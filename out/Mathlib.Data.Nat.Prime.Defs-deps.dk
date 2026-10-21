@@ -1,0 +1,34 @@
+(; constants used by Mathlib.Data.Nat.Prime.Defs, declared with their translated types ;)
+
+(; doc: A `Bool` (that is, `decide p`) paired with a proof of `p` if `decide p` is `true` or a proof of `¬p` if `decide p` is `false`. The easiest way to extract these proofs is to use `of_decide_eq_true` or `of_decide_eq_false`.  `Decidable` instances are primarily used via `if`-expressions and the tactic `decide`. In conditional expressions, the `Decidable` instance for the proposition is used to select a branch. At run time, this case distinction code is identical to that which would be generated for a `Bool`-based conditional. In proofs, the tactic `decide` synthesizes an instance of `Decidable p`, attempts to reduce `decide p` to `true`, and then succeeds with the proof `of_decide_eq_true rfl` if it can.  Because `Decidable` carries data, when writing `@[simp]` lemmas which include a `Decidable` instance on the LHS, it is best to use `{_ : Decidable p}` rather than `[Decidable p]` so that non-canonical instances can be found via unification rather than instance synthesis. ;)
+(; //LEAN:Decidable ;)
+Decidable : (p : Prop) -> Set.
+
+(; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
+(; //LEAN:Function.Injective ;)
+Function__Injective : (f : (Elem x -> x1)) -> Prop.
+
+(; doc: `Irreducible p` states that `p` is non-unit and only factors into units.  We explicitly avoid stating that `p` is non-zero, this would require a semiring. Assuming only a monoid allows us to reuse irreducible for associated elements.  [Wikidata Q2989575](https://www.wikidata.org/wiki/Q2989575) ;)
+(; //LEAN:Irreducible ;)
+Irreducible : (p : Elem M) -> Prop.
+
+(; doc: `m` and `n` are coprime, or relatively prime, if their `gcd` is 1. ;)
+(; //LEAN:Nat.Coprime ;)
+Nat__Coprime : (m : Elem Nat) -> (n : Elem Nat) -> Prop.
+
+(; doc: This instance is set up to work in the kernel (`by decide`) for small values.  Below (`decidablePrime'`) we will define a faster variant to be used by the compiler (e.g. in `#eval` or `by native_decide`).  If you need to prove that a particular number is prime, in any case you should not use `by decide`, but rather `by norm_num`, which is much faster. ;)
+(; //LEAN:Nat.decidablePrime ;)
+Nat__decidablePrime : (p : Elem Nat) -> Elem (Decidable (prime p)).
+
+(; doc: Integer square root function. Implemented via Newton's method. ;)
+(; //LEAN:Nat.sqrt ;)
+Nat__sqrt : (n : Elem Nat) -> Elem Nat.
+
+(; doc: An element `p` of a commutative monoid with zero (e.g., a ring) is called *prime*, if it's not zero, not a unit, and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`. ;)
+(; //LEAN:Prime ;)
+Prime : (p : Elem M) -> Prop.
+
+(; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
+(; //LEAN:ite ;)
+ite : (c : Prop) -> (t : Elem x) -> (e : Elem x) -> Elem x.
+

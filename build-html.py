@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Build mathlib-informath.html: each exported Mathlib statement with its
+"""Build mathlib-informath.html, a table of contents, and pages/<Part>.html,
+one page for each directory of Mathlib whose modules are in modules.txt
+(pages/Mathlib.Data.Nat.Prime.html for Mathlib.Data.Nat.Prime.Defs, ...),
+with each exported Mathlib statement, its
 Lean source, its Dedukti translation, and Informath's informalization in
 English and as a formula, rendered by MathJax.
 
     lake exe export $(cat modules.txt)     # -> out/<Module>.dk, .json, -deps.dk
-    python3 build-html.py                  # -> mathlib-informath.html
+    python3 build-html.py                  # -> mathlib-informath.html, pages/*.html
 
 The modules are those of modules.txt, in its order.  The Lean source is read
 from the Mathlib checkout (../mathlib4, or $MATHLIB), from the line where the
@@ -32,6 +35,7 @@ def informath():
 
 
 RUN = None
+FORCED = set()   # (name, symbolic) of the readings made with -force-symbolic
 
 
 def run(*args):
@@ -85,11 +89,24 @@ def readings(dk, decls, blocks, symbolic):
         if tag == 'equal':
             for k in range(i2 - i1):
                 out[names[i1 + k]] = strip(lines[j1 + k])
+    # a declaration that got no reading is read alone with -force-symbolic,
+    # which writes \mathrm{c}(...) where a constant has no form that fits
+    for d in decls:
+        if d['lean'] in out or d['lean'] not in blocks:
+            continue
+        tmp = '.html-one.dk'
+        open(tmp, 'w').write(blocks[d['lean']] + '\n')
+        ls = run('-force-symbolic', *flags[:-1], tmp)
+        os.remove(tmp)
+        if ls:
+            out[d['lean']] = strip(ls[0])
+            FORCED.add((d['lean'], symbolic))
     return out
 
 
 def source(module, d):
-    """The declaration as written in Mathlib, without its docstring and proof."""
+    """The declaration as written in Mathlib, without its docstring and proof:
+    up to its first := outside brackets (not the one of @[deprecated (since := ...)])."""
     path = os.path.join(MATHLIB, module.replace('.', '/') + '.lean')
     lines = open(path).read().split('\n')
     i, end = d['line'] - 1, d['endLine']
@@ -97,18 +114,26 @@ def source(module, d):
         while i < end and '-/' not in lines[i]:
             i += 1
         i += 1
-    out = []
+    out, depth = [], 0
     while i < end:
         l = lines[i]
-        if out and re.match(r'\s*\|', l):           # equations of a definition by cases
+        if out and depth == 0 and re.match(r'\s*\|', l):   # equations of a definition by cases
             break
-        if ':=' in l:
-            out.append(l[:l.index(':=') + 2])
-            break
-        if re.search(r'\bwhere\s*$', l):
-            out.append(l)
+        cut = None
+        for k, ch in enumerate(l):
+            if ch in '([{':
+                depth += 1
+            elif ch in ')]}':
+                depth -= 1
+            elif ch == ':' and l[k:k + 2] == ':=' and depth == 0:
+                cut = k + 2
+                break
+        if cut is not None:
+            out.append(l[:cut])
             break
         out.append(l)
+        if depth == 0 and re.search(r'\bwhere\s*$', l):
+            break
         i += 1
     return '\n'.join(out).rstrip()
 
@@ -148,20 +173,10 @@ def reading_html(t):
 
 # ---------------------------------------------------------------- the page
 
-HEAD = """<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mathlib informalized</title>
-<script>
-window.MathJax = {
-  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']], macros: {MACROS} },
-  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
-};
-</script>
-<script async src="{MATHJAX}"></script>
-<style>
+STYLE = """
  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0 auto;max-width:1150px;padding:1.5rem;line-height:1.5;color:#222;background:#fff}
  header{border-bottom:1px solid #ddd;margin-bottom:1rem}
+ nav{font-size:.9em;margin-bottom:.4rem}
  h2{margin-top:2.4rem;border-bottom:2px solid #0645ad;padding-bottom:.2rem;font-size:1.25rem}
  h2 a{font-size:.7em;font-weight:400;margin-left:.6rem}
  .entry{padding:.8rem 0;border-bottom:1px solid #eee}
@@ -176,13 +191,14 @@ window.MathJax = {
  pre.lean{background:#fbf8ef;border-color:#ece3c8}
  .text{font-size:.95em;padding-top:.2rem}
  .missing{color:#999;font-style:italic}
+ .forced{color:#999;font-size:.75em}
  table.cov{border-collapse:collapse;margin:.6rem 0;font-size:.9em}
  table.cov td,table.cov th{border:1px solid #ddd;padding:.2rem .6rem;text-align:right}
  table.cov td:first-child,table.cov th:first-child{text-align:left}
-</style></head><body>
-<header>
-<h1>Mathlib informalized</h1>
-<p>Statements of <a href="https://github.com/leanprover-community/mathlib4">Mathlib</a>
+ table.cov tr.group td{font-weight:700;background:#f4f6fb}
+"""
+
+INTRO = """<p>Statements of <a href="https://github.com/leanprover-community/mathlib4">Mathlib</a>
 (commit <code>{COMMIT}</code>), each with its <b>Lean</b> source, its translation to
 <b>Dedukti</b> by <code>Export.lean</code>, and its informalization by
 <a href="https://github.com/GrammaticalFramework/informath">Informath</a>, in
@@ -190,10 +206,61 @@ window.MathJax = {
 instance arguments and maps Lean's arithmetic and logic to Informath's base
 (<code>mapping.tsv</code>); the other Mathlib constants are worded by the symbol table
 <code>mathlib.dkgf</code>. Constants without a wording appear as
-$\\mathrm{name}$.</p>
-{COVERAGE}
-</header>
-"""
+$\\mathrm{name}$.</p>"""
+
+
+def page(title, head, body, macros, extra=''):
+    return """<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>%s</title>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$']], displayMath: [['$$','$$']], macros: %s },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script async src="%s"></script>%s
+<style>%s</style></head><body>
+<header>%s</header>
+%s
+</body></html>
+""" % (html.escape(title), json.dumps(macros), MATHJAX, extra, STYLE, head, body)
+
+
+def group_of(module):
+    """The subfile of a module: its directory, Mathlib.Data.Nat.Prime for
+    Mathlib.Data.Nat.Prime.Defs."""
+    return module.rsplit('.', 1)[0]
+
+
+def entry_html(m, d, blocks, english, formula, commit):
+    name = d['lean']
+    path = m.replace('.', '/') + '.lean'
+    e, f = english.get(name), formula.get(name)
+    rows = [
+        ('Lean', '<pre class=lean>%s</pre>' % html.escape(source(m, d))),
+        ('Dedukti', '<pre>%s</pre>' % html.escape(blocks.get(name, '(not exported)'))),
+        ('English', '<div class=text>%s%s</div>' % (reading_html(e), forced(name, False)) if e
+         else '<div class="text missing">no reading</div>'),
+        ('Formula', '<div class=text>%s%s</div>' % (reading_html(f), forced(name, True)) if f
+         else '<div class="text missing">no formula</div>'),
+    ]
+    return ('<div class=entry id="%s"><span class=name>%s</span><span class="k %s">%s</span>'
+            '<a class=src href="%s">%s:%d</a>%s%s</div>' % (
+                html.escape(name), html.escape(name), d['kind'], d['kind'],
+                GITHUB % (commit, path, d['nameLine']), html.escape(path.split('/')[-1]), d['nameLine'],
+                '<div class=doc>%s</div>' % doc_html(d['doc']) if d['doc'] else '',
+                ''.join('<div class=row><div class=lab>%s</div><div>%s</div></div>' % r for r in rows)))
+
+
+def forced(name, symbolic):
+    return (' <span class=forced>(forced symbolic: no wording found)</span>'
+            if (name, symbolic) in FORCED else '')
+
+
+def worded(text):
+    return bool(text) and '\\mathrm' not in text and 'holds for' not in text
 
 
 def main():
@@ -202,46 +269,54 @@ def main():
     modules = [l.strip() for l in open('modules.txt') if l.strip() and not l.startswith('#')]
     commit = subprocess.run(['git', '-C', MATHLIB, 'rev-parse', 'HEAD'],
                             capture_output=True, text=True).stdout.strip()
-    body, rows, total = [], [], [0, 0]
+    ms = macros(modules)
+    groups = []
     for m in modules:
-        decls = json.load(open('out/%s.json' % m))
-        blocks = dk_blocks('out/%s.dk' % m)
-        english = readings('out/%s.dk' % m, decls, blocks, False)
-        formula = readings('out/%s.dk' % m, decls, blocks, True)
-        path = m.replace('.', '/') + '.lean'
-        body.append('<h2 id="%s">%s <a href="%s">source</a></h2>' % (
-            html.escape(m), html.escape(m), GITHUB % (commit, path, 1)))
-        worded = 0
-        for d in decls:
-            name = d['lean']
-            e, f = english.get(name), formula.get(name)
-            worded += bool(e) and '\\mathrm' not in e and 'holds for' not in e
-            rowsh = [
-                ('Lean', '<pre class=lean>%s</pre>' % html.escape(source(m, d))),
-                ('Dedukti', '<pre>%s</pre>' % html.escape(blocks.get(name, '(not exported)'))),
-                ('English', '<div class=text>%s</div>' % reading_html(e) if e
-                 else '<div class="text missing">no reading</div>'),
-                ('Formula', '<div class=text>%s</div>' % reading_html(f) if f
-                 else '<div class="text missing">no formula</div>'),
-            ]
-            body.append(
-                '<div class=entry id="%s"><span class=name>%s</span><span class="k %s">%s</span>'
-                '<a class=src href="%s">%s:%d</a>%s%s</div>' % (
-                    html.escape(name), html.escape(name), d['kind'], d['kind'],
-                    GITHUB % (commit, path, d['nameLine']), html.escape(path.split('/')[-1]), d['nameLine'],
-                    '<div class=doc>%s</div>' % doc_html(d['doc']) if d['doc'] else '',
-                    ''.join('<div class=row><div class=lab>%s</div><div>%s</div></div>' % r for r in rowsh)))
-        rows.append('<tr><td><a href="#%s">%s</a></td><td>%d</td><td>%d</td></tr>'
-                    % (html.escape(m), html.escape(m), len(decls), worded))
-        total[0] += len(decls)
-        total[1] += worded
-    coverage = ('<table class=cov><tr><th>module</th><th>statements</th><th>fully worded</th></tr>%s'
-                '<tr><th>all</th><th>%d</th><th>%d</th></tr></table>' % (''.join(rows), total[0], total[1]))
-    page = (HEAD.replace('{MACROS}', json.dumps(macros(modules))).replace('{MATHJAX}', MATHJAX)
-            .replace('{COMMIT}', commit[:10]).replace('{COVERAGE}', coverage))
-    open(OUT, 'w').write(page + '\n'.join(body) + '\n</body></html>\n')
-    print('%d statements in %d modules, %d fully worded -> %s (RunInformath: %s)'
-          % (total[0], len(modules), total[1], OUT, RUN))
+        if not groups or groups[-1][0] != group_of(m):
+            groups.append((group_of(m), []))
+        groups[-1][1].append(m)
+    os.makedirs('pages', exist_ok=True)
+    where, rows, total = {}, [], [0, 0]
+    for g, mods in groups:
+        file = 'pages/%s.html' % g
+        body, grows, gtot = [], [], [0, 0]
+        for m in mods:
+            decls = json.load(open('out/%s.json' % m))
+            blocks = dk_blocks('out/%s.dk' % m)
+            english = readings('out/%s.dk' % m, decls, blocks, False)
+            formula = readings('out/%s.dk' % m, decls, blocks, True)
+            body.append('<h2 id="%s">%s <a href="%s">source</a></h2>' % (
+                html.escape(m), html.escape(m), GITHUB % (commit, m.replace('.', '/') + '.lean', 1)))
+            body += [entry_html(m, d, blocks, english, formula, commit) for d in decls]
+            n, w = len(decls), sum(worded(english.get(d['lean'])) for d in decls)
+            for d in decls:
+                where[d['lean']] = file
+            grows.append((m, n, w))
+            gtot[0] += n
+            gtot[1] += w
+        head = ('<nav><a href="../mathlib-informath.html">Mathlib informalized</a> &rsaquo; %s</nav>'
+                '<h1>%s</h1>%s' % (html.escape(g), html.escape(g), INTRO.replace('{COMMIT}', commit[:10])) +
+                '<table class=cov><tr><th>module</th><th>statements</th><th>fully worded</th></tr>%s</table>'
+                % ''.join('<tr><td><a href="#%s">%s</a></td><td>%d</td><td>%d</td></tr>'
+                          % (html.escape(m), html.escape(m), n, w) for m, n, w in grows))
+        open(file, 'w').write(page(g + ' informalized', head, '\n'.join(body), ms))
+        rows.append('<tr class=group><td><a href="%s">%s</a></td><td>%d</td><td>%d</td></tr>'
+                    % (file, html.escape(g), gtot[0], gtot[1]))
+        rows += ['<tr><td>&nbsp;&nbsp;<a href="%s#%s">%s</a></td><td>%d</td><td>%d</td></tr>'
+                 % (file, html.escape(m), html.escape(m.rsplit('.', 1)[1]), n, w) for m, n, w in grows]
+        total[0] += gtot[0]
+        total[1] += gtot[1]
+        print('%s: %d statements, %d fully worded -> %s' % (g, gtot[0], gtot[1], file))
+    toc = ('<table class=cov><tr><th>part of Mathlib</th><th>statements</th><th>fully worded</th></tr>%s'
+           '<tr><th>all</th><th>%d</th><th>%d</th></tr></table>' % (''.join(rows), total[0], total[1]))
+    # the declarations had anchors on this page before it was split
+    forward = ('\n<script>\n(function(){var w=%s;var h=decodeURIComponent(location.hash.slice(1));'
+               'if(w[h])location.replace(w[h]+"#"+encodeURIComponent(h));})();\n</script>' % json.dumps(where))
+    head = '<h1>Mathlib informalized</h1>' + INTRO.replace('{COMMIT}', commit[:10]) + \
+        '<p>One page for each part of Mathlib:</p>' + toc
+    open(OUT, 'w').write(page('Mathlib informalized', head, '', {}, forward))
+    print('%d statements in %d modules, %d fully worded -> %s and %d pages (RunInformath: %s)'
+          % (total[0], len(modules), total[1], OUT, len(groups), RUN))
 
 
 if __name__ == '__main__':

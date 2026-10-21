@@ -43,6 +43,8 @@ def mangle (n : Name) : String :=
 structure St where
   mapping : Std.HashMap Name String := {}
   used : Std.HashSet Name := {}      -- unmapped constants referred to
+  derived : Std.HashMap String String := {}  -- c__app constants and their types
+  binders : Std.HashSet Name := {}   -- constants of binders.txt
   names : Std.HashSet String := {}   -- variable names in use
 
 abbrev M := StateRefT St MetaM
@@ -95,12 +97,12 @@ partial def tr (e : Expr) : M String := do
   | .sort _ => return "Set"
   | .lit (.natVal n) => return numeral n
   | .lit (.strVal s) => return s!"\"{s}\""
-  | .const c _ => app c #[]
+  | .const c _ => app c #[] e
   | .app .. =>
     let f := e.getAppFn
     let args := e.getAppArgs
     match f with
-    | .const c _ => app c args
+    | .const c _ => app c args e
     | _ => do
       let fs ← tr f
       let as ← args.mapM tr
@@ -147,15 +149,45 @@ partial def hypoType (t : Expr) : M String := do
   return s!"Elem {paren (← tr t)}"
 
 /-- An application of a constant, with the special cases of the mapping. -/
-partial def app (c : Name) (args : Array Expr) : M String := do
+partial def app (c : Name) (args : Array Expr) (whole : Expr) : M String := do
+  -- a coercion to a function, DFunLike.coe f x (n.factorization p): when f is
+  -- an application of a constant, the constant applied to its explicit
+  -- arguments and to x, as one constant c__app declared in the deps
+  if c == `DFunLike.coe && args.size ≥ 6 then
+    let f := args[4]!
+    let rest := args.extract 5 args.size
+    match f.getAppFn with
+    | .const fc _ => do
+      let fexpl ← try explicitArgs fc catch _ => pure (f.getAppArgs.map fun _ => true)
+      let fshown := (f.getAppArgs.toList.zip (fexpl.toList ++ List.replicate f.getAppNumArgs true)).filter (·.2)
+                     |>.map (·.1)
+      let all := fshown ++ rest.toList
+      let nm := mangle fc ++ "__app"
+      if !((← get).derived.contains nm) then
+        let mut hs := #[]
+        let mut i := 0
+        for a in all do
+          i := i + 1
+          hs := hs.push s!"(a{i} : {← hypoType (← inferType a)})"
+        let ty := " -> ".intercalate (hs.toList ++ [← hypoType (← inferType whole)])
+        modify fun st => { st with derived := st.derived.insert nm ty }
+      let as ← all.mapM tr
+      return " ".intercalate (nm :: as.map paren)
+    | _ => do
+      let fs ← tr f
+      let as ← rest.mapM tr
+      return " ".intercalate (paren fs :: (as.map paren).toList)
   -- numerals: OfNat.ofNat α n inst
   if c == ``OfNat.ofNat && args.size ≥ 2 then
     if let .lit (.natVal n) := args[1]!.consumeMData then return numeral n
   -- casts between number types are the identity in Informath's Num
   if (c == ``Nat.cast || c == ``Int.cast || c == ``NatCast.natCast || c == ``IntCast.intCast
-      || c == ``Subtype.val)
+      || c == ``Subtype.val || c == `SetLike.coe)
       && args.size ≥ 1 then
     return ← tr args.back!
+  -- an element of a subtype, Subtype.mk x h, is x
+  if c == ``Subtype.mk && args.size == 4 then
+    return ← tr args[2]!
   -- ∃ x, p x  /  Exists (fun x => p x)
   if c == ``Exists && args.size == 2 then
     let p := args[1]!
@@ -180,7 +212,15 @@ partial def app (c : Name) (args : Array Expr) : M String := do
       modify fun s => { s with used := s.used.insert c }
       pure (mangle c)
   if shown.isEmpty then return head
-  let as ← shown.mapM tr
+  -- the function arguments of a binder constant are λs, eta-expanded if need be
+  let binder := (← get).binders.contains c
+  let as ← shown.mapM fun a => do
+    if binder then
+      -- all its arguments, as the macro shows each bound variable: f to x y => f x y
+      let ty ← whnf (← inferType a)
+      if ty.isForall then
+        return ← tr (← Core.betaReduce (← etaExpand a))
+    tr a
   return " ".intercalate (head :: as.map paren)
 
 end
@@ -210,6 +250,11 @@ so that the #k of its symbol table entry count the same arguments. -/
 def statement (type : Expr) : M String := do
   statementGo (!(← isProp type)) type
 
+/-- A class is declared as a predicate: its instance arguments are exported
+as hypotheses Proof (C α), "Let α be a commutative monoid". -/
+def asPredicate (env : Environment) (n : Name) (s : String) : String :=
+  if isClass env n && s.endsWith "Set" then String.ofList (s.toList.take (s.length - 3)) ++ "Prop" else s
+
 def kindOf : ConstantInfo → String
   | .thmInfo _ => "theorem"
   | .defnInfo _ => "def"
@@ -224,12 +269,22 @@ def kindOf : ConstantInfo → String
 def wanted (env : Environment) (n : Name) (ci : ConstantInfo) : Bool :=
   !n.isInternal && !n.isInternalDetail && !isAuxRecursor env n && !isNoConfusion env n &&
   !(ci matches .recInfo _) && !(ci matches .quotInfo _) &&
-  !(Lean.Meta.isInstanceCore env n) && !(`match_).isPrefixOf n && !n.isImplementationDetail
+  !(Lean.Meta.isInstanceCore env n) && !(`match_).isPrefixOf n && !n.isImplementationDetail &&
+  !(Lean.Linter.isDeprecated env n)  -- old names of other declarations
 
 def jsonStr (s : String) : String := (Json.str s).compress
 
 def strip (s : String) : String :=
   String.ofList (s.toList.dropWhile Char.isWhitespace |>.reverse.dropWhile Char.isWhitespace |>.reverse)
+
+def readBinders : IO (Std.HashSet Name) := do
+  let path : System.FilePath := "binders.txt"
+  if !(← path.pathExists) then return {}
+  let mut b := {}
+  for line in (← IO.FS.lines path) do
+    if line.startsWith "#" || strip line == "" then continue
+    b := b.insert (strip line).toName
+  return b
 
 def readMapping : IO (Std.HashMap Name String) := do
   let path : System.FilePath := "mapping.tsv"
@@ -242,7 +297,8 @@ def readMapping : IO (Std.HashMap Name String) := do
     | _ => pure ()
   return m
 
-def exportModule (env : Environment) (mapping : Std.HashMap Name String) (mod : Name) :
+def exportModule (env : Environment) (mapping : Std.HashMap Name String)
+    (binders : Std.HashSet Name) (mod : Name) :
     IO Unit := do
   let some idx := env.getModuleIdx? mod | throw <| IO.userError s!"module {mod} not loaded"
   -- in the order of the source, as the module records them
@@ -268,16 +324,18 @@ def exportModule (env : Environment) (mapping : Std.HashMap Name String) (mod : 
   let mut dk := s!"(; {mod}: statements exported from Mathlib by MathlibInformath/Export.lean ;)\n\n"
   let mut json := #[]
   let mut used : Std.HashSet Name := {}
+  let mut derived : Std.HashMap String String := {}
   for (n, ci) in decls do
     let act : M String := statement ci.type
-    let res ← ((act.run {mapping}).run' {} {}).toIO ctx st |>.toBaseIO
+    let res ← ((act.run {mapping, binders}).run' {} {}).toIO ctx st |>.toBaseIO
     let doc ← (Lean.findDocString? env n)
     let pp ← ((Meta.ppExpr ci.type).run' {} {}).toIO ctx st |>.toBaseIO
     let ppStr := match pp with | .ok (f, _) => toString f | .error _ => ""
     match res with
     | .ok ((s, stt), _) =>
       used := stt.used.fold (fun acc c => acc.insert c) used
-      dk := dk ++ s!"(; //LEAN:{n} ;)\n{mangle n} : {s}.\n\n"
+      derived := stt.derived.fold (fun acc k v => acc.insert k v) derived
+      dk := dk ++ s!"(; //LEAN:{n} ;)\n{mangle n} : {asPredicate env n s}.\n\n"
       let r := lineOf.get! n
       json := json.push s!"\{\"lean\": {jsonStr n.toString}, \"dk\": {jsonStr (mangle n)}, \"kind\": {jsonStr (kindOf ci)}, \"doc\": {jsonStr (doc.getD "")}, \"statement\": {jsonStr ppStr}, \"line\": {r.range.pos.line}, \"nameLine\": {r.selectionRange.pos.line}, \"endLine\": {r.range.endPos.line}}"
     | .error e =>
@@ -285,15 +343,17 @@ def exportModule (env : Environment) (mapping : Std.HashMap Name String) (mod : 
   -- the constants used but neither exported nor mapped
   let exported : Std.HashSet Name := decls.foldl (fun acc (n, _) => acc.insert n) {}
   let mut deps := s!"(; constants used by {mod}, declared with their translated types ;)\n\n"
+  for (nm, ty) in derived.toList.toArray.qsort (·.1 < ·.1) do
+    deps := deps ++ s!"(; a constant applied as a function: DFunLike.coe ;)\n{nm} : {ty}.\n\n"
   for c in used.toList.toArray.qsort (·.toString < ·.toString) do
     if exported.contains c then continue
     let some ci := env.find? c | continue
-    let res ← (((statement ci.type).run {mapping}).run' {} {}).toIO ctx st |>.toBaseIO
+    let res ← (((statement ci.type).run {mapping, binders}).run' {} {}).toIO ctx st |>.toBaseIO
     match res with
     | .ok ((s, _), _) =>
       let doc := ((← Lean.findDocString? env c).getD "").replace "\n" " " |>.replace ";)" "; )"
       let docLine := if doc.isEmpty then "" else s!"(; doc: {doc} ;)\n"
-      deps := deps ++ s!"{docLine}(; //LEAN:{c} ;)\n{mangle c} : {s}.\n\n"
+      deps := deps ++ s!"{docLine}(; //LEAN:{c} ;)\n{mangle c} : {asPredicate env c s}.\n\n"
     | .error _ => deps := deps ++ s!"(; NOT EXPORTED: {c} ;)\n\n"
   IO.FS.createDirAll "out"
   IO.FS.writeFile s!"out/{mod}.dk" dk
@@ -310,6 +370,7 @@ unsafe def main (args : List String) : IO UInt32 := do
   let mods := args.map String.toName
   let env ← importModules (mods.map fun m => { module := m }).toArray {} (loadExts := true)
   let mapping ← readMapping
+  let binders ← readBinders
   for m in mods do
-    exportModule env mapping m
+    exportModule env mapping binders m
   return 0

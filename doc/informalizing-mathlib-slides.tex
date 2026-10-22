@@ -154,7 +154,7 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
 
 \section{Building mathlib-informath}
 
-\begin{frame}{Two days, twelve prompts}
+\begin{frame}{Two days, thirteen prompts}
   \small
   \scriptsize\begin{tabular}{@{}r>{\raggedright\arraybackslash}p{0.42\textwidth}>{\raggedright\arraybackslash}p{0.3\textwidth}l@{}}
     \toprule
@@ -171,15 +171,16 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
     9 & add French & a third row, an index & \commit{823155a} \\
     10 & add Czech, hidden with French; buttons at each entry & a fourth row & \commit{cacc011} \commit{0c9c416} \\
     11 & aggregate hypotheses (in Informath); rebuild the pages & 503 readings change & \commit{afd0d9d} \\
-    12 & add German & a fifth row, with a time limit & \\
+    12 & add German & a fifth row, with a time limit & \commit{a53c372} \\
+    13 & proofs that use tactics, as proof units & 25 tactic proofs (English) & \commit{9822ffa} \\
     \bottomrule
   \end{tabular}
 
   \vspace{2mm}
-  \footnotesize 21--22 October 2026: 12 commits in mathlib-informath (besides these slides)
-  and 7 in informath (\commit{4f31f55}, \commit{ceb9b85}, \commit{7773194},
-  \commit{778e998}, \commit{0da10d2}, \commit{5907eec}, and German), all made by Claude
-  when asked, and pushed by me.
+  \footnotesize 21--22 October 2026: 13 commits in mathlib-informath (besides these slides)
+  and 8 in informath (\commit{4f31f55}, \commit{ceb9b85}, \commit{7773194},
+  \commit{778e998}, \commit{0da10d2}, \commit{5907eec}, \commit{a8b863f}, \commit{4bcff16}),
+  all made by Claude when asked, and pushed by me.
 \end{frame}
 
 \begin{frame}{1. The plan: three decisions}
@@ -546,6 +547,50 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
   \end{itemize}
 \end{frame}
 
+\begin{frame}[fragile]{13. Tactic proofs}
+  \footnotesize
+  \prompt{Now I'm interested in adding proofs that use tactics. This might be doable by
+  ignoring proof expressions in Dedukti and going directly to lists of proof units.}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      242 of our 620 theorems are proved by tactics, mostly \texttt{rw}, \texttt{simp},
+      \texttt{exact}; the scripts alone say little. Claude asked three questions:
+      \ok{Lean's goals}, \ok{a new mode \texttt{-tactic-proof}}, \ok{Nat.Prime.Defs in
+      English first}.
+      \begin{itemize}
+        \item \texttt{export --tactics}: the module elaborated again (5 s), each tactic
+              of a sequence with its goals before and after, in Dedukti.
+        \item \texttt{tactic-units.py}: units from comparing the goals --- assumed,
+              obtained, stated, closed, ``it is enough to show'', cases.
+        \item \texttt{RunInformath -tactic-proof}: the units through the symbol tables and
+              the NLG, written out as by \texttt{-proof-text}.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+\begin{lstlisting}
+obtain ⟨n, hn⟩ := hm
+have := pp.isUnit_or_isUnit hn
+rw [Nat.isUnit_iff, Nat.isUnit_iff] at this
+apply Or.imp_right _ this
+rintro rfl
+rw [hn, mul_one]
+\end{lstlisting}
+      \scriptsize
+      \begin{tabular}{@{}r>{\raggedright\arraybackslash}p{0.88\linewidth}@{}}
+        1. & Let $n$ be an element of $\mathbb{N}$ such that $p = m \times n$. \\
+        2. & $m$ is a unit or $n$ is a unit. \\
+        3. & $m = 1$ or $n = 1$. \\
+        4. & It is enough to show that if $n = 1$, then $m = p$. \\
+        5. & Assume that $n = 1$. \\
+        6. & $m = p$. \\
+      \end{tabular}
+    \end{column}
+  \end{columns}
+  Fixed on the way: \texttt{rintro rfl} assumed the \bad{substituted} hypotheses;
+  \texttt{by\_cases} lost its case hypotheses. The rebuild found that the RGL, changed in my
+  German work, no longer compiles \bad{Czech}.
+\end{frame}
+
 \begin{frame}{The result}
   \centering
   \begin{tabular}{@{}lrrrrr@{}}
@@ -566,6 +611,7 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
   \begin{itemize}
     \item 264 declarations with their definiens; 240 proof texts in each
           language, out of 242 term proofs; 48 statements without German (time limit).
+    \item 25 tactic proofs in English (\texttt{Nat.Prime.Defs}), out of 242.
     \item Every statement has a formula; 31 need \texttt{-force-symbolic}.
     \item \url{https://aarneranta.github.io/mathlib-informath/mathlib-informath.html}
   \end{itemize}
@@ -582,9 +628,11 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
           hand-reviewed table entries. All of Mathlib needs entries generated in
           bulk from docstrings and names, verified by the grammar and the type
           checker.
-    \item \textbf{Tactic proofs.} 378 of the 620 theorems here, and most of
-          Mathlib's, are proved \texttt{by} tactics. They need the proof term
-          that Lean elaborates, or a reading of the tactic script.
+    \item \textbf{Tactic proofs.} 242 of the 620 theorems here, and most of
+          Mathlib's, are proved \texttt{by} tactics: 25 have proof texts so far, in
+          English; the others, the other languages, and the term and tactic proofs to be
+          told apart on the page. Long \texttt{simp\_rw} goals, \texttt{by\_contra} as
+          ``it is enough to show that we have a contradiction''.
     \item \textbf{Unworded statements} (131 of 705):
       \begin{itemize}
         \item multi-letter variables (\texttt{lt}, \texttt{self},
@@ -672,11 +720,12 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
     The regression suite, the autoformalization template
     &
     The next modules; French as a third row; one index loading the grammar
-    once; Czech, hidden; hypotheses aggregated, reordered; German, with an aggressive time limit
+    once; Czech, hidden; hypotheses aggregated, reordered; German, with an aggressive time limit;
+    tactic proofs as proof units, after Verbose Lean
     &
     Informath: \texttt{abstractionTypes}, \texttt{-languages},
     multilingual proof texts, \texttt{-no-back-to-dedukti},
-    \texttt{ProofUnitsFre}, Czech, \texttt{aggregateHypos} \\
+    \texttt{ProofUnitsFre}, Czech, \texttt{aggregateHypos}, \texttt{-tactic-proof}; \texttt{export --tactics} \\
     \bottomrule
   \end{tabularx}
 

@@ -1,0 +1,95 @@
+(; Mathlib.Algebra.Prime.Defs: statements exported from Mathlib by MathlibInformath/Export.lean ;)
+
+(; //LEAN:Prime ;)
+def Prime : (p : Elem M) -> Prop :=
+  p => and (Neq p 0) (and (not (IsUnit p)) (forall M (a => forall M (b => if (divide p (times a b)) (or (divide p a) (divide p b)))))).
+
+(; //LEAN:Prime.ne_zero ;)
+def Prime__ne_zero : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> Proof (Neq p 0) :=
+  M => x => p => hp => andEl (Neq p 0) (and (not (IsUnit p)) (forall M (a => forall M (b => if (divide p (times a b)) (or (divide p a) (divide p b)))))) hp.
+
+(; //LEAN:Prime.not_isUnit ;)
+def Prime__not_isUnit : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> Proof (not (IsUnit p)) :=
+  M => x => p => hp => andEl (not (IsUnit p)) (forall M (a => forall M (b => if (divide p (times a b)) (or (divide p a) (divide p b))))) (andEr (Neq p 0) (and (not (IsUnit p)) (forall M (a1 => forall M (b1 => if (divide p (times a1 b1)) (or (divide p a1) (divide p b1)))))) hp).
+
+(; //LEAN:Prime.not_dvd_one ;)
+def Prime__not_dvd_one : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> Proof (not (divide p 1)) :=
+  M => x => p => hp => mt (divide p 1) (IsUnit p) (ifI (divide p 1) (IsUnit p) (h => isUnit_of_dvd_one M p h)) (Prime__not_isUnit M p hp).
+
+(; //LEAN:Prime.ne_one ;)
+Prime__ne_one : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> Proof (Neq p 1).
+
+(; //LEAN:Prime.dvd_or_dvd ;)
+def Prime__dvd_or_dvd : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> (a : Elem M) -> (b : Elem M) -> (h : Proof (divide p (times a b))) -> Proof (or (divide p a) (divide p b)) :=
+  M => x => p => hp => a => b => h => andEr (not (IsUnit p)) (forall M (a1 => forall M (b1 => if (divide p (times a1 b1)) (or (divide p a1) (divide p b1))))) (andEr (Neq p 0) (and (not (IsUnit p)) (forall M (a2 => forall M (b2 => if (divide p (times a2 b2)) (or (divide p a2) (divide p b2)))))) hp) a b h.
+
+(; //LEAN:Prime.dvd_mul ;)
+def Prime__dvd_mul : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (divide p (times a b)) (or (divide p a) (divide p b))) :=
+  M => x => p => hp => a => b => iffI (divide p (times a b)) (or (divide p a) (divide p b)) (Prime__dvd_or_dvd M p hp a b) (h => orE (divide p a) (divide p b) (divide p (times a b)) h (h1 => dvd_mul_of_dvd_left M p a h1 b) (h2 => dvd_mul_of_dvd_right M p b h2 a)).
+
+(; //LEAN:Prime.isPrimal ;)
+def Prime__isPrimal : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> Proof (IsPrimal p) :=
+  M => x => p => hp => forallI M (_a => forall M (_b1 => if (divide p (times _a _b1)) (exists M (x13 => exists M (x14 => and (divide x13 _a) (and (divide x14 _b1) (Eqt M p (times x13 x14)))))))) (_a => forallI M (_b => if (divide p (times _a _b)) (exists M (x11 => exists M (x12 => and (divide x11 _a) (and (divide x12 _b) (Eqt M p (times x11 x12))))))) (_b => ifI (divide p (times _a _b)) (exists M (x9 => exists M (x10 => and (divide x9 _a) (and (divide x10 _b) (Eqt M p (times x9 x10)))))) (dvd => orE (divide p _a) (divide p _b) (exists M (x1 => exists M (x2 => and (divide x1 _a) (and (divide x2 _b) (Eqt M p (times x1 x2)))))) (Prime__dvd_or_dvd M p hp _a _b dvd) (h => existsI M (x3 => exists M (x4 => and (divide x3 _a) (and (divide x4 _b) (Eqt M p (times x3 x4))))) p (existsI M (x5 => and (divide p _a) (and (divide x5 _b) (Eqt M p (times p x5)))) 1 (andI (divide p _a) (and (divide 1 _b) (Eqt M p (times p 1))) h (andI (divide 1 _b) (Eqt M p (times p 1)) (one_dvd M _b) (Eq__symm M (times p 1) p (mul_one M p)))))) (h1 => existsI M (x6 => exists M (x7 => and (divide x6 _a) (and (divide x7 _b) (Eqt M p (times x6 x7))))) 1 (existsI M (x8 => and (divide 1 _a) (and (divide x8 _b) (Eqt M p (times 1 x8)))) p (andI (divide 1 _a) (and (divide p _b) (Eqt M p (times 1 p))) (one_dvd M _a) (andI (divide p _b) (Eqt M p (times 1 p)) h1 (Eq__symm M (times 1 p) p (one_mul M p))))))))).
+
+(; //LEAN:Prime.not_dvd_mul ;)
+def Prime__not_dvd_mul : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> (a : Elem M) -> (b : Elem M) -> (ha : Proof (not (divide p a))) -> (hb : Proof (not (divide p b))) -> Proof (not (divide p (times a b))) :=
+  M => x => p => hp => a => b => ha => hb => iffEr (not (divide p (times a b))) (not (or (divide p a) (divide p b))) (Iff__not (divide p (times a b)) (or (divide p a) (divide p b)) (Prime__dvd_mul M p hp a b)) (iffEr (not (or (divide p a) (divide p b))) (and (not (divide p a)) (not (divide p b))) (not_or (divide p a) (divide p b)) (andI (not (divide p a)) (not (divide p b)) ha hb)).
+
+(; //LEAN:Prime.dvd_of_dvd_pow ;)
+Prime__dvd_of_dvd_pow : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> (a : Elem M) -> (n : Elem Nat) -> (h : Proof (divide p (pow a n))) -> Proof (divide p a).
+
+(; //LEAN:Prime.dvd_pow_iff_dvd ;)
+def Prime__dvd_pow_iff_dvd : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> (a : Elem M) -> (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (iff (divide p (pow a n)) (divide p a)) :=
+  M => x => p => hp => a => n => hn => iffI (divide p (pow a n)) (divide p a) (Prime__dvd_of_dvd_pow M p hp a n) (h => dvd_pow M p a h n hn).
+
+(; //LEAN:not_prime_zero ;)
+def not_prime_zero : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> Proof (not (Prime 0)) :=
+  M => x => ifI (Prime 0) false (h => Prime__ne_zero M 0 h rfl).
+
+(; //LEAN:not_prime_one ;)
+def not_prime_one : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> Proof (not (Prime 1)) :=
+  M => x => ifI (Prime 1) false (h => Prime__not_isUnit M 1 h (isUnit_one M)).
+
+(; //LEAN:Irreducible.not_dvd_isUnit ;)
+def Irreducible__not_dvd_isUnit : (M : Set) -> (_ : Proof (CommMonoid M)) -> (p : Elem M) -> (u : Elem M) -> (hp : Proof (Irreducible p)) -> (hu : Proof (IsUnit u)) -> Proof (not (divide p u)) :=
+  M => x => p => u => hp => hu => mt (divide p u) (IsUnit p) (ifI (divide p u) (IsUnit p) (h => isUnit_of_dvd_unit M p u h hu)) (Irreducible__not_isUnit M p hp).
+
+(; //LEAN:Irreducible.not_dvd_one ;)
+def Irreducible__not_dvd_one : (M : Set) -> (_ : Proof (CommMonoid M)) -> (p : Elem M) -> (hp : Proof (Irreducible p)) -> Proof (not (divide p 1)) :=
+  M => x => p => hp => Irreducible__not_dvd_isUnit M p 1 hp (isUnit_one M).
+
+(; //LEAN:Irreducible.not_dvd_unit ;)
+def Irreducible__not_dvd_unit : (M : Set) -> (_ : Proof (CommMonoid M)) -> (p : Elem M) -> (u : Elem (Units M)) -> (hp : Proof (Irreducible p)) -> Proof (not (divide p (Units__val u))) :=
+  M => x => p => u => hp => Irreducible__not_dvd_isUnit M p (Units__val u) hp (Units__isUnit M u).
+
+(; //LEAN:Irreducible.isUnit_of_mul_self_dvd ;)
+Irreducible__isUnit_of_mul_self_dvd : (M : Set) -> (_ : Proof (CommMonoid M)) -> (p : Elem M) -> (a : Elem M) -> (hp : Proof (Irreducible p)) -> (ha : Proof (divide (times a a) p)) -> Proof (IsUnit a).
+
+(; //LEAN:not_irreducible_zero ;)
+not_irreducible_zero : (M : Set) -> (_ : Proof (MonoidWithZero M)) -> Proof (not (Irreducible 0)).
+
+(; //LEAN:Irreducible.ne_zero ;)
+Irreducible__ne_zero : (M : Set) -> (_ : Proof (MonoidWithZero M)) -> (p : Elem M) -> (h : Proof (Irreducible p)) -> Proof (Neq p 0).
+
+(; //LEAN:Irreducible.dvd_symm ;)
+Irreducible__dvd_symm : (M : Set) -> (_ : Proof (Monoid M)) -> (p : Elem M) -> (q : Elem M) -> (hp : Proof (Irreducible p)) -> (hq : Proof (Irreducible q)) -> (h : Proof (divide p q)) -> Proof (divide q p).
+
+(; //LEAN:Irreducible.dvd_comm ;)
+def Irreducible__dvd_comm : (M : Set) -> (_ : Proof (Monoid M)) -> (p : Elem M) -> (q : Elem M) -> (hp : Proof (Irreducible p)) -> (hq : Proof (Irreducible q)) -> Proof (iff (divide p q) (divide q p)) :=
+  M => x => p => q => hp => hq => iffI (divide p q) (divide q p) (Irreducible__dvd_symm M p q hp hq) (Irreducible__dvd_symm M q p hq hp).
+
+(; //LEAN:Irreducible.prime_of_isPrimal ;)
+Irreducible__prime_of_isPrimal : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (a : Elem M) -> (irr : Proof (Irreducible a)) -> (primal : Proof (IsPrimal a)) -> Proof (Prime a).
+
+(; //LEAN:Irreducible.prime ;)
+def Irreducible__prime : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (_ : Proof (DecompositionMonoid M)) -> (a : Elem M) -> (irr : Proof (Irreducible a)) -> Proof (Prime a) :=
+  M => x => h => a => irr => Irreducible__prime_of_isPrimal M a irr (DecompositionMonoid__primal M SemigroupWithZero__toSemigroup a).
+
+(; //LEAN:Prime.irreducible ;)
+def Prime__irreducible : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (_ : Proof (IsCancelMulZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> Proof (Irreducible p) :=
+  M => x => h => p => hp => Irreducible__mk (Prime__not_isUnit M p hp) (forallI M (a => forall M (b1 => if (Eqt M p (times a b1)) (or (IsUnit a) (IsUnit b1)))) (a => forallI M (b => if (Eqt M p (times a b)) (or (IsUnit a) (IsUnit b))) (b => ifI (Eqt M p (times a b)) (or (IsUnit a) (IsUnit b)) (h1 => Eq__ndrec (ifI (Prime (times a b)) (or (IsUnit a) (IsUnit b)) (hp1 => Or__imp (divide (times a b) b) (IsUnit a) (divide (times a b) a) (IsUnit b) (ifI (divide (times a b) b) (IsUnit a) (h2 => isUnit_of_dvd_one M a (iffEl (divide (times a b) (times 1 b)) (divide a 1) (mul_dvd_mul_iff_right M a 1 b (right_ne_zero_of_mul M a b (Prime__ne_zero M (times a b) hp1))) (dvd_mul_of_dvd_right M (times a b) b h2 1)))) (ifI (divide (times a b) a) (IsUnit b) (h3 => isUnit_of_dvd_one M b (iffEl (divide (times a b) (times a 1)) (divide b 1) (mul_dvd_mul_iff_left M a b 1 (left_ne_zero_of_mul M a b (Prime__ne_zero M (times a b) hp1))) (dvd_mul_of_dvd_left M (times a b) a h3 1)))) (Or__symm (divide (times a b) a) (divide (times a b) b) (Prime__dvd_or_dvd M (times a b) hp1 a b (dvd_rfl M (times a b)))))) (Eq__symm M p (times a b) h1) hp)))).
+
+(; //LEAN:irreducible_iff_prime ;)
+def irreducible_iff_prime : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (_ : Proof (IsCancelMulZero M)) -> (_ : Proof (DecompositionMonoid M)) -> (a : Elem M) -> Proof (iff (Irreducible a) (Prime a)) :=
+  M => x => h => h1 => a => iffI (Irreducible a) (Prime a) (Irreducible__prime M a) (Prime__irreducible M a).
+

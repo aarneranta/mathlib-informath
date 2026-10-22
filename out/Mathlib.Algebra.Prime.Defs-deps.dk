@@ -1,0 +1,134 @@
+(; constants used by Mathlib.Algebra.Prime.Defs, declared with their translated types ;)
+
+(; doc: A commutative monoid is a monoid with commutative `(*)`. ;)
+(; //LEAN:CommMonoid ;)
+CommMonoid : (M : Set) -> Prop.
+
+(; doc: A type `M` is a commutative “monoid with zero” if it is a commutative monoid with zero element, and `0` is left and right absorbing. ;)
+(; //LEAN:CommMonoidWithZero ;)
+CommMonoidWithZero : (x : Set) -> Prop.
+
+(; doc: A monoid is a decomposition monoid if every element is primal. An integral domain whose multiplicative monoid is a decomposition monoid, is called a pre-Schreier domain; it is a Schreier domain if it is moreover integrally closed. ;)
+(; //LEAN:DecompositionMonoid ;)
+DecompositionMonoid : (x : Set) -> Prop.
+
+(; //LEAN:DecompositionMonoid.primal ;)
+DecompositionMonoid__primal : (x : Set) -> (x1 : Proof (Semigroup x)) -> (_ : Proof (DecompositionMonoid x)) -> (a : Elem x) -> Proof (IsPrimal a).
+
+(; doc: Non-dependent recursor for the equality type. ;)
+(; //LEAN:Eq.ndrec ;)
+Eq__ndrec : (m : Elem (motive a)) -> (h : Proof (Eqt x a b)) -> Elem (motive b).
+
+(; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.symm ;)
+Eq__symm : (x : Set) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Eqt x a b)) -> Proof (Eqt x b a).
+
+(; doc: **Alias** of `not_congr`. ;)
+(; //LEAN:Iff.not ;)
+Iff__not : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff (not a) (not b)).
+
+(; doc: `Irreducible p` states that `p` is non-unit and only factors into units.  We explicitly avoid stating that `p` is non-zero, this would require a semiring. Assuming only a monoid allows us to reuse irreducible for associated elements.  [Wikidata Q2989575](https://www.wikidata.org/wiki/Q2989575) ;)
+(; //LEAN:Irreducible ;)
+Irreducible : (p : Elem M) -> Prop.
+
+(; //LEAN:Irreducible.mk ;)
+Irreducible__mk : (M : Set) -> (_ : Proof (Monoid M)) -> (p : Elem M) -> (not_isUnit : Proof (not (IsUnit p))) -> (isUnit_or_isUnit : Proof (forall M (a => forall M (b => if (Eqt M p (times a b)) (or (IsUnit a) (IsUnit b)))))) -> Proof (Irreducible p).
+
+(; doc: An irreducible element is not a unit. ;)
+(; //LEAN:Irreducible.not_isUnit ;)
+Irreducible__not_isUnit : (M : Set) -> (_ : Proof (Monoid M)) -> (p : Elem M) -> (self : Proof (Irreducible p)) -> Proof (not (IsUnit p)).
+
+(; doc: A mixin for cancellative multiplication by nonzero elements. ;)
+(; //LEAN:IsCancelMulZero ;)
+IsCancelMulZero : (x : Set) -> Prop.
+
+(; doc: An element `a` in a semigroup is primal if whenever `a` is a divisor of `b * c`, it can be factored as the product of a divisor of `b` and a divisor of `c`. ;)
+(; //LEAN:IsPrimal ;)
+IsPrimal : (a : Elem x) -> Prop.
+
+(; doc: An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse. The actual definition says that `a` is equal to some `u : Mˣ`, where `Mˣ` is a bundled version of `IsUnit`. ;)
+(; //LEAN:IsUnit ;)
+IsUnit : (a : Elem M) -> Prop.
+
+(; doc: A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. ;)
+(; //LEAN:Monoid ;)
+Monoid : (M : Set) -> Prop.
+
+(; doc: A type `M₀` is a “monoid with zero” if it is a monoid with zero element, and `0` is left and right absorbing. ;)
+(; //LEAN:MonoidWithZero ;)
+MonoidWithZero : (x : Set) -> Prop.
+
+(; //LEAN:Or.imp ;)
+Or__imp : (a : Prop) -> (c : Prop) -> (b : Prop) -> (d : Prop) -> (f : Proof (if a c)) -> (g : Proof (if b d)) -> (h : Proof (or a b)) -> Proof (or c d).
+
+(; //LEAN:Or.symm ;)
+Or__symm : (a : Prop) -> (b : Prop) -> (h : Proof (or a b)) -> Proof (or b a).
+
+(; //LEAN:SemigroupWithZero.toSemigroup ;)
+SemigroupWithZero__toSemigroup : Proof (Semigroup x).
+
+(; doc: Units of a `Monoid`, bundled version. Notation: `αˣ`.  An element of a `Monoid` is a unit if it has a two-sided inverse. This version bundles the inverse element so that it can be computed. For a predicate see `IsUnit`. ;)
+(; //LEAN:Units ;)
+Units : (x : Set) -> Set.
+
+(; //LEAN:Units.isUnit ;)
+Units__isUnit : (M : Set) -> (_ : Proof (Monoid M)) -> (u : Elem (Units M)) -> Proof (IsUnit (Units__val u)).
+
+(; doc: The underlying value in the base `Monoid`. ;)
+(; //LEAN:Units.val ;)
+Units__val : (self : Elem (Units x)) -> Elem x.
+
+(; //LEAN:dvd_mul_of_dvd_left ;)
+dvd_mul_of_dvd_left : (x : Set) -> (_ : Proof (Semigroup x)) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (divide a b)) -> (c : Elem x) -> Proof (divide a (times b c)).
+
+(; //LEAN:dvd_mul_of_dvd_right ;)
+dvd_mul_of_dvd_right : (x : Set) -> (_ : Proof (CommSemigroup x)) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (divide a b)) -> (c : Elem x) -> Proof (divide a (times c b)).
+
+(; //LEAN:dvd_pow ;)
+dvd_pow : (x : Set) -> (_ : Proof (Monoid x)) -> (a : Elem x) -> (b : Elem x) -> (hab : Proof (divide a b)) -> (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (divide a (pow b n)).
+
+(; //LEAN:dvd_rfl ;)
+dvd_rfl : (x : Set) -> (_ : Proof (Monoid x)) -> (a : Elem x) -> Proof (divide a a).
+
+(; //LEAN:isUnit_of_dvd_one ;)
+isUnit_of_dvd_one : (x : Set) -> (_ : Proof (CommMonoid x)) -> (a : Elem x) -> (h : Proof (divide a 1)) -> Proof (IsUnit a).
+
+(; //LEAN:isUnit_of_dvd_unit ;)
+isUnit_of_dvd_unit : (x : Set) -> (_ : Proof (CommMonoid x)) -> (x2 : Elem x) -> (y : Elem x) -> (xy : Proof (divide x2 y)) -> (hu : Proof (IsUnit y)) -> Proof (IsUnit x2).
+
+(; //LEAN:isUnit_one ;)
+isUnit_one : (M : Set) -> (_ : Proof (Monoid M)) -> Proof (IsUnit 1).
+
+(; //LEAN:left_ne_zero_of_mul ;)
+left_ne_zero_of_mul : (x : Set) -> (_ : Proof (MulZeroClass x)) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Neq (times a b) 0)) -> Proof (Neq a 0).
+
+(; //LEAN:mt ;)
+mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
+
+(; doc: Given two elements `b`, `c` of a cancellative `MonoidWithZero` and a nonzero element `a`, `a*b` divides `a*c` iff `b` divides `c`. ;)
+(; //LEAN:mul_dvd_mul_iff_left ;)
+mul_dvd_mul_iff_left : (x : Set) -> (_ : Proof (MonoidWithZero x)) -> (_ : Proof (IsLeftCancelMulZero x)) -> (a : Elem x) -> (b : Elem x) -> (c : Elem x) -> (ha : Proof (Neq a 0)) -> Proof (iff (divide (times a b) (times a c)) (divide b c)).
+
+(; doc: Given two elements `a`, `b` of a commutative cancellative `MonoidWithZero` and a nonzero element `c`, `a*c` divides `b*c` iff `a` divides `b`. ;)
+(; //LEAN:mul_dvd_mul_iff_right ;)
+mul_dvd_mul_iff_right : (x : Set) -> (_ : Proof (CommMonoidWithZero x)) -> (_ : Proof (IsCancelMulZero x)) -> (a : Elem x) -> (b : Elem x) -> (c : Elem x) -> (hc : Proof (Neq c 0)) -> Proof (iff (divide (times a c) (times b c)) (divide a b)).
+
+(; //LEAN:mul_one ;)
+mul_one : (M : Set) -> (_ : Proof (MulOneClass M)) -> (a : Elem M) -> Proof (Eqt M (times a 1) a).
+
+(; //LEAN:not_or ;)
+not_or : (p : Prop) -> (q : Prop) -> Proof (iff (not (or p q)) (and (not p) (not q))).
+
+(; //LEAN:one_dvd ;)
+one_dvd : (x : Set) -> (_ : Proof (Monoid x)) -> (a : Elem x) -> Proof (divide 1 a).
+
+(; //LEAN:one_mul ;)
+one_mul : (M : Set) -> (_ : Proof (MulOneClass M)) -> (a : Elem M) -> Proof (Eqt M (times 1 a) a).
+
+(; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
+(; //LEAN:rfl ;)
+rfl : (x : Set) -> (a : Elem x) -> Proof (Eqt x a a).
+
+(; //LEAN:right_ne_zero_of_mul ;)
+right_ne_zero_of_mul : (x : Set) -> (_ : Proof (MulZeroClass x)) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Neq (times a b) 0)) -> Proof (Neq b 0).
+

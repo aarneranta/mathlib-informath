@@ -6,7 +6,7 @@ with each exported Mathlib statement, its
 Lean source, its Dedukti translation, and Informath's informalization in
 English and as a formula, rendered by MathJax.
 
-    lake exe export $(cat modules.txt)     # -> out/<Module>.dk, .json, -deps.dk
+    lake exe export $(grep -v '^#' modules.txt)     # -> out/<Module>.dk, .json, -deps.dk
     python3 build-html.py                  # -> mathlib-informath.html, pages/*.html
 
 The modules are those of modules.txt, in its order.  The Lean source is read
@@ -197,8 +197,13 @@ def proof_texts(m, decls, blocks, stmts):
             continue
         one = '.html-proof.dk'
         open(one, 'w').write(blocks[d['lean']] + '\n')
-        r = subprocess.run([RUN, '-proof-text', '-base=' + base, '-add-symboltables=' + TABLE, one],
-                           capture_output=True, text=True)
+        try:   # a long proof can take Informath minutes: it is left out after 30 s
+            r = subprocess.run([RUN, '-proof-text', '-base=' + base, '-add-symboltables=' + TABLE, one],
+                               capture_output=True, text=True, timeout=PROOF_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            os.remove(one)
+            PROOF_FAILED.append(d['lean'] + ' (timed out)')
+            continue
         os.remove(one)
         tables = re.findall(r'\\begin\{tabular\}\{[^\n]*\}\n(.*?)\\end\{tabular\}', r.stdout, re.S)
         if r.returncode or not tables:
@@ -215,6 +220,7 @@ def proof_texts(m, decls, blocks, stmts):
 
 
 PROOF_FAILED = []
+PROOF_TIMEOUT = 30   # seconds
 
 
 def drop_instances(text):
@@ -368,10 +374,26 @@ window.MathJax = {
 """ % (html.escape(title), json.dumps(macros), MATHJAX, extra, STYLE, head, body)
 
 
+PAGE = {}   # module -> its page, from the "# page: X" lines of modules.txt
+
+
 def group_of(module):
-    """The subfile of a module: its directory, Mathlib.Data.Nat.Prime for
-    Mathlib.Data.Nat.Prime.Defs."""
-    return module.rsplit('.', 1)[0]
+    """The subfile of a module: the page given in modules.txt, or else its
+    directory, Mathlib.Data.Nat.Prime for Mathlib.Data.Nat.Prime.Defs."""
+    return PAGE.get(module) or module.rsplit('.', 1)[0]
+
+
+def read_modules():
+    modules, page = [], None
+    for l in open('modules.txt'):
+        l = l.strip()
+        if l.startswith('# page:'):
+            page = l[len('# page:'):].strip() or None
+        elif l and not l.startswith('#'):
+            modules.append(l)
+            if page:
+                PAGE[l] = page
+    return modules
 
 
 def entry_html(m, d, blocks, english, formula, proofs, commit, where):
@@ -402,13 +424,15 @@ def forced(name, symbolic):
 
 
 def worded(text):
-    return bool(text) and '\\mathrm' not in text and 'holds for' not in text
+    """No constant left verbatim: a variable may hold for arguments ($r$
+    holds for $a$ and $b$), a \\mathrm{Constant} may not."""
+    return bool(text) and '\\mathrm' not in text
 
 
 def main():
     global RUN
     RUN = informath()
-    modules = [l.strip() for l in open('modules.txt') if l.strip() and not l.startswith('#')]
+    modules = read_modules()
     commit = subprocess.run(['git', '-C', MATHLIB, 'rev-parse', 'HEAD'],
                             capture_output=True, text=True).stdout.strip()
     ms = macros(modules)
@@ -452,7 +476,7 @@ def main():
         rows.append('<tr class=group><td><a href="%s">%s</a></td><td>%d</td><td>%d</td></tr>'
                     % (file, html.escape(g), gtot[0], gtot[1]))
         rows += ['<tr><td>&nbsp;&nbsp;<a href="%s#%s">%s</a></td><td>%d</td><td>%d</td></tr>'
-                 % (file, html.escape(m), html.escape(m.rsplit('.', 1)[1]), n, w) for m, n, w in grows]
+                 % (file, html.escape(m), html.escape(m[len(g) + 1:]), n, w) for m, n, w in grows]
         total[0] += gtot[0]
         total[1] += gtot[1]
         print('%s: %d statements, %d fully worded -> %s' % (g, gtot[0], gtot[1], file))

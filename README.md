@@ -6,6 +6,8 @@ and read in English and as formulas by
 
 [mathlib-informath.html](mathlib-informath.html) is a table of contents, with
 one page in `pages/` for each part of Mathlib in `modules.txt`: so far
+`Mathlib/Order/Defs/` (orders and lattices), the `Mathlib/Algebra/` modules
+that the prime numbers import (`Group/Nat/Units`, `Prime/Defs`),
 `Mathlib/Data/Nat/Prime/` (prime numbers) and `Mathlib/Data/Nat/Factorization/`
 (prime factorizations). Each page shows, for each statement:
 
@@ -25,7 +27,7 @@ one page in `pages/` for each part of Mathlib in `modules.txt`: so far
 | `mathlib.dkgf` | the Informath symbol table of the other Mathlib constants the statements use |
 | `nd.dk` | the natural deduction rules that proofs are translated to (`ifI`, `forallE`, ...) |
 | `binders.txt` | constants with a binder notation (`∏ x ∈ s, f x`), whose function arguments are bound variables and bodies |
-| `modules.txt` | the modules exported and shown |
+| `modules.txt` | the modules exported and shown, in the order of the pages; a `# page: X` line puts the modules after it on one page X |
 | `out/` | the export: `<Module>.dk` (the statements), `<Module>.json` (docstrings, source lines), `<Module>-deps.dk` (the constants they use) |
 | `build-html.py` | builds `mathlib-informath.html` and `pages/*.html` |
 
@@ -61,7 +63,7 @@ Informath built (`stack build` or `stack install`) with `INFORMATH_ROOT`
 pointing to it.
 
     lake build                                # the exporter
-    lake exe export $(cat modules.txt)        # -> out/
+    lake exe export $(grep -v '^#' modules.txt)        # -> out/
     python3 build-html.py                     # -> mathlib-informath.html, pages/
 
 To check the symbol table against the exported constants, and to read a module

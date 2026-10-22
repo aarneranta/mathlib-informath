@@ -1,0 +1,42 @@
+(; constants used by Mathlib.Order.Defs.PartialOrder, declared with their translated types ;)
+
+(; doc: Propositional equality is `Decidable` for all elements of a type.  In other words, an instance of `DecidableEq α` is a means of deciding the proposition `a = b` is for all `a b : α`. ;)
+(; //LEAN:DecidableEq ;)
+DecidableEq : (x : Set) -> Set.
+
+(; doc: Abbreviation for `DecidableRel (· < · : α → α → Prop)`. ;)
+(; //LEAN:DecidableLT ;)
+DecidableLT : (x : Set) -> Set.
+
+(; doc: Although `TrailingParserDescr` is an abbreviation for `ParserDescr`, Lean will look at the declared type in order to determine whether to add the parser to the leading or trailing parser table. The determination is done automatically by the `syntax` command. ;)
+(; //LEAN:Lean.TrailingParserDescr ;)
+Lean__TrailingParserDescr : Set.
+
+(; //LEAN:Preorder.lt_iff_le_not_ge._autoParam ;)
+Preorder__lt_iff_le_not_ge___autoParam : Elem Lean__Syntax.
+
+(; doc: Gadget for automatic parameter support. This is similar to the `optParam` gadget, but it uses the given tactic. Like `optParam`, this gadget only affects elaboration. For example, the tactic will *not* be invoked during type class resolution. ;)
+(; //LEAN:autoParam ;)
+autoParam : (x : Set) -> (tactic : Elem Lean__Syntax) -> Set.
+
+(; //LEAN:decidableLTOfDecidableLE._proof_1 ;)
+decidableLTOfDecidableLE___proof_1 : (x : Set) -> (_ : Proof (Preorder x)) -> (x2 : Elem x) -> (x3 : Elem x) -> Proof (iff (and (Leq x2 x3) (not (Leq x3 x2))) (Lt x2 x3)).
+
+(; doc: Transfer decidability of `a` to decidability of `b`, if the propositions are equivalent. **Important**: this function should be used instead of `rw` on `Decidable b`, because the kernel will get stuck reducing the usage of `propext` otherwise, and `decide` will not work. ;)
+(; //LEAN:decidable_of_iff ;)
+decidable_of_iff : (a : Prop) -> (h : Proof (iff a b)) -> Proof (Decidable b).
+
+(; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
+(; //LEAN:dite ;)
+dite : (c : Prop) -> (t : (Proof c -> x)) -> (e : (Proof (not c) -> x)) -> Elem x.
+
+(; doc: `flip f a b` is `f b a`. It is useful for "point-free" programming, since it can sometimes be used to avoid introducing variables. For example, `(·<·)` is the less-than relation, and `flip (·<·)` is the greater-than relation. ;)
+(; //LEAN:flip ;)
+flip : (f : (Elem x -> Elem x1 -> x2)) -> (x3 : Elem x1) -> (x4 : Elem x) -> Elem x2.
+
+(; //LEAN:imp_not_comm ;)
+imp_not_comm : (a : Prop) -> (b : Prop) -> Proof (iff (if a (not b)) (if b (not a))).
+
+(; //LEAN:mt ;)
+mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
+

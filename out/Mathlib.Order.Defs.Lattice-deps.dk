@@ -1,0 +1,124 @@
+(; constants used by Mathlib.Order.Defs.Lattice, declared with their translated types ;)
+
+(; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
+(; //LEAN:Eq ;)
+Eq : (x1 : Elem x) -> (x2 : Elem x) -> Prop.
+
+(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
+(; //LEAN:Eq.mpr ;)
+Eq__mpr : (h : Proof (Eqt Set x x1)) -> (b : Elem x1) -> Elem x.
+
+(; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
+(; //LEAN:Eq.refl ;)
+Eq__refl : (x : Set) -> (a : Elem x) -> Proof (Eqt x a a).
+
+(; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.symm ;)
+Eq__symm : (x : Set) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Eqt x a b)) -> Proof (Eqt x b a).
+
+(; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.trans ;)
+Eq__trans : (x : Set) -> (a : Elem x) -> (b : Elem x) -> (c : Elem x) -> (h : Proof (Eqt x a b)) -> (h1 : Proof (Eqt x b c)) -> Proof (Eqt x a c).
+
+(; //LEAN:Iff.rfl ;)
+Iff__rfl : (a : Prop) -> Proof (iff a a).
+
+(; //LEAN:Iff.trans ;)
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+
+(; doc: Returns the greater of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `max` in identifiers is `max`.   * The recommended spelling of `⊔` in identifiers is `sup` (`⊔` is the preferred notation for `max` when the type is not linearly ordered.). ;)
+(; //LEAN:Max.max ;)
+Max__max : (x1 : Elem x) -> (x2 : Elem x) -> Elem x.
+
+(; doc: Returns the lesser of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `min` in identifiers is `min`.   * The recommended spelling of `⊓` in identifiers is `inf` (`⊓` is the preferred notation for `min` when the type is not linearly ordered.). ;)
+(; //LEAN:Min.min ;)
+Min__min : (x1 : Elem x) -> (x2 : Elem x) -> Elem x.
+
+(; //LEAN:Std.le_refl._simp_1 ;)
+Std__le_refl___simp_1 : (x : Set) -> (_ : Proof (LE x)) -> (_ : Proof (Std__Refl (x2 => x3 => Leq x2 x3))) -> (a : Elem x) -> Proof (Eqt Prop (Leq a a) True).
+
+(; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
+(; //LEAN:Trans.trans ;)
+Trans__trans : (x3 : Elem (r a b)) -> (x4 : Elem (s b c)) -> Elem (t a c).
+
+(; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
+(; //LEAN:True ;)
+True : Prop.
+
+(; //LEAN:and_assoc ;)
+and_assoc : (a : Prop) -> (b : Prop) -> (c : Prop) -> Proof (iff (and (and a b) c) (and a (and b c))).
+
+(; //LEAN:and_true ;)
+and_true : (p : Prop) -> Proof (Eqt Prop (and p True) p).
+
+(; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:congr ;)
+congr : (x : Set) -> (x1 : Set) -> (x2 : (Elem x -> x1)) -> (x3 : (Elem x -> x1)) -> (x4 : Elem x) -> (x5 : Elem x) -> (h : Proof (Eqt (Elem x -> x1) x2 x3)) -> (h1 : Proof (Eqt x x4 x5)) -> Proof (Eqt x1 (x2 x4) (x3 x5)).
+
+(; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:congrArg ;)
+congrArg : (x : Set) -> (x1 : Set) -> (x2 : Elem x) -> (x3 : Elem x) -> (f : (Elem x -> x1)) -> (h : Proof (Eqt x x2 x3)) -> Proof (Eqt x1 (f x2) (f x3)).
+
+(; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
+(; //LEAN:congrFun' ;)
+congrFun' : (x : Set) -> (x1 : Set) -> (f : (Elem x -> x1)) -> (g : (Elem x -> x1)) -> (h : Proof (Eqt (Elem x -> x1) f g)) -> (a : Elem x) -> Proof (Eqt x1 (f a) (g a)).
+
+(; //LEAN:eq_comm ;)
+eq_comm : (x : Set) -> (a : Elem x) -> (b : Elem x) -> Proof (iff (Eqt x a b) (Eqt x b a)).
+
+(; //LEAN:eq_of_forall_ge_iff ;)
+eq_of_forall_ge_iff : (x : Set) -> (_ : Proof (PartialOrder x)) -> (a : Elem x) -> (b : Elem x) -> (H : Proof (forall x (c => iff (Leq a c) (Leq b c)))) -> Proof (Eqt x a b).
+
+(; //LEAN:eq_self ;)
+eq_self : (x : Set) -> (a : Elem x) -> Proof (Eqt Prop (Eqt x a a) True).
+
+(; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
+(; //LEAN:id ;)
+id : (a : Elem x) -> Elem x.
+
+(; //LEAN:iff_self ;)
+iff_self : (p : Prop) -> Proof (Eqt Prop (iff p p) True).
+
+(; //LEAN:le_antisymm ;)
+le_antisymm : (x : Set) -> (_ : Proof (PartialOrder x)) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq b a)) -> Proof (Eqt x a b).
+
+(; //LEAN:le_antisymm_iff ;)
+le_antisymm_iff : (x : Set) -> (_ : Proof (PartialOrder x)) -> (a : Elem x) -> (b : Elem x) -> Proof (iff (Eqt x a b) (and (Leq a b) (Leq b a))).
+
+(; //LEAN:le_of_eq ;)
+le_of_eq : (x : Set) -> (_ : Proof (Preorder x)) -> (a : Elem x) -> (b : Elem x) -> (hab : Proof (Eqt x a b)) -> Proof (Leq a b).
+
+(; doc: The relation `≤` on a preorder is reflexive. ;)
+(; //LEAN:le_refl ;)
+le_refl : (x : Set) -> (_ : Proof (Preorder x)) -> (a : Elem x) -> Proof (Leq a a).
+
+(; doc: A version of `le_refl` where the argument is implicit ;)
+(; //LEAN:le_rfl ;)
+le_rfl : (x : Set) -> (_ : Proof (Preorder x)) -> (a : Elem x) -> Proof (Leq a a).
+
+(; //LEAN:le_sup_left._simp_2 ;)
+le_sup_left___simp_2 : (x : Set) -> (_ : Proof (SemilatticeSup x)) -> (a : Elem x) -> (b : Elem x) -> Proof (Eqt Prop (Leq a (Max__max a b)) True).
+
+(; //LEAN:le_sup_right._simp_2 ;)
+le_sup_right___simp_2 : (x : Set) -> (_ : Proof (SemilatticeSup x)) -> (a : Elem x) -> (b : Elem x) -> Proof (Eqt Prop (Leq b (Max__max a b)) True).
+
+(; doc: The relation `≤` on a preorder is transitive. ;)
+(; //LEAN:le_trans ;)
+le_trans : (x : Set) -> (_ : Proof (Preorder x)) -> (a : Elem x) -> (b : Elem x) -> (c : Elem x) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq b c)) -> Proof (Leq a c).
+
+(; //LEAN:lt_of_lt_of_le ;)
+lt_of_lt_of_le : (x : Set) -> (_ : Proof (Preorder x)) -> (a : Elem x) -> (b : Elem x) -> (c : Elem x) -> (hab : Proof (Lt a b)) -> (hbc : Proof (Leq b c)) -> Proof (Lt a c).
+
+(; //LEAN:of_eq_true ;)
+of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
+
+(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
+(; //LEAN:propext ;)
+propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a b).
+
+(; //LEAN:sup_le_iff._simp_3 ;)
+sup_le_iff___simp_3 : (x : Set) -> (_ : Proof (SemilatticeSup x)) -> (a : Elem x) -> (b : Elem x) -> (c : Elem x) -> Proof (Eqt Prop (Leq (Max__max a b) c) (and (Leq a c) (Leq b c))).
+
+(; //LEAN:true_and ;)
+true_and : (p : Prop) -> Proof (Eqt Prop (and True p) p).
+

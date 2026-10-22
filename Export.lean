@@ -296,6 +296,9 @@ partial def statementGo (explicitOnly : Bool) (t : Expr) : M String := do
       withLocalDecl (Name.mkSimple nm) bi ty fun y => do
         let rest ← statementGo explicitOnly (b.instantiate1 y)
         if explicitOnly && bi != .default then return rest
+        -- decidability instances are computational, not hypotheses of the statement
+        if bi == .instImplicit && (ty.getAppFn.constName?.map (·.toString.startsWith "Decidable")).getD false then
+          return rest
         let h ← if bi == .instImplicit then do pure s!"(_ : Proof {paren (← tr ty)})"
                  else do pure s!"({nm} : {← hypoType ty})"
         return s!"{h} -> {rest}"

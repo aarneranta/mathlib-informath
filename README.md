@@ -1,7 +1,7 @@
 # mathlib-informath
 
 Informalizations of Lean Mathlib4: Mathlib's statements translated to Dedukti
-and read in English and as formulas by
+and read in English, in French and as formulas by
 [Informath](https://github.com/GrammaticalFramework/informath).
 
 [mathlib-informath.html](mathlib-informath.html) is a table of contents, with
@@ -13,9 +13,9 @@ that the prime numbers import (`Group/Nat/Units`, `Prime/Defs`),
 
 * its Lean source, with a link to its line in Mathlib on GitHub,
 * its translation to Dedukti,
-* Informath's informalization in English and as a formula, rendered by MathJax,
+* Informath's informalization in English, in French and as a formula, rendered by MathJax,
 * for a theorem whose proof is a term (not a tactic proof), the proof in
-  English: numbered lines, each with the rule or the Mathlib lemma it applies
+  English and in French: numbered lines, each with the rule or the Mathlib lemma it applies
   (linked to its entry) and the lines it uses.
 
 ## Files
@@ -29,7 +29,9 @@ that the prime numbers import (`Group/Nat/Units`, `Prime/Defs`),
 | `binders.txt` | constants with a binder notation (`∏ x ∈ s, f x`), whose function arguments are bound variables and bodies |
 | `modules.txt` | the modules exported and shown, in the order of the pages; a `# page: X` line puts the modules after it on one page X |
 | `out/` | the export: `<Module>.dk` (the statements), `<Module>.json` (docstrings, source lines), `<Module>-deps.dk` (the constants they use) |
-| `build-html.py` | builds `mathlib-informath.html` and `pages/*.html` |
+| `build-index.py` | builds `index.json`: for each declaration its Dedukti, its readings (English, French, formula) and proof texts, made by RunInformath in a few calls |
+| `index.json` | the index, from which the pages are made |
+| `build-html.py` | builds `mathlib-informath.html` and `pages/*.html` from `index.json` |
 
 The translation keeps the explicit arguments of Lean's constants and drops the
 implicit and instance ones, turns type class assumptions such as `[CommMonoid M]`
@@ -60,10 +62,20 @@ is the argument of a macro, as in `{k ∈ s | k ≠ 0}`.
 Requirements: a Mathlib checkout beside this one (`../mathlib4`, with
 `lake exe cache get` run there), the Lean toolchain of `lean-toolchain`, and
 Informath built (`stack build` or `stack install`) with `INFORMATH_ROOT`
-pointing to it.
+pointing to it, and its grammar of English and French built in Informath:
+
+    cd grammars ; gf --make --probs=Informath.probs InformathEng.gf InformathFre.gf InformathLatex.gf ; mv Informath.pgf ../share/InformathFull.pgf
+
+The French readings come from the same symbol table: Informath parses its
+English wordings into GF trees and linearizes them in French, so a word needs
+a French linearization in Informath's grammars (`MathlibFre.gf` for the words
+of `Mathlib.gf`). The grammar is loaded once for all statements and once for
+all proofs, which `build-index.py` reads in one call each, with
+`-json -languages=Eng,Fre` and `-proof-text -languages=Eng,Fre`.
 
     lake build                                # the exporter
     lake exe export $(grep -v '^#' modules.txt)        # -> out/
+    python3 build-index.py                    # -> index.json (half a minute)
     python3 build-html.py                     # -> mathlib-informath.html, pages/
 
 To check the symbol table against the exported constants, and to read a module

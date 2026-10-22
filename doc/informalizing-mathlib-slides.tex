@@ -41,7 +41,7 @@
 \newcommand{\decided}[1]{\par\textcolor{gfblue}{\textbf{#1}}\par}
 
 \title{Informalizing Lean Mathlib}
-\subtitle{Mathlib in English and French with Informath, built with Claude Code}
+\subtitle{Mathlib in English, French and Czech with Informath, built with Claude Code}
 \author{Aarne Ranta}
 \date{22 October 2026}
 
@@ -154,7 +154,7 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
 
 \section{Building mathlib-informath}
 
-\begin{frame}{Two days, nine prompts}
+\begin{frame}{Two days, eleven prompts}
   \small
   \footnotesize\begin{tabular}{@{}r>{\raggedright\arraybackslash}p{0.4\textwidth}>{\raggedright\arraybackslash}p{0.3\textwidth}l@{}}
     \toprule
@@ -169,13 +169,15 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
     7 & macros in red: MathJax issue? & a builder bug; $\operatorname{ord}_p(n)$ & \commit{6b7383c} \\
     8 & the Algebra and Order.Defs modules & 705 statements on 4 pages & \commit{976bbd0} \\
     9 & add French & a third row, an index & \commit{823155a} \\
+    10 & add Czech, hidden with French; buttons at each entry & a fourth row & \commit{cacc011} \commit{0c9c416} \\
+    11 & aggregate hypotheses (in Informath); rebuild the pages & 503 readings change & \commit{afd0d9d} \\
     \bottomrule
   \end{tabular}
 
   \vspace{2mm}
-  21--22 October 2026: 8 commits in mathlib-informath and 4 in informath
-  (\commit{4f31f55}, \commit{ceb9b85}, \commit{7773194}, \commit{778e998}),
-  all made by Claude when asked, and pushed by me.
+  21--22 October 2026: 12 commits in mathlib-informath (and these slides) and 6 in
+  informath (\commit{4f31f55}, \commit{ceb9b85}, \commit{7773194}, \commit{778e998},
+  \commit{0da10d2}, \commit{5907eec}), all made by Claude when asked, and pushed by me.
 \end{frame}
 
 \begin{frame}{1. The plan: three decisions}
@@ -460,18 +462,75 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
   running; the full grammar now has English and French only (\commit{823155a}).
 \end{frame}
 
+\begin{frame}{10. Czech}
+  \prompt{Now that the grammar with 7 languages is in place, why not add Czech to the
+  html file - to begin with. Please hide French and Czech by default but make them
+  easy to click visible.}
+  \begin{itemize}
+    \item The Czech grammar had its user extensions switched off: \texttt{HottWordsCze}
+          was a stub with two \bad{Swedish} words, and did not compile. Now in Czech,
+          and on (\commit{0da10d2}).
+    \item No \texttt{ProofUnitsCze}: proof texts would be empty, as French ones were.
+    \item The same 27 words as for French: \texttt{MathlibCze} (\emph{nejmenší, shora
+          omezený, množina dělitelů} \dots) and partial modules. Unreviewed.
+    \item \texttt{build-index.py}: RunInformath loses its buffered output when it stops
+          on an error, which cut off the proof \emph{before} a failing one; a proof now
+          counts as failed only if it fails alone.
+    \item A check box for each hidden language above the entries, remembered in the
+          browser.
+  \end{itemize}
+  \prompt{add Czech and French links locally at each judgement, where they are easier
+  to find.}
+  A French and a Czech button in each entry's header line (\commit{0c9c416}).
+\end{frame}
+
+\begin{frame}{11. Aggregated hypotheses}
+  \footnotesize
+  \prompt{optimize hypotheses by using AdjKindHypo and SuchThatHypo \ldots\ even sorting
+  the hypotheses so that this becomes more possible \ldots\ whenever the type
+  dependencies are obeyed.}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \texttt{aggregateHypos} in Informath (\commit{5907eec}):
+      \begin{enumerate}
+        \item one hypothesis per variable;
+        \item a variable moves back next to the last one of its kind, if its kind
+              depends on nothing in between;
+        \item variables of a kind regrouped;
+        \item the propositions about them attached: an adjective each, the same, or
+              else ``such that''.
+      \end{enumerate}
+      The old rule had never applied: unnamed hypotheses arrive with generated labels.
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{503 of 705} English readings change (\commit{afd0d9d}):
+      \begin{itemize}
+        \item 105 adjectives: ``Let $p$ and $q$ be \ok{prime natural numbers}.''
+        \item 315 ``such that'': ``Let $p$ and $m$ be natural numbers \ok{such that}
+              $p$ is prime and $m$ divides $p$'' --- $m$ was declared after ``Assume
+              that $p$ is prime''.
+        \item 83 class hypotheses: ``Let $x$ be a set such that $x$ is a join
+              semilattice.''
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \textbf{Remaining:} \bad{``a set such that $x$ is a join semilattice''} could be ``a
+  join semilattice''; ``such that'' after ``a function from \dots\ to sets'' seems to be
+  about the sets; mixed wordings of a constant keep variables apart.
+\end{frame}
+
 \begin{frame}{The result}
   \centering
-  \begin{tabular}{@{}lrrr@{}}
+  \begin{tabular}{@{}lrrrr@{}}
     \toprule
-    page & statements & fully worded, English & French \\
+    page & statements & fully worded, English & French & Czech \\
     \midrule
-    Mathlib.Order.Defs & 354 & 281 & 281 \\
-    Mathlib.Algebra & 29 & 26 & 26 \\
-    Mathlib.Data.Nat.Prime & 128 & 125 & 125 \\
-    Mathlib.Data.Nat.Factorization & 194 & 142 & 142 \\
+    Mathlib.Order.Defs & 354 & 281 & 281 & 281 \\
+    Mathlib.Algebra & 29 & 26 & 26 & 26 \\
+    Mathlib.Data.Nat.Prime & 128 & 125 & 125 & 125 \\
+    Mathlib.Data.Nat.Factorization & 194 & 142 & 142 & 142 \\
     \midrule
-    all & \textbf{705} & \textbf{574} & \textbf{574} \\
+    all & \textbf{705} & \textbf{574} & \textbf{574} & \textbf{574} \\
     \bottomrule
   \end{tabular}
 
@@ -513,7 +572,7 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
 \end{frame}
 
 \begin{frame}{Open problems: language}
-  \small
+  \footnotesize
   \begin{itemize}
     \item \textbf{Proof texts} where a lemma or constructor is used unapplied:
           ``For all sets $x$ and functions $r$ \ldots\ and elements
@@ -525,6 +584,8 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
     \item \textbf{French}: ``pour tous \bad{des} nombres naturels'', ``il
           n'est pas le cas que'' (a calque of ``it is not the case that''),
           ``une relation \bad{d'équivalences}''; three French modules are partial.
+    \item \textbf{Czech}: unreviewed words; ``existuje přirozené číslo $p$,
+          \bad{takový}, že'' (\emph{takové}): ``such that'' agrees only after a CN.
     \item \textbf{Informath}:
       \begin{itemize}
         \item \texttt{\$} in a quoted verbal form splits a table entry
@@ -544,7 +605,7 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
 
 \begin{frame}{Who did what}
   \scriptsize
-  \renewcommand{\arraystretch}{1.15}\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+  \renewcommand{\arraystretch}{1.0}\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
     \toprule
     \textbf{Already in Informath} & \textbf{From my prompts} & \textbf{Added by Claude} \\
     \midrule
@@ -582,11 +643,11 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
     The regression suite, the autoformalization template
     &
     The next modules; French as a third row; one index loading the grammar
-    once; no German yet
+    once; no German yet; Czech, hidden; hypotheses aggregated, reordered
     &
     Informath: \texttt{abstractionTypes}, \texttt{-languages},
     multilingual proof texts, \texttt{-no-back-to-dedukti},
-    \texttt{ProofUnitsFre} \\
+    \texttt{ProofUnitsFre}, Czech, \texttt{aggregateHypos} \\
     \bottomrule
   \end{tabularx}
 
@@ -600,7 +661,7 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
 
   \vspace{3mm}
   \normalsize
-  705 Mathlib statements, 240 proofs, in English, French and LaTeX
+  705 Mathlib statements, 240 proofs, in English, French, Czech and LaTeX
 \end{frame}
 
 \end{document}

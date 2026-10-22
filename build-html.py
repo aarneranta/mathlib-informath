@@ -87,7 +87,7 @@ def statements(m, decls):
 # formulas can do; English uses the words of the entry instead
 PSEUDO = re.compile(r'\s*\|\s*\$\\operatorname\{[A-Za-z]+\}\([^$]*\)\$|\$\\operatorname\{[A-Za-z]+\}\([^$]*\)\$\s*\|\s*')
 ENGLISH_TABLE = '.html-english.dkgf'
-STANDARD = 'lcm|gcd|max|min|supp|deg|card'
+STANDARD = 'lcm|gcd|max|min|supp|deg|card|ord'
 
 
 def english_table():
@@ -266,7 +266,9 @@ def macros(modules):
     with open(base, 'w') as f:
         for m in modules:
             f.write(open('out/%s-deps.dk' % m).read() + '\n' + open('out/%s.dk' % m).read() + '\n')
-    lines = run('-base=' + base, TABLE)
+    # the macros are numbered after their position in the table, so the English
+    # table, which has fewer LaTeX forms, names them otherwise: both sets are needed
+    lines = run('-base=' + base, TABLE) + run('-base=' + base, english_table())
     os.remove(base)
     share = os.path.join(os.environ['INFORMATH_ROOT'], 'share', 'baseconstants.dkgf')
     lines += [l[len('#MACRO '):] for l in open(share) if l.startswith('#MACRO ')]
@@ -274,7 +276,10 @@ def macros(modules):
     for l in lines:
         m = re.match(r'\\newcommand\{\\(\w+)\}(?:\[(\d+)\])?\{(.*)\}\s*$', l.strip())
         if m:
-            out[m.group(1)] = [m.group(3), int(m.group(2))] if m.group(2) else m.group(3)
+            d = [m.group(3), int(m.group(2))] if m.group(2) else m.group(3)
+            if m.group(1) in out and out[m.group(1)] != d:
+                print('MACRO CLASH: \\%s is %s in one table and %s in the other' % (m.group(1), out[m.group(1)], d))
+            out[m.group(1)] = d
     return out
 
 

@@ -41,7 +41,7 @@
 \newcommand{\decided}[1]{\par\textcolor{gfblue}{\textbf{#1}}\par}
 
 \title{Informalizing Lean Mathlib}
-\subtitle{Mathlib in English, French and Czech with Informath, built with Claude Code}
+\subtitle{Mathlib in English, French, Czech and German with Informath, built with Claude Code}
 \author{Aarne Ranta}
 \date{22 October 2026}
 
@@ -154,9 +154,9 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
 
 \section{Building mathlib-informath}
 
-\begin{frame}{Two days, eleven prompts}
+\begin{frame}{Two days, twelve prompts}
   \small
-  \footnotesize\begin{tabular}{@{}r>{\raggedright\arraybackslash}p{0.4\textwidth}>{\raggedright\arraybackslash}p{0.3\textwidth}l@{}}
+  \scriptsize\begin{tabular}{@{}r>{\raggedright\arraybackslash}p{0.42\textwidth}>{\raggedright\arraybackslash}p{0.3\textwidth}l@{}}
     \toprule
     & prompt (abridged) & outcome & commits \\
     \midrule
@@ -171,13 +171,15 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
     9 & add French & a third row, an index & \commit{823155a} \\
     10 & add Czech, hidden with French; buttons at each entry & a fourth row & \commit{cacc011} \commit{0c9c416} \\
     11 & aggregate hypotheses (in Informath); rebuild the pages & 503 readings change & \commit{afd0d9d} \\
+    12 & add German & a fifth row, with a time limit & \\
     \bottomrule
   \end{tabular}
 
   \vspace{2mm}
-  21--22 October 2026: 12 commits in mathlib-informath (and these slides) and 6 in
-  informath (\commit{4f31f55}, \commit{ceb9b85}, \commit{7773194}, \commit{778e998},
-  \commit{0da10d2}, \commit{5907eec}), all made by Claude when asked, and pushed by me.
+  \footnotesize 21--22 October 2026: 12 commits in mathlib-informath (besides these slides)
+  and 7 in informath (\commit{4f31f55}, \commit{ceb9b85}, \commit{7773194},
+  \commit{778e998}, \commit{0da10d2}, \commit{5907eec}, and German), all made by Claude
+  when asked, and pushed by me.
 \end{frame}
 
 \begin{frame}{1. The plan: three decisions}
@@ -519,18 +521,43 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
   about the sets; mixed wordings of a constant keep variables apart.
 \end{frame}
 
+\begin{frame}{12. German, and a time explosion}
+  \small
+  \prompt{I know that this can be heavy, but can you add German to Mathlib-informath?}
+  \begin{itemize}
+    \item German had the least: its user extensions were Naproche only, and its Wikidata
+          lexicon partial. The table needed 67 German words, 40 of them general
+          (\emph{Kardinalität, Bild, Vereinigung} \dots); new \texttt{ProofUnitsGer},
+          \texttt{MathlibGer} and partial modules. Unreviewed.
+    \item Then the batch call did not finish. GF's German linearization is exponential
+          in nested noun phrases: ``the minimum of the minimum of $a$ and $b$ and $c$''
+          --- depth 2 in 0.3 s, depth 3 in 35 s; English is instant.
+  \end{itemize}
+  \prompt{aggressive time limit per statement. I will try to fix German rgl.}
+  \begin{itemize}
+    \item German is read apart, in chunks of 12 with \textbf{1 s per statement}; a chunk
+          over the limit is split in halves down to the slow statements, which get no
+          German, marked on the page.
+    \item 48 statements left out --- the lattice laws (\texttt{sup\_assoc} \dots) and
+          the \texttt{ordCompl} lemmas; all 240 proofs have German. The index takes
+          15 minutes instead of one.
+    \item German flaws seen: \bad{``elemente''}, \bad{``Dann $2 \leq p$''} (without
+          \emph{gilt}), ``eine prime natürliche Zahl'' for \emph{Primzahl}.
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{The result}
   \centering
-  \begin{tabular}{@{}lrrrr@{}}
+  \begin{tabular}{@{}lrrrrr@{}}
     \toprule
-    page & statements & fully worded, English & French & Czech \\
+    page & statements & fully worded, English & French & Czech & German \\
     \midrule
-    Mathlib.Order.Defs & 354 & 281 & 281 & 281 \\
-    Mathlib.Algebra & 29 & 26 & 26 & 26 \\
-    Mathlib.Data.Nat.Prime & 128 & 125 & 125 & 125 \\
-    Mathlib.Data.Nat.Factorization & 194 & 142 & 142 & 142 \\
+    Mathlib.Order.Defs & 354 & 281 & 281 & 281 & 242 \\
+    Mathlib.Algebra & 29 & 26 & 26 & 26 & 26 \\
+    Mathlib.Data.Nat.Prime & 128 & 125 & 125 & 125 & 125 \\
+    Mathlib.Data.Nat.Factorization & 194 & 142 & 142 & 142 & 135 \\
     \midrule
-    all & \textbf{705} & \textbf{574} & \textbf{574} & \textbf{574} \\
+    all & \textbf{705} & \textbf{574} & \textbf{574} & \textbf{574} & \textbf{528} \\
     \bottomrule
   \end{tabular}
 
@@ -538,7 +565,7 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
   \raggedright
   \begin{itemize}
     \item 264 declarations with their definiens; 240 proof texts in each
-          language, out of 242 term proofs.
+          language, out of 242 term proofs; 48 statements without German (time limit).
     \item Every statement has a formula; 31 need \texttt{-force-symbolic}.
     \item \url{https://aarneranta.github.io/mathlib-informath/mathlib-informath.html}
   \end{itemize}
@@ -595,7 +622,9 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
         \item \texttt{proof2dedukti} does not cover proofs, so the
               back-translation of \texttt{-json} crashes on them.
       \end{itemize}
-    \item Swedish and German are left out of the full grammar for now.
+    \item \textbf{German}: GF's linearization is exponential in nested noun phrases
+          (48 statements over the limit); ``elemente''; ``Dann $2 \leq p$''.
+    \item Swedish is left out of the full grammar for now.
   \end{itemize}
 \end{frame}
 
@@ -643,7 +672,7 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
     The regression suite, the autoformalization template
     &
     The next modules; French as a third row; one index loading the grammar
-    once; no German yet; Czech, hidden; hypotheses aggregated, reordered
+    once; Czech, hidden; hypotheses aggregated, reordered; German, with an aggressive time limit
     &
     Informath: \texttt{abstractionTypes}, \texttt{-languages},
     multilingual proof texts, \texttt{-no-back-to-dedukti},
@@ -661,7 +690,7 @@ theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) :
 
   \vspace{3mm}
   \normalsize
-  705 Mathlib statements, 240 proofs, in English, French, Czech and LaTeX
+  705 Mathlib statements, 240 proofs, in English, French, Czech, German and LaTeX
 \end{frame}
 
 \end{document}

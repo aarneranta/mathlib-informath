@@ -145,7 +145,7 @@ INTRO = """<p>Statements of <a href="https://github.com/leanprover-community/mat
 <b>Dedukti</b> by <code>Export.lean</code>, and its informalization by
 <a href="https://github.com/GrammaticalFramework/informath">Informath</a>, in
 <b>English</b>, as a <b>formula</b>, and in <b>French</b> and <b>Czech</b>,
-which the check boxes above the entries show. The Dedukti translation drops implicit and
+which the buttons at each entry show there, and the check boxes above the entries everywhere. The Dedukti translation drops implicit and
 instance arguments and maps Lean's arithmetic and logic to Informath's base
 (<code>mapping.tsv</code>); the other Mathlib constants are worded by the symbol table
 <code>mathlib.dkgf</code>, whose English wordings Informath also renders in the other languages. Constants without a wording appear as
@@ -168,13 +168,23 @@ LANG_SCRIPT = """
 (function(){
   function get(l){try{return localStorage.getItem('lang-'+l)==='1';}catch(e){return false;}}
   function set(l,v){try{localStorage.setItem('lang-'+l,v?'1':'0');}catch(e){}}
+  // a language's button in an entry shows or hides it in that entry only
+  function show(entry,l,on){
+    entry.classList.toggle('show-'+l,on);
+    var b=entry.querySelector('.langlink[data-lang="'+l+'"]'); if(b) b.classList.toggle('on',on);
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('.langlink'); if(!b) return;
+    var entry=b.closest('.entry'), l=b.dataset.lang;
+    show(entry,l,!entry.classList.contains('show-'+l));
+  });
+  // a check box above the entries shows or hides the language in all of them
+  function all(l,on){ document.querySelectorAll('.entry').forEach(function(e){show(e,l,on);}); }
   document.querySelectorAll('.langs input').forEach(function(box){
     var l=box.dataset.lang;
     box.checked=get(l);
-    document.body.classList.toggle('show-'+l,box.checked);
-    box.addEventListener('change',function(){
-      document.body.classList.toggle('show-'+l,box.checked); set(l,box.checked);
-    });
+    if(box.checked) all(l,true);
+    box.addEventListener('change',function(){ all(l,box.checked); set(l,box.checked); });
   });
 })();
 </script>"""
@@ -202,8 +212,11 @@ window.MathJax = {
 
 def lang_css():
     hidden = [l for l in LANGUAGE_NAMES if l not in SHOWN]
-    return ''.join(' .row.lang-%s{display:none}\n body.show-%s .row.lang-%s{display:grid}\n' % (l, l, l)
+    return ''.join(' .row.lang-%s{display:none}\n .entry.show-%s .row.lang-%s{display:grid}\n' % (l, l, l)
                    for l in hidden) + \
+        ' .langlink{font:inherit;font-size:.8em;margin-left:.5rem;padding:0 .35rem;border:1px solid #c8d3e6;' \
+        'border-radius:3px;background:#f4f6fb;color:#0645ad;cursor:pointer}\n' \
+        ' .langlink.on{background:#0645ad;color:#fff;border-color:#0645ad}\n' \
         ' .langs{position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #ddd;' \
         'padding:.35rem 0;font-size:.9em}\n .langs label{margin-left:.8rem;cursor:pointer}\n'
 
@@ -230,10 +243,13 @@ def entry_html(d, languages, commit, where):
         if d['proof'] and lang in d['proof']:
             rows.append((lang, 'Proof' if lang == 'Eng' else 'Proof, ' + LANGUAGE_NAMES[lang],
                          proof_html(d['proof'][lang], where, where[name])))
+    toggles = ''.join('<button type=button class=langlink data-lang="%s" title="show or hide %s here">%s</button>'
+                      % (l, LANGUAGE_NAMES[l], LANGUAGE_NAMES[l]) for l in languages if l not in SHOWN)
     return ('<div class=entry id="%s"><span class=name>%s</span><span class="k %s">%s</span>'
-            '<a class=src href="%s">%s:%d</a>%s%s</div>' % (
+            '<a class=src href="%s">%s:%d</a>%s%s%s</div>' % (
                 html.escape(name), html.escape(name), d['kind'], d['kind'],
                 GITHUB % (commit, path, d['nameLine']), html.escape(path.split('/')[-1]), d['nameLine'],
+                toggles,
                 '<div class=doc>%s</div>' % doc_html(d['doc']) if d['doc'] else '',
                 ''.join('<div class="row%s"><div class=lab>%s</div><div>%s</div></div>'
                         % (' lang-' + l if l else '', lab, c) for l, lab, c in rows)))

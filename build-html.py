@@ -20,7 +20,7 @@ MATHLIB = os.environ.get('MATHLIB', os.path.join(os.path.dirname(os.path.abspath
 GITHUB = 'https://github.com/leanprover-community/mathlib4/blob/%s/%s#L%d'
 OUT = 'mathlib-informath.html'
 INDEX = 'index.json'
-LANGUAGE_NAMES = {'Eng': 'English', 'Fre': 'French', 'Cze': 'Czech'}
+LANGUAGE_NAMES = {'Eng': 'English', 'Fre': 'French', 'Cze': 'Czech', 'Ger': 'German'}
 SHOWN = ['Eng']     # the languages shown by default; the others are switched on in the page header
 MATHJAX = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js'
 
@@ -230,6 +230,9 @@ def entry_html(d, languages, commit, where):
         t = d['readings'].get(mode)
         forced = (' <span class=forced>(forced symbolic: no wording found)</span>'
                   if mode in d['forced'] else '')
+        if not t and mode in d.get('timedOut', []):
+            return ('<div class="text missing">no %s: generation took over the time limit</div>'
+                    % what)
         return ('<div class=text>%s%s</div>' % (reading_html(t), forced) if t
                 else '<div class="text missing">no %s</div>' % what)
     # rows: (language or None, label, content)
@@ -240,9 +243,12 @@ def entry_html(d, languages, commit, where):
         (None, 'Formula', text('formula', 'formula')),
     ]
     for lang in languages:
+        label = 'Proof' if lang == 'Eng' else 'Proof, ' + LANGUAGE_NAMES[lang]
         if d['proof'] and lang in d['proof']:
-            rows.append((lang, 'Proof' if lang == 'Eng' else 'Proof, ' + LANGUAGE_NAMES[lang],
-                         proof_html(d['proof'][lang], where, where[name])))
+            rows.append((lang, label, proof_html(d['proof'][lang], where, where[name])))
+        elif d['proof'] and lang + ' proof' in d.get('timedOut', []):
+            rows.append((lang, label, '<div class="text missing">no proof text: generation took '
+                                      'over the time limit</div>'))
     toggles = ''.join('<button type=button class=langlink data-lang="%s" title="show or hide %s here">%s</button>'
                       % (l, LANGUAGE_NAMES[l], LANGUAGE_NAMES[l]) for l in languages if l not in SHOWN)
     return ('<div class=entry id="%s"><span class=name>%s</span><span class="k %s">%s</span>'

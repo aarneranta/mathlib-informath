@@ -16,13 +16,21 @@ cannot render.  The formulas are read in another call, with the English
 grammar only and the full symbol table.  RunInformath is the newest one built
 in $INFORMATH_ROOT (stack build), or the one on the PATH.
 """
-import difflib, glob, json, os, re, subprocess, sys
+import difflib, glob, json, os, re, subprocess, sys, time
 
 MATHLIB = os.environ.get('MATHLIB', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'mathlib4'))
 TABLE = 'mathlib.dkgf'
 INDEX = 'index.json'
-LANGUAGES = ['Eng', 'Fre', 'Cze']  # the verbal readings; build-html.py shows them in this order
-PROOF_TIMEOUT = 300               # seconds for one call of -proof-text
+LANGUAGES = ['Eng', 'Fre', 'Cze', 'Ger']  # the verbal readings; build-html.py shows them in this order
+# German linearization can take minutes on nested noun phrases (GF, RGL), so
+# German is read apart, in chunks with a time limit of PER_ITEM seconds per
+# statement or proof, on top of the time RunInformath takes to load; a slow
+# statement gets no German
+SLOW_LANGUAGES = ['Ger']
+FAST_LANGUAGES = [l for l in LANGUAGES if l not in SLOW_LANGUAGES]
+PER_ITEM = 1
+CHUNK = 12
+PROOF_TIMEOUT = 300               # seconds for one call of -proof-text in the fast languages
 TMP = '.index-'                   # prefix of the temporary files
 
 
@@ -155,20 +163,65 @@ def verbal_table():
 LABEL = re.compile(r'^\S+\.\s+')    # Nat__Prime__pos. / Definition. / Définition.
 
 
-def verbal_readings(dk, table, force=False):
-    """Dedukti name -> language -> reading, all languages in one call."""
-    lines = run('-json', '-no-back-to-dedukti', '-languages=' + ','.join(LANGUAGES),
-                '-add-symboltables=' + table, *(['-force-symbolic'] if force else []), dk)
+def verbal_readings(dk, table, langs, force=False, timeout=None):
+    """Dedukti name -> language -> reading, the languages in one call; with
+    a timeout, subprocess.TimeoutExpired if the call takes longer."""
+    r = subprocess.run([RUN, '-json', '-no-back-to-dedukti', '-languages=' + ','.join(langs),
+                        '-add-symboltables=' + table] + (['-force-symbolic'] if force else []) + [dk],
+                       capture_output=True, text=True, timeout=timeout)
+    if r.returncode:
+        raise RuntimeError(r.stderr[-500:])
     out = {}
-    for l in lines:
-        r = json.loads(l)
-        ws = r['originalDedukti'].split()
+    for l in r.stdout.split('\n'):
+        if not l.strip():
+            continue
+        j = json.loads(l)
+        ws = j['originalDedukti'].split()
         name = ws[1] if ws[0] == 'def' else ws[0]
-        for lang in LANGUAGES:
-            ranks = r['nlgResults'].get('Informath' + lang)
+        for lang in langs:
+            ranks = j['nlgResults'].get('Informath' + lang)
             if ranks:
                 out.setdefault(name, {})[lang] = LABEL.sub('', ranks[0]['lin'], count=1)
     return out
+
+
+def load_time(lang):
+    """The seconds RunInformath takes to read nothing in lang: loading the grammar."""
+    one = write('load.dk', 'loadTest : Prop.\n')
+    t = time.time()
+    subprocess.run([RUN, '-to-lang=' + lang, one], capture_output=True, text=True)
+    return time.time() - t
+
+
+def bisected(items, call, load):
+    """call(items) on chunks of CHUNK items, with a time limit of PER_ITEM
+    seconds per item on top of load; a chunk that runs over the limit or fails
+    is split in halves, down to the items that are too slow (or fail) alone.
+    Returns the merged results and the items given up."""
+    results, given_up = {}, []
+
+    def go(chunk):
+        try:
+            results.update(call(chunk, load + PER_ITEM * len(chunk)))
+        except (subprocess.TimeoutExpired, RuntimeError):
+            if len(chunk) == 1:
+                given_up.append(chunk[0])
+            else:
+                go(chunk[:len(chunk) // 2])
+                go(chunk[len(chunk) // 2:])
+    for i in range(0, len(items), CHUNK):
+        go(items[i:i + CHUNK])
+    return results, given_up
+
+
+def slow_readings(blocks, names, table, lang, load, force=False):
+    """Lean name -> reading in lang, statement by statement within the time
+    limit, and the names given up."""
+    def call(chunk, timeout):
+        f = write('slow.dk', '\n\n'.join(blocks[n][1] for n in chunk) + '\n')
+        got = verbal_readings(f, table, [lang], force, timeout)
+        return {n: got[blocks[n][0]][lang] for n in chunk if lang in got.get(blocks[n][0], {})}
+    return bisected(names, call, load)
 
 
 def formulas(dk, decls, force=False):
@@ -191,7 +244,7 @@ def formulas(dk, decls, force=False):
     return out
 
 
-def proof_texts(base, proofs):
+def proof_texts(base, proofs, langs):
     """Dedukti blocks of proved theorems -> language -> the rows (number,
     sentence, justification) of each proof text; a proof that Informath
     cannot render stops its call, and the output buffered before the error
@@ -201,8 +254,8 @@ def proof_texts(base, proofs):
     the proof count as failed."""
     out, failed, i, alone = [], [], 0, False
     while i < len(proofs):
-        stdout, error = call_proof_text(base, proofs[i:i + 1] if alone else proofs[i:])
-        texts = proof_tables(stdout)
+        stdout, error = call_proof_text(base, proofs[i:i + 1] if alone else proofs[i:], langs)
+        texts = proof_tables(stdout, langs)
         out += texts
         i += len(texts)
         if alone:
@@ -218,28 +271,40 @@ def proof_texts(base, proofs):
     return out, failed
 
 
-def call_proof_text(base, proofs):
+def call_proof_text(base, proofs, langs, timeout=PROOF_TIMEOUT):
     """RunInformath -proof-text on the proofs: its output, and whether it failed."""
     rest = write('proofs.dk', '\n\n'.join(proofs) + '\n')
     try:
-        r = subprocess.run([RUN, '-proof-text', '-languages=' + ','.join(LANGUAGES), '-base=' + base,
+        r = subprocess.run([RUN, '-proof-text', '-languages=' + ','.join(langs), '-base=' + base,
                             '-add-symboltables=' + TABLE, rest],
-                           capture_output=True, text=True, timeout=PROOF_TIMEOUT)
+                           capture_output=True, text=True, timeout=timeout)
         return r.stdout, r.returncode != 0
     except subprocess.TimeoutExpired as e:
         stdout = e.stdout or ''
         return (stdout.decode() if isinstance(stdout, bytes) else stdout), True
 
 
-def proof_tables(stdout):
+def proof_tables(stdout, langs):
     """The proof texts of an output, as long as each has a table in every language."""
     out = []
     for sec in re.split(r'\\subsection\*', stdout)[1:]:
         tables = re.findall(r'\\begin\{tabular\}\{[^\n]*\}\n(.*?)\\end\{tabular\}', sec, re.S)
-        if len(tables) < len(LANGUAGES):
+        if len(tables) < len(langs):
             break
-        out.append({lang: rows(t) for lang, t in zip(LANGUAGES, tables)})
+        out.append({lang: rows(t) for lang, t in zip(langs, tables)})
     return out
+
+
+def slow_proofs(base, proofs, names, lang, load):
+    """Lean name -> proof text rows in lang, proof by proof within the time
+    limit, and the names given up."""
+    def call(chunk, timeout):
+        stdout, error = call_proof_text(base, [proofs[n] for n in chunk], [lang], timeout)
+        texts = proof_tables(stdout, [lang])
+        if error or len(texts) < len(chunk):
+            raise RuntimeError('proof text failed')
+        return {n: t[lang] for n, t in zip(chunk, texts)}
+    return bisected(names, call, load)
 
 
 def rows(table):
@@ -294,19 +359,40 @@ def main():
     verbal = verbal_table()
     all_stmts = write('statements.dk', '\n'.join(stmts))
 
-    verb = verbal_readings(all_stmts, verbal)
+    verb = verbal_readings(all_stmts, verbal, FAST_LANGUAGES)
     form = formulas(all_stmts, decls)
     texts = {d['lean']: dict(verb.get(d['dk'], {}), formula=form.get(d['lean'])) for d in decls}
+    # the slow languages statement by statement, the statements without proofs
+    stmt_blocks = dk_blocks(all_stmts)
+    sblocks = {d['lean']: (d['dk'], stmt_blocks[d['lean']]) for d in decls if d['lean'] in stmt_blocks}
+    timed_out, loads = {}, {lang: load_time(lang) for lang in SLOW_LANGUAGES}
+    for lang in SLOW_LANGUAGES:
+        got, given_up = slow_readings(sblocks, list(sblocks), verbal, lang, loads[lang])
+        for n, t in got.items():
+            texts[n][lang] = t
+        for n in given_up:
+            timed_out.setdefault(n, []).append(lang)
     # a declaration without a reading is read with -force-symbolic, which writes
     # \mathrm{c}(...) where a constant has no form that fits
     forced = {}
-    for modes in [LANGUAGES, ['formula']]:
-        missing = [d for d in decls if d['lean'] in blocks and any(not texts[d['lean']].get(k) for k in modes)]
+    for modes in [FAST_LANGUAGES, ['formula']] + [[lang] for lang in SLOW_LANGUAGES]:
+        missing = [d for d in decls if d['lean'] in blocks and any(not texts[d['lean']].get(k) for k in modes)
+                   and not any(k in timed_out.get(d['lean'], []) for k in modes)]
         if not missing:
             continue
         one = write('forced.dk', '\n\n'.join(blocks[d['lean']] for d in missing) + '\n')
-        got = (lambda v: {d['lean']: v.get(d['dk'], {}) for d in missing})(verbal_readings(one, verbal, True)) \
-            if modes == LANGUAGES else {k: {'formula': v} for k, v in formulas(one, missing, True).items()}
+        if modes == FAST_LANGUAGES:
+            got = (lambda v: {d['lean']: v.get(d['dk'], {}) for d in missing})(
+                verbal_readings(one, verbal, FAST_LANGUAGES, True))
+        elif modes == ['formula']:
+            got = {k: {'formula': v} for k, v in formulas(one, missing, True).items()}
+        else:
+            lang = modes[0]
+            fb = {d['lean']: (d['dk'], blocks[d['lean']]) for d in missing}
+            r, given_up = slow_readings(fb, list(fb), verbal, lang, loads[lang], True)
+            got = {n: {lang: t} for n, t in r.items()}
+            for n in given_up:
+                timed_out.setdefault(n, []).append(lang)
         for d in missing:
             for k in modes:
                 if not texts[d['lean']].get(k) and got.get(d['lean'], {}).get(k):
@@ -314,9 +400,15 @@ def main():
                     forced.setdefault(d['lean'], []).append(k)
 
     proved = [d for d in decls if is_theorem(d) and d.get('definiens') and d['lean'] in blocks]
-    texts_of_proofs, failed = proof_texts(write('proof-base.dk', '\n'.join(base) + '\n'),
-                                          [blocks[d['lean']] for d in proved])
+    proof_base = write('proof-base.dk', '\n'.join(base) + '\n')
+    texts_of_proofs, failed = proof_texts(proof_base, [blocks[d['lean']] for d in proved], FAST_LANGUAGES)
     proofs = {d['lean']: p for d, p in zip(proved, texts_of_proofs) if p}
+    for lang in SLOW_LANGUAGES:
+        got, given_up = slow_proofs(proof_base, {n: blocks[n] for n in proofs}, list(proofs), lang, loads[lang])
+        for n, rows_ in got.items():
+            proofs[n][lang] = rows_
+        for n in given_up:
+            timed_out.setdefault(n, []).append(lang + ' proof')
 
     commit = lambda path: subprocess.run(['git', '-C', path, 'rev-parse', 'HEAD'],
                                          capture_output=True, text=True).stdout.strip()
@@ -328,7 +420,8 @@ def main():
         'macros': macros(modules, verbal),
         'proofsFailed': [proved[i]['lean'] for i in failed],
         'declarations': [dict(d, dedukti=blocks.get(d['lean']), readings=texts[d['lean']],
-                              forced=forced.get(d['lean'], []), proof=proofs.get(d['lean']))
+                              forced=forced.get(d['lean'], []), proof=proofs.get(d['lean']),
+                              timedOut=timed_out.get(d['lean'], []))
                          for d in decls],
     }
     json.dump(index, open(INDEX, 'w'), ensure_ascii=False, indent=1)
@@ -341,6 +434,11 @@ def main():
              sum(bool(texts[d['lean']].get('formula')) for d in decls), len(proofs), RUN))
     if failed:
         print('%d proofs without a proof text: %s' % (len(failed), ' '.join(index['proofsFailed'])))
+    for lang in SLOW_LANGUAGES:
+        r = [n for n, ls in timed_out.items() if lang in ls]
+        p = [n for n, ls in timed_out.items() if lang + ' proof' in ls]
+        print('%s over %d s per item (loading %.1f s): %d readings, %d proofs left out: %s'
+              % (lang, PER_ITEM, loads[lang], len(r), len(p), ' '.join(r + p)))
 
 
 if __name__ == '__main__':

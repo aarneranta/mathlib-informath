@@ -1,16 +1,59 @@
 (; constants used by Mathlib.Data.Nat.Prime.Defs, declared with their translated types ;)
 
+(; doc: The Boolean value `true`, not to be confused with the proposition `True`. ;)
+(; //LEAN:Bool.true ;)
+Bool__true : Elem Bool.
+
 (; doc: A `Bool` (that is, `decide p`) paired with a proof of `p` if `decide p` is `true` or a proof of `¬p` if `decide p` is `false`. The easiest way to extract these proofs is to use `of_decide_eq_true` or `of_decide_eq_false`.  `Decidable` instances are primarily used via `if`-expressions and the tactic `decide`. In conditional expressions, the `Decidable` instance for the proposition is used to select a branch. At run time, this case distinction code is identical to that which would be generated for a `Bool`-based conditional. In proofs, the tactic `decide` synthesizes an instance of `Decidable p`, attempts to reduce `decide p` to `true`, and then succeeds with the proof `of_decide_eq_true rfl` if it can.  Because `Decidable` carries data, when writing `@[simp]` lemmas which include a `Decidable` instance on the LHS, it is best to use `{_ : Decidable p}` rather than `[Decidable p]` so that non-canonical instances can be found via unification rather than instance synthesis. ;)
 (; //LEAN:Decidable ;)
 Decidable : (p : Prop) -> Prop.
+
+(; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
+(; //LEAN:Eq.refl ;)
+Eq__refl : (x : Set) -> (a : Elem x) -> Proof (Eqt x a a).
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
 Function__Injective : (f : (Elem x -> x1)) -> Prop.
 
+(; //LEAN:Iff.rfl ;)
+Iff__rfl : (a : Prop) -> Proof (iff a a).
+
+(; //LEAN:Iff.symm ;)
+Iff__symm : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff b a).
+
+(; //LEAN:Iff.trans ;)
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+
 (; doc: `Irreducible p` states that `p` is non-unit and only factors into units.  We explicitly avoid stating that `p` is non-zero, this would require a semiring. Assuming only a monoid allows us to reuse irreducible for associated elements.  [Wikidata Q2989575](https://www.wikidata.org/wiki/Q2989575) ;)
 (; //LEAN:Irreducible ;)
 Irreducible : (p : Elem M) -> Prop.
+
+(; //LEAN:Irreducible.ne_zero ;)
+Irreducible__ne_zero : (M : Set) -> (_ : Proof (MonoidWithZero M)) -> (p : Elem M) -> (h : Proof (Irreducible p)) -> Proof (Neq p 0).
+
+(; //LEAN:Irreducible.not_dvd_one ;)
+Irreducible__not_dvd_one : (M : Set) -> (_ : Proof (CommMonoid M)) -> (p : Elem M) -> (hp : Proof (Irreducible p)) -> Proof (not (divide p 1)).
+
+(; doc: An irreducible element is not a unit. ;)
+(; //LEAN:Irreducible.not_isUnit ;)
+Irreducible__not_isUnit : (M : Set) -> (_ : Proof (Monoid M)) -> (p : Elem M) -> (self : Proof (Irreducible p)) -> Proof (not (IsUnit p)).
+
+(; doc: An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse. The actual definition says that `a` is equal to some `u : Mˣ`, where `Mˣ` is a bundled version of `IsUnit`. ;)
+(; //LEAN:IsUnit ;)
+IsUnit : (a : Elem M) -> Prop.
+
+(; doc: **Alias** of `Decidable.lt_or_eq_of_le`. ;)
+(; //LEAN:LE.le.lt_or_eq_dec ;)
+LE__le__lt_or_eq_dec : (x : Set) -> (_ : Proof (PartialOrder x)) -> (a : Elem x) -> (b : Elem x) -> (_ : Proof (DecidableLE x)) -> (hab : Proof (Leq a b)) -> Proof (or (Lt a b) (Eqt x a b)).
+
+(; doc: **Alias** of `le_of_lt`. ;)
+(; //LEAN:LT.lt.le ;)
+LT__lt__le : (x : Set) -> (_ : Proof (Preorder x)) -> (a : Elem x) -> (b : Elem x) -> (hab : Proof (Lt a b)) -> Proof (Leq a b).
+
+(; doc: **Alias** of `ne_of_gt`. ;)
+(; //LEAN:LT.lt.ne' ;)
+LT__lt__ne' : (x : Set) -> (_ : Proof (Preorder x)) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Lt b a)) -> Proof (Neq a b).
 
 (; doc: `m` and `n` are coprime, or relatively prime, if their `gcd` is 1. ;)
 (; //LEAN:Nat.Coprime ;)
@@ -18,17 +61,126 @@ Nat__Coprime : (m : Elem Nat) -> (n : Elem Nat) -> Prop.
 
 (; doc: This instance is set up to work in the kernel (`by decide`) for small values.  Below (`decidablePrime'`) we will define a faster variant to be used by the compiler (e.g. in `#eval` or `by native_decide`).  If you need to prove that a particular number is prime, in any case you should not use `by decide`, but rather `by norm_num`, which is much faster. ;)
 (; //LEAN:Nat.decidablePrime ;)
-Nat__decidablePrime : (p : Elem Nat) -> Elem (Decidable (prime p)).
+Nat__decidablePrime : (p : Elem Nat) -> Proof (Decidable (prime p)).
+
+(; //LEAN:Nat.div_lt_self ;)
+Nat__div_lt_self : (n : Elem Nat) -> (k : Elem Nat) -> (hLtN : Proof (Lt 0 n)) -> (hLtK : Proof (Lt 1 k)) -> Proof (Lt (div n k) n).
+
+(; //LEAN:Nat.div_mul_le_self ;)
+Nat__div_mul_le_self : (m : Elem Nat) -> (n : Elem Nat) -> Proof (Leq (times (div m n) n) m).
+
+(; //LEAN:Nat.le_of_dvd ;)
+Nat__le_of_dvd : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Lt 0 n)) -> (h1 : Proof (divide m n)) -> Proof (Leq m n).
+
+(; //LEAN:Nat.le_of_succ_le ;)
+Nat__le_of_succ_le : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Leq (succ n) m)) -> Proof (Leq n m).
+
+(; //LEAN:Nat.le_sqrt ;)
+Nat__le_sqrt : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Leq m (Nat__sqrt n)) (Leq (times m m) n)).
+
+(; //LEAN:Nat.lt_add_of_pos_right ;)
+Nat__lt_add_of_pos_right : (k : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Lt 0 k)) -> Proof (Lt n (plus n k)).
+
+(; //LEAN:Nat.mul_le_mul_right ;)
+Nat__mul_le_mul_right : (n : Elem Nat) -> (m : Elem Nat) -> (k : Elem Nat) -> (h : Proof (Leq n m)) -> Proof (Leq (times n k) (times m k)).
+
+(; //LEAN:Nat.ne_of_gt ;)
+Nat__ne_of_gt : (a : Elem Nat) -> (b : Elem Nat) -> (h : Proof (Lt b a)) -> Proof (Neq a b).
+
+(; //LEAN:Nat.ne_of_lt ;)
+Nat__ne_of_lt : (a : Elem Nat) -> (b : Elem Nat) -> (h : Proof (Lt a b)) -> Proof (Neq a b).
+
+(; //LEAN:Nat.pos_of_ne_zero ;)
+Nat__pos_of_ne_zero : (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Lt 0 n).
 
 (; doc: Integer square root function. Implemented via Newton's method. ;)
 (; //LEAN:Nat.sqrt ;)
 Nat__sqrt : (n : Elem Nat) -> Elem Nat.
 
+(; //LEAN:Nat.sub_lt_sub_right ;)
+Nat__sub_lt_sub_right : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> (h : Proof (Leq c a)) -> (h1 : Proof (Lt a b)) -> Proof (Lt (minus a c) (minus b c)).
+
+(; //LEAN:Nat.succ_lt_succ ;)
+Nat__succ_lt_succ : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Lt n m)) -> Proof (Lt (succ n) (succ m)).
+
+(; //LEAN:Nat.zero_lt_succ ;)
+Nat__zero_lt_succ : (n : Elem Nat) -> Proof (Lt 0 (succ n)).
+
+(; doc: *Ex falso* for negation: from `¬a` and `a` anything follows. This is the same as `absurd` with the arguments flipped, but it is in the `Not` namespace so that projection notation can be used. ;)
+(; //LEAN:Not.elim ;)
+Not__elim : (H1 : Proof (not a)) -> (H2 : Proof a) -> Elem x.
+
+(; //LEAN:Or.imp_left ;)
+Or__imp_left : (a : Prop) -> (b : Prop) -> (c : Prop) -> (f : Proof (if a b)) -> (h : Proof (or a c)) -> Proof (or b c).
+
+(; //LEAN:Or.resolve_right ;)
+Or__resolve_right : (a : Prop) -> (b : Prop) -> (h : Proof (or a b)) -> (nb : Proof (not b)) -> Proof a.
+
 (; doc: An element `p` of a commutative monoid with zero (e.g., a ring) is called *prime*, if it's not zero, not a unit, and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`. ;)
 (; //LEAN:Prime ;)
 Prime : (p : Elem M) -> Prop.
 
+(; //LEAN:Prime.irreducible ;)
+Prime__irreducible : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (_ : Proof (IsCancelMulZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> Proof (Irreducible p).
+
+(; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
+(; //LEAN:Subtype ;)
+Subtype : (p : (Elem x -> Prop)) -> Set.
+
+(; //LEAN:Subtype.coe_injective ;)
+Subtype__coe_injective : (x : Set) -> (p : (Elem x -> Prop)) -> Proof (Function__Injective (a => a)).
+
+(; //LEAN:Subtype.ext_iff ;)
+Subtype__ext_iff : (x : Set) -> (p : (Elem x -> Prop)) -> (a1 : Elem (Subtype (x3 => p x3))) -> (a2 : Elem (Subtype (x2 => p x2))) -> Proof (iff (Eqt (Subtype (x1 => p x1)) a1 a2) (Eqt x a1 a2)).
+
+(; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
+(; //LEAN:Trans.trans ;)
+Trans__trans : (x3 : Elem (r a b)) -> (x4 : Elem (s b c)) -> Elem (t a c).
+
+(; //LEAN:and_congr_right ;)
+and_congr_right : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (if a (iff b c))) -> Proof (iff (and a b) (and a c)).
+
+(; //LEAN:and_iff_right ;)
+and_iff_right : (a : Prop) -> (b : Prop) -> (ha : Proof a) -> Proof (iff (and a b) b).
+
+(; doc: Transfer decidability of `b` to decidability of `a`, if the propositions are equivalent. This is the same as `decidable_of_iff` but the iff is flipped. ;)
+(; //LEAN:decidable_of_iff' ;)
+decidable_of_iff' : (b : Prop) -> (h : Proof (iff a b)) -> Proof (Decidable a).
+
+(; //LEAN:forall_congr' ;)
+forall_congr' : (x : Set) -> (p : (Elem x -> Prop)) -> (q : (Elem x -> Prop)) -> (h : Proof (forall x (a2 => iff (p a2) (q a2)))) -> Proof (iff (forall x (a => p a)) (forall x (a1 => q a1))).
+
+(; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
+(; //LEAN:id ;)
+id : (a : Elem x) -> Elem x.
+
 (; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:ite ;)
 ite : (c : Prop) -> (t : Elem x) -> (e : Elem x) -> Elem x.
+
+(; //LEAN:le_of_not_gt ;)
+le_of_not_gt : (x : Set) -> (_ : Proof (LinearOrder x)) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (not (Lt b a))) -> Proof (Leq a b).
+
+(; //LEAN:lt_iff_le_and_ne ;)
+lt_iff_le_and_ne : (x : Set) -> (_ : Proof (PartialOrder x)) -> (a : Elem x) -> (b : Elem x) -> Proof (iff (Lt a b) (and (Leq a b) (Neq a b))).
+
+(; //LEAN:ne_of_gt ;)
+ne_of_gt : (x : Set) -> (_ : Proof (Preorder x)) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Lt b a)) -> Proof (Neq a b).
+
+(; //LEAN:not_congr ;)
+not_congr : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff (not a) (not b)).
+
+(; //LEAN:of_decide_eq_true ;)
+of_decide_eq_true : (p : Prop) -> (_ : Proof (Decidable p)) -> (h : Proof (Eqt Bool (Decidable__decide p) Bool__true)) -> Proof p.
+
+(; //LEAN:or_iff_right_of_imp ;)
+or_iff_right_of_imp : (a : Prop) -> (b : Prop) -> (ha : Proof (if a b)) -> Proof (iff (or a b) b).
+
+(; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
+(; //LEAN:rfl ;)
+rfl : (x : Set) -> (a : Elem x) -> Proof (Eqt x a a).
+
+(; doc: **Alias** of `pow_two`.  ---  Note that most of the lemmas about powers of two refer to it as `sq`. ;)
+(; //LEAN:sq ;)
+sq : (M : Set) -> (_ : Proof (Monoid M)) -> (a : Elem M) -> Proof (Eqt M (pow a 2) (times a a)).
 

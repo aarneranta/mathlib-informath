@@ -67,6 +67,22 @@ def is_theorem(d):
     return d['kind'] == 'theorem'
 
 
+def statements(m, decls):
+    """out/<m>.dk with the proofs of its theorems dropped (definitions keep
+    their definiens), as a temporary file: what the readings are made from,
+    and the module's part of the base of the proof texts."""
+    text = open('out/%s.dk' % m).read()
+    theorems = {d['dk'] for d in decls if is_theorem(d)}
+
+    def one(mt):
+        name = mt.group(1)
+        return '%s : %s.' % (name, mt.group(2)) if name in theorems else mt.group(0)
+    text = re.sub(r'^def ([^ ]+) : (.*?) :=\n  .*?\.$', one, text, flags=re.S | re.M)
+    path = '.html-%s-statements.dk' % m
+    open(path, 'w').write(text)
+    return path
+
+
 def readings(dk, decls, blocks, symbolic):
     """Lean name -> reading, aligned with the declarations by their labels."""
     flags = ['-add-symboltables=' + TABLE] + (['-to-symbolic-latex'] if symbolic else []) + [dk]
@@ -114,6 +130,8 @@ def source(module, d):
         while i < end and '-/' not in lines[i]:
             i += 1
         i += 1
+    if d.get('definiens'):                          # the definiens is shown too
+        return '\n'.join(lines[i:end]).rstrip()
     out, depth = [], 0
     while i < end:
         l = lines[i]
@@ -136,6 +154,88 @@ def source(module, d):
             break
         i += 1
     return '\n'.join(out).rstrip()
+
+
+def proof_texts(m, decls, blocks, stmts):
+    """Lean name -> the rows (number, sentence, justification) of the proof
+    text of each proved theorem: RunInformath -proof-text on the declaration
+    alone, with Informath's base, nd.dk, the module's dependencies and its
+    statements as the base, so that each lemma's premisses are known."""
+    base = '.html-proof-base.dk'
+    with open(base, 'w') as f:
+        for path in [os.path.join(os.environ['INFORMATH_ROOT'], 'share', 'baseconstants.dk'), 'nd.dk']:
+            f.write(open(path).read() + '\n')
+        # the lemmas are rules without their type class instances (Export.lean
+        # writes those hypotheses (_ : Proof (C x)) and drops them in proofs)
+        for path in ['out/%s-deps.dk' % m, stmts]:
+            f.write(drop_instances(open(path).read()) + '\n')
+    out = {}
+    for d in decls:
+        if not (is_theorem(d) and d.get('definiens')):
+            continue
+        one = '.html-proof.dk'
+        open(one, 'w').write(blocks[d['lean']] + '\n')
+        r = subprocess.run([RUN, '-proof-text', '-base=' + base, '-add-symboltables=' + TABLE, one],
+                           capture_output=True, text=True)
+        os.remove(one)
+        tables = re.findall(r'\\begin\{tabular\}\{[^\n]*\}\n(.*?)\\end\{tabular\}', r.stdout, re.S)
+        if r.returncode or not tables:
+            PROOF_FAILED.append(d['lean'])
+            continue
+        rows = []
+        for row in re.split(r'\\\\\s*\n', tables[0]):
+            mt = re.match(r'\s*(\d+\.)\s*&(.*)&(.*)$', row, re.S)
+            if mt:
+                rows.append(tuple(g.strip() for g in mt.groups()))
+        out[d['lean']] = rows
+    os.remove(base)
+    return out
+
+
+PROOF_FAILED = []
+
+
+def drop_instances(text):
+    """The hypotheses (_ : Proof (...)) -> of the declarations left out."""
+    out, i = [], 0
+    while True:
+        k = text.find('(_ : Proof (', i)
+        if k < 0:
+            break
+        depth, j = 0, k
+        while j < len(text):
+            depth += {'(': 1, ')': -1}.get(text[j], 0)
+            if depth == 0:
+                break
+            j += 1
+        out.append(text[i:k])
+        i = j + 1
+        if text.startswith(' -> ', i):
+            i += 4
+    out.append(text[i:])
+    return ''.join(out)
+
+
+def justification_html(j, where, here):
+    """The rule of a step, \\texttt{Nat\\_\\_Prime\\_\\_ne\\_zero} 2, 3: its Lean name,
+    linked to its entry where it has one."""
+    def one(mt):
+        dk = mt.group(1).replace('\\_', '_')
+        lean = dk.replace('__', '.')
+        page = where.get(lean)
+        if page:
+            href = ('' if page == here else os.path.basename(page)) + '#' + lean
+            return '<a href="%s"><code>%s</code></a>' % (html.escape(href), html.escape(lean))
+        return '<code>%s</code>' % html.escape(lean)
+    return re.sub(r'\\texttt\{([^{}]*)\}', one, html.escape(j, quote=False))
+
+
+def proof_html(rows, where, here):
+    body = ''.join('<tr><td class=n>%s</td><td>%s</td><td class=j>%s</td></tr>'
+                   % (html.escape(n), reading_html(t), justification_html(j, where, here))
+                   for n, t, j in rows)
+    return ('<details%s><summary>%d lines</summary><table class=proof>%s</table></details>'
+            % (' open' if len(rows) <= 12 else '', len(rows), body))
 
 
 def macros(modules):
@@ -192,6 +292,11 @@ STYLE = """
  .text{font-size:.95em;padding-top:.2rem}
  .missing{color:#999;font-style:italic}
  .forced{color:#999;font-size:.75em}
+ table.proof{border-collapse:collapse;font-size:.95em;margin:.1rem 0}
+ table.proof td{padding:.1rem .5rem;vertical-align:top;border-bottom:1px solid #f0f0f0}
+ table.proof td.n{color:#888;text-align:right;white-space:nowrap}
+ table.proof td.j{color:#555;white-space:nowrap;font-size:.9em}
+ summary{cursor:pointer;color:#0645ad;font-size:.85em}
  table.cov{border-collapse:collapse;margin:.6rem 0;font-size:.9em}
  table.cov td,table.cov th{border:1px solid #ddd;padding:.2rem .6rem;text-align:right}
  table.cov td:first-child,table.cov th:first-child{text-align:left}
@@ -234,7 +339,7 @@ def group_of(module):
     return module.rsplit('.', 1)[0]
 
 
-def entry_html(m, d, blocks, english, formula, commit):
+def entry_html(m, d, blocks, english, formula, proofs, commit, where):
     name = d['lean']
     path = m.replace('.', '/') + '.lean'
     e, f = english.get(name), formula.get(name)
@@ -246,6 +351,8 @@ def entry_html(m, d, blocks, english, formula, commit):
         ('Formula', '<div class=text>%s%s</div>' % (reading_html(f), forced(name, True)) if f
          else '<div class="text missing">no formula</div>'),
     ]
+    if name in proofs:
+        rows.append(('Proof', proof_html(proofs[name], where, 'pages/%s.html' % group_of(m))))
     return ('<div class=entry id="%s"><span class=name>%s</span><span class="k %s">%s</span>'
             '<a class=src href="%s">%s:%d</a>%s%s</div>' % (
                 html.escape(name), html.escape(name), d['kind'], d['kind'],
@@ -277,17 +384,24 @@ def main():
         groups[-1][1].append(m)
     os.makedirs('pages', exist_ok=True)
     where, rows, total = {}, [], [0, 0]
+    for g, mods in groups:          # every declaration's page, for the links of the proofs
+        for m in mods:
+            for d in json.load(open('out/%s.json' % m)):
+                where[d['lean']] = 'pages/%s.html' % g
     for g, mods in groups:
         file = 'pages/%s.html' % g
         body, grows, gtot = [], [], [0, 0]
         for m in mods:
             decls = json.load(open('out/%s.json' % m))
             blocks = dk_blocks('out/%s.dk' % m)
-            english = readings('out/%s.dk' % m, decls, blocks, False)
-            formula = readings('out/%s.dk' % m, decls, blocks, True)
+            stmts = statements(m, decls)
+            english = readings(stmts, decls, blocks, False)
+            formula = readings(stmts, decls, blocks, True)
+            proofs = proof_texts(m, decls, blocks, stmts)
+            os.remove(stmts)
             body.append('<h2 id="%s">%s <a href="%s">source</a></h2>' % (
                 html.escape(m), html.escape(m), GITHUB % (commit, m.replace('.', '/') + '.lean', 1)))
-            body += [entry_html(m, d, blocks, english, formula, commit) for d in decls]
+            body += [entry_html(m, d, blocks, english, formula, proofs, commit, where) for d in decls]
             n, w = len(decls), sum(worded(english.get(d['lean'])) for d in decls)
             for d in decls:
                 where[d['lean']] = file
@@ -317,6 +431,8 @@ def main():
     open(OUT, 'w').write(page('Mathlib informalized', head, '', {}, forward))
     print('%d statements in %d modules, %d fully worded -> %s and %d pages (RunInformath: %s)'
           % (total[0], len(modules), total[1], OUT, len(groups), RUN))
+    if PROOF_FAILED:
+        print('%d proofs without a proof text: %s' % (len(PROOF_FAILED), ' '.join(PROOF_FAILED)))
 
 
 if __name__ == '__main__':

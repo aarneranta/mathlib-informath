@@ -1,18 +1,207 @@
 (; constants used by Mathlib.Data.Nat.Prime.Basic, declared with their translated types ;)
 
+(; doc: The Boolean value `true`, not to be confused with the proposition `True`. ;)
+(; //LEAN:Bool.true ;)
+Bool__true : Elem Bool.
+
+(; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
+(; //LEAN:Eq.refl ;)
+Eq__refl : (x : Set) -> (a : Elem x) -> Proof (Eqt x a a).
+
+(; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.symm ;)
+Eq__symm : (x : Set) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Eqt x a b)) -> Proof (Eqt x b a).
+
+(; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.trans ;)
+Eq__trans : (x : Set) -> (a : Elem x) -> (b : Elem x) -> (c : Elem x) -> (h : Proof (Eqt x a b)) -> (h1 : Proof (Eqt x b c)) -> Proof (Eqt x a c).
+
 (; doc: `a % b` computes the remainder upon dividing `a` by `b`. The meaning of this notation is type-dependent. * For `Nat` and `Int` it satisfies `a % b + b * (a / b) = a`,   and `a % 0` is defined to be `a`.  Conventions for notations in identifiers:   * The recommended spelling of `%` in identifiers is `mod`. ;)
 (; //LEAN:HMod.hMod ;)
 HMod__hMod : (x3 : Elem x) -> (x4 : Elem x1) -> Elem x2.
+
+(; //LEAN:Iff.trans ;)
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+
+(; doc: **Alias** of `eq_or_lt_of_le`. ;)
+(; //LEAN:LE.le.eq_or_lt ;)
+LE__le__eq_or_lt : (x : Set) -> (_ : Proof (PartialOrder x)) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Leq a b)) -> Proof (or (Eqt x a b) (Lt a b)).
 
 (; doc: `m` and `n` are coprime, or relatively prime, if their `gcd` is 1. ;)
 (; //LEAN:Nat.Coprime ;)
 Nat__Coprime : (m : Elem Nat) -> (n : Elem Nat) -> Prop.
 
+(; //LEAN:Nat.Coprime.mul_dvd_of_dvd_of_dvd ;)
+Nat__Coprime__mul_dvd_of_dvd_of_dvd : (m : Elem Nat) -> (n : Elem Nat) -> (a : Elem Nat) -> (hmn : Proof (Nat__Coprime m n)) -> (hm : Proof (divide m a)) -> (hn : Proof (divide n a)) -> Proof (divide (times m n) a).
+
+(; //LEAN:Nat.Coprime.pow ;)
+Nat__Coprime__pow : (k : Elem Nat) -> (l : Elem Nat) -> (m : Elem Nat) -> (n : Elem Nat) -> (H1 : Proof (Nat__Coprime k l)) -> Proof (Nat__Coprime (pow k m) (pow l n)).
+
+(; //LEAN:Nat.Coprime.pow_right ;)
+Nat__Coprime__pow_right : (k : Elem Nat) -> (m : Elem Nat) -> (n : Elem Nat) -> (H1 : Proof (Nat__Coprime k m)) -> Proof (Nat__Coprime k (pow m n)).
+
+(; //LEAN:Nat.Coprime.symm ;)
+Nat__Coprime__symm : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Nat__Coprime n m)) -> Proof (Nat__Coprime m n).
+
+(; //LEAN:Nat.Prime.coprime_iff_not_dvd ;)
+Nat__Prime__coprime_iff_not_dvd : (p : Elem Nat) -> (n : Elem Nat) -> (pp : Proof (prime p)) -> Proof (iff (Nat__Coprime p n) (not (divide p n))).
+
+(; //LEAN:Nat.Prime.dvd_mul ;)
+Nat__Prime__dvd_mul : (p : Elem Nat) -> (m : Elem Nat) -> (n : Elem Nat) -> (pp : Proof (prime p)) -> Proof (iff (divide p (times m n)) (or (divide p m) (divide p n))).
+
+(; //LEAN:Nat.Prime.eq_one_or_self_of_dvd ;)
+Nat__Prime__eq_one_or_self_of_dvd : (p : Elem Nat) -> (pp : Proof (prime p)) -> (m : Elem Nat) -> (hm : Proof (divide m p)) -> Proof (or (Eq m 1) (Eq m p)).
+
+(; //LEAN:Nat.Prime.one_lt ;)
+Nat__Prime__one_lt : (p : Elem Nat) -> (h : Proof (prime p)) -> Proof (Lt 1 p).
+
+(; //LEAN:Nat.Prime.pos ;)
+Nat__Prime__pos : (p : Elem Nat) -> (pp : Proof (prime p)) -> Proof (Lt 0 p).
+
+(; doc: **Alias** of the forward direction of `Nat.prime_iff`. ;)
+(; //LEAN:Nat.Prime.prime ;)
+Nat__Prime__prime : (p : Elem Nat) -> (h : Proof (prime p)) -> Proof (Prime p).
+
+(; //LEAN:Nat.Prime.two_le ;)
+Nat__Prime__two_le : (p : Elem Nat) -> (h : Proof (prime p)) -> Proof (Leq 2 p).
+
+(; //LEAN:Nat.coprime_comm ;)
+Nat__coprime_comm : (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Nat__Coprime n m) (Nat__Coprime m n)).
+
+(; //LEAN:Nat.coprime_iff_gcd_eq_one ;)
+Nat__coprime_iff_gcd_eq_one : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Nat__Coprime m n) (Eq (gcd m n) 1)).
+
+(; //LEAN:Nat.coprime_of_dvd ;)
+Nat__coprime_of_dvd : (m : Elem Nat) -> (n : Elem Nat) -> (H : Proof (forall Nat (k => if (prime k) (if (divide k m) (not (divide k n)))))) -> Proof (Nat__Coprime m n).
+
+(; //LEAN:Nat.div_add_mod ;)
+Nat__div_add_mod : (m : Elem Nat) -> (n : Elem Nat) -> Proof (Eq (plus (times n (div m n)) (HMod__hMod m n)) m).
+
+(; //LEAN:Nat.dvd_of_mod_eq_zero ;)
+Nat__dvd_of_mod_eq_zero : (m : Elem Nat) -> (n : Elem Nat) -> (H : Proof (Eq (HMod__hMod n m) 0)) -> Proof (divide m n).
+
+(; //LEAN:Nat.dvd_prime_two_le ;)
+Nat__dvd_prime_two_le : (p : Elem Nat) -> (m : Elem Nat) -> (pp : Proof (prime p)) -> (H : Proof (Leq 2 m)) -> Proof (iff (divide m p) (Eq m p)).
+
+(; //LEAN:Nat.le_of_dvd ;)
+Nat__le_of_dvd : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Lt 0 n)) -> (h1 : Proof (divide m n)) -> Proof (Leq m n).
+
+(; //LEAN:Nat.lt_le_asymm ;)
+Nat__lt_le_asymm : (a : Elem Nat) -> (b : Elem Nat) -> (h : Proof (Lt a b)) -> Proof (not (Leq b a)).
+
+(; //LEAN:Nat.lt_pred_iff ;)
+Nat__lt_pred_iff : (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Lt n (Nat__pred m)) (Lt (succ n) m)).
+
 (; doc: Returns the smallest prime factor of `n ≠ 1`. ;)
 (; //LEAN:Nat.minFac ;)
 Nat__minFac : (n : Elem Nat) -> Elem Nat.
 
+(; //LEAN:Nat.minFac_dvd ;)
+Nat__minFac_dvd : (n : Elem Nat) -> Proof (divide (Nat__minFac n) n).
+
+(; //LEAN:Nat.minFac_prime ;)
+Nat__minFac_prime : (n : Elem Nat) -> (n1 : Proof (Neq n 1)) -> Proof (prime (Nat__minFac n)).
+
+(; //LEAN:Nat.mod_two_eq_zero_or_one ;)
+Nat__mod_two_eq_zero_or_one : (n : Elem Nat) -> Proof (or (Eq (HMod__hMod n 2) 0) (Eq (HMod__hMod n 2) 1)).
+
+(; //LEAN:Nat.ne_of_lt ;)
+Nat__ne_of_lt : (a : Elem Nat) -> (b : Elem Nat) -> (h : Proof (Lt a b)) -> Proof (Neq a b).
+
+(; //LEAN:Nat.not_prime_iff_minFac_lt ;)
+Nat__not_prime_iff_minFac_lt : (n : Elem Nat) -> (n2 : Proof (Leq 2 n)) -> Proof (iff (not (prime n)) (Lt (Nat__minFac n) n)).
+
+(; doc: Alias for `Nat.zero_lt_one`. ;)
+(; //LEAN:Nat.one_pos ;)
+Nat__one_pos : Proof (Lt 0 1).
+
+(; //LEAN:Nat.pos_of_ne_zero ;)
+Nat__pos_of_ne_zero : (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Lt 0 n).
+
 (; doc: The predecessor of a natural number is one less than it. The predecessor of `0` is defined to be `0`.  This definition is overridden in the compiler with an efficient implementation. This definition is the logical model. ;)
 (; //LEAN:Nat.pred ;)
 Nat__pred : (x : Elem Nat) -> Elem Nat.
+
+(; //LEAN:Nat.prime_dvd_prime_iff_eq ;)
+Nat__prime_dvd_prime_iff_eq : (p : Elem Nat) -> (q : Elem Nat) -> (pp : Proof (prime p)) -> (qp : Proof (prime q)) -> Proof (iff (divide p q) (Eq p q)).
+
+(; //LEAN:Nat.succ_pred_eq_of_pos ;)
+Nat__succ_pred_eq_of_pos : (n : Elem Nat) -> (h : Proof (Lt 0 n)) -> Proof (Eq (succ (Nat__pred n)) n).
+
+(; //LEAN:Nat.two_le_iff ;)
+Nat__two_le_iff : (n : Elem Nat) -> Proof (iff (Leq 2 n) (and (Neq n 0) (Neq n 1))).
+
+(; //LEAN:Or.imp ;)
+Or__imp : (a : Prop) -> (c : Prop) -> (b : Prop) -> (d : Prop) -> (f : Proof (if a c)) -> (g : Proof (if b d)) -> (h : Proof (or a b)) -> Proof (or c d).
+
+(; //LEAN:Or.imp_left ;)
+Or__imp_left : (a : Prop) -> (b : Prop) -> (c : Prop) -> (f : Proof (if a b)) -> (h : Proof (or a c)) -> Proof (or b c).
+
+(; //LEAN:Or.imp_right ;)
+Or__imp_right : (b : Prop) -> (c : Prop) -> (a : Prop) -> (f : Proof (if b c)) -> (h : Proof (or a b)) -> Proof (or a c).
+
+(; //LEAN:Or.resolve_left ;)
+Or__resolve_left : (a : Prop) -> (b : Prop) -> (h : Proof (or a b)) -> (na : Proof (not a)) -> Proof b.
+
+(; //LEAN:Or.resolve_right ;)
+Or__resolve_right : (a : Prop) -> (b : Prop) -> (h : Proof (or a b)) -> (nb : Proof (not b)) -> Proof a.
+
+(; //LEAN:Prime.dvd_of_dvd_pow ;)
+Prime__dvd_of_dvd_pow : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> (a : Elem M) -> (n : Elem Nat) -> (h : Proof (divide p (pow a n))) -> Proof (divide p a).
+
+(; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
+(; //LEAN:True ;)
+True : Prop.
+
+(; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:congr ;)
+congr : (x : Set) -> (x1 : Set) -> (x2 : (Elem x -> x1)) -> (x3 : (Elem x -> x1)) -> (x4 : Elem x) -> (x5 : Elem x) -> (h : Proof (Eqt (Elem x -> x1) x2 x3)) -> (h1 : Proof (Eqt x x4 x5)) -> Proof (Eqt x1 (x2 x4) (x3 x5)).
+
+(; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:congrArg ;)
+congrArg : (x : Set) -> (x1 : Set) -> (x2 : Elem x) -> (x3 : Elem x) -> (f : (Elem x -> x1)) -> (h : Proof (Eqt x x2 x3)) -> Proof (Eqt x1 (f x2) (f x3)).
+
+(; doc: **Alias** of `congrArg`. ;)
+(; //LEAN:congr_arg ;)
+congr_arg : (x : Set) -> (x1 : Set) -> (x2 : Elem x) -> (x3 : Elem x) -> (f : (Elem x -> x1)) -> (h : Proof (Eqt x x2 x3)) -> Proof (Eqt x1 (f x2) (f x3)).
+
+(; //LEAN:eq_false ;)
+eq_false : (p : Prop) -> (h : Proof (not p)) -> Proof (Eqt Prop p false).
+
+(; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
+(; //LEAN:id ;)
+id : (a : Elem x) -> Elem x.
+
+(; //LEAN:iff_not_comm ;)
+iff_not_comm : (a : Prop) -> (b : Prop) -> Proof (iff (iff a (not b)) (iff b (not a))).
+
+(; //LEAN:mt ;)
+mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
+
+(; //LEAN:ne_of_gt ;)
+ne_of_gt : (x : Set) -> (_ : Proof (Preorder x)) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Lt b a)) -> Proof (Neq a b).
+
+(; //LEAN:not_congr ;)
+not_congr : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff (not a) (not b)).
+
+(; //LEAN:not_false_eq_true ;)
+not_false_eq_true : Proof (Eqt Prop (not false) True).
+
+(; //LEAN:not_imp_not ;)
+not_imp_not : (a : Prop) -> (b : Prop) -> Proof (iff (if (not a) (not b)) (if b a)).
+
+(; //LEAN:not_irreducible_pow ;)
+not_irreducible_pow : (M : Set) -> (_ : Proof (Monoid M)) -> (x1 : Elem M) -> (n : Elem Nat) -> (h : Proof (Neq n 1)) -> Proof (not (Irreducible (pow x1 n))).
+
+(; //LEAN:not_le_of_gt ;)
+not_le_of_gt : (x : Set) -> (_ : Proof (Preorder x)) -> (a : Elem x) -> (b : Elem x) -> (hab : Proof (Lt a b)) -> Proof (not (Leq b a)).
+
+(; //LEAN:of_decide_eq_true ;)
+of_decide_eq_true : (p : Prop) -> (_ : Proof (Decidable p)) -> (h : Proof (Eqt Bool (Decidable__decide p) Bool__true)) -> Proof p.
+
+(; //LEAN:of_eq_true ;)
+of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
+
+(; //LEAN:or_self ;)
+or_self : (p : Prop) -> Proof (Eqt Prop (or p p) p).
 

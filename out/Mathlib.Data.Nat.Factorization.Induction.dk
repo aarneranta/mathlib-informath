@@ -4,10 +4,12 @@
 Nat__recOnPrimePow : (zero : Elem (motive 0)) -> (one : Elem (motive 1)) -> (prime_pow_mul : ((a1 : Elem Nat) -> (p : Elem Nat) -> (n : Elem Nat) -> Proof (prime p) -> Proof (not (divide p a1)) -> Proof (Lt 0 n) -> Elem (motive a1) -> motive (times (pow p n) a1))) -> (a : Elem Nat) -> Elem (motive a).
 
 (; //LEAN:Nat.recOnPosPrimePosCoprime ;)
-Nat__recOnPosPrimePosCoprime : (prime_pow : ((p : Elem Nat) -> (n : Elem Nat) -> Proof (prime p) -> Proof (Lt 0 n) -> motive (pow p n))) -> (zero : Elem (motive 0)) -> (one : Elem (motive 1)) -> (coprime : ((a1 : Elem Nat) -> (b : Elem Nat) -> Proof (Lt 1 a1) -> Proof (Lt 1 b) -> Proof (Nat__Coprime a1 b) -> Elem (motive a1) -> Elem (motive b) -> motive (times a1 b))) -> (a : Elem Nat) -> Elem (motive a).
+def Nat__recOnPosPrimePosCoprime : (prime_pow : ((p : Elem Nat) -> (n : Elem Nat) -> Proof (prime p) -> Proof (Lt 0 n) -> motive (pow p n))) -> (zero : Elem (motive 0)) -> (one : Elem (motive 1)) -> (coprime : ((a1 : Elem Nat) -> (b : Elem Nat) -> Proof (Lt 1 a1) -> Proof (Lt 1 b) -> Proof (Nat__Coprime a1 b) -> Elem (motive a1) -> Elem (motive b) -> motive (times a1 b))) -> (a : Elem Nat) -> Elem (motive a) :=
+  prime_pow => zero => one => coprime => a => Nat__recOnPrimePow zero one (a1 => p => n => hp' => hpa => hn => hPa => dite (Eq a1 1) (ha1 => Eq__mpr (Nat__recOnPosPrimePosCoprime___proof_1 a1 p n ha1) (Eq__mpr (Nat__recOnPosPrimePosCoprime___proof_2 p n) (prime_pow p n hp' hn))) (ha11 => coprime (pow p n) a1 (Nat__recOnPosPrimePosCoprime___proof_3 p n hp' hn) (Nat__recOnPosPrimePosCoprime___proof_4 a1 p hpa ha11) (Nat__recOnPosPrimePosCoprime___proof_5 a1 p n hp' hpa hn) (prime_pow p n hp' hn) hPa)) a.
 
 (; //LEAN:Nat.recOnPrimeCoprime ;)
-Nat__recOnPrimeCoprime : (zero : Elem (motive 0)) -> (prime_pow : ((p : Elem Nat) -> (n : Elem Nat) -> Proof (prime p) -> motive (pow p n))) -> (coprime : ((a1 : Elem Nat) -> (b : Elem Nat) -> Proof (Lt 1 a1) -> Proof (Lt 1 b) -> Proof (Nat__Coprime a1 b) -> Elem (motive a1) -> Elem (motive b) -> motive (times a1 b))) -> (a : Elem Nat) -> Elem (motive a).
+def Nat__recOnPrimeCoprime : (zero : Elem (motive 0)) -> (prime_pow : ((p : Elem Nat) -> (n : Elem Nat) -> Proof (prime p) -> motive (pow p n))) -> (coprime : ((a1 : Elem Nat) -> (b : Elem Nat) -> Proof (Lt 1 a1) -> Proof (Lt 1 b) -> Proof (Nat__Coprime a1 b) -> Elem (motive a1) -> Elem (motive b) -> motive (times a1 b))) -> (a : Elem Nat) -> Elem (motive a) :=
+  zero => prime_pow => coprime => a => Nat__recOnPosPrimePosCoprime (p => n => h => h1 => prime_pow p n h) zero (prime_pow 2 0 Nat__prime_two) coprime a.
 
 (; //LEAN:Nat.recOnMul ;)
 Nat__recOnMul : (zero : Elem (motive 0)) -> (one : Elem (motive 1)) -> (prime : ((p : Elem Nat) -> Proof (prime p) -> motive p)) -> (mul : ((a1 : Elem Nat) -> (b : Elem Nat) -> Elem (motive a1) -> Elem (motive b) -> motive (times a1 b))) -> (a : Elem Nat) -> Elem (motive a).

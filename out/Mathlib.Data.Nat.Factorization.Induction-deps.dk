@@ -4,6 +4,10 @@
 (; //LEAN:CommMonoid ;)
 CommMonoid : (M : Set) -> Prop.
 
+(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
+(; //LEAN:Eq.mpr ;)
+Eq__mpr : (h : Proof (Eqt Set x x1)) -> (b : Elem x1) -> Elem x.
+
 (; doc: `prod f g` is the product of `g a (f a)` over the support of `f`. ;)
 (; //LEAN:Finsupp.prod ;)
 Finsupp__prod : (f : Elem (Finsupp x M)) -> (g : (Elem x -> Elem M -> N)) -> Elem N.
@@ -15,4 +19,26 @@ Nat__Coprime : (m : Elem Nat) -> (n : Elem Nat) -> Prop.
 (; doc: `n.factorization` is the finitely supported function `ℕ →₀ ℕ` mapping each prime factor of `n` to its multiplicity in `n`. ;)
 (; //LEAN:Nat.factorization ;)
 Nat__factorization : (n : Elem Nat) -> Elem (Finsupp Nat Nat).
+
+(; //LEAN:Nat.prime_two ;)
+Nat__prime_two : Proof (prime 2).
+
+(; //LEAN:Nat.recOnPosPrimePosCoprime._proof_1 ;)
+Nat__recOnPosPrimePosCoprime___proof_1 : (motive : (Elem Nat -> Set)) -> (a : Elem Nat) -> (p : Elem Nat) -> (n : Elem Nat) -> (ha1 : Proof (Eq a 1)) -> Proof (Eqt Set (motive (times (pow p n) a)) (motive (times (pow p n) 1))).
+
+(; //LEAN:Nat.recOnPosPrimePosCoprime._proof_2 ;)
+Nat__recOnPosPrimePosCoprime___proof_2 : (motive : (Elem Nat -> Set)) -> (p : Elem Nat) -> (n : Elem Nat) -> Proof (Eqt Set (motive (times (pow p n) 1)) (motive (pow p n))).
+
+(; //LEAN:Nat.recOnPosPrimePosCoprime._proof_3 ;)
+Nat__recOnPosPrimePosCoprime___proof_3 : (p : Elem Nat) -> (n : Elem Nat) -> (hp' : Proof (prime p)) -> (hn : Proof (Lt 0 n)) -> Proof (Lt 1 (pow p n)).
+
+(; //LEAN:Nat.recOnPosPrimePosCoprime._proof_4 ;)
+Nat__recOnPosPrimePosCoprime___proof_4 : (a : Elem Nat) -> (p : Elem Nat) -> (hpa : Proof (not (divide p a))) -> (ha1 : Proof (not (Eq a 1))) -> Proof (Lt 1 a).
+
+(; //LEAN:Nat.recOnPosPrimePosCoprime._proof_5 ;)
+Nat__recOnPosPrimePosCoprime___proof_5 : (a : Elem Nat) -> (p : Elem Nat) -> (n : Elem Nat) -> (hp' : Proof (prime p)) -> (hpa : Proof (not (divide p a))) -> (hn : Proof (Lt 0 n)) -> Proof (Nat__Coprime (pow p n) a).
+
+(; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
+(; //LEAN:dite ;)
+dite : (c : Prop) -> (t : (Proof c -> x)) -> (e : (Proof (not c) -> x)) -> Elem x.
 

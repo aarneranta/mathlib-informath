@@ -11,6 +11,14 @@ AddCommMonoid : (M : Set) -> Prop.
 (; //LEAN:CommMonoid ;)
 CommMonoid : (M : Set) -> Prop.
 
+(; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.symm ;)
+Eq__symm : (x : Set) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Eqt x a b)) -> Proof (Eqt x b a).
+
+(; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.trans ;)
+Eq__trans : (x : Set) -> (a : Elem x) -> (b : Elem x) -> (c : Elem x) -> (h : Proof (Eqt x a b)) -> (h1 : Proof (Eqt x b c)) -> Proof (Eqt x a c).
+
 (; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
 (; //LEAN:Finset ;)
 Finset : (x : Set) -> Set.
@@ -59,6 +67,12 @@ Finsupp : (x : Set) -> (M : Set) -> Set.
 (; //LEAN:Finsupp.erase ;)
 Finsupp__erase : (a : Elem x) -> (f : Elem (Finsupp x M)) -> Elem (Finsupp x M).
 
+(; //LEAN:Finsupp.mem_support_iff ;)
+Finsupp__mem_support_iff : (x : Set) -> (M : Set) -> (_ : Proof (Zero M)) -> (f : Elem (Finsupp x M)) -> (a : Elem x) -> Proof (iff (Membership__mem (Finsupp__support f) a) (Neq (f a) 0)).
+
+(; //LEAN:Finsupp.notMem_support_iff ;)
+Finsupp__notMem_support_iff : (x : Set) -> (M : Set) -> (_ : Proof (Zero M)) -> (f : Elem (Finsupp x M)) -> (a : Elem x) -> Proof (iff (not (Membership__mem (Finsupp__support f) a)) (Eqt M (f a) 0)).
+
 (; doc: `prod f g` is the product of `g a (f a)` over the support of `f`. ;)
 (; //LEAN:Finsupp.prod ;)
 Finsupp__prod : (f : Elem (Finsupp x M)) -> (g : (Elem x -> Elem M -> N)) -> Elem N.
@@ -67,9 +81,20 @@ Finsupp__prod : (f : Elem (Finsupp x M)) -> (g : (Elem x -> Elem M -> N)) -> Ele
 (; //LEAN:Finsupp.single ;)
 Finsupp__single : (a : Elem x) -> (b : Elem M) -> Elem (Finsupp x M).
 
+(; doc: The support of a finitely supported function (aka `Finsupp`). ;)
+(; //LEAN:Finsupp.support ;)
+Finsupp__support : (self : Elem (Finsupp x M)) -> Elem (Finset x).
+
 (; doc: Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation from `β` to `α`. ;)
 (; //LEAN:Function.onFun ;)
 Function__onFun : (f : (Elem x1 -> Elem x1 -> x2)) -> (g : (Elem x -> x1)) -> (x3 : Elem x) -> (x4 : Elem x) -> Elem x2.
+
+(; //LEAN:Iff.trans ;)
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+
+(; doc: **Alias** of `ne_of_gt`. ;)
+(; //LEAN:LT.lt.ne' ;)
+LT__lt__ne' : (x : Set) -> (_ : Proof (Preorder x)) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Lt b a)) -> Proof (Neq a b).
 
 (; doc: Returns the greater of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `max` in identifiers is `max`.   * The recommended spelling of `⊔` in identifiers is `sup` (`⊔` is the preferred notation for `max` when the type is not linearly ordered.). ;)
 (; //LEAN:Max.max ;)
@@ -87,6 +112,21 @@ Min__min : (x1 : Elem x) -> (x2 : Elem x) -> Elem x.
 (; //LEAN:Nat.Coprime ;)
 Nat__Coprime : (m : Elem Nat) -> (n : Elem Nat) -> Prop.
 
+(; //LEAN:Nat.Prime.factorization_pos_of_dvd ;)
+Nat__Prime__factorization_pos_of_dvd : (n : Elem Nat) -> (p : Elem Nat) -> (hp : Proof (prime p)) -> (hn : Proof (Neq n 0)) -> (h : Proof (divide p n)) -> Proof (Lt 0 (Nat__factorization__app n p)).
+
+(; //LEAN:Nat.coprime_or_dvd_of_prime ;)
+Nat__coprime_or_dvd_of_prime : (p : Elem Nat) -> (pp : Proof (prime p)) -> (i : Elem Nat) -> Proof (or (Nat__Coprime p i) (divide p i)).
+
+(; //LEAN:Nat.div_dvd_of_dvd ;)
+Nat__div_dvd_of_dvd : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (divide n m)) -> Proof (divide (div m n) m).
+
+(; //LEAN:Nat.div_le_self ;)
+Nat__div_le_self : (n : Elem Nat) -> (k : Elem Nat) -> Proof (Leq (div n k) n).
+
+(; //LEAN:Nat.dvd_of_mem_primeFactorsList ;)
+Nat__dvd_of_mem_primeFactorsList : (n : Elem Nat) -> (p : Elem Nat) -> (h : Proof (Membership__mem (Nat__primeFactorsList n) p)) -> Proof (divide p n).
+
 (; doc: `n.factorization` is the finitely supported function `ℕ →₀ ℕ` mapping each prime factor of `n` to its multiplicity in `n`. ;)
 (; //LEAN:Nat.factorization ;)
 Nat__factorization : (n : Elem Nat) -> Elem (Finsupp Nat Nat).
@@ -95,6 +135,21 @@ Nat__factorization : (n : Elem Nat) -> Elem (Finsupp Nat Nat).
 (; //LEAN:Nat.lcm ;)
 Nat__lcm : (m : Elem Nat) -> (n : Elem Nat) -> Elem Nat.
 
+(; //LEAN:Nat.le_of_dvd ;)
+Nat__le_of_dvd : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Lt 0 n)) -> (h1 : Proof (divide m n)) -> Proof (Leq m n).
+
+(; //LEAN:Nat.le_of_mem_primeFactors ;)
+Nat__le_of_mem_primeFactors : (n : Elem Nat) -> (p : Elem Nat) -> (h : Proof (Membership__mem (Nat__primeFactors n) p)) -> Proof (Leq p n).
+
+(; //LEAN:Nat.mem_primeFactors_iff_mem_primeFactorsList ;)
+Nat__mem_primeFactors_iff_mem_primeFactorsList : (n : Elem Nat) -> (p : Elem Nat) -> Proof (iff (Membership__mem (Nat__primeFactors n) p) (Membership__mem (Nat__primeFactorsList n) p)).
+
+(; //LEAN:Nat.mul_div_cancel' ;)
+Nat__mul_div_cancel' : (n : Elem Nat) -> (m : Elem Nat) -> (H : Proof (divide n m)) -> Proof (Eq (times n (div m n)) m).
+
+(; //LEAN:Nat.ordProj_dvd ;)
+Nat__ordProj_dvd : (n : Elem Nat) -> (p : Elem Nat) -> Proof (divide (pow p (Nat__factorization__app n p)) n).
+
 (; doc: The prime factors of a natural number as a finset. ;)
 (; //LEAN:Nat.primeFactors ;)
 Nat__primeFactors : (n : Elem Nat) -> Elem (Finset Nat).
@@ -102,6 +157,12 @@ Nat__primeFactors : (n : Elem Nat) -> Elem (Finset Nat).
 (; doc: `primeFactorsList n` is the prime factorization of `n`, listed in increasing order. ;)
 (; //LEAN:Nat.primeFactorsList ;)
 Nat__primeFactorsList : (x : Elem Nat) -> Elem (List Nat).
+
+(; //LEAN:Nat.prod_factorization_pow_eq_self ;)
+Nat__prod_factorization_pow_eq_self : (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (Eq (Finsupp__prod (Nat__factorization n) (x => x1 => pow x x1)) n).
+
+(; //LEAN:Ne.bot_lt ;)
+Ne__bot_lt : (x : Set) -> (_ : Proof (PartialOrder x)) -> (_ : Proof (OrderBot x)) -> (a : Elem x) -> (h : Proof (Neq a Bot__bot)) -> Proof (Lt Bot__bot a).
 
 (; doc: A relation `r` holds pairwise if `r i j` for all `i ≠ j`. ;)
 (; //LEAN:Pairwise ;)
@@ -115,7 +176,44 @@ Set__Icc : (a : Elem x) -> (b : Elem x) -> Elem (powerset x).
 (; //LEAN:Set.ofPred ;)
 Set__ofPred : (Mem : (Elem x -> Prop)) -> Elem (powerset x).
 
+(; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
+(; //LEAN:True ;)
+True : Prop.
+
+(; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:congrArg ;)
+congrArg : (x : Set) -> (x1 : Set) -> (x2 : Elem x) -> (x3 : Elem x) -> (f : (Elem x -> x1)) -> (h : Proof (Eqt x x2 x3)) -> Proof (Eqt x1 (f x2) (f x3)).
+
+(; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
+(; //LEAN:congrFun' ;)
+congrFun' : (x : Set) -> (x1 : Set) -> (f : (Elem x -> x1)) -> (g : (Elem x -> x1)) -> (h : Proof (Eqt (Elem x -> x1) f g)) -> (a : Elem x) -> Proof (Eqt x1 (f a) (g a)).
+
+(; //LEAN:dvd_pow_self ;)
+dvd_pow_self : (x : Set) -> (_ : Proof (Monoid x)) -> (a : Elem x) -> (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (divide a (pow a n)).
+
+(; //LEAN:iff_self ;)
+iff_self : (p : Prop) -> Proof (Eqt Prop (iff p p) True).
+
+(; //LEAN:mt ;)
+mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
+
+(; //LEAN:not_le_of_gt ;)
+not_le_of_gt : (x : Set) -> (_ : Proof (Preorder x)) -> (a : Elem x) -> (b : Elem x) -> (hab : Proof (Lt a b)) -> Proof (not (Leq b a)).
+
+(; //LEAN:of_eq_true ;)
+of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
+
+(; //LEAN:or_iff_left ;)
+or_iff_left : (b : Prop) -> (a : Prop) -> (hb : Proof (not b)) -> Proof (iff (or a b) a).
+
 (; doc: For `p ≠ 1`, the `p`-adic valuation of a natural `n ≠ 0` is the largest natural number `k` such that `p^k` divides `n`. If `n = 0` or `p = 1`, then `padicValNat p n` defaults to `0`. ;)
 (; //LEAN:padicValNat ;)
 padicValNat : (p : Elem Nat) -> (n : Elem Nat) -> Elem Nat.
+
+(; //LEAN:pow_one ;)
+pow_one : (M : Set) -> (_ : Proof (Monoid M)) -> (a : Elem M) -> Proof (Eqt M (pow a 1) a).
+
+(; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
+(; //LEAN:rfl ;)
+rfl : (x : Set) -> (a : Elem x) -> Proof (Eqt x a a).
 

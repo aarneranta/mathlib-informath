@@ -13,31 +13,39 @@ Nat__not_prime_of_mul_eq : (a : Elem Nat) -> (b : Elem Nat) -> (n : Elem Nat) ->
 Nat__Prime__dvd_iff_eq : (p : Elem Nat) -> (a : Elem Nat) -> (hp : Proof (prime p)) -> (a1 : Proof (Neq a 1)) -> Proof (iff (divide a p) (Eq p a)).
 
 (; //LEAN:Nat.Prime.eq_two_or_odd ;)
-Nat__Prime__eq_two_or_odd : (p : Elem Nat) -> (hp : Proof (prime p)) -> Proof (or (Eq p 2) (Eq (HMod__hMod p 2) 1)).
+def Nat__Prime__eq_two_or_odd : (p : Elem Nat) -> (hp : Proof (prime p)) -> Proof (or (Eq p 2) (Eq (HMod__hMod p 2) 1)) :=
+  p => hp => Or__imp_left (Eq (HMod__hMod p 2) 0) (Eq p 2) (Eq (HMod__hMod p 2) 1) (ifI (Eq (HMod__hMod p 2) 0) (Eq p 2) (h => Eq__symm Nat 2 p (Or__resolve_left (Eq 2 1) (Eq 2 p) (Nat__Prime__eq_one_or_self_of_dvd p hp 2 (Nat__dvd_of_mod_eq_zero 2 p h)) (of_decide_eq_true (not (Eq 2 1)) (id (Eq__refl Bool__true)))))) (Nat__mod_two_eq_zero_or_one p).
 
 (; //LEAN:Nat.Prime.eq_two_or_odd' ;)
-Nat__Prime__eq_two_or_odd' : (p : Elem Nat) -> (hp : Proof (prime p)) -> Proof (or (Eq p 2) (odd p)).
+def Nat__Prime__eq_two_or_odd' : (p : Elem Nat) -> (hp : Proof (prime p)) -> Proof (or (Eq p 2) (odd p)) :=
+  p => hp => Or__imp_right (Eq (HMod__hMod p 2) 1) (odd p) (Eq p 2) (ifI (Eq (HMod__hMod p 2) 1) (exists Nat (k1 => Eq p (plus (times 2 k1) 1))) (h => existsI Nat (k => Eq p (plus (times 2 k) 1)) (div p 2) (Eq__trans Nat p (plus (times 2 (div p 2)) (HMod__hMod p 2)) (plus (times 2 (div p 2)) 1) (Eq__symm Nat (plus (times 2 (div p 2)) (HMod__hMod p 2)) p (Nat__div_add_mod p 2)) (congr_arg Nat Nat (HMod__hMod p 2) 1 (plus (times 2 (div p 2))) h)))) (Nat__Prime__eq_two_or_odd p hp).
 
 (; //LEAN:Nat.Prime.five_le_of_ne_two_of_ne_three ;)
 Nat__Prime__five_le_of_ne_two_of_ne_three : (p : Elem Nat) -> (hp : Proof (prime p)) -> (h_two : Proof (Neq p 2)) -> (h_three : Proof (Neq p 3)) -> Proof (Leq 5 p).
 
 (; //LEAN:Nat.Prime.pred_pos ;)
-Nat__Prime__pred_pos : (p : Elem Nat) -> (pp : Proof (prime p)) -> Proof (Lt 0 (Nat__pred p)).
+def Nat__Prime__pred_pos : (p : Elem Nat) -> (pp : Proof (prime p)) -> Proof (Lt 0 (Nat__pred p)) :=
+  p => pp => iffEr (Lt 0 (Nat__pred p)) (Lt (succ 0) p) (Nat__lt_pred_iff 0 p) (Nat__Prime__one_lt p pp).
 
 (; //LEAN:Nat.succ_pred_prime ;)
-Nat__succ_pred_prime : (p : Elem Nat) -> (pp : Proof (prime p)) -> Proof (Eq (succ (Nat__pred p)) p).
+def Nat__succ_pred_prime : (p : Elem Nat) -> (pp : Proof (prime p)) -> Proof (Eq (succ (Nat__pred p)) p) :=
+  p => pp => Nat__succ_pred_eq_of_pos p (Nat__Prime__pos p pp).
 
 (; //LEAN:Nat.exists_dvd_of_not_prime ;)
-Nat__exists_dvd_of_not_prime : (n : Elem Nat) -> (n2 : Proof (Leq 2 n)) -> (np : Proof (not (prime n))) -> Proof (exists Nat (m => and (divide m n) (and (Neq m 1) (Neq m n)))).
+def Nat__exists_dvd_of_not_prime : (n : Elem Nat) -> (n2 : Proof (Leq 2 n)) -> (np : Proof (not (prime n))) -> Proof (exists Nat (m => and (divide m n) (and (Neq m 1) (Neq m n)))) :=
+  n => n2 => np => existsI Nat (m => and (divide m n) (and (Neq m 1) (Neq m n))) (Nat__minFac n) (andI (divide (Nat__minFac n) n) (and (Neq (Nat__minFac n) 1) (Neq (Nat__minFac n) n)) (Nat__minFac_dvd n) (andI (Neq (Nat__minFac n) 1) (Neq (Nat__minFac n) n) (ne_of_gt Nat (Nat__minFac n) 1 (Nat__Prime__one_lt (Nat__minFac n) (Nat__minFac_prime n (ne_of_gt Nat n 1 n2)))) (Nat__ne_of_lt (Nat__minFac n) n (iffEl (not (prime n)) (Lt (Nat__minFac n) n) (Nat__not_prime_iff_minFac_lt n n2) np)))).
 
 (; //LEAN:Nat.exists_dvd_of_not_prime2 ;)
-Nat__exists_dvd_of_not_prime2 : (n : Elem Nat) -> (n2 : Proof (Leq 2 n)) -> (np : Proof (not (prime n))) -> Proof (exists Nat (m => and (divide m n) (and (Leq 2 m) (Lt m n)))).
+def Nat__exists_dvd_of_not_prime2 : (n : Elem Nat) -> (n2 : Proof (Leq 2 n)) -> (np : Proof (not (prime n))) -> Proof (exists Nat (m => and (divide m n) (and (Leq 2 m) (Lt m n)))) :=
+  n => n2 => np => existsI Nat (m => and (divide m n) (and (Leq 2 m) (Lt m n))) (Nat__minFac n) (andI (divide (Nat__minFac n) n) (and (Leq 2 (Nat__minFac n)) (Lt (Nat__minFac n) n)) (Nat__minFac_dvd n) (andI (Leq 2 (Nat__minFac n)) (Lt (Nat__minFac n) n) (Nat__Prime__two_le (Nat__minFac n) (Nat__minFac_prime n (ne_of_gt Nat n 1 n2))) (iffEl (not (prime n)) (Lt (Nat__minFac n) n) (Nat__not_prime_iff_minFac_lt n n2) np))).
 
 (; //LEAN:Nat.not_prime_of_dvd_of_ne ;)
-Nat__not_prime_of_dvd_of_ne : (m : Elem Nat) -> (n : Elem Nat) -> (h1 : Proof (divide m n)) -> (h2 : Proof (Neq m 1)) -> (h3 : Proof (Neq m n)) -> Proof (not (prime n)).
+def Nat__not_prime_of_dvd_of_ne : (m : Elem Nat) -> (n : Elem Nat) -> (h1 : Proof (divide m n)) -> (h2 : Proof (Neq m 1)) -> (h3 : Proof (Neq m n)) -> Proof (not (prime n)) :=
+  m => n => h1 => h2 => h3 => ifI (prime n) false (h => orE (Eq m 1) (Eq m n) false (Nat__Prime__eq_one_or_self_of_dvd n h m h1) h2 h3).
 
 (; //LEAN:Nat.not_prime_of_dvd_of_lt ;)
-Nat__not_prime_of_dvd_of_lt : (m : Elem Nat) -> (n : Elem Nat) -> (h1 : Proof (divide m n)) -> (h2 : Proof (Leq 2 m)) -> (h3 : Proof (Lt m n)) -> Proof (not (prime n)).
+def Nat__not_prime_of_dvd_of_lt : (m : Elem Nat) -> (n : Elem Nat) -> (h1 : Proof (divide m n)) -> (h2 : Proof (Leq 2 m)) -> (h3 : Proof (Lt m n)) -> Proof (not (prime n)) :=
+  m => n => h1 => h2 => h3 => Nat__not_prime_of_dvd_of_ne m n h1 (ne_of_gt Nat m 1 h2) (Nat__ne_of_lt m n h3).
 
 (; //LEAN:Nat.not_prime_iff_exists_dvd_ne ;)
 Nat__not_prime_iff_exists_dvd_ne : (n : Elem Nat) -> (h : Proof (Leq 2 n)) -> Proof (iff (not (prime n)) (exists Nat (m => and (divide m n) (and (Neq m 1) (Neq m n))))).
@@ -58,7 +66,8 @@ Nat__Prime__even_iff : (p : Elem Nat) -> (hp : Proof (prime p)) -> Proof (iff (e
 Nat__Prime__odd_iff : (p : Elem Nat) -> (hp : Proof (prime p)) -> Proof (iff (odd p) (Leq 3 p)).
 
 (; //LEAN:Nat.Prime.odd_of_ne_two ;)
-Nat__Prime__odd_of_ne_two : (p : Elem Nat) -> (hp : Proof (prime p)) -> (h_two : Proof (Neq p 2)) -> Proof (odd p).
+def Nat__Prime__odd_of_ne_two : (p : Elem Nat) -> (hp : Proof (prime p)) -> (h_two : Proof (Neq p 2)) -> Proof (odd p) :=
+  p => hp => h_two => Or__resolve_left (Eq p 2) (odd p) (Nat__Prime__eq_two_or_odd' p hp) h_two.
 
 (; //LEAN:Nat.Prime.even_sub_one ;)
 Nat__Prime__even_sub_one : (p : Elem Nat) -> (hp : Proof (prime p)) -> (h2 : Proof (Neq p 2)) -> Proof (even (minus p 1)).
@@ -67,16 +76,19 @@ Nat__Prime__even_sub_one : (p : Elem Nat) -> (hp : Proof (prime p)) -> (h2 : Pro
 Nat__forall_prime_iff_two_and_odd : (P : (Elem Nat -> Prop)) -> Proof (iff (forall Nat (p => if (prime p) (P p))) (and (P 2) (forall Nat (p1 => if (prime p1) (if (odd p1) (P p1)))))).
 
 (; //LEAN:Nat.forall_prime_of_two_of_odd ;)
-Nat__forall_prime_of_two_of_odd : (P : (Elem Nat -> Prop)) -> (h : Proof (and (P 2) (forall Nat (p1 => if (prime p1) (if (odd p1) (P p1)))))) -> (p : Elem Nat) -> (h1 : Proof (prime p)) -> Proof (P p).
+def Nat__forall_prime_of_two_of_odd : (P : (Elem Nat -> Prop)) -> (h : Proof (and (P 2) (forall Nat (p1 => if (prime p1) (if (odd p1) (P p1)))))) -> (p : Elem Nat) -> (h1 : Proof (prime p)) -> Proof (P p) :=
+  P => iffEr (forall Nat (p => if (prime p) (P p))) (and (P 2) (forall Nat (p1 => if (prime p1) (if (odd p1) (P p1))))) (Nat__forall_prime_iff_two_and_odd P).
 
 (; //LEAN:Nat.Prime.mod_two_eq_one_iff_ne_two ;)
 Nat__Prime__mod_two_eq_one_iff_ne_two : (p : Elem Nat) -> (hp : Proof (prime p)) -> Proof (iff (Eq (HMod__hMod p 2) 1) (Neq p 2)).
 
 (; //LEAN:Nat.coprime_of_dvd' ;)
-Nat__coprime_of_dvd' : (m : Elem Nat) -> (n : Elem Nat) -> (H : Proof (forall Nat (k => if (prime k) (if (divide k m) (if (divide k n) (divide k 1)))))) -> Proof (Nat__Coprime m n).
+def Nat__coprime_of_dvd' : (m : Elem Nat) -> (n : Elem Nat) -> (H : Proof (forall Nat (k => if (prime k) (if (divide k m) (if (divide k n) (divide k 1)))))) -> Proof (Nat__Coprime m n) :=
+  m => n => H => Nat__coprime_of_dvd m n (forallI Nat (k => if (prime k) (if (divide k m) (if (divide k n) false))) (k => ifI (prime k) (if (divide k m) (if (divide k n) false)) (kp => ifI (divide k m) (if (divide k n) false) (km => ifI (divide k n) false (kn => not_le_of_gt Nat 1 k (Nat__Prime__one_lt k kp) (Nat__le_of_dvd k 1 Nat__one_pos (ifE (divide k n) (divide k 1) (ifE (divide k m) (if (divide k n) (divide k 1)) (ifE (prime k) (if (divide k m) (if (divide k n) (divide k 1))) (forallE Nat (k1 => if (prime k1) (if (divide k1 m) (if (divide k1 n) (divide k1 1)))) H k) kp) km) kn))))))).
 
 (; //LEAN:Nat.Prime.dvd_iff_not_coprime ;)
-Nat__Prime__dvd_iff_not_coprime : (p : Elem Nat) -> (n : Elem Nat) -> (pp : Proof (prime p)) -> Proof (iff (divide p n) (not (Nat__Coprime p n))).
+def Nat__Prime__dvd_iff_not_coprime : (p : Elem Nat) -> (n : Elem Nat) -> (pp : Proof (prime p)) -> Proof (iff (divide p n) (not (Nat__Coprime p n))) :=
+  p => n => pp => iffEr (iff (divide p n) (not (Nat__Coprime p n))) (iff (Nat__Coprime p n) (not (divide p n))) (iff_not_comm (divide p n) (Nat__Coprime p n)) (Nat__Prime__coprime_iff_not_dvd p n pp).
 
 (; //LEAN:Nat.Prime.not_coprime_iff_dvd ;)
 Nat__Prime__not_coprime_iff_dvd : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (not (Nat__Coprime m n)) (exists Nat (p => and (prime p) (and (divide p m) (divide p n))))).
@@ -85,40 +97,51 @@ Nat__Prime__not_coprime_iff_dvd : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff
 Nat__coprime_of_lt_minFac : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Neq m 0)) -> (h1 : Proof (Lt m (Nat__minFac n))) -> Proof (Nat__Coprime n m).
 
 (; //LEAN:Nat.gcd_eq_one_of_lt_minFac ;)
-Nat__gcd_eq_one_of_lt_minFac : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Neq m 0)) -> (h1 : Proof (Lt m (Nat__minFac n))) -> Proof (Eq (gcd n m) 1).
+def Nat__gcd_eq_one_of_lt_minFac : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Neq m 0)) -> (h1 : Proof (Lt m (Nat__minFac n))) -> Proof (Eq (gcd n m) 1) :=
+  n => m => h => h1 => iffEl (Nat__Coprime n m) (Eq (gcd n m) 1) (Nat__coprime_iff_gcd_eq_one n m) (Nat__coprime_of_lt_minFac n m h h1).
 
 (; //LEAN:Nat.Prime.not_dvd_mul ;)
-Nat__Prime__not_dvd_mul : (p : Elem Nat) -> (m : Elem Nat) -> (n : Elem Nat) -> (pp : Proof (prime p)) -> (Hm : Proof (not (divide p m))) -> (Hn : Proof (not (divide p n))) -> Proof (not (divide p (times m n))).
+def Nat__Prime__not_dvd_mul : (p : Elem Nat) -> (m : Elem Nat) -> (n : Elem Nat) -> (pp : Proof (prime p)) -> (Hm : Proof (not (divide p m))) -> (Hn : Proof (not (divide p n))) -> Proof (not (divide p (times m n))) :=
+  p => m => n => pp => Hm => Hn => mt (divide p (times m n)) (or (divide p m) (divide p n)) (iffEl (divide p (times m n)) (or (divide p m) (divide p n)) (Nat__Prime__dvd_mul p m n pp)) (of_eq_true (not (or (divide p m) (divide p n))) (Eq__trans Prop (not (or (divide p m) (divide p n))) (not false) True (congrArg Prop Prop (or (divide p m) (divide p n)) false not (Eq__trans Prop (or (divide p m) (divide p n)) (or false false) false (congr Prop Prop (or (divide p m)) (or false) (divide p n) false (congrArg Prop (Prop -> Prop) (divide p m) false or (eq_false (divide p m) Hm)) (eq_false (divide p n) Hn)) (or_self false))) not_false_eq_true)).
 
 (; //LEAN:Nat.coprime_two_left ;)
 Nat__coprime_two_left : (n : Elem Nat) -> Proof (iff (Nat__Coprime 2 n) (odd n)).
 
 (; //LEAN:Nat.coprime_two_right ;)
-Nat__coprime_two_right : (n : Elem Nat) -> Proof (iff (Nat__Coprime n 2) (odd n)).
+def Nat__coprime_two_right : (n : Elem Nat) -> Proof (iff (Nat__Coprime n 2) (odd n)) :=
+  n => Iff__trans (Nat__Coprime n 2) (Nat__Coprime 2 n) (odd n) (Nat__coprime_comm n 2) (Nat__coprime_two_left n).
 
 (; //LEAN:Odd.coprime_two_left ;)
-Odd__coprime_two_left : (n : Elem Nat) -> (h : Proof (odd n)) -> Proof (Nat__Coprime 2 n).
+def Odd__coprime_two_left : (n : Elem Nat) -> (h : Proof (odd n)) -> Proof (Nat__Coprime 2 n) :=
+  n => iffEr (Nat__Coprime 2 n) (odd n) (Nat__coprime_two_left n).
 
 (; //LEAN:Nat.Coprime.odd_of_left ;)
-Nat__Coprime__odd_of_left : (n : Elem Nat) -> (h : Proof (Nat__Coprime 2 n)) -> Proof (odd n).
+def Nat__Coprime__odd_of_left : (n : Elem Nat) -> (h : Proof (Nat__Coprime 2 n)) -> Proof (odd n) :=
+  n => iffEl (Nat__Coprime 2 n) (odd n) (Nat__coprime_two_left n).
 
 (; //LEAN:Odd.coprime_two_right ;)
-Odd__coprime_two_right : (n : Elem Nat) -> (h : Proof (odd n)) -> Proof (Nat__Coprime n 2).
+def Odd__coprime_two_right : (n : Elem Nat) -> (h : Proof (odd n)) -> Proof (Nat__Coprime n 2) :=
+  n => iffEr (Nat__Coprime n 2) (odd n) (Nat__coprime_two_right n).
 
 (; //LEAN:Nat.Coprime.odd_of_right ;)
-Nat__Coprime__odd_of_right : (n : Elem Nat) -> (h : Proof (Nat__Coprime n 2)) -> Proof (odd n).
+def Nat__Coprime__odd_of_right : (n : Elem Nat) -> (h : Proof (Nat__Coprime n 2)) -> Proof (odd n) :=
+  n => iffEl (Nat__Coprime n 2) (odd n) (Nat__coprime_two_right n).
 
 (; //LEAN:Nat.Prime.dvd_of_dvd_pow ;)
-Nat__Prime__dvd_of_dvd_pow : (p : Elem Nat) -> (m : Elem Nat) -> (n : Elem Nat) -> (pp : Proof (prime p)) -> (h : Proof (divide p (pow m n))) -> Proof (divide p m).
+def Nat__Prime__dvd_of_dvd_pow : (p : Elem Nat) -> (m : Elem Nat) -> (n : Elem Nat) -> (pp : Proof (prime p)) -> (h : Proof (divide p (pow m n))) -> Proof (divide p m) :=
+  p => m => n => pp => h => Prime__dvd_of_dvd_pow Nat p (Nat__Prime__prime p pp) m n h.
 
 (; //LEAN:Nat.Prime.not_prime_pow' ;)
-Nat__Prime__not_prime_pow' : (x : Elem Nat) -> (n : Elem Nat) -> (hn : Proof (Neq n 1)) -> Proof (not (prime (pow x n))).
+def Nat__Prime__not_prime_pow' : (x : Elem Nat) -> (n : Elem Nat) -> (hn : Proof (Neq n 1)) -> Proof (not (prime (pow x n))) :=
+  x => n => hn => not_irreducible_pow Nat x n hn.
 
 (; //LEAN:Nat.Prime.not_prime_pow ;)
-Nat__Prime__not_prime_pow : (x : Elem Nat) -> (n : Elem Nat) -> (hn : Proof (Leq 2 n)) -> Proof (not (prime (pow x n))).
+def Nat__Prime__not_prime_pow : (x : Elem Nat) -> (n : Elem Nat) -> (hn : Proof (Leq 2 n)) -> Proof (not (prime (pow x n))) :=
+  x => n => hn => Nat__Prime__not_prime_pow' x n (andEr (Neq n 0) (Neq n 1) (iffEl (Leq 2 n) (and (Neq n 0) (Neq n 1)) (Nat__two_le_iff n) hn)).
 
 (; //LEAN:Nat.Prime.eq_one_of_pow ;)
-Nat__Prime__eq_one_of_pow : (x : Elem Nat) -> (n : Elem Nat) -> (h : Proof (prime (pow x n))) -> Proof (Eq n 1).
+def Nat__Prime__eq_one_of_pow : (x : Elem Nat) -> (n : Elem Nat) -> (h : Proof (prime (pow x n))) -> Proof (Eq n 1) :=
+  x => n => h => iffEl (if (not (Eq n 1)) (not (prime (pow x n)))) (if (prime (pow x n)) (Eq n 1)) (not_imp_not (Eq n 1) (prime (pow x n))) (Nat__Prime__not_prime_pow' x n) h.
 
 (; //LEAN:Nat.Prime.pow_eq_iff ;)
 Nat__Prime__pow_eq_iff : (p : Elem Nat) -> (a : Elem Nat) -> (k : Elem Nat) -> (hp : Proof (prime p)) -> Proof (iff (Eq (pow a k) p) (and (Eq a p) (Eq k 1))).
@@ -127,31 +150,38 @@ Nat__Prime__pow_eq_iff : (p : Elem Nat) -> (a : Elem Nat) -> (k : Elem Nat) -> (
 Nat__Prime__mul_eq_prime_sq_iff : (x : Elem Nat) -> (y : Elem Nat) -> (p : Elem Nat) -> (hp : Proof (prime p)) -> (hx : Proof (Neq x 1)) -> (hy : Proof (Neq y 1)) -> Proof (iff (Eq (times x y) (pow p 2)) (and (Eq x p) (Eq y p))).
 
 (; //LEAN:Nat.Prime.coprime_pow_of_not_dvd ;)
-Nat__Prime__coprime_pow_of_not_dvd : (p : Elem Nat) -> (m : Elem Nat) -> (a : Elem Nat) -> (pp : Proof (prime p)) -> (h : Proof (not (divide p a))) -> Proof (Nat__Coprime a (pow p m)).
+def Nat__Prime__coprime_pow_of_not_dvd : (p : Elem Nat) -> (m : Elem Nat) -> (a : Elem Nat) -> (pp : Proof (prime p)) -> (h : Proof (not (divide p a))) -> Proof (Nat__Coprime a (pow p m)) :=
+  p => m => a => pp => h => Nat__Coprime__pow_right a p m (Nat__Coprime__symm p a (iffEr (Nat__Coprime p a) (not (divide p a)) (Nat__Prime__coprime_iff_not_dvd p a pp) h)).
 
 (; //LEAN:Nat.coprime_primes ;)
-Nat__coprime_primes : (p : Elem Nat) -> (q : Elem Nat) -> (pp : Proof (prime p)) -> (pq : Proof (prime q)) -> Proof (iff (Nat__Coprime p q) (Neq p q)).
+def Nat__coprime_primes : (p : Elem Nat) -> (q : Elem Nat) -> (pp : Proof (prime p)) -> (pq : Proof (prime q)) -> Proof (iff (Nat__Coprime p q) (Neq p q)) :=
+  p => q => pp => pq => Iff__trans (Nat__Coprime p q) (not (divide p q)) (Neq p q) (Nat__Prime__coprime_iff_not_dvd p q pp) (not_congr (divide p q) (Eq p q) (Nat__dvd_prime_two_le q p pq (Nat__Prime__two_le p pp))).
 
 (; //LEAN:Nat.coprime_pow_primes ;)
-Nat__coprime_pow_primes : (p : Elem Nat) -> (q : Elem Nat) -> (n : Elem Nat) -> (m : Elem Nat) -> (pp : Proof (prime p)) -> (pq : Proof (prime q)) -> (h : Proof (Neq p q)) -> Proof (Nat__Coprime (pow p n) (pow q m)).
+def Nat__coprime_pow_primes : (p : Elem Nat) -> (q : Elem Nat) -> (n : Elem Nat) -> (m : Elem Nat) -> (pp : Proof (prime p)) -> (pq : Proof (prime q)) -> (h : Proof (Neq p q)) -> Proof (Nat__Coprime (pow p n) (pow q m)) :=
+  p => q => n => m => pp => pq => h => Nat__Coprime__pow p q n m (iffEr (Nat__Coprime p q) (Neq p q) (Nat__coprime_primes p q pp pq) h).
 
 (; //LEAN:Nat.coprime_or_dvd_of_prime ;)
 Nat__coprime_or_dvd_of_prime : (p : Elem Nat) -> (pp : Proof (prime p)) -> (i : Elem Nat) -> Proof (or (Nat__Coprime p i) (divide p i)).
 
 (; //LEAN:Nat.coprime_of_lt_prime ;)
-Nat__coprime_of_lt_prime : (n : Elem Nat) -> (p : Elem Nat) -> (ne_zero : Proof (Neq n 0)) -> (hlt : Proof (Lt n p)) -> (pp : Proof (prime p)) -> Proof (Nat__Coprime p n).
+def Nat__coprime_of_lt_prime : (n : Elem Nat) -> (p : Elem Nat) -> (ne_zero : Proof (Neq n 0)) -> (hlt : Proof (Lt n p)) -> (pp : Proof (prime p)) -> Proof (Nat__Coprime p n) :=
+  n => p => ne_zero => hlt => pp => Or__resolve_right (Nat__Coprime p n) (divide p n) (Nat__coprime_or_dvd_of_prime p pp n) (ifI (divide p n) false (h => Nat__lt_le_asymm n p hlt (Nat__le_of_dvd p n (Nat__pos_of_ne_zero n ne_zero) h))).
 
 (; //LEAN:Nat.eq_or_coprime_of_le_prime ;)
-Nat__eq_or_coprime_of_le_prime : (n : Elem Nat) -> (p : Elem Nat) -> (ne_zero : Proof (Neq n 0)) -> (hle : Proof (Leq n p)) -> (pp : Proof (prime p)) -> Proof (or (Eq p n) (Nat__Coprime p n)).
+def Nat__eq_or_coprime_of_le_prime : (n : Elem Nat) -> (p : Elem Nat) -> (ne_zero : Proof (Neq n 0)) -> (hle : Proof (Leq n p)) -> (pp : Proof (prime p)) -> Proof (or (Eq p n) (Nat__Coprime p n)) :=
+  n => p => ne_zero => hle => pp => Or__imp (Eq n p) (Eq p n) (Lt n p) (Nat__Coprime p n) (Eq__symm Nat n p) (ifI (Lt n p) (Nat__Coprime p n) (h => Nat__coprime_of_lt_prime n p ne_zero h pp)) (LE__le__eq_or_lt Nat n p hle).
 
 (; //LEAN:Nat.prime_eq_prime_of_dvd_pow ;)
-Nat__prime_eq_prime_of_dvd_pow : (m : Elem Nat) -> (p : Elem Nat) -> (q : Elem Nat) -> (pp : Proof (prime p)) -> (pq : Proof (prime q)) -> (h : Proof (divide p (pow q m))) -> Proof (Eq p q).
+def Nat__prime_eq_prime_of_dvd_pow : (m : Elem Nat) -> (p : Elem Nat) -> (q : Elem Nat) -> (pp : Proof (prime p)) -> (pq : Proof (prime q)) -> (h : Proof (divide p (pow q m))) -> Proof (Eq p q) :=
+  m => p => q => pp => pq => h => iffEl (divide p q) (Eq p q) (Nat__prime_dvd_prime_iff_eq p q pp pq) (Nat__Prime__dvd_of_dvd_pow p q m pp h).
 
 (; //LEAN:Nat.dvd_prime_pow ;)
 Nat__dvd_prime_pow : (p : Elem Nat) -> (pp : Proof (prime p)) -> (m : Elem Nat) -> (i : Elem Nat) -> Proof (iff (divide i (pow p m)) (exists Nat (k => and (Leq k m) (Eq i (pow p k))))).
 
 (; //LEAN:Nat.Prime.dvd_mul_of_dvd_ne ;)
-Nat__Prime__dvd_mul_of_dvd_ne : (p1 : Elem Nat) -> (p2 : Elem Nat) -> (n : Elem Nat) -> (h_ne : Proof (Neq p1 p2)) -> (pp1 : Proof (prime p1)) -> (pp2 : Proof (prime p2)) -> (h1 : Proof (divide p1 n)) -> (h2 : Proof (divide p2 n)) -> Proof (divide (times p1 p2) n).
+def Nat__Prime__dvd_mul_of_dvd_ne : (p1 : Elem Nat) -> (p2 : Elem Nat) -> (n : Elem Nat) -> (h_ne : Proof (Neq p1 p2)) -> (pp1 : Proof (prime p1)) -> (pp2 : Proof (prime p2)) -> (h1 : Proof (divide p1 n)) -> (h2 : Proof (divide p2 n)) -> Proof (divide (times p1 p2) n) :=
+  p1 => p2 => n => h_ne => pp1 => pp2 => h1 => h2 => Nat__Coprime__mul_dvd_of_dvd_of_dvd p1 p2 n (iffEr (Nat__Coprime p1 p2) (Neq p1 p2) (Nat__coprime_primes p1 p2 pp1 pp2) h_ne) h1 h2.
 
 (; //LEAN:Nat.eq_prime_pow_of_dvd_least_prime_pow ;)
 Nat__eq_prime_pow_of_dvd_least_prime_pow : (a : Elem Nat) -> (p : Elem Nat) -> (k : Elem Nat) -> (pp : Proof (prime p)) -> (h : Proof (not (divide a (pow p k)))) -> (h1 : Proof (divide a (pow p (plus k 1)))) -> Proof (Eq a (pow p (plus k 1))).

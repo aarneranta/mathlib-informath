@@ -1,7 +1,8 @@
 (; Mathlib.Data.Nat.Factorization.Root: statements exported from Mathlib by MathlibInformath/Export.lean ;)
 
 (; //LEAN:Nat.floorRoot ;)
-Nat__floorRoot : (n : Elem Nat) -> (a : Elem Nat) -> Elem Nat.
+def Nat__floorRoot : (n : Elem Nat) -> (a : Elem Nat) -> Elem Nat :=
+  n => a => ite (or (Eq n 0) (Eq a 0)) 0 (Finsupp__prod (Nat__factorization a) (p => k => pow p (div k n))).
 
 (; //LEAN:Nat.floorRoot_def ;)
 Nat__floorRoot_def : (a : Elem Nat) -> (n : Elem Nat) -> Proof (Eq (Nat__floorRoot n a) (ite (or (Eq n 0) (Eq a 0)) 0 (Finsupp__prod (FloorDiv__floorDiv (Nat__factorization a) n) (x => x1 => pow x x1)))).
@@ -34,10 +35,12 @@ Nat__factorization_floorRoot : (n : Elem Nat) -> (a : Elem Nat) -> Proof (Eqt (F
 Nat__pow_dvd_iff_dvd_floorRoot : (a : Elem Nat) -> (b : Elem Nat) -> (n : Elem Nat) -> Proof (iff (divide (pow a n) b) (divide a (Nat__floorRoot n b))).
 
 (; //LEAN:Nat.floorRoot_pow_dvd ;)
-Nat__floorRoot_pow_dvd : (a : Elem Nat) -> (n : Elem Nat) -> Proof (divide (pow (Nat__floorRoot n a) n) a).
+def Nat__floorRoot_pow_dvd : (a : Elem Nat) -> (n : Elem Nat) -> Proof (divide (pow (Nat__floorRoot n a) n) a) :=
+  a => n => iffEr (divide (pow (Nat__floorRoot n a) n) a) (divide (Nat__floorRoot n a) (Nat__floorRoot n a)) (Nat__pow_dvd_iff_dvd_floorRoot (Nat__floorRoot n a) a n) (dvd_rfl Nat (Nat__floorRoot n a)).
 
 (; //LEAN:Nat.ceilRoot ;)
-Nat__ceilRoot : (n : Elem Nat) -> (a : Elem Nat) -> Elem Nat.
+def Nat__ceilRoot : (n : Elem Nat) -> (a : Elem Nat) -> Elem Nat :=
+  n => a => ite (or (Eq n 0) (Eq a 0)) 0 (Finsupp__prod (Nat__factorization a) (p => k => pow p (div (minus (plus k n) 1) n))).
 
 (; //LEAN:Nat.ceilRoot_def ;)
 Nat__ceilRoot_def : (a : Elem Nat) -> (n : Elem Nat) -> Proof (Eq (Nat__ceilRoot n a) (ite (or (Eq n 0) (Eq a 0)) 0 (Finsupp__prod (CeilDiv__ceilDiv (Nat__factorization a) n) (x => x1 => pow x x1)))).
@@ -70,5 +73,6 @@ Nat__factorization_ceilRoot : (n : Elem Nat) -> (a : Elem Nat) -> Proof (Eqt (Fi
 Nat__dvd_pow_iff_ceilRoot_dvd : (a : Elem Nat) -> (b : Elem Nat) -> (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (iff (divide a (pow b n)) (divide (Nat__ceilRoot n a) b)).
 
 (; //LEAN:Nat.dvd_ceilRoot_pow ;)
-Nat__dvd_ceilRoot_pow : (a : Elem Nat) -> (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (divide a (pow (Nat__ceilRoot n a) n)).
+def Nat__dvd_ceilRoot_pow : (a : Elem Nat) -> (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (divide a (pow (Nat__ceilRoot n a) n)) :=
+  a => n => hn => iffEr (divide a (pow (Nat__ceilRoot n a) n)) (divide (Nat__ceilRoot n a) (Nat__ceilRoot n a)) (Nat__dvd_pow_iff_ceilRoot_dvd a (Nat__ceilRoot n a) n hn) (dvd_rfl Nat (Nat__ceilRoot n a)).
 

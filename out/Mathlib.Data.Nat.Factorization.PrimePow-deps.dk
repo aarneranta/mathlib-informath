@@ -9,9 +9,19 @@ Nat__Primes__prodNatEquiv__app : (a1 : Elem (Prod Nat__Primes Nat)) -> Elem (Sub
 (; a constant applied as a function: DFunLike.coe ;)
 Nat__factorization__app : (a1 : Elem Nat) -> (a2 : Elem Nat) -> Elem Nat.
 
+(; //LEAN:Dvd.intro ;)
+Dvd__intro : (x : Set) -> (_ : Proof (Semigroup x)) -> (a : Elem x) -> (b : Elem x) -> (c : Elem x) -> (h : Proof (Eqt x (times a c) b)) -> Proof (divide a b).
+
+(; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.symm ;)
+Eq__symm : (x : Set) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Eqt x a b)) -> Proof (Eqt x b a).
+
 (; doc: `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. ;)
 (; //LEAN:Equiv ;)
 Equiv : (x : Set) -> (x1 : Set) -> Set.
+
+(; //LEAN:Equiv.mk ;)
+Equiv__mk : (toFun : (Elem x -> x1)) -> (invFun : (Elem x1 -> x)) -> (left_inv : Proof (autoParam (Function__LeftInverse invFun toFun) Equiv__left_inv___autoParam)) -> (right_inv : Proof (autoParam (Function__RightInverse invFun toFun) Equiv__right_inv___autoParam)) -> Elem (Equiv x x1).
 
 (; doc: For `p : α → Prop`, `ExistsUnique p` means that there exists a unique `x : α` with `p x`. ;)
 (; //LEAN:ExistsUnique ;)
@@ -53,6 +63,12 @@ Nat__Coprime : (m : Elem Nat) -> (n : Elem Nat) -> Prop.
 (; //LEAN:Nat.Primes ;)
 Nat__Primes : Set.
 
+(; //LEAN:Nat.Primes.prodNatEquiv._proof_4 ;)
+Nat__Primes__prodNatEquiv___proof_4 : (n : Elem (Subtype (n3 => IsPrimePow n3))) -> Proof (Eqt (Subtype (n1 => IsPrimePow n1)) ((pk => pow (Prod__fst pk) (plus (Prod__snd pk) 1)) ((n2 => Prod__mk (Nat__minFac n2) (minus (Nat__factorization__app n2 (Nat__minFac n2)) 1)) n)) n).
+
+(; //LEAN:Nat.Primes.prodNatEquiv._proof_6 ;)
+Nat__Primes__prodNatEquiv___proof_6 : (x : Elem (Prod Nat__Primes Nat)) -> Proof (Eqt (Prod Nat__Primes Nat) (Prod__mk (Nat__minFac (pow (Prod__fst x) (plus (Prod__snd x) 1))) (minus (Nat__factorization__app (pow (Prod__fst x) (plus (Prod__snd x) 1)) (Nat__minFac (pow (Prod__fst x) (plus (Prod__snd x) 1)))) 1)) x).
+
 (; doc: `divisors n` is the `Finset` of divisors of `n`. By convention, we set `divisors 0 = ∅`. ;)
 (; //LEAN:Nat.divisors ;)
 Nat__divisors : (n : Elem Nat) -> Elem (Finset Nat).
@@ -73,9 +89,17 @@ Nat__primeFactors : (n : Elem Nat) -> Elem (Finset Nat).
 (; //LEAN:Prod ;)
 Prod : (x : Set) -> (x1 : Set) -> Set.
 
+(; doc: The first element of a pair. ;)
+(; //LEAN:Prod.fst ;)
+Prod__fst : (self : Elem (Prod x x1)) -> Elem x.
+
 (; doc: Constructs a pair. This is usually written `(x, y)` instead of `Prod.mk x y`.  Conventions for notations in identifiers:   * The recommended spelling of `(a, b)` in identifiers is `mk`. ;)
 (; //LEAN:Prod.mk ;)
 Prod__mk : (fst : Elem x) -> (snd : Elem x1) -> Elem (Prod x x1).
+
+(; doc: The second element of a pair. ;)
+(; //LEAN:Prod.snd ;)
+Prod__snd : (self : Elem (Prod x x1)) -> Elem x1.
 
 (; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
 (; //LEAN:Subtype ;)
@@ -84,4 +108,8 @@ Subtype : (p : (Elem x -> Prop)) -> Set.
 (; doc: `a ∪ b` is the union of `a` and `b`.  Conventions for notations in identifiers:   * The recommended spelling of `∪` in identifiers is `union`. ;)
 (; //LEAN:Union.union ;)
 Union__union : (x1 : Elem x) -> (x2 : Elem x) -> Elem x.
+
+(; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
+(; //LEAN:rfl ;)
+rfl : (x : Set) -> (a : Elem x) -> Proof (Eqt x a a).
 

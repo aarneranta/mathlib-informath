@@ -1,10 +1,12 @@
 (; Mathlib.Data.Nat.Factorization.Basic: statements exported from Mathlib by MathlibInformath/Export.lean ;)
 
 (; //LEAN:Nat.factorization_eq_zero_of_lt ;)
-Nat__factorization_eq_zero_of_lt : (n : Elem Nat) -> (p : Elem Nat) -> (h : Proof (Lt n p)) -> Proof (Eq (Nat__factorization__app n p) 0).
+def Nat__factorization_eq_zero_of_lt : (n : Elem Nat) -> (p : Elem Nat) -> (h : Proof (Lt n p)) -> Proof (Eq (Nat__factorization__app n p) 0) :=
+  n => p => h => iffEl (not (Membership__mem (Finsupp__support (Nat__factorization n)) p)) (Eq (Nat__factorization__app n p) 0) (Finsupp__notMem_support_iff Nat Nat (Nat__factorization n) p) (mt (Membership__mem (Finsupp__support (Nat__factorization n)) p) (Leq p n) (Nat__le_of_mem_primeFactors n p) (not_le_of_gt Nat n p h)).
 
 (; //LEAN:Nat.dvd_of_factorization_pos ;)
-Nat__dvd_of_factorization_pos : (n : Elem Nat) -> (p : Elem Nat) -> (hn : Proof (Neq (Nat__factorization__app n p) 0)) -> Proof (divide p n).
+def Nat__dvd_of_factorization_pos : (n : Elem Nat) -> (p : Elem Nat) -> (hn : Proof (Neq (Nat__factorization__app n p) 0)) -> Proof (divide p n) :=
+  n => p => hn => Nat__dvd_of_mem_primeFactorsList n p (iffEl (Membership__mem (Nat__primeFactors n) p) (Membership__mem (Nat__primeFactorsList n) p) (Nat__mem_primeFactors_iff_mem_primeFactorsList n p) (iffEr (Membership__mem (Finsupp__support (Nat__factorization n)) p) (Neq (Nat__factorization__app n p) 0) (Finsupp__mem_support_iff Nat Nat (Nat__factorization n) p) hn)).
 
 (; //LEAN:Nat.factorization_eq_zero_iff_remainder ;)
 Nat__factorization_eq_zero_iff_remainder : (p : Elem Nat) -> (r : Elem Nat) -> (i : Elem Nat) -> (pp : Proof (prime p)) -> (hr0 : Proof (Neq r 0)) -> Proof (iff (not (divide p r)) (Eq (Nat__factorization__app (plus (times p i) r) p) 0)).
@@ -16,10 +18,12 @@ Nat__factorization_eq_zero_iff' : (n : Elem Nat) -> Proof (iff (Eqt (Finsupp Nat
 Nat__factorization_prod_apply : (x : Set) -> (p : Elem Nat) -> (S : Elem (Finset x)) -> (g : (Elem x -> Nat)) -> (hS : Proof (forall x (x3 => if (Membership__mem S x3) (Neq (g x3) 0)))) -> Proof (Eq (Nat__factorization__app (Finset__prod S (x1 => g x1)) p) (Finset__sum S (x2 => Nat__factorization__app (g x2) p))).
 
 (; //LEAN:Nat.prod_factorization_eq_prod_primeFactors ;)
-Nat__prod_factorization_eq_prod_primeFactors : (n : Elem Nat) -> (x : Set) -> (_ : Proof (CommMonoid x)) -> (f : (Elem Nat -> Elem Nat -> x)) -> Proof (Eqt x (Finsupp__prod (Nat__factorization n) (x2 => x3 => f x2 x3)) (Finset__prod (Nat__primeFactors n) (p => f p (Nat__factorization__app n p)))).
+def Nat__prod_factorization_eq_prod_primeFactors : (n : Elem Nat) -> (x : Set) -> (_ : Proof (CommMonoid x)) -> (f : (Elem Nat -> Elem Nat -> x)) -> Proof (Eqt x (Finsupp__prod (Nat__factorization n) (x2 => x3 => f x2 x3)) (Finset__prod (Nat__primeFactors n) (p => f p (Nat__factorization__app n p)))) :=
+  n => x => x1 => f => rfl.
 
 (; //LEAN:Nat.prod_primeFactors_prod_factorization ;)
-Nat__prod_primeFactors_prod_factorization : (n : Elem Nat) -> (x : Set) -> (_ : Proof (CommMonoid x)) -> (f : (Elem Nat -> x)) -> Proof (Eqt x (Finset__prod (Nat__primeFactors n) (p => f p)) (Finsupp__prod (Nat__factorization n) (p1 => x2 => f p1))).
+def Nat__prod_primeFactors_prod_factorization : (n : Elem Nat) -> (x : Set) -> (_ : Proof (CommMonoid x)) -> (f : (Elem Nat -> x)) -> Proof (Eqt x (Finset__prod (Nat__primeFactors n) (p => f p)) (Finsupp__prod (Nat__factorization n) (p1 => x2 => f p1))) :=
+  n => x => x1 => f => rfl.
 
 (; //LEAN:Nat.Prime.factorization_self ;)
 Nat__Prime__factorization_self : (p : Elem Nat) -> (hp : Proof (prime p)) -> Proof (Eq (Nat__factorization__app p p) 1).
@@ -40,22 +44,26 @@ Nat__ordProj_of_not_prime : (n : Elem Nat) -> (p : Elem Nat) -> (hp : Proof (not
 Nat__ordCompl_of_not_prime : (n : Elem Nat) -> (p : Elem Nat) -> (hp : Proof (not (prime p))) -> Proof (Eq (div n (pow p (Nat__factorization__app n p))) n).
 
 (; //LEAN:Nat.ordCompl_dvd ;)
-Nat__ordCompl_dvd : (n : Elem Nat) -> (p : Elem Nat) -> Proof (divide (div n (pow p (Nat__factorization__app n p))) n).
+def Nat__ordCompl_dvd : (n : Elem Nat) -> (p : Elem Nat) -> Proof (divide (div n (pow p (Nat__factorization__app n p))) n) :=
+  n => p => Nat__div_dvd_of_dvd (pow p (Nat__factorization__app n p)) n (Nat__ordProj_dvd n p).
 
 (; //LEAN:Nat.ordProj_pos ;)
 Nat__ordProj_pos : (n : Elem Nat) -> (p : Elem Nat) -> Proof (Lt 0 (pow p (Nat__factorization__app n p))).
 
 (; //LEAN:Nat.ordProj_le ;)
-Nat__ordProj_le : (n : Elem Nat) -> (p : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (Leq (pow p (Nat__factorization__app n p)) n).
+def Nat__ordProj_le : (n : Elem Nat) -> (p : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (Leq (pow p (Nat__factorization__app n p)) n) :=
+  n => p => hn => Nat__le_of_dvd (pow p (Nat__factorization__app n p)) n (Ne__bot_lt Nat n hn) (Nat__ordProj_dvd n p).
 
 (; //LEAN:Nat.ordCompl_pos ;)
 Nat__ordCompl_pos : (n : Elem Nat) -> (p : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (Lt 0 (div n (pow p (Nat__factorization__app n p)))).
 
 (; //LEAN:Nat.ordCompl_le ;)
-Nat__ordCompl_le : (n : Elem Nat) -> (p : Elem Nat) -> Proof (Leq (div n (pow p (Nat__factorization__app n p))) n).
+def Nat__ordCompl_le : (n : Elem Nat) -> (p : Elem Nat) -> Proof (Leq (div n (pow p (Nat__factorization__app n p))) n) :=
+  n => p => Nat__div_le_self n (pow p (Nat__factorization__app n p)).
 
 (; //LEAN:Nat.ordProj_mul_ordCompl_eq_self ;)
-Nat__ordProj_mul_ordCompl_eq_self : (n : Elem Nat) -> (p : Elem Nat) -> Proof (Eq (times (pow p (Nat__factorization__app n p)) (div n (pow p (Nat__factorization__app n p)))) n).
+def Nat__ordProj_mul_ordCompl_eq_self : (n : Elem Nat) -> (p : Elem Nat) -> Proof (Eq (times (pow p (Nat__factorization__app n p)) (div n (pow p (Nat__factorization__app n p)))) n) :=
+  n => p => Nat__mul_div_cancel' (pow p (Nat__factorization__app n p)) n (Nat__ordProj_dvd n p).
 
 (; //LEAN:Nat.ordProj_mul ;)
 Nat__ordProj_mul : (a : Elem Nat) -> (b : Elem Nat) -> (p : Elem Nat) -> (ha : Proof (Neq a 0)) -> (hb : Proof (Neq b 0)) -> Proof (Eq (pow p (Nat__factorization__app (times a b) p)) (times (pow p (Nat__factorization__app a p)) (pow p (Nat__factorization__app b p)))).
@@ -88,7 +96,8 @@ Nat__Prime__pow_dvd_iff_le_factorization : (p : Elem Nat) -> (k : Elem Nat) -> (
 Nat__Prime__pow_dvd_iff_dvd_ordProj : (p : Elem Nat) -> (k : Elem Nat) -> (n : Elem Nat) -> (pp : Proof (prime p)) -> (hn : Proof (Neq n 0)) -> Proof (iff (divide (pow p k) n) (divide (pow p k) (pow p (Nat__factorization__app n p)))).
 
 (; //LEAN:Nat.Prime.dvd_iff_one_le_factorization ;)
-Nat__Prime__dvd_iff_one_le_factorization : (p : Elem Nat) -> (n : Elem Nat) -> (pp : Proof (prime p)) -> (hn : Proof (Neq n 0)) -> Proof (iff (divide p n) (Leq 1 (Nat__factorization__app n p))).
+def Nat__Prime__dvd_iff_one_le_factorization : (p : Elem Nat) -> (n : Elem Nat) -> (pp : Proof (prime p)) -> (hn : Proof (Neq n 0)) -> Proof (iff (divide p n) (Leq 1 (Nat__factorization__app n p))) :=
+  p => n => pp => hn => Iff__trans (divide p n) (divide (pow p 1) n) (Leq 1 (Nat__factorization__app n p)) (of_eq_true (iff (divide p n) (divide (pow p 1) n)) (Eq__trans Prop (iff (divide p n) (divide (pow p 1) n)) (iff (divide p n) (divide p n)) True (congrArg Prop Prop (divide (pow p 1) n) (divide p n) (iff (divide p n)) (congrFun' Nat Prop (divide (pow p 1)) (divide p) (congrArg Nat (Elem Nat -> Prop) (pow p 1) p divide (pow_one Nat p)) n)) (iff_self (divide p n)))) (Nat__Prime__pow_dvd_iff_le_factorization p 1 n pp hn).
 
 (; //LEAN:Nat.exists_factorization_lt_of_lt ;)
 Nat__exists_factorization_lt_of_lt : (a : Elem Nat) -> (b : Elem Nat) -> (ha : Proof (Neq a 0)) -> (hab : Proof (Lt a b)) -> Proof (exists Nat (p => Lt (Nat__factorization__app a p) (Nat__factorization__app b p))).
@@ -97,13 +106,15 @@ Nat__exists_factorization_lt_of_lt : (a : Elem Nat) -> (b : Elem Nat) -> (ha : P
 Nat__factorization_div : (d : Elem Nat) -> (n : Elem Nat) -> (h : Proof (divide d n)) -> Proof (Eqt (Finsupp Nat Nat) (Nat__factorization (div n d)) (minus (Nat__factorization n) (Nat__factorization d))).
 
 (; //LEAN:Nat.dvd_ordProj_of_dvd ;)
-Nat__dvd_ordProj_of_dvd : (n : Elem Nat) -> (p : Elem Nat) -> (hn : Proof (Neq n 0)) -> (pp : Proof (prime p)) -> (h : Proof (divide p n)) -> Proof (divide p (pow p (Nat__factorization__app n p))).
+def Nat__dvd_ordProj_of_dvd : (n : Elem Nat) -> (p : Elem Nat) -> (hn : Proof (Neq n 0)) -> (pp : Proof (prime p)) -> (h : Proof (divide p n)) -> Proof (divide p (pow p (Nat__factorization__app n p))) :=
+  n => p => hn => pp => h => dvd_pow_self Nat p (Nat__factorization__app n p) (LT__lt__ne' Nat (Nat__factorization__app n p) 0 (Nat__Prime__factorization_pos_of_dvd n p pp hn h)).
 
 (; //LEAN:Nat.not_dvd_ordCompl ;)
 Nat__not_dvd_ordCompl : (n : Elem Nat) -> (p : Elem Nat) -> (hp : Proof (prime p)) -> (hn : Proof (Neq n 0)) -> Proof (not (divide p (div n (pow p (Nat__factorization__app n p))))).
 
 (; //LEAN:Nat.coprime_ordCompl ;)
-Nat__coprime_ordCompl : (n : Elem Nat) -> (p : Elem Nat) -> (hp : Proof (prime p)) -> (hn : Proof (Neq n 0)) -> Proof (Nat__Coprime p (div n (pow p (Nat__factorization__app n p)))).
+def Nat__coprime_ordCompl : (n : Elem Nat) -> (p : Elem Nat) -> (hp : Proof (prime p)) -> (hn : Proof (Neq n 0)) -> Proof (Nat__Coprime p (div n (pow p (Nat__factorization__app n p)))) :=
+  n => p => hp => hn => iffEl (or (Nat__Coprime p (div n (pow p (Nat__factorization__app n p)))) (divide p (div n (pow p (Nat__factorization__app n p))))) (Nat__Coprime p (div n (pow p (Nat__factorization__app n p)))) (or_iff_left (divide p (div n (pow p (Nat__factorization__app n p)))) (Nat__Coprime p (div n (pow p (Nat__factorization__app n p)))) (Nat__not_dvd_ordCompl n p hp hn)) (Nat__coprime_or_dvd_of_prime p hp (div n (pow p (Nat__factorization__app n p)))).
 
 (; //LEAN:Nat.factorization_ordCompl ;)
 Nat__factorization_ordCompl : (n : Elem Nat) -> (p : Elem Nat) -> Proof (Eqt (Finsupp Nat Nat) (Nat__factorization (div n (pow p (Nat__factorization__app n p)))) (Finsupp__erase p (Nat__factorization n))).
@@ -202,7 +213,8 @@ Nat__eq_iff_prime_padicValNat_eq : (a : Elem Nat) -> (b : Elem Nat) -> (ha : Pro
 Nat__prod_pow_prime_padicValNat : (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> (m : Elem Nat) -> (pr : Proof (Lt n m)) -> Proof (Eq (Finset__prod (Finset__filter (p => prime p) (Finset__range m)) (p1 => pow p1 (padicValNat p1 n))) n).
 
 (; //LEAN:Nat.prod_primeFactors_pow_factorization ;)
-Nat__prod_primeFactors_pow_factorization : (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (Eq n (Finset__prod (Nat__primeFactors n) (p => pow p (Nat__factorization__app n p)))).
+def Nat__prod_primeFactors_pow_factorization : (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (Eq n (Finset__prod (Nat__primeFactors n) (p => pow p (Nat__factorization__app n p)))) :=
+  n => hn => Eq__trans Nat n (Finsupp__prod (Nat__factorization n) (x => x1 => pow x x1)) (Finset__prod (Nat__primeFactors n) (p => pow p (Nat__factorization__app n p))) (Eq__symm Nat (Finsupp__prod (Nat__factorization n) (x2 => x3 => pow x2 x3)) n (Nat__prod_factorization_pow_eq_self n hn)) (Nat__prod_factorization_eq_prod_primeFactors n Nat (x4 => x5 => pow x4 x5)).
 
 (; //LEAN:Nat.prod_primeFactors_coe_pow_factorization ;)
 Nat__prod_primeFactors_coe_pow_factorization : (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (Eq n (Finset__prod Finset__univ (p => pow p (Nat__factorization__app n p)))).

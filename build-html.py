@@ -37,7 +37,7 @@ def source(module, d):
         while i < end and '-/' not in lines[i]:
             i += 1
         i += 1
-    if d.get('definiens'):                          # the definiens is shown too
+    if d.get('definiens') or d.get('tactics'):      # the definiens or the tactic proof too
         return '\n'.join(lines[i:end]).rstrip()
     out, depth = [], 0
     while i < end:
@@ -65,7 +65,9 @@ def source(module, d):
 
 def justification_html(j, where, here):
     """The rule of a step, \\texttt{Nat\\_\\_Prime\\_\\_ne\\_zero} 2, 3: its Lean name,
-    linked to its entry where it has one."""
+    linked to its entry where it has one; in a tactic proof, the tactic."""
+    if j.startswith('TACTIC:'):
+        return '<code>%s</code>' % html.escape(j[len('TACTIC:'):])
     def one(mt):
         dk = mt.group(1).replace('\\_', '_')
         lean = dk.replace('__', '.')

@@ -1,0 +1,977 @@
+[
+ {
+  "name": "Nat__Prime__eq_one_or_self_of_dvd",
+  "lean": "Nat.Prime.eq_one_or_self_of_dvd",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "hn",
+      "Proof (Eq p (times m n))"
+     ]
+    ],
+    "by": "obtain ⟨n, hn⟩ := hm"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(or (IsUnit m) (IsUnit n))",
+    "by": "have := pp.isUnit_or_isUnit hn"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(or (Eq m 1) (Eq n 1))",
+    "by": "rw [Nat.isUnit_iff, Nat.isUnit_iff] at this"
+   },
+   {
+    "unit": "enough",
+    "prop": "if (Eq n 1) (Eq m p)",
+    "by": "apply Or.imp_right _ this"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "_h",
+      "Proof (Eq n 1)"
+     ]
+    ],
+    "by": "rintro rfl"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq m p",
+    "by": "rw [hn, mul_one]"
+   }
+  ]
+ },
+ {
+  "name": "Nat__prime_def",
+  "lean": "Nat.prime_def",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (and (Leq 2 p) (forall Nat (m => if (divide m p) (or (Eq m 1) (Eq m p)))))"
+     ]
+    ],
+    "by": "refine ⟨fun h => ⟨h.two_le, h.eq_one_or_self_of_dvd⟩, fun h => ?_⟩"
+   },
+   {
+    "unit": "enough",
+    "prop": "prime p",
+    "by": "refine ⟨fun h => ⟨h.two_le, h.eq_one_or_self_of_dvd⟩, fun h => ?_⟩"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt 1 p)",
+    "by": "have h1 := Nat.one_lt_two.trans_le h.1"
+   },
+   {
+    "unit": "enough",
+    "prop": "forall Nat (a => forall Nat (b => if (Eq p (times a b)) (or (IsUnit a) (IsUnit b))))",
+    "by": "refine ⟨mt Nat.isUnit_iff.mp h1.ne', ?_⟩"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "a",
+      "Elem Nat"
+     ],
+     [
+      "b",
+      "Elem Nat"
+     ]
+    ],
+    "by": "rintro a b rfl"
+   },
+   {
+    "unit": "enough",
+    "prop": "or (Eq a 1) (Eq b 1)",
+    "by": "simp only [Nat.isUnit_iff]"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hab",
+      "Proof (Eq a (times a b))"
+     ]
+    ],
+    "by": "refine (h.2 a <| dvd_mul_right ..).imp_right fun hab ↦ ?_"
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq b 1",
+    "by": "refine (h.2 a <| dvd_mul_right ..).imp_right fun hab ↦ ?_"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq b 1",
+    "by": "rw [← mul_right_inj' (Nat.ne_zero_of_lt h1), ← hab, ← hab, mul_one]"
+   }
+  ]
+ },
+ {
+  "name": "Nat__prime_def_lt'",
+  "lean": "Nat.prime_def_lt'",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Lt 1 2",
+    "by": "decide"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (if (Leq 2 m) (if (Lt m p) (not (divide m p))))"
+     ]
+    ],
+    "by": ""
+   },
+   {
+    "unit": "cases",
+    "by": "rcases m with (_ | _ | m)"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (if (Leq 2 0) (if (Lt 0 p) (not (divide 0 p))))"
+     ],
+     [
+      "l",
+      "Proof (Lt 0 p)"
+     ],
+     [
+      "d",
+      "Proof (divide 0 p)"
+     ]
+    ],
+    "by": ""
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq 0 1",
+    "by": "omega"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (if (Leq 2 (plus 0 1)) (if (Lt (plus 0 1) p) (not (divide (plus 0 1) p))))"
+     ],
+     [
+      "l",
+      "Proof (Lt (plus 0 1) p)"
+     ],
+     [
+      "d",
+      "Proof (divide (plus 0 1) p)"
+     ]
+    ],
+    "by": ""
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (plus 0 1) 1",
+    "by": "rfl"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (if (Leq 2 (plus (plus m 1) 1)) (if (Lt (plus (plus m 1) 1) p) (not (divide (plus (plus m 1) 1) p))))"
+     ],
+     [
+      "l",
+      "Proof (Lt (plus (plus m 1) 1) p)"
+     ],
+     [
+      "d",
+      "Proof (divide (plus (plus m 1) 1) p)"
+     ]
+    ],
+    "by": ""
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (plus (plus m 1) 1) 1",
+    "by": "exact (h (le_add_left 2 m) l).elim d"
+   }
+  ]
+ },
+ {
+  "name": "Nat__prime_def_le_sqrt",
+  "lean": "Nat.prime_def_le_sqrt",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "rcases le_sqrt_of_eq_mul e with hm | hk"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hm",
+      "Proof (Leq m (Nat__sqrt p))"
+     ]
+    ],
+    "by": ""
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exact a m m2 hm mdvd"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hk",
+      "Proof (Leq k (Nat__sqrt p))"
+     ]
+    ],
+    "by": ""
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eq p (times k m))",
+    "by": "rw [mul_comm] at e"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exact a k (Nat.lt_of_mul_lt_mul_right (a := m) (by rwa [one_mul, ← e])) hk ⟨m, e⟩"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (times 1 m) (times k m)",
+    "by": "rwa [one_mul, ← e]"
+   }
+  ]
+ },
+ {
+  "name": "Nat__prime_iff_not_exists_mul_eq",
+  "lean": "Nat.prime_iff_not_exists_mul_eq",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (prime p) (and (Leq 2 p) (forall Nat (m => forall Nat (n => if (Lt m p) (if (Lt n p) (Neq (times m n) p))))))",
+    "by": "push Not"
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (and (Leq 2 p) (forall Nat (m => if (Lt m p) (forall Nat (x => if (Eq p (times m x)) (Eq m 1)))))) (and (Leq 2 p) (forall Nat (m1 => forall Nat (n => if (Lt m1 p) (if (Lt n p) (Neq (times m1 n) p))))))",
+    "by": "simp_rw [prime_def_lt, dvd_def, exists_imp]"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hp",
+      "Proof (Leq 2 p)"
+     ],
+     [
+      "m",
+      "Elem Nat"
+     ],
+     [
+      "h",
+      "Proof (Lt m p)"
+     ]
+    ],
+    "by": "refine and_congr_right fun hp ↦ forall_congr' fun m ↦ (forall_congr' fun h ↦ ?_).trans forall_comm"
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (forall Nat (x => if (Eq p (times m x)) (Eq m 1))) (forall Nat (b => if (Lt b p) (Neq (times m b) p)))",
+    "by": "refine and_congr_right fun hp ↦ forall_congr' fun m ↦ (forall_congr' fun h ↦ ?_).trans forall_comm"
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (forall Nat (x => if (Eq p (times m x)) (Eq m 1))) (forall Nat (b => if (Eq p (times m b)) (Leq p b)))",
+    "by": "simp_rw [Ne, forall_comm (β := _ = _), eq_comm, imp_false, not_lt]"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "hpn",
+      "Proof (Leq p n)"
+     ]
+    ],
+    "by": "refine forall₂_congr fun n hp ↦ ⟨by simp_all, fun hpn ↦ ?_⟩"
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq m 1",
+    "by": "refine forall₂_congr fun n hp ↦ ⟨by simp_all, fun hpn ↦ ?_⟩"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (Eq m 1) (Leq p n)",
+    "by": "simp_all"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(and (Neq m 0) (Neq n 0))",
+    "by": "have := mul_ne_zero_iff.mp (hp ▸ show p ≠ 0 by lia)"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Neq p 0",
+    "by": "lia"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq m 1",
+    "by": "exact (Nat.mul_eq_right (by lia)).mp"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Neq n 0",
+    "by": "lia"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt 0 m",
+    "by": "lia"
+   }
+  ]
+ },
+ {
+  "name": "Nat__prime_of_coprime",
+  "lean": "Nat.prime_of_coprime",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "m",
+      "Elem Nat"
+     ],
+     [
+      "mlt",
+      "Proof (Lt m n)"
+     ],
+     [
+      "mdvd",
+      "Proof (divide m n)"
+     ]
+    ],
+    "by": "refine prime_def_lt.mpr ⟨h1, fun m mlt mdvd => ?_⟩"
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq m 1",
+    "by": "refine prime_def_lt.mpr ⟨h1, fun m mlt mdvd => ?_⟩"
+   },
+   {
+    "unit": "verify",
+    "prop": "(Neq m 0)",
+    "by": "have hm : m ≠ 0"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eq n 0)",
+    "by": "rw [zero_dvd_iff] at mdvd"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exact mlt.ne' mdvd"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq m 1",
+    "by": "exact (h m mlt hm).symm.eq_one_of_dvd mdvd"
+   }
+  ]
+ },
+ {
+  "name": "Nat__prime_two",
+  "lean": "Nat.prime_two",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "prime 2",
+    "by": "decide"
+   }
+  ]
+ },
+ {
+  "name": "Nat__prime_three",
+  "lean": "Nat.prime_three",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "prime 3",
+    "by": "decide"
+   }
+  ]
+ },
+ {
+  "name": "Nat__prime_five",
+  "lean": "Nat.prime_five",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "prime 5",
+    "by": "decide"
+   }
+  ]
+ },
+ {
+  "name": "Nat__prime_seven",
+  "lean": "Nat.prime_seven",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "prime 7",
+    "by": "decide"
+   }
+  ]
+ },
+ {
+  "name": "Nat__prime_eleven",
+  "lean": "Nat.prime_eleven",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "prime ((nn 1 (nd 1)))",
+    "by": "decide"
+   }
+  ]
+ },
+ {
+  "name": "Nat__minFac_one",
+  "lean": "Nat.minFac_one",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__minFac 1) 1",
+    "by": "simp [minFac, minFacAux]"
+   }
+  ]
+ },
+ {
+  "name": "Nat__minFac_two",
+  "lean": "Nat.minFac_two",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__minFac 2) 2",
+    "by": "simp [minFac]"
+   }
+  ]
+ },
+ {
+  "name": "Nat__minFac_dvd",
+  "lean": "Nat.minFac_dvd",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "divide (Nat__minFac n) n",
+    "by": "simp [n1]"
+   }
+  ]
+ },
+ {
+  "name": "Nat__minFac_prime_iff",
+  "lean": "Nat.minFac_prime_iff",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "if (prime (Nat__minFac n)) (Neq n 1)",
+    "by": "refine ⟨?_, minFac_prime⟩"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (prime (Nat__minFac 1))"
+     ]
+    ],
+    "by": "rintro h rfl"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "simp only [minFac_one, not_prime_one] at h"
+   }
+  ]
+ },
+ {
+  "name": "Nat__minFac_le_of_dvd",
+  "lean": "Nat.minFac_le_of_dvd",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "by_cases n1 : n = 1"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n1",
+      "Proof (Eq n 1)"
+     ]
+    ],
+    "by": ""
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (Leq 2 m') (if (divide m' n) (Leq (Nat__minFac n) m'))",
+    "by": "exact fun m2 _ => n1.symm ▸ le_trans (by simp) m2"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "m2",
+      "Proof (Leq 2 m')"
+     ]
+    ],
+    "by": ""
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__minFac 1) 2",
+    "by": "simp"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n1",
+      "Proof (not (Eq n 1))"
+     ]
+    ],
+    "by": ""
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (Leq 2 m') (if (divide m' n) (Leq (Nat__minFac n) m'))",
+    "by": "apply (minFac_has_prop n1).2.2"
+   }
+  ]
+ },
+ {
+  "name": "Nat__minFac_pos",
+  "lean": "Nat.minFac_pos",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "by_cases n1 : n = 1"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n1",
+      "Proof (Eq n 1)"
+     ]
+    ],
+    "by": ""
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt 0 (Nat__minFac n)",
+    "by": "simp [n1]"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n1",
+      "Proof (not (Eq n 1))"
+     ]
+    ],
+    "by": ""
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt 0 (Nat__minFac n)",
+    "by": "exact (minFac_prime n1).pos"
+   }
+  ]
+ },
+ {
+  "name": "Nat__le_minFac",
+  "lean": "Nat.le_minFac",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "_h",
+      "Proof (Eq n 1)"
+     ]
+    ],
+    "by": "rintro rfl"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq m p",
+    "by": "cases pp.not_dvd_one d"
+   }
+  ]
+ },
+ {
+  "name": "Nat__le_minFac'",
+  "lean": "Nat.le_minFac'",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "_h",
+      "Proof (Eq n 1)"
+     ]
+    ],
+    "by": "rintro rfl"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq m p",
+    "by": "cases not_le_of_gt pp (le_of_dvd (by decide) d)"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt 0 1",
+    "by": "decide"
+   }
+  ]
+ },
+ {
+  "name": "Nat__decidablePrime_csimp",
+  "lean": "Nat.decidablePrime_csimp",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt ((p : Elem Nat) -> Decidable (prime p)) Nat__decidablePrime Nat__decidablePrime'",
+    "by": "subsingleton"
+   }
+  ]
+ },
+ {
+  "name": "Nat__minFac_le_div",
+  "lean": "Nat.minFac_le_div",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "not (Lt 0 0)",
+    "by": "rw [h0, mul_zero]"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "not (Lt 0 0)",
+    "by": "decide"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h1",
+      "Proof (Eq n (times (Nat__minFac n) 1))"
+     ]
+    ],
+    "by": ""
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eq n (Nat__minFac n))",
+    "by": "rw [mul_one] at h1"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt n 2)",
+    "by": "rw [prime_def_minFac, not_and_or, ← h1, eq_self_iff_true, _root_.not_true, _root_.or_false,"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__minFac n) (div n (Nat__minFac n))",
+    "by": "rw [le_antisymm (le_of_lt_succ np) (succ_le_of_lt pos), minFac_one, Nat.div_one]"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem Nat"
+     ],
+     [
+      "hx",
+      "Proof (Eq n (times (Nat__minFac n) (plus x 2)))"
+     ]
+    ],
+    "by": ""
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (Nat__minFac n) (div (times (Nat__minFac n) (plus x 2)) (Nat__minFac n))",
+    "by": "conv_rhs =>"
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (Nat__minFac n) (plus x 2)",
+    "by": "rw [Nat.mul_div_cancel_left _ (minFac_pos _)]"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__minFac n) (plus x 2)",
+    "by": "exact minFac_le_of_dvd (le_add_left 2 x) ⟨minFac n, by rwa [mul_comm]⟩"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq n (times (plus x 2) (Nat__minFac n))",
+    "by": "rwa [mul_comm]"
+   }
+  ]
+ },
+ {
+  "name": "Nat__minFac_eq_one_iff",
+  "lean": "Nat.minFac_eq_one_iff",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "and (if (Eq (Nat__minFac n) 1) (Eq n 1)) (if (Eq n 1) (Eq (Nat__minFac n) 1))",
+    "by": "constructor"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Eq (Nat__minFac n) 1)"
+     ]
+    ],
+    "by": "intro h"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hn",
+      "Proof (not (Eq n 1))"
+     ]
+    ],
+    "by": "by_contra hn"
+   },
+   {
+    "unit": "enough",
+    "prop": "false",
+    "by": "by_contra hn"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(prime (Nat__minFac n))",
+    "by": "have := minFac_prime hn"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(prime 1)",
+    "by": "rw [h] at this"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exact not_prime_one this"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "_h",
+      "Proof (Eq n 1)"
+     ]
+    ],
+    "by": "rintro rfl"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__minFac 1) 1",
+    "by": "simp [minFac, minFacAux]"
+   }
+  ]
+ },
+ {
+  "name": "Nat__minFac_eq_two_iff",
+  "lean": "Nat.minFac_eq_two_iff",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "and (if (Eq (Nat__minFac n) 2) (divide 2 n)) (if (divide 2 n) (Eq (Nat__minFac n) 2))",
+    "by": "constructor"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Eq (Nat__minFac n) 2)"
+     ]
+    ],
+    "by": "intro h"
+   },
+   {
+    "unit": "enough",
+    "prop": "divide (Nat__minFac n) n",
+    "by": "rw [← h]"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (Nat__minFac n) n",
+    "by": "exact minFac_dvd n"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (divide 2 n)"
+     ]
+    ],
+    "by": "intro h"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Leq (Nat__minFac n) 2)",
+    "by": "have ub := minFac_le_of_dvd (le_refl 2) h"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt 0 (Nat__minFac n))",
+    "by": "have lb := minFac_pos n"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h'",
+      "Proof (Lt (Nat__minFac n) 2)"
+     ]
+    ],
+    "by": "refine ub.eq_or_lt.resolve_right fun h' => ?_"
+   },
+   {
+    "unit": "enough",
+    "prop": "false",
+    "by": "refine ub.eq_or_lt.resolve_right fun h' => ?_"
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (Nat__minFac n) 1",
+    "by": "suffices n.minFac = 1 by simp_all"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "this",
+      "Proof (Eq (Nat__minFac n) 1)"
+     ]
+    ],
+    "by": ""
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "simp_all"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__minFac n) 1",
+    "by": "exact (le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')).symm"
+   }
+  ]
+ },
+ {
+  "name": "Nat__coprime_of_dvd",
+  "lean": "Nat.coprime_of_dvd",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eq (gcd m n) 1",
+    "by": "rw [coprime_iff_gcd_eq_one]"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "g2",
+      "Proof (not (Eq (gcd m n) 1))"
+     ]
+    ],
+    "by": "by_contra g2"
+   },
+   {
+    "unit": "enough",
+    "prop": "false",
+    "by": "by_contra g2"
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "p",
+      "Elem Nat"
+     ],
+     [
+      "hp",
+      "Proof (prime p)"
+     ],
+     [
+      "hpdvd",
+      "Proof (divide p (gcd m n))"
+     ]
+    ],
+    "by": "obtain ⟨p, hp, hpdvd⟩ := exists_prime_and_dvd g2"
+   },
+   {
+    "unit": "enough",
+    "prop": "and (divide (gcd m n) m) (divide (gcd m n) n)",
+    "by": "apply H p hp <;> apply dvd_trans hpdvd"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (gcd m n) m",
+    "by": "exact gcd_dvd_left _ _"
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (gcd m n) n",
+    "by": "exact gcd_dvd_right _ _"
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__coprime_iff_not_dvd",
+  "lean": "Nat.Prime.coprime_iff_not_dvd",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "divide p (times n 1)",
+    "by": "simp [d]"
+   }
+  ]
+ }
+]

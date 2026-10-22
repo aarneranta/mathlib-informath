@@ -488,12 +488,103 @@ def exportModule (env : Environment) (mapping : Std.HashMap Name String)
   IO.FS.writeFile s!"out/{mod}.json" ("[\n" ++ ",\n".intercalate json.toList ++ "\n]\n")
   IO.println s!"{mod}: {decls.length} declarations -> out/{mod}.dk, out/{mod}.json; {used.size} constants used"
 
+
+/-! ## Tactic proofs
+
+`lake exe export --tactics <Module>` elaborates the module again from its
+source with info trees, and writes out/<Module>-tactics.json: for each step of
+a tactic proof (a tactic of a tactic sequence, written in the source), its
+position and text, the main goal before it and the goals after it, each with
+its hypotheses and target translated to Dedukti. -/
+
+open Lean.Elab in
+/-- The goal as JSON: its hypotheses (name and Dedukti type) and target. -/
+def goalJson (ci : ContextInfo) (mctx : MetavarContext) (g : MVarId)
+    (mapping : Std.HashMap Name String) (keepAll binders : Std.HashSet Name) : IO String := do
+  let act : MetaM String := do
+    let decl ← g.getDecl
+    withLCtx decl.lctx decl.localInstances do
+      let m : M String := do
+        let mut hs := #[]
+        for d in decl.lctx do
+          if d.isImplementationDetail then continue
+          let nm := d.userName.eraseMacroScopes.toString (escape := false)
+          let ty ← hypoType (← instantiateMVars d.type)
+          hs := hs.push s!"[{jsonStr nm}, {jsonStr ty}, {if d.userName.hasMacroScopes then "true" else "false"}]"
+        let tgt ← tr (← instantiateMVars decl.type)
+        return s!"\{\"hyps\": [{", ".intercalate hs.toList}], \"target\": {jsonStr tgt}}"
+      m.run' {mapping, binders, keepAll, proofMode := true}
+  try
+    ({ ci with mctx := mctx }).runMetaM decl0 act
+  catch e => return s!"\{\"error\": {jsonStr (toString e)}}"
+where decl0 : LocalContext := {}
+
+def seqKinds : List Name :=
+  [``Lean.Parser.Tactic.tacticSeq, ``Lean.Parser.Tactic.tacticSeq1Indented,
+   ``Lean.Parser.Tactic.tacticSeqBracketed]
+
+open Lean.Elab in
+/-- The steps of the tactic proofs in an info tree: the tactics directly
+inside a tactic sequence, written in the source (not made by a macro). -/
+partial def tacticSteps (ctx? : Option ContextInfo) (inSeq : Bool) :
+    InfoTree → StateT (Array (ContextInfo × TacticInfo)) IO Unit
+  | .context pci t => tacticSteps (pci.mergeIntoOuter? ctx?) inSeq t
+  | .node i cs => do
+    match i with
+    | .ofTacticInfo ti =>
+      if seqKinds.contains ti.stx.getKind then
+        cs.forM (tacticSteps ctx? true)
+      else
+        if inSeq && (ti.stx.getPos? (canonicalOnly := true)).isSome then
+          if let some ci := ctx? then modify (·.push (ci, ti))
+        cs.forM (tacticSteps ctx? false)
+    | _ => cs.forM (tacticSteps ctx? inSeq)
+  | .hole _ => pure ()
+
+open Lean.Elab in
+def exportTactics (mod : Name) (mapping : Std.HashMap Name String)
+    (keepAll binders : Std.HashSet Name) : IO Unit := do
+  let mathlib := (← IO.getEnv "MATHLIB").getD "../mathlib4"
+  let path : System.FilePath := mathlib ++ "/" ++ (mod.toString.replace "." "/") ++ ".lean"
+  let input ← IO.FS.readFile path
+  let inputCtx := Parser.mkInputContext input path.toString
+  let (header, parserState, messages) ← Parser.parseHeader inputCtx
+  let (env, messages) ← processHeader header {} messages inputCtx
+  let cmdState := { Command.mkState env messages {} with infoState := { enabled := true } }
+  let s ← IO.processCommands inputCtx parserState cmdState
+  let fileMap := inputCtx.fileMap
+  let mut out := #[]
+  for t in s.commandState.infoState.trees do
+    let ((), steps) ← (tacticSteps none false t).run #[]
+    for (ci, ti) in steps do
+      let some pos := ti.stx.getPos? (canonicalOnly := true) | continue
+      let endPos := (ti.stx.getTailPos? (canonicalOnly := true)).getD pos
+      let p := fileMap.toPosition pos
+      let e := fileMap.toPosition endPos
+      let text := (String.Pos.Raw.extract input pos endPos)
+      let before ← match ti.goalsBefore with
+        | g :: _ => goalJson ci ti.mctxBefore g mapping keepAll binders
+        | [] => pure "null"
+      let mut after := #[]
+      for g in ti.goalsAfter do
+        after := after.push (← goalJson ci ti.mctxAfter g mapping keepAll binders)
+      out := out.push s!"\{\"line\": {p.line}, \"col\": {p.column}, \"endLine\": {e.line}, \"kind\": {jsonStr ti.stx.getKind.toString}, \"nBefore\": {ti.goalsBefore.length}, \"tactic\": {jsonStr text}, \"before\": {before}, \"after\": [{", ".intercalate after.toList}]}"
+  IO.FS.createDirAll "out"
+  IO.FS.writeFile s!"out/{mod}-tactics.json" ("[\n" ++ ",\n".intercalate out.toList ++ "\n]\n")
+  IO.println s!"{mod}: {out.size} tactic steps -> out/{mod}-tactics.json"
+
 unsafe def main (args : List String) : IO UInt32 := do
   if args.isEmpty then
     IO.eprintln "usage: lake exe export <Module> ..."
     return 1
   initSearchPath (← findSysroot)
   enableInitializersExecution
+  if args.head? == some "--tactics" then
+    let (mapping, keepAll) ← readMapping
+    let binders ← readBinders
+    for m in args.tail.map String.toName do
+      exportTactics m mapping keepAll binders
+    return 0
   let mods := args.map String.toName
   let env ← importModules (mods.map fun m => { module := m }).toArray {} (loadExts := true)
   let (mapping, keepAll) ← readMapping

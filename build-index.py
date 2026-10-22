@@ -6,6 +6,7 @@ build-html.py makes the pages from it.
 
     lake exe export $(grep -v '^#' modules.txt)   # -> out/<Module>.dk, .json, -deps.dk
     python3 build-index.py                        # -> index.json
+    python3 build-index.py --reuse-slow           # the same, German taken from index.json
     python3 build-html.py                         # -> mathlib-informath.html, pages/*.html
 
 RunInformath loads its grammar of English and French (share/InformathFull.pgf)
@@ -31,6 +32,7 @@ FAST_LANGUAGES = [l for l in LANGUAGES if l not in SLOW_LANGUAGES]
 PER_ITEM = 1
 CHUNK = 12
 PROOF_TIMEOUT = 300               # seconds for one call of -proof-text in the fast languages
+TACTIC_LANGUAGES = ['Eng']        # the languages of the proof texts of tactic proofs, so far
 TMP = '.index-'                   # prefix of the temporary files
 
 
@@ -365,8 +367,12 @@ def main():
     # the slow languages statement by statement, the statements without proofs
     stmt_blocks = dk_blocks(all_stmts)
     sblocks = {d['lean']: (d['dk'], stmt_blocks[d['lean']]) for d in decls if d['lean'] in stmt_blocks}
-    timed_out, loads = {}, {lang: load_time(lang) for lang in SLOW_LANGUAGES}
-    for lang in SLOW_LANGUAGES:
+    # --reuse-slow: the slow languages' readings, proofs and time-outs as they
+    # are in the existing index, which saves their many calls
+    reuse = '--reuse-slow' in sys.argv[1:] and os.path.exists(INDEX)
+    old = {d['lean']: d for d in json.load(open(INDEX))['declarations']} if reuse else {}
+    timed_out, loads = {}, {lang: (0 if reuse else load_time(lang)) for lang in SLOW_LANGUAGES}
+    for lang in ([] if reuse else SLOW_LANGUAGES):
         got, given_up = slow_readings(sblocks, list(sblocks), verbal, lang, loads[lang])
         for n, t in got.items():
             texts[n][lang] = t
@@ -375,7 +381,15 @@ def main():
     # a declaration without a reading is read with -force-symbolic, which writes
     # \mathrm{c}(...) where a constant has no form that fits
     forced = {}
-    for modes in [FAST_LANGUAGES, ['formula']] + [[lang] for lang in SLOW_LANGUAGES]:
+    for n, d in old.items():
+        if n in texts:
+            for lang in SLOW_LANGUAGES:
+                if d['readings'].get(lang):
+                    texts[n][lang] = d['readings'][lang]
+            timed_out[n] = [t for t in d.get('timedOut', []) if t.split()[0] in SLOW_LANGUAGES]
+            if not timed_out[n]:
+                del timed_out[n]
+    for modes in [FAST_LANGUAGES, ['formula']] + [[lang] for lang in ([] if reuse else SLOW_LANGUAGES)]:
         missing = [d for d in decls if d['lean'] in blocks and any(not texts[d['lean']].get(k) for k in modes)
                    and not any(k in timed_out.get(d['lean'], []) for k in modes)]
         if not missing:
@@ -403,12 +417,35 @@ def main():
     proof_base = write('proof-base.dk', '\n'.join(base) + '\n')
     texts_of_proofs, failed = proof_texts(proof_base, [blocks[d['lean']] for d in proved], FAST_LANGUAGES)
     proofs = {d['lean']: p for d, p in zip(proved, texts_of_proofs) if p}
-    for lang in SLOW_LANGUAGES:
+    for n, p in proofs.items():
+        for lang in SLOW_LANGUAGES:
+            if reuse and (old.get(n, {}).get('proof') or {}).get(lang):
+                p[lang] = old[n]['proof'][lang]
+    for lang in ([] if reuse else SLOW_LANGUAGES):
         got, given_up = slow_proofs(proof_base, {n: blocks[n] for n in proofs}, list(proofs), lang, loads[lang])
         for n, rows_ in got.items():
             proofs[n][lang] = rows_
         for n in given_up:
             timed_out.setdefault(n, []).append(lang + ' proof')
+
+    # the tactic proofs of the modules exported with lake exe export --tactics:
+    # their steps as proof units (tactic-units.py), read by -tactic-proof
+    tactic_by = {}
+    for m in modules:
+        if not os.path.exists('out/%s-tactics.json' % m):
+            continue
+        subprocess.run([sys.executable, 'tactic-units.py', m], check=True, capture_output=True)
+        units_file = 'out/%s-tactic-units.json' % m
+        units = json.load(open(units_file))
+        r = subprocess.run([RUN, '-tactic-proof', '-languages=' + ','.join(TACTIC_LANGUAGES),
+                            '-add-symboltables=' + TABLE, units_file], capture_output=True, text=True)
+        tactic_texts = proof_tables(r.stdout, TACTIC_LANGUAGES)
+        for p, t in zip(units, tactic_texts):
+            # the justification is the tactic as written, for the page to show as code
+            for lang in t:
+                t[lang] = [[n, text, 'TACTIC:' + u['by']] for (n, text, _), u in zip(t[lang], p['steps'])]
+            proofs[p['lean']] = t
+            tactic_by[p['lean']] = True
 
     commit = lambda path: subprocess.run(['git', '-C', path, 'rev-parse', 'HEAD'],
                                          capture_output=True, text=True).stdout.strip()
@@ -421,7 +458,7 @@ def main():
         'proofsFailed': [proved[i]['lean'] for i in failed],
         'declarations': [dict(d, dedukti=blocks.get(d['lean']), readings=texts[d['lean']],
                               forced=forced.get(d['lean'], []), proof=proofs.get(d['lean']),
-                              timedOut=timed_out.get(d['lean'], []))
+                              timedOut=timed_out.get(d['lean'], []), tactics=d['lean'] in tactic_by)
                          for d in decls],
     }
     json.dump(index, open(INDEX, 'w'), ensure_ascii=False, indent=1)
@@ -437,8 +474,8 @@ def main():
     for lang in SLOW_LANGUAGES:
         r = [n for n, ls in timed_out.items() if lang in ls]
         p = [n for n, ls in timed_out.items() if lang + ' proof' in ls]
-        print('%s over %d s per item (loading %.1f s): %d readings, %d proofs left out: %s'
-              % (lang, PER_ITEM, loads[lang], len(r), len(p), ' '.join(r + p)))
+        print('%s%s over %d s per item: %d readings, %d proofs left out: %s'
+              % (lang, ' (reused)' if reuse else '', PER_ITEM, len(r), len(p), ' '.join(r + p)))
 
 
 if __name__ == '__main__':

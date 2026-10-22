@@ -34,6 +34,7 @@ that the prime numbers import (`Group/Nat/Units`, `Prime/Defs`),
 | `build-index.py` | builds `index.json`: for each declaration its Dedukti, its readings (English, French, Czech, German, formula) and proof texts, made by RunInformath in a few calls |
 | `index.json` | the index, from which the pages are made |
 | `build-html.py` | builds `mathlib-informath.html` and `pages/*.html` from `index.json` |
+| `tactic-units.py` | the steps of a module's tactic proofs as proof units, for `RunInformath -tactic-proof` |
 
 The translation keeps the explicit arguments of Lean's constants and drops the
 implicit and instance ones, turns type class assumptions such as `[CommMonoid M]`
@@ -54,6 +55,17 @@ rules the rules of `nd.dk` (`mapping.tsv`, third column `all`), and Mathlib
 lemmas keep their arguments but for type class instances. The proofs are
 written out by `RunInformath -proof-text`. A definiens with compiled pattern
 matching (`match_` functions, recursors) is not translated.
+
+A theorem proved by tactics (`:= by ...`) gets its proof text from the steps
+of the tactic proof, so far for the modules exported with `--tactics`
+(`Mathlib.Data.Nat.Prime.Defs`) and in English. `lake exe export --tactics`
+elaborates the module again from its source and writes, for each tactic of a
+tactic sequence, the goals before and after it in Dedukti
+(`out/<Module>-tactics.json`); `tactic-units.py` compares them and makes proof
+units: assumptions ("Assume that $n = 1$"), new variables and facts ("Let $n$ be
+an element of $\mathbb{N}$ such that $p = m \times n$"), closed goals, and what
+is enough to show ("It is enough to show that ..."); `RunInformath
+-tactic-proof` writes them out, each with its tactic as the justification.
 
 A statement that gets no reading with the symbol table is read again with
 `-force-symbolic`, and marked so on the page: this happens where a proposition
@@ -80,6 +92,7 @@ limit split in halves down to the slow statements, which get no German.
 
     lake build                                # the exporter
     lake exe export $(grep -v '^#' modules.txt)        # -> out/
+    lake exe export --tactics Mathlib.Data.Nat.Prime.Defs   # -> out/<Module>-tactics.json
     python3 build-index.py                    # -> index.json (15 minutes, German)
     python3 build-html.py                     # -> mathlib-informath.html, pages/
 

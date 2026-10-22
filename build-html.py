@@ -2,8 +2,8 @@
 """Build mathlib-informath.html, a table of contents, and pages/<Part>.html,
 one page for each part of Mathlib in modules.txt, from index.json (made by
 build-index.py): each exported Mathlib statement with its Lean source, its
-Dedukti translation, and Informath's informalization in English, in French
-and as a formula, rendered by MathJax, and the proof texts of the theorems.
+Dedukti translation, and Informath's informalization in English, French,
+Czech and as a formula, rendered by MathJax, and the proof texts of the theorems.
 
     lake exe export $(grep -v '^#' modules.txt)     # -> out/<Module>.dk, .json, -deps.dk
     python3 build-index.py                  # -> index.json
@@ -20,7 +20,8 @@ MATHLIB = os.environ.get('MATHLIB', os.path.join(os.path.dirname(os.path.abspath
 GITHUB = 'https://github.com/leanprover-community/mathlib4/blob/%s/%s#L%d'
 OUT = 'mathlib-informath.html'
 INDEX = 'index.json'
-LANGUAGE_NAMES = {'Eng': 'English', 'Fre': 'French'}
+LANGUAGE_NAMES = {'Eng': 'English', 'Fre': 'French', 'Cze': 'Czech'}
+SHOWN = ['Eng']     # the languages shown by default; the others are switched on in the page header
 MATHJAX = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js'
 
 
@@ -143,11 +144,40 @@ INTRO = """<p>Statements of <a href="https://github.com/leanprover-community/mat
 (commit <code>{COMMIT}</code>), each with its <b>Lean</b> source, its translation to
 <b>Dedukti</b> by <code>Export.lean</code>, and its informalization by
 <a href="https://github.com/GrammaticalFramework/informath">Informath</a>, in
-<b>English</b>, in <b>French</b> and as a <b>formula</b>. The Dedukti translation drops implicit and
+<b>English</b>, as a <b>formula</b>, and in <b>French</b> and <b>Czech</b>,
+which the check boxes above the entries show. The Dedukti translation drops implicit and
 instance arguments and maps Lean's arithmetic and logic to Informath's base
 (<code>mapping.tsv</code>); the other Mathlib constants are worded by the symbol table
-<code>mathlib.dkgf</code>, whose English wordings Informath also renders in French. Constants without a wording appear as
+<code>mathlib.dkgf</code>, whose English wordings Informath also renders in the other languages. Constants without a wording appear as
 $\\mathrm{name}$.</p>"""
+
+
+def lang_switch(languages):
+    """Check boxes for the languages hidden by default: a checked language
+    shows its rows on every page, remembered in the browser."""
+    hidden = [l for l in languages if l not in SHOWN]
+    if not hidden:
+        return ''
+    boxes = ' '.join('<label><input type=checkbox data-lang="%s"> %s</label>' % (l, LANGUAGE_NAMES[l])
+                     for l in hidden)
+    return '<div class=langs>Show also: %s</div>' % boxes
+
+
+LANG_SCRIPT = """
+<script>
+(function(){
+  function get(l){try{return localStorage.getItem('lang-'+l)==='1';}catch(e){return false;}}
+  function set(l,v){try{localStorage.setItem('lang-'+l,v?'1':'0');}catch(e){}}
+  document.querySelectorAll('.langs input').forEach(function(box){
+    var l=box.dataset.lang;
+    box.checked=get(l);
+    document.body.classList.toggle('show-'+l,box.checked);
+    box.addEventListener('change',function(){
+      document.body.classList.toggle('show-'+l,box.checked); set(l,box.checked);
+    });
+  });
+})();
+</script>"""
 
 
 def page(title, head, body, macros, extra=''):
@@ -164,9 +194,18 @@ window.MathJax = {
 <script async src="%s"></script>%s
 <style>%s</style></head><body>
 <header>%s</header>
-%s
+%s%s
 </body></html>
-""" % (html.escape(title), json.dumps(macros), MATHJAX, extra, STYLE, head, body)
+""" % (html.escape(title), json.dumps(macros), MATHJAX, extra, STYLE + lang_css(), head, body,
+       LANG_SCRIPT if 'class=langs' in head else '')
+
+
+def lang_css():
+    hidden = [l for l in LANGUAGE_NAMES if l not in SHOWN]
+    return ''.join(' .row.lang-%s{display:none}\n body.show-%s .row.lang-%s{display:grid}\n' % (l, l, l)
+                   for l in hidden) + \
+        ' .langs{position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #ddd;' \
+        'padding:.35rem 0;font-size:.9em}\n .langs label{margin-left:.8rem;cursor:pointer}\n'
 
 
 def entry_html(d, languages, commit, where):
@@ -180,25 +219,34 @@ def entry_html(d, languages, commit, where):
                   if mode in d['forced'] else '')
         return ('<div class=text>%s%s</div>' % (reading_html(t), forced) if t
                 else '<div class="text missing">no %s</div>' % what)
+    # rows: (language or None, label, content)
     rows = [
-        ('Lean', '<pre class=lean>%s</pre>' % html.escape(source(m, d))),
-        ('Dedukti', '<pre>%s</pre>' % html.escape(d['dedukti'] or '(not exported)')),
-    ] + [(LANGUAGE_NAMES[lang], text(lang, 'reading')) for lang in languages] + [
-        ('Formula', text('formula', 'formula')),
+        (None, 'Lean', '<pre class=lean>%s</pre>' % html.escape(source(m, d))),
+        (None, 'Dedukti', '<pre>%s</pre>' % html.escape(d['dedukti'] or '(not exported)')),
+    ] + [(lang, LANGUAGE_NAMES[lang], text(lang, 'reading')) for lang in languages] + [
+        (None, 'Formula', text('formula', 'formula')),
     ]
     for lang in languages:
         if d['proof'] and lang in d['proof']:
-            rows.append(('Proof' if lang == 'Eng' else 'Proof, ' + LANGUAGE_NAMES[lang],
+            rows.append((lang, 'Proof' if lang == 'Eng' else 'Proof, ' + LANGUAGE_NAMES[lang],
                          proof_html(d['proof'][lang], where, where[name])))
     return ('<div class=entry id="%s"><span class=name>%s</span><span class="k %s">%s</span>'
             '<a class=src href="%s">%s:%d</a>%s%s</div>' % (
                 html.escape(name), html.escape(name), d['kind'], d['kind'],
                 GITHUB % (commit, path, d['nameLine']), html.escape(path.split('/')[-1]), d['nameLine'],
                 '<div class=doc>%s</div>' % doc_html(d['doc']) if d['doc'] else '',
-                ''.join('<div class=row><div class=lab>%s</div><div>%s</div></div>' % r for r in rows)))
+                ''.join('<div class="row%s"><div class=lab>%s</div><div>%s</div></div>'
+                        % (' lang-' + l if l else '', lab, c) for l, lab, c in rows)))
 
 
-COV_HEAD = '<th>statements</th><th>fully worded, English</th><th>French</th>'
+def cov_head(languages):
+    return '<th>statements</th>' + ''.join(
+        '<th>fully worded, %s</th>' % LANGUAGE_NAMES[l] if i == 0 else '<th>%s</th>' % LANGUAGE_NAMES[l]
+        for i, l in enumerate(languages))
+
+
+def cov_cells(ns, tag='td'):
+    return ''.join('<%s>%d</%s>' % (tag, n, tag) for n in ns)
 
 
 def worded(text):
@@ -215,41 +263,43 @@ def main():
     page_of = {m: g for g, mods in index['pages'] for m in mods}
     # every declaration's page, for the links of the proofs
     where = {d['lean']: 'pages/%s.html' % page_of[d['module']] for d in decls}
-    rows, total = [], [0, 0, 0]
+    head_cov = cov_head(languages)
+    rows, total = [], [0] * (1 + len(languages))
     for g, mods in index['pages']:
         file = 'pages/%s.html' % g
-        body, grows, gtot = [], [], [0, 0, 0]
+        body, grows, gtot = [], [], [0] * (1 + len(languages))
         for m in mods:
             ds = [d for d in decls if d['module'] == m]
             body.append('<h2 id="%s">%s <a href="%s">source</a></h2>' % (
                 html.escape(m), html.escape(m), GITHUB % (commit, m.replace('.', '/') + '.lean', 1)))
             body += [entry_html(d, languages, commit, where) for d in ds]
-            n = len(ds)
-            w, wf = [sum(worded(d['readings'].get(lang)) for d in ds) for lang in ('Eng', 'Fre')]
-            grows.append((m, n, w, wf))
-            gtot = [a + b for a, b in zip(gtot, (n, w, wf))]
+            ns = [len(ds)] + [sum(worded(d['readings'].get(lang)) for d in ds) for lang in languages]
+            grows.append((m, ns))
+            gtot = [a + b for a, b in zip(gtot, ns)]
         head = ('<nav><a href="../mathlib-informath.html">Mathlib informalized</a> &rsaquo; %s</nav>'
                 '<h1>%s</h1>%s' % (html.escape(g), html.escape(g), INTRO.replace('{COMMIT}', commit[:10])) +
                 '<table class=cov><tr><th>module</th>%s</tr>%s</table>'
-                % (COV_HEAD, ''.join('<tr><td><a href="#%s">%s</a></td><td>%d</td><td>%d</td><td>%d</td></tr>'
-                                     % (html.escape(m), html.escape(m), n, w, wf) for m, n, w, wf in grows)))
+                % (head_cov, ''.join('<tr><td><a href="#%s">%s</a></td>%s</tr>'
+                                     % (html.escape(m), html.escape(m), cov_cells(ns)) for m, ns in grows)) +
+                lang_switch(languages))
         open(file, 'w').write(page(g + ' informalized', head, '\n'.join(body), ms))
-        rows.append('<tr class=group><td><a href="%s">%s</a></td><td>%d</td><td>%d</td><td>%d</td></tr>'
-                    % ((file, html.escape(g)) + tuple(gtot)))
-        rows += ['<tr><td>&nbsp;&nbsp;<a href="%s#%s">%s</a></td><td>%d</td><td>%d</td><td>%d</td></tr>'
-                 % (file, html.escape(m), html.escape(m[len(g) + 1:]), n, w, wf) for m, n, w, wf in grows]
+        rows.append('<tr class=group><td><a href="%s">%s</a></td>%s</tr>' % (file, html.escape(g), cov_cells(gtot)))
+        rows += ['<tr><td>&nbsp;&nbsp;<a href="%s#%s">%s</a></td>%s</tr>'
+                 % (file, html.escape(m), html.escape(m[len(g) + 1:]), cov_cells(ns)) for m, ns in grows]
         total = [a + b for a, b in zip(total, gtot)]
-        print('%s: %d statements, %d fully worded in English, %d in French -> %s' % ((g,) + tuple(gtot) + (file,)))
-    toc = ('<table class=cov><tr><th>part of Mathlib</th>%s</tr>%s'
-           '<tr><th>all</th><th>%d</th><th>%d</th><th>%d</th></tr></table>' % ((COV_HEAD, ''.join(rows)) + tuple(total)))
+        print('%s: %d statements, fully worded: %s -> %s' % (
+            g, gtot[0], ', '.join('%d %s' % (n, l) for n, l in zip(gtot[1:], languages)), file))
+    toc = ('<table class=cov><tr><th>part of Mathlib</th>%s</tr>%s<tr><th>all</th>%s</tr></table>'
+           % (head_cov, ''.join(rows), cov_cells(total, 'th')))
     # the declarations had anchors on this page before it was split
     forward = ('\n<script>\n(function(){var w=%s;var h=decodeURIComponent(location.hash.slice(1));'
                'if(w[h])location.replace(w[h]+"#"+encodeURIComponent(h));})();\n</script>' % json.dumps(where))
     head = '<h1>Mathlib informalized</h1>' + INTRO.replace('{COMMIT}', commit[:10]) + \
         '<p>One page for each part of Mathlib:</p>' + toc
     open(OUT, 'w').write(page('Mathlib informalized', head, '', {}, forward))
-    print('%d statements in %d modules, %d fully worded in English, %d in French -> %s and %d pages'
-          % (total[0], len(page_of), total[1], total[2], OUT, len(index['pages'])))
+    print('%d statements in %d modules, fully worded: %s -> %s and %d pages' % (
+        total[0], len(page_of), ', '.join('%d %s' % (n, l) for n, l in zip(total[1:], languages)),
+        OUT, len(index['pages'])))
 
 
 if __name__ == '__main__':

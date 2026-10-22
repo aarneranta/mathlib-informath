@@ -21,7 +21,7 @@ import difflib, glob, json, os, re, subprocess, sys
 MATHLIB = os.environ.get('MATHLIB', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'mathlib4'))
 TABLE = 'mathlib.dkgf'
 INDEX = 'index.json'
-LANGUAGES = ['Eng', 'Fre']        # the verbal readings; build-html.py shows them in this order
+LANGUAGES = ['Eng', 'Fre', 'Cze']  # the verbal readings; build-html.py shows them in this order
 PROOF_TIMEOUT = 300               # seconds for one call of -proof-text
 TMP = '.index-'                   # prefix of the temporary files
 
@@ -194,31 +194,52 @@ def formulas(dk, decls, force=False):
 def proof_texts(base, proofs):
     """Dedukti blocks of proved theorems -> language -> the rows (number,
     sentence, justification) of each proof text; a proof that Informath
-    cannot render stops its call, and the next call starts after it."""
-    out, failed, i = [], [], 0
+    cannot render stops its call, and the output buffered before the error
+    is lost, so the proofs before it may be cut off too. The next call
+    starts at the first proof without its tables; a call that gives nothing
+    is tried with its first proof alone, and only if that fails too does
+    the proof count as failed."""
+    out, failed, i, alone = [], [], 0, False
     while i < len(proofs):
-        rest = write('proofs.dk', '\n\n'.join(proofs[i:]) + '\n')
-        try:
-            r = subprocess.run([RUN, '-proof-text', '-languages=' + ','.join(LANGUAGES), '-base=' + base,
-                                '-add-symboltables=' + TABLE, rest],
-                               capture_output=True, text=True, timeout=PROOF_TIMEOUT)
-            stdout, error = r.stdout, r.returncode != 0
-        except subprocess.TimeoutExpired as e:
-            stdout, error = e.stdout or '', True
-            stdout = stdout.decode() if isinstance(stdout, bytes) else stdout
-        for sec in re.split(r'\\subsection\*', stdout)[1:]:
-            tables = re.findall(r'\\begin\{tabular\}\{[^\n]*\}\n(.*?)\\end\{tabular\}', sec, re.S)
-            if len(tables) < len(LANGUAGES):
-                break
-            out.append({lang: rows(t) for lang, t in zip(LANGUAGES, tables)})
-            i += 1
-        if not error:
+        stdout, error = call_proof_text(base, proofs[i:i + 1] if alone else proofs[i:])
+        texts = proof_tables(stdout)
+        out += texts
+        i += len(texts)
+        if alone:
+            if not texts:          # it fails alone too
+                failed.append(i)
+                out.append(None)
+                i += 1
+            alone = False
+        elif error:
+            alone = not texts      # nothing came: try the first proof alone
+        else:
             break
-        if i < len(proofs):
-            failed.append(i)
-            out.append(None)
-            i += 1
     return out, failed
+
+
+def call_proof_text(base, proofs):
+    """RunInformath -proof-text on the proofs: its output, and whether it failed."""
+    rest = write('proofs.dk', '\n\n'.join(proofs) + '\n')
+    try:
+        r = subprocess.run([RUN, '-proof-text', '-languages=' + ','.join(LANGUAGES), '-base=' + base,
+                            '-add-symboltables=' + TABLE, rest],
+                           capture_output=True, text=True, timeout=PROOF_TIMEOUT)
+        return r.stdout, r.returncode != 0
+    except subprocess.TimeoutExpired as e:
+        stdout = e.stdout or ''
+        return (stdout.decode() if isinstance(stdout, bytes) else stdout), True
+
+
+def proof_tables(stdout):
+    """The proof texts of an output, as long as each has a table in every language."""
+    out = []
+    for sec in re.split(r'\\subsection\*', stdout)[1:]:
+        tables = re.findall(r'\\begin\{tabular\}\{[^\n]*\}\n(.*?)\\end\{tabular\}', sec, re.S)
+        if len(tables) < len(LANGUAGES):
+            break
+        out.append({lang: rows(t) for lang, t in zip(LANGUAGES, tables)})
+    return out
 
 
 def rows(table):

@@ -83,9 +83,31 @@ def statements(m, decls):
     return path
 
 
+# Lean names written as notation, $\operatorname{primeFactors}(#1)$, are what
+# formulas can do; English uses the words of the entry instead
+PSEUDO = re.compile(r'\s*\|\s*\$\\operatorname\{[A-Za-z]+\}\([^$]*\)\$|\$\\operatorname\{[A-Za-z]+\}\([^$]*\)\$\s*\|\s*')
+ENGLISH_TABLE = '.html-english.dkgf'
+STANDARD = 'lcm|gcd|max|min|supp|deg|card'
+
+
+def english_table():
+    """mathlib.dkgf without the pseudo-notations of the entries that have words."""
+    if not os.path.exists(ENGLISH_TABLE):
+        out = []
+        for l in open(TABLE):
+            if not l.startswith('#') and '"' in l and '\\operatorname{' in l:
+                def drop(m):   # the operator names of mathematics are notation, not Lean
+                    return m.group(0) if re.search(r'operatorname\{(%s)\}' % STANDARD, m.group(0)) else ' | '
+                l = PSEUDO.sub(drop, l).replace('|  |', '|').rstrip(' |\n') + '\n'
+            out.append(l)
+        open(ENGLISH_TABLE, 'w').write(''.join(out))
+    return ENGLISH_TABLE
+
+
 def readings(dk, decls, blocks, symbolic):
     """Lean name -> reading, aligned with the declarations by their labels."""
-    flags = ['-add-symboltables=' + TABLE] + (['-to-symbolic-latex'] if symbolic else []) + [dk]
+    flags = ['-add-symboltables=' + (TABLE if symbolic else english_table())] + \
+        (['-to-symbolic-latex'] if symbolic else []) + [dk]
     lines = run(*flags)
     names = [d['lean'] for d in decls]
     if symbolic:
@@ -265,6 +287,14 @@ def doc_html(doc):
 
 
 def reading_html(t):
+    # a qualified constant without a form for its place in a formula,
+    # \mathrm{Nat\_\_primeFactors}, is shown as an operator, primeFactors
+    def operator(m):
+        parts = m.group(1).split('\\_\\_')
+        if parts[-1] == 'app' and len(parts) > 1:   # a constant applied as a function
+            parts = parts[:-1]
+        return '\\operatorname{%s}' % parts[-1].replace('\\_', '\\_')
+    t = re.sub(r'\\mathrm\{((?:[A-Za-z0-9\']+\\_\\_)+[A-Za-z0-9\']+)\}', operator, t)
     t = html.escape(t, quote=False)
     t = t.replace('\\begin{itemize}', '<ul>').replace('\\end{itemize}', '</ul>')
     t = re.sub(r'\\item\b\s*', '<li>', t)
@@ -431,6 +461,8 @@ def main():
     open(OUT, 'w').write(page('Mathlib informalized', head, '', {}, forward))
     print('%d statements in %d modules, %d fully worded -> %s and %d pages (RunInformath: %s)'
           % (total[0], len(modules), total[1], OUT, len(groups), RUN))
+    if os.path.exists(ENGLISH_TABLE):
+        os.remove(ENGLISH_TABLE)
     if PROOF_FAILED:
         print('%d proofs without a proof text: %s' % (len(PROOF_FAILED), ' '.join(PROOF_FAILED)))
 

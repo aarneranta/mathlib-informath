@@ -16,11 +16,19 @@ gives both languages (-json -languages=Eng,Fre), and so are the proofs
 cannot render.  The formulas are read in another call, with the English
 grammar only and the full symbol table.  RunInformath is the newest one built
 in $INFORMATH_ROOT (stack build), or the one on the PATH.
+
+The symbol table is mathlib.dkgf, written by hand, on top of definitions.dkgf,
+made by definition-table.py for all of Mathlib's definitions; the grammar must
+have the words that definition-table.py -lexicon generated (make
+full_grammar in Informath).
 """
 import difflib, glob, json, os, re, subprocess, sys, time
 
 MATHLIB = os.environ.get('MATHLIB', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'mathlib4'))
-TABLE = 'mathlib.dkgf'
+# the symbol tables, the later overriding the earlier: the generated entries of
+# all Mathlib definitions (definition-table.py) and the hand-written ones
+TABLES = ['definitions.dkgf', 'mathlib.dkgf']
+TABLE = None                      # the two in one file, written by main
 INDEX = 'index.json'
 LANGUAGES = ['Eng', 'Fre', 'Cze', 'Ger', 'Swe']  # the verbal readings; build-html.py shows them in this order
 # German linearization can take minutes on nested noun phrases (GF, RGL), so
@@ -34,6 +42,7 @@ CHUNK = 12
 PROOF_TIMEOUT = 300               # seconds for one call of -proof-text in the fast languages
 TACTIC_LANGUAGES = ['Eng', 'Fre', 'Cze', 'Ger', 'Swe']  # the languages of the proof texts of tactic proofs
 TMP = '.index-'                   # prefix of the temporary files
+OUT = 'out'                       # the directory of the exported modules
 
 
 def informath():
@@ -110,7 +119,7 @@ def statements(m, decls):
     """out/<m>.dk with the proofs of its theorems dropped (definitions keep
     their definiens): what the readings are made from, and the module's part
     of the base of the proof texts."""
-    text = open('out/%s.dk' % m).read()
+    text = open(OUT + '/%s.dk' % m).read()
     theorems = {d['dk'] for d in decls if is_theorem(d)}
 
     def one(mt):
@@ -320,7 +329,7 @@ def rows(table):
 
 def macros(modules, verbal):
     """MathJax macros: those of mathlib.dkgf's LaTeX forms, and Informath's own."""
-    base = write('base.dk', ''.join(open('out/%s-deps.dk' % m).read() + '\n' + open('out/%s.dk' % m).read() + '\n'
+    base = write('base.dk', ''.join(open(OUT + '/%s-deps.dk' % m).read() + '\n' + open(OUT + '/%s.dk' % m).read() + '\n'
                                     for m in modules))
     # the macros are numbered after their position in the table, so the verbal
     # table, which has fewer LaTeX forms, names them otherwise: both sets are needed
@@ -341,23 +350,24 @@ def macros(modules, verbal):
 # ---------------------------------------------------------------- the index
 
 def main():
-    global RUN
+    global RUN, TABLE
     RUN = informath()
+    TABLE = write('table.dkgf', ''.join(open(t).read() + '\n' for t in TABLES if os.path.exists(t)))
     modules = read_modules()
     decls, blocks, stmts, base = [], {}, [], []
     root = os.environ['INFORMATH_ROOT']
     base += [open(os.path.join(root, 'share', 'baseconstants.dk')).read(), open('nd.dk').read()]
     for m in modules:
-        ds = json.load(open('out/%s.json' % m))
+        ds = json.load(open(OUT + '/%s.json' % m))
         for d in ds:
             d['module'] = m
         decls += ds
-        blocks.update(dk_blocks('out/%s.dk' % m))
+        blocks.update(dk_blocks(OUT + '/%s.dk' % m))
         s = statements(m, ds)
         stmts.append(s)
         # the lemmas are rules without their type class instances (Export.lean
         # writes those hypotheses (_ : Proof (C x)) and drops them in proofs)
-        base += [drop_instances(open('out/%s-deps.dk' % m).read()), drop_instances(s)]
+        base += [drop_instances(open(OUT + '/%s-deps.dk' % m).read()), drop_instances(s)]
     verbal = verbal_table()
     all_stmts = write('statements.dk', '\n'.join(stmts))
 
@@ -432,10 +442,11 @@ def main():
     # their steps as proof units (tactic-units.py), read by -tactic-proof
     tactic_by = {}
     for m in modules:
-        if not os.path.exists('out/%s-tactics.json' % m):
+        if not os.path.exists(OUT + '/%s-tactics.json' % m):
             continue
-        subprocess.run([sys.executable, 'tactic-units.py', m], check=True, capture_output=True)
-        units_file = 'out/%s-tactic-units.json' % m
+        subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tactic-units.py'), m, OUT],
+                       check=True, capture_output=True)
+        units_file = OUT + '/%s-tactic-units.json' % m
         units = json.load(open(units_file))
         r = subprocess.run([RUN, '-tactic-proof', '-languages=' + ','.join(TACTIC_LANGUAGES),
                             '-add-symboltables=' + TABLE, units_file], capture_output=True, text=True)

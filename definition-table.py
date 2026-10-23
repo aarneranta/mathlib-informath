@@ -181,7 +181,8 @@ DICT = {}
 
 # words before another word in a name, as modifiers: AddMonoidHom, MulEquiv
 MODIFIERS = {'add': 'additive', 'mul': 'multiplicative', 'nat': 'natural', 'int': 'integer',
-             'comm': 'commutative', 'lin': 'linear', 'alg': 'algebra', 'cont': 'continuous'}
+             'comm': 'commutative', 'lin': 'linear', 'alg': 'algebra', 'cont': 'continuous',
+             'rel': 'relative'}
 
 # pairs of words of names that are one term
 PAIRS = {('nat', 'trans'): 'natural transformation', ('nat', 'iso'): 'natural isomorphism',
@@ -192,7 +193,9 @@ PAIRS = {('nat', 'trans'): 'natural transformation', ('nat', 'iso'): 'natural is
          ('linear', 'equiv'): 'linear equivalence', ('ring', 'equiv'): 'ring isomorphism',
          ('alg', 'equiv'): 'algebra isomorphism', ('order', 'iso'): 'order isomorphism',
          ('nhds', 'within'): 'neighbourhood filter within', ('is', 'o'): 'is little o',
-         ('is', 'big', 'o'): 'is big o', ('l', 'i'): 'linear isometric'}
+         ('is', 'big', 'o'): 'is big o', ('l', 'i'): 'linear isometric',
+         ('rel', 'iso'): 'relation isomorphism', ('rel', 'hom'): 'relation homomorphism',
+         ('rel', 'embedding'): 'relation embedding', ('rel', 'series'): 'relation series'}
 
 # adjectives of relations: "#1 is Brauer equivalent to #2"
 RELATIONAL = set('''equivalent isomorphic equal coprime disjoint orthogonal similar conjugate homotopic
@@ -259,6 +262,39 @@ def main_args(typ, nargs):
     return (objs or list(range(1, nargs + 1)))[-2:]
 
 
+def arg_types(typ, ks):
+    """The types of the arguments ks of a Dedukti type, as strings."""
+    parts, depth, cur = [], 0, ''
+    for ch in typ:
+        depth += ch == '('
+        depth -= ch == ')'
+        cur += ch
+        if depth == 0 and cur.endswith('->'):
+            parts.append(cur[:-2].strip())
+            cur = ''
+    return [parts[k - 1] if k <= len(parts) else '' for k in ks]
+
+
+def parameter(doc, names, types):
+    """Which of two arguments (0 or 1) the docstring names after "relative
+    to", "with respect to", "for", "over" or "w.r.t.", by its name or by the
+    words of its type (a Grothendieck topology: CategoryTheory__GrothendieckTopology),
+    or None."""
+    for m in re.finditer(r'\b(?:relative to|with respect to|w\.r\.t\.?|for|over|along)\s+([^.,;:]{1,60})', doc):
+        phrase = m.group(1)
+        hits = []
+        for i, (n, t) in enumerate(zip(names, types)):
+            heads = re.findall(r'__([A-Z][A-Za-z]+)|\b([A-Z][A-Za-z]+)\b', t.split(':')[-1])
+            words = {w.lower() for h in heads for part in h if part
+                     for w in re.findall(r'[A-Z][a-z]+', part)} - {'elem', 'proof', 'set', 'opposite'}
+            if (n and re.search(r'`%s`' % re.escape(n), phrase)) or \
+                    (words and all(w in phrase.lower() for w in words)):
+                hits.append(i)
+        if len(hits) == 1:
+            return hits[0]
+    return None
+
+
 def of_args(ks):
     if not ks:
         return ''
@@ -287,7 +323,7 @@ def stems(ws):
     return {w[:4].lower() for w in ws if len(w) >= 3}
 
 
-def from_name(lean, module, nargs, cat, value, doc='', typ=''):
+def from_name(lean, module, nargs, cat, value, doc='', typ='', argnames=()):
     ws = head_words(lean, module, cat)
     if not ws or any(w.isdigit() for w in ws) or ws[-1] == 'of':
         return []
@@ -296,15 +332,22 @@ def from_name(lean, module, nargs, cat, value, doc='', typ=''):
     first = '#%d' % ks[0] if ks else '#1'
     out = []
     if cat == 'Prop' and len(ks) == 2:
+        # a predicate of two objects is binary, with no argument left out, and
+        # its subject is the argument that the docstring does not name after
+        # "relative to", "for" etc.; without such a clue there is no reading,
+        # as the wrong subject would make a false one
         x, y = ks
+        p = parameter(doc, [argnames[k - 1] if len(argnames) >= k else '' for k in ks], arg_types(typ, ks))
+        if p is None and ws[-1] not in RELATIONAL:
+            return []
+        if p == 0:
+            x, y = y, x
         rest = ' '.join(ws[1:] if ws[0] == 'is' else ws)
-        binary = ['#%d is %s to #%d' % (x, rest, y), '#%d is %s with #%d' % (x, rest, y),
-                  '#%d is a %s of #%d' % (x, rest, y)]
-        unary = ['#%d is %s' % (y, rest), '#%d is a %s' % (y, rest)]
-        if not adjectival(ws[-1]) and not (len(ws) > 2 and ws[-2].endswith('ly')):
-            unary.reverse()
-        rel = ws[-1] in RELATIONAL or re.search(r'\b%s (to|with)\b' % re.escape(ws[-1]), doc)
-        out += binary + unary if rel else unary + binary
+        if ws[-1] in RELATIONAL or re.search(r'\b%s (to|with)\b' % re.escape(ws[-1]), doc):
+            out += ['#%d is %s to #%d' % (x, rest, y), '#%d is %s with #%d' % (x, rest, y)]
+        adj = adjectival(ws[-1]) or (len(ws) > 2 and ws[-2].endswith('ly'))
+        forms = ['#%d is %s with respect to #%d' % (x, rest, y), '#%d is a %s with respect to #%d' % (x, rest, y)]
+        out += forms if adj else forms[::-1]
     elif cat == 'Prop':
         if ws[0] in ('is', 'has'):
             rest = ' '.join(ws[1:])
@@ -524,7 +567,7 @@ def main():
                 if any(a.startswith(b) or b.startswith(a) for a in stems(re.findall(r'[A-Za-z]+', c)) for b in name_stems)]
         cands = [(c2, 'doc') for c in docs for c2 in cut_generic(c)]
         cands += [(c, 'doc') for c in docs] + \
-                [(c, 'name') for c in from_name(d['lean'], d['module'], nargs, cat, value, d['doc'], d['type'])]
+                [(c, 'name') for c in from_name(d['lean'], d['module'], nargs, cat, value, d['doc'], d['type'], names)]
         seen, cs = set(), []
         for c, src in cands:
             if c not in seen:

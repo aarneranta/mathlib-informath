@@ -403,12 +403,11 @@ def readMapping : IO (Std.HashMap Name String × Std.HashSet Name) := do
     | _ => pure ()
   return (m, all)
 
-def exportModule (env : Environment) (mapping : Std.HashMap Name String)
-    (keepAll binders : Std.HashSet Name) (mod : Name) :
-    IO Unit := do
-  let some idx := env.getModuleIdx? mod | throw <| IO.userError s!"module {mod} not loaded"
-  -- in the order of the source, as the module records them
-  let names := env.header.moduleData[idx.toNat]!.constNames
+/-- Export the declarations `names` of a module `mod`, whose source is `src`,
+to `outDir`/<mod>.dk, .json and -deps.dk. -/
+def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
+    (keepAll binders : Std.HashSet Name) (mod : Name) (names : Array Name) (src : Array String)
+    (outDir : String := "out") : IO Unit := do
   let decls := names.toList.filterMap fun n =>
     match env.find? n with
     | some ci => if wanted env n ci then some (n, ci) else none
@@ -427,9 +426,6 @@ def exportModule (env : Environment) (mapping : Std.HashMap Name String)
   let decls := ranged.toList.map fun (n, ci, _) => (n, ci)
   let lineOf : Std.HashMap Name DeclarationRanges :=
     ranged.foldl (fun m (n, _, r) => m.insert n r) {}
-  let mathlib := (← IO.getEnv "MATHLIB").getD "../mathlib4"
-  let srcPath : System.FilePath := mathlib ++ "/" ++ (mod.toString.replace "." "/") ++ ".lean"
-  let src ← if ← srcPath.pathExists then IO.FS.lines srcPath else pure #[]
   let mut dk := s!"(; {mod}: statements exported from Mathlib by MathlibInformath/Export.lean ;)\n\n"
   let mut json := #[]
   let mut used : Std.HashSet Name := {}
@@ -482,11 +478,21 @@ def exportModule (env : Environment) (mapping : Std.HashMap Name String)
       let docLine := if doc.isEmpty then "" else s!"(; doc: {doc} ;)\n"
       deps := deps ++ s!"{docLine}(; //LEAN:{c} ;)\n{mangle c} : {asPredicate env c s}.\n\n"
     | .error _ => deps := deps ++ s!"(; NOT EXPORTED: {c} ;)\n\n"
-  IO.FS.createDirAll "out"
-  IO.FS.writeFile s!"out/{mod}.dk" dk
-  IO.FS.writeFile s!"out/{mod}-deps.dk" deps
-  IO.FS.writeFile s!"out/{mod}.json" ("[\n" ++ ",\n".intercalate json.toList ++ "\n]\n")
-  IO.println s!"{mod}: {decls.length} declarations -> out/{mod}.dk, out/{mod}.json; {used.size} constants used"
+  IO.FS.createDirAll outDir
+  IO.FS.writeFile s!"{outDir}/{mod}.dk" dk
+  IO.FS.writeFile s!"{outDir}/{mod}-deps.dk" deps
+  IO.FS.writeFile s!"{outDir}/{mod}.json" ("[\n" ++ ",\n".intercalate json.toList ++ "\n]\n")
+  IO.println s!"{mod}: {decls.length} declarations -> {outDir}/{mod}.dk, {outDir}/{mod}.json; {used.size} constants used"
+
+def exportModule (env : Environment) (mapping : Std.HashMap Name String)
+    (keepAll binders : Std.HashSet Name) (mod : Name) : IO Unit := do
+  let some idx := env.getModuleIdx? mod | throw <| IO.userError s!"module {mod} not loaded"
+  -- in the order of the source, as the module records them
+  let names := env.header.moduleData[idx.toNat]!.constNames
+  let mathlib := (← IO.getEnv "MATHLIB").getD "../mathlib4"
+  let srcPath : System.FilePath := mathlib ++ "/" ++ (mod.toString.replace "." "/") ++ ".lean"
+  let src ← if ← srcPath.pathExists then IO.FS.lines srcPath else pure #[]
+  exportDecls env mapping keepAll binders mod names src
 
 
 /-! ## All definitions
@@ -589,10 +595,10 @@ partial def tacticSteps (ctx? : Option ContextInfo) (inSeq : Bool) :
   | .hole _ => pure ()
 
 open Lean.Elab in
-def exportTactics (mod : Name) (mapping : Std.HashMap Name String)
-    (keepAll binders : Std.HashSet Name) : IO Unit := do
-  let mathlib := (← IO.getEnv "MATHLIB").getD "../mathlib4"
-  let path : System.FilePath := mathlib ++ "/" ++ (mod.toString.replace "." "/") ++ ".lean"
+/-- Elaborate a source file with info trees: the environment it makes, its
+messages, and the steps of its tactic proofs as JSON lines. -/
+def elaborate (path : System.FilePath) (mapping : Std.HashMap Name String)
+    (keepAll binders : Std.HashSet Name) : IO (Environment × MessageLog × Array String) := do
   let input ← IO.FS.readFile path
   let inputCtx := Parser.mkInputContext input path.toString
   let (header, parserState, messages) ← Parser.parseHeader inputCtx
@@ -616,9 +622,42 @@ def exportTactics (mod : Name) (mapping : Std.HashMap Name String)
       for g in ti.goalsAfter do
         after := after.push (← goalJson ci ti.mctxAfter g mapping keepAll binders)
       out := out.push s!"\{\"line\": {p.line}, \"col\": {p.column}, \"endLine\": {e.line}, \"kind\": {jsonStr ti.stx.getKind.toString}, \"nBefore\": {ti.goalsBefore.length}, \"tactic\": {jsonStr text}, \"before\": {before}, \"after\": [{", ".intercalate after.toList}]}"
-  IO.FS.createDirAll "out"
-  IO.FS.writeFile s!"out/{mod}-tactics.json" ("[\n" ++ ",\n".intercalate out.toList ++ "\n]\n")
-  IO.println s!"{mod}: {out.size} tactic steps -> out/{mod}-tactics.json"
+  return (s.commandState.env, s.commandState.messages, out)
+
+def writeTactics (outDir : String) (mod : Name) (steps : Array String) : IO Unit := do
+  IO.FS.createDirAll outDir
+  IO.FS.writeFile s!"{outDir}/{mod}-tactics.json" ("[\n" ++ ",\n".intercalate steps.toList ++ "\n]\n")
+  IO.println s!"{mod}: {steps.size} tactic steps -> {outDir}/{mod}-tactics.json"
+
+def exportTactics (mod : Name) (mapping : Std.HashMap Name String)
+    (keepAll binders : Std.HashSet Name) : IO Unit := do
+  let mathlib := (← IO.getEnv "MATHLIB").getD "../mathlib4"
+  let path : System.FilePath := mathlib ++ "/" ++ (mod.toString.replace "." "/") ++ ".lean"
+  let (_, _, steps) ← elaborate path mapping keepAll binders
+  writeTactics "out" mod steps
+
+/-! ## Any Lean file
+
+`lake exe export --file <File.lean> <outDir>` elaborates a Lean file (one that
+imports Mathlib, say) and exports the declarations it makes as a module named
+after the file: <outDir>/<File>.dk, .json, -deps.dk and -tactics.json. Its
+error messages go to standard error, and the exit code is 1 if there are any. -/
+
+def exportFile (path : System.FilePath) (outDir : String) (mapping : Std.HashMap Name String)
+    (keepAll binders : Std.HashSet Name) : IO UInt32 := do
+  let (env, messages, steps) ← elaborate path mapping keepAll binders
+  let mut errors := 0
+  for m in messages.toList do
+    if m.severity == .error then
+      errors := errors + 1
+      IO.eprintln (← m.toString)
+  let mod := (path.fileStem.getD "Input").toName
+  -- the constants that the file adds, not the imported ones
+  let names := env.constants.map₂.toList.map (·.1) |>.toArray
+  let src ← IO.FS.lines path
+  exportDecls env mapping keepAll binders mod names src outDir
+  writeTactics outDir mod steps
+  return if errors > 0 then 1 else 0
 
 unsafe def main (args : List String) : IO UInt32 := do
   if args.isEmpty then
@@ -626,6 +665,12 @@ unsafe def main (args : List String) : IO UInt32 := do
     return 1
   initSearchPath (← findSysroot)
   enableInitializersExecution
+  if args.head? == some "--file" then
+    let [path, outDir] := args.tail | do
+      IO.eprintln "usage: lake exe export --file <File.lean> <outDir>"; return 1
+    let (mapping, keepAll) ← readMapping
+    let binders ← readBinders
+    return ← exportFile path outDir mapping keepAll binders
   if args.head? == some "--definitions" then
     let (mapping, keepAll) ← readMapping
     let binders ← readBinders

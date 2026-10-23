@@ -1,0 +1,321 @@
+#!/usr/bin/env python3
+"""mathlib-informath: informalize Lean 4 code that uses Mathlib.
+
+    mathlib-informath [options] [File.lean]     # or the Lean code on standard input
+
+The Lean code is elaborated by Lean with Mathlib (lake exe export --file, from
+Export.lean), which translates its declarations to Dedukti; RunInformath reads
+them in natural language with Informath's grammar (share/InformathFull.pgf) and
+the symbol tables of Mathlib (definitions.dkgf and mathlib.dkgf, and the
+user's own, -table=), as build-index.py does for the pages of Mathlib.  Code
+without an import line gets "import Mathlib".
+
+Options:
+  -languages=Eng,Fre,...  the languages of the readings (default Eng; also Fre,
+                          Cze, Ger, Swe); German has a time limit of 1 s for each
+  -table=<file.dkgf>      a symbol table of one's own, on top of the standard ones
+  -html                   an HTML page, as the pages of mathlib-informath
+  -pdf                    a PDF document (with lualatex)
+  -o=<file>               the output file (default: standard output for text,
+                          <File>.html or <File>.pdf otherwise)
+  -keep                   keep the working directory, and say where it is
+  -check                  check that the parts needed are there, and stop
+  -install                build the parts that are missing, as far as possible
+  -help                   this message
+
+The parts needed: Lean (elan, lake), Mathlib built (../mathlib4, or $MATHLIB),
+this repository's exporter built (lake build), and Informath (../informath, or
+$INFORMATH_ROOT) with RunInformath built (stack build) and its grammar
+(make full_grammar).
+"""
+import glob, html, importlib.util, json, os, re, shutil, subprocess, sys, tempfile
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+LANGUAGES = ['Eng', 'Fre', 'Cze', 'Ger', 'Swe']
+
+
+def fail(msg):
+    sys.exit('mathlib-informath: %s\n(mathlib-informath -help for help)' % msg)
+
+
+def options(argv):
+    opts, files = {}, []
+    for a in argv:
+        if a.startswith('-') and len(a) > 1:
+            k, _, v = a[1:].partition('=')
+            opts[k] = v or True
+        else:
+            files.append(a)
+    known = {'languages', 'table', 'html', 'pdf', 'o', 'keep', 'check', 'install', 'help', 'h'}
+    for k in opts:
+        if k not in known:
+            fail('unknown option -%s' % k)
+    return opts, files
+
+
+# ---------------------------------------------------------------- the parts
+
+def informath_root():
+    """Informath: $INFORMATH_ROOT if it has the grammar, else ../informath."""
+    for root in (os.environ.get('INFORMATH_ROOT'), os.path.join(HERE, '..', 'informath')):
+        if root and os.path.exists(os.path.join(root, 'share', 'InformathFull.pgf')):
+            return os.path.abspath(root)
+    return os.path.abspath(os.environ.get('INFORMATH_ROOT') or os.path.join(HERE, '..', 'informath'))
+
+
+def mathlib_dir():
+    return os.path.abspath(os.environ.get('MATHLIB', os.path.join(HERE, '..', 'mathlib4')))
+
+
+def run_informath(root):
+    built = glob.glob(os.path.join(root, '.stack-work', 'dist', '*', '*', 'build', 'RunInformath', 'RunInformath'))
+    return max(built, key=os.path.getmtime) if built else shutil.which('RunInformath')
+
+
+def lake():
+    return shutil.which('lake') or (os.path.expanduser('~/.elan/bin/lake')
+                                    if os.path.exists(os.path.expanduser('~/.elan/bin/lake')) else None)
+
+
+def parts():
+    """(part, found or None, how to get it) for each part needed."""
+    root, ml = informath_root(), mathlib_dir()
+    exporter = os.path.join(HERE, '.lake', 'build', 'bin', 'export')
+    return [
+        ('Lean (lake)', lake(),
+         'install elan: curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh'),
+        ('Mathlib', ml if os.path.exists(os.path.join(ml, '.lake', 'build', 'lib', 'lean', 'Mathlib.olean')) else None,
+         'git clone https://github.com/leanprover-community/mathlib4 %s; cd %s; lake exe cache get' % (ml, ml)),
+        ('the exporter', exporter if os.path.exists(exporter) else None, 'cd %s; lake build' % HERE),
+        ('Informath', root if os.path.isdir(root) else None,
+         'git clone https://github.com/GrammaticalFramework/informath %s' % root),
+        ('RunInformath', run_informath(root), 'cd %s; stack build' % root),
+        ('the grammar', os.path.join(root, 'share', 'InformathFull.pgf')
+         if os.path.exists(os.path.join(root, 'share', 'InformathFull.pgf')) else None,
+         'cd %s; make full_grammar' % root),
+        ('the symbol tables', HERE if all(os.path.exists(os.path.join(HERE, t))
+                                         for t in ('definitions.dkgf', 'mathlib.dkgf', 'mapping.tsv')) else None,
+         'they come with this repository: git checkout definitions.dkgf mathlib.dkgf mapping.tsv'),
+    ]
+
+
+def check(verbose):
+    missing = []
+    for name, found, how in parts():
+        if verbose:
+            print('%-18s %s' % (name, found or 'MISSING: ' + how))
+        if not found:
+            missing.append((name, how))
+    return missing
+
+
+def install():
+    """Run the steps that build what is missing; the ones that download or
+    clone are only shown."""
+    for name, found, how in parts():
+        if found:
+            continue
+        if how.startswith(('install', 'git clone', 'they come')):
+            print('%s is missing; to get it: %s' % (name, how))
+            continue
+        print('%s: %s' % (name, how))
+        d, cmd = how[3:].split('; ', 1)
+        if subprocess.run(cmd, shell=True, cwd=d).returncode:
+            fail('%s failed' % how)
+    missing = check(False)
+    if missing:
+        fail('still missing: %s' % ', '.join(n for n, _ in missing))
+    print('all parts are there')
+
+
+def load(name, file):
+    spec = importlib.util.spec_from_file_location(name, os.path.join(HERE, file))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+# ---------------------------------------------------------------- the readings
+
+def informalize(code, stem, langs, table, work):
+    """The index of the declarations of the Lean code, as build-index.py makes it."""
+    if not re.search(r'^\s*import\s', code, re.M):
+        code = 'import Mathlib\n\n' + code
+    src = os.path.join(work, stem + '.lean')
+    open(src, 'w').write(code)
+    out = os.path.join(work, 'out')
+    r = subprocess.run([lake(), 'exe', 'export', '--file', src, out], cwd=HERE, capture_output=True, text=True)
+    if not os.path.exists(os.path.join(out, stem + '.json')):
+        fail('Lean could not elaborate the code:\n' + (r.stderr or r.stdout)[-3000:])
+    if r.returncode:
+        sys.stderr.write('Lean reported errors; the declarations without them are read:\n' + r.stderr[-3000:])
+    os.environ['INFORMATH_ROOT'] = informath_root()
+    bi = load('build_index', 'build-index.py')
+    bi.OUT, bi.TMP, bi.INDEX = out, os.path.join(work, '.index-'), os.path.join(work, 'index.json')
+    bi.LANGUAGES = langs
+    bi.SLOW_LANGUAGES = [l for l in langs if l in bi.SLOW_LANGUAGES]
+    bi.FAST_LANGUAGES = [l for l in langs if l not in bi.SLOW_LANGUAGES]
+    bi.TACTIC_LANGUAGES = [l for l in langs if l in bi.TACTIC_LANGUAGES]
+    bi.TABLES = [os.path.join(HERE, t) for t in bi.TABLES] + ([os.path.abspath(table)] if table else [])
+    bi.read_modules = lambda: [stem]
+    argv, cwd = sys.argv, os.getcwd()
+    sys.argv = [argv[0]]
+    os.chdir(HERE)                      # nd.dk, mapping.tsv
+    try:
+        devnull = open(os.devnull, 'w')
+        stdout, sys.stdout = sys.stdout, devnull
+        try:
+            bi.main()
+        finally:
+            sys.stdout = stdout
+    finally:
+        sys.argv = argv
+        os.chdir(cwd)
+    return json.load(open(bi.INDEX))
+
+
+# ---------------------------------------------------------------- the outputs
+
+def source_lines(work, stem, d):
+    lines = open(os.path.join(work, stem + '.lean')).read().split('\n')
+    return '\n'.join(lines[d['line'] - 1:d['endLine']]).rstrip()
+
+
+def as_text(index, work, stem):
+    langs = index['languages']
+    names = {'Eng': 'English', 'Fre': 'French', 'Cze': 'Czech', 'Ger': 'German', 'Swe': 'Swedish'}
+    out = []
+    for d in index['declarations']:
+        out.append('%s (%s)' % (d['lean'], d['kind']))
+        for lang in langs + ['formula']:
+            t = d['readings'].get(lang)
+            label = names.get(lang, 'Formula')
+            out.append('  %s: %s' % (label, t or '(none)'))
+        for lang in langs:
+            rows = (d.get('proof') or {}).get(lang)
+            if rows:
+                out.append('  Proof%s:' % ('' if len(langs) == 1 else ', ' + names[lang]))
+                for n, text, by in rows:
+                    by = by[len('TACTIC:'):] if by.startswith('TACTIC:') else re.sub(r'\\texttt\{(.*)\}', r'\1', by)
+                    out.append('    %s %s%s' % (n, text, '   [%s]' % by.replace('\\_', '_') if by else ''))
+        out.append('')
+    return '\n'.join(out)
+
+
+def as_html(index, work, stem):
+    bh = load('build_html', 'build-html.py')
+    bh.MATHLIB = work                                   # the source of a declaration
+    bh.GITHUB = '#%.0s%.0s%s'                           # no links to GitHub
+    bh.source = lambda m, d: source_lines(work, stem, d)
+    langs = index['languages']
+    where = {d['lean']: '' for d in index['declarations']}
+    body = '\n'.join(bh.entry_html(d, langs, index['mathlib'], where) for d in index['declarations'])
+    head = '<h1>%s informalized</h1>%s' % (html.escape(stem), bh.lang_switch(langs) if len(langs) > 1 else '')
+    return bh.page(stem + ' informalized', head, body, index['macros'])
+
+
+def as_latex(index, work, stem):
+    langs = index['languages']
+    names = {'Eng': 'English', 'Fre': 'French', 'Cze': 'Czech', 'Ger': 'German', 'Swe': 'Swedish'}
+    tex = lambda s: s.replace('\\', '\\textbackslash{}').replace('_', '\\_').replace('#', '\\#').replace('&', '\\&') \
+        .replace('%', '\\%').replace('{', '\\{').replace('}', '\\}').replace('$', '\\$')
+    macros = []
+    for name, d in index['macros'].items():
+        if isinstance(d, list):
+            macros.append('\\newcommand{\\%s}[%d]{%s}' % (name, d[1], d[0]))
+        else:
+            macros.append('\\newcommand{\\%s}{%s}' % (name, d))
+    out = ['\\documentclass{article}', '\\usepackage{amsmath,amssymb,amsfonts,fontspec}',
+           # a monospaced font with the symbols of Lean (ℕ, ∑, ≤)
+           '\\IfFontExistsTF{DejaVu Sans Mono}{\\setmonofont{DejaVu Sans Mono}[Scale=0.85]}'
+           '{\\IfFontExistsTF{Menlo}{\\setmonofont{Menlo}[Scale=0.85]}{}}',
+           '\\usepackage[margin=2cm]{geometry}', '\\setlength\\parindent{0pt}', '\\setlength\\parskip{6pt}',
+           '\n'.join(macros), '\\begin{document}', '\\section*{%s informalized}' % tex(stem)]
+    for d in index['declarations']:
+        out.append('\\subsection*{\\texttt{%s} (%s)}' % (tex(d['lean']), d['kind']))
+        out.append('\\begin{verbatim}\n%s\n\\end{verbatim}' % source_lines(work, stem, d))
+        for lang in langs + ['formula']:
+            t = d['readings'].get(lang)
+            if t:
+                out.append('\\textbf{%s.} %s\n' % (names.get(lang, 'Formula'), t))
+        for lang in langs:
+            rows = (d.get('proof') or {}).get(lang)
+            if rows:
+                out.append('\\textbf{Proof%s.}\n\n\\begin{tabular}{rp{0.62\\textwidth}l}' %
+                           ('' if len(langs) == 1 else ', ' + names[lang]))
+                for n, text, by in rows:
+                    by = '\\texttt{%s}' % tex(by[len('TACTIC:'):]) if by.startswith('TACTIC:') else by
+                    out.append('%s & %s & %s \\\\' % (n, text, by))
+                out.append('\\end{tabular}\n')
+    out.append('\\end{document}')
+    return '\n'.join(out) + '\n'
+
+
+def main():
+    opts, files = options(sys.argv[1:])
+    if opts.get('help') or opts.get('h'):
+        print(__doc__)
+        return
+    if opts.get('check'):
+        sys.exit(1 if check(True) else 0)
+    if opts.get('install'):
+        install()
+        return
+    missing = check(False)
+    if missing:
+        fail('missing: %s\n%s\n(mathlib-informath -install builds what it can)' % (
+            ', '.join(n for n, _ in missing), '\n'.join('  %s: %s' % m for m in missing)))
+    langs = opts['languages'].split(',') if isinstance(opts.get('languages'), str) else ['Eng']
+    for l in langs:
+        if l not in LANGUAGES:
+            fail('unknown language %s; the languages are %s' % (l, ','.join(LANGUAGES)))
+    if len(files) > 1:
+        fail('one Lean file at a time')
+    if files:
+        if not os.path.exists(files[0]):
+            fail('no such file: %s' % files[0])
+        code = open(files[0]).read()
+        stem = re.sub(r'\W', '_', os.path.splitext(os.path.basename(files[0]))[0])
+    else:
+        code = sys.stdin.read()
+        stem = 'Input'
+    if not code.strip():
+        fail('no Lean code given')
+    table = opts.get('table') if isinstance(opts.get('table'), str) else None
+    if table and not os.path.exists(table):
+        fail('no such symbol table: %s' % table)
+    work = tempfile.mkdtemp(prefix='mathlib-informath-')
+    try:
+        index = informalize(code, stem, langs, table, work)
+        if not index['declarations']:
+            fail('the code has no declarations to read')
+        if opts.get('pdf'):
+            texfile = os.path.join(work, stem + '.tex')
+            open(texfile, 'w').write(as_latex(index, work, stem))
+            r = subprocess.run(['lualatex', '-interaction=nonstopmode', stem + '.tex'], cwd=work,
+                               capture_output=True, text=True)
+            pdf = os.path.join(work, stem + '.pdf')
+            if not os.path.exists(pdf):
+                fail('lualatex failed:\n' + r.stdout[-2000:])
+            target = opts['o'] if isinstance(opts.get('o'), str) else stem + '.pdf'
+            shutil.copy(pdf, target)
+            print('-> %s' % target, file=sys.stderr)
+        elif opts.get('html'):
+            target = opts['o'] if isinstance(opts.get('o'), str) else stem + '.html'
+            open(target, 'w').write(as_html(index, work, stem))
+            print('-> %s' % target, file=sys.stderr)
+        else:
+            text = as_text(index, work, stem)
+            if isinstance(opts.get('o'), str):
+                open(opts['o'], 'w').write(text)
+            else:
+                sys.stdout.write(text)
+    finally:
+        if opts.get('keep'):
+            print('working directory: %s' % work, file=sys.stderr)
+        else:
+            shutil.rmtree(work, ignore_errors=True)
+
+
+if __name__ == '__main__':
+    main()

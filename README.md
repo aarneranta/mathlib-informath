@@ -20,11 +20,33 @@ that the prime numbers import (`Group/Nat/Units`, `Prime/Defs`),
   each language: numbered lines, each with the rule or the Mathlib lemma it applies
   (linked to its entry) and the lines it uses.
 
+## Informalizing your own Lean code
+
+`mathlib-informath` reads any Lean 4 code that uses Mathlib, from a file or
+from standard input, with the same tools as the pages:
+
+    ./mathlib-informath Example.lean                  # plain text, in English
+    ./mathlib-informath -languages=Eng,Fre -html Example.lean   # Example.html
+    ./mathlib-informath -pdf Example.lean             # Example.pdf (lualatex)
+    echo 'theorem t (n : ℕ) (h : 0 < n) : n ≠ 0 := by omega' | ./mathlib-informath
+    ./mathlib-informath -table=my.dkgf Example.lean   # with a symbol table of one's own
+
+Code without an import line gets `import Mathlib`. Lean elaborates it
+(`lake exe export --file`, about half a minute, most of it loading Mathlib),
+and RunInformath reads its declarations with the symbol tables
+`definitions.dkgf` and `mathlib.dkgf`. `./mathlib-informath -check` tells which of the
+parts it needs are missing (Lean, Mathlib built in `../mathlib4`, the
+exporter built here, Informath in `../informath` or `$INFORMATH_ROOT` with
+RunInformath and its grammar), `-install` builds those it can, and `-help`
+shows the options.
+
 ## Files
 
 | | |
 |---|---|
-| `Export.lean` | a Lean program that exports statements of Mathlib modules to Informath's Dedukti dialect |
+| `Export.lean` | a Lean program that exports statements of Mathlib modules (or of any Lean file, `--file`) to Informath's Dedukti dialect, all Mathlib definitions (`--definitions`), and the steps of tactic proofs (`--tactics`) |
+| `mathlib-informath` | the stand-alone informalizer of Lean code |
+| `definition-table.py`, `definitions.dkgf` | the symbol table of all Mathlib definitions, made from their docstrings and names |
 | `mapping.tsv` | Lean constants mapped to Informath's base constants (`Nat.Prime` to `prime`, `Dvd.dvd` to `divide`, ...) |
 | `mathlib.dkgf` | the Informath symbol table of the other Mathlib constants the statements use |
 | `nd.dk` | the natural deduction rules that proofs are translated to (`ifI`, `forallE`, ...) |

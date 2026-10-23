@@ -2,7 +2,7 @@
 """The tactic proofs of a module as proof units, for RunInformath -tactic-proof.
 
     lake exe export --tactics <Module>          # -> out/<Module>-tactics.json
-    python3 tactic-units.py <Module>            # -> out/<Module>-tactic-units.json
+    python3 tactic-units.py <Module> [<dir>]    # -> out/<Module>-tactic-units.json (or <dir>/...)
 
 out/<Module>-tactics.json has, for each step of a tactic proof (a tactic of a
 tactic sequence), the main goal before it and the goals after it, with their
@@ -182,8 +182,9 @@ def inside(s, c):
 
 def main():
     mod = sys.argv[1]
-    decls = json.load(open('out/%s.json' % mod))
-    steps = json.load(open('out/%s-tactics.json' % mod))
+    outdir = sys.argv[2] if sys.argv[2:] else 'out'
+    decls = json.load(open('%s/%s.json' % (outdir, mod)))
+    steps = json.load(open('%s/%s-tactics.json' % (outdir, mod)))
     proofs = []
     for d in decls:
         if d['kind'] != 'theorem' or d.get('definiens'):
@@ -197,7 +198,7 @@ def main():
             for u in units:
                 u['by'] = first_line(u['by'])
             proofs.append({'name': d['dk'], 'lean': d['lean'], 'steps': units})
-    out = 'out/%s-tactic-units.json' % mod
+    out = '%s/%s-tactic-units.json' % (outdir, mod)
     json.dump(proofs, open(out, 'w'), ensure_ascii=False, indent=1)
     print('%s: %d tactic proofs, %d units -> %s' % (mod, len(proofs), sum(len(p['steps']) for p in proofs), out))
 

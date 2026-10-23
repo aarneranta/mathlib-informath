@@ -489,6 +489,53 @@ def exportModule (env : Environment) (mapping : Std.HashMap Name String)
   IO.println s!"{mod}: {decls.length} declarations -> out/{mod}.dk, out/{mod}.json; {used.size} constants used"
 
 
+/-! ## All definitions
+
+`lake exe export --definitions [Prefix ...]` imports all of Mathlib and writes
+out/definitions.jsonl: for each declaration of a Mathlib module (of one whose
+name starts with a given prefix) that may need a symbol table entry (a
+definition, structure, class, field, constructor, opaque constant or axiom,
+not a theorem, an instance, a parent projection toX or an auxiliary or
+deprecated declaration), one line with its Lean name, its Dedukti name, its
+kind, its module, its docstring and its type translated as the statements are,
+with the explicit arguments only. -/
+
+def definitionLine (env : Environment) (mapping : Std.HashMap Name String)
+    (keepAll binders : Std.HashSet Name) (ctx : Core.Context) (st : Core.State)
+    (mod n : Name) (ci : ConstantInfo) : IO (Option String) := do
+  let res ← (((statement ci.type).run {mapping, binders, keepAll}).run' {} {}).toIO ctx st |>.toBaseIO
+  let .ok ((s, _), _) := res | return none
+  let doc := (← Lean.findDocString? env n).getD ""
+  let field := (env.getProjectionFnInfo? n).isSome
+  return some s!"\{\"lean\": {jsonStr n.toString}, \"dk\": {jsonStr (mangle n)}, \"kind\": {jsonStr (kindOf ci)}, \"module\": {jsonStr mod.toString}, \"class\": {isClass env n}, \"structure\": {isStructure env n}, \"field\": {field}, \"doc\": {jsonStr doc}, \"type\": {jsonStr (asPredicate env n s)}}"
+
+def exportDefinitions (prefixes : List String) (mapping : Std.HashMap Name String)
+    (keepAll binders : Std.HashSet Name) : IO Unit := do
+  let env ← importModules #[{ module := `Mathlib }] {} (loadExts := true)
+  let ctx : Core.Context := { fileName := "<export>", fileMap := default, maxHeartbeats := 0,
+                              options := {} }
+  let st : Core.State := { env }
+  let inScope (m : String) := m.startsWith "Mathlib." &&
+    (prefixes.isEmpty || prefixes.any fun p => m == p || m.startsWith (p ++ "."))
+  let mut out := #[]
+  let mut failed := 0
+  for (mod, data) in env.header.moduleNames.zip env.header.moduleData do
+    if !inScope mod.toString then continue
+    for n in data.constNames do
+      let some ci := env.find? n | continue
+      if ci matches .thmInfo _ then continue
+      if !wanted env n ci then continue
+      -- the projections to parent structures are coercions, not words
+      if let some sname := env.getProjectionStructureName? n then
+        if let .str _ f := n then
+          if (isSubobjectField? env sname (.mkSimple f)).isSome then continue
+      match ← definitionLine env mapping keepAll binders ctx st mod n ci with
+      | some l => out := out.push l
+      | none => failed := failed + 1
+  IO.FS.createDirAll "out"
+  IO.FS.writeFile "out/definitions.jsonl" ("\n".intercalate out.toList ++ "\n")
+  IO.println s!"{out.size} definitions -> out/definitions.jsonl; {failed} not translated"
+
 /-! ## Tactic proofs
 
 `lake exe export --tactics <Module>` elaborates the module again from its
@@ -579,6 +626,11 @@ unsafe def main (args : List String) : IO UInt32 := do
     return 1
   initSearchPath (← findSysroot)
   enableInitializersExecution
+  if args.head? == some "--definitions" then
+    let (mapping, keepAll) ← readMapping
+    let binders ← readBinders
+    exportDefinitions args.tail mapping keepAll binders
+    return 0
   if args.head? == some "--tactics" then
     let (mapping, keepAll) ← readMapping
     let binders ← readBinders

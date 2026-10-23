@@ -41,9 +41,9 @@
 \newcommand{\decided}[1]{\par\textcolor{gfblue}{\textbf{#1}}\par}
 
 \title{Informalizing Lean Mathlib}
-\subtitle{Mathlib in English, French, Czech and German with Informath, built with Claude Code}
+\subtitle{Mathlib in English, French, Czech, German and Swedish with Informath, built with Claude Code}
 \author{Aarne Ranta}
-\date{22 October 2026}
+\date{23 October 2026}
 
 \begin{document}
 
@@ -591,18 +591,144 @@ rw [hn, mul_one]
   German work, no longer compiles \bad{Czech}.
 \end{frame}
 
+\begin{frame}{14. Czech again, and optimized grammars}
+  \small
+  \prompt{can you fix the Czech grammar ?}
+  \begin{itemize}
+    \item The RGL's Czech had changed: \texttt{NP} with clitics and pro-drop, 32 agreement
+          values, new \texttt{mkV2}, \texttt{mkVS}. Informath's \texttt{[ArgKind]} then
+          had 536,870,912 concrete functions; an \texttt{ArgKindNP} without the new fields
+          brings it to 1,048,576. ``Předpokládejme'' and ``všechna'' came for free.
+    \item Then my \texttt{-optimize-pgf} for smaller grammars broke all proof texts:
+          \bad{Index (-1) out of range}. Claude bisected it to the optimization; I knew
+          why: units are not reachable from the start category, so I added \texttt{UnitJmt}.
+    \item Claude added \texttt{ProofUnits} for Swedish, Czech and German (the units of
+          tactic proofs), with ``dass $p$ prim \ok{ist}'' (verb last), and the Swedish
+          words of the Mathlib pages: Swedish became the fifth language.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{15. A symbol table for all of Mathlib}
+  \small
+  \prompt{Build a symbol table for all of Mathlib's definitions. Use information from
+  docstrings and also try to parse camel script to multiword expressions. Add words to
+  Informath lexicon if needed. Start by doing this just for English}
+  \begin{itemize}
+    \item \texttt{export --definitions}: all of Mathlib imported once (20 s), 56,867
+          definitions, structures, classes, fields; 38,624 after leaving out tactics,
+          notations, auxiliaries.
+    \item \texttt{definition-table.py}: candidates from the docstring (``The cofinality of
+          an ordinal is \dots'') and the name (\texttt{minFac}: ``the minimum factor of
+          \#1''), Mathlib's abbreviations spelled out; all parsed in one call (30 s); the
+          first whose category and arity fit is the entry.
+    \item New words for the grammar from DictEng (categories, plurals): about 500.
+    \item \textbf{70\%} of the definitions have a wording (26,154): functions 22,641 of
+          31,858, types 1,792 of 2,457, predicates 1,721 of 4,309.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{16. Readings that are right, or none}
+  \footnotesize
+  Rounds of sampling found the classes of errors:
+  \begin{itemize}
+    \item \texttt{AddMonoidHom}: \bad{``sum monoid homomorphism''} $\to$ \ok{``additive monoid
+          homomorphism''}; \texttt{MulLeftMono} is about monotonicity, not monomorphisms.
+    \item \texttt{Bicone.ofLimitCone}: \bad{``the limit cone of \#1''} $\to$ \ok{``the bicone
+          of \#1''}; \texttt{pointOfClosedPoint} keeps its head, \texttt{PartitionOfUnity}
+          its ``of''; \texttt{compRight} is the \ok{right composition}.
+    \item Extra explicit arguments (a category, a topology): readings name the main ones,
+          as \texttt{Eqt}'s ``\#2 is equal to \#3'' does.
+    \item But \texttt{IsRelUpperSet s P} became \bad{``$P$ is a relation upper set''}. A
+          wrong reading is worse than a symbolic one: a predicate of two objects is now
+          binary, ``\#1 is a relative upper set with respect to \#2'', its subject the
+          argument the docstring does not name after ``relative to'', ``for''; without such
+          a clue, no reading (predicates 2,531 $\to$ 1,721).
+  \end{itemize}
+  The pages gain 14 fully worded statements: \texttt{UpperSet.carrier} is ``the carrier of
+  $\mathrm{self}$''.
+\end{frame}
+
+\begin{frame}{17. The words in the other languages}
+  \small
+  \prompt{As for lexicon, you can also try ../wordnet. The abstract syntax file gives hints
+  about what domain each word sense is used on.}
+  \begin{itemize}
+    \item GF's WordNet: 117 of 789 words, 13 by a sense tagged \emph{mathematics}, and
+          even those mixed: \emph{Sechseck}, \emph{variance} \ok{right}; minus as
+          \bad{\emph{Weg}}, triplet as \bad{\emph{trois}}; substructure as
+          \bad{\emph{Infrastruktur}} by its gloss. Mathlib's jargon (cocone, hypercover,
+          sheafification) is not there.
+    \item Instead \texttt{translations.tsv}: one line per word with French, German,
+          Swedish and Czech forms (gender, plural), written by Claude, \textbf{to be
+          reviewed}; an empty cell where unsure. 473, 465, 441, 441 of 485 words.
+    \item Where a language still lacks a word, \texttt{build-index.py} keeps the reading
+          made without the generated table: 26 declarations, all with readings again.
+    \item On the way: 300 junk words of docstrings out of the lexicon (\emph{because},
+          \emph{banana}, \emph{simproc}).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{18. A stand-alone informalizer}
+  \footnotesize
+  \prompt{Write a stand-alone program that informalizes any piece of Lean code read from
+  standard-in or from a file. \dots\ Claude would no more be needed when running this
+  program.} \hfill (\texttt{standalone.md})
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item \texttt{export --file}: any Lean file elaborated (about 35 s, mostly loading
+              Mathlib), its declarations and tactic steps exported.
+        \item \texttt{mathlib-informath}: the index code of the pages for one file;
+              plain text, \texttt{-html}, \texttt{-pdf}; \texttt{-languages},
+              \texttt{-table} for one's own entries; \texttt{-check}, \texttt{-install}.
+        \item Later: a web server keeping Lean loaded, and VS Code.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+\begin{lstlisting}
+$ mathlib-informath Example.lean
+prime_ne_one (theorem)
+  English: Let $p$ be a prime natural number.
+           Then $p \neq 1$.
+  Proof:
+    1. Assume that $p = 1$.     [intro h]
+    2. $1$ is prime.            [rw [h] at hp]
+    3. We have a contradiction.
+                   [exact Nat.not_prime_one hp]
+\end{lstlisting}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{19. All definitions on a page}
+  \small
+  \prompt{I would like to have a browsable page with the definitions.}
+  \begin{itemize}
+    \item \texttt{definitions.html}: all 38,690 definitions with their wordings, 26,215 of
+          them worded; the arguments by their names (``the cofinality of $o$''); the
+          docstring's first sentence; a link to Mathlib's documentation.
+    \item Search by name, wording and docstring; filters by part of Mathlib, by kind, and
+          by where the wording comes from (by hand, docstring, name). The data is a 7 MB
+          JSON file read by the page.
+    \item Linked from the main page; the Dedukti rows of the entries are now folded, as
+          the proofs are, as I asked: ``It is only interesting for debugging.''
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{The result}
   \centering
-  \begin{tabular}{@{}lrrrrr@{}}
+  Fully worded statements:
+
+  \begin{tabular}{@{}lrrrrrr@{}}
     \toprule
-    page & statements & fully worded, English & French & Czech & German \\
+    page & statements & English & French & Czech & German & Swedish \\
     \midrule
-    Mathlib.Order.Defs & 354 & 281 & 281 & 281 & 242 \\
-    Mathlib.Algebra & 29 & 26 & 26 & 26 & 26 \\
-    Mathlib.Data.Nat.Prime & 128 & 125 & 125 & 125 & 125 \\
-    Mathlib.Data.Nat.Factorization & 194 & 142 & 142 & 142 & 135 \\
+    Mathlib.Order.Defs & 354 & 291 & 289 & 289 & 248 & 289 \\
+    Mathlib.Algebra & 29 & 29 & 29 & 29 & 28 & 28 \\
+    Mathlib.Data.Nat.Prime & 128 & 125 & 125 & 125 & 125 & 125 \\
+    Mathlib.Data.Nat.Factorization & 194 & 143 & 143 & 143 & 132 & 142 \\
     \midrule
-    all & \textbf{705} & \textbf{574} & \textbf{574} & \textbf{574} & \textbf{528} \\
+    all & \textbf{705} & \textbf{588} & \textbf{586} & \textbf{586} & \textbf{533} & \textbf{584} \\
     \bottomrule
   \end{tabular}
 
@@ -610,8 +736,9 @@ rw [hn, mul_one]
   \raggedright
   \begin{itemize}
     \item 264 declarations with their definiens; 240 proof texts in each
-          language, out of 242 term proofs; 48 statements without German (time limit).
-    \item 25 tactic proofs in English (\texttt{Nat.Prime.Defs}), out of 242.
+          language, out of 242 term proofs; 51 statements without German (time limit).
+    \item 25 tactic proofs in all five languages (\texttt{Nat.Prime.Defs}), out of 242.
+    \item 26,215 of Mathlib's 38,690 definitions worded (\texttt{definitions.html}).
     \item Every statement has a formula; 31 need \texttt{-force-symbolic}.
     \item \url{https://aarneranta.github.io/mathlib-informath/mathlib-informath.html}
   \end{itemize}
@@ -624,10 +751,11 @@ rw [hn, mul_one]
 \begin{frame}{Open problems: coverage}
   \small
   \begin{itemize}
-    \item \textbf{Scale.} 705 of Mathlib's 240,000 declarations, with 108
-          hand-reviewed table entries. All of Mathlib needs entries generated in
-          bulk from docstrings and names, verified by the grammar and the type
-          checker.
+    \item \textbf{Scale.} 705 of Mathlib's 240,000 declarations on the pages; 26,154
+          generated entries for its definitions, unreviewed: composite names
+          (\texttt{XEquivY}), bundled maps without arguments (\bad{``the dual''}), verbs
+          (\texttt{PreservesX}), 2,000 unknown abbreviations; the words of the other
+          languages in \texttt{translations.tsv} to be reviewed.
     \item \textbf{Tactic proofs.} 242 of the 620 theorems here, and most of
           Mathlib's, are proved \texttt{by} tactics: 25 have proof texts so far, in
           English; the others, the other languages, and the term and tactic proofs to be
@@ -647,7 +775,7 @@ rw [hn, mul_one]
 \end{frame}
 
 \begin{frame}{Open problems: language}
-  \footnotesize
+  \scriptsize
   \begin{itemize}
     \item \textbf{Proof texts} where a lemma or constructor is used unapplied:
           ``For all sets $x$ and functions $r$ \ldots\ and elements
@@ -672,7 +800,8 @@ rw [hn, mul_one]
       \end{itemize}
     \item \textbf{German}: GF's linearization is exponential in nested noun phrases
           (48 statements over the limit); ``elemente''; ``Dann $2 \leq p$''.
-    \item Swedish is left out of the full grammar for now.
+    \item \textbf{Swedish}: ``lika \bad{till}'' (\emph{lika med}) and Czech ``rovná
+          \bad{do}'': \texttt{Eqt}'s ``is equal to'' parses word by word.
   \end{itemize}
 \end{frame}
 
@@ -726,6 +855,13 @@ rw [hn, mul_one]
     Informath: \texttt{abstractionTypes}, \texttt{-languages},
     multilingual proof texts, \texttt{-no-back-to-dedukti},
     \texttt{ProofUnitsFre}, Czech, \texttt{aggregateHypos}, \texttt{-tactic-proof}; \texttt{export --tactics} \\
+    \texttt{-optimize-pgf}, \texttt{UnitJmt}; the Czech RGL
+    &
+    Swedish; a symbol table of all definitions; WordNet; a reviewable table; older
+    readings kept; the stand-alone program (\texttt{standalone.md}); the definitions page
+    &
+    \texttt{export --definitions, --file}; \texttt{definition-table.py}, 500 words and
+    their translations; \texttt{mathlib-informath}; \texttt{definitions.html} \\
     \bottomrule
   \end{tabularx}
 
@@ -739,7 +875,8 @@ rw [hn, mul_one]
 
   \vspace{3mm}
   \normalsize
-  705 Mathlib statements, 240 proofs, in English, French, Czech, German and LaTeX
+  705 Mathlib statements, 265 proofs, in English, French, Czech, German, Swedish and LaTeX;
+  26,215 of Mathlib's definitions in English
 \end{frame}
 
 \end{document}

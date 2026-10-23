@@ -64,7 +64,7 @@ ABBREVIATIONS = {
     'trunc': 'truncation', 'quot': 'quotient', 'elim': 'eliminator', 'inl': 'left injection',
     'inr': 'right injection', 'finsupp': 'finitely supported function', 'dom': 'domain',
     'conj': 'conjugate', 'distrib': 'distributive', 'indep': 'independent', 'ulift': 'lift',
-    'unop': 'unopposite', 'cont': 'continuous', 'lin': 'linear', 'subtype': 'subtype',
+    'unop': 'opposite', 'cont': 'continuous', 'lin': 'linear', 'subtype': 'subtype',
     'nnreal': 'nonnegative real number', 'ennreal': 'extended nonnegative real number',
     'ereal': 'extended real number', 'zmod': 'integers modulo', 'padic': 'p-adic number',
     'bdd': 'bounded', 'nonneg': 'nonnegative', 'nonpos': 'nonpositive', 'iso': 'isomorphism',
@@ -72,11 +72,25 @@ ABBREVIATIONS = {
     'irred': 'irreducible', 'mvpolynomial': 'multivariate polynomial', 'charpoly': 'characteristic polynomial',
     'minpoly': 'minimal polynomial', 'spec': 'spectrum', 'tendsto': 'limit', 'cdf': 'cumulative distribution function',
     'pdf': 'probability density function', 'pmf': 'probability mass function', 'ae': 'almost everywhere',
+    'congr': 'congruence', 'comap': 'preimage', 'diff': 'difference', 'lex': 'lexicographic',
+    'cond': 'conditional', 'precomp': 'precomposition', 'postcomp': 'postcomposition',
+    'reindex': 'reindexing', 'uncurry': 'uncurrying', 'cod': 'codomain', 'res': 'restriction',
+    'restr': 'restriction', 'inter': 'intersection', 'bialg': 'bialgebra', 'coalg': 'coalgebra',
+    'fg': 'finitely generated', 'coind': 'coinduction', 'homeo': 'homeomorphism', 'elem': 'element',
+    'univ': 'universal set', 'coord': 'coordinate', 'mv': 'multivariate', 'fintype': 'finite type',
+    'biprod': 'biproduct', 'rep': 'representation', 'bilin': 'bilinear', 'nn': 'nonnegative',
+    'meas': 'measurable', 'comon': 'comonoid', 'idx': 'index', 'vcomp': 'vertical composition',
+    'finrank': 'finite rank', 'var': 'variable', 'vert': 'vertex', 'decomp': 'decomposition',
+    'noncomm': 'noncommutative', 'triv': 'trivial', 'aeval': 'algebra evaluation', 'unif': 'uniform',
+    'dim': 'dimension', 'ess': 'essential', 'cmp': 'comparison', 'dbl': 'double', 'subst': 'substitution',
+    'icc': 'closed interval', 'ioo': 'open interval', 'postcompose': 'postcomposition',
+    'precompose': 'precomposition', 'sheafify': 'sheafification', 'unopposite': 'opposite',
+    'lie': 'Lie', 'cof': 'cofinality', 'lequiv': 'linear equivalence', 'liequiv': 'linear isometric equivalence',
 }
 
 # words of names that no wording uses: Mathlib's markers of variants and of
 # constructions
-DROP = {'mk', 'of', 'to', 'aux', 'core', 'impl', 'def', 'pre', 'mk\'', 'v', 'u', 'r', 'l', 'x', 'y', 'z'}
+DROP = {'mk', 'aux', 'core', 'impl', 'def', 'pre'}
 
 # words that no new lexical item is made of
 STOP = set('''the of and is a an in to at on by for with from into onto over under as when where if
@@ -152,6 +166,8 @@ def wanted(d):
     if re.search(r'(^_|Aux$|aux$|Impl$|^go$|^loop$|_def$|^proof_|^match_|^rec$|^ctorIdx$|^noConfusionType$'
                  r'|^toCtorIdx$|^sizeOf$|[Dd]elab|[Uu]nexpand|Simps|^instDecidable|^decEq)', last):
         return False
+    if '«' in d['lean'] or last.startswith('term'):
+        return False                    # notations
     if re.search(r'\.(Simps|Delaborator|Meta|Tactic)\.', d['lean']):
         return False
     if re.match(r'\s*(An? )?[Aa]uxiliary', d['doc']) or re.match(r'\s*[Ii]mplementation', d['doc']):
@@ -160,25 +176,64 @@ def wanted(d):
 
 
 STRUCTURES = set()
+DICT = {}
 
 
-def words_of_name(lean, doc):
+# words before another word in a name, as modifiers: AddMonoidHom, MulEquiv
+MODIFIERS = {'add': 'additive', 'mul': 'multiplicative', 'nat': 'natural', 'int': 'integer',
+             'comm': 'commutative', 'lin': 'linear', 'alg': 'algebra', 'cont': 'continuous'}
+
+# pairs of words of names that are one term
+PAIRS = {('nat', 'trans'): 'natural transformation', ('nat', 'iso'): 'natural isomorphism',
+         ('nat', 'degree'): 'natural degree', ('mon', 'cat'): 'monoid category',
+         ('grp', 'cat'): 'group category', ('top', 'cat'): 'topological category',
+         ('ring', 'cat'): 'ring category', ('mod', 'cat'): 'module category',
+         ('add', 'equiv'): 'additive equivalence', ('mul', 'equiv'): 'multiplicative equivalence',
+         ('linear', 'equiv'): 'linear equivalence', ('ring', 'equiv'): 'ring isomorphism',
+         ('alg', 'equiv'): 'algebra isomorphism', ('order', 'iso'): 'order isomorphism',
+         ('nhds', 'within'): 'neighbourhood filter within', ('is', 'o'): 'is little o',
+         ('is', 'big', 'o'): 'is big o', ('l', 'i'): 'linear isometric'}
+
+# adjectives of relations: "#1 is Brauer equivalent to #2"
+RELATIONAL = set('''equivalent isomorphic equal coprime disjoint orthogonal similar conjugate homotopic
+adjacent comparable parallel related independent congruent associated dual complementary
+codisjoint perpendicular cofinal subordinate homeomorphic equinumerous'''.split())
+
+# Greek letters that Mathlib names maps by
+GREEK = {'ι': 'inclusion', 'π': 'projection'}
+
+
+def words_of_name(lean, module):
     """The words of the last part of a name, abbreviations spelled out and
-    proper names capitalized: minFac -> ['minimum', 'factor']."""
+    proper names capitalized: minFac -> ['minimum', 'factor'],
+    AddMonoidHom -> ['additive', 'monoid', 'homomorphism']; an inner "of" is
+    kept (PartitionOfUnity), a first "of" or "to" (ofList, toFun) is not."""
     parts = lean.split('.')
     last = parts[-1]
     if last in ('app', 'toFun', 'apply') and len(parts) > 1:
         last = parts[-2]
-    ws = re.findall(r'[A-Z]?[a-z]+|[A-Z]+(?![a-z])|\d+', last.replace('_', ' '))
-    out = []
-    for w in ws:
-        lw = w.lower()
-        if lw in ABBREVIATIONS:
-            out += ABBREVIATIONS[lw].split()
-        elif lw in PROPER:
-            out.append(PROPER[lw])
+    last = re.sub('[ιπ]', lambda m: ' %s ' % GREEK[m.group(0)].capitalize(), last)
+    ws = [w.lower() for w in re.findall(r'[A-Z]?[a-z]+|[A-Z]+(?![a-z])|\d+', last.replace('_', ' '))]
+    while ws and ws[0] in ('of', 'to') and len(ws) > 1:
+        ws = ws[1:]
+    out, i = [], 0
+    while i < len(ws):
+        w, nxt = ws[i], (ws[i + 1] if i + 1 < len(ws) else None)
+        if (w, nxt) in PAIRS:
+            out += PAIRS[(w, nxt)].split()
+            i += 2
+            continue
+        if nxt and w in MODIFIERS:
+            out.append(MODIFIERS[w])
+        elif w in ('mono', 'anti') and 'CategoryTheory' not in module:
+            out.append('monotone' if w == 'mono' else 'antitone')
+        elif w in ABBREVIATIONS:
+            out += ABBREVIATIONS[w].split()
+        elif w in PROPER:
+            out.append(PROPER[w])
         else:
-            out.append(lw)
+            out.append(w)
+        i += 1
     return out
 
 
@@ -188,33 +243,104 @@ def singular(w):
     return suggest.singular(w)
 
 
-def from_name(lean, nargs, cat, value, doc):
-    ws = [w for w in words_of_name(lean, doc) if w not in DROP]
-    if not ws or any(w.isdigit() for w in ws):
+def main_args(typ, nargs):
+    """The numbers of the arguments that a reading names: the ones that are
+    not types (Set), at most two, the last ones."""
+    parts, depth, cur = [], 0, ''
+    for ch in typ:
+        depth += ch == '('
+        depth -= ch == ')'
+        cur += ch
+        if depth == 0 and cur.endswith('->'):
+            parts.append(cur[:-2].strip())
+            cur = ''
+    objs = [i + 1 for i, p in enumerate(parts[:nargs])
+            if not re.fullmatch(r'\(\S+ : (Set|Prop)\)|Set|Prop', p) and not re.match(r'(\(\S+ : )?\(*Proof\b', p)]
+    return (objs or list(range(1, nargs + 1)))[-2:]
+
+
+def of_args(ks):
+    if not ks:
+        return ''
+    return ' of #%d' % ks[0] if len(ks) == 1 else ' of #%d and #%d' % tuple(ks[-2:])
+
+
+def head_words(lean, module, cat):
+    """The words that a reading of a name is made of: a constructor ofX
+    names its namespace's type (Bicone.ofLimitCone: "bicone"), a function
+    XOfY its X (pointOfClosedPoint: "point"), but a type keeps its "of"
+    (PartitionOfUnity); a final left or right comes first (compRight: "right
+    composition")."""
+    parts = lean.split('.')
+    last = parts[-1]
+    if cat == 'Exp' and re.match(r'of[A-Z]', last) and len(parts) > 1:
+        return [w for w in words_of_name('.'.join(parts[:-1]), module) if w not in DROP and len(w) > 1]
+    ws = [w for w in words_of_name(lean, module) if w not in DROP and len(w) > 1]
+    if cat == 'Exp' and 'of' in ws[1:]:
+        ws = ws[:ws.index('of', 1)]
+    if len(ws) > 1 and ws[-1] in ('left', 'right'):
+        ws = [ws[-1]] + ws[:-1]
+    return ws
+
+
+def stems(ws):
+    return {w[:4].lower() for w in ws if len(w) >= 3}
+
+
+def from_name(lean, module, nargs, cat, value, doc='', typ=''):
+    ws = head_words(lean, module, cat)
+    if not ws or any(w.isdigit() for w in ws) or ws[-1] == 'of':
         return []
     sg = lambda w: singular(w) if w.islower() else w
+    ks = main_args(typ, nargs) if nargs > 2 or cat == 'Prop' else list(range(1, nargs + 1))
+    first = '#%d' % ks[0] if ks else '#1'
     out = []
-    if cat == 'Prop':
+    if cat == 'Prop' and len(ks) == 2:
+        x, y = ks
+        rest = ' '.join(ws[1:] if ws[0] == 'is' else ws)
+        binary = ['#%d is %s to #%d' % (x, rest, y), '#%d is %s with #%d' % (x, rest, y),
+                  '#%d is a %s of #%d' % (x, rest, y)]
+        unary = ['#%d is %s' % (y, rest), '#%d is a %s' % (y, rest)]
+        if not adjectival(ws[-1]) and not (len(ws) > 2 and ws[-2].endswith('ly')):
+            unary.reverse()
+        rel = ws[-1] in RELATIONAL or re.search(r'\b%s (to|with)\b' % re.escape(ws[-1]), doc)
+        out += binary + unary if rel else unary + binary
+    elif cat == 'Prop':
         if ws[0] in ('is', 'has'):
             rest = ' '.join(ws[1:])
             if rest:
-                out += ['#1 is a %s' % rest, '#1 is %s' % rest] if ws[0] == 'is' else ['#1 has a %s' % rest]
+                adj = adjectival(ws[-1]) or (len(ws) > 2 and ws[-2].endswith('ly')) or \
+                    re.search(r'\bis %s\b' % re.escape(rest), doc) and not re.search(r'\bis an? %s\b' % re.escape(rest), doc)
+                out += (['%s is %s' % (first, rest), '%s is a %s' % (first, rest)] if adj else
+                        ['%s is a %s' % (first, rest), '%s is %s' % (first, rest)]) if ws[0] == 'is' else ['%s has a %s' % (first, rest)]
         else:
-            out += ['#1 is %s' % ' '.join(ws), '#1 is a %s' % ' '.join(ws)]
+            out += ['%s is %s' % (first, ' '.join(ws)), '%s is a %s' % (first, ' '.join(ws))]
     elif cat == 'Kind':
-        out += [' '.join(sg(w) for w in ws) + suggest.args_phrase(nargs)]
+        out += [' '.join(sg(w) for w in ws) + (suggest.args_phrase(nargs) if nargs <= 2 else of_args(list(range(1, nargs + 1))))]
     elif cat == 'Exp':
-        if ws[0] in ('to', 'of') and len(ws) > 1:
-            ws = ws[1:]
         collection = re.match(r'Elem \((Finset|List|Multiset|Set)\b', value)
         if collection and ws[-1].endswith('s') and ws[-1] != 'list':
             kind = 'list' if collection.group(1) == 'List' else 'set'
-            out += ['the %s of %s%s' % (kind, ' '.join([sg(w) for w in ws[:-1]] + [ws[-1]]), suggest.args_phrase(nargs))]
+            out += ['the %s of %s%s' % (kind, ' '.join([sg(w) for w in ws[:-1]] + [ws[-1]]), of_args(ks))]
         np = ' '.join([sg(w) for w in ws])
-        out += ['the %s%s' % (np, suggest.args_phrase(nargs))]
+        out += ['the %s%s' % (np, of_args(ks))]
+        if len(ks) == 2:
+            out += ['the %s of #%d' % (np, ks[-1])]
         if nargs == 0:
             out += [np]
     return out
+
+
+def adjectival(w):
+    e = DICT.get(w, {})
+    return ('A' in e and 'N' not in e) or (not e and w.endswith(ADJ_SUFFIXES) and not w.endswith(NOUN_EXCEPTIONS))
+
+
+def cut_generic(c):
+    """A docstring's noun phrase without a phrase about any object: "the
+    cofinality on an ordinal of #1" -> "the cofinality of #1"."""
+    cut = re.sub(r' (?:on|in|for|of|over|from|of all) (?:an?|any|some|every|each) [a-z -]+?(?= of #| on #| in #|$)', '', c)
+    return [cut] if cut != c else []
 
 
 def parse_all(cands):
@@ -234,14 +360,22 @@ def parse_all(cands):
     return dict(zip(cands, blocks))
 
 
-def known_words(words):
+def known_words(words, generated=()):
+    """word -> whether the grammar has it, other than as a generated word."""
     r = subprocess.run([RUN, '-find-gf'], input='\n'.join(words) + '\n', capture_output=True, text=True)
     out = {}
     for line in r.stdout.split('\n'):
         if ' :' in line:
             w, fs = line.split(' :', 1)
-            out[w.strip()] = bool(fs.strip())
+            out[w.strip()] = any(f not in generated for f in fs.split())
     return out
+
+
+def generated_functions():
+    """The functions of the generated block of Mathlib.gf."""
+    s = open(os.path.join(os.environ['INFORMATH_ROOT'], 'grammars', 'Mathlib.gf')).read()
+    m = re.search(re.escape(GENERATED[0]) + '(.*?)' + re.escape(GENERATED[1]), s, re.S)
+    return set(re.findall(r'fun (\S+) :', m.group(1))) if m else set()
 
 
 ADJ_SUFFIXES = ('al', 'ic', 'ive', 'ous', 'able', 'ible', 'ary', 'ian', 'ant', 'ent', 'less', 'ful',
@@ -273,6 +407,9 @@ def dict_eng():
         m = re.match(r'lin ([a-z]+)_A = (?:compoundA \()?mkA "([a-z]+)"', l)
         if m and m.group(1) == m.group(2):
             out[m.group(2)]['A'] = True
+        m = re.match(r'lin ([a-z]+)_Adv = ', l)
+        if m:
+            out[m.group(1)]['Adv'] = True
         m = re.match(r'lin ([a-z]+)_V2? = ', l)
         if m:
             out[m.group(1)]['V'] = True
@@ -282,14 +419,18 @@ def dict_eng():
 def lexical_item(w, dic, adj_role, doc_count):
     """(GF function, its English linearization) for a new word, or None: a
     noun or an adjective as DictEng has it (an adjective if the candidates use
-    it as one, when it is both), a proper name as a noun, and a word that
-    DictEng lacks, if docstrings use it thrice, by its ending."""
+    it as one, when it is both), an adverb in -ly, a proper name as a noun,
+    and a word that DictEng lacks, if three docstrings use it, by its ending."""
     ident = re.sub(r"[^A-Za-z0-9]", '_', w)
     e = dic.get(w.lower(), {})
     plural = None
     for sg, pl in IRREGULAR_PLURALS:
         if w.endswith(sg):
             plural = w[:-len(sg)] + pl
+    if w.endswith('ly') and ('Adv' in e or 'N' not in e):
+        return ident + '_Adverb', 'ParadigmsEng.mkAdv "%s"' % w
+    if w.endswith('est') and len(w) > 5 and w[:-3] in dic:
+        return None                     # a superlative
     if 'A' in e and ('N' not in e or adj_role):
         return ident + '_Adj', 'mkAdj "%s"' % w
     if 'N' in e:
@@ -298,7 +439,7 @@ def lexical_item(w, dic, adj_role, doc_count):
         return ident + '_Noun', 'mkNoun "%s"' % w
     elif e or doc_count < 3:
         return None                     # a verb, or a word of names only
-    elif w.lower().endswith(ADJ_SUFFIXES) and w.lower() not in NOUN_EXCEPTIONS:
+    elif w.lower().endswith(ADJ_SUFFIXES) and not w.lower().endswith(NOUN_EXCEPTIONS):
         return ident + '_Adj', 'mkAdj "%s"' % w
     if plural and plural != w + 's':
         return ident + '_Noun', 'mkNoun (mkN "%s" "%s")' % (w, plural)
@@ -317,6 +458,16 @@ def write_block(path, lines):
     open(path, 'w').write(s)
 
 
+DOC_COUNTS = collections.Counter()
+
+
+def count_doc_words(defs):
+    """How many docstrings use each word in their prose (not in code)."""
+    for d in defs:
+        prose = re.sub(r'`[^`]*`|\$[^$]*\$|\[[^\]]*\]\([^)]*\)', ' ', d['doc'])
+        DOC_COUNTS.update(set(re.findall(r"[A-Za-z][a-z]+", prose)))
+
+
 def make_lexicon(name_words, doc_words, adj_words, funs):
     """New English words for Mathlib.gf and MathlibEng.gf: the unknown words of
     the candidates from names that come twice or more, and those of the
@@ -324,12 +475,21 @@ def make_lexicon(name_words, doc_words, adj_words, funs):
     content words; a word that the grammar has as a function already is not made."""
     grammars = os.path.join(os.environ['INFORMATH_ROOT'], 'grammars')
     words = sorted(w for w in set(name_words) | set(doc_words)
-                   if (name_words[w] >= 2 or doc_words[w] >= 3) and w.lower() not in STOP
-                   and re.fullmatch(r"[A-Za-zÀ-ÿ]{4,}", w) and w.lower() not in ABBREVIATIONS)
+                   if (name_words[w] >= 2 or doc_words[w] >= 3 or DOC_COUNTS[w] >= 3) and w.lower() not in STOP
+                   and re.fullmatch(r"[A-Za-zÀ-ÿ]{4,}", w) and not re.search(r'[a-z][A-Z]', w)
+                   and w.lower() not in ABBREVIATIONS)
     absl, cncl = [], []
     dic = dict_eng()
+    # a plural as its singular, if that is a word too: cocones -> cocone
+    lemmas = []
     for w in words:
-        item = lexical_item(w, dic, adj_words[w] * 2 > name_words[w] + doc_words[w], doc_words[w])
+        sg = singular(w) if w.islower() else w
+        if sg != w and (sg in dic or DOC_COUNTS[sg] or sg in words):
+            w = sg
+        if w not in lemmas:
+            lemmas.append(w)
+    for w in lemmas:
+        item = lexical_item(w, dic, adj_words[w] * 2 > name_words[w] + doc_words[w], DOC_COUNTS[w])
         if not item:
             continue
         f, lin = item
@@ -343,6 +503,9 @@ def make_lexicon(name_words, doc_words, adj_words, funs):
 
 
 def main():
+    DICT.update(dict_eng())
+    defs0 = [json.loads(l) for l in open('out/definitions.jsonl')]
+    count_doc_words(defs0)
     defs = [json.loads(l) for l in open('out/definitions.jsonl')]
     STRUCTURES.update(d['lean'] for d in defs if d['structure'])
     have = covered()
@@ -355,8 +518,13 @@ def main():
         value = suggest.VALUE[0]
         if cat == 'Proof':
             continue
-        cands = [(c, 'doc') for c in suggest.from_doc(d['dk'], d['doc'], names, nargs, cat)] + \
-                [(c, 'name') for c in from_name(d['lean'], nargs, cat, value, d['doc'])]
+        # a docstring's wording, if it shares a word with the name
+        name_stems = stems(words_of_name(d['lean'], d['module'])) | stems(head_words(d['lean'], d['module'], cat))
+        docs = [c for c in suggest.from_doc(d['dk'], d['doc'], names, nargs, cat)
+                if any(a.startswith(b) or b.startswith(a) for a in stems(re.findall(r'[A-Za-z]+', c)) for b in name_stems)]
+        cands = [(c2, 'doc') for c in docs for c2 in cut_generic(c)]
+        cands += [(c, 'doc') for c in docs] + \
+                [(c, 'name') for c in from_name(d['lean'], d['module'], nargs, cat, value, d['doc'], d['type'])]
         seen, cs = set(), []
         for c, src in cands:
             if c not in seen:
@@ -368,10 +536,15 @@ def main():
     parses = parse_all(allc)
 
     def fits(c, cat, nargs):
+        """The first parse of the right category that uses arguments of the
+        constant, all if it has two or fewer, the others left out of the reading,
+        as Eqt's "#2 is equal to #3" leaves out the type #1."""
         for tree, prof in parses.get(c, []):
             head = tree.lstrip('(').split()[0]
-            k = len(re.findall(r'\d+', prof))
-            if cats.get(head) in CATS[cat] and k == nargs:
+            used = [int(i) for i in re.findall(r'\d+', prof)]
+            if cats.get(head) not in CATS[cat] or any(i > nargs for i in used) or len(set(used)) < len(used):
+                continue
+            if len(used) == nargs or (nargs > 2 and used) or (nargs == 2 and len(used) == 1 and cat == 'Prop'):
                 return tree
         return None
 
@@ -383,18 +556,20 @@ def main():
         ok = [(c, src, fits(c, cat, nargs)) for c, src in cs]
         good = [(c, src, t) for c, src, t in ok if t]
         bad = [(c, src) for c, src, t in ok if not t]
-        for c, src in bad:
+        # the words of all candidates count, as the generated words are made
+        # again each time
+        for c, src in cs:
             for w in re.findall(r"[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ'-]*", c):
                 words[w] += 1
                 (name_words if src == 'name' else doc_words)[w] += 1
-                if re.match(r'#1 is (?!an? )', c):
+                if re.match(r'#\d+ is (?!an? )', c):
                     adj_words[w] += 1
         if good:
             got += 1
             c, src, t = good[0]
             table.append((d, c, src))
         tsv.append((d, cat, nargs, good, bad))
-    known = known_words(sorted(words))
+    known = known_words(sorted(words), generated_functions())
     unknown = collections.Counter({w: n for w, n in words.items() if not known.get(w, True)})
 
     with open('definitions.dkgf', 'w') as f:
@@ -417,7 +592,7 @@ def main():
           % (len(rows), got, len(unknown)))
     if '-lexicon' in sys.argv[1:]:
         make_lexicon(collections.Counter({w: n for w, n in name_words.items() if w in unknown}),
-                     collections.Counter({w: n for w, n in doc_words.items() if w in unknown}), adj_words, set(cats))
+                     collections.Counter({w: n for w, n in doc_words.items() if w in unknown}), adj_words, set(cats) - generated_functions())
     by = collections.Counter(cat for _, cat, _, _ in rows)
     byok = collections.Counter(cat for _, cat, _, good, _ in tsv if good)
     print('  ' + ', '.join('%s %d/%d' % (k, byok[k], by[k]) for k in by))

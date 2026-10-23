@@ -85,7 +85,7 @@ ABBREVIATIONS = {
     'dim': 'dimension', 'ess': 'essential', 'cmp': 'comparison', 'dbl': 'double', 'subst': 'substitution',
     'icc': 'closed interval', 'ioo': 'open interval', 'postcompose': 'postcomposition',
     'precompose': 'precomposition', 'sheafify': 'sheafification', 'unopposite': 'opposite',
-    'lie': 'Lie', 'cof': 'cofinality', 'lequiv': 'linear equivalence', 'liequiv': 'linear isometric equivalence',
+    'lie': 'Lie', 'cof': 'cofinality', 'con': 'congruence relation', 'perm': 'permutation', 'lequiv': 'linear equivalence', 'liequiv': 'linear isometric equivalence',
 }
 
 # words of names that no wording uses: Mathlib's markers of variants and of
@@ -115,7 +115,7 @@ Choquet Steinitz Hamel Wiener Riesz Fréchet Frechet Arzela Ascoli Dini Heine Bo
 Clifford Grassmann Plücker Plucker Pontryagin Bohr Dynkin Coxeter Weyl Killing Cartan Chevalley
 Picard Néron Severi Bott Frattini Hopf Poincaré Poincare Dold Kan Ext Tor Seifert Whitehead
 Mahler Liouvillian Pochhammer Stirling Catalan Fibonacci Lucas Wythoff Beatty Zeckendorf Hasse Weil
-Selmer Mersenne Wieferich Ramanujan Gamma Beta Zeta'''.split()}
+Selmer Mersenne Wieferich Ramanujan Gamma Beta Zeta Yoneda Coyoneda Beck Dirac'''.split()}
 
 # categories of the lexical items that a parse can start with, by its value category
 CATS = {
@@ -196,6 +196,11 @@ PAIRS = {('nat', 'trans'): 'natural transformation', ('nat', 'iso'): 'natural is
          ('is', 'big', 'o'): 'is big o', ('l', 'i'): 'linear isometric',
          ('rel', 'iso'): 'relation isomorphism', ('rel', 'hom'): 'relation homomorphism',
          ('rel', 'embedding'): 'relation embedding', ('rel', 'series'): 'relation series'}
+
+# the verbs that predicates are named after
+VERB_HEADS = {'has': 'has', 'preserves': 'preserves', 'reflects': 'reflects', 'creates': 'creates',
+              'admits': 'admits'}
+VERBS = ['preserve', 'reflect', 'create', 'admit']   # in the lexicon, generated if missing
 
 # adjectives of relations: "#1 is Brauer equivalent to #2"
 RELATIONAL = set('''equivalent isomorphic equal coprime disjoint orthogonal similar conjugate homotopic
@@ -349,7 +354,14 @@ def from_name(lean, module, nargs, cat, value, doc='', typ='', argnames=()):
         forms = ['#%d is %s with respect to #%d' % (x, rest, y), '#%d is a %s with respect to #%d' % (x, rest, y)]
         out += forms if adj else forms[::-1]
     elif cat == 'Prop':
-        if ws[0] in ('is', 'has'):
+        if ws[0] in VERB_HEADS and len(ws) > 1:
+            # HasLimits: "#1 has limits"; PreservesFiniteLimits: "#1 preserves finite limits"
+            verb, rest = VERB_HEADS[ws[0]], ws[1:]
+            plural = ' '.join(rest[:-1] + [rest[-1] if rest[-1].endswith('s') else rest[-1] + 's'])
+            sing = ' '.join([sg(w) for w in rest])
+            out += ['%s %s %s' % (first, verb, plural), '%s %s a %s' % (first, verb, sing),
+                    '%s %s an %s' % (first, verb, sing)]
+        elif ws[0] in ('is', 'has'):
             rest = ' '.join(ws[1:])
             if rest:
                 adj = adjectival(ws[-1]) or (len(ws) > 2 and ws[-2].endswith('ly')) or \
@@ -507,21 +519,21 @@ JUNK = set('''because while them without will until against another everything i
 five four sorry weird stupid young brown nightly weekly bird banana church bell machine fund ghost
 store stream tape load float token info meta mathlib namespace tactic simp simproc typeclass defeq
 formatter parenthesizer caching emulator discharger peek lookup insert reorder select trim paste
-squash shrink move raise pull push yield seen made known written built chosen considered described
+squash  move raise pull push yield seen made known written built  considered described
 needed required provided proposed referred regarded registered viewed involved implemented
 guaranteed specified expressed exhibited fudge junk guess intent clog blur slash sect stereo
-auto away back down after near together outside inside forall prop prod perm frac conv con quasi
-beck krull bernoulli clifford dirac serre levy reedy bourbaki yoneda coyoneda candidate package
+auto away back down after near together outside inside forall prop prod  frac conv  quasi
+ krull bernoulli clifford  serre levy reedy bourbaki   candidate package
 packaged success priority precedence proxy wrapped upgraded unsound undefined lawful literal
 plot spread synonym them dfinsupp finset fpqc proetale lapply subfamily boxes epis simplices
-bicomplexes coalgebras subcomplexes nuclei continuants select halt anchor arch foot leg horn
-rack shelf spine site coming going making showing turning plot cast chunk con prod perm finset
+bicomplexes coalgebras subcomplexes nuclei continuants select halt anchor arch foot leg 
+rack shelf  site coming going making showing turning plot  chunk  prod  finset
 foldl foldr yield spread discard compress linearize parametrize preserve bigger larger largest
-coarsest smaller higher automorphize binder datum couple corner shadow contract tilt sober
+coarsest smaller higher automorphize binder datum couple  shadow contract tilt sober
 accidental actual based carried changed combined composed constructed contained continued
-covered determined divided followed formed identified included inherited joined listed mapped
-modified placed presented pulled realized reconstructed removed represented restricted shifted
-sorted stopped tagged transferred transported valued forbidden external incident trailing walking
+covered determined  followed formed identified included inherited joined listed mapped
+modified placed  pulled realized reconstructed removed represented  
+sorted stopped tagged transferred transported valued forbidden  incident trailing 
 going typically possibly necessarily finally immediately initially frequently effectively
 theoretically virtually'''.split())
 
@@ -571,6 +583,8 @@ def cell_lin(lang, cat, cell):
     forms separated by /, for a noun followed by its gender (French m f,
     German m f n, Swedish u n, Czech ma mi f n)."""
     q = lambda xs: ' '.join('"%s"' % x.strip() for x in xs)
+    if cat == 'Verb':
+        return '%smkVerb (mkV %s)' % ('UtilitiesCze.' if lang == 'Cze' else '', q(cell.split('/')))
     if cat == 'Adverb':
         return 'Paradigms%s.mkAdv "%s"' % (lang, cell.strip())
     if cat == 'Adj':
@@ -622,7 +636,7 @@ def make_lexicon(name_words, doc_words, adj_words, funs):
                    and re.fullmatch(r"[A-Za-zÀ-ÿ]{4,}", w) and not re.search(r'[a-z][A-Z]', w)
                    and (w.islower() or w.lower() in PROPER) and w not in JUNK
                    and (not w.endswith('ing') or 'N' in dic.get(w, {}) or w in ING_TERMS)
-                   and w.lower() not in ABBREVIATIONS)
+                   and ABBREVIATIONS.get(w.lower(), w.lower()) == w.lower())
     absl, cncl, items = [], [], []
     # a plural as its singular, if that is a word too: cocones -> cocone
     lemmas = []
@@ -630,10 +644,17 @@ def make_lexicon(name_words, doc_words, adj_words, funs):
         sg = singular(w) if w.islower() else w
         if sg != w and (sg in dic or DOC_COUNTS[sg] or sg in words):
             w = sg
-        if w in JUNK or len(w) < 4:
+        if w in JUNK or len(w) < 4 or ABBREVIATIONS.get(w.lower(), w.lower()) != w.lower():
             continue
+        w = PROPER.get(w.lower(), w)      # Yoneda, not yoneda
         if w not in lemmas:
             lemmas.append(w)
+    for v in VERBS:
+        f = v + '_Verb'
+        if f not in funs:
+            absl.append('fun %s : Verb ;' % f)
+            cncl.append('lin %s = mkVerb "%s" ;' % (f, v))
+            items.append((f, v))
     for w in lemmas:
         item = lexical_item(w, dic, adj_words[w] * 2 > name_words[w] + doc_words[w], DOC_COUNTS[w])
         if not item:

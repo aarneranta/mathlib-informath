@@ -63,7 +63,9 @@ Dedukti and the Informath grammar, written in Grammatical Framework (GF), and is
 compositional and does not invent content. The main bottleneck is the symbol table, which tells
 how each Lean constant is to be worded. We infer it for all of Mathlib's definitions from
 their docstrings and names, checking each candidate with the grammar: two thirds of 38,690
-definitions get a wording. On 705 statements of Mathlib's prime numbers, orders and lattices,
+definitions get a wording. All 38,690 definitions are then read in English, with their
+definientia, and 99\% get a reading, a third of them with no constant left symbolic; the same
+pipeline can read them in the other languages when needed. On 705 statements of Mathlib's prime numbers, orders and lattices,
 83\% are fully worded in English, and 265 proofs, by terms or by tactics, are rendered as texts.
 The system was built in a collaboration between a human researcher and an AI coding agent, which
 is also a coauthor of this paper; we report what came from where.
@@ -378,13 +380,16 @@ generated one. Table~\ref{tab:who} divides the work between the existing Informa
 author's prompts and decisions, and the AI agent.
 
 \begin{table}[t]
-\centering\small
+\centering\footnotesize
 \begin{tabular}{lrrrr}
 \toprule
 & functions, constants & types & predicates & all \\
 \midrule
 definitions & 31,877 & 2,466 & 4,347 & 38,690 \\
 with a wording & 22,276 & 1,763 & 1,818 & \textbf{25,857} (67\%) \\
+\midrule
+\multicolumn{4}{l}{read in English (Section~\ref{sec:allread}): with a reading} & \textbf{38,279} (99\%) \\
+\multicolumn{4}{l}{\quad with no constant shown symbolically} & about 12,300 (32\%) \\
 \midrule
 \multicolumn{4}{l}{the wordings from: names 22,307; docstrings 3,488; the hand-written table 62} \\
 \bottomrule
@@ -538,10 +543,28 @@ wrong & ``the vector multiplicative vector of $w$ and $v$'' (\ttt{vecMulVec}), `
 
 Two thirds are thus usable, and the predicates fare best: of the eleven in the sample, nine are
 good. The wrong ones are mostly composite names read word by word
-(\ttt{presheafHomSectionsEquiv}: ``the presheaf homomorphism section equivalence''), and
+(\ttt{presheaf\-Hom\-Sections\-Equiv}: ``the presheaf homomorphism section equivalence''), and
 abbreviations spelled out wrongly in context (\emph{SMul} is a scalar multiplication, not a
 product). Proof arguments and unnamed arguments ($\#4$) should not be shown, and
 \ttt{LibraryNote}, documentation without mathematical content, should have been filtered out.
+
+\paragraph{All the definitions in English.}
+\label{sec:allread}
+Finally, all 38,690 definitions were read in English, as the statements on the pages are: each
+definition's statement, with its definiens where it has one (25,494 of the exported constants
+have one that the exporter translates), by the full symbol table. With eight RunInformath
+processes and a time limit of one second per definition, this took about half an hour on a
+laptop. 38,279 definitions (99\%) got a reading, 405 went over the time limit, and 6 got none.
+About 12,300 readings (32\%) show no constant symbolically; the others show the constants that
+have no wording, often from the definiens, as operators. The readings are published on 111
+static pages of at most 400 definitions, by part of Mathlib, with a search page over all of
+them. For example, \ttt{Quiver.IsThin}:
+\reading{Let $V$ be a set. Then $V$ is thin, if for all elements $a$ and $b$ of $V$, the set of
+homomorphisms of $a$ and $b$ is a subsingleton.}
+\noindent The other four languages use the same pipeline and grammar, and their words are in the
+translation table, so the definitions can be read in them on demand, for instance by a server;
+these readings have not been made or checked, and they will show more constants symbolically
+where a language lacks a word.
 
 \section{Known problems and open issues}
 \label{sec:problems}
@@ -568,7 +591,8 @@ direction.
 
 Symbolic informalization of Lean is feasible at the scale of Mathlib if the lexicon can be
 inferred: Mathlib's naming conventions and docstrings give wordings to two thirds of its
-definitions, and a grammar can check them. The readings are faithful by construction, and they
+definitions, and a grammar can check them. With them, all of Mathlib's definitions have been
+read in English, a third of them with no symbolic residue, in half an hour on a laptop. The readings are faithful by construction, and they
 come in five languages at once. What the method does not give is judgement: which wording is
 right, which word a language uses, when a reading is false although it parses. That remained
 the human's part, in a collaboration where the AI agent did most of the construction and the

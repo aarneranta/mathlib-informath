@@ -198,9 +198,10 @@ LANG_SCRIPT = """
 
 def definitions_box():
     """A link to definitions.html (build-definitions.py), with its numbers."""
-    if not os.path.exists('definitions-data.json'):
+    if not os.path.exists('definitions-data.js'):
         return ''
-    rows = json.load(open('definitions-data.json'))['rows']
+    text = open('definitions-data.js').read()
+    rows = json.loads(text[text.index('{'):text.rindex('}') + 1])['rows']
     return ('<a class=defsbox href="definitions.html"><b>All of Mathlib\'s definitions in English &rsaquo;</b>'
             '<span>%s of its %s definitions (functions, types, structures, classes, predicates) have an '
             'English wording, made from their docstrings and names; search them by name, wording or '

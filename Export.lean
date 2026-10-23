@@ -513,7 +513,17 @@ def definitionLine (env : Environment) (mapping : Std.HashMap Name String)
   let .ok ((s, _), _) := res | return none
   let doc := (← Lean.findDocString? env n).getD ""
   let field := (env.getProjectionFnInfo? n).isSome
-  return some s!"\{\"lean\": {jsonStr n.toString}, \"dk\": {jsonStr (mangle n)}, \"kind\": {jsonStr (kindOf ci)}, \"module\": {jsonStr mod.toString}, \"class\": {isClass env n}, \"structure\": {isStructure env n}, \"field\": {field}, \"doc\": {jsonStr doc}, \"type\": {jsonStr (asPredicate env n s)}}"
+  -- the definiens, as the modules' definitions have it: not a compiled pattern
+  -- matching or recursion, not a class, and not too big to read
+  let mut defn := ""
+  if let some v := ci.value? (allowOpaque := false) then
+    if !isClass env n then
+      let vres ← (((value ci.type v).run {mapping, binders, keepAll}).run' {} {}).toIO ctx st |>.toBaseIO
+      if let .ok ((vs, _), _) := vres then
+        let compiled := ["UNSUPPORTED", "match_", "casesOn", "__rec ", "_private", "_proof_"].any
+                          fun w => (vs.splitOn w).length > 1
+        if !compiled && vs.length ≤ 3000 then defn := vs
+  return some s!"\{\"lean\": {jsonStr n.toString}, \"dk\": {jsonStr (mangle n)}, \"kind\": {jsonStr (kindOf ci)}, \"module\": {jsonStr mod.toString}, \"class\": {isClass env n}, \"structure\": {isStructure env n}, \"field\": {field}, \"doc\": {jsonStr doc}, \"type\": {jsonStr (asPredicate env n s)}, \"definiens\": {jsonStr defn}}"
 
 def exportDefinitions (prefixes : List String) (mapping : Std.HashMap Name String)
     (keepAll binders : Std.HashSet Name) : IO Unit := do

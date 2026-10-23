@@ -54,6 +54,14 @@ be reviewed (its header explains the notation; an empty cell means no word).
 Where a language lacks a word, `build-index.py` keeps the reading made without
 the generated table, which shows the constant symbolically.
 
+`definitions.html` searches all 38,690 definitions by name and wording and
+links to their entries on static pages, `definitions/<Part>-<k>.html` (111
+pages of at most 400 definitions), where each has its wording and its reading
+in English: the statement of the definition with its definiens, read by
+Informath (`python3 build-definitions.py`, about half an hour with 8
+RunInformath processes; the readings are cached in
+`out/definition-readings.json`).
+
 ## Files
 
 | | |

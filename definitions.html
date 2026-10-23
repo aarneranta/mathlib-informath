@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mathlib definitions in English</title>
+<style>
+ body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0 auto;max-width:1150px;padding:1.5rem;line-height:1.5;color:#222;background:#fff}
+ header{border-bottom:1px solid #ddd;margin-bottom:1rem}
+ nav{font-size:.9em;margin-bottom:.4rem}
+ .bar{position:sticky;top:0;background:#fff;padding:.6rem 0;border-bottom:1px solid #ddd;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;z-index:2}
+ .bar input[type=search]{flex:1 1 18rem;font:inherit;padding:.35rem .6rem;border:1px solid #c8d3e6;border-radius:4px}
+ .bar select{font:inherit;padding:.3rem;border:1px solid #c8d3e6;border-radius:4px;background:#fff}
+ .count{color:#666;font-size:.9em}
+ .entry{padding:.55rem 0;border-bottom:1px solid #eee}
+ .name{font-weight:700;font-family:ui-monospace,Menlo,monospace;color:#0645ad;text-decoration:none;word-break:break-all}
+ .name:hover{text-decoration:underline}
+ .k{font-size:.72em;padding:0 .35rem;border-radius:3px;background:#eef;color:#335;margin-left:.4rem}
+ .k.Prop{background:#e6f4ea;color:#1e6b34}.k.Kind{background:#fdf0e1;color:#7a4a08}
+ .mod{color:#888;font-size:.8em;margin-left:.6rem;font-family:ui-monospace,Menlo,monospace}
+ .w{margin:.2rem 0 .1rem;font-size:1.02em}
+ .w i{font-family:ui-monospace,Menlo,monospace;font-style:normal;color:#7a2a8a}
+ .w.none{color:#999;font-style:italic;font-size:.9em}
+ .src{color:#999;font-size:.75em;margin-left:.4rem}
+ .doc{color:#555;font-size:.88em}
+ .pages{margin:1rem 0;display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
+ .pages button{font:inherit;padding:.2rem .6rem;border:1px solid #c8d3e6;border-radius:3px;background:#f4f6fb;color:#0645ad;cursor:pointer}
+ .pages button:disabled{color:#aaa;cursor:default}
+</style></head><body>
+<header>
+<nav><a href="mathlib-informath.html">Mathlib informalized</a> &rsaquo; definitions</nav>
+<h1>Mathlib's definitions in English</h1>
+<p>All 38,690 definitions of Mathlib (its functions, constants, types, structures,
+classes and predicates; not its theorems, instances or tactics), 26,215 of them with an English
+wording that Informath's grammar parses: functions and constants 22,658 of 31,877 · types 1,800 of 2,466 · predicates 1,757 of 4,347. The wordings marked <b>hand</b> are
+written by hand in <code>mathlib.dkgf</code>; the others are made by
+<code>definition-table.py</code> from the definition's docstring (<b>doc</b>) or from its name
+(<b>name</b>), and are in <code>definitions.dkgf</code>. In a wording, the arguments are shown by
+their names. Each name links to Mathlib's documentation.</p>
+</header>
+<div class=bar>
+ <input type=search id=q placeholder="search names, wordings and docstrings" autofocus>
+ <select id=area><option value="">all of Mathlib</option></select>
+ <select id=cat><option value="">all kinds</option><option value="Exp">functions and constants</option>
+  <option value="Kind">types</option><option value="Prop">predicates</option></select>
+ <select id=wd><option value="">worded or not</option><option value="y">worded</option>
+  <option value="n">not worded</option><option value="hand">by hand</option>
+  <option value="doc">from the docstring</option><option value="name">from the name</option></select>
+ <span class=count id=count></span>
+</div>
+<div id=list></div>
+<div class=pages id=pages></div>
+<script>
+const PER = 100;
+let D = null, hits = [], page = 0;
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function wording(w) {
+  return esc(w).replace(/\x01([^\x02]*)\x02/g, '<i>$1</i>');
+}
+function area(m) { return m.split('.').slice(0, 2).join('.'); }
+function filter() {
+  const q = $('q').value.trim().toLowerCase().split(/\s+/).filter(x => x);
+  const a = $('area').value, c = $('cat').value, wd = $('wd').value;
+  hits = [];
+  for (const r of D.rows) {
+    if (a && area(D.modules[r[3]]) !== a) continue;
+    if (c && r[2] !== c) continue;
+    if (wd === 'y' && !r[4] || wd === 'n' && r[4] || ['hand','doc','name'].includes(wd) && r[5] !== wd) continue;
+    if (q.length) {
+      const text = (r[0] + ' ' + r[4] + ' ' + r[6]).toLowerCase();
+      if (!q.every(x => text.includes(x))) continue;
+    }
+    hits.push(r);
+  }
+  page = 0;
+  show();
+}
+function show() {
+  const from = page * PER, rows = hits.slice(from, from + PER);
+  $('count').textContent = hits.length.toLocaleString() + ' definitions';
+  $('list').innerHTML = rows.map(r => {
+    const m = D.modules[r[3]];
+    const url = 'https://leanprover-community.github.io/mathlib4_docs/%s.html#%s'.replace('%s', m.replace(/\./g, '/')).replace('%s', encodeURIComponent(r[0]));
+    return '<div class=entry><a class=name href="' + url + '">' + esc(r[0]) + '</a>' +
+      '<span class="k ' + r[2] + '">' + esc(r[1]) + '</span><span class=mod>' + esc(m) + '</span>' +
+      (r[4] ? '<div class=w>' + wording(r[4]) + '<span class=src>' + r[5] + '</span></div>'
+            : '<div class="w none">no wording</div>') +
+      (r[6] ? '<div class=doc>' + esc(r[6]) + '</div>' : '') + '</div>';
+  }).join('');
+  const n = Math.max(1, Math.ceil(hits.length / PER));
+  $('pages').innerHTML = '<button id=prev' + (page ? '' : ' disabled') + '>&lsaquo; previous</button>' +
+    '<span class=count>page ' + (page + 1) + ' of ' + n.toLocaleString() + '</span>' +
+    '<button id=next' + (page + 1 < n ? '' : ' disabled') + '>next &rsaquo;</button>';
+  $('prev').onclick = () => { page--; show(); scrollTo(0, 0); };
+  $('next').onclick = () => { page++; show(); scrollTo(0, 0); };
+}
+fetch('definitions-data.json').then(r => r.json()).then(d => {
+  D = d;
+  const areas = [...new Set(d.modules.map(area))].sort();
+  $('area').innerHTML += areas.map(a => '<option>' + esc(a) + '</option>').join('');
+  for (const id of ['q', 'area', 'cat', 'wd']) $(id).addEventListener('input', filter);
+  filter();
+});
+</script>
+</body></html>

@@ -29,6 +29,10 @@ MATHLIB = os.environ.get('MATHLIB', os.path.join(os.path.dirname(os.path.abspath
 # all Mathlib definitions (definition-table.py) and the hand-written ones
 TABLES = ['definitions.dkgf', 'mathlib.dkgf']
 TABLE = None                      # the two in one file, written by main
+# a reading that the generated entries spoil in some language, as there is no
+# word for them in it, is made with the hand-written table only
+GENERATED_TABLES = ['definitions.dkgf']
+PLACEHOLDER = re.compile(r"\[[A-Za-z0-9_']+_[A-Z][A-Za-z0-9]*\]")   # a function without a linearization
 INDEX = 'index.json'
 LANGUAGES = ['Eng', 'Fre', 'Cze', 'Ger', 'Swe']  # the verbal readings; build-html.py shows them in this order
 # German linearization can take minutes on nested noun phrases (GF, RGL), so
@@ -157,18 +161,18 @@ PSEUDO = re.compile(r'\s*\|\s*\$\\operatorname\{[A-Za-z]+\}\([^$]*\)\$|\$\\opera
 STANDARD = 'lcm|gcd|max|min|supp|deg|card|ord'
 
 
-def verbal_table():
-    """mathlib.dkgf without the pseudo-notations of the entries that have
+def verbal_table(table=None, name='verbal.dkgf'):
+    """The symbol table without the pseudo-notations of the entries that have
     words, for the verbal readings (English and French: Informath parses the
     verbal forms in English and linearizes the trees in each language)."""
     out = []
-    for l in open(TABLE):
+    for l in open(table or TABLE):
         if not l.startswith('#') and '"' in l and '\\operatorname{' in l:
             def drop(m):   # the operator names of mathematics are notation, not Lean
                 return m.group(0) if re.search(r'operatorname\{(%s)\}' % STANDARD, m.group(0)) else ' | '
             l = PSEUDO.sub(drop, l).replace('|  |', '|').rstrip(' |\n') + '\n'
         out.append(l)
-    return write('verbal.dkgf', ''.join(out))
+    return write(name, ''.join(out))
 
 
 LABEL = re.compile(r'^\S+\.\s+')    # Nat__Prime__pos. / Definition. / Définition.
@@ -388,6 +392,36 @@ def main():
             texts[n][lang] = t
         for n in given_up:
             timed_out.setdefault(n, []).append(lang)
+    # the readings that a generated entry spoils in a language, with no reading
+    # at all or a word that the language lacks ([cocone_Noun]), made again
+    # with the hand-written tables only, which read the constant symbolically
+    old_tables = [t for t in TABLES if os.path.basename(t) not in GENERATED_TABLES]
+    old_verbal = verbal_table(write('old-table.dkgf', ''.join(open(t).read() + '\n' for t in old_tables
+                                                             if os.path.exists(t))), 'old-verbal.dkgf')
+    spoiled = lambda t: not t or PLACEHOLDER.search(t)
+    worse = {lang: [n for n in sblocks if spoiled(texts[n].get(lang)) and lang not in timed_out.get(n, [])]
+             for lang in LANGUAGES}
+    older = {}
+    names = sorted({n for lang in FAST_LANGUAGES for n in worse[lang]})
+    if names and len(old_tables) < len(TABLES):
+        try:
+            got = verbal_readings(write('older.dk', '\n\n'.join(sblocks[n][1] for n in names) + '\n'),
+                                  old_verbal, FAST_LANGUAGES)
+        except RuntimeError:
+            got = {}
+        for n in names:
+            for lang in FAST_LANGUAGES:
+                t = got.get(sblocks[n][0], {}).get(lang)
+                if n in worse[lang] and t and not spoiled(t):
+                    texts[n][lang] = t
+                    older.setdefault(n, []).append(lang)
+    for lang in ([] if reuse or len(old_tables) == len(TABLES) else SLOW_LANGUAGES):
+        if worse[lang]:
+            got, _ = slow_readings(sblocks, worse[lang], old_verbal, lang, loads[lang])
+            for n, t in got.items():
+                if not spoiled(t):
+                    texts[n][lang] = t
+                    older.setdefault(n, []).append(lang)
     # a declaration without a reading is read with -force-symbolic, which writes
     # \mathrm{c}(...) where a constant has no form that fits
     forced = {}
@@ -427,6 +461,22 @@ def main():
     proof_base = write('proof-base.dk', '\n'.join(base) + '\n')
     texts_of_proofs, failed = proof_texts(proof_base, [blocks[d['lean']] for d in proved], FAST_LANGUAGES)
     proofs = {d['lean']: p for d, p in zip(proved, texts_of_proofs) if p}
+    # the proof texts that a generated entry spoils, likewise
+    bad_rows = lambda rows: not rows or any(PLACEHOLDER.search(t) for _, t, _ in rows)
+    redo = [d['lean'] for d in proved if d['lean'] not in proofs or
+            any(bad_rows(proofs[d['lean']].get(lang)) for lang in FAST_LANGUAGES)]
+    if redo and len(old_tables) < len(TABLES):
+        table, TABLE = TABLE, write('old-table.dkgf', ''.join(open(t).read() + '\n' for t in old_tables
+                                                             if os.path.exists(t)))
+        try:
+            again, _ = proof_texts(proof_base, [blocks[n] for n in redo], FAST_LANGUAGES)
+        finally:
+            TABLE = table
+        for n, p in zip(redo, again):
+            for lang in FAST_LANGUAGES:
+                if p and not bad_rows(p.get(lang)) and bad_rows((proofs.get(n) or {}).get(lang)):
+                    proofs.setdefault(n, {})[lang] = p[lang]
+                    older.setdefault(n, []).append(lang + ' proof')
     for n, p in proofs.items():
         for lang in SLOW_LANGUAGES:
             if reuse and (old.get(n, {}).get('proof') or {}).get(lang):
@@ -469,17 +519,18 @@ def main():
         'proofsFailed': [proved[i]['lean'] for i in failed],
         'declarations': [dict(d, dedukti=blocks.get(d['lean']), readings=texts[d['lean']],
                               forced=forced.get(d['lean'], []), proof=proofs.get(d['lean']),
-                              timedOut=timed_out.get(d['lean'], []), tactics=d['lean'] in tactic_by)
+                              timedOut=timed_out.get(d['lean'], []), tactics=d['lean'] in tactic_by,
+                              older=older.get(d['lean'], []))
                          for d in decls],
     }
     json.dump(index, open(INDEX, 'w'), ensure_ascii=False, indent=1)
     for f in glob.glob(TMP + '*'):
         os.remove(f)
     n = len(decls)
-    print('%d declarations of %d modules -> %s: readings %s, %d formulas, %d proof texts (RunInformath: %s)'
+    print('%d declarations of %d modules -> %s: readings %s, %d formulas, %d proof texts, %d with older readings (RunInformath: %s)'
           % (n, len(modules), INDEX,
              ', '.join('%d %s' % (sum(bool(texts[d['lean']].get(l)) for d in decls), l) for l in LANGUAGES),
-             sum(bool(texts[d['lean']].get('formula')) for d in decls), len(proofs), RUN))
+             sum(bool(texts[d['lean']].get('formula')) for d in decls), len(proofs), len(older), RUN))
     if failed:
         print('%d proofs without a proof text: %s' % (len(failed), ' '.join(index['proofsFailed'])))
     for lang in SLOW_LANGUAGES:

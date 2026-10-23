@@ -40,6 +40,20 @@ exporter built here, Informath in `../informath` or `$INFORMATH_ROOT` with
 RunInformath and its grammar), `-install` builds those it can, and `-help`
 shows the options.
 
+## The symbol table of all Mathlib definitions
+
+`definitions.dkgf` has English wordings for about two thirds of Mathlib's
+definitions (26154 of 38624), made by `definition-table.py` from their
+docstrings and names; `mathlib.dkgf`, written by hand, overrides it. The
+words that the wordings need but Informath lacks (about 500) are generated in
+English into a block of Informath's `Mathlib.gf` and `MathlibEng.gf`
+(`python3 definition-table.py -lexicon`, then `make full_grammar` in
+Informath), and in the other languages from `translations.tsv`: one line per
+word with its French, German, Swedish and Czech forms, written by Claude and to
+be reviewed (its header explains the notation; an empty cell means no word).
+Where a language lacks a word, `build-index.py` keeps the reading made without
+the generated table, which shows the constant symbolically.
+
 ## Files
 
 | | |
@@ -47,6 +61,7 @@ shows the options.
 | `Export.lean` | a Lean program that exports statements of Mathlib modules (or of any Lean file, `--file`) to Informath's Dedukti dialect, all Mathlib definitions (`--definitions`), and the steps of tactic proofs (`--tactics`) |
 | `mathlib-informath` | the stand-alone informalizer of Lean code |
 | `definition-table.py`, `definitions.dkgf` | the symbol table of all Mathlib definitions, made from their docstrings and names |
+| `translations.tsv` | the words that `definition-table.py -lexicon` adds to Informath's lexicon, in French, German, Swedish and Czech: to be reviewed |
 | `mapping.tsv` | Lean constants mapped to Informath's base constants (`Nat.Prime` to `prime`, `Dvd.dvd` to `divide`, ...) |
 | `mathlib.dkgf` | the Informath symbol table of the other Mathlib constants the statements use |
 | `nd.dk` | the natural deduction rules that proofs are translated to (`ifI`, `forallE`, ...) |

@@ -136,6 +136,10 @@ STYLE = """
  table.proof td.n{color:#888;text-align:right;white-space:nowrap}
  table.proof td.j{color:#555;white-space:nowrap;font-size:.9em}
  summary{cursor:pointer;color:#0645ad;font-size:.85em}
+ a.defsbox{display:block;margin:1.2rem 0;padding:.8rem 1rem;border:1px solid #c8d3e6;border-left:4px solid #0645ad;border-radius:6px;background:#f4f6fb;color:#222;text-decoration:none;max-width:46rem}
+ a.defsbox:hover{background:#eaf0fb}
+ a.defsbox b{display:block;color:#0645ad;font-size:1.05em;margin-bottom:.2rem}
+ a.defsbox span{font-size:.9em;color:#444}
  table.cov{border-collapse:collapse;margin:.6rem 0;font-size:.9em}
  table.cov td,table.cov th{border:1px solid #ddd;padding:.2rem .6rem;text-align:right}
  table.cov td:first-child,table.cov th:first-child{text-align:left}
@@ -192,6 +196,18 @@ LANG_SCRIPT = """
 </script>"""
 
 
+def definitions_box():
+    """A link to definitions.html (build-definitions.py), with its numbers."""
+    if not os.path.exists('definitions-data.json'):
+        return ''
+    rows = json.load(open('definitions-data.json'))['rows']
+    return ('<a class=defsbox href="definitions.html"><b>All of Mathlib\'s definitions in English &rsaquo;</b>'
+            '<span>%s of its %s definitions (functions, types, structures, classes, predicates) have an '
+            'English wording, made from their docstrings and names; search them by name, wording or '
+            'docstring, by part of Mathlib and by kind.</span></a>'
+            % ('{:,}'.format(sum(bool(r[4]) for r in rows)), '{:,}'.format(len(rows))))
+
+
 def page(title, head, body, macros, extra=''):
     return """<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
@@ -240,7 +256,9 @@ def entry_html(d, languages, commit, where):
     # rows: (language or None, label, content)
     rows = [
         (None, 'Lean', '<pre class=lean>%s</pre>' % html.escape(source(m, d))),
-        (None, 'Dedukti', '<pre>%s</pre>' % html.escape(d['dedukti'] or '(not exported)')),
+        # the Dedukti translation is for debugging: closed until clicked
+        (None, 'Dedukti', '<details><summary>%d lines</summary><pre>%s</pre></details>'
+         % (len((d['dedukti'] or '').split('\n')), html.escape(d['dedukti'] or '(not exported)'))),
     ] + [(lang, LANGUAGE_NAMES[lang], text(lang, 'reading')) for lang in languages] + [
         (None, 'Formula', text('formula', 'formula')),
     ]
@@ -319,7 +337,7 @@ def main():
     forward = ('\n<script>\n(function(){var w=%s;var h=decodeURIComponent(location.hash.slice(1));'
                'if(w[h])location.replace(w[h]+"#"+encodeURIComponent(h));})();\n</script>' % json.dumps(where))
     head = '<h1>Mathlib informalized</h1>' + INTRO.replace('{COMMIT}', commit[:10]) + \
-        '<p>One page for each part of Mathlib:</p>' + toc
+        '<p>One page for each part of Mathlib:</p>' + toc + definitions_box()
     open(OUT, 'w').write(page('Mathlib informalized', head, '', {}, forward))
     print('%d statements in %d modules, fully worded: %s -> %s and %d pages' % (
         total[0], len(page_of), ', '.join('%d %s' % (n, l) for n, l in zip(total[1:], languages)),

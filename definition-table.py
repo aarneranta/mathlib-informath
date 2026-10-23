@@ -501,6 +501,36 @@ def write_block(path, lines):
     open(path, 'w').write(s)
 
 
+# words of docstrings that are no mathematical terms: function words that
+# DictEng lacks, everyday words, and the words of Lean and its tools
+JUNK = set('''because while them without will until against another everything itself during just
+five four sorry weird stupid young brown nightly weekly bird banana church bell machine fund ghost
+store stream tape load float token info meta mathlib namespace tactic simp simproc typeclass defeq
+formatter parenthesizer caching emulator discharger peek lookup insert reorder select trim paste
+squash shrink move raise pull push yield seen made known written built chosen considered described
+needed required provided proposed referred regarded registered viewed involved implemented
+guaranteed specified expressed exhibited fudge junk guess intent clog blur slash sect stereo
+auto away back down after near together outside inside forall prop prod perm frac conv con quasi
+beck krull bernoulli clifford dirac serre levy reedy bourbaki yoneda coyoneda candidate package
+packaged success priority precedence proxy wrapped upgraded unsound undefined lawful literal
+plot spread synonym them dfinsupp finset fpqc proetale lapply subfamily boxes epis simplices
+bicomplexes coalgebras subcomplexes nuclei continuants select halt anchor arch foot leg horn
+rack shelf spine site coming going making showing turning plot cast chunk con prod perm finset
+foldl foldr yield spread discard compress linearize parametrize preserve bigger larger largest
+coarsest smaller higher automorphize binder datum couple corner shadow contract tilt sober
+accidental actual based carried changed combined composed constructed contained continued
+covered determined divided followed formed identified included inherited joined listed mapped
+modified placed presented pulled realized reconstructed removed represented restricted shifted
+sorted stopped tagged transferred transported valued forbidden external incident trailing walking
+going typically possibly necessarily finally immediately initially frequently effectively
+theoretically virtually'''.split())
+
+# words in -ing that are terms of mathematics
+ING_TERMS = set('''braiding gluing currying thickening coarsening grading labelling scaling tensoring
+coupling branching doubling reindexing classifying connecting representing corepresenting stopping
+hitting halting walking localizing colimiting normalizing separating reflecting intertwining
+trailing'''.split())
+
 DOC_COUNTS = collections.Counter()
 
 
@@ -511,24 +541,97 @@ def count_doc_words(defs):
         DOC_COUNTS.update(set(re.findall(r"[A-Za-z][a-z]+", prose)))
 
 
+TRANSLATIONS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'translations.tsv')
+OTHER_LANGUAGES = [('Fre', 'MathlibFre.gf'), ('Ger', 'MathlibGer.gf'), ('Swe', 'MathlibSwe.gf'),
+                   ('Cze', 'next/MathlibCze.gf')]
+GENDERS = {
+    'Fre': {'m': 'masculine', 'f': 'feminine'},
+    'Ger': {'m': 'masculine', 'f': 'feminine', 'n': 'neuter'},
+    'Swe': {'u': 'utrum', 'n': 'neutrum'},
+    'Cze': {'ma': 'mascAnimate', 'mi': 'mascInanimate', 'f': 'feminine', 'n': 'neuter'},
+}
+
+
+def read_translations():
+    """function -> {language: cell} from translations.tsv."""
+    out = {}
+    if not os.path.exists(TRANSLATIONS):
+        return out
+    for l in open(TRANSLATIONS):
+        if l.startswith('#') or not l.strip():
+            continue
+        cols = l.rstrip('\n').split('\t')
+        cols += [''] * (6 - len(cols))
+        out[cols[0]] = dict(zip(['Eng'] + [lang for lang, _ in OTHER_LANGUAGES], cols[1:6]))
+    return out
+
+
+def cell_lin(lang, cat, cell):
+    """The linearization of a word from its cell in translations.tsv: the
+    forms separated by /, for a noun followed by its gender (French m f,
+    German m f n, Swedish u n, Czech ma mi f n)."""
+    q = lambda xs: ' '.join('"%s"' % x.strip() for x in xs)
+    if cat == 'Adverb':
+        return 'Paradigms%s.mkAdv "%s"' % (lang, cell.strip())
+    if cat == 'Adj':
+        return 'mkAdj (mkA %s)' % q(cell.split('/'))
+    words = cell.split()
+    gender = GENDERS[lang].get(words[-1]) if len(words) > 1 else None
+    forms = ' '.join(words[:-1] if gender else words).split('/')
+    return 'mkNoun (mkN %s%s)' % (q(forms), ' ' + gender if gender else '')
+
+
+def translate_lexicon(items, grammars):
+    """The generated words in the other languages, from translations.tsv
+    (written by hand and to be reviewed); a proper name as it is in English.
+    A word without a translation in a language has no linearization there,
+    and the readings that need it fall back to the ones without the generated
+    table (build-index.py). The words that the table lacks are added to it
+    with empty cells."""
+    table = read_translations()
+    new = [(f, w) for f, w in items if f not in table and not w[0].isupper()]
+    if new:
+        with open(TRANSLATIONS, 'a') as out:
+            for f, w in new:
+                out.write('%s\t%s\t\t\t\t\n' % (f, w))
+    for lang, module in OTHER_LANGUAGES:
+        block, got = [], 0
+        for f, w in items:
+            cat = f.rsplit('_', 1)[1]
+            cell = table.get(f, {}).get(lang, '').strip()
+            if w[0].isupper():
+                block.append('lin %s = %s "%s" ;' % (f, 'mkNoun' if cat == 'Noun' else 'mkAdj', w))
+            elif cell:
+                block.append('lin %s = %s ;' % (f, cell_lin(lang, cat, cell)))
+            else:
+                continue
+            got += 1
+        write_block(os.path.join(grammars, module), block)
+        print('  %s: %d of %d words -> %s' % (lang, got, len(items), module))
+
+
 def make_lexicon(name_words, doc_words, adj_words, funs):
     """New English words for Mathlib.gf and MathlibEng.gf: the unknown words of
     the candidates from names that come twice or more, and those of the
     candidates from docstrings that come three times or more, that look like
     content words; a word that the grammar has as a function already is not made."""
     grammars = os.path.join(os.environ['INFORMATH_ROOT'], 'grammars')
+    dic = dict_eng()
     words = sorted(w for w in set(name_words) | set(doc_words)
                    if (name_words[w] >= 2 or doc_words[w] >= 3 or DOC_COUNTS[w] >= 3) and w.lower() not in STOP
                    and re.fullmatch(r"[A-Za-zÀ-ÿ]{4,}", w) and not re.search(r'[a-z][A-Z]', w)
+                   and (w.islower() or w.lower() in PROPER) and w not in JUNK
+                   and (not w.endswith('ing') or 'N' in dic.get(w, {}) or w in ING_TERMS)
                    and w.lower() not in ABBREVIATIONS)
-    absl, cncl = [], []
-    dic = dict_eng()
+    absl, cncl, items = [], [], []
     # a plural as its singular, if that is a word too: cocones -> cocone
     lemmas = []
     for w in words:
         sg = singular(w) if w.islower() else w
         if sg != w and (sg in dic or DOC_COUNTS[sg] or sg in words):
             w = sg
+        if w in JUNK or len(w) < 4:
+            continue
         if w not in lemmas:
             lemmas.append(w)
     for w in lemmas:
@@ -540,8 +643,10 @@ def make_lexicon(name_words, doc_words, adj_words, funs):
             continue
         absl.append('fun %s : %s ;' % (f, f.rsplit('_', 1)[1]))
         cncl.append('lin %s = %s ;' % (f, lin))
+        items.append((f, w))
     write_block(os.path.join(grammars, 'Mathlib.gf'), absl)
     write_block(os.path.join(grammars, 'MathlibEng.gf'), cncl)
+    translate_lexicon(items, grammars)
     print('%d words -> Mathlib.gf, MathlibEng.gf' % len(absl))
 
 

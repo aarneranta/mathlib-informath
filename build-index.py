@@ -22,7 +22,7 @@ import difflib, glob, json, os, re, subprocess, sys, time
 MATHLIB = os.environ.get('MATHLIB', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'mathlib4'))
 TABLE = 'mathlib.dkgf'
 INDEX = 'index.json'
-LANGUAGES = ['Eng', 'Fre', 'Cze', 'Ger']  # the verbal readings; build-html.py shows them in this order
+LANGUAGES = ['Eng', 'Fre', 'Cze', 'Ger', 'Swe']  # the verbal readings; build-html.py shows them in this order
 # German linearization can take minutes on nested noun phrases (GF, RGL), so
 # German is read apart, in chunks with a time limit of PER_ITEM seconds per
 # statement or proof, on top of the time RunInformath takes to load; a slow
@@ -32,7 +32,7 @@ FAST_LANGUAGES = [l for l in LANGUAGES if l not in SLOW_LANGUAGES]
 PER_ITEM = 1
 CHUNK = 12
 PROOF_TIMEOUT = 300               # seconds for one call of -proof-text in the fast languages
-TACTIC_LANGUAGES = ['Eng']        # the languages of the proof texts of tactic proofs, so far
+TACTIC_LANGUAGES = ['Eng', 'Fre', 'Cze', 'Ger', 'Swe']  # the languages of the proof texts of tactic proofs
 TMP = '.index-'                   # prefix of the temporary files
 
 

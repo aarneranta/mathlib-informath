@@ -20,7 +20,7 @@ MATHLIB = os.environ.get('MATHLIB', os.path.join(os.path.dirname(os.path.abspath
 GITHUB = 'https://github.com/leanprover-community/mathlib4/blob/%s/%s#L%d'
 OUT = 'mathlib-informath.html'
 INDEX = 'index.json'
-LANGUAGE_NAMES = {'Eng': 'English', 'Fre': 'French', 'Cze': 'Czech', 'Ger': 'German'}
+LANGUAGE_NAMES = {'Eng': 'English', 'Fre': 'French', 'Cze': 'Czech', 'Ger': 'German', 'Swe': 'Swedish'}
 SHOWN = ['Eng']     # the languages shown by default; the others are switched on in the page header
 MATHJAX = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js'
 
@@ -146,7 +146,7 @@ INTRO = """<p>Statements of <a href="https://github.com/leanprover-community/mat
 (commit <code>{COMMIT}</code>), each with its <b>Lean</b> source, its translation to
 <b>Dedukti</b> by <code>Export.lean</code>, and its informalization by
 <a href="https://github.com/GrammaticalFramework/informath">Informath</a>, in
-<b>English</b>, as a <b>formula</b>, and in <b>French</b> and <b>Czech</b>,
+<b>English</b>, as a <b>formula</b>, and in <b>French</b>, <b>Czech</b>, <b>German</b> and <b>Swedish</b>,
 which the buttons at each entry show there, and the check boxes above the entries everywhere. The Dedukti translation drops implicit and
 instance arguments and maps Lean's arithmetic and logic to Informath's base
 (<code>mapping.tsv</code>); the other Mathlib constants are worded by the symbol table

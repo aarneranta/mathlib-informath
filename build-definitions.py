@@ -11,7 +11,8 @@ Each definition (as definition-table.py selects them: no theorems, instances,
 tactics or auxiliary declarations) has its Lean name, kind, category (a
 function or constant, a type, a predicate), module, the wording of the symbol
 table (from mathlib.dkgf, written by hand, or from definitions.dkgf, made from
-the docstring or the name), and its reading in English and as a formula: its
+the docstring or the name), and its reading in English, as a formula and in
+French (hidden until asked for, as on the other pages): its
 statement, with its definiens where it has one, read by Informath as
 build-index.py reads the statements of the other pages, within a time limit.
 The readings are cached in out/definition-readings.json, so that only new
@@ -28,6 +29,10 @@ PAGES = 'definitions'          # the directory of the static pages
 PER_PAGE = 400                 # at most, unless a module has more
 CHUNK = 200                    # definitions per call of a worker
 CATEGORIES = {'Exp': 'function or constant', 'Kind': 'type', 'Prop': 'predicate'}
+MODES = ('Eng', 'formula', 'Fre')     # the readings of each definition
+# a word that a language lacks, as GF shows it: [definition_Noun]
+NO_WORD = re.compile(r'\[([A-Za-z0-9]+(?:_[A-Za-z0-9]+)*?)_(Noun|Adj|Verb|Adverb|Fun|Fam|Name)\]')
+NO_WORD_STYLE = '<style>.noword{color:#a05a00;border-bottom:1px dotted #a05a00}</style>'
 SOURCES = {'hand': 'by hand', 'doc': 'from the docstring', 'name': 'from the name',
            'lexicon': 'from the name, with words of the lexicon'}
 
@@ -95,18 +100,19 @@ def formula_readings(blocks, names, force=False):
     return bi.bisected(names, call, bi.LOAD)
 
 
-def read_chunk(decls):
-    """Lean name -> {'Eng': English reading, 'formula': formula} of a chunk of
-    definitions, None for one over the time limit; -force-symbolic for one
-    without a reading otherwise."""
+def read_chunk(job):
+    """Lean name -> mode -> reading of a chunk of definitions, in the modes of
+    the job (English, a formula, French), None for one over the time limit;
+    -force-symbolic for one without a reading otherwise."""
+    decls, modes = job
     bi = informath()
     blocks = {d['lean']: (d['dk'], declaration(d)) for d in decls}
     out = {n: {} for n in blocks}
-    for mode in ('Eng', 'formula'):
+    for mode in modes:
         def read(names, force=False):
-            if mode == 'Eng':
-                return bi.slow_readings(blocks, names, bi.VERBAL, 'Eng', bi.LOAD, force)
-            return formula_readings(blocks, names, force)
+            if mode == 'formula':
+                return formula_readings(blocks, names, force)
+            return bi.slow_readings(blocks, names, bi.VERBAL, mode, bi.LOAD, force)
         got, given_up = read(list(blocks))
         missing = [n for n in blocks if n not in got and n not in given_up]
         if missing:
@@ -121,13 +127,18 @@ def all_readings(decls, workers, reread):
     """The readings of all definitions, from the cache and from new calls."""
     cache = {} if reread or not os.path.exists(CACHE) else json.load(open(CACHE))
     # an older cache has the English readings only, as strings
-    todo = [d for d in decls if not isinstance(cache.get(d['lean']), dict)]
+    for n, v in cache.items():
+        if not isinstance(v, dict):
+            cache[n] = {}
+    todo = [d for d in decls if any(m not in cache.get(d['lean'], {}) for m in MODES)]
     chunks = [todo[i:i + CHUNK] for i in range(0, len(todo), CHUNK)]
+    jobs = [(c, [m for m in MODES if any(m not in cache.get(d['lean'], {}) for d in c)]) for c in chunks]
     if chunks:
         print('%d definitions to read, in %d chunks, %d workers' % (len(todo), len(chunks), workers), flush=True)
     with concurrent.futures.ProcessPoolExecutor(workers) as pool:
-        for k, got in enumerate(pool.map(read_chunk, chunks), 1):
-            cache.update(got)
+        for k, got in enumerate(pool.map(read_chunk, jobs), 1):
+            for n, v in got.items():
+                cache.setdefault(n, {}).update(v)
             if k % 10 == 0 or k == len(chunks):
                 json.dump(cache, open(CACHE, 'w'), ensure_ascii=False)
                 print('  %d of %d chunks' % (k, len(chunks)), flush=True)
@@ -176,16 +187,22 @@ def entry(bh, r, modules, readings):
                if w else '<span class=missing>no wording</span>')
     def text(mode, what):
         t = readings.get(mode, '')
-        return ('<div class=text>%s</div>' % bh.reading_html(t) if t else
+        # a word that the language lacks is shown in English, marked
+        word = lambda m: '<span class=noword title="no %s word">%s</span>' % (
+            bh.LANGUAGE_NAMES.get(mode, mode), m.group(1).replace('_', ' '))
+        return ('<div class=text>%s</div>' % NO_WORD.sub(word, bh.reading_html(t)) if t else
                 '<div class="text missing">%s</div>' % ('generation took over the time limit'
                                                         if t is None else 'no ' + what))
     return ('<div class=entry id="%s"><a class=name href="%s">%s</a><span class="k %s">%s</span>'
             '<span class=src>%s, %s</span>'
+            '<button type=button class=langlink data-lang="Fre" title="show or hide French here">French</button>'
             '<div class=row><div class=lab>Wording</div><div class=text>%s</div></div>'
             '<div class=row><div class=lab>English</div>%s</div>'
-            '<div class=row><div class=lab>Formula</div>%s</div></div>'
+            '<div class=row><div class=lab>Formula</div>%s</div>'
+            '<div class="row lang-Fre"><div class=lab>French</div>%s</div></div>'
             % (html.escape(name), DOCS % (m.replace('.', '/'), name), html.escape(name), kind, kind,
-               html.escape(m), CATEGORIES[cat], wording, text('Eng', 'reading'), text('formula', 'formula')))
+               html.escape(m), CATEGORIES[cat], wording, text('Eng', 'reading'), text('formula', 'formula'),
+               text('Fre', 'reading')))
 
 
 def write_pages(pages, modules, readings, macros):
@@ -208,10 +225,10 @@ def write_pages(pages, modules, readings, macros):
                 '<a href="../definitions.html">definitions</a> &rsaquo; %s</nav>'
                 '<h1>Definitions: %s</h1><p>%d definitions of %d modules, %s to %s. %s %s</p>'
                 % (html.escape(title), html.escape(title), len(rs), len(mods), html.escape(mods[0]),
-                   html.escape(mods[-1]), prev, nxt))
+                   html.escape(mods[-1]), prev, nxt)) + bh.lang_switch(['Eng', 'Fre'])
         open(os.path.join(HERE, page_file(part, k)), 'w').write(
             bh.page('Definitions: ' + title, head, '\n'.join(body) +
-                    '<p class=pager>%s %s</p>' % (prev, nxt), macros).replace('href="pages/', 'href="../pages/'))
+                    '<p class=pager>%s %s</p>' % (prev, nxt), macros, NO_WORD_STYLE).replace('href="pages/', 'href="../pages/'))
 
 
 # ---------------------------------------------------------------- main
@@ -276,6 +293,7 @@ def main():
     worded = sum(bool(r[4]) for r in rows)
     read = sum(bool(readings.get(r[0], {}).get('Eng')) for r in rows)
     formulas = sum(bool(readings.get(r[0], {}).get('formula')) for r in rows)
+    french = sum(bool(readings.get(r[0], {}).get('Fre')) for r in rows)
     toc = []
     for part in dict.fromkeys(p for p, _, _ in pages):
         ps = [(i, k, rs) for i, (p, k, rs) in enumerate(pages) if p == part]
@@ -285,14 +303,14 @@ def main():
                                                           for i, k, _ in ps)))
     open(os.path.join(HERE, 'definitions.html'), 'w').write(PAGE % {
         'n': '{:,}'.format(len(rows)), 'w': '{:,}'.format(worded), 'r': '{:,}'.format(read),
-        'f': '{:,}'.format(formulas),
+        'f': '{:,}'.format(formulas), 'fr': '{:,}'.format(french),
         'p': '{:,}'.format(len(pages)),
         'cov': ' · '.join('%s %s of %s' % (label, '{:,}'.format(counts[c + ' worded']), '{:,}'.format(counts[c]))
                           for c, label in (('Exp', 'functions and constants'), ('Kind', 'types'),
                                            ('Prop', 'predicates'))),
         'toc': '\n'.join(toc)})
-    print('%d definitions, %d worded, %d with a reading, %d with a formula -> definitions.html, %d pages in %s/'
-          % (len(rows), worded, read, formulas, len(pages), PAGES))
+    print('%d definitions, %d worded, %d with a reading, %d with a formula, %d in French -> definitions.html, '
+          '%d pages in %s/' % (len(rows), worded, read, formulas, french, len(pages), PAGES))
 
 
 PAGE = """<!DOCTYPE html>
@@ -333,7 +351,8 @@ classes and predicates; not its theorems, instances or tactics), on %(p)s pages 
 Each has the <b>wording</b> that the symbol table gives it, %(w)s of them (%(cov)s), written by
 hand in <code>mathlib.dkgf</code> or made by <code>definition-table.py</code> from the definition's
 docstring or name, with the arguments shown by their names; and its <b>reading</b> in English, %(r)s
-of them, and as a <b>formula</b>, %(f)s of them: the statement of the definition, with its definiens
+of them, as a <b>formula</b>, %(f)s of them, and in <b>French</b>, %(fr)s of them (hidden on the
+pages until asked for, with the same symbol table): the statement of the definition, with its definiens
 where it has one, read by Informath as the statements on the other pages are, where a constant
 without a wording is shown symbolically.
 Search below to find a definition's page; each name there links to Mathlib's documentation, which

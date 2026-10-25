@@ -62,9 +62,10 @@ language in five natural languages. The translation goes through the logical fra
 Dedukti and the Informath grammar, written in Grammatical Framework (GF), and is symbolic: it is
 compositional and does not invent content. The main bottleneck is the symbol table, which tells
 how each Lean constant is to be worded. We infer it for all of Mathlib's definitions from
-their docstrings and names, checking each candidate with the grammar: two thirds of 38,690
-definitions get a wording. All 38,690 definitions are then read in English, with their
-definientia: 99\% get a reading, a third of them with no constant left symbolic, and the same
+their docstrings and names, checking each candidate with the grammar and replacing the words
+that it lacks by words of its lexicon: 69\% of 38,667 definitions get a wording. All of them are
+then read in English and as formulas, with their definientia: 99\% get a reading, a third of
+them with no constant left symbolic, and the same
 pipeline can read them in the other languages when needed. Theorems and proofs are read for
 705 statements of Mathlib's prime numbers, orders and lattices, in all five languages: 83\% are
 fully worded in English, and 265 proofs, by terms or by tactics, are rendered as texts.
@@ -112,8 +113,8 @@ This paper applies Informath to Lean and Mathlib. Our contributions are:
   good and bad, and the open problems
   (Sections~\ref{sec:examples}--\ref{sec:problems}).
 \end{itemize}
-The system is open source \cite{mathlib-informath}, with web pages showing all 38,690
-definitions with their readings in English, the 705 statements with their proofs in five
+The system is open source \cite{mathlib-informath}, with web pages showing all 38,667
+definitions with their readings in English and as formulas, the 705 statements with their proofs in five
 languages, and a stand-alone program that informalizes any Lean file.
 
 \paragraph{Authorship.} The software described here and this paper were written by Claude, an
@@ -318,7 +319,7 @@ infer a table for all of Mathlib's definitions.
 \paragraph{The definitions.} \ttt{export --definitions} imports all of Mathlib (20 seconds) and
 exports every declaration that may need a wording: definitions, structures, classes, fields,
 inductive types, but not theorems, instances, tactics, notations, auxiliary or deprecated
-declarations. Of 56,867 such constants, 38,690 remain after filtering, each with its Dedukti
+declarations. Of 56,852 such constants, 38,667 remain after filtering, each with its Dedukti
 type, explicit argument names and docstring. Its type tells its category: a function or constant
 (\ttt{Exp}), a type (\ttt{Kind}), or a predicate (\ttt{Prop}).
 
@@ -344,7 +345,7 @@ gives, as \ttt{cof} is spelled out as \emph{cofinality}. Since the candidate sha
 the name, it is accepted; a docstring wording that shares no word with the name, such as ``the
 ring'' for \ttt{HahnSeries.toPowerSeries}, is not tried.
 
-\paragraph{Checking.} All 39,000 candidates are parsed by the grammar in one call (30 seconds).
+\paragraph{Checking.} All 41,000 candidates are parsed by the grammar in one call (30 seconds).
 A candidate is accepted if its parse has the category and the arity of the constant; the first
 one accepted becomes the entry. Many constants take explicit parameters before their main
 arguments (a category, a Grothendieck topology); a wording may leave them out, as \ttt{Eqt}
@@ -373,11 +374,23 @@ empty cell where unsure; the grammar modules are generated from it. Where a lang
 word, the index keeps the reading made without the generated table, which shows the constant
 symbolically.
 
+\paragraph{The lexicon, a second time.} Most definitions left without an entry have a word in
+their name that the grammar lacks as a noun or adjective, although its lexicon (4,560 words) has
+a word for it. A second round replaces such words: a verb by its nominalization, after its object
+(\ttt{restrictScalars}: ``the scalar restriction of \ttt{\#1}''); an abbreviation by the word of
+the lexicon that it abbreviates and that the docstrings of the definitions named with it use
+most (\ttt{denom}: denominator, \ttt{coeq}: coequalizer); a proper name by its spelling
+(\ttt{kronecker}: Kronecker); and \ttt{desc} and \ttt{forget} by ``the induced morphism'' and
+``the forgetful functor''. As long names read word by word were mostly wrong, the round is
+restricted to names of at most two words. It gives 887 entries with 135 replacements, which are
+listed for review.
+
 \section{Who contributed what}
 \label{sec:who}
 
 Table~\ref{tab:sources} shows where the wordings of the definitions come from: most from names,
-an eighth from docstrings, and a few from the hand-written table, which overrides the
+an eighth from docstrings, 887 from names with words of the lexicon, and a few from the
+hand-written table, which overrides the
 generated one. Table~\ref{tab:who} divides the work between the existing Informath, the first
 author's prompts and decisions, and the AI agent.
 
@@ -387,13 +400,15 @@ author's prompts and decisions, and the AI agent.
 \toprule
 & functions, constants & types & predicates & all \\
 \midrule
-definitions & 31,877 & 2,466 & 4,347 & 38,690 \\
-with a wording & 22,276 & 1,763 & 1,818 & \textbf{25,857} (67\%) \\
+definitions & 31,858 & 2,464 & 4,345 & 38,667 \\
+with a wording & 23,059 & 1,816 & 1,866 & \textbf{26,741} (69\%) \\
 \midrule
-\multicolumn{4}{l}{read in English (Section~\ref{sec:allread}): with a reading} & \textbf{38,279} (99\%) \\
-\multicolumn{4}{l}{\quad with no constant shown symbolically} & about 12,300 (32\%) \\
+\multicolumn{4}{l}{read in English (Section~\ref{sec:allread}): with a reading} & \textbf{38,424} (99\%) \\
+\multicolumn{4}{l}{\quad with no constant shown symbolically} & about 12,200 (32\%) \\
+\multicolumn{4}{l}{read as a formula} & \textbf{38,460} (99\%) \\
 \midrule
-\multicolumn{4}{l}{the wordings from: names 22,307; docstrings 3,488; the hand-written table 62} \\
+\multicolumn{5}{l}{the wordings from: names 22,304; docstrings 3,488; names with the lexicon 887;
+the hand-written table 62} \\
 \bottomrule
 \end{tabular}
 \caption{The symbol table of Mathlib's definitions.}
@@ -411,8 +426,7 @@ verbal, symbolic and macro forms; NLG with variants and ranking; proof texts fro
 The goal; the choice of Mathlib's prime numbers as the first case; the contents of the pages;
 loading the grammar once; the idea of tactic proofs as proof units; the time limit for German;
 WordNet as a resource; a reviewable table rather than generated code; the stand-alone program &
-\ttt{Export.lean} with its translation rules; the index and the pages; the table inference and
-the lexicon generation; the translations table; the Informath extensions this needed
+\ttt{Export.lean} with its translation rules; the index and the pages; the table inference, the lexicon generation and the second round with the lexicon; the translations table; the Informath extensions this needed
 (multilingual proof texts, \ttt{-tactic-proof}, aggregated hypotheses, Czech and Swedish
 modules) \\
 \bottomrule
@@ -513,7 +527,7 @@ all & 705 & \textbf{588} & \textbf{586} & \textbf{586} & \textbf{533} & \textbf{
 \label{tab:results}
 \end{table}
 
-For all of Mathlib, the generated table gives two thirds of the definitions a wording
+For all of Mathlib, the generated table gives 69\% of the definitions a wording
 (Table~\ref{tab:sources}), checked by the grammar for category and arity but not reviewed by
 hand. Random samples during the development showed classes of errors, which led to the rules
 of Section~\ref{sec:tables}.
@@ -550,19 +564,28 @@ abbreviations spelled out wrongly in context (\emph{SMul} is a scalar multiplica
 product). Proof arguments and unnamed arguments ($\#4$) should not be shown, and
 \ttt{LibraryNote}, documentation without mathematical content, should have been filtered out.
 
+\paragraph{A sample of the second round.} 60 of the 887 entries made with the lexicon, judged in
+the same way, are 40 good, 14 acceptable and 6 wrong (10\%, against 30\%): ``the scalar
+restriction of $f$'' and ``$f$ is differentiable on $s$'' are good; ``the composition application
+of $c$ and $i$'' (\ttt{applyComposition}) and ``the finite extension of $K$ and $L$''
+(\ttt{finiteExts}, a set of extensions) are wrong.
+
 \paragraph{All the definitions in English.}
 \label{sec:allread}
-Finally, all 38,690 definitions were read in English, as the statements on the pages are: each
-definition's statement, with its definiens where it has one (25,494 of the exported constants
-have one that the exporter translates), by the full symbol table. With eight RunInformath
-processes and a time limit of one second per definition, this took about half an hour on a
-laptop. 38,279 definitions (99\%) got a reading, 405 went over the time limit, and 6 got none.
-About 12,300 readings (32\%) show no constant symbolically; the others show the constants that
+Finally, all 38,667 definitions were read in English and as formulas, as the statements on the
+pages are: each definition's statement, with its definiens where it has one (25,491 of the
+exported constants have one that the exporter translates), by the full symbol table. With eight
+RunInformath processes and a time limit of one second per definition and mode, this took about
+half an hour on a laptop. 38,424 definitions (99\%) got a reading, 217 went over the time
+limit, and 26 got none; 38,460 got a formula. About 12,200 readings (32\%) show no constant
+symbolically; the others show the constants that
 have no wording, often from the definiens, as operators. The readings are published on 111
 static pages of at most 400 definitions, by part of Mathlib, with a search page over all of
 them. For example, \ttt{Quiver.IsThin}:
 \reading{Let $V$ be a set. Then $V$ is thin, if for all elements $a$ and $b$ of $V$, the set of
-homomorphisms of $a$ and $b$ is a subsingleton.}
+homomorphisms of $a$ and $b$ is a subsingleton.\\[1mm]
+$V \in \mathrm{Set} \vdash \operatorname{IsThin}(V) :\Leftrightarrow \forall a \in V .\ \forall b \in V .\
+\mathrm{Subsingleton}(\operatorname{Hom}(a, b))$}
 \noindent The other four languages use the same pipeline and grammar, and their words are in the
 translation table, so the definitions can be read in them on demand, for instance by a server;
 these readings have not been made or checked, and they will show more constants symbolically
@@ -571,12 +594,13 @@ where a language lacks a word.
 \section{Known problems and open issues}
 \label{sec:problems}
 
-\paragraph{Coverage.} All of Mathlib's definitions are read, but only in English, and its
+\paragraph{Coverage.} All of Mathlib's definitions are read, but only in English and as formulas, and its
 theorems only in part: the 705 statements of the pages are a small part of its 194,000 theorems,
 which the same pipeline could read, with their proofs, but which we have not run on. Of the
-definitions, 405 go over the time limit, and two thirds of the readings still show some constant
+definitions, 217 go over the time limit, and two thirds of the readings still show some constant
 symbolically, mostly constants of the definientia that have no wording. The generated table is
-unreviewed, and in our sample 18 of 60 of its wordings (30\%) are wrong: composite names
+unreviewed, and in our samples 18 of 60 of its first wordings (30\%) and 6 of 60 of those made with
+the lexicon (10\%) are wrong: composite names
 (\ttt{quotientIdealMapEquivTensorQuot}) become nonsense when read word by word; bundled maps
 without arguments get bare readings; about 2,500 unknown words are abbreviations of jargon that
 we do not spell out. Most tactic proofs have no text yet, and long \ttt{simp} goals make poor
@@ -597,9 +621,9 @@ direction.
 \section{Conclusion}
 
 Symbolic informalization of Lean is feasible at the scale of Mathlib if the lexicon can be
-inferred: Mathlib's naming conventions and docstrings give wordings to two thirds of its
+inferred: Mathlib's naming conventions and docstrings, with the grammar's own lexicon, give wordings to 69\% of its
 definitions, and a grammar can check them. With them, all of Mathlib's definitions have been
-read in English, a third of them with no symbolic residue, in half an hour on a laptop. The readings are faithful by construction, and they
+read in English and as formulas, a third of them with no symbolic residue, in half an hour on a laptop. The readings are faithful by construction, and they
 come in five languages at once. What the method does not give is judgement: which wording is
 right, which word a language uses, when a reading is false although it parses. That remained
 the human's part, in a collaboration where the AI agent did most of the construction and the

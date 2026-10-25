@@ -64,9 +64,9 @@ compositional and does not invent content. The main bottleneck is the symbol tab
 how each Lean constant is to be worded. We infer it for all of Mathlib's definitions from
 their docstrings and names, checking each candidate with the grammar and replacing the words
 that it lacks by words of its lexicon: 69\% of 38,667 definitions get a wording. All of them are
-then read in English and as formulas, with their definientia: 99\% get a reading, a third of
-them with no constant left symbolic, and the same
-pipeline can read them in the other languages when needed. Theorems and proofs are read for
+then read in English, as formulas and in French, with their definientia: 99\% get a reading
+in English, a third of them with no constant left symbolic, and 98\% in French, with the same
+symbol table. Theorems and proofs are read for
 705 statements of Mathlib's prime numbers, orders and lattices, in all five languages: 83\% are
 fully worded in English, and 265 proofs, by terms or by tactics, are rendered as texts.
 The system was built in a collaboration between a human researcher and an AI coding agent, which
@@ -114,7 +114,7 @@ This paper applies Informath to Lean and Mathlib. Our contributions are:
   (Sections~\ref{sec:examples}--\ref{sec:problems}).
 \end{itemize}
 The system is open source \cite{mathlib-informath}, with web pages showing all 38,667
-definitions with their readings in English and as formulas, the 705 statements with their proofs in five
+definitions with their readings in English, as formulas and in French, the 705 statements with their proofs in five
 languages, and a stand-alone program that informalizes any Lean file.
 
 \paragraph{Authorship.} The software described here and this paper were written by Claude, an
@@ -406,6 +406,8 @@ with a wording & 23,059 & 1,816 & 1,866 & \textbf{26,741} (69\%) \\
 \multicolumn{4}{l}{read in English (Section~\ref{sec:allread}): with a reading} & \textbf{38,424} (99\%) \\
 \multicolumn{4}{l}{\quad with no constant shown symbolically} & about 12,200 (32\%) \\
 \multicolumn{4}{l}{read as a formula} & \textbf{38,460} (99\%) \\
+\multicolumn{4}{l}{read in French: with a reading} & \textbf{37,994} (98\%) \\
+\multicolumn{4}{l}{\quad with no constant shown symbolically and no English word} & about 8,700 (22\%) \\
 \midrule
 \multicolumn{5}{l}{the wordings from: names 22,304; docstrings 3,488; names with the lexicon 887;
 the hand-written table 62} \\
@@ -572,7 +574,7 @@ of $c$ and $i$'' (\ttt{applyComposition}) and ``the finite extension of $K$ and 
 
 \paragraph{All the definitions in English.}
 \label{sec:allread}
-Finally, all 38,667 definitions were read in English and as formulas, as the statements on the
+Finally, all 38,667 definitions were read in English and as formulas, and then in French, as the statements on the
 pages are: each definition's statement, with its definiens where it has one (25,491 of the
 exported constants have one that the exporter translates), by the full symbol table. With eight
 RunInformath processes and a time limit of one second per definition and mode, this took about
@@ -586,15 +588,23 @@ them. For example, \ttt{Quiver.IsThin}:
 homomorphisms of $a$ and $b$ is a subsingleton.\\[1mm]
 $V \in \mathrm{Set} \vdash \operatorname{IsThin}(V) :\Leftrightarrow \forall a \in V .\ \forall b \in V .\
 \mathrm{Subsingleton}(\operatorname{Hom}(a, b))$}
-\noindent The other four languages use the same pipeline and grammar, and their words are in the
-translation table, so the definitions can be read in them on demand, for instance by a server;
-these readings have not been made or checked, and they will show more constants symbolically
-where a language lacks a word.
+\noindent French uses the same pipeline and symbol table, as Informath parses the English
+wordings into GF trees and linearizes them in French; the French rows are hidden on the pages
+until asked for, as on the other pages. The French reading of \ttt{Quiver.IsThin} is
+\reading{Soit $V$ un ensemble. Alors $V$ est fin si pour tous les éléments $a$ et $b$ de $V$,
+l'ensemble d'homomorphismes de $a$ et $b$ est un sous-singleton.}
+\noindent where \emph{fin} for \emph{thin} is a word to be reviewed. 37,994 definitions (98\%)
+got a French reading, in half an hour. 9,774 of them (26\%) use a word that has no French form:
+263 words of Informath's lexicon, from its parts that were written for English only (the
+Godement, HoTT and Naproche lexicons), led by \emph{opposite} (in 1,554 readings), \emph{lift}
+(1,053) and \emph{carrier} (950). The pages show such a word in English, marked. The other three
+languages can be read in the same way.
 
 \section{Known problems and open issues}
 \label{sec:problems}
 
-\paragraph{Coverage.} All of Mathlib's definitions are read, but only in English and as formulas, and its
+\paragraph{Coverage.} All of Mathlib's definitions are read, but only in English, as formulas
+and in French, and its
 theorems only in part: the 705 statements of the pages are a small part of its 194,000 theorems,
 which the same pipeline could read, with their proofs, but which we have not run on. Of the
 definitions, 217 go over the time limit, and two thirds of the readings still show some constant
@@ -609,7 +619,8 @@ reading.
 \paragraph{Language.} Agreement of ``such that'' with an existential's kind fails in Czech and
 French; multi-letter variables (\ttt{self}, \ttt{motive}) are shown as constants; a lemma used
 unapplied in a proof term gives garbled text; the meaning of $\leq$ on finite sets is
-``subset'', which the reading does not know. The words of four languages need native review,
+``subset'', which the reading does not know. 263 words of the lexicon have no French form, and
+the French readings of the definitions are not checked. The words of four languages need native review,
 and German linearization needs a fix in the RGL.
 
 \paragraph{Correctness.} The translation is compositional, but the exporter drops implicit
@@ -623,7 +634,8 @@ direction.
 Symbolic informalization of Lean is feasible at the scale of Mathlib if the lexicon can be
 inferred: Mathlib's naming conventions and docstrings, with the grammar's own lexicon, give wordings to 69\% of its
 definitions, and a grammar can check them. With them, all of Mathlib's definitions have been
-read in English and as formulas, a third of them with no symbolic residue, in half an hour on a laptop. The readings are faithful by construction, and they
+read in English, as formulas and in French, a third of them with no symbolic residue in
+English, in an hour on a laptop. The readings are faithful by construction, and they
 come in five languages at once. What the method does not give is judgement: which wording is
 right, which word a language uses, when a reading is false although it parses. That remained
 the human's part, in a collaboration where the AI agent did most of the construction and the

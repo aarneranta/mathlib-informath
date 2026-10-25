@@ -11,14 +11,15 @@ Each definition (as definition-table.py selects them: no theorems, instances,
 tactics or auxiliary declarations) has its Lean name, kind, category (a
 function or constant, a type, a predicate), module, the wording of the symbol
 table (from mathlib.dkgf, written by hand, or from definitions.dkgf, made from
-the docstring or the name), and its reading in English: its statement, with its
-definiens where it has one, read by Informath as build-index.py reads the
-statements of the other pages, within a time limit. The readings are cached in
-out/definition-readings.json, so that only new definitions are read again
+the docstring or the name), and its reading in English and as a formula: its
+statement, with its definiens where it has one, read by Informath as
+build-index.py reads the statements of the other pages, within a time limit.
+The readings are cached in out/definition-readings.json, so that only new
+definitions are read again
 (-reread reads them all); they are read by several RunInformath processes at
 once (-workers=N, 8 by default).
 """
-import collections, concurrent.futures, glob, html, importlib.util, json, os, re, sys
+import collections, concurrent.futures, glob, html, importlib.util, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DOCS = 'https://leanprover-community.github.io/mathlib4_docs/%s.html#%s'
@@ -27,7 +28,8 @@ PAGES = 'definitions'          # the directory of the static pages
 PER_PAGE = 400                 # at most, unless a module has more
 CHUNK = 200                    # definitions per call of a worker
 CATEGORIES = {'Exp': 'function or constant', 'Kind': 'type', 'Prop': 'predicate'}
-SOURCES = {'hand': 'by hand', 'doc': 'from the docstring', 'name': 'from the name'}
+SOURCES = {'hand': 'by hand', 'doc': 'from the docstring', 'name': 'from the name',
+           'lexicon': 'from the name, with words of the lexicon'}
 
 
 def load(name, file):
@@ -73,25 +75,53 @@ def informath():
     return BI
 
 
+def formula_readings(blocks, names, force=False):
+    """Lean name -> formula, by RunInformath -to-symbolic-latex within the time
+    limit, and the names given up. A call must give one formula for each
+    definition, as all of them have the same label; one that does not is split."""
+    bi = informath()
+
+    def call(chunk, timeout):
+        f = bi.write('formulas.dk', '\n\n'.join(blocks[n][1] for n in chunk) + '\n')
+        r = subprocess.run([bi.RUN, '-add-symboltables=' + bi.TABLE, '-to-symbolic-latex'] +
+                           (['-force-symbolic'] if force else []) + [f], capture_output=True, text=True,
+                           timeout=timeout)
+        lines = [l for l in r.stdout.split('\n') if l.strip()]
+        if len(chunk) == 1 and lines:
+            lines = [' '.join(lines)]
+        if r.returncode or len(lines) != len(chunk):
+            raise RuntimeError(r.stderr[-500:])
+        return {n: bi.FORMULA_LABEL.sub('', l).strip() for n, l in zip(chunk, lines)}
+    return bi.bisected(names, call, bi.LOAD)
+
+
 def read_chunk(decls):
-    """Lean name -> English reading of a chunk of definitions, None for one over
-    the time limit; -force-symbolic for one without a reading otherwise."""
+    """Lean name -> {'Eng': English reading, 'formula': formula} of a chunk of
+    definitions, None for one over the time limit; -force-symbolic for one
+    without a reading otherwise."""
     bi = informath()
     blocks = {d['lean']: (d['dk'], declaration(d)) for d in decls}
-    got, given_up = bi.slow_readings(blocks, list(blocks), bi.VERBAL, 'Eng', bi.LOAD)
-    missing = [n for n in blocks if n not in got and n not in given_up]
-    if missing:
-        more, _ = bi.slow_readings(blocks, missing, bi.VERBAL, 'Eng', bi.LOAD, True)
-        got.update(more)
-    out = {n: got.get(n, '') for n in blocks}
-    out.update({n: None for n in given_up})
+    out = {n: {} for n in blocks}
+    for mode in ('Eng', 'formula'):
+        def read(names, force=False):
+            if mode == 'Eng':
+                return bi.slow_readings(blocks, names, bi.VERBAL, 'Eng', bi.LOAD, force)
+            return formula_readings(blocks, names, force)
+        got, given_up = read(list(blocks))
+        missing = [n for n in blocks if n not in got and n not in given_up]
+        if missing:
+            more, _ = read(missing, True)
+            got.update(more)
+        for n in blocks:
+            out[n][mode] = None if n in given_up else got.get(n, '')
     return out
 
 
 def all_readings(decls, workers, reread):
     """The readings of all definitions, from the cache and from new calls."""
     cache = {} if reread or not os.path.exists(CACHE) else json.load(open(CACHE))
-    todo = [d for d in decls if d['lean'] not in cache]
+    # an older cache has the English readings only, as strings
+    todo = [d for d in decls if not isinstance(cache.get(d['lean']), dict)]
     chunks = [todo[i:i + CHUNK] for i in range(0, len(todo), CHUNK)]
     if chunks:
         print('%d definitions to read, in %d chunks, %d workers' % (len(todo), len(chunks), workers), flush=True)
@@ -138,21 +168,24 @@ def page_file(part, k):
     return '%s/%s-%d.html' % (PAGES, part, k)
 
 
-def entry(bh, r, modules, reading):
+def entry(bh, r, modules, readings):
     name, kind, cat, mi, w, src = r[:6]
     m = modules[mi]
     wording = (html.escape(w).replace('\x01', '<i>').replace('\x02', '</i>') +
                ' <span class=forced>(%s)</span>' % SOURCES.get(src, src)
                if w else '<span class=missing>no wording</span>')
-    text = ('<div class=text>%s</div>' % bh.reading_html(reading) if reading else
-            '<div class="text missing">%s</div>' % ('generation took over the time limit'
-                                                    if reading is None else 'no reading'))
+    def text(mode, what):
+        t = readings.get(mode, '')
+        return ('<div class=text>%s</div>' % bh.reading_html(t) if t else
+                '<div class="text missing">%s</div>' % ('generation took over the time limit'
+                                                        if t is None else 'no ' + what))
     return ('<div class=entry id="%s"><a class=name href="%s">%s</a><span class="k %s">%s</span>'
             '<span class=src>%s, %s</span>'
             '<div class=row><div class=lab>Wording</div><div class=text>%s</div></div>'
-            '<div class=row><div class=lab>English</div>%s</div></div>'
+            '<div class=row><div class=lab>English</div>%s</div>'
+            '<div class=row><div class=lab>Formula</div>%s</div></div>'
             % (html.escape(name), DOCS % (m.replace('.', '/'), name), html.escape(name), kind, kind,
-               html.escape(m), CATEGORIES[cat], wording, text))
+               html.escape(m), CATEGORIES[cat], wording, text('Eng', 'reading'), text('formula', 'formula')))
 
 
 def write_pages(pages, modules, readings, macros):
@@ -166,7 +199,7 @@ def write_pages(pages, modules, readings, macros):
         body = []
         for m, group in _by_module(rs, modules):
             body.append('<h2 id="%s">%s</h2>' % (html.escape(m), html.escape(m)))
-            body += [entry(bh, r, modules, readings.get(r[0], '')) for r in group]
+            body += [entry(bh, r, modules, readings.get(r[0], {})) for r in group]
         prev = '<a href="%s">&lsaquo; previous</a>' % os.path.basename(page_file(*pages[i - 1][:2])) if i else ''
         nxt = ('<a href="%s">next &rsaquo;</a>' % os.path.basename(page_file(*pages[i + 1][:2]))
                if i + 1 < len(pages) else '')
@@ -241,7 +274,8 @@ def main():
     if os.path.exists(os.path.join(HERE, 'definitions-data.json')):
         os.remove(os.path.join(HERE, 'definitions-data.json'))
     worded = sum(bool(r[4]) for r in rows)
-    read = sum(bool(readings.get(r[0])) for r in rows)
+    read = sum(bool(readings.get(r[0], {}).get('Eng')) for r in rows)
+    formulas = sum(bool(readings.get(r[0], {}).get('formula')) for r in rows)
     toc = []
     for part in dict.fromkeys(p for p, _, _ in pages):
         ps = [(i, k, rs) for i, (p, k, rs) in enumerate(pages) if p == part]
@@ -251,13 +285,14 @@ def main():
                                                           for i, k, _ in ps)))
     open(os.path.join(HERE, 'definitions.html'), 'w').write(PAGE % {
         'n': '{:,}'.format(len(rows)), 'w': '{:,}'.format(worded), 'r': '{:,}'.format(read),
+        'f': '{:,}'.format(formulas),
         'p': '{:,}'.format(len(pages)),
         'cov': ' · '.join('%s %s of %s' % (label, '{:,}'.format(counts[c + ' worded']), '{:,}'.format(counts[c]))
                           for c, label in (('Exp', 'functions and constants'), ('Kind', 'types'),
                                            ('Prop', 'predicates'))),
         'toc': '\n'.join(toc)})
-    print('%d definitions, %d worded, %d with a reading -> definitions.html, %d pages in %s/'
-          % (len(rows), worded, read, len(pages), PAGES))
+    print('%d definitions, %d worded, %d with a reading, %d with a formula -> definitions.html, %d pages in %s/'
+          % (len(rows), worded, read, formulas, len(pages), PAGES))
 
 
 PAGE = """<!DOCTYPE html>
@@ -298,8 +333,9 @@ classes and predicates; not its theorems, instances or tactics), on %(p)s pages 
 Each has the <b>wording</b> that the symbol table gives it, %(w)s of them (%(cov)s), written by
 hand in <code>mathlib.dkgf</code> or made by <code>definition-table.py</code> from the definition's
 docstring or name, with the arguments shown by their names; and its <b>reading</b> in English, %(r)s
-of them: the statement of the definition, with its definiens where it has one, read by Informath
-as the statements on the other pages are, where a constant without a wording is shown symbolically.
+of them, and as a <b>formula</b>, %(f)s of them: the statement of the definition, with its definiens
+where it has one, read by Informath as the statements on the other pages are, where a constant
+without a wording is shown symbolically.
 Search below to find a definition's page; each name there links to Mathlib's documentation, which
 has the docstring.</p>
 </header>
@@ -310,7 +346,8 @@ has the docstring.</p>
   <option value="Kind">types</option><option value="Prop">predicates</option></select>
  <select id=wd><option value="">worded or not</option><option value="y">worded</option>
   <option value="n">not worded</option><option value="hand">by hand</option>
-  <option value="doc">from the docstring</option><option value="name">from the name</option></select>
+  <option value="doc">from the docstring</option><option value="name">from the name</option>
+  <option value="lexicon">from the name, with the lexicon</option></select>
  <span class=count id=count></span>
 </div>
 <div id=list></div>

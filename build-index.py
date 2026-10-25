@@ -239,10 +239,14 @@ def slow_readings(blocks, names, table, lang, load, force=False):
     return bisected(names, call, load)
 
 
+# the label of a formula: \textbf{Definition}. or \textbf{Theorem} \texttt{\detokenize{name}}.
+FORMULA_LABEL = re.compile(r'^\\textbf\{(\w+)\}(?: \\texttt\{\\detokenize\{([^}]*)\}\})?\.\s*')
+
+
 def formulas(dk, decls, force=False):
     """Lean name -> formula, aligned with the declarations by their labels."""
     lines = run('-add-symboltables=' + TABLE, '-to-symbolic-latex', *(['-force-symbolic'] if force else []), dk)
-    lab = re.compile(r'^\\textbf\{(\w+)\}(?: \\texttt\{\\detokenize\{([^}]*)\}\})?\.\s*')
+    lab = FORMULA_LABEL
     # a theorem is labelled with its name, a definition with "Definition", and
     # a constant without a definiens (a structure's constructor) as an axiom
     # with its name, which counts as "Definition" here

@@ -43,8 +43,15 @@ shows the options.
 ## The symbol table of all Mathlib definitions
 
 `definitions.dkgf` has English wordings for about two thirds of Mathlib's
-definitions (26154 of 38624), made by `definition-table.py` from their
-docstrings and names; `mathlib.dkgf`, written by hand, overrides it. The
+definitions (26679 of 38601), made by `definition-table.py` from their
+docstrings and names; `mathlib.dkgf`, written by hand, overrides it. A
+definition whose name has words that the grammar lacks is tried again with
+them replaced by words of Informath's lexicon (`lexicon-repair.py`): verbs by
+their nominalizations (`restrictScalars`: "the scalar restriction of #1"),
+abbreviations by the word that the docstrings of the definitions named with
+them use (`denom`: "denominator"), and proper names by their spelling
+(`kronecker`: "Kronecker"), in names of at most two words; the replacements,
+to be reviewed, are listed in `out/lexicon-repairs.tsv`. The
 words that the wordings need but Informath lacks (about 500) are generated in
 English into a block of Informath's `Mathlib.gf` and `MathlibEng.gf`
 (`python3 definition-table.py -lexicon`, then `make full_grammar` in

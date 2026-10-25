@@ -16,6 +16,11 @@ first one whose parse has the constant's category (Exp, Kind or Prop) and its
 number of arguments is its entry in definitions.dkgf.  out/definition-table.tsv
 has every constant with its candidates, and the words of the candidates that
 the grammar does not know, which out/unknown-words.tsv counts.
+
+A definition that gets no entry so is tried again with the words of its name
+replaced by words of Informath's lexicon (lexicon-repair.py: restrictScalars,
+"the scalar restriction of #1"; denom, "denominator"); out/lexicon-entries.tsv
+has these entries, and out/lexicon-repairs.tsv the replacements, to be reviewed.
 """
 import collections, importlib.util, json, os, re, subprocess, sys
 
@@ -23,6 +28,9 @@ spec = importlib.util.spec_from_file_location('suggest', os.path.join(os.path.di
 suggest = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(suggest)
 RUN = suggest.RUN
+spec = importlib.util.spec_from_file_location('repair', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lexicon-repair.py'))
+repair = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(repair)
 
 # the parts of Mathlib that define no mathematical concepts
 SKIP_MODULES = ('Mathlib.Tactic', 'Mathlib.Lean', 'Mathlib.Util', 'Mathlib.Testing', 'Mathlib.Deprecated',
@@ -195,7 +203,8 @@ PAIRS = {('nat', 'trans'): 'natural transformation', ('nat', 'iso'): 'natural is
          ('nhds', 'within'): 'neighbourhood filter within', ('is', 'o'): 'is little o',
          ('is', 'big', 'o'): 'is big o', ('l', 'i'): 'linear isometric',
          ('rel', 'iso'): 'relation isomorphism', ('rel', 'hom'): 'relation homomorphism',
-         ('rel', 'embedding'): 'relation embedding', ('rel', 'series'): 'relation series'}
+         ('rel', 'embedding'): 'relation embedding', ('rel', 'series'): 'relation series',
+         ('dist', 'lat'): 'distributive lattice'}
 
 # the verbs that predicates are named after
 VERB_HEADS = {'has': 'has', 'preserves': 'preserves', 'reflects': 'reflects', 'creates': 'creates',
@@ -328,8 +337,9 @@ def stems(ws):
     return {w[:4].lower() for w in ws if len(w) >= 3}
 
 
-def from_name(lean, module, nargs, cat, value, doc='', typ='', argnames=()):
-    ws = head_words(lean, module, cat)
+def from_name(lean, module, nargs, cat, value, doc='', typ='', argnames=(), ws=None):
+    """The candidates from a name, or from the words ws made of it."""
+    ws = ws or head_words(lean, module, cat)
     if not ws or any(w.isdigit() for w in ws) or ws[-1] == 'of':
         return []
     sg = lambda w: singular(w) if w.islower() else w
@@ -738,6 +748,45 @@ def main():
             c, src, t = good[0]
             table.append((d, c, src))
         tsv.append((d, cat, nargs, good, bad))
+
+    # the second round: the words of the names replaced by words of the lexicon
+    lex = repair.Lexicon(os.path.join(os.environ['INFORMATH_ROOT'], 'share', 'InformathEng.pgf'), 'out/lexicon.json')
+    fixer = repair.Repairer(lex, defs, lambda d: words_of_name(d['lean'], d['module']), DICT, PROPER)
+    second = []
+    for i, (d, cat, nargs, good, bad) in enumerate(tsv):
+        if good:
+            continue
+        names, _, _ = suggest.signature(d['type'])
+        value = suggest.VALUE[0]
+        ws, made = fixer.repair(head_words(d['lean'], d['module'], cat), d['dk'], cat)
+        cs = []
+        if made:
+            cs = from_name(d['lean'], d['module'], nargs, cat, value, d['doc'], d['type'], names, ws)
+        ks = main_args(d['type'], nargs)
+        ap = repair.adjective_prep(ws, lex) if cat == 'Prop' and len(ks) == 2 else None
+        if ap:
+            cs = ['#%d is %s %s #%d' % (ks[0], ap[0], ap[1], ks[1])] + cs
+        if cs:
+            second.append((i, cs, made))
+    parses.update(parse_all(sorted({c for _, cs, _ in second for c in cs} - set(parses))))
+    lexicon_rows = []
+    for i, cs, made in second:
+        d, cat, nargs, good, bad = tsv[i]
+        fit = [(c, 'lexicon', t) for c in cs for t in [fits(c, cat, nargs)] if t]
+        if fit:
+            got += 1
+            table.append((d, fit[0][0], 'lexicon'))
+            tsv[i] = (d, cat, nargs, fit, bad)
+            fixer.used(made)
+            lexicon_rows.append((d, fit[0][0], made))
+    fixer.write('out/lexicon-repairs.tsv')
+    with open('out/lexicon-entries.tsv', 'w') as f:
+        f.write('constant\tentry\treplacements\tdocstring\n')
+        for d, c, made in lexicon_rows:
+            f.write('%s\t%s\t%s\t%s\n' % (d['dk'], c, ', '.join('%s -> %s' % (w, r) for w, r, _ in made),
+                                          re.sub(r'\s+', ' ', d['doc'])[:200]))
+    print('%d entries from the lexicon -> out/lexicon-entries.tsv, their replacements -> out/lexicon-repairs.tsv'
+          % len(lexicon_rows), file=sys.stderr)
     known = known_words(sorted(words), generated_functions())
     unknown = collections.Counter({w: n for w, n in words.items() if not known.get(w, True)})
 

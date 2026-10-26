@@ -17,10 +17,10 @@ statement, with its definiens where it has one, read by Informath as
 build-index.py reads the statements of the other pages, within a time limit.
 The readings are cached in out/definition-readings.json, so that only new
 definitions are read again
-(-reread reads them all); they are read by several RunInformath processes at
-once (-workers=N, 8 by default).
+(-reread reads them all, -retry those over the time limit again); they are
+read by several RunInformath processes at once (-workers=N, 8 by default).
 """
-import collections, concurrent.futures, glob, html, importlib.util, json, os, re, subprocess, sys
+import collections, concurrent.futures, glob, hashlib, html, importlib.util, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DOCS = 'https://leanprover-community.github.io/mathlib4_docs/%s.html#%s'
@@ -123,13 +123,26 @@ def read_chunk(job):
     return out
 
 
-def all_readings(decls, workers, reread):
+def all_readings(decls, workers, reread, retry=False):
     """The readings of all definitions, from the cache and from new calls."""
     cache = {} if reread or not os.path.exists(CACHE) else json.load(open(CACHE))
     # an older cache has the English readings only, as strings
     for n, v in cache.items():
         if not isinstance(v, dict):
             cache[n] = {}
+    # a definition is read again if its declaration or the symbol tables have
+    # changed since its readings were made (a new Mathlib, a new table); a
+    # change of the grammar needs -reread
+    tables = hashlib.sha1(''.join(open(os.path.join(HERE, t)).read() for t in ('definitions.dkgf', 'mathlib.dkgf'))
+                          .encode()).hexdigest()[:12]
+    for d in decls:
+        key = hashlib.sha1(declaration(d).encode()).hexdigest()[:12] + tables
+        if cache.get(d['lean'], {}).get('key') != key:
+            cache[d['lean']] = {'key': key}
+        elif retry:
+            # -retry: the readings over the time limit are tried again
+            for m in [m for m, v in cache[d['lean']].items() if v is None]:
+                del cache[d['lean']][m]
     todo = [d for d in decls if any(m not in cache.get(d['lean'], {}) for m in MODES)]
     chunks = [todo[i:i + CHUNK] for i in range(0, len(todo), CHUNK)]
     jobs = [(c, [m for m in MODES if any(m not in cache.get(d['lean'], {}) for d in c)]) for c in chunks]
@@ -236,6 +249,7 @@ def write_pages(pages, modules, readings, macros):
 def main():
     workers = int(([a.split('=')[1] for a in sys.argv[1:] if a.startswith('-workers=')] or [8])[0])
     reread = '-reread' in sys.argv[1:]
+    retry = '-retry' in sys.argv[1:]
     limit = int(([a.split('=')[1] for a in sys.argv[1:] if a.startswith('-limit=')] or [0])[0])
     dt = load('definition_table', 'definition-table.py')
     defs = [json.loads(l) for l in open(os.path.join(HERE, 'out', 'definitions.jsonl'))]
@@ -276,7 +290,7 @@ def main():
         if limit and len(rows) >= limit:      # for testing
             break
 
-    readings = all_readings(decls, workers, reread)
+    readings = all_readings(decls, workers, reread, retry)
     macros = informath().macros(BI.read_modules(), BI.VERBAL)
     for f in glob.glob(os.path.join(HERE, '.defs-*')):
         os.remove(f)

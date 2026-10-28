@@ -79,9 +79,19 @@ def justification_html(j, where, here):
     return re.sub(r'\\texttt\{([^{}]*)\}', one, html.escape(j, quote=False))
 
 
+INDENT = '\\hspace*{1.5em}'      # one open scope of a line (RunInformath -proof-indent)
+
+
 def proof_html(rows, where, here):
-    body = ''.join('<tr><td class=n>%s</td><td>%s</td><td class=j>%s</td></tr>'
-                   % (html.escape(n), reading_html(t), justification_html(j, where, here))
+    """The lines of a proof text, indented by the scopes open at them, with a
+    vertical line for each as in Fitch's notation."""
+    def sentence(t):
+        depth = 0
+        while t.startswith(INDENT):
+            t, depth = t[len(INDENT):], depth + 1
+        return '<td class=s%s>%s</td>' % (' style="--depth:%d"' % depth if depth else '', reading_html(t))
+    body = ''.join('<tr><td class=n>%s</td>%s<td class=j>%s</td></tr>'
+                   % (html.escape(n), sentence(t), justification_html(j, where, here))
                    for n, t, j in rows)
     return ('<details%s><summary>%d lines</summary><table class=proof>%s</table></details>'
             % (' open' if len(rows) <= 12 else '', len(rows), body))
@@ -135,6 +145,9 @@ STYLE = """
  table.proof td{padding:.1rem .5rem;vertical-align:top;border-bottom:1px solid #f0f0f0}
  table.proof td.n{color:#888;text-align:right;white-space:nowrap}
  table.proof td.j{color:#555;white-space:nowrap;font-size:.9em}
+ table.proof td.s{--depth:0;padding-left:calc(.5rem + var(--depth) * 1.2em);
+   background:repeating-linear-gradient(to right, transparent 0 .5rem, #bbb .5rem calc(.5rem + 1px), transparent calc(.5rem + 1px) calc(.5rem + 1.2em));
+   background-size:calc(var(--depth) * 1.2em) 100%;background-repeat:no-repeat}
  summary{cursor:pointer;color:#0645ad;font-size:.85em}
  a.defsbox{display:block;margin:1.2rem 0;padding:.8rem 1rem;border:1px solid #c8d3e6;border-left:4px solid #0645ad;border-radius:6px;background:#f4f6fb;color:#222;text-decoration:none;max-width:46rem}
  a.defsbox:hover{background:#eaf0fb}

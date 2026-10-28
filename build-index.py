@@ -44,6 +44,9 @@ FAST_LANGUAGES = [l for l in LANGUAGES if l not in SLOW_LANGUAGES]
 PER_ITEM = 1
 CHUNK = 12
 PROOF_TIMEOUT = 300               # seconds for one call of -proof-text in the fast languages
+# the proof texts indented by the assumptions open at each line, with the goals
+# of the assumptions, and the variables and hypotheses of a scope in one line
+PROOF_FLAGS = ['-proof-indent', '-proof-goals', '-proof-merge-hypos']
 TACTIC_LANGUAGES = ['Eng', 'Fre', 'Cze', 'Ger', 'Swe']  # the languages of the proof texts of tactic proofs
 TMP = '.index-'                   # prefix of the temporary files
 OUT = 'out'                       # the directory of the exported modules
@@ -294,7 +297,7 @@ def call_proof_text(base, proofs, langs, timeout=PROOF_TIMEOUT):
     """RunInformath -proof-text on the proofs: its output, and whether it failed."""
     rest = write('proofs.dk', '\n\n'.join(proofs) + '\n')
     try:
-        r = subprocess.run([RUN, '-proof-text', '-languages=' + ','.join(langs), '-base=' + base,
+        r = subprocess.run([RUN, '-proof-text'] + PROOF_FLAGS + ['-languages=' + ','.join(langs), '-base=' + base,
                             '-add-symboltables=' + TABLE, rest],
                            capture_output=True, text=True, timeout=timeout)
         return r.stdout, r.returncode != 0

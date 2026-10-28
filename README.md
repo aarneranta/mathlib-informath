@@ -119,6 +119,33 @@ an element of $\mathbb{N}$ such that $p = m \times n$"), closed goals, and what
 is enough to show ("It is enough to show that ..."); `RunInformath
 -tactic-proof` writes them out, each with its tactic as the justification.
 
+Both kinds of proof text are laid out in the same way (`build-index.py`
+passes `-proof-indent` and `-proof-goals`, and for the term proofs also
+`-proof-merge-hypos`), and `build-html.py` shows the indentation with a
+vertical line for each open scope:
+
+* **Indentation.** A line is indented by the assumptions open at it. In a term
+  proof, a scope is what one λ binds, and the line that discharges it is back
+  one level out. In a tactic proof, `tactic-units.py` gives each unit a
+  `depth`: the number of assumptions (the hypotheses of an `intro`, and those at
+  the beginning of a case) that are still hypotheses of the goal. The facts of
+  `have`, `obtain` or `rw at` and the statement's hypotheses open no scope, and
+  an assumption that substitutes (`rintro rfl`) leaves no hypothesis, so it stays
+  open until the next step that closes a goal. The depth is approximate where a
+  case split changes the type of an earlier hypothesis (`rcases m with ...`
+  turns `h` about `m` into `h` about `0`): that hypothesis is no longer counted,
+  as Lean's goals do not say where a hypothesis came from.
+* **Goals.** An assumption states what it is made for: "To prove that $m = p$,
+  assume that $n = 1$." In a term proof, the goal is the conclusion of the rule
+  that discharges the assumption, given where it differs from what the
+  assumption's scope proves (introductions, not eliminations), and not when it
+  is the statement itself. In a tactic proof, an `intro` of propositions only
+  gets a `goal`: what is left to show after it; an `intro` of variables does not,
+  as its goal would mention them before they are introduced.
+* **Merged hypotheses** (term proofs). The variables and hypotheses of one scope
+  are one line, aggregated as in statements: "Let $x$ be an element of $X$ such
+  that ...", "Assume that $A$ and $B$."
+
 A statement that gets no reading with the symbol table is read again with
 `-force-symbolic`, and marked so on the page: this happens where a proposition
 is the argument of a macro, as in `{k ∈ s | k ≠ 0}`.

@@ -21,6 +21,13 @@ by comparing the goals:
 * a step that splits the goal into cases (by_cases, rcases with |, cases,
   induction) is "we reason by cases" or "by induction".
 
+Each unit has its depth: the number of assumptions open at it (those of an
+intro and of the beginning of a case, while they are hypotheses of the goal;
+not the derived facts, nor the statement's hypotheses), for RunInformath's
+-proof-indent; and an assumption of propositions by an intro has its goal,
+what is left to show under it ("to prove that m = p, assume that n = 1"),
+for -proof-goals.
+
 Each unit has the step's tactic as its justification. The declaration of a
 step is found by its line in out/<Module>.json.
 """
@@ -108,21 +115,31 @@ def first_line(tactic):
 
 
 def units_of_proof(steps):
-    """The proof units of the steps of one proof, in order."""
+    """The proof units of the steps of one proof, in order, with their depths."""
     units, seen = [], set()
+    groups = []          # the assumptions made: sets of hypotheses, or [] for one that substitutes
+    open_substs = []     # those that substitute (rintro rfl), open until a goal is closed
+
+    def add(unit, context):
+        """A unit, with the number of assumptions open in its context."""
+        ctx = set(context)
+        unit['depth'] = sum(1 for g in groups if g and g <= ctx) + len(open_substs)
+        units.append(unit)
+
     if steps and steps[0]['before']:
         seen = set(hyps(steps[0]['before']))
     for st in steps:
         before, after = st['before'], st['after']
         if not before or 'error' in before or any('error' in a for a in after):
-            units.append({'unit': 'obvious', 'by': st['tactic']})
+            add({'unit': 'obvious', 'by': st['tactic']}, hyps(before) if before and 'error' not in before else [])
             continue
         name = tactic_name(st)
         hb = hyps(before)
         # hypotheses there without an earlier step's making them: a case's
         entered = [h for h in hb if h not in seen]
         if entered:
-            units.append({'unit': 'hypos', 'hypos': entered, 'by': ''})
+            groups.append(set(entered))      # the assumption of a case
+            add({'unit': 'hypos', 'hypos': entered, 'by': ''}, hb)
         seen |= set(hb)
         n_before = st.get('nBefore', 1)
         closed = len(after) < n_before
@@ -137,10 +154,10 @@ def units_of_proof(steps):
         main = new_goals[0] if new_goals else None
         new = [h for h in hyps(main) if h not in hb] if main else []
         if name in INDUCTION:
-            units.append({'unit': 'induction', 'by': st['tactic']})
+            add({'unit': 'induction', 'by': st['tactic']}, hb)
             continue
         if len(new_goals) > 1 and (name in CASES or '|' in st['tactic']):
-            units.append({'unit': 'cases', 'by': st['tactic']})
+            add({'unit': 'cases', 'by': st['tactic']}, hb)
             continue
         derived = name in DERIVED or ' at ' in st['tactic']
         if not derived:
@@ -150,28 +167,38 @@ def units_of_proof(steps):
         if new and name in ('have', 'haveI') and re.search(r':=\s*by\b', st['tactic']) \
                 and all(is_prop(t) for _, t in new):
             # a fact proved by a nested proof, which follows
-            units.append({'unit': 'verify', 'prop': conj([t[len('Proof '):] for _, t in new]),
-                          'by': st['tactic']})
+            add({'unit': 'verify', 'prop': conj([t[len('Proof '):] for _, t in new]),
+                 'by': st['tactic']}, hb)
         elif new:
             if not derived:
-                units.append({'unit': 'hypos', 'hypos': new, 'by': st['tactic']})
+                # an assumption, with what is left to show as its goal
+                groups.append(set(new))
+                unit = {'unit': 'hypos', 'hypos': new, 'by': st['tactic']}
+                # (not where it introduces variables, which the goal would
+                # mention before they are introduced)
+                if name in INTRO and main and all(is_prop(t) for _, t in new):
+                    unit['goal'] = target(main)
+                add(unit, hyps(main))
             elif all(is_prop(t) for _, t in new):
-                units.append({'unit': 'conclusion', 'prop': conj([t[len('Proof '):] for _, t in new]),
-                              'by': st['tactic']})
+                add({'unit': 'conclusion', 'prop': conj([t[len('Proof '):] for _, t in new]),
+                     'by': st['tactic']}, hyps(main) if main else hb)
             else:
-                units.append({'unit': 'hypos', 'hypos': new, 'by': st['tactic']})
+                add({'unit': 'hypos', 'hypos': new, 'by': st['tactic']}, hyps(main) if main else hb)
         if closed:
-            units.append({'unit': 'conclusion', 'prop': target(before), 'by': st['tactic']})
+            add({'unit': 'conclusion', 'prop': target(before), 'by': st['tactic']}, hb)
+            if open_substs:
+                open_substs.pop()
         elif main and target(main) != target(before) or len(new_goals) > 1:
             if name in INTRO:
                 # an assumption that substitutes (rintro rfl) leaves no hypothesis
                 ab = split_if(target(before))
                 if not new and ab:
-                    units.append({'unit': 'hypos', 'hypos': [['_h', 'Proof (%s)' % ab[0]]],
-                                  'by': st['tactic']})
+                    open_substs.append(True)
+                    add({'unit': 'hypos', 'hypos': [['_h', 'Proof (%s)' % ab[0]]],
+                         'goal': ab[1], 'by': st['tactic']}, hb)
             else:
                 targets = [target(g) for g in new_goals]
-                units.append({'unit': 'enough', 'prop': conj(targets), 'by': st['tactic']})
+                add({'unit': 'enough', 'prop': conj(targets), 'by': st['tactic']}, hb)
     return units
 
 

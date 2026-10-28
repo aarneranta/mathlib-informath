@@ -505,7 +505,7 @@ def main():
                        check=True, capture_output=True)
         units_file = OUT + '/%s-tactic-units.json' % m
         units = json.load(open(units_file))
-        r = subprocess.run([RUN, '-tactic-proof', '-languages=' + ','.join(TACTIC_LANGUAGES),
+        r = subprocess.run([RUN, '-tactic-proof', '-proof-indent', '-proof-goals', '-languages=' + ','.join(TACTIC_LANGUAGES),
                             '-add-symboltables=' + TABLE, units_file], capture_output=True, text=True)
         tactic_texts = proof_tables(r.stdout, TACTIC_LANGUAGES)
         for p, t in zip(units, tactic_texts):

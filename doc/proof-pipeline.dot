@@ -1,0 +1,98 @@
+// proof-pipeline.dot: how mathlib-informath reads Mathlib's statements and proofs
+//   dot -Tpng -Gdpi=200 proof-pipeline.dot -o proof-pipeline.png
+digraph proofs {
+  rankdir=LR;
+  newrank=true;
+  nodesep=0.3; ranksep=0.4;
+  fontname="Helvetica";
+  node [fontname="Helvetica", fontsize=14];
+  edge [color="#555555", arrowsize=0.8, penwidth=1.2, fontname="Helvetica", fontsize=12];
+
+  // sources of information
+  node [shape=folder, style=filled, fillcolor="#fde9b8", color="#c9a227"];
+  mathlib   [label="Mathlib\n(Lean 4 source)"];
+  lean      [label="Lean 4\nelaborator"];
+  ndrules   [label="nd.dk, mapping.tsv\n(natural deduction rules,\nLean constants mapped)"];
+  informath [label="Informath: GF grammar,\nRunInformath, symbol tables\ndefinitions.dkgf (from the\ndocstrings), mathlib.dkgf"];
+
+  // programs
+  node [shape=box, style="rounded,filled", fillcolor="#dbe8f7", color="#3a6ea5"];
+  export    [label="lake exe export\n(Export.lean)"];
+  exporttac [label="lake exe export\n--tactics"];
+  units     [label="tactic-units.py\n(goals before and after\neach tactic, compared)"];
+  index     [label="build-index.py", penwidth=2.5, fontsize=16];
+  html      [label="build-html.py"];
+
+  // files
+  node [shape=note, style=filled, fillcolor="#ffffff", color="#888888"];
+  dk        [label="out/Module.dk\nstatements, and term proofs\nas Dedukti definitions"];
+  deps      [label="out/Module-deps.dk,\nModule.json\n(constants used, sources)"];
+  goals     [label="out/Module-tactics.json\n(the goals of each step,\nin Dedukti)"];
+  pages     [label="mathlib-informath.html,\npages/*.html", fillcolor="#e3f4e1", color="#3d8b37", penwidth=2.5, fontsize=16];
+
+  // RunInformath, as it is run by build-index.py
+  node [shape=box, style="rounded,filled", fillcolor="#e6dcf3", color="#6a4c93"];
+  rstat  [label="RunInformath -json\n(statements)"];
+  rterm  [label="RunInformath -proof-text\n-proof-indent -proof-goals\n-proof-merge-hypos"];
+  rtac   [label="RunInformath -tactic-proof\n-proof-indent -proof-goals"];
+
+  subgraph cluster_lean {
+    label="Lean"; labeljust=l; style=rounded; color="#bbbbbb"; fontcolor="#555555"; fontsize=18;
+    mathlib; lean; export; exporttac;
+  }
+  subgraph cluster_term {
+    label="Term proofs"; labeljust=l;
+    style=rounded; color="#3a6ea5"; fontcolor="#3a6ea5"; fontsize=16;
+    dk; deps; rterm;
+  }
+  subgraph cluster_tac {
+    label="Tactic proofs"; labeljust=l;
+    style=rounded; color="#6a4c93"; fontcolor="#6a4c93"; fontsize=16;
+    goals; units; rtac;
+  }
+
+  mathlib -> export;
+  mathlib -> exporttac;
+  lean -> export;
+  lean -> exporttac;
+  ndrules -> export;
+  export -> dk [label="λ as ifI, forallI;\napplication as ifE, forallE;\nlemmas as rules"];
+  export -> deps;
+
+  // statements
+  dk -> rstat;
+  informath -> rstat;
+
+  // term proofs
+  dk -> rterm [color="#3a6ea5", penwidth=2];
+  deps -> rterm [color="#3a6ea5"];
+  ndrules -> rterm [color="#3a6ea5", label="-base"];
+  informath -> rterm;
+
+  // tactic proofs
+  exporttac -> goals [color="#6a4c93", penwidth=2];
+  goals -> units [color="#6a4c93", penwidth=2];
+  units -> rtac [color="#6a4c93", penwidth=2, label="proof units: assume,\nlet, it is enough\nto show, ..."];
+  informath -> rtac;
+
+  // build-index.py runs the three, and the pages are made from its index
+  rstat -> index [label="readings, formulas"];
+  rterm -> index [color="#3a6ea5", penwidth=2, label="proof texts"];
+  rtac -> index [color="#6a4c93", penwidth=2, label="proof texts"];
+  index -> html [label="index.json"];
+  html -> pages;
+
+  {rank=same; mathlib; lean;}
+  {rank=same; informath; dk;}
+
+  // legend
+  subgraph cluster_legend {
+    label=""; style=rounded; color="#bbbbbb";
+    node [fontsize=12];
+    lsrc  [label="source of\ninformation", shape=folder, style=filled, fillcolor="#fde9b8", color="#c9a227"];
+    lprog [label="program", shape=box, style="rounded,filled", fillcolor="#dbe8f7", color="#3a6ea5"];
+    lrun  [label="RunInformath", shape=box, style="rounded,filled", fillcolor="#e6dcf3", color="#6a4c93"];
+    lfile [label="file", shape=note, style=filled, fillcolor="#ffffff", color="#888888"];
+  }
+  lsrc -> lprog -> lrun -> lfile [style=invis];
+}

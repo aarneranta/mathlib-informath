@@ -82,6 +82,7 @@ RunInformath processes; the readings are cached in
 | `nd.dk` | the natural deduction rules that proofs are translated to (`ifI`, `forallE`, ...) |
 | `binders.txt` | constants with a binder notation (`∏ x ∈ s, f x`), whose function arguments are bound variables and bodies |
 | `modules.txt` | the modules exported and shown, in the order of the pages; a `# page: X` line puts the modules after it on one page X |
+| `structures.txt`, `structures.dkgf` | the classes exported as structure definitions (`lake exe export --structures`), and the nouns that name them |
 | `out/` | the export: `<Module>.dk` (the statements), `<Module>.json` (docstrings, source lines), `<Module>-deps.dk` (the constants they use) |
 | `build-index.py` | builds `index.json`: for each declaration its Dedukti, its readings (English, French, Czech, German, formula) and proof texts, made by RunInformath in a few calls |
 | `index.json` | the index, from which the pages are made |
@@ -150,6 +151,30 @@ A statement that gets no reading with the symbol table is read again with
 `-force-symbolic`, and marked so on the page: this happens where a proposition
 is the argument of a macro, as in `{k ∈ s | k ≠ 0}`.
 
+## Algebraic structures
+
+The page `Structures.Algebra` shows Mathlib's classes from magmas to
+commutative groups (`structures.txt`: `Mul`, `CommMagma`, `Semigroup`, ...,
+`Group`, `CommGroup`, `AddCommGroup`) as Informath's structure definitions, in
+the style of Informath's `test/algebra.dk`: "A semigroup is an algebraic
+structure, where $G$ is a set, $*$ is a binary operation on $G$, and for all
+..." `lake exe export --structures` writes, for each class `C`, a declaration
+
+    Semigroup__structure : (G : Set) -> ({|*|} : Oper G) ->
+      (mul_assoc : Proof (forall G (a => ...))) -> Structure.
+
+whose arguments are the fields of the class with those of its parents
+(`extends`) flattened. In the types of the fields, the operations that Lean
+finds by instance resolution (`a * b`, `1`, `a⁻¹`) are the variables of the
+fields; a binary operation is an `Oper G` applied with `appOper`, named by its
+notation (`mul` is `*`, `add` is `+`). Left out are the fields with a default
+value (`npow`, `div`, `zpow`) and the laws that mention them or any other
+operation that the stated fields do not give (`npow_zero : x ^ 0 = 1`); the
+page lists them for each structure, with the parents. The structure is a
+constant of its own, `C__structure`, named by a noun in `structures.dkgf`,
+since the class `C` is exported as a predicate of its carrier (`Group : Set ->
+Prop`, "$G$ is a group"), as the statements that assume it need.
+
 ## Building
 
 Requirements: a Mathlib checkout beside this one (`../mathlib4`, with
@@ -172,6 +197,7 @@ limit split in halves down to the slow statements, which get no German.
     lake build                                # the exporter
     lake exe export $(grep -v '^#' modules.txt)        # -> out/
     lake exe export --tactics Mathlib.Data.Nat.Prime.Defs   # -> out/<Module>-tactics.json
+    lake exe export --structures              # structures.txt -> out/Structures.*.dk
     python3 build-index.py                    # -> index.json (15 minutes, German)
     python3 build-html.py                     # -> mathlib-informath.html, pages/
 

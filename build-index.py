@@ -27,7 +27,7 @@ import difflib, glob, json, os, re, subprocess, sys, time
 MATHLIB = os.environ.get('MATHLIB', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'mathlib4'))
 # the symbol tables, the later overriding the earlier: the generated entries of
 # all Mathlib definitions (definition-table.py) and the hand-written ones
-TABLES = ['definitions.dkgf', 'mathlib.dkgf']
+TABLES = ['definitions.dkgf', 'mathlib.dkgf', 'structures.dkgf']
 TABLE = None                      # the two in one file, written by main
 # a reading that the generated entries spoil in some language, as there is no
 # word for them in it, is made with the hand-written table only

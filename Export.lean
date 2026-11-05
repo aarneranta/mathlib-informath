@@ -2,6 +2,7 @@
 Export the statements of Mathlib declarations to Informath's Dedukti dialect.
 
     lake exe export Mathlib.Data.Nat.Prime.Defs [more modules]   # -> out/<Module>.dk, .json
+    lake exe export --structures      # the classes of structures.txt as structure definitions
 
 For each declaration of the given modules (theorems, definitions, axioms, and
 structures and classes with their fields), the type is translated:
@@ -48,6 +49,7 @@ structure St where
   names : Std.HashSet String := {}   -- variable names in use
   proofMode : Bool := false          -- in a proof term, theorems keep all their arguments
   keepAll : Std.HashSet Name := {}   -- mapped to rules of nd.dk, which take all arguments
+  opers : Std.HashMap FVarId (String × String) := {}  -- binary operations of a structure: name, carrier
 
 abbrev M := StateRefT St MetaM
 
@@ -100,7 +102,9 @@ mutual
 partial def tr (e : Expr) : M String := do
   match e with
   | .mdata _ b => tr b
-  | .fvar id => return (← id.getUserName).toString  -- names are fixed when bound
+  | .fvar id =>
+    if let some (nm, _) := (← get).opers.get? id then return nm
+    return (← id.getUserName).toString  -- names are fixed when bound
   | .sort .zero => return "Prop"
   | .sort _ => return "Set"
   | .lit (.natVal n) => return numeral n
@@ -112,6 +116,11 @@ partial def tr (e : Expr) : M String := do
     match f with
     | .const c _ => app c args e
     | _ => do
+      -- a binary operation of a structure applied: appOper G op a b
+      if let .fvar id := f then
+        if let some (nm, carrier) := (← get).opers.get? id then
+          if args.size == 2 then
+            return s!"appOper {carrier} {nm} {paren (← tr args[0]!)} {paren (← tr args[1]!)}"
       if (← get).proofMode && f.isFVar && (← isProp (← inferType e)) then
         -- a hypothesis applied: an elimination rule for each argument
         let mut cur ← tr f
@@ -495,6 +504,176 @@ def exportModule (env : Environment) (mapping : Std.HashMap Name String)
   exportDecls env mapping keepAll binders mod names src
 
 
+/-! ## Algebraic structures
+
+`lake exe export --structures` reads `structures.txt`, whose lines are
+`<Name> <Module> <Class> ...`, imports each Module and writes
+out/<Name>.dk, .json and -deps.dk: for each class, a declaration in the style
+of Informath's test/algebra.dk,
+
+    Semigroup__structure : (G : Set) -> ({|*|} : Oper G) ->
+      (mul_assoc : Proof (forall G (a => ...))) -> Structure.
+
+that Informath reads as a structure definition ("A semigroup is an
+algebraic structure, where ..."). The fields are those of the class with its
+parents' (`extends`) flattened, but for the fields with a default value
+(`npow`, `div`, `zpow` and their laws), which Mathlib adds for definitional
+convenience. In the types of the fields, the operations of the instance
+(`a * b`, `1`, `a⁻¹`, found by instance resolution in Lean) become the
+variables of the fields before; a binary operation is an `Oper G`, applied
+with `appOper`, and named by its notation. The structure is a constant of its
+own, `C__structure`, as the class `C` itself is exported as a predicate of
+its carrier, `C : Set -> Prop`, which statements use ("Assume that G is a
+group"). -/
+
+/-- The notation that names a binary operation field. -/
+def operName (f : Name) : String :=
+  match f.toString with
+  | "mul" => "{|*|}" | "add" => "{|+|}" | "div" => "{|/|}" | "sub" => "{|-|}"
+  | s => s
+
+/-- The fields a structure definition states: all fields, flattened through
+`extends`, except those with a default value. -/
+def statedFields (env : Environment) (c : Name) : Array Name × Array Name :=
+  (getStructureFieldsFlattened env c (includeSubobjectFields := false)).partition fun f =>
+    (getEffectiveDefaultFnForField? env c f).isNone
+
+/-- `e` with the operations of the instance replaced by the field variables:
+an application of a projection (Mul.mul, HMul.hMul, OfNat.ofNat, Inv.inv ...)
+whose part up to its instance argument is a field's value. -/
+def replaceFields (fields : Array (Expr × Expr)) (e : Expr) : MetaM Expr :=
+  Meta.transform e (pre := fun e => do
+    let f := e.getAppFn
+    let some c := f.constName? | return .continue
+    let some info := (← getEnv).getProjectionFnInfo? c | return .continue
+    let args := e.getAppArgs
+    let k := info.numParams + 1
+    if args.size < k then return .continue
+    let pre := mkAppN f (args.extract 0 k)
+    let ty ← inferType pre
+    for (v, x) in fields do
+      if (← isDefEq (← inferType v) ty) && (← isDefEq v pre) then
+        return .visit (mkAppN x (args.extract k args.size))
+    return .continue)
+
+/-- The type of a data field: Elem G, or a function type of such. -/
+partial def fieldType (t : Expr) : M String := do
+  match t with
+  | .forallE _ a b _ =>
+    if b.hasLooseBVars then hypoType t
+    else return s!"{← hypoType a} -> {← fieldType b}"
+  | _ => hypoType t
+
+/-- The structure declaration of a class, and the names of the fields left
+out: those with a default value, and the laws that mention them or any
+other operation of the instance that the stated fields do not give. -/
+def structureDecl (c : Name) : M (String × Array Name) := do
+  let env ← getEnv
+  let ci ← getConstInfo c
+  let (stated, defaulted) := statedFields env c
+  forallTelescope ci.type fun xs _ => do
+    let some carrierE := xs[0]? | throwError "{c} has no carrier"
+    -- the carrier as Mathlib names it, but for a Greek letter (Mul α)
+    let n0 := (← carrierE.fvarId!.getUserName).eraseMacroScopes.toString
+    let carrier ← freshName (if n0.all (fun (ch : Char) => ch.isAlphanum && ch.toNat < 128) then n0.toName else `G) false
+    withLocalDecl (Name.mkSimple carrier) .default (← inferType carrierE) fun g => do
+      let cls := mkApp (mkConst c (ci.levelParams.map Level.param)) g
+      withLocalDecl `inst .instImplicit cls fun inst => do
+        -- the defaulted fields as variables too, to see which laws mention them
+        let dvs ← defaulted.mapM fun f => (mkProjection inst f : MetaM Expr)
+        let dtys ← dvs.mapM fun v => (inferType v : MetaM Expr)
+        withLocalDeclsDND (defaulted.zip dtys) fun dxs => do
+        let marks := dxs.map (·.fvarId!)
+        let rec go (i : Nat) (done : Array (Expr × Expr)) (acc : Array String) (left : Array Name) :
+            M (Array String × Array Name) := do
+          if h : i < stated.size then
+            let f := stated[i]
+            let v ← mkProjection inst f
+            let ty ← replaceFields (done ++ dvs.zip dxs) (← instantiateMVars (← inferType v))
+            -- a law about a defaulted field, or about any other operation of the
+            -- instance than the stated ones (x ^ n is npow, its arguments swapped)
+            if ty.containsFVar inst.fvarId! || marks.any (fun (m : FVarId) => ty.containsFVar m) then
+              return ← go (i + 1) done acc (left.push f)
+            let binop ← isDefEq ty (← mkArrow g (← mkArrow g g))
+            let prop ← isProp ty
+            -- the bound variables of each field are named afresh
+            let names := (← get).names
+            let nm ← if binop then pure (operName f) else freshName f prop
+            withLocalDecl (Name.mkSimple nm) .default ty fun x => do
+              if binop then
+                modify fun s => { s with opers := s.opers.insert x.fvarId! (nm, carrier) }
+              let t ← if binop then pure s!"Oper {carrier}"
+                      else if prop then pure s!"Proof {paren (← tr ty)}"
+                      -- in parentheses: Informath reads (f : A -> B) as (f : A) -> B
+                      else do let t ← fieldType ty; pure (if (t.splitOn " -> ").length > 1 then s!"({t})" else t)
+              modify fun s => { s with names := names.insert nm }
+              go (i + 1) (done.push (v, x)) (acc.push s!"({nm} : {t})") left
+          else return (acc, left)
+        let (fs, left) ← go 0 #[] #[] defaulted
+        let decl := " -> ".intercalate ([s!"({carrier} : Set)"] ++ fs.toList ++ ["Structure"])
+        return (s!"{mangle c}__structure : {decl}.", left)
+
+/-- The base of the structure declarations, for out/<Name>-deps.dk. -/
+def structureBase : String :=
+  "Structure : Type.\n\nOper : (A : Set) -> Type.\n\n" ++
+  "appOper : (A : Set) -> (op : Oper A) -> (x : Elem A) -> (y : Elem A) -> Elem A.\n"
+
+def exportStructures (outName : Name) (mod : Name) (classes : List Name)
+    (mapping : Std.HashMap Name String) (keepAll binders : Std.HashSet Name)
+    (outDir : String := "out") : IO Unit := do
+  let env ← importModules #[{ module := mod }] {} (loadExts := true)
+  let ctx : Core.Context := { fileName := "<export>", fileMap := default, maxHeartbeats := 0,
+                              options := {} }
+  let st : Core.State := { env }
+  let mathlib := (← IO.getEnv "MATHLIB").getD "../mathlib4"
+  let sysroot ← findSysroot
+  let mut dk := s!"(; {outName}: Mathlib's classes as Informath's structures, by MathlibInformath/Export.lean ;)\n\n"
+  let mut json := #[]
+  for c in classes do
+    let some ci := env.find? c | IO.eprintln s!"{c}: not found"; continue
+    let res ← (((structureDecl c).run {mapping, binders, keepAll}).run' {} {}).toIO ctx st |>.toBaseIO
+    let some m := (env.getModuleIdxFor? c).map fun i => env.header.moduleNames[i.toNat]!
+      | IO.eprintln s!"{c}: no module"; continue
+    -- the source: Mathlib's, or Lean's own (Mul is in Init.Prelude)
+    let rel := m.toString.replace "." "/" ++ ".lean"
+    let (file, url) := if m.getRoot == `Mathlib then
+        ((mathlib : System.FilePath) / rel, s!"https://github.com/leanprover-community/mathlib4/blob/COMMIT/{rel}")
+      else (sysroot / "src" / "lean" / rel, s!"https://github.com/leanprover/lean4/blob/v{Lean.versionString}/src/{rel}")
+    let src ← if ← file.pathExists then IO.FS.lines file else pure #[]
+    let ranges ← match ← ((Lean.findDeclarationRanges? c : CoreM _).toIO ctx st |>.toBaseIO) with
+      | .ok (some r, _) => pure r
+      | _ => IO.eprintln s!"{c}: no source position"; continue
+    -- the class as written, its docstring apart, up to the end of its fields
+    let lines := (src.extract (ranges.range.pos.line - 1) ranges.range.endPos.line).toList
+    let lines := if lines.head?.any (fun l => (strip l).startsWith "/--") then
+        (lines.dropWhile (fun l => !(l.splitOn "-/").length > 1 )).drop 1 else lines
+    let doc := (← Lean.findDocString? env c).getD ""
+    let parents := (getStructureParentInfo env c).map (·.structName.toString)
+    match res with
+    | .ok (((decl, defaulted), _), _) =>
+      dk := dk ++ s!"(; //LEAN:{c} ;)\n{decl}\n\n"
+      json := json.push s!"\{\"lean\": {jsonStr c.toString}, \"dk\": {jsonStr (mangle c ++ "__structure")}, \"kind\": \"structure\", \"doc\": {jsonStr doc}, \"statement\": \"\", \"line\": {ranges.range.pos.line}, \"nameLine\": {ranges.selectionRange.pos.line}, \"endLine\": {ranges.range.endPos.line}, \"definiens\": false, \"structure\": true, \"sourceModule\": {jsonStr m.toString}, \"source\": {jsonStr (strip ("\n".intercalate lines))}, \"url\": {jsonStr (url ++ s!"#L{ranges.selectionRange.pos.line}")}, \"extends\": [{", ".intercalate (parents.toList.map jsonStr)}], \"defaulted\": [{", ".intercalate (defaulted.toList.map (jsonStr ·.toString))}]}"
+    | .error e =>
+      dk := dk ++ s!"(; //LEAN:{c} ;)\n(; NOT EXPORTED: {toString e} ;)\n\n"
+      IO.eprintln s!"{c}: {toString e}"
+  IO.FS.createDirAll outDir
+  IO.FS.writeFile s!"{outDir}/{outName}.dk" dk
+  IO.FS.writeFile s!"{outDir}/{outName}-deps.dk" structureBase
+  IO.FS.writeFile s!"{outDir}/{outName}.json" ("[\n" ++ ",\n".intercalate json.toList ++ "\n]\n")
+  IO.println s!"{outName}: {json.size} structures -> {outDir}/{outName}.dk, {outDir}/{outName}.json"
+
+/-- The lines of structures.txt: name, module, classes. -/
+def readStructures : IO (List (Name × Name × List Name)) := do
+  let path : System.FilePath := "structures.txt"
+  if !(← path.pathExists) then return []
+  let mut out := []
+  for line in (← IO.FS.lines path) do
+    if line.startsWith "#" || strip line == "" then continue
+    match (line.splitOn " ").filter (· != "") |>.map String.toName with
+    | n :: m :: cs => out := out ++ [(n, m, cs)]
+    | _ => pure ()
+  return out
+
 /-! ## All definitions
 
 `lake exe export --definitions [Prefix ...]` imports all of Mathlib and writes
@@ -686,13 +865,21 @@ unsafe def main (args : List String) : IO UInt32 := do
     let binders ← readBinders
     exportDefinitions args.tail mapping keepAll binders
     return 0
+  if args.head? == some "--structures" then
+    let (mapping, keepAll) ← readMapping
+    let binders ← readBinders
+    for (n, m, cs) in ← readStructures do
+      exportStructures n m cs mapping keepAll binders
+    return 0
   if args.head? == some "--tactics" then
     let (mapping, keepAll) ← readMapping
     let binders ← readBinders
     for m in args.tail.map String.toName do
       exportTactics m mapping keepAll binders
     return 0
-  let mods := args.map String.toName
+  -- the names of structures.txt are exported by --structures, not as modules
+  let structs := (← readStructures).map (·.1)
+  let mods := (args.map String.toName).filter (!structs.contains ·)
   let env ← importModules (mods.map fun m => { module := m }).toArray {} (loadExts := true)
   let (mapping, keepAll) ← readMapping
   let binders ← readBinders

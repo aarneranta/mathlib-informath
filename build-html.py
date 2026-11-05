@@ -29,7 +29,10 @@ MATHJAX = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js'
 
 def source(module, d):
     """The declaration as written in Mathlib, without its docstring and proof:
-    up to its first := outside brackets (not the one of @[deprecated (since := ...)])."""
+    up to its first := outside brackets (not the one of @[deprecated (since := ...)]).
+    A structure (lake exe export --structures) brings its source with it."""
+    if 'source' in d:
+        return d['source']
     path = os.path.join(MATHLIB, module.replace('.', '/') + '.lean')
     lines = open(path).read().split('\n')
     i, end = d['line'] - 1, d['endLine']
@@ -132,6 +135,7 @@ STYLE = """
  .name{font-weight:700;font-family:ui-monospace,Menlo,monospace;color:#0645ad}
  .k{font-size:.72em;padding:0 .35rem;border-radius:3px;background:#eef;color:#335;margin-left:.4rem}
  .k.theorem{background:#e6f4ea;color:#1e6b34}
+ .k.structure{background:#f3e8fd;color:#5b2a86}
  .src{font-size:.8em;margin-left:.6rem}
  .doc{color:#444;font-size:.92em;margin:.3rem 0}
  .row{display:grid;grid-template-columns:6.5rem 1fr;gap:.6rem;margin:.25rem 0;align-items:start}
@@ -255,8 +259,9 @@ def lang_css():
 
 def entry_html(d, languages, commit, where):
     """A declaration of the index, with its readings and proof texts."""
-    name, m = d['lean'], d['module']
+    name, m = d['lean'], d.get('sourceModule', d['module'])
     path = m.replace('.', '/') + '.lean'
+    url = d['url'].replace('COMMIT', commit) if 'url' in d else GITHUB % (commit, path, d['nameLine'])
 
     def text(mode, what):
         t = d['readings'].get(mode)
@@ -276,6 +281,11 @@ def entry_html(d, languages, commit, where):
     ] + [(lang, LANGUAGE_NAMES[lang], text(lang, 'reading')) for lang in languages] + [
         (None, 'Formula', text('formula', 'formula')),
     ]
+    if d.get('structure'):
+        # what the structure definition does not show of the class
+        code = lambda ns: ', '.join('<code>%s</code>' % html.escape(n) for n in ns) or '(none)'
+        rows[2:2] = [(None, 'Extends', '<div class=text>%s</div>' % code(d.get('extends', []))),
+                     (None, 'Left out', '<div class=text>%s</div>' % code(d.get('defaulted', [])))]
     for lang in languages:
         label = 'Proof' if lang == 'Eng' else 'Proof, ' + LANGUAGE_NAMES[lang]
         if d['proof'] and lang in d['proof']:
@@ -288,7 +298,7 @@ def entry_html(d, languages, commit, where):
     return ('<div class=entry id="%s"><span class=name>%s</span><span class="k %s">%s</span>'
             '<a class=src href="%s">%s:%d</a>%s%s%s</div>' % (
                 html.escape(name), html.escape(name), d['kind'], d['kind'],
-                GITHUB % (commit, path, d['nameLine']), html.escape(path.split('/')[-1]), d['nameLine'],
+                url, html.escape(path.split('/')[-1]), d['nameLine'],
                 toggles,
                 '<div class=doc>%s</div>' % doc_html(d['doc']) if d['doc'] else '',
                 ''.join('<div class="row%s"><div class=lab>%s</div><div>%s</div></div>'
@@ -326,8 +336,10 @@ def main():
         body, grows, gtot = [], [], [0] * (1 + len(languages))
         for m in mods:
             ds = [d for d in decls if d['module'] == m]
-            body.append('<h2 id="%s">%s <a href="%s">source</a></h2>' % (
-                html.escape(m), html.escape(m), GITHUB % (commit, m.replace('.', '/') + '.lean', 1)))
+            body.append('<h2 id="%s">%s%s</h2>' % (
+                html.escape(m), html.escape(m),
+                ' <a href="%s">source</a>' % GITHUB % (commit, m.replace('.', '/') + '.lean', 1)
+                if m.startswith('Mathlib.') else ''))
             body += [entry_html(d, languages, commit, where) for d in ds]
             ns = [len(ds)] + [sum(worded(d['readings'].get(lang)) for d in ds) for lang in languages]
             grows.append((m, ns))

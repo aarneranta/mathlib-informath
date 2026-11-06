@@ -604,7 +604,7 @@ def structureDecl (c : Name) : M (String × Array Name) := do
                 modify fun s => { s with opers := s.opers.insert x.fvarId! (nm, carrier) }
               let t ← if binop then pure s!"Oper {carrier}"
                       else if prop then pure s!"Proof {paren (← tr ty)}"
-                      -- in parentheses: Informath reads (f : A -> B) as (f : A) -> B
+                      -- in parentheses: in Dedukti, (f : A -> B) is the type (f : A) -> B
                       else do let t ← fieldType ty; pure (if (t.splitOn " -> ").length > 1 then s!"({t})" else t)
               modify fun s => { s with names := names.insert nm }
               go (i + 1) (done.push (v, x)) (acc.push s!"({nm} : {t})") left

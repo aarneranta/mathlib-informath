@@ -34,12 +34,14 @@ TABLE = None                      # the two in one file, written by main
 GENERATED_TABLES = ['definitions.dkgf']
 PLACEHOLDER = re.compile(r"\[[A-Za-z0-9_']+_[A-Z][A-Za-z0-9]*\]")   # a function without a linearization
 INDEX = 'index.json'
-LANGUAGES = ['Eng', 'Fre', 'Cze', 'Ger', 'Swe']  # the verbal readings; build-html.py shows them in this order
+ALL_LANGUAGES = ['Eng', 'Fre', 'Cze', 'Ger', 'Swe']  # build-html.py shows them in this order
+# the verbal readings made: English only, unless LANGUAGES=Eng,Fre,... is set
+LANGUAGES = [l for l in ALL_LANGUAGES if l in os.environ.get('LANGUAGES', 'Eng').split(',')]
 # German linearization can take minutes on nested noun phrases (GF, RGL), so
 # German is read apart, in chunks with a time limit of PER_ITEM seconds per
 # statement or proof, on top of the time RunInformath takes to load; a slow
 # statement gets no German
-SLOW_LANGUAGES = ['Ger']
+SLOW_LANGUAGES = [l for l in ['Ger'] if l in LANGUAGES]
 FAST_LANGUAGES = [l for l in LANGUAGES if l not in SLOW_LANGUAGES]
 PER_ITEM = 1
 CHUNK = 12
@@ -47,7 +49,7 @@ PROOF_TIMEOUT = 300               # seconds for one call of -proof-text in the f
 # the proof texts indented by the assumptions open at each line, with the goals
 # of the assumptions, and the variables and hypotheses of a scope in one line
 PROOF_FLAGS = ['-proof-indent', '-proof-goals', '-proof-merge-hypos']
-TACTIC_LANGUAGES = ['Eng', 'Fre', 'Cze', 'Ger', 'Swe']  # the languages of the proof texts of tactic proofs
+TACTIC_LANGUAGES = LANGUAGES     # the languages of the proof texts of tactic proofs
 TMP = '.index-'                   # prefix of the temporary files
 OUT = 'out'                       # the directory of the exported modules
 

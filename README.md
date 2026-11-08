@@ -257,7 +257,8 @@ limit split in halves down to the slow statements, which get no German.
     lake exe export $(grep -v '^#' modules.txt)        # -> out/
     lake exe export --tactics Mathlib.Data.Nat.Prime.Defs   # -> out/<Module>-tactics.json
     lake exe export --structures              # structures.txt -> out/Structures.*.dk
-    python3 build-index.py                    # -> index.json (15 minutes, German)
+    python3 build-index.py                    # -> index.json, English (1 minute)
+    LANGUAGES=Eng,Fre,Cze,Ger,Swe python3 build-index.py   # all languages (15 minutes, German)
     python3 build-html.py                     # -> mathlib-informath.html, pages/
 
 To check the symbol table against the exported constants, and to read a module

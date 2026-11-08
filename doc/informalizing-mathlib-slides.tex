@@ -32,6 +32,7 @@
     {ℕ}{{$\mathbb{N}$}}1 {∣}{{$\mid$}}1 {∨}{{$\vee$}}1 {∧}{{$\wedge$}}1
     {≠}{{$\neq$}}1 {≤}{{$\leq$}}1 {⟨}{{$\langle$}}1 {⟩}{{$\rangle$}}1
     {↔}{{$\leftrightarrow$}}1 {λ}{{$\lambda$}}1
+    {⁻¹}{{$^{-1}$}}2 {•}{{$\bullet$}}1 {⊔}{{$\sqcup$}}1 {⊓}{{$\sqcap$}}1
 }
 
 \newcommand{\bad}[1]{\textcolor{warn}{#1}}
@@ -818,20 +819,158 @@ prime_ne_one (theorem)
   \end{itemize}
 \end{frame}
 
+\begin{frame}[fragile]{25. Structures and inheritance: the problem}
+  \footnotesize
+  \prompt{Now I have a different task, described in mathlib-informath/doc/structures/}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+\begin{lstlisting}
+/-- A `Monoid` is a `Semigroup` with an element `1`
+    such that `1 * a = a * 1 = a`. -/
+class Monoid (M : Type*) extends One M, Mul M,
+    Semigroup M, MulOneClass M, NPow M where
+  npow := npowRecAuto
+  protected npow_zero (x : M) : x ^ 0 = 1
+  protected npow_succ (n : ℕ) (x : M) : ...
+
+class Group (G : Type*) extends DivInvMonoid G where
+  protected inv_mul_cancel : ∀ a : G, a⁻¹ * a = 1
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item About 2,000 classes; statements use them as predicates: \texttt{[Group G]},
+              ``$G$ is a group''.
+        \item Lean \bad{flattens}: all fields of all ancestors, among them notation classes
+              (\texttt{One}, \texttt{Mul}), technical ones (\texttt{NPow},
+              \texttt{DivInvMonoid}), and an additive copy of each (\texttt{to\_additive}).
+        \item The first Structures page did the same: \bad{``A commutative group is an
+              algebraic structure, where $G$ is a set, one is an element of $G$, \ldots''}
+        \item A textbook names \ok{one parent} and lists what is new: \emph{a group is a
+              monoid in which every element has an inverse}.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{26. Four options}
+  \small
+  The design note in \texttt{doc/structures} had samples of each, read by Informath:
+  \begin{description}[(D)]
+    \item[(A)] \textbf{flattened}: complete, correct, repetitive;
+    \item[(B)] \textbf{the parent as a clause}: carrier, the parent's predicate (Lean's instance
+          argument), the new fields only;
+    \item[(C)] \textbf{an extension judgement}: B read as ``a monoid is a semigroup $M$ with an
+          element $1$ such that \ldots'';
+    \item[(D)] \textbf{the class as a defined predicate}: ``$M$ is a monoid if $M$ is a
+          semigroup and there exists an element $e$ such that \ldots''; fits proofs (a field
+          used is the definition eliminated), loses that $1$ is data.
+  \end{description}
+  \decided{Claude's choice: B and C for the structure, D for the predicate, both shown}
+  \begin{itemize}
+    \item \textbf{The parent}: the one the docstring names (``A \texttt{Group} is a
+          \texttt{Monoid} with \ldots''), not \texttt{MulOneClass} or \texttt{DivInvMonoid};
+          else the ancestor with the most fields.
+    \item \textbf{Additive classes} from \texttt{to\_additive}'s own table: names, parent,
+          fields, and $* \mapsto +$, $1 \mapsto 0$, $a^{-1} \mapsto -a$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{27. Export and grammar}
+  \footnotesize
+\begin{lstlisting}
+Group__structure : (G : Set) -> (h : Proof (Monoid G)) -> ({|⁻¹|} : UOper G) ->
+  (inv_mul_cancel : Proof (forall G (a => Eqt G (times (appUOper G {|⁻¹|} a) a) 1))) -> Structure.
+def Monoid : (M : Set) -> Prop := M => and (Semigroup M)
+  (exists M (e => and (forall M (a => Eqt M (times e a) a)) (forall M (a => Eqt M (times a e) a)))).
+\end{lstlisting}
+  \begin{itemize}
+    \item Fields \ok{named by their notation} ($1$, ${}^{-1}$, $\leq$, $\sqcup$) and typed by
+          shape: \texttt{Oper}, \texttt{UOper} ($a^{-1}$, $-a$), \texttt{Rel}, \texttt{Action
+          R M}; defaulted and technical fields (\texttt{npow}, \texttt{natCast}) left out with
+          their laws.
+    \item Informath (GF abstract syntax), chosen by an NLG rule when the carrier is followed
+          by its parent read as a noun, and mapped back to \texttt{StructureJmt}:
+\begin{lstlisting}
+ExtensionJmt      : Label -> Kind -> Kind -> Ident -> [ArgKind] -> Prop -> Jmt
+ExtensionHyposJmt : Label -> [Hypo] -> Kind -> Kind -> Ident -> [ArgKind] -> Prop -> Jmt
+\end{lstlisting}
+    \item Quantifiers aggregated inside conjunctions: ``for all elements $a$ and $b$ of $G$'',
+          ``for all $a$, $P$ and $Q$''; \bad{not} inside disjunctions, where ``both $x$ and $y$
+          are even or both odd'' would become ``$x$ and $y$ are even or odd''.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{28. The hierarchy}
+  \footnotesize
+  \prompt{I would like to finish 1 [rings, fields, modules, lattices] but then go on to a wider
+  setting: redo definitions by now showing structures properly.}
+  \begin{itemize}
+    \item A group is a monoid $G$ with an operation ${}^{-1}$ on $G$ such that for all
+          elements $a$ of $G$, $a^{-1} \times a = 1$.
+    \item A ring is a semiring $R$ with an operation $-$ on $R$ such that for all elements
+          $a$ of $R$, $-a + a = 0$.
+    \item A lattice is a join semilattice $G$ with a binary operation $\sqcap$ on $G$ such that
+          \ldots
+    \item A distributive lattice is a lattice $G$ such that for all elements $x$, $y$ and $z$
+          of $G$, $(x \sqcup y) \sqcap (x \sqcup z) \leq x \sqcup (y \sqcap z)$.
+    \item \ok{Let $R$ be a semiring. Then} a module over $R$ is an additive commutative monoid
+          $M$ with an action $\bullet$ of $R$ on $M$ such that \ldots
+    \item Un groupe est un monoïde $G$ avec une opération ${}^{-1}$ sur $G$ tel que pour tous
+          les éléments $a$ de $G$, $a^{-1} \times a = 1$.
+    \item Let $M$ be a set. Then $M$ is a monoid, if $M$ is a semigroup and there exists an
+          element $e$ of $M$, such that for all elements $a$ of $M$, $e \times a = a$ and
+          $a \times e = a$.
+  \end{itemize}
+  50 structures and predicates on two pages, \texttt{Structures.Algebra} and
+  \texttt{Structures.Order}, all fully worded in English. Informath \commit{8793eb1},
+  \commit{c2c7cd7}, \commit{06ec169}; mathlib-informath \commit{00baf4e}.
+\end{frame}
+
+\begin{frame}{29. All classes, and notation, on the definition pages}
+  \footnotesize
+  \prompt{I would also like to add symbolic variants whenever easy to find; definitions.dkgf
+  hardly has any now. It is enough to do definitions for English and French.}
+  \begin{itemize}
+    \item \textbf{Classes}: the same export over all classes, all of them possible parents;
+          1,889 of 2,009 export. On the pages: \ok{359 read by extension} (``a metric space is a
+          pseudo metric space $G$ such that \ldots''), \ok{510 as predicates}, 86 as lists of
+          clauses (an adjective parent, ``cancellative''); \bad{877 only combine parents}
+          (\texttt{LeftCancelSemigroup extends Semigroup, IsLeftCancelMul}) and keep the plain
+          reading.
+    \item Bugs found on the way: Greek parameters (\texttt{Monoid $\alpha$}) broke Dedukti's lexer,
+          out-parameters ($\alpha, \beta$ of a hom class) were not types, a parent with two
+          arguments (\texttt{DistribMulAction R M}) made $R$ the carrier.
+    \item \textbf{Notation}: each definition applied to variables and printed by Lean's
+          delaborator, scoped notations opened; if it is not the name, it is written in \LaTeX\
+          token by token: \texttt{Int\_\_floor : "the floor of \#1" | \$\textbackslash
+          lfloor \#1 \textbackslash rfloor\$}. \textbf{42} definitions: $\bot$, $s^c$, $|x|$,
+          $\|x\|$, $s \mathbin{\Delta} t$, $M \simeq_{+*} N$, $\mathbb{R}_{\geq 0}$,
+          $\sqrt{x}$, $A^T$, $\# s$. Few, because $+$, $\mid$, $\leq$, $n!$ are mapped to
+          Informath's own, and binders (\bad{$\sum x \in s, f x$}) and bracket subscripts
+          (\bad{$M \otimes[R] N$}) are left out.
+    \item Read again (an hour, 8 processes, then \texttt{-retry}): 38,517 in English, 38,546
+          formulas, 38,306 in French. Fully worded English \bad{down} from 12,800 to 12,000: a
+          class's fields bring in constants that ``we can say that $M$ is a monoid'' did not.
+          mathlib-informath \commit{ed45554}.
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{The result}
-  \centering
+  \centering\footnotesize
   Fully worded statements:
 
   \begin{tabular}{@{}lrrrrrr@{}}
     \toprule
     page & statements & English & French & Czech & German & Swedish \\
     \midrule
-    Mathlib.Order.Defs & 354 & 291 & 289 & 289 & 248 & 289 \\
+    Mathlib.Order.Defs & 354 & 291 & 291 & 289 & 247 & 289 \\
     Mathlib.Algebra & 29 & 29 & 29 & 29 & 28 & 28 \\
+    Structures.Algebra, .Order & 50 & 50 & 50 & 50 & 47 & 47 \\
     Mathlib.Data.Nat.Prime & 128 & 125 & 125 & 125 & 125 & 125 \\
-    Mathlib.Data.Nat.Factorization & 194 & 144 & 144 & 144 & 132 & 142 \\
+    Mathlib.Data.Nat.Factorization & 194 & 144 & 144 & 144 & 135 & 142 \\
     \midrule
-    all & \textbf{705} & \textbf{589} & \textbf{587} & \textbf{587} & \textbf{533} & \textbf{584} \\
+    all & \textbf{755} & \textbf{639} & \textbf{639} & \textbf{637} & \textbf{582} & \textbf{631} \\
     \bottomrule
   \end{tabular}
 
@@ -841,8 +980,9 @@ prime_ne_one (theorem)
     \item 264 declarations with their definiens; 240 proof texts in each
           language, out of 242 term proofs; 51 statements without German (time limit).
     \item 25 tactic proofs in all five languages (\texttt{Nat.Prime.Defs}), out of 242.
-    \item 26,747 of Mathlib's 38,675 definitions worded; 38,261 read in English, 38,575 as
-          formulas, 37,894 in French (\texttt{definitions.html}).
+    \item 26,741 of Mathlib's 38,667 definitions worded, 42 with Mathlib's notation; 38,517
+          read in English, 38,546 as formulas, 38,306 in French (\texttt{definitions.html});
+          869 classes read as structures or predicates.
     \item Every statement has a formula; 31 need \texttt{-force-symbolic}.
     \item \url{https://aarneranta.github.io/mathlib-informath/mathlib-informath.html}
   \end{itemize}
@@ -853,9 +993,12 @@ prime_ne_one (theorem)
 \section{Open problems}
 
 \begin{frame}{Open problems: coverage}
-  \small
+  \footnotesize
   \begin{itemize}
-    \item \textbf{Scale.} 705 of Mathlib's 240,000 declarations on the pages; 26,747
+    \item \textbf{Structures.} One parent only: the other parents should be clauses (877
+          classes); adjective parents, two-argument parents; D' (``every $a$ has an inverse'');
+          $a \times b$ for $ab$; RGL's \bad{``an unary''}.
+    \item \textbf{Scale.} 755 of Mathlib's 240,000 declarations on the pages; 26,747
           generated entries for its definitions, unreviewed: composite names
           (\texttt{XEquivY}), bundled maps without arguments (\bad{``the dual''}), verbs
           (\texttt{PreservesX}), 2,000 unknown abbreviations; the words of the other
@@ -865,7 +1008,7 @@ prime_ne_one (theorem)
           English; the others, the other languages, and the term and tactic proofs to be
           told apart on the page. Long \texttt{simp\_rw} goals, \texttt{by\_contra} as
           ``it is enough to show that we have a contradiction''.
-    \item \textbf{Unworded statements} (131 of 705):
+    \item \textbf{Unworded statements} (116 of 755):
       \begin{itemize}
         \item multi-letter variables (\texttt{lt}, \texttt{self},
               \texttt{motive}) are shown as $\mathrm{lt}$ and counted as constants;
@@ -914,7 +1057,7 @@ prime_ne_one (theorem)
 \section{Summary}
 
 \begin{frame}{Who did what}
-  \scriptsize
+  \tiny
   \renewcommand{\arraystretch}{1.0}\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
     \toprule
     \textbf{Already in Informath} & \textbf{From my prompts} & \textbf{Added by Claude} \\
@@ -962,10 +1105,13 @@ prime_ne_one (theorem)
     \texttt{-optimize-pgf}, \texttt{UnitJmt}; the Czech RGL
     &
     Swedish; a symbol table of all definitions; WordNet; a reviewable table; older
-    readings kept; the stand-alone program (\texttt{standalone.md}); the definitions page
+    readings kept; the stand-alone program (\texttt{standalone.md}); the definitions page;
+    structures as in textbooks, over the hierarchy and all classes; symbolic variants
     &
     \texttt{export --definitions, --file}; \texttt{definition-table.py}, 500 words and
-    their translations; \texttt{mathlib-informath}; \texttt{definitions.html} \\
+    their translations; \texttt{mathlib-informath}; \texttt{definitions.html}; the structure
+    options chosen, parents from docstrings, \texttt{ExtensionJmt}; notation by the
+    delaborator \\
     \bottomrule
   \end{tabularx}
 
@@ -979,8 +1125,9 @@ prime_ne_one (theorem)
 
   \vspace{3mm}
   \normalsize
-  705 Mathlib statements, 265 proofs, in English, French, Czech, German, Swedish and LaTeX;
-  all of Mathlib's 38,675 definitions read in English, French and as formulas
+  755 Mathlib statements and structures, 265 proofs, in English, French, Czech, German, Swedish
+  and LaTeX; all of Mathlib's 38,667 definitions read in English, French and as formulas, its
+  classes as structures
 \end{frame}
 
 \end{document}

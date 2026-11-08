@@ -24,6 +24,7 @@
     {ℕ}{{$\mathbb{N}$}}1 {∣}{{$\mid$}}1 {∨}{{$\vee$}}1 {∧}{{$\wedge$}}1
     {≠}{{$\neq$}}1 {≤}{{$\leq$}}1 {⟨}{{$\langle$}}1 {⟩}{{$\rangle$}}1
     {↔}{{$\leftrightarrow$}}1 {λ}{{$\lambda$}}1 {·}{{$\cdot$}}1 {¬}{{$\neg$}}1
+    {⁻¹}{{$^{-1}$}}2 {≃}{{$\simeq$}}1 {⊗}{{$\otimes$}}1 {∑}{{$\sum$}}1
     {ü}{{\"u}}1 {ä}{{\"a}}1 {ö}{{\"o}}1 {é}{{\'e}}1
 }
 
@@ -63,12 +64,16 @@ Dedukti and the Informath grammar, written in Grammatical Framework (GF), and is
 compositional and does not invent content. The main bottleneck is the symbol table, which tells
 how each Lean constant is to be worded. We infer it for all of Mathlib's definitions from
 their docstrings and names, checking each candidate with the grammar and replacing the words
-that it lacks by words of its lexicon: 69\% of 38,675 definitions get a wording. All of them are
-then read in English, as formulas and in French, with their definientia: 99\% get a reading
-in English, a third of them with no constant left symbolic, and 98\% in French, with the same
-symbol table. Theorems and proofs are read for
-705 statements of Mathlib's prime numbers, orders and lattices, in all five languages: 83\% are
-fully worded in English, and 265 proofs, by terms or by tactics, are rendered as texts.
+that it lacks by words of its lexicon: 69\% of 38,667 definitions get a wording, and Mathlib's
+own notation gives symbolic variants. Mathlib's classes, with their multiple inheritance, are
+read as a textbook defines algebraic structures, by extension of one parent (``a group is a
+monoid $G$ with an operation ${}^{-1}$ on $G$ such that \ldots''), and as predicates of their
+carriers. All definitions are then read in English, as formulas and in French, with their
+definientia: over 99\% get a reading in English and in French, with the same symbol table,
+almost a third of them with no constant left symbolic. Theorems and proofs are read for
+755 statements of Mathlib's prime numbers, orders, lattices and algebraic structures, in all
+five languages: 85\% are fully worded in English, and 265 proofs, by terms or by tactics, are
+rendered as texts.
 The system was built in a collaboration between a human researcher and an AI coding agent, which
 is also a coauthor of this paper; we report what came from where.
 \end{abstract}
@@ -106,16 +111,20 @@ This paper applies Informath to Lean and Mathlib. Our contributions are:
   (Section~\ref{sec:pipeline});
 \item a method for inferring the symbol table, the mapping of Lean constants to words, for all
   of Mathlib's definitions from their docstrings and names, with each candidate checked by the
-  grammar (Section~\ref{sec:tables});
+  grammar, and with Mathlib's notation as symbolic variants (Section~\ref{sec:tables});
+\item a treatment of Mathlib's classes as algebraic structures defined by extension of a
+  parent, and as defined predicates, with the GF judgements that read them
+  (Section~\ref{sec:structures});
 \item an account of how much comes from the existing grammar, from Mathlib's own text, from
   general lexical resources, from the human author and from the AI agent (Section~\ref{sec:who});
 \item results on all of Mathlib's definitions and on the theorems of a part of Mathlib, examples
   good and bad, and the open problems
   (Sections~\ref{sec:examples}--\ref{sec:problems}).
 \end{itemize}
-The system is open source \cite{mathlib-informath}, with web pages showing all 38,675
-definitions with their readings in English, as formulas and in French, the 705 statements with their proofs in five
-languages, and a stand-alone program that informalizes any Lean file.
+The system is open source \cite{mathlib-informath}, with web pages showing all 38,667
+definitions with their readings in English, as formulas and in French, the 755 statements and
+structures with their proofs in five languages, and a stand-alone program that informalizes any
+Lean file.
 
 \paragraph{Authorship.} The software described here and this paper were written by Claude, an
 AI model by Anthropic, working as a coding agent (Claude Code \cite{claude-code}) in the first
@@ -217,7 +226,8 @@ $(x : \ttt{Elem}\ \alpha)$, one with $\alpha : \ttt{Prop}$ a hypothesis, and
 $(\alpha : \ttt{Type}\ u)$ becomes $(\alpha : \ttt{Set})$. Implicit arguments are dropped
 in applications, so that only the arguments a reader sees in Mathlib remain. An instance
 binder \ttt{[CommMonoid M]} becomes a hypothesis \ttt{Proof (CommMonoid M)}, a class is
-declared as a predicate, and a bundled function applied by coercion (\ttt{DFunLike.coe f x})
+declared as a predicate (and defined as one, with its structure, in
+Section~\ref{sec:structures}), and a bundled function applied by coercion (\ttt{DFunLike.coe f x})
 becomes a constant \ttt{f\_\_app} with its own type. A table of 39 mappings sends Lean's logic
 and arithmetic (\ttt{Dvd.dvd}, \ttt{Nat.Prime}, \ttt{HAdd.hAdd}, \ttt{Iff}) to Informath's base
 constants, whose wordings are part of Informath. The output is meant to be read, not checked:
@@ -247,7 +257,7 @@ Section~\ref{sec:examples}.
 
 \paragraph{2. Readings.} RunInformath translates the Dedukti declarations with the base table,
 Mathlib's table (Section~\ref{sec:tables}) and the grammar, and gives a reading in each language
-and a formula in \LaTeX. The index of all 705 statements is built in one call per mode, so that
+and a formula in \LaTeX. The index of all 755 statements is built in one call per mode, so that
 the grammar of five languages (8 MB) is loaded once. German linearization turned out to be
 exponential in nested noun phrases (three levels of ``the maximum of'' took 35 seconds), so
 German is read apart, with a time limit of one second per statement.
@@ -319,7 +329,7 @@ infer a table for all of Mathlib's definitions.
 \paragraph{The definitions.} \ttt{export --definitions} imports all of Mathlib (20 seconds) and
 exports every declaration that may need a wording: definitions, structures, classes, fields,
 inductive types, but not theorems, instances, tactics, notations, auxiliary or deprecated
-declarations. Of 56,870 such constants, 38,675 remain after filtering, each with its Dedukti
+declarations. Of 56,852 such constants, 38,667 remain after filtering, each with its Dedukti
 type, explicit argument names and docstring. Its type tells its category: a function or constant
 (\ttt{Exp}), a type (\ttt{Kind}), or a predicate (\ttt{Prop}).
 
@@ -385,6 +395,152 @@ most (\ttt{denom}: denominator, \ttt{coeq}: coequalizer); a proper name by its s
 restricted to names of at most two words. It gives 887 entries with 135 replacements, which are
 listed for review.
 
+\paragraph{Notation.} The generated entries were verbal only, although Mathlib has notation for
+many of its concepts. The exporter therefore prints each definition applied to variables for its
+explicit arguments with Lean's own delaborator, with the scoped notations of its namespaces
+opened (\ttt{n !} is scoped in \ttt{Nat}). Where the result is not the name applied to the
+arguments, it is notation, and it is written in \LaTeX\ token by token, the variables becoming
+the argument positions:
+\begin{lstlisting}
+Int__floor : "the floor of #1" | $\lfloor #1 \rfloor$
+RingEquiv  : "ring isomorphism of #1 and #2" | $#1 \simeq_{+*} #2$
+NNReal     : $\mathbb{R}_{\geq 0}$       -- no wording: the notation alone
+\end{lstlisting}
+A run of symbols is one token, so that Lean's \ttt{M $\simeq$+* N} and \ttt{$\mathbb{R}$$\geq$0}
+get their own \LaTeX, and a token without one rules the notation out, as do binders
+(\ttt{$\sum$ x $\in$ s, f x}) and Lean's bracketed subscripts (\ttt{M $\otimes$[R] N},
+\ttt{f\^{}[n]}), which \LaTeX\ writes otherwise. This
+gives 42 definitions a symbolic variant, among them $\bot$, $\top$, $s^c$, $|x|$, $\|x\|$,
+$\lceil x \rceil$, $s \mathbin{\Delta} t$, $\sqrt{x}$, $A^T$ and $\# s$. The number is small
+because the most common notations ($+$, $\mid$, $\leq$, $n!$) belong to constants
+that are mapped to Informath's own, and many others are binders.
+
+\section{Structures and inheritance}
+\label{sec:structures}
+
+Much of Mathlib's mathematics lives in its \emph{classes}: \ttt{Monoid}, \ttt{Group},
+\ttt{Ring}, \ttt{Field}, \ttt{Lattice}, \ttt{Module}, \ttt{TopologicalSpace}, some 2,000 in
+all. A class is a structure, a record of data and laws over a carrier type, and it is
+\emph{extended} by other classes, often by several at once:
+\begin{lstlisting}
+/-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
+class Monoid (M : Type*) extends One M, Mul M, Semigroup M, MulOneClass M, NPow M where
+  npow := npowRecAuto
+  protected npow_zero (x : M) : x ^ 0 = 1 := by intros; rfl
+  protected npow_succ (n : ℕ) (x : M) : x ^ (n + 1) = x ^ n * x := by intros; rfl
+
+class Group (G : Type*) extends DivInvMonoid G where
+  protected inv_mul_cancel : ∀ a : G, a⁻¹ * a = 1
+\end{lstlisting}
+Statements use the classes as predicates of their carriers: \ttt{[Group G]} becomes ``$G$ is a
+group''. But what a group \emph{is} is spread over the hierarchy, and Lean's way of putting it
+together is not a textbook's. Lean flattens: an instance of \ttt{Monoid} has all the fields of all
+its ancestors, and the ancestors include classes that exist only to carry notation (\ttt{One},
+\ttt{Mul}), technical classes that fix the implementation (\ttt{NPow}, the power $x^n$ with a
+default definition, and \ttt{DivInvMonoid}, a monoid with an inverse and a division but no
+laws), and the additive copy of every multiplicative class, generated by the attribute
+\ttt{to\_additive}. A textbook names one parent and lists what is new: \emph{a monoid is a
+semigroup with an identity element; a group is a monoid in which every element has an
+inverse; a commutative group is a group in which $ab = ba$}.
+
+\paragraph{Four options.} The design started from a note of options, each with samples read by
+Informath. (A) \emph{Flattened}: each class a structure with all its fields; complete and
+correct, but a commutative group repeats the monoid and the group. (B) \emph{The parent as a
+clause}: the structure has its carrier, its parent's predicate as a hypothesis, as Lean's
+instance argument, and only its own fields. (C) \emph{An extension judgement}: B's encoding,
+read by a new GF judgement as a definition by extension. (D) \emph{The class as a defined
+predicate}: ``$G$ is a group if $G$ is a monoid and there is a function $i$ such that \ldots'',
+its data quantified existentially. D unifies the class with the predicate that statements
+use, and fits proofs: a use of the field \ttt{mul\_comm} becomes an elimination of the
+definition, ``since $G$ is a commutative group, $ab = ba$''; it loses that the identity and the
+inverse are data chosen by the structure. We implemented B and C for the structure and D for
+the predicate, and show both.
+
+\paragraph{The export.} For a class $C$ with carrier $G$ and primary parent $P$, the exporter
+writes a structure and a definition:
+\begin{lstlisting}
+Monoid__structure : (M : Set) -> (h : Proof (Semigroup M)) -> ({|1|} : Elem M) ->
+  (one_mul : Proof (forall M (a => Eqt M (times {|1|} a) a))) ->
+  (mul_one : Proof (forall M (a => Eqt M (times a {|1|}) a))) -> Structure.
+def Monoid : (M : Set) -> Prop := M => and (Semigroup M)
+  (exists M (e => and (forall M (a => Eqt M (times e a) a)) (forall M (a => Eqt M (times a e) a)))).
+\end{lstlisting}
+Several choices make this read like mathematics:
+\begin{itemize}
+\item \emph{The primary parent} is the one the docstring names, as Mathlib writes its docstrings
+  as a textbook would (``A \ttt{Monoid} is a \ttt{Semigroup} with \ldots'', ``A \ttt{Group} is a
+  \ttt{Monoid} with an operation ${}^{-1}$ \ldots''), skipping \ttt{MulOneClass} and
+  \ttt{DivInvMonoid}; without one, the ancestor with the most fields. The fields of the parent
+  are its own: the structure lists only the fields that are new with respect to it.
+\item \emph{Fields are named by their notation}: the identity is a variable $1$ (written
+  \ttt{\{|1|\}} in Dedukti), the inverse ${}^{-1}$, the order $\leq$. A field has a type by its
+  shape: a binary operation \ttt{Oper G}, a unary one \ttt{UOper G}, written $a^{-1}$ or $-a$, a
+  relation \ttt{Rel G}, an action \ttt{Action R M} of a scalar on the carrier. The parent's
+  operations are written as statements write them ($a \times b$, $a \leq b$).
+\item \emph{Technical fields are left out}: a field with a default value (\ttt{npow},
+  \ttt{zpow}, \ttt{div}), data not built of the carrier (\ttt{natCast}, \ttt{nnqsmul}), and
+  the laws that mention them. They are listed on the page.
+\item \emph{Parameters}: a class over another type, as \ttt{Module R M}, has its scalars and
+  their instance (\ttt{[Semiring R]}) as clauses before the carrier, which are read as a
+  hypothesis. Greek carriers ($\alpha$) get a textbook letter ($R$ for a ring, $K$ for a field,
+  $M$ for a monoid or a module), and out-parameters ($\alpha, \beta$ of a class of morphisms
+  \ttt{F}) are parameters, \ttt{F} being the carrier.
+\item \emph{Additive classes} are derived from the multiplicative ones by \ttt{to\_additive}'s
+  own translation table, which maps the names of the class, its parent and its fields, and the
+  notation ($*$ to $+$, $1$ to $0$, $a^{-1}$ to $-a$).
+\end{itemize}
+
+\paragraph{The grammar.} Informath had a \ttt{StructureJmt}, which reads a structure as a list of
+clauses (``a monoid is an algebraic structure, where $M$ is a set, $M$ is a semigroup,
+$1$ is an element of $M$, \ldots''). We added judgements of definition by extension to its
+abstract syntax:
+\begin{lstlisting}
+ExtensionJmt      : Label -> Kind -> Kind -> Ident -> [ArgKind] -> Prop -> Jmt
+ExtensionHyposJmt : Label -> [Hypo] -> Kind -> Kind -> Ident -> [ArgKind] -> Prop -> Jmt
+\end{lstlisting}
+with the defined kind, the parent kind, the carrier, the new data and their laws (and variants
+without data or without laws). They are produced by an NLG rule from a \ttt{StructureJmt} whose
+carrier is followed by its parent read as a noun (from the parent's entry, ``\ttt{\#1} is a
+semigroup''); the clauses before the carrier become hypotheses. The concrete syntax is written
+once with the RGL, as ``a $K$ is a $P$ $x$ with $D$ such that $Q$'', and the semantics maps
+the judgements back to \ttt{StructureJmt}, so that the round trip to Dedukti is preserved.
+Aggregation of quantifiers inside conjunctions (``for all elements $a$ and $b$ of $G$'',
+``for all $a$, $P$ and $Q$'') makes the laws shorter. The structures of rings, orders, lattices
+and modules then read:
+\reading{A group is a monoid $G$ with an operation ${}^{-1}$ on $G$ such that for all elements
+$a$ of $G$, $a^{-1} \times a = 1$.\\
+A ring is a semiring $R$ with an operation $-$ on $R$ such that for all elements $a$ of $R$,
+$-a + a = 0$.\\
+A distributive lattice is a lattice $G$ such that for all elements $x$, $y$ and $z$ of $G$,
+$(x \sqcup y) \sqcap (x \sqcup z) \leq x \sqcup (y \sqcap z)$.\\
+Let $R$ be a semiring. Then a module over $R$ is an additive commutative monoid $M$ with an
+action $\bullet$ of $R$ on $M$ such that for all elements $x$ and $y$ of $R$, for all elements
+$b$ of $M$, $(x \times y) \bullet b = x \bullet (y \bullet b)$, \ldots\\
+Un groupe est un monoïde $G$ avec une opération ${}^{-1}$ sur $G$ tel que pour tous les
+éléments $a$ de $G$, $a^{-1} \times a = 1$.}
+\noindent and the predicates:
+\reading{Let $M$ be a set. Then $M$ is a monoid, if $M$ is a semigroup and there exists an
+element $e$ of $M$, such that for all elements $a$ of $M$, $e \times a = a$ and $a \times e =
+a$.}
+\noindent Two pages of the index show 50 structures and predicates, from magmas to fields, from
+preorders to distributive lattices, and modules, in all five languages; 50 of 50 are fully
+worded in English.
+
+\paragraph{All the classes.} The same export runs over all of Mathlib's classes, with all classes
+as possible parents, for the definition pages (Section~\ref{sec:allread}). 1,889 of the 2,009
+classes export as structures. On the pages, a class worded as a noun is read as its structure,
+with its predicate under it; any other class as its predicate (``$G$ is unique, if
+$\mathrm{Inhabited}$ holds for $G$ and for all elements $a$ of $G$, $a =
+\mathrm{Inhabited\_\_default}$'');
+a class whose fields are all technical, such as \ttt{TopologicalSpace} with its \ttt{IsOpen},
+keeps its declaration. Of the 1,948 classes on the pages, 359 read as extensions (``a metric
+space is a pseudo metric space $G$ such that for all elements $x$ and $y$ of $G$, if the
+distance of $x$ and $y$ is equal to $0$, then $x = y$''), 510 as defined predicates, and 86 as
+lists of clauses, as their parent is an adjective (\ttt{IsDomain}: ``$G$ is cancellative'') or
+has two arguments (\ttt{Module R M} by \ttt{DistribMulAction R M}). 877 have no fields of their
+own: they combine parents (\ttt{LeftCancelSemigroup extends Semigroup, IsLeftCancelMul}), and
+the parents other than the primary one are not yet clauses, so these keep the plain reading.
+
 \section{Who contributed what}
 \label{sec:who}
 
@@ -400,17 +556,19 @@ author's prompts and decisions, and the AI agent.
 \toprule
 & functions, constants & types & predicates & all \\
 \midrule
-definitions & 31,864 & 2,466 & 4,345 & 38,675 \\
-with a wording & 23,064 & 1,817 & 1,866 & \textbf{26,747} (69\%) \\
+definitions & 31,858 & 2,464 & 4,345 & 38,667 \\
+with a wording & 23,059 & 1,816 & 1,866 & \textbf{26,741} (69\%) \\
 \midrule
-\multicolumn{4}{l}{read in English (Section~\ref{sec:allread}): with a reading} & \textbf{38,261} (99\%) \\
-\multicolumn{4}{l}{\quad with no constant shown symbolically} & about 12,800 (33\%) \\
-\multicolumn{4}{l}{read as a formula} & \textbf{38,575} (99\%) \\
-\multicolumn{4}{l}{read in French: with a reading} & \textbf{37,894} (98\%) \\
-\multicolumn{4}{l}{\quad with no constant shown symbolically} & about 12,700 (33\%) \\
+\multicolumn{4}{l}{read in English (Section~\ref{sec:allread}): with a reading} & \textbf{38,517} (99.6\%) \\
+\multicolumn{4}{l}{\quad with no constant shown symbolically} & about 12,000 (31\%) \\
+\multicolumn{4}{l}{read as a formula} & \textbf{38,546} (99.7\%) \\
+\multicolumn{4}{l}{read in French: with a reading} & \textbf{38,306} (99.1\%) \\
+\multicolumn{4}{l}{\quad with no constant shown symbolically} & about 11,950 (31\%) \\
 \midrule
-\multicolumn{5}{l}{the wordings from: names 22,308; docstrings 3,490; names with the lexicon 887;
+\multicolumn{5}{l}{the wordings from: names 22,304; docstrings 3,488; names with the lexicon 887;
 the hand-written table 62} \\
+\multicolumn{5}{l}{symbolic variants from Mathlib's notation: 42; classes read as structures or
+predicates: 869} \\
 \bottomrule
 \end{tabular}
 \caption{The symbol table of Mathlib's definitions.}
@@ -427,17 +585,23 @@ The GF grammar and its concrete syntaxes on the RGL; the Dedukti theory; symbol 
 verbal, symbolic and macro forms; NLG with variants and ranking; proof texts from terms &
 The goal; the choice of Mathlib's prime numbers as the first case; the contents of the pages;
 loading the grammar once; the idea of tactic proofs as proof units; the time limit for German;
-WordNet as a resource; a reviewable table rather than generated code; the stand-alone program &
+WordNet as a resource; a reviewable table rather than generated code; the stand-alone program;
+structures as in textbooks, over the hierarchy and then all classes; symbolic variants &
 \ttt{Export.lean} with its translation rules; the index and the pages; the table inference, the lexicon generation and the second round with the lexicon; the translations table; the Informath extensions this needed
 (multilingual proof texts, \ttt{-tactic-proof}, aggregated hypotheses, Czech and Swedish
-modules) \\
+modules, the extension judgements); the choice among the structure options, the parent from
+the docstring; notation from the delaborator \\
 \bottomrule
 \end{tabular}
 \caption{The division of labour.}
 \label{tab:who}
 \end{table}
 
-Some of the decisive steps were the human's: the diagnosis of a parameter explosion in the GF
+For the structures, the first author set the goal, informal definitions by extension rather
+than the flat records of the first version, and the scope, first the hierarchy from magmas to
+fields, lattices and modules, then all the classes on the definition pages; Claude chose among
+the options of the design note (B and C with D), found the docstrings' parents, and wrote the
+grammar judgements. Some of the decisive steps were the human's: the diagnosis of a parameter explosion in the GF
 compiler (a list category whose concrete functions grew to $5 \times 10^{13}$), the reason why
 size-optimized grammars broke all proof texts (the proof units were not reachable from the start
 category), and the decision to keep the translations reviewable. Others were the agent's:
@@ -452,9 +616,12 @@ languages, are to be reviewed by native speakers.
 \begin{lstlisting}
 def Prime (p : ℕ) := Irreducible p
 \end{lstlisting}
-\reading{Let $p$ be a natural number. Then $p$ is prime, if $p$ is irreducible.\\
-Soit $p$ un nombre naturel. Alors $p$ est premier si $p$ est irréductible.\\
-Låt $p$ vara ett naturligt tal. Då är $p$ primt, om $p$ är irreducibelt.}
+\reading{Let $p \in \mathbb{N}$. Then $p$ is prime, if $p$ is irreducible.\\
+Soit $p \in \mathbb{N}$. Alors $p$ est premier si $p$ est irréductible.\\
+Låt $p \in \mathbb{N}$. Då är $p$ primt, om $p$ är irreducibelt.}
+\noindent Informath prefers the symbolic declaration of a variable of a set, ``Let $p \in
+\mathbb{N}$'', to the verbal ``Let $p$ be a natural number'', also with a condition: ``Let $p,
+u \in M$ such that \ldots''.
 \noindent Wordings from the generated table, with the arguments shown by their names:
 ``the cofinality of $o$'', ``the normalizer of $H$'', ``$C$ has limits'', ``$F$ preserves
 finite limits'', ``$P$ is separated with respect to $J$'', ``$M$ is a perfect matching''.
@@ -463,19 +630,19 @@ finite limits'', ``$P$ is separated with respect to $J$'', ``$M$ is a perfect ma
 \begin{lstlisting}
 theorem exists_infinite_primes (n : ℕ) : ∃ p, n ≤ p ∧ Prime p
 \end{lstlisting}
-\reading{Let $n$ be a natural number. Then there exists a natural number $p$, such that
+\reading{Let $n \in \mathbb{N}$. Then there exists a natural number $p$, such that
 $n \leq p$ and $p$ is prime.\\
-Soit $n$ un nombre naturel. Alors il existe un nombre naturel $p$ tel que $n \leq p$ et $p$ soit
+Soit $n \in \mathbb{N}$. Alors il existe un nombre naturel $p$ tel que $n \leq p$ et $p$ soit
 premier.\\
-Sei $n$ eine natürliche Zahl. Dann gibt es eine natürliche Zahl $p$, derart, dass $n \leq p$
+Sei $n \in \mathbb{N}$. Dann gibt es eine natürliche Zahl $p$, derart, dass $n \leq p$
 und $p$ prim ist.\\
-Låt $n$ vara ett naturligt tal. Då finns det ett naturligt tal $p$, så att $n \leq p$ och $p$
+Låt $n \in \mathbb{N}$. Då finns det ett naturligt tal $p$, så att $n \leq p$ och $p$
 är primt.\\
-Nechť $n$ je přirozené číslo. Tedy existuje přirozené číslo $p$, \textcolor{red}{takový}, že
+Nechť $n \in \mathbb{N}$. Tedy existuje přirozené číslo $p$, \textcolor{red}{takový}, že
 $n \leq p$ a $p$ je prvočíselné.}
 \noindent The aggregation of hypotheses makes statements with many variables readable:
-\reading{Let $M$ be a set such that $M$ is a commutative monoid. Let $p$ and $u$ be elements of
-$M$ such that $p$ is irreducible and $u$ is a unit. Then $p$ does not divide $u$.}
+\reading{Let $M$ be a set such that $M$ is a commutative monoid. Let $p, u \in M$ such that
+$p$ is irreducible and $u$ is a unit. Then $p$ does not divide $u$.}
 \noindent (\ttt{Irreducible.not\_dvd\_isUnit}; the Lean statement has the implicit \ttt{M},
 \ttt{p}, \ttt{u} and the instance \ttt{[CommMonoid M]}.)
 
@@ -502,12 +669,12 @@ $\mathrm{minFac}(n! + 1)$ is prime.\quad \ldots}
 
 \section{Results}
 
-Table~\ref{tab:results} shows the readings of 705 statements from 19 modules: Mathlib's order
-and lattice definitions, the algebra that the prime numbers import, the prime numbers, and
-prime factorizations. A statement is \emph{fully worded} if no Lean constant in it is shown
+Table~\ref{tab:results} shows the readings of 755 statements from 23 modules: Mathlib's order
+and lattice definitions, the algebra that the prime numbers import, the algebraic and order
+structures of Section~\ref{sec:structures}, the prime numbers, and prime factorizations. A statement is \emph{fully worded} if no Lean constant in it is shown
 symbolically. Every statement has a formula, and 264 declarations come with their definiens.
 Of the 242 term proofs, 240 have a proof text in each language; of the 242 tactic proofs, the 25
-of \ttt{Nat.Prime.Defs} have one so far, in five languages. In 26 statements a language keeps
+of \ttt{Nat.Prime.Defs} have one so far, in five languages. In 29 statements a language keeps
 the older, more symbolic reading because it lacks a generated word. The whole index takes about
 ten minutes on a laptop, most of it for German.
 
@@ -517,12 +684,13 @@ ten minutes on a laptop, most of it for German.
 \toprule
 & statements & English & French & Czech & German & Swedish \\
 \midrule
-Order, lattices & 354 & 291 & 289 & 289 & 248 & 289 \\
+Order, lattices & 354 & 291 & 291 & 289 & 247 & 289 \\
 Algebra & 29 & 29 & 29 & 29 & 28 & 28 \\
+Structures & 50 & 50 & 50 & 50 & 47 & 47 \\
 Prime numbers & 128 & 125 & 125 & 125 & 125 & 125 \\
-Factorizations & 194 & 144 & 144 & 144 & 132 & 142 \\
+Factorizations & 194 & 144 & 144 & 144 & 135 & 142 \\
 \midrule
-all & 705 & \textbf{589} & \textbf{587} & \textbf{587} & \textbf{533} & \textbf{584} \\
+all & 755 & \textbf{639} & \textbf{639} & \textbf{637} & \textbf{582} & \textbf{631} \\
 \bottomrule
 \end{tabular}
 \caption{Fully worded statements, by language.}
@@ -574,14 +742,17 @@ of $c$ and $i$'' (\ttt{applyComposition}) and ``the finite extension of $K$ and 
 
 \paragraph{All the definitions in English.}
 \label{sec:allread}
-Finally, all 38,675 definitions were read in English and as formulas, and then in French, as the statements on the
-pages are: each definition's statement, with its definiens where it has one (25,497 of the
-exported constants have one that the exporter translates), by the full symbol table. With eight
+Finally, all 38,667 definitions were read in English and as formulas, and then in French, as the statements on the
+pages are: each definition's statement, with its definiens where it has one (25,491 of the
+exported constants have one that the exporter translates), and each class as its structure or
+predicate (Section~\ref{sec:structures}), by the full symbol table. With eight
 RunInformath processes and a time limit of one second per definition and mode, this took about
-half an hour on a laptop. 38,261 definitions (99\%) got a reading, 408 went over the time
-limit, and 6 got none; 38,575 got a formula. About 12,800 readings (33\%) show no constant
-symbolically; the others show the constants that
-have no wording, often from the definiens, as operators. The readings are published on 111
+an hour on a laptop, and those over the limit were read again on a quiet machine. 38,517
+definitions (99.6\%) got a reading, 119 went over the time limit, and 31 got none; 38,546 got a
+formula. About 12,000 readings (31\%) show no constant symbolically; the others show the
+constants that have no wording, often from the definiens, as operators. (The share was 33\%
+before the classes were read as structures: a class's fields bring in more constants than its
+bare declaration, ``we can say that $M$ is a monoid''.) The readings are published on 111
 static pages of at most 400 definitions, by part of Mathlib, with a search page over all of
 them. For example, \ttt{Quiver.IsThin}:
 \reading{Let $V$ be a set. Then $V$ is thin, if for all elements $a$ and $b$ of $V$, the set of
@@ -598,10 +769,10 @@ French readings (26\%) used a word that had no French form: 263 words of Informa
 from its parts that were written for English only (the Godement, HoTT and Naproche lexicons),
 led by \emph{opposite} (in 1,554 readings), \emph{lift} (1,053) and \emph{carrier} (950).
 Claude wrote their French forms (\emph{opposé}, \emph{relèvement}, \emph{ensemble sous-jacent}),
-to be reviewed, and the affected definitions were read again. With the Mathlib of 26 October,
-37,894 definitions (98\%) have a French reading, and about 12,700 of them show no constant
-symbolically, almost as many as in English (about 12,800).
-4 readings still use a word without a French form, which the pages show in English, marked. The
+to be reviewed, and the affected definitions were read again. Now 38,306 definitions (99\%)
+have a French reading, and about 11,950 of them show no constant symbolically, almost as many
+as in English (about 12,000). 48 readings still use a word without a French form, which the
+pages show in English, marked. The
 other three languages can be read in the same way.
 
 \section{Known problems and open issues}
@@ -609,9 +780,9 @@ other three languages can be read in the same way.
 
 \paragraph{Coverage.} All of Mathlib's definitions are read, but only in English, as formulas
 and in French, and its
-theorems only in part: the 705 statements of the pages are a small part of its 194,000 theorems,
+theorems only in part: the 755 statements of the pages are a small part of its 194,000 theorems,
 which the same pipeline could read, with their proofs, but which we have not run on. Of the
-definitions, 408 go over the time limit in English and 618 in French, and two thirds of the readings still show some constant
+definitions, 119 go over the time limit in English and 243 in French, and two thirds of the readings still show some constant
 symbolically, mostly constants of the definientia that have no wording. The generated table is
 unreviewed, and in our samples 18 of 60 of its first wordings (30\%) and 6 of 60 of those made with
 the lexicon (10\%) are wrong: composite names
@@ -620,11 +791,21 @@ without arguments get bare readings; about 2,500 unknown words are abbreviations
 we do not spell out. Most tactic proofs have no text yet, and long \ttt{simp} goals make poor
 reading.
 
+\paragraph{Structures.} Multiple inheritance is reduced to one parent: the other parents of a
+class (\ttt{IsLeftCancelMul} of \ttt{LeftCancelSemigroup}) should be clauses, ``a left
+cancellative semigroup is a semigroup that is left cancellative''; 877 classes wait for this.
+A parent that is an adjective (``cancellative'') or that has two arguments
+(\ttt{DistribMulAction R M}) gives a list of clauses rather than an extension. D', the
+informal form of D (``for every $a$ there is a $b$ such that $ba = 1$'' rather than ``there is
+a function $i$''), is not generated, and the parent's multiplication is written $a \times b$
+where a textbook writes $ab$.
+
 \paragraph{Language.} Agreement of ``such that'' with an existential's kind fails in Czech and
 French; multi-letter variables (\ttt{self}, \ttt{motive}) are shown as constants; a lemma used
 unapplied in a proof term gives garbled text; the meaning of $\leq$ on finite sets is
 ``subset'', which the reading does not know. The French words added for the definitions and the
-French readings themselves are not checked. The words of four languages need native review,
+French readings themselves are not checked. ``An unary operation'': the RGL's English
+article takes \emph{an} before every word beginning with \emph{un}. The words of four languages need native review,
 and German linearization needs a fix in the RGL.
 
 \paragraph{Correctness.} The translation is compositional, but the exporter drops implicit
@@ -638,8 +819,10 @@ direction.
 Symbolic informalization of Lean is feasible at the scale of Mathlib if the lexicon can be
 inferred: Mathlib's naming conventions and docstrings, with the grammar's own lexicon, give wordings to 69\% of its
 definitions, and a grammar can check them. With them, all of Mathlib's definitions have been
-read in English, as formulas and in French, a third of them with no symbolic residue in
-English, in an hour on a laptop. The readings are faithful by construction, and they
+read in English, as formulas and in French, almost a third of them with no symbolic residue in
+English, in an hour on a laptop. Mathlib's own structure helps too: its docstrings name the
+parent a textbook would, its \ttt{to\_additive} table gives the additive structures, and its
+delaborator the notation, so that its classes read as definitions by extension. The readings are faithful by construction, and they
 come in five languages at once. What the method does not give is judgement: which wording is
 right, which word a language uses, when a reading is false although it parses. That remained
 the human's part, in a collaboration where the AI agent did most of the construction and the

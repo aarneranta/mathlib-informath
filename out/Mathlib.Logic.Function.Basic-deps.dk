@@ -1,0 +1,491 @@
+(; constants used by Mathlib.Logic.Function.Basic, declared with their translated types ;)
+
+(; doc: The Boolean values, `true` and `false`.  Logically speaking, this is equivalent to `Prop` (the type of propositions). The distinction is public important for programming: both propositions and their proofs are erased in the code generator, while `Bool` corresponds to the Boolean type in most programming languages and carries precisely one bit of run-time information. ;)
+(; //LEAN:Bool ;)
+Bool : Set.
+
+(; doc: Boolean negation, also known as Boolean complement. `not x` can be written `!x`.  This is a function that maps the value `true` to `false` and the value `false` to `true`. The propositional connective is `Not : Prop → Prop`.  Conventions for notations in identifiers:   * The recommended spelling of `!` in identifiers is `not`. ;)
+(; //LEAN:Bool.not ;)
+Bool__not : (x : Elem Bool) -> Elem Bool.
+
+(; //LEAN:Bool.not_not ;)
+Bool__not_not : (b : Elem Bool) -> Proof (Eqt Bool (Bool__not (Bool__not b)) b).
+
+(; doc: The Boolean value `true`, not to be confused with the proposition `True`. ;)
+(; //LEAN:Bool.true ;)
+Bool__true : Elem Bool.
+
+(; doc: Using `Classical.choice`, extracts a term from a `Nonempty` type. ;)
+(; //LEAN:Classical.arbitrary ;)
+Classical__arbitrary : (X : Set) -> Elem X.
+
+(; doc: **The axiom of choice**. `Nonempty α` is a proof that `α` has an element, but the element itself is erased. The axiom `choice` supplies a particular element of `α` given only this proof.  The textbook axiom of choice normally makes a family of choices all at once, but that is implied from this formulation, because if `α : ι → Type` is a family of types and `h : ∀ i, Nonempty (α i)` is a proof that they are all nonempty, then `fun i => Classical.choice (h i) : ∀ i, α i` is a family of chosen elements. This is actually a bit stronger than the ZFC choice axiom; this is sometimes called "[global choice](https://en.wikipedia.org/wiki/Axiom_of_global_choice)".  In Lean, we use the axiom of choice to derive the law of excluded middle (see `Classical.em`), so it will often show up in axiom listings where you may not expect. You can use `#print axioms my_thm` to find out if a given theorem depends on this or other axioms.  This axiom can be used to construct "data", but obviously there is no algorithm to compute it, so Lean will require you to mark any definition that would involve executing `Classical.choice` or other axioms as `noncomputable`, and will not produce any executable code for such definitions. ;)
+(; //LEAN:Classical.choice ;)
+Classical__choice : (h : Proof (Nonempty X)) -> Elem X.
+
+(; doc: Given that there exists an element satisfying `p`, returns one such element.  This is a straightforward consequence of, and equivalent to, `Classical.choice`.  See also `choose_spec`, which asserts that the returned value has property `p`. ;)
+(; //LEAN:Classical.choose ;)
+Classical__choose : (h : Proof (exists X (x => p x))) -> Elem X.
+
+(; //LEAN:Classical.choose_spec ;)
+Classical__choose_spec : (X : Set) -> (p : (Elem X -> Prop)) -> (h : Proof (exists X (x => p x))) -> Proof (p (Classical__choose h)).
+
+(; //LEAN:Classical.not_forall ;)
+Classical__not_forall : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (iff (not (forall X (x => p x))) (exists X (x1 => not (p x1)))).
+
+(; doc: The Double Negation Theorem: `¬¬P` is equivalent to `P`. The left-to-right direction, double negation elimination (DNE), is classically true but not constructively. ;)
+(; //LEAN:Classical.not_not ;)
+Classical__not_not : (a : Prop) -> Proof (iff (not (not a)) a).
+
+(; doc: All propositions are `Decidable`. ;)
+(; //LEAN:Classical.propDecidable ;)
+Classical__propDecidable : (a : Prop) -> Proof (Decidable a).
+
+(; doc: Propositional equality is `Decidable` for all elements of a type.  In other words, an instance of `DecidableEq α` is a means of deciding the proposition `a = b` is for all `a b : α`. ;)
+(; //LEAN:DecidableEq ;)
+DecidableEq : (X : Set) -> Set.
+
+(; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
+(; //LEAN:Eq ;)
+Eq : (x : Elem X) -> (x1 : Elem X) -> Prop.
+
+(; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
+(; //LEAN:Eq.mp ;)
+Eq__mp : (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
+
+(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
+(; //LEAN:Eq.mpr ;)
+Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+
+(; doc: Non-dependent recursor for the equality type. ;)
+(; //LEAN:Eq.ndrec ;)
+Eq__ndrec : (m : Elem (motive a)) -> (h : Proof (Eqt X a b)) -> Elem (motive b).
+
+(; //LEAN:Eq.rec ;)
+Eq__rec : (refl : Elem (motive x (Eq__refl x))) -> (t : Proof (Eqt X x x1)) -> Elem (motive x1 t).
+
+(; //LEAN:Eq.recOn ;)
+Eq__recOn : (t : Proof (Eqt X x x1)) -> (refl : Elem (motive x (Eq__refl x))) -> Elem (motive x1 t).
+
+(; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
+(; //LEAN:Eq.refl ;)
+Eq__refl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
+
+(; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.symm ;)
+Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Proof (Eqt X b a).
+
+(; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.trans ;)
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+
+(; doc: An equivalence relation `r : α → α → Prop` is a relation that is  * reflexive: `r x x`, * symmetric: `r x y` implies `r y x`, and * transitive: `r x y` and `r y z` implies `r x z`.  Equality is an equivalence relation, and equivalence relations share many of the properties of equality. ;)
+(; //LEAN:Equivalence ;)
+Equivalence : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+
+(; //LEAN:Equivalence.mk ;)
+Equivalence__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (refl : Proof (forall X (x2 => r x2 x2))) -> (symm : Proof (forall X (x1 => forall X (y1 => if (r x1 y1) (r y1 x1))))) -> (trans : Proof (forall X (x => forall X (y => forall X (z => if (r x y) (if (r y z) (r x z))))))) -> Proof (Equivalence r).
+
+(; doc: An equivalence relation is reflexive: `r x x` ;)
+(; //LEAN:Equivalence.refl ;)
+Equivalence__refl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (self : Proof (Equivalence r)) -> (x : Elem X) -> Proof (r x x).
+
+(; doc: An equivalence relation is symmetric: `r x y` implies `r y x` ;)
+(; //LEAN:Equivalence.symm ;)
+Equivalence__symm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (self : Proof (Equivalence r)) -> (x : Elem X) -> (y : Elem X) -> (h : Proof (r x y)) -> Proof (r y x).
+
+(; doc: An equivalence relation is transitive: `r x y` and `r y z` implies `r x z` ;)
+(; //LEAN:Equivalence.trans ;)
+Equivalence__trans : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (self : Proof (Equivalence r)) -> (x : Elem X) -> (y : Elem X) -> (z : Elem X) -> (h : Proof (r x y)) -> (h1 : Proof (r y z)) -> Proof (r x z).
+
+(; doc: Extract an element from an existential statement, using `Classical.choose`. ;)
+(; //LEAN:Exists.choose ;)
+Exists__choose : (P : Proof (exists X (a => p a))) -> Elem X.
+
+(; doc: For `p : α → Prop`, `ExistsUnique p` means that there exists a unique `x : α` with `p x`. ;)
+(; //LEAN:ExistsUnique ;)
+ExistsUnique : (p : (Elem X -> Prop)) -> Prop.
+
+(; //LEAN:ExistsUnique.exists ;)
+ExistsUnique__exists : (X : Set) -> (p : (Elem X -> Prop)) -> (h : Proof (ExistsUnique (x1 => p x1))) -> Proof (exists X (x => p x)).
+
+(; //LEAN:ExistsUnique.unique ;)
+ExistsUnique__unique : (X : Set) -> (p : (Elem X -> Prop)) -> (h : Proof (ExistsUnique (x2 => p x2))) -> (x : Elem X) -> (x1 : Elem X) -> (h1 : Proof (p x)) -> (h2 : Proof (p x1)) -> Proof (Eqt X x x1).
+
+(; doc: A function is called bijective if it is both injective and surjective. ;)
+(; //LEAN:Function.Bijective ;)
+Function__Bijective : (f : (Elem X -> Y)) -> Prop.
+
+(; doc: `HasLeftInverse f` means that `f` has an unspecified left inverse. ;)
+(; //LEAN:Function.HasLeftInverse ;)
+Function__HasLeftInverse : (f : (Elem X -> Y)) -> Prop.
+
+(; //LEAN:Function.HasLeftInverse.injective ;)
+Function__HasLeftInverse__injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (h : Proof (Function__HasLeftInverse f)) -> Proof (Function__Injective f).
+
+(; doc: `HasRightInverse f` means that `f` has an unspecified right inverse. ;)
+(; //LEAN:Function.HasRightInverse ;)
+Function__HasRightInverse : (f : (Elem X -> Y)) -> Prop.
+
+(; //LEAN:Function.HasRightInverse.surjective ;)
+Function__HasRightInverse__surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (h : Proof (Function__HasRightInverse f)) -> Proof (Function__Surjective f).
+
+(; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
+(; //LEAN:Function.Injective ;)
+Function__Injective : (f : (Elem X -> Y)) -> Prop.
+
+(; //LEAN:Function.Injective.comp ;)
+Function__Injective__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (g : (Elem Y -> Z)) -> (f : (Elem X -> Y)) -> (hg : Proof (Function__Injective g)) -> (hf : Proof (Function__Injective f)) -> Proof (Function__Injective (Function__comp g f)).
+
+(; //LEAN:Function.Injective.eq_iff ;)
+Function__Injective__eq_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (I : Proof (Function__Injective f)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt Y (f a) (f b)) (Eqt X a b)).
+
+(; //LEAN:Function.Injective.eq_iff' ;)
+Function__Injective__eq_iff' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (I : Proof (Function__Injective f)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem Y) -> (h : Proof (Eqt Y (f b) c)) -> Proof (iff (Eqt Y (f a) c) (Eqt X a b)).
+
+(; //LEAN:Function.Injective.ne ;)
+Function__Injective__ne : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective f)) -> (x : Elem X) -> (x1 : Elem X) -> (h : Proof (Neq x x1)) -> Proof (Neq (f x) (f x1)).
+
+(; doc: `LeftInverse g f` means that `g` is a left inverse to `f`. That is, `g ∘ f = id`. ;)
+(; //LEAN:Function.LeftInverse ;)
+Function__LeftInverse : (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> Prop.
+
+(; //LEAN:Function.LeftInverse.injective ;)
+Function__LeftInverse__injective : (X : Set) -> (Y : Set) -> (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> (h : Proof (Function__LeftInverse g f)) -> Proof (Function__Injective f).
+
+(; doc: `RightInverse g f` means that `g` is a right inverse to `f`. That is, `f ∘ g = id`. ;)
+(; //LEAN:Function.RightInverse ;)
+Function__RightInverse : (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> Prop.
+
+(; //LEAN:Function.RightInverse.surjective ;)
+Function__RightInverse__surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> X)) -> (h : Proof (Function__RightInverse g f)) -> Proof (Function__Surjective f).
+
+(; doc: A function `f : α → β` is called surjective if every `b : β` is equal to `f a` for some `a : α`. ;)
+(; //LEAN:Function.Surjective ;)
+Function__Surjective : (f : (Elem X -> Y)) -> Prop.
+
+(; //LEAN:Function.Surjective.comp ;)
+Function__Surjective__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (g : (Elem Y -> Z)) -> (f : (Elem X -> Y)) -> (hg : Proof (Function__Surjective g)) -> (hf : Proof (Function__Surjective f)) -> Proof (Function__Surjective (Function__comp g f)).
+
+(; doc: Function composition, usually written with the infix operator `∘`. A new function is created from two existing functions, where one function's output is used as input to the other.  Examples:  * `Function.comp List.reverse (List.drop 2) [3, 2, 4, 1] = [1, 4]`  * `(List.reverse ∘ List.drop 2) [3, 2, 4, 1] = [1, 4]`  Conventions for notations in identifiers:   * The recommended spelling of `∘` in identifiers is `comp`. ;)
+(; //LEAN:Function.comp ;)
+Function__comp : (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
+
+(; //LEAN:Function.comp_apply ;)
+Function__comp_apply : (Y : Set) -> (W : Set) -> (X : Set) -> (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Proof (Eqt W (Function__comp f g x) (f (g x))).
+
+(; //LEAN:Function.comp_assoc ;)
+Function__comp_assoc : (X : Set) -> (Y : Set) -> (X1 : Set) -> (W : Set) -> (f : (Elem X1 -> W)) -> (g : (Elem Y -> X1)) -> (h : (Elem X -> Y)) -> Proof (Eqt (Elem X -> W) (Function__comp (Function__comp f g) h) (Function__comp f (Function__comp g h))).
+
+(; //LEAN:Function.comp_id ;)
+Function__comp_id : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Proof (Eqt (Elem X -> Y) (Function__comp f id) f).
+
+(; doc: The constant function that ignores its argument.  If `a : α`, then `Function.const β a : β → α` is the “constant function with value `a`”. For all arguments `b : β`, `Function.const β a b = a`. It is often written directly as `fun _ => a`.  Examples:  * `Function.const Bool 10 true = 10`  * `Function.const Bool 10 false = 10`  * `Function.const String 10 "any string" = 10` ;)
+(; //LEAN:Function.const ;)
+Function__const : (Y : Set) -> (a : Elem X) -> (x : Elem Y) -> Elem X.
+
+(; doc: Transforms a function from pairs into an equivalent two-parameter function.  Examples: * `Function.curry (fun (x, y) => x + y) 3 5 = 8` * `Function.curry Prod.swap 3 "five" = ("five", 3)` ;)
+(; //LEAN:Function.curry ;)
+Function__curry : (x : (Elem (Prod X Y) -> X1)) -> (x1 : Elem X) -> (x2 : Elem Y) -> Elem X1.
+
+(; //LEAN:Function.curry_uncurry ;)
+Function__curry_uncurry : (X : Set) -> (Y : Set) -> (X1 : Set) -> (f : (Elem X -> Elem Y -> X1)) -> Proof (Eqt (Elem X -> Elem Y -> X1) (Function__curry (Function__uncurry f)) f).
+
+(; //LEAN:Function.id_comp ;)
+Function__id_comp : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Proof (Eqt (Elem X -> Y) (Function__comp id f) f).
+
+(; //LEAN:Function.injective_id ;)
+Function__injective_id : (X : Set) -> Proof (Function__Injective id).
+
+(; doc: Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation from `β` to `α`. ;)
+(; //LEAN:Function.onFun ;)
+Function__onFun : (f : (Elem Y -> Elem Y -> X1)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> (x1 : Elem X) -> Elem X1.
+
+(; //LEAN:Function.rightInverse_of_injective_of_leftInverse ;)
+Function__rightInverse_of_injective_of_leftInverse : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> X)) -> (injf : Proof (Function__Injective f)) -> (lfg : Proof (Function__LeftInverse f g)) -> Proof (Function__RightInverse f g).
+
+(; doc: For a two-argument function `f`, `swap f` is the same function but taking the arguments in the reverse order. `swap f y x = f x y`. ;)
+(; //LEAN:Function.swap ;)
+Function__swap : (f : ((x2 : Elem X) -> (y1 : Elem Y) -> x x2 y1)) -> (y : Elem Y) -> (x1 : Elem X) -> Elem (x x1 y).
+
+(; doc: Transforms a two-parameter function into an equivalent function from pairs.  Examples: * `Function.uncurry List.drop (1, ["a", "b", "c"]) = ["b", "c"]` * `[("orange", 2), ("android", 3) ].map (Function.uncurry String.take) = ["or", "and"]` ;)
+(; //LEAN:Function.uncurry ;)
+Function__uncurry : (x : (Elem X -> Elem Y -> X1)) -> (x1 : Elem (Prod X Y)) -> Elem X1.
+
+(; //LEAN:Function.uncurry_curry ;)
+Function__uncurry_curry : (X : Set) -> (Y : Set) -> (X1 : Set) -> (f : (Elem (Prod X Y) -> X1)) -> Proof (Eqt (Elem (Prod X Y) -> X1) (Function__uncurry (Function__curry f)) f).
+
+(; doc: Heterogeneous equality. `a ≍ b` asserts that `a` and `b` have the same type, and casting `a` across the equality yields `b`, and vice versa.  You should avoid using this type if you can. Heterogeneous equality does not have all the same properties as `Eq`, because the assumption that the types of `a` and `b` are equal is often too weak to prove theorems of interest. One public important non-theorem is the analogue of `congr`: If `f ≍ g` and `x ≍ y` and `f x` and `g y` are well typed it does not follow that `f x ≍ g y`. (This does follow if you have `f = g` instead.) However if `a` and `b` have the same type then `a = b` and `a ≍ b` are equivalent.  Conventions for notations in identifiers:   * The recommended spelling of `≍` in identifiers is `heq`. ;)
+(; //LEAN:HEq ;)
+HEq : (x : Elem X) -> (x1 : Elem Y) -> Prop.
+
+(; doc: **Alias** of `not_congr`. ;)
+(; //LEAN:Iff.not ;)
+Iff__not : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff (not a) (not b)).
+
+(; //LEAN:Iff.trans ;)
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+
+(; doc: The inverse image of `r : β → β → Prop` by a function `α → β` is the relation `s : α → α → Prop` defined by `s a b = r (f a) (f b)`. ;)
+(; //LEAN:InvImage ;)
+InvImage : (r : (Elem Y -> Elem Y -> Prop)) -> (f : (Elem X -> Y)) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
+
+(; doc: `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is, `IsPartialOrder X r` and `Std.Total r`. ;)
+(; //LEAN:IsLinearOrder ;)
+IsLinearOrder : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
+
+(; //LEAN:IsLinearOrder.mk ;)
+IsLinearOrder__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (IsPartialOrder X r)) -> (_ : Proof (Std__Total r)) -> Proof (IsLinearOrder X r).
+
+(; doc: `IsPartialOrder X r` means that the binary relation `r` on `X` is a partial order, that is, `IsPreorder X r` and `Std.Antisymm r`. ;)
+(; //LEAN:IsPartialOrder ;)
+IsPartialOrder : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
+
+(; //LEAN:IsPartialOrder.mk ;)
+IsPartialOrder__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (IsPreorder X r)) -> (_ : Proof (Std__Antisymm r)) -> Proof (IsPartialOrder X r).
+
+(; doc: `IsStrictTotalOrder X lt` means that the binary relation `lt` on `X` is a strict total order, that is, `Std.Trichotomous lt` and `IsStrictOrder X lt`. ;)
+(; //LEAN:IsStrictTotalOrder ;)
+IsStrictTotalOrder : (X : Set) -> (lt : (Elem X -> Elem X -> Prop)) -> Prop.
+
+(; //LEAN:IsStrictTotalOrder.mk ;)
+IsStrictTotalOrder__mk : (X : Set) -> (lt : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Trichotomous lt)) -> (_ : Proof (IsStrictOrder X lt)) -> Proof (IsStrictTotalOrder X lt).
+
+(; doc: `LE α` is the typeclass which supports the notation `x ≤ y` where `x y : α`. ;)
+(; //LEAN:LE ;)
+LE : (X : Set) -> Prop.
+
+(; doc: `LT α` is the typeclass which supports the notation `x < y` where `x y : α`. ;)
+(; //LEAN:LT ;)
+LT : (X : Set) -> Prop.
+
+(; doc: A `ParserDescr` is a grammar for parsers. This is used by the `syntax` command to produce parsers without having to `import Lean`. ;)
+(; //LEAN:Lean.ParserDescr ;)
+Lean__ParserDescr : Set.
+
+(; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
+(; //LEAN:Membership.mem ;)
+Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+
+(; doc: `Nonempty α` is a typeclass that says that `α` is not an empty type, that is, there exists an element in the type. It differs from `Inhabited α` in that `Nonempty α` is a `Prop`, which means that it does not actually carry an element of `α`, only a proof that *there exists* such an element. Given `Nonempty α`, you can construct an element of `α` *nonconstructively* using `Classical.choice`. ;)
+(; //LEAN:Nonempty ;)
+Nonempty : (X : Set) -> Prop.
+
+(; doc: The elimination principle for `Nonempty α`. If `Nonempty α`, and we can prove `p` given any element `x : α`, then `p` holds. Note that it is essential that `p` is a `Prop` here; the version with `p` being a `Sort u` is equivalent to `Classical.choice`. ;)
+(; //LEAN:Nonempty.elim ;)
+Nonempty__elim : (X : Set) -> (p : Prop) -> (h : Proof (Nonempty X)) -> (h1 : Proof (forall X (x => p))) -> Proof p.
+
+(; doc: If `val : α`, then `α` is nonempty. ;)
+(; //LEAN:Nonempty.intro ;)
+Nonempty__intro : (X : Set) -> (val : Elem X) -> Proof (Nonempty X).
+
+(; doc: Using `Classical.choice`, extracts a term from a `Nonempty` type. ;)
+(; //LEAN:Nonempty.some ;)
+Nonempty__some : (h : Proof (Nonempty X)) -> Elem X.
+
+(; doc: Predicate typeclass for expressing that a type is not reduced to a single element. In rings, this is equivalent to `0 ≠ 1`. In vector spaces, this is equivalent to positive dimension. ;)
+(; //LEAN:Nontrivial ;)
+Nontrivial : (X : Set) -> Prop.
+
+(; doc: Optional values, which are either `some` around a value from the underlying type or `none`.  `Option` can represent nullable types or computations that might fail. In the codomain of a function type, it can also represent partiality. ;)
+(; //LEAN:Option ;)
+Option : (X : Set) -> Set.
+
+(; doc: Sequencing of `Option` computations.  From the perspective of `Option` as computations that might fail, this function sequences potentially-failing computations, failing if either fails. From the perspective of `Option` as a collection with at most one element, the function is applied to the element if present, and the final result is empty if either the initial or the resulting collections are empty.  This function is often accessed via the `>>=` operator from the `Bind (Option α)` instance, or implicitly via `do`-notation, but it is also idiomatic to call it using [generalized field notation](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=generalized-field-notation).  Examples:  * `none.bind (fun x => some x) = none`  * `(some 4).bind (fun x => some x) = some 4`  * `none.bind (Option.guard (· > 2)) = none`  * `(some 2).bind (Option.guard (· > 2)) = none`  * `(some 4).bind (Option.guard (· > 2)) = some 4` ;)
+(; //LEAN:Option.bind ;)
+Option__bind : (x : Elem (Option X)) -> (x1 : (Elem X -> Option Y)) -> Elem (Option Y).
+
+(; //LEAN:Option.eq_some_of_isSome ;)
+Option__eq_some_of_isSome : (X : Set) -> (o : Elem (Option X)) -> (h : Proof (Eqt Bool (Option__isSome o) Bool__true)) -> Proof (Eqt (Option X) o (Option__some (Option__get o h))).
+
+(; doc: Extracts the value from an option that can be proven to be `some`. ;)
+(; //LEAN:Option.get ;)
+Option__get : (o : Elem (Option X)) -> (h : Proof (Eqt Bool (Option__isSome o) Bool__true)) -> Elem X.
+
+(; doc: Gets an optional value, returning a given default on `none`.  This function is `@[macro_inline]`, so `dflt` will not be evaluated unless `opt` turns out to be `none`.  Examples:  * `(some "hello").getD "goodbye" = "hello"`  * `none.getD "goodbye" = "goodbye"` ;)
+(; //LEAN:Option.getD ;)
+Option__getD : (opt : Elem (Option X)) -> (dflt : Elem X) -> Elem X.
+
+(; doc: Returns `true` on `some x` and `false` on `none`. ;)
+(; //LEAN:Option.isSome ;)
+Option__isSome : (x : Elem (Option X)) -> Elem Bool.
+
+(; doc: No value. ;)
+(; //LEAN:Option.none ;)
+Option__none : Elem (Option X).
+
+(; //LEAN:Option.rec ;)
+Option__rec : (none : Elem (motive Option__none)) -> (some : ((val : Elem X) -> motive (Option__some val))) -> (t : Elem (Option X)) -> Elem (motive t).
+
+(; doc: Some value of type `α`. ;)
+(; //LEAN:Option.some ;)
+Option__some : (val : Elem X) -> Elem (Option X).
+
+(; //LEAN:Option.some.inj ;)
+Option__some__inj : (X : Set) -> (val : Elem X) -> (val1 : Elem X) -> (h : Proof (Eqt (Option X) (Option__some val) (Option__some val1))) -> Proof (Eqt X val val1).
+
+(; doc: Sends a dependent function `a : ∀ i, α i` to a dependent function `Pi.map f a : ∀ i, β i` by applying `f i` to `i`-th component. ;)
+(; //LEAN:Pi.map ;)
+Pi__map : (f : ((i2 : Elem I) -> Elem (x i2) -> x1 i2)) -> (x2 : ((i1 : Elem I) -> x i1)) -> (i : Elem I) -> Elem (x1 i).
+
+(; doc: The product type, usually written `α × β`. Product types are also called pair or tuple types. Elements of this type are pairs in which the first element is an `α` and the second element is a `β`.  Products nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.  Conventions for notations in identifiers:   * The recommended spelling of `×` in identifiers is `Prod`. ;)
+(; //LEAN:Prod ;)
+Prod : (X : Set) -> (Y : Set) -> Set.
+
+(; doc: The first element of a pair. ;)
+(; //LEAN:Prod.fst ;)
+Prod__fst : (self : Elem (Prod X Y)) -> Elem X.
+
+(; doc: Constructs a pair. This is usually written `(x, y)` instead of `Prod.mk x y`.  Conventions for notations in identifiers:   * The recommended spelling of `(a, b)` in identifiers is `mk`. ;)
+(; //LEAN:Prod.mk ;)
+Prod__mk : (fst : Elem X) -> (snd : Elem Y) -> Elem (Prod X Y).
+
+(; doc: The second element of a pair. ;)
+(; //LEAN:Prod.snd ;)
+Prod__snd : (self : Elem (Prod X Y)) -> Elem Y.
+
+(; doc: Swaps the elements in a pair.  Examples: * `(1, 2).swap = (2, 1)` * `("orange", -87).swap = (-87, "orange")` ;)
+(; //LEAN:Prod.swap ;)
+Prod__swap : (x : Elem (Prod X Y)) -> Elem (Prod Y X).
+
+(; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
+(; //LEAN:Set.Subset ;)
+Set__Subset : (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+
+(; doc: `Antisymm r` says that `r` is antisymmetric, that is, `r a b → r b a → a = b`. ;)
+(; //LEAN:Std.Antisymm ;)
+Std__Antisymm : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+
+(; //LEAN:Std.Antisymm.mk ;)
+Std__Antisymm__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (antisymm : Proof (forall X (a => forall X (b => if (r a b) (if (r b a) (Eqt X a b)))))) -> Proof (Std__Antisymm r).
+
+(; doc: `Symm r` means that the binary relation `r` is symmetric, that is, `r a b → r b a`. ;)
+(; //LEAN:Std.Symm ;)
+Std__Symm : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+
+(; doc: `Trichotomous r` says that `r` is trichotomous, that is, `¬ r a b → ¬ r b a → a = b`. ;)
+(; //LEAN:Std.Trichotomous ;)
+Std__Trichotomous : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+
+(; //LEAN:Std.Trichotomous.mk ;)
+Std__Trichotomous__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (trichotomous : Proof (forall X (a => forall X (b => if (not (r a b)) (if (not (r b a)) (Eqt X a b)))))) -> Proof (Std__Trichotomous r).
+
+(; doc: An trichotomous relation `r` satisfies `¬ r a b → ¬ r b a → a = b`. ;)
+(; //LEAN:Std.Trichotomous.trichotomous ;)
+Std__Trichotomous__trichotomous : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Trichotomous r)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (not (r a b))) -> (h1 : Proof (not (r b a))) -> Proof (Eqt X a b).
+
+(; doc: A _subsingleton_ is a type with at most one element. It is either empty or has a unique element.  All propositions are subsingletons because of proof irrelevance: false propositions are empty, and all proofs of a true proposition are equal to one another. Some non-propositional types are also subsingletons. ;)
+(; //LEAN:Subsingleton ;)
+Subsingleton : (X : Set) -> Prop.
+
+(; doc: If a type is a subsingleton, then all of its elements are equal. ;)
+(; //LEAN:Subsingleton.elim ;)
+Subsingleton__elim : (X : Set) -> (_ : Proof (Subsingleton X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X a b).
+
+(; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
+(; //LEAN:Subtype ;)
+Subtype : (p : (Elem X -> Prop)) -> Set.
+
+(; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
+(; //LEAN:Trans.trans ;)
+Trans__trans : (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
+
+(; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
+(; //LEAN:True ;)
+True : Prop.
+
+(; //LEAN:and_congr ;)
+and_congr : (a : Prop) -> (c : Prop) -> (b : Prop) -> (d : Prop) -> (h : Proof (iff a c)) -> (h1 : Proof (iff b d)) -> Proof (iff (and a b) (and c d)).
+
+(; doc: A version of `antisymm` with `r` explicit.  This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. ;)
+(; //LEAN:antisymm_of ;)
+antisymm_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Antisymm r)) -> (a : Elem X) -> (b : Elem X) -> (h1 : Proof (r a b)) -> (h2 : Proof (r b a)) -> Proof (Eqt X a b).
+
+(; doc: A function applied to a `dite` is a `dite` of that function applied to each of the branches. ;)
+(; //LEAN:apply_dite ;)
+apply_dite : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (P : Prop) -> (x1 : (Proof P -> X)) -> (y : (Proof (not P) -> X)) -> Proof (Eqt Y (f (dite P x1 y)) (dite P (h => f (x1 h)) (h1 => f (y h1)))).
+
+(; doc: Cast across a type equality. If `h : α = β` is an equality of types, and `a : α`, then `a : β` will usually not typecheck directly, but this function will allow you to work around this and embed `a` in type `β` as `cast h a : β`.  It is best to avoid this function if you can, because it is more complicated to reason about terms containing casts, but if the types don't match up definitionally sometimes there isn't anything better you can do.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:cast ;)
+cast : (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
+
+(; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:congrArg ;)
+congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+
+(; doc: Congruence in the function part of an application: If `f = g` then `f a = g a`. ;)
+(; //LEAN:congrFun ;)
+congrFun : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> x x3)) -> (g : ((x2 : Elem X) -> x x2)) -> (h : Proof (Eqt ((x1 : Elem X) -> x x1) f g)) -> (a : Elem X) -> Proof (Eqt (x a) (f a) (g a)).
+
+(; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
+(; //LEAN:congrFun' ;)
+congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Eqt (Elem X -> Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
+
+(; doc: **Alias** of `congrArg`. ;)
+(; //LEAN:congr_arg ;)
+congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+
+(; doc: **Alias** of `congrFun`. ;)
+(; //LEAN:congr_fun ;)
+congr_fun : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> x x3)) -> (g : ((x2 : Elem X) -> x x2)) -> (h : Proof (Eqt ((x1 : Elem X) -> x x1) f g)) -> (a : Elem X) -> Proof (Eqt (x a) (f a) (g a)).
+
+(; doc: Transfer decidability of `a` to decidability of `b`, if the propositions are equivalent. **Important**: this function should be used instead of `rw` on `Decidable b`, because the kernel will get stuck reducing the usage of `propext` otherwise, and `decide` will not work. ;)
+(; //LEAN:decidable_of_iff ;)
+decidable_of_iff : (a : Prop) -> (h : Proof (iff a b)) -> Proof (Decidable b).
+
+(; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
+(; //LEAN:dite ;)
+dite : (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
+
+(; //LEAN:dite_eq_left ;)
+dite_eq_left : (c : Prop) -> (h : Proof (Decidable c)) -> (hc : Proof c) -> (X : Set) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Proof (Eqt X (dite c t e) (t hc)).
+
+(; //LEAN:dite_eq_right ;)
+dite_eq_right : (c : Prop) -> (h : Proof (Decidable c)) -> (hnc : Proof (not c)) -> (X : Set) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Proof (Eqt X (dite c t e) (e hnc)).
+
+(; //LEAN:eq_self ;)
+eq_self : (X : Set) -> (a : Elem X) -> Proof (Eqt Prop (Eqt X a a) True).
+
+(; //LEAN:exists_congr ;)
+exists_congr : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h : Proof (forall X (a2 => iff (p a2) (q a2)))) -> Proof (iff (exists X (a => p a)) (exists X (a1 => q a1))).
+
+(; doc: `flip f a b` is `f b a`. It is useful for "point-free" programming, since it can sometimes be used to avoid introducing variables. For example, `(·<·)` is the less-than relation, and `flip (·<·)` is the greater-than relation. ;)
+(; //LEAN:flip ;)
+flip : (f : (Elem X -> Elem Y -> X1)) -> (x : Elem Y) -> (x1 : Elem X) -> Elem X1.
+
+(; //LEAN:forall_congr' ;)
+forall_congr' : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h : Proof (forall X (a2 => iff (p a2) (q a2)))) -> Proof (iff (forall X (a => p a)) (forall X (a1 => q a1))).
+
+(; doc: **Function extensionality.** If two functions return equal results for all possible arguments, then they are equal.  It is called “extensionality” because it provides a way to prove two objects equal based on the properties of the underlying mathematical functions, rather than based on the syntax used to denote them. Function extensionality is a theorem that can be [proved using quotient types](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=quotient-funext). ;)
+(; //LEAN:funext ;)
+funext : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> (g : ((x3 : Elem X) -> x x3)) -> (h : Proof (forall X (x2 => Eqt (x x2) (f x2) (g x2)))) -> Proof (Eqt ((x1 : Elem X) -> x x1) f g).
+
+(; //LEAN:funext_iff ;)
+funext_iff : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> (g : ((x3 : Elem X) -> x x3)) -> Proof (iff (Eqt ((x1 : Elem X) -> x x1) f g) (forall X (x2 => Eqt (x x2) (f x2) (g x2)))).
+
+(; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
+(; //LEAN:id ;)
+id : (a : Elem X) -> Elem X.
+
+(; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
+(; //LEAN:ite ;)
+ite : (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
+
+(; //LEAN:ite_id ;)
+ite_id : (c : Prop) -> (X : Set) -> (t : Elem X) -> Proof (Eqt X (ite c t t) t).
+
+(; //LEAN:of_eq_true ;)
+of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
+
+(; doc: Gadget for marking output parameters in type classes.  For example, the `Membership` class is defined as: ``` class Membership (α : outParam (Type u)) (γ : Type v) ``` This means that whenever a typeclass goal of the form `Membership ?α ?γ` comes up, Lean will wait to solve it until `?γ` is known, but then it will run typeclass inference, and take the first solution it finds, for any value of `?α`, which thereby determines what `?α` should be.  This expresses that in a term like `a ∈ s`, `s` might be a `Set α` or `List α` or some other type with a membership operation, and in each case the "member" type `α` is determined by looking at the container type. ;)
+(; //LEAN:outParam ;)
+outParam : (X : Set) -> Set.
+
+(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
+(; //LEAN:propext ;)
+propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a b).
+
+(; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
+(; //LEAN:rfl ;)
+rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
+

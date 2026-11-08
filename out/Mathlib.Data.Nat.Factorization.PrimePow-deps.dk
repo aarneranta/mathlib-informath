@@ -10,46 +10,46 @@ Nat__Primes__prodNatEquiv__app : (a1 : Elem (Prod Nat__Primes Nat)) -> Elem (Sub
 Nat__factorization__app : (a1 : Elem Nat) -> (a2 : Elem Nat) -> Elem Nat.
 
 (; //LEAN:Dvd.intro ;)
-Dvd__intro : (x : Set) -> (_ : Proof (Semigroup x)) -> (a : Elem x) -> (b : Elem x) -> (c : Elem x) -> (h : Proof (Eqt x (times a c) b)) -> Proof (divide a b).
+Dvd__intro : (X : Set) -> (_ : Proof (Semigroup X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X (times a c) b)) -> Proof (divide a b).
 
 (; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.symm ;)
-Eq__symm : (x : Set) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Eqt x a b)) -> Proof (Eqt x b a).
+Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Proof (Eqt X b a).
 
 (; doc: `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. ;)
 (; //LEAN:Equiv ;)
-Equiv : (x : Set) -> (x1 : Set) -> Set.
+Equiv : (X : Set) -> (Y : Set) -> Set.
 
 (; //LEAN:Equiv.mk ;)
-Equiv__mk : (toFun : (Elem x -> x1)) -> (invFun : (Elem x1 -> x)) -> (left_inv : Proof (autoParam (Function__LeftInverse invFun toFun) Equiv__left_inv___autoParam)) -> (right_inv : Proof (autoParam (Function__RightInverse invFun toFun) Equiv__right_inv___autoParam)) -> Elem (Equiv x x1).
+Equiv__mk : (toFun : (Elem X -> Y)) -> (invFun : (Elem Y -> X)) -> (left_inv : Proof (autoParam (Function__LeftInverse invFun toFun) Equiv__left_inv___autoParam)) -> (right_inv : Proof (autoParam (Function__RightInverse invFun toFun) Equiv__right_inv___autoParam)) -> Elem (Equiv X Y).
 
 (; doc: For `p : α → Prop`, `ExistsUnique p` means that there exists a unique `x : α` with `p x`. ;)
 (; //LEAN:ExistsUnique ;)
-ExistsUnique : (p : (Elem x -> Prop)) -> Prop.
+ExistsUnique : (p : (Elem X -> Prop)) -> Prop.
 
 (; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
 (; //LEAN:Finset ;)
-Finset : (x : Set) -> Set.
+Finset : (X : Set) -> Set.
 
 (; doc: A finset is nontrivial if it has at least two elements. ;)
 (; //LEAN:Finset.Nontrivial ;)
-Finset__Nontrivial : (s : Elem (Finset x)) -> Prop.
+Finset__Nontrivial : (s : Elem (Finset X)) -> Prop.
 
 (; doc: `s.card` is the number of elements of `s`, aka its cardinality.  The notation `#s` can be accessed in the `Finset` locale. ;)
 (; //LEAN:Finset.card ;)
-Finset__card : (s : Elem (Finset x)) -> Elem Nat.
+Finset__card : (s : Elem (Finset X)) -> Elem Nat.
 
 (; doc: `Finset.filter p s` is the set of elements of `s` that satisfy `p`.  For example, one can use `s.filter (· ∈ t)` to get the intersection of `s` with `t : Set α` as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available). ;)
 (; //LEAN:Finset.filter ;)
-Finset__filter : (p : (Elem x -> Prop)) -> (s : Elem (Finset x)) -> Elem (Finset x).
+Finset__filter : (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Elem (Finset X).
 
 (; doc: `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that `f x = 0` for all but finitely many `x`. ;)
 (; //LEAN:Finsupp ;)
-Finsupp : (x : Set) -> (M : Set) -> Set.
+Finsupp : (X : Set) -> (M : Set) -> Set.
 
 (; doc: `single a b` is the finitely supported function with value `b` at `a` and zero otherwise. ;)
 (; //LEAN:Finsupp.single ;)
-Finsupp__single : (a : Elem x) -> (b : Elem M) -> Elem (Finsupp x M).
+Finsupp__single : (a : Elem X) -> (b : Elem M) -> Elem (Finsupp X M).
 
 (; doc: `n` is a prime power if there is a prime `p` and a positive natural `k` such that `n` can be written as `p^k`. ;)
 (; //LEAN:IsPrimePow ;)
@@ -87,29 +87,29 @@ Nat__primeFactors : (n : Elem Nat) -> Elem (Finset Nat).
 
 (; doc: The product type, usually written `α × β`. Product types are also called pair or tuple types. Elements of this type are pairs in which the first element is an `α` and the second element is a `β`.  Products nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.  Conventions for notations in identifiers:   * The recommended spelling of `×` in identifiers is `Prod`. ;)
 (; //LEAN:Prod ;)
-Prod : (x : Set) -> (x1 : Set) -> Set.
+Prod : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: The first element of a pair. ;)
 (; //LEAN:Prod.fst ;)
-Prod__fst : (self : Elem (Prod x x1)) -> Elem x.
+Prod__fst : (self : Elem (Prod X Y)) -> Elem X.
 
 (; doc: Constructs a pair. This is usually written `(x, y)` instead of `Prod.mk x y`.  Conventions for notations in identifiers:   * The recommended spelling of `(a, b)` in identifiers is `mk`. ;)
 (; //LEAN:Prod.mk ;)
-Prod__mk : (fst : Elem x) -> (snd : Elem x1) -> Elem (Prod x x1).
+Prod__mk : (fst : Elem X) -> (snd : Elem Y) -> Elem (Prod X Y).
 
 (; doc: The second element of a pair. ;)
 (; //LEAN:Prod.snd ;)
-Prod__snd : (self : Elem (Prod x x1)) -> Elem x1.
+Prod__snd : (self : Elem (Prod X Y)) -> Elem Y.
 
 (; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
 (; //LEAN:Subtype ;)
-Subtype : (p : (Elem x -> Prop)) -> Set.
+Subtype : (p : (Elem X -> Prop)) -> Set.
 
 (; doc: `a ∪ b` is the union of `a` and `b`.  Conventions for notations in identifiers:   * The recommended spelling of `∪` in identifiers is `union`. ;)
 (; //LEAN:Union.union ;)
-Union__union : (x1 : Elem x) -> (x2 : Elem x) -> Elem x.
+Union__union : (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)
-rfl : (x : Set) -> (a : Elem x) -> Proof (Eqt x a a).
+rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
 

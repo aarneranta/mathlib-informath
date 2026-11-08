@@ -56,11 +56,16 @@ abbrev M := StateRefT St MetaM
 
 /-- A variable name for a binder: the user's name if it is a plain identifier
 and free, else a fresh one. -/
-def freshName (n : Name) (prop : Bool) : M String := do
+def freshName (n : Name) (prop : Bool) (sort : Bool := false) : M String := do
   let base0 := (n.eraseMacroScopes.toString (escape := false))
   let ok := !base0.isEmpty && base0.all (fun c => c.isAlphanum || c == '_' || c == '\'') &&
     !(base0.toList.head?.map Char.isDigit |>.getD false) && !n.hasMacroScopes
-  let base := if ok then base0 else if prop then "h" else "x"
+  -- a Greek type variable (α : Type u) gets the Latin capital a textbook would
+  -- use for a set: "Let X and Y be sets"
+  let latin := match base0 with
+    | "α" => "X" | "β" => "Y" | "γ" => "Z" | "δ" => "W" | "ι" => "I" | "κ" => "J"
+    | "σ" => "S" | "τ" => "T" | "ω" => "U" | _ => "X"
+  let base := if ok then base0 else if prop then "h" else if sort && !n.hasMacroScopes then latin else "x"
   let st ← get
   if !st.names.contains base then
     modify fun s => { s with names := s.names.insert base }
@@ -165,7 +170,7 @@ type elsewhere. -/
 partial def binder (n : Name) (t b : Expr) (bi : BinderInfo) (isLam : Bool)
     (plain : Nat := 0) : M String := do
   let prop ← isProp t
-  let nm ← freshName n prop
+  let nm ← freshName n prop t.isSort
   -- in a proof, a λ that proves an implication or a ∀ is its introduction
   -- rule, ifI or forallI; but not the λs that rules take as arguments (plain)
   let intro ← if isLam && plain == 0 && (← get).proofMode then isProp (← inferType (.lam n t b bi))
@@ -238,6 +243,31 @@ partial def app (c : Name) (args : Array Expr) (whole : Expr) : M String := do
       let fs ← tr f
       let as ← rest.mapM tr
       return " ".intercalate (paren fs :: (as.map paren).toList)
+  -- the order on sets and finite sets is inclusion, and its lattice operations
+  -- union and intersection: s ⊆ t is LE.le (Set α) s t, s ∪ t is Max.max
+  let setLike (t : Expr) : Bool := match t.getAppFn.constName? with
+    | some n => n == `Set || n == `Finset
+    | none => false
+  if args.size ≥ 1 && setLike args[0]! then
+    let setOp : Option Name :=
+      if c == ``LE.le && args.size == 4 then some `Set.Subset
+      else if c == ``LT.lt && args.size == 4 then some `HasSSubset.SSubset
+      else if c == ``Max.max && args.size == 4 then some `Union.union
+      else if c == ``Min.min && args.size == 4 then some `Inter.inter
+      else none
+    if let some op := setOp then
+      modify fun s => { s with used := s.used.insert op }
+      return s!"{mangle op} {paren (← tr args[2]!)} {paren (← tr args[3]!)}"
+    if c == `Top.top && args.size == 2 then
+      modify fun s => { s with used := s.used.insert `Set.univ }
+      return mangle `Set.univ
+    if c == `Bot.bot && args.size == 2 then
+      modify fun s => { s with used := s.used.insert `EmptyCollection.emptyCollection }
+      return mangle `EmptyCollection.emptyCollection
+  -- the coercion of a bundled function not applied (⇑OrderDual.ofDual,
+  -- f ∘ ⇑e) is the function itself
+  if c == `DFunLike.coe && args.size == 5 then
+    return ← tr args[4]!
   -- numerals: OfNat.ofNat α n inst
   if c == ``OfNat.ofNat && args.size ≥ 2 then
     if let .lit (.natVal n) := args[1]!.consumeMData then return numeral n
@@ -307,7 +337,7 @@ partial def statementGo (explicitOnly : Bool) (t : Expr) : M String := do
     match t with
     | .forallE n ty b bi => do
       let prop ← isProp ty
-      let nm ← freshName n prop
+      let nm ← freshName n prop ty.isSort
       withLocalDecl (Name.mkSimple nm) bi ty fun y => do
         let rest ← statementGo explicitOnly (b.instantiate1 y)
         if explicitOnly && bi != .default then return rest
@@ -334,7 +364,7 @@ partial def valueGo (explicitOnly : Bool) (t v : Expr) : M String := do
   match t, v with
   | .forallE n ty b bi, .lam _ _ vb _ =>
     let prop ← isProp ty
-    let nm ← freshName n prop
+    let nm ← freshName n prop ty.isSort
     withLocalDecl (Name.mkSimple nm) bi ty fun y => do
       let rest ← valueGo explicitOnly (b.instantiate1 y) (vb.instantiate1 y)
       if explicitOnly && bi != .default then return rest
@@ -1367,6 +1397,14 @@ unsafe def main (args : List String) : IO UInt32 := do
       exportStructures env n cs mapping keepAll binders
     return 0
   if args.head? == some "--tactics" then
+    -- only the first file elaborated in a process gets its info trees, so
+    -- several modules are exported by one process each
+    if args.tail.length > 1 then
+      for m in args.tail do
+        let out ← IO.Process.output { cmd := (← IO.appPath).toString, args := #["--tactics", m] }
+        IO.print out.stdout
+        IO.eprint out.stderr
+      return 0
     let (mapping, keepAll) ← readMapping
     let binders ← readBinders
     for m in args.tail.map String.toName do

@@ -106,6 +106,14 @@ RunInformath processes; the readings are cached in
 | `index.json` | the index, from which the pages are made |
 | `build-html.py` | builds `mathlib-informath.html` and `pages/*.html` from `index.json` |
 | `tactic-units.py` | the steps of a module's tactic proofs as proof units, for `RunInformath -tactic-proof` |
+| `coverage.py`, `coverage.md` | for each module, how many readings are fully worded and how many theorems have proof texts, and the constants most often left without a wording |
+
+A Greek type variable becomes the Latin capital a textbook would use for a
+set ("Let $X$ and $Y$ be sets" for `α` and `β`). The order on sets is
+inclusion, and Mathlib writes `s ⊆ t`, `s ∪ t` and `s ∩ t` with the order's
+`≤`, `max` and `min`; on sets (and finite sets) these become `Set.Subset`,
+`Union.union` and `Inter.inter` again, and `⊤`, `⊥` the universal and the
+empty set.
 
 The translation keeps the explicit arguments of Lean's constants and drops the
 implicit and instance ones, turns type class assumptions such as `[CommMonoid M]`

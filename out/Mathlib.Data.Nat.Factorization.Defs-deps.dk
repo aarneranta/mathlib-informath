@@ -18,50 +18,50 @@ DFunLike__coe : (x2 : Elem F) -> (a : Elem x) -> Elem (x1 a).
 
 (; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
 (; //LEAN:Eq ;)
-Eq : (x1 : Elem x) -> (x2 : Elem x) -> Prop.
+Eq : (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (x : Set) -> (a : Elem x) -> (b : Elem x) -> (c : Elem x) -> (h : Proof (Eqt x a b)) -> (h1 : Proof (Eqt x b c)) -> Proof (Eqt x a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. ;)
 (; //LEAN:Equiv ;)
-Equiv : (x : Set) -> (x1 : Set) -> Set.
+Equiv : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
 (; //LEAN:Finset ;)
-Finset : (x : Set) -> Set.
+Finset : (X : Set) -> Set.
 
 (; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.prod ;)
-Finset__prod : (s : Elem (Finset x)) -> (f : (Elem x -> M)) -> Elem M.
+Finset__prod : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
-Finset__sum : (s : Elem (Finset x)) -> (f : (Elem x -> M)) -> Elem M.
+Finset__sum : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
 
 (; doc: `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that `f x = 0` for all but finitely many `x`. ;)
 (; //LEAN:Finsupp ;)
-Finsupp : (x : Set) -> (M : Set) -> Set.
+Finsupp : (X : Set) -> (M : Set) -> Set.
 
 (; doc: `prod f g` is the product of `g a (f a)` over the support of `f`. ;)
 (; //LEAN:Finsupp.prod ;)
-Finsupp__prod : (f : Elem (Finsupp x M)) -> (g : (Elem x -> Elem M -> N)) -> Elem N.
+Finsupp__prod : (f : Elem (Finsupp X M)) -> (g : (Elem X -> Elem M -> N)) -> Elem N.
 
 (; doc: `single a b` is the finitely supported function with value `b` at `a` and zero otherwise. ;)
 (; //LEAN:Finsupp.single ;)
-Finsupp__single : (a : Elem x) -> (b : Elem M) -> Elem (Finsupp x M).
+Finsupp__single : (a : Elem X) -> (b : Elem M) -> Elem (Finsupp X M).
 
 (; doc: The support of a finitely supported function (aka `Finsupp`). ;)
 (; //LEAN:Finsupp.support ;)
-Finsupp__support : (self : Elem (Finsupp x M)) -> Elem (Finset x).
+Finsupp__support : (self : Elem (Finsupp X M)) -> Elem (Finset X).
 
 (; //LEAN:Finsupp.support_mono ;)
-Finsupp__support_mono : (x : Set) -> (x1 : Set) -> (_ : Proof (AddCommMonoid x1)) -> (_ : Proof (PartialOrder x1)) -> (f : Elem (Finsupp x x1)) -> (g : Elem (Finsupp x x1)) -> (_ : Proof (CanonicallyOrderedAdd x1)) -> (hfg : Proof (Leq f g)) -> Proof (Leq (Finsupp__support f) (Finsupp__support g)).
+Finsupp__support_mono : (I : Set) -> (X : Set) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof (PartialOrder X)) -> (f : Elem (Finsupp I X)) -> (g : Elem (Finsupp I X)) -> (_ : Proof (CanonicallyOrderedAdd X)) -> (hfg : Proof (Leq f g)) -> Proof (Set__Subset (Finsupp__support f) (Finsupp__support g)).
 
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
-HSMul__hSMul : (x3 : Elem x) -> (x4 : Elem x1) -> Elem x2.
+HSMul__hSMul : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
 
 (; doc: The absolute value of an integer is its distance from `0`.  This function is overridden by the compiler with an efficient implementation. This definition is the logical model.  Examples:  * `(7 : Int).natAbs = 7`  * `(0 : Int).natAbs = 0`  * `(-11 : Int).natAbs = 11` ;)
 (; //LEAN:Int.natAbs ;)
@@ -69,7 +69,7 @@ Int__natAbs : (m : Elem Int) -> Elem Nat.
 
 (; doc: An element `a` of a type `α` with multiplication satisfies `IsSquare a` if `a = r * r`, for some root `r : α`.  [OEIS A000290](https://oeis.org/A000290) ;)
 (; //LEAN:IsSquare ;)
-IsSquare : (a : Elem x) -> Prop.
+IsSquare : (a : Elem X) -> Prop.
 
 (; doc: A `ParserDescr` is a grammar for parsers. This is used by the `syntax` command to produce parsers without having to `import Lean`. ;)
 (; //LEAN:Lean.ParserDescr ;)
@@ -77,19 +77,19 @@ Lean__ParserDescr : Set.
 
 (; doc: Counts the number of times an element occurs in a list.  Examples: * `[1, 1, 2, 3, 5].count 1 = 2` * `[1, 1, 2, 3, 5].count 5 = 1` * `[1, 1, 2, 3, 5].count 4 = 0` ;)
 (; //LEAN:List.count ;)
-List__count : (a : Elem x) -> (x2 : Elem (List x)) -> Elem Nat.
+List__count : (a : Elem X) -> (x1 : Elem (List X)) -> Elem Nat.
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
-Membership__mem : (x2 : Elem x1) -> (x3 : Elem x) -> Prop.
+Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
 
 (; doc: `Multiset α` is the quotient of `List α` by list permutation. The result is a type of finite sets with duplicates allowed. ;)
 (; //LEAN:Multiset ;)
-Multiset : (x : Set) -> Set.
+Multiset : (X : Set) -> Set.
 
 (; doc: The quotient map from `List α` to `Multiset α`. ;)
 (; //LEAN:Multiset.ofList ;)
-Multiset__ofList : (x1 : Elem (List x)) -> Elem (Multiset x).
+Multiset__ofList : (x : Elem (List X)) -> Elem (Multiset X).
 
 (; doc: `m` and `n` are coprime, or relatively prime, if their `gcd` is 1. ;)
 (; //LEAN:Nat.Coprime ;)
@@ -129,15 +129,15 @@ PNat : Set.
 
 (; doc: `f` is injective on `s` if the restriction of `f` to `s` is injective. ;)
 (; //LEAN:Set.InjOn ;)
-Set__InjOn : (f : (Elem x -> x1)) -> (s : Elem (powerset x)) -> Prop.
+Set__InjOn : (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
 (; //LEAN:Set.ofPred ;)
-Set__ofPred : (Mem : (Elem x -> Prop)) -> Elem (powerset x).
+Set__ofPred : (Mem : (Elem X -> Prop)) -> Elem (powerset X).
 
 (; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
 (; //LEAN:Subtype ;)
-Subtype : (p : (Elem x -> Prop)) -> Set.
+Subtype : (p : (Elem X -> Prop)) -> Set.
 
 (; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:True ;)
@@ -145,26 +145,26 @@ True : Prop.
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (x : Set) -> (x1 : Set) -> (x2 : Elem x) -> (x3 : Elem x) -> (f : (Elem x -> x1)) -> (h : Proof (Eqt x x2 x3)) -> Proof (Eqt x1 (f x2) (f x3)).
+congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
 
 (; doc: Congruence in the function part of an application: If `f = g` then `f a = g a`. ;)
 (; //LEAN:congrFun ;)
-congrFun : (x : Set) -> (x1 : (Elem x -> Set)) -> (f : ((x4 : Elem x) -> x1 x4)) -> (g : ((x3 : Elem x) -> x1 x3)) -> (h : Proof (Eqt ((x2 : Elem x) -> x1 x2) f g)) -> (a : Elem x) -> Proof (Eqt (x1 a) (f a) (g a)).
+congrFun : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> x x3)) -> (g : ((x2 : Elem X) -> x x2)) -> (h : Proof (Eqt ((x1 : Elem X) -> x x1) f g)) -> (a : Elem X) -> Proof (Eqt (x a) (f a) (g a)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
-congrFun' : (x : Set) -> (x1 : Set) -> (f : (Elem x -> x1)) -> (g : (Elem x -> x1)) -> (h : Proof (Eqt (Elem x -> x1) f g)) -> (a : Elem x) -> Proof (Eqt x1 (f a) (g a)).
+congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Eqt (Elem X -> Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
 
 (; //LEAN:eq_self ;)
-eq_self : (x : Set) -> (a : Elem x) -> Proof (Eqt Prop (Eqt x a a) True).
+eq_self : (X : Set) -> (a : Elem X) -> Proof (Eqt Prop (Eqt X a a) True).
 
 (; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:ite ;)
-ite : (c : Prop) -> (t : Elem x) -> (e : Elem x) -> Elem x.
+ite : (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
 
 (; doc: A `ℕ`-valued version of `emultiplicity`, returning `0` instead of `⊤`. ;)
 (; //LEAN:multiplicity ;)
-multiplicity : (a : Elem x) -> (b : Elem x) -> Elem Nat.
+multiplicity : (a : Elem X) -> (b : Elem X) -> Elem Nat.
 
 (; //LEAN:of_eq_true ;)
 of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
@@ -175,5 +175,5 @@ padicValNat : (p : Elem Nat) -> (n : Elem Nat) -> Elem Nat.
 
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)
-rfl : (x : Set) -> (a : Elem x) -> Proof (Eqt x a a).
+rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
 

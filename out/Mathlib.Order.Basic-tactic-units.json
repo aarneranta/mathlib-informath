@@ -1,0 +1,882 @@
+[
+ {
+  "name": "not_lt_iff_not_le_or_ge",
+  "lean": "not_lt_iff_not_le_or_ge",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (not (Lt a b)) (or (not (Leq a b)) (Leq b a))",
+    "by": "rw [lt_iff_le_not_ge, Classical.not_and_iff_not_or_not, Classical.not_not]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "not_lt_iff_le_imp_ge",
+  "lean": "not_lt_iff_le_imp_ge",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (not (Lt a b)) (if (Leq a b) (Leq b a))",
+    "by": "simp [not_lt_iff_not_le_or_ge, or_iff_not_imp_left]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt",
+  "lean": "eq_iff_eq_of_lt_iff_lt_of_gt_iff_gt",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eqt α x y) (Eqt α x' y')",
+    "by": "grind",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "min_rec",
+  "lean": "min_rec",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "p (Min__min a b)",
+    "by": "obtain hab | hba := le_total a b <;> simp [min_eq_left, min_eq_right, *]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "min_def_lt",
+  "lean": "min_def_lt",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eqt α (ite (not (Leq b a)) a b) (ite (Lt a b) a b)",
+    "by": "rw [min_comm, min_def, ← ite_not]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt α (ite (not (Leq b a)) a b) (ite (Lt a b) a b)",
+    "by": "simp only [not_le]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "max_def_lt",
+  "lean": "max_def_lt",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eqt α (ite (not (Leq b a)) b a) (ite (Lt a b) b a)",
+    "by": "rw [max_comm, max_def, ← ite_not]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt α (ite (not (Leq b a)) b a) (ite (Lt a b) b a)",
+    "by": "simp only [not_le]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Preorder__toLE_injective",
+  "lean": "Preorder.toLE_injective",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "_h",
+      "Proof (Eqt (LE α) Preorder__toLE Preorder__toLE)"
+     ]
+    ],
+    "goal": "Eqt (Preorder α) (Preorder__mk le_refl' le_trans' A_iff) (Preorder__mk le_refl' le_trans' B_iff)",
+    "by": "rintro ⟨⟩",
+    "depth": 1
+   },
+   {
+    "unit": "verify",
+    "prop": "(Eqt (Elem α -> Elem α -> Prop) A_lt B_lt)",
+    "by": "have : A_lt = B_lt",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "a",
+      "Elem α"
+     ],
+     [
+      "b",
+      "Elem α"
+     ]
+    ],
+    "by": "funext a b",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt Prop (A_lt a b) (B_lt a b)",
+    "by": "funext a b",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt Prop (A_lt a b) (B_lt a b)",
+    "by": "rw [A_iff, B_iff]",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Preorder α) (Preorder__mk le_refl' le_trans' A_iff) (Preorder__mk le_refl' le_trans' B_iff)",
+    "by": "congr",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "PartialOrder__toPreorder_injective",
+  "lean": "PartialOrder.toPreorder_injective",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (PartialOrder α) (PartialOrder__mk le_antisymm') (PartialOrder__mk le_antisymm')",
+    "by": "congr",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "LinearOrder__toPartialOrder_injective",
+  "lean": "LinearOrder.toPartialOrder_injective",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "_h",
+      "Proof (Eqt (PartialOrder α) LinearOrder__toPartialOrder LinearOrder__toPartialOrder)"
+     ]
+    ],
+    "goal": "Eqt (LinearOrder α) (LinearOrder__mk le_total' A_decidableLE A_decidableEq A_decidableLT A_min_def A_max_def A_compare_canonical) (LinearOrder__mk le_total' B_decidableLE B_decidableEq B_decidableLT B_min_def B_max_def B_compare_canonical)",
+    "by": "rintro ⟨⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "and ((forall α (a12 => forall α (b10 => Eqt Ordering (B_compare a12 b10) (compareOfLessAndEq a12 b10))))) (and ((forall α (a14 => forall α (b12 => Eqt α (B_min a14 b12) (ite (A_le a14 b12) a14 b12))))) ((forall α (a15 => forall α (b13 => Eqt α (B_max a15 b13) (ite (A_le a15 b13) b13 a15))))))",
+    "by": "obtain rfl : A_decidableLE = B_decidableLE := Subsingleton.elim _ _",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt (LinearOrder α) (LinearOrder__mk le_total' A_decidableLE A_decidableEq A_decidableLT A_min_def A_max_def A_compare_canonical) (LinearOrder__mk le_total' A_decidableLE B_decidableEq B_decidableLT B_min_def B_max_def B_compare_canonical)",
+    "by": "obtain rfl : A_decidableLE = B_decidableLE := Subsingleton.elim _ _",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "and ((forall α (a13 => forall α (b11 => Eqt α (B_min a13 b11) (ite (A_le a13 b11) a13 b11))))) (and ((forall α (a14 => forall α (b12 => Eqt α (B_max a14 b12) (ite (A_le a14 b12) b12 a14))))) ((forall α (a15 => forall α (b13 => Eqt Ordering (B_compare a15 b13) (compareOfLessAndEq a15 b13))))))",
+    "by": "obtain rfl : A_decidableEq = B_decidableEq := Subsingleton.elim _ _",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt (LinearOrder α) (LinearOrder__mk le_total' A_decidableLE A_decidableEq A_decidableLT A_min_def A_max_def A_compare_canonical) (LinearOrder__mk le_total' A_decidableLE A_decidableEq B_decidableLT B_min_def B_max_def B_compare_canonical)",
+    "by": "obtain rfl : A_decidableEq = B_decidableEq := Subsingleton.elim _ _",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt (LinearOrder α) (LinearOrder__mk le_total' A_decidableLE A_decidableEq A_decidableLT A_min_def A_max_def A_compare_canonical) (LinearOrder__mk le_total' A_decidableLE A_decidableEq A_decidableLT B_min_def B_max_def B_compare_canonical)",
+    "by": "obtain rfl : A_decidableLT = B_decidableLT := Subsingleton.elim _ _",
+    "depth": 1
+   },
+   {
+    "unit": "verify",
+    "prop": "(Eqt (Elem α -> Elem α -> α) A_min B_min)",
+    "by": "have : A_min = B_min",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "a",
+      "Elem α"
+     ],
+     [
+      "b",
+      "Elem α"
+     ]
+    ],
+    "by": "funext a b",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt α (A_min a b) (B_min a b)",
+    "by": "funext a b",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt α (A_min a b) (B_min a b)",
+    "by": "exact (A_min_def _ _).trans (B_min_def _ _).symm",
+    "depth": 2
+   },
+   {
+    "unit": "verify",
+    "prop": "(Eqt (Elem α -> Elem α -> α) A_max B_max)",
+    "by": "have : A_max = B_max",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "a",
+      "Elem α"
+     ],
+     [
+      "b",
+      "Elem α"
+     ]
+    ],
+    "by": "funext a b",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt α (A_max a b) (B_max a b)",
+    "by": "funext a b",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt α (A_max a b) (B_max a b)",
+    "by": "exact (A_max_def _ _).trans (B_max_def _ _).symm",
+    "depth": 2
+   },
+   {
+    "unit": "verify",
+    "prop": "(Eqt (Elem α -> Elem α -> Ordering) A_compare B_compare)",
+    "by": "have : A_compare = B_compare",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "a",
+      "Elem α"
+     ],
+     [
+      "b",
+      "Elem α"
+     ]
+    ],
+    "by": "funext a b",
+    "depth": 3
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt Ordering (A_compare a b) (B_compare a b)",
+    "by": "funext a b",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt Ordering (A_compare a b) (B_compare a b)",
+    "by": "exact (A_compare_canonical _ _).trans (B_compare_canonical _ _).symm",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (LinearOrder α) (LinearOrder__mk le_total' A_decidableLE A_decidableEq A_decidableLT A_min_def A_max_def A_compare_canonical) (LinearOrder__mk le_total' A_decidableLE A_decidableEq A_decidableLT B_min_def B_max_def B_compare_canonical)",
+    "by": "congr",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Preorder__ext",
+  "lean": "Preorder.ext",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem α"
+     ],
+     [
+      "y",
+      "Elem α"
+     ]
+    ],
+    "by": "ext x y",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (Leq x y) (Leq x y)",
+    "by": "ext x y",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Leq x y) (Leq x y)",
+    "by": "exact H x y",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "PartialOrder__ext",
+  "lean": "PartialOrder.ext",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem α"
+     ],
+     [
+      "y",
+      "Elem α"
+     ]
+    ],
+    "by": "ext x y",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (Leq x y) (Leq x y)",
+    "by": "ext x y",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Leq x y) (Leq x y)",
+    "by": "exact H x y",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "PartialOrder__ext_lt",
+  "lean": "PartialOrder.ext_lt",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem α"
+     ],
+     [
+      "y",
+      "Elem α"
+     ]
+    ],
+    "by": "ext x y",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (Leq x y) (Leq x y)",
+    "by": "ext x y",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Leq x y) (Leq x y)",
+    "by": "rw [le_iff_lt_or_eq, @le_iff_lt_or_eq _ A, H]",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "LinearOrder__ext",
+  "lean": "LinearOrder.ext",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem α"
+     ],
+     [
+      "y",
+      "Elem α"
+     ]
+    ],
+    "by": "ext x y",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (Leq x y) (Leq x y)",
+    "by": "ext x y",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Leq x y) (Leq x y)",
+    "by": "exact H x y",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "compl_lt",
+  "lean": "compl_lt",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Elem α -> Elem α -> Prop) (Compl__compl (x2 => x3 => Lt x2 x3)) (x4 => x5 => Geq x4 x5)",
+    "by": "simp [compl]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "compl_le",
+  "lean": "compl_le",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Elem α -> Elem α -> Prop) (Compl__compl (x2 => x3 => Leq x2 x3)) (x4 => x5 => Gt x4 x5)",
+    "by": "simp [compl]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "compl_gt",
+  "lean": "compl_gt",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Elem α -> Elem α -> Prop) (Compl__compl (x2 => x3 => Gt x2 x3)) (x4 => x5 => Leq x4 x5)",
+    "by": "simp [compl]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "compl_ge",
+  "lean": "compl_ge",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Elem α -> Elem α -> Prop) (Compl__compl (x2 => x3 => Geq x2 x3)) (x4 => x5 => Lt x4 x5)",
+    "by": "simp [compl]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Pi__lt_def",
+  "lean": "Pi.lt_def",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Lt x y) (and (Leq x y) (exists ι (i3 => Lt (x i3) (y i3))))",
+    "by": "simp +contextual [lt_iff_le_not_ge, Pi.le_def]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "lt_of_strongLT",
+  "lean": "lt_of_strongLT",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "inhabited_h",
+      "Proof (Inhabited ι)"
+     ]
+    ],
+    "by": "inhabit ι",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt a b",
+    "by": "exact Pi.lt_def.2 ⟨le_of_strongLT h, default, h _⟩",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "update_le_update_iff",
+  "lean": "update_le_update_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Leq (Function__update x i a) (Function__update y i b)) (and (Leq a b) (forall ι (j => if (Neq j i) (Leq (x j) (y j)))))",
+    "by": "simp +contextual [update_le_iff]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "update_le_update_iff'",
+  "lean": "update_le_update_iff'",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Leq (Function__update x i a) (Function__update x i b)) (Leq a b)",
+    "by": "simp [update_le_update_iff]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "le_update_self_iff",
+  "lean": "le_update_self_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Leq x (Function__update x i a)) (Leq (x i) a)",
+    "by": "simp [le_update_iff]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "lt_update_self_iff",
+  "lean": "lt_update_self_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Lt x (Function__update x i a)) (Lt (x i) a)",
+    "by": "simp [lt_iff_le_not_ge]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Function__const_le_const",
+  "lean": "Function.const_le_const",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Leq (Function__const β a) (Function__const β b)) (Leq a b)",
+    "by": "simp [Pi.le_def]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Function__const_lt_const",
+  "lean": "Function.const_lt_const",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Lt (Function__const β a) (Function__const β b)) (Lt a b)",
+    "by": "simpa [Pi.lt_def] using le_of_lt",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "compare_of_injective_eq_compareOfLessAndEq",
+  "lean": "compare_of_injective_eq_compareOfLessAndEq",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Eqt Ordering (Ord__compare (f a) (f b)) (compareOfLessAndEq (f a) (f b)))",
+    "by": "have h := LinearOrder.compare_eq_compareOfLessAndEq (f a) (f b)",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt Ordering (ite (Lt (f a) (f b)) Ordering__lt (ite (Eqt β (f a) (f b)) Ordering__eq Ordering__gt)) (ite (Lt a b) Ordering__lt (ite (Eqt α a b) Ordering__eq Ordering__gt))",
+    "by": "simp only [h, compareOfLessAndEq]",
+    "depth": 0
+   },
+   {
+    "unit": "cases",
+    "by": "split_ifs <;> try (first | rfl | contradiction)",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(not (Eqt β (f a) (f b)))",
+    "by": "have : ¬ f a = f b := by rename_i h; exact inj.ne h",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "not (Eqt β (f a) (f b))",
+    "by": "exact inj.ne h",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "contradiction",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "grind",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Prod__swap_lt_mk",
+  "lean": "Prod.swap_lt_mk",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (Lt (Prod__swap (Prod__swap x)) (Prod__swap (Prod__mk b a))) (Lt x (Prod__mk a b))",
+    "by": "rw [← swap_lt_swap]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Lt (Prod__swap (Prod__swap x)) (Prod__swap (Prod__mk b a))) (Lt x (Prod__mk a b))",
+    "by": "simp",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Prod__lt_iff",
+  "lean": "Prod.lt_iff",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Lt x y)"
+     ]
+    ],
+    "by": "refine ⟨fun h ↦ ?_, ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (or (and (Lt (Prod__fst x) (Prod__fst y)) (Leq (Prod__snd x) (Prod__snd y))) (and (Leq (Prod__fst x) (Prod__fst y)) (Lt (Prod__snd x) (Prod__snd y)))) (if (or (and (Lt (Prod__fst x) (Prod__fst y)) (Leq (Prod__snd x) (Prod__snd y))) (and (Leq (Prod__fst x) (Prod__fst y)) (Lt (Prod__snd x) (Prod__snd y)))) (Lt x y))",
+    "by": "refine ⟨fun h ↦ ?_, ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Lt x y)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "cases",
+    "by": "by_cases h₁ : y.1 ≤ x.1",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h₁",
+      "Proof (Leq (Prod__fst y) (Prod__fst x))"
+     ]
+    ],
+    "by": "",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "or (and (Lt (Prod__fst x) (Prod__fst y)) (Leq (Prod__snd x) (Prod__snd y))) (and (Leq (Prod__fst x) (Prod__fst y)) (Lt (Prod__snd x) (Prod__snd y)))",
+    "by": "exact Or.inr ⟨h.1.1, LE.le.lt_of_not_ge h.1.2 fun h₂ ↦ h.2 ⟨h₁, h₂⟩⟩",
+    "depth": 3
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h₁",
+      "Proof (not (Leq (Prod__fst y) (Prod__fst x)))"
+     ]
+    ],
+    "by": "",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "or (and (Lt (Prod__fst x) (Prod__fst y)) (Leq (Prod__snd x) (Prod__snd y))) (and (Leq (Prod__fst x) (Prod__fst y)) (Lt (Prod__snd x) (Prod__snd y)))",
+    "by": "exact Or.inl ⟨LE.le.lt_of_not_ge h.1.1 h₁, h.1.2⟩",
+    "depth": 3
+   },
+   {
+    "unit": "cases",
+    "by": "rintro (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩)",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h₁",
+      "Proof (Lt (Prod__fst x) (Prod__fst y))"
+     ],
+     [
+      "h₂",
+      "Proof (Leq (Prod__snd x) (Prod__snd y))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt x y",
+    "by": "exact ⟨⟨h₁.le, h₂⟩, fun h ↦ h₁.not_ge h.1⟩",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h₁",
+      "Proof (Leq (Prod__fst x) (Prod__fst y))"
+     ],
+     [
+      "h₂",
+      "Proof (Lt (Prod__snd x) (Prod__snd y))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt x y",
+    "by": "exact ⟨⟨h₁, h₂.le⟩, fun h ↦ h₂.not_ge h.2⟩",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Prod__lt_of_lt_of_le",
+  "lean": "Prod.lt_of_lt_of_le",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Lt x y",
+    "by": "simp [lt_iff, *]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Prod__lt_of_le_of_lt",
+  "lean": "Prod.lt_of_le_of_lt",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Lt x y",
+    "by": "simp [lt_iff, *]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Prod__mk_lt_mk_of_lt_of_le",
+  "lean": "Prod.mk_lt_mk_of_lt_of_le",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Lt (Prod__mk a₁ b₁) (Prod__mk a₂ b₂)",
+    "by": "simp [lt_iff, *]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Prod__mk_lt_mk_of_le_of_lt",
+  "lean": "Prod.mk_lt_mk_of_le_of_lt",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Lt (Prod__mk a₁ b₁) (Prod__mk a₂ b₂)",
+    "by": "simp [lt_iff, *]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "eq_or_eq_or_eq_of_forall_not_lt_lt",
+  "lean": "eq_or_eq_or_eq_of_forall_not_lt_lt",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hne",
+      "Proof (not (or (Eqt α x y) (or (Eqt α y z) (Eqt α x z))))"
+     ]
+    ],
+    "by": "by_contra hne",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "false",
+    "by": "by_contra hne",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(and (Neq x y) (and (Neq y z) (Neq x z)))",
+    "by": "simp only [not_or, ← Ne.eq_def] at hne",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h₁",
+      "Proof (Lt x y)"
+     ],
+     [
+      "h₂",
+      "Proof (Lt y z)"
+     ],
+     [
+      "h₃",
+      "Proof (Lt x z)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exacts [h h₁ h₂, h h₂ h₃, h h₃ h₂, h h₃ h₁, h h₁ h₃, h h₂ h₃, h h₁ h₃, h h₂ h₁]",
+    "depth": 1
+   }
+  ]
+ }
+]

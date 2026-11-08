@@ -6,26 +6,26 @@ Bool__true : Elem Bool.
 
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
-Eq__refl : (x : Set) -> (a : Elem x) -> Proof (Eqt x a a).
+Eq__refl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
 
 (; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.symm ;)
-Eq__symm : (x : Set) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Eqt x a b)) -> Proof (Eqt x b a).
+Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Proof (Eqt X b a).
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (x : Set) -> (a : Elem x) -> (b : Elem x) -> (c : Elem x) -> (h : Proof (Eqt x a b)) -> (h1 : Proof (Eqt x b c)) -> Proof (Eqt x a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: `a % b` computes the remainder upon dividing `a` by `b`. The meaning of this notation is type-dependent. * For `Nat` and `Int` it satisfies `a % b + b * (a / b) = a`,   and `a % 0` is defined to be `a`.  Conventions for notations in identifiers:   * The recommended spelling of `%` in identifiers is `mod`. ;)
 (; //LEAN:HMod.hMod ;)
-HMod__hMod : (x3 : Elem x) -> (x4 : Elem x1) -> Elem x2.
+HMod__hMod : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
 
 (; //LEAN:Iff.trans ;)
 Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
 
 (; doc: **Alias** of `eq_or_lt_of_le`. ;)
 (; //LEAN:LE.le.eq_or_lt ;)
-LE__le__eq_or_lt : (x : Set) -> (_ : Proof (PartialOrder x)) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Leq a b)) -> Proof (or (Eqt x a b) (Lt a b)).
+LE__le__eq_or_lt : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq a b)) -> Proof (or (Eqt X a b) (Lt a b)).
 
 (; doc: `m` and `n` are coprime, or relatively prime, if their `gcd` is 1. ;)
 (; //LEAN:Nat.Coprime ;)
@@ -155,22 +155,22 @@ True : Prop.
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (x : Set) -> (x1 : Set) -> (x2 : (Elem x -> x1)) -> (x3 : (Elem x -> x1)) -> (x4 : Elem x) -> (x5 : Elem x) -> (h : Proof (Eqt (Elem x -> x1) x2 x3)) -> (h1 : Proof (Eqt x x4 x5)) -> Proof (Eqt x1 (x2 x4) (x3 x5)).
+congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (x : Set) -> (x1 : Set) -> (x2 : Elem x) -> (x3 : Elem x) -> (f : (Elem x -> x1)) -> (h : Proof (Eqt x x2 x3)) -> Proof (Eqt x1 (f x2) (f x3)).
+congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
 
 (; doc: **Alias** of `congrArg`. ;)
 (; //LEAN:congr_arg ;)
-congr_arg : (x : Set) -> (x1 : Set) -> (x2 : Elem x) -> (x3 : Elem x) -> (f : (Elem x -> x1)) -> (h : Proof (Eqt x x2 x3)) -> Proof (Eqt x1 (f x2) (f x3)).
+congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
 
 (; //LEAN:eq_false ;)
 eq_false : (p : Prop) -> (h : Proof (not p)) -> Proof (Eqt Prop p false).
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
-id : (a : Elem x) -> Elem x.
+id : (a : Elem X) -> Elem X.
 
 (; //LEAN:iff_not_comm ;)
 iff_not_comm : (a : Prop) -> (b : Prop) -> Proof (iff (iff a (not b)) (iff b (not a))).
@@ -179,7 +179,7 @@ iff_not_comm : (a : Prop) -> (b : Prop) -> Proof (iff (iff a (not b)) (iff b (no
 mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
 
 (; //LEAN:ne_of_gt ;)
-ne_of_gt : (x : Set) -> (_ : Proof (Preorder x)) -> (a : Elem x) -> (b : Elem x) -> (h : Proof (Lt b a)) -> Proof (Neq a b).
+ne_of_gt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt b a)) -> Proof (Neq a b).
 
 (; //LEAN:not_congr ;)
 not_congr : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff (not a) (not b)).
@@ -194,7 +194,7 @@ not_imp_not : (a : Prop) -> (b : Prop) -> Proof (iff (if (not a) (not b)) (if b 
 not_irreducible_pow : (M : Set) -> (_ : Proof (Monoid M)) -> (x1 : Elem M) -> (n : Elem Nat) -> (h : Proof (Neq n 1)) -> Proof (not (Irreducible (pow x1 n))).
 
 (; //LEAN:not_le_of_gt ;)
-not_le_of_gt : (x : Set) -> (_ : Proof (Preorder x)) -> (a : Elem x) -> (b : Elem x) -> (hab : Proof (Lt a b)) -> Proof (not (Leq b a)).
+not_le_of_gt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Lt a b)) -> Proof (not (Leq b a)).
 
 (; //LEAN:of_decide_eq_true ;)
 of_decide_eq_true : (p : Prop) -> (h : Proof (Eqt Bool (Decidable__decide p) Bool__true)) -> Proof p.

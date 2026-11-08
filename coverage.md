@@ -11,9 +11,9 @@ Made by `coverage.py` from `index.json`.
 | Mathlib.Order.Defs.Lattice | 106 | 106 (100%) | 0 | 94 | 29 | 0 | 112 | 0 (0%) |
 | Mathlib.Logic.Function.Basic | 232 | 149 (64%) | 0 | 214 | 137 | 53 | 778 | 0 (0%) |
 | Mathlib.Order.Basic | 255 | 212 (83%) | 0 | 239 | 135 | 33 | 470 | 0 (0%) |
-| Mathlib.Order.Lattice | 142 | 112 (78%) | 0 | 123 | 44 | 17 | 317 | 0 (0%) |
+| Mathlib.Order.Lattice | 142 | 114 (80%) | 0 | 123 | 44 | 17 | 317 | 0 (0%) |
 | Mathlib.Order.Monotone.Basic | 139 | 115 (82%) | 0 | 139 | 97 | 29 | 543 | 0 (0%) |
-| Mathlib.Order.Bounds.Basic | 310 | 275 (88%) | 0 | 300 | 84 | 48 | 439 | 0 (0%) |
+| Mathlib.Order.Bounds.Basic | 310 | 285 (91%) | 0 | 300 | 84 | 48 | 439 | 0 (0%) |
 | Mathlib.Data.Set.Basic | 264 | 244 (92%) | 0 | 261 | 208 | 27 | 565 | 0 (0%) |
 | Mathlib.Data.Set.Image | 300 | 255 (85%) | 0 | 300 | 130 | 149 | 759 | 0 (0%) |
 | Mathlib.Data.Set.Function | 298 | 280 (93%) | 0 | 297 | 179 | 85 | 1462 | 0 (0%) |
@@ -55,7 +55,7 @@ Made by `coverage.py` from `index.json`.
 | Mathlib.Data.Nat.Totient | 46 | 35 (76%) | 9 | 43 | 7 | 36 | 321 | 0 (0%) |
 | Mathlib.Data.Int.GCD | 43 | 32 (74%) | 2 | 37 | 7 | 23 | 133 | 0 (0%) |
 | Mathlib.Data.Int.ModEq | 93 | 91 (97%) | 0 | 91 | 35 | 54 | 195 | 0 (0%) |
-| Mathlib.Data.ZMod.Basic | 198 | 152 (76%) | 0 | 185 | 53 | 126 | 605 | 0 (0%) |
+| Mathlib.Data.ZMod.Basic | 198 | 156 (78%) | 0 | 185 | 53 | 126 | 605 | 0 (0%) |
 | Mathlib.Data.Rat.Defs | 48 | 35 (72%) | 3 | 47 | 27 | 19 | 116 | 0 (0%) |
 | Mathlib.NumberTheory.Divisors | 132 | 83 (62%) | 28 | 125 | 29 | 88 | 376 | 0 (0%) |
 | Mathlib.Data.Finset.Basic | 138 | 98 (71%) | 0 | 132 | 42 | 89 | 363 | 0 (0%) |
@@ -77,16 +77,16 @@ Made by `coverage.py` from `index.json`.
 | Mathlib.Algebra.Polynomial.Div | 98 | 77 (78%) | 5 | 92 | 17 | 72 | 458 | 0 (0%) |
 | Mathlib.Algebra.Polynomial.Roots | 156 | 112 (71%) | 3 | 151 | 31 | 114 | 509 | 0 (0%) |
 | Mathlib.Topology.Basic | 45 | 39 (86%) | 0 | 44 | 24 | 18 | 122 | 0 (0%) |
-| Mathlib.Order.Filter.Basic | 318 | 265 (83%) | 0 | 310 | 177 | 85 | 806 | 1 (0%) |
-| Mathlib.Topology.MetricSpace.Pseudo.Defs | 241 | 152 (63%) | 0 | 220 | 105 | 93 | 586 | 2 (0%) |
-| Mathlib.Topology.Compactness.Compact | 160 | 101 (63%) | 1 | 159 | 52 | 91 | 701 | 5 (0%) |
+| Mathlib.Order.Filter.Basic | 318 | 267 (83%) | 0 | 310 | 177 | 85 | 806 | 1 (0%) |
+| Mathlib.Topology.MetricSpace.Pseudo.Defs | 241 | 153 (63%) | 0 | 220 | 105 | 93 | 586 | 2 (0%) |
+| Mathlib.Topology.Compactness.Compact | 160 | 102 (63%) | 1 | 159 | 52 | 91 | 701 | 5 (0%) |
 | Mathlib.Topology.Connected.Basic | 104 | 93 (89%) | 0 | 96 | 48 | 41 | 606 | 0 (0%) |
 | Mathlib.Analysis.Real.Sqrt | 114 | 106 (92%) | 0 | 108 | 36 | 72 | 245 | 0 (0%) |
 | Mathlib.Analysis.SpecificLimits.Basic | 88 | 43 (48%) | 0 | 87 | 27 | 56 | 453 | 22 (4%) |
 | Mathlib.Analysis.Calculus.Deriv.Basic | 196 | 125 (63%) | 0 | 190 | 149 | 39 | 465 | 36 (7%) |
 | Mathlib.Analysis.Calculus.MeanValue | 59 | 40 (67%) | 0 | 59 | 26 | 33 | 524 | 21 (4%) |
 | Mathlib.Analysis.SpecialFunctions.Exp | 80 | 41 (51%) | 0 | 79 | 36 | 40 | 320 | 0 (0%) |
-| **all** | 9126 | 7034 (77%) | 116 | 8472 | 3245 | 3200 | 22523 | 87 (0%) |
+| **all** | 9126 | 7054 (77%) | 116 | 8472 | 3245 | 3200 | 22523 | 87 (0%) |
 
 ## Constants shown symbolically
 
@@ -94,18 +94,17 @@ The constants without a wording, by the number of readings they occur in.
 
 | constant | readings | modules |
 |---|---|---|
-| `Leq` | 86 | 21 |
-| `Lt` | 68 | 17 |
+| `Leq` | 53 | 16 |
+| `Lt` | 52 | 14 |
 | `Proof` | 48 | 11 |
 | `SummationFilter__unconditional` | 36 | 2 |
-| `Eq` | 31 | 15 |
-| `Neq` | 27 | 12 |
+| `Eq` | 28 | 12 |
 | `Nat__divisors` | 26 | 5 |
+| `Neq` | 25 | 11 |
 | `Filter__HasBasis` | 25 | 3 |
 | `OneHom__mk` | 22 | 7 |
 | `Nat__factorization` | 22 | 6 |
 | `Set__range` | 21 | 6 |
-| `Geq` | 20 | 5 |
 | `Equiv__mk` | 20 | 11 |
 | `True` | 20 | 8 |
 | `MonoidHom__mk` | 18 | 7 |
@@ -224,7 +223,6 @@ The constants without a wording, by the number of readings they occur in.
 | `NoncompactSpace` | 7 | 1 |
 | `Asymptotics__IsBigO` | 7 | 2 |
 | `Filter__IsBoundedUnder` | 7 | 1 |
-| `Gt` | 6 | 4 |
 | `OrderDual__ofDual__app` | 6 | 3 |
 | `WellFoundedLT` | 6 | 2 |
 | `Set__rangeFactorization` | 6 | 1 |
@@ -244,3 +242,5 @@ The constants without a wording, by the number of readings they occur in.
 | `AddSubgroup__Normal` | 6 | 2 |
 | `Submonoid__powers` | 6 | 1 |
 | `AddSubmonoid__multiples` | 6 | 1 |
+| `Units__val` | 6 | 4 |
+| `Fin__mk` | 6 | 2 |

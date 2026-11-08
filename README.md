@@ -193,7 +193,7 @@ mathematics that most of Mathlib imports, in six tiers (`modules.txt`):
 
 All of them are exported with their tactic proofs too. `coverage.md`
 (`python3 coverage.py`) tells, module by module, how much reads well; over
-all modules, 7034 of the 9126 readings are fully worded, and 6445 of the 8472
+all modules, 7054 of the 9126 readings are fully worded, and 6445 of the 8472
 theorems have a proof text (3245 from terms, 3200 from tactics). The
 readings are English only for now (`LANGUAGES` in `build-index.py`).
 

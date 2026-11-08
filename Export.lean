@@ -273,7 +273,8 @@ partial def app (c : Name) (args : Array Expr) (whole : Expr) : M String := do
     if let .lit (.natVal n) := args[1]!.consumeMData then return numeral n
   -- casts between number types are the identity in Informath's Num
   if (c == ``Nat.cast || c == ``Int.cast || c == ``NatCast.natCast || c == ``IntCast.intCast
-      || c == ``Subtype.val || c == `SetLike.coe)
+      || c == ``Subtype.val || c == `SetLike.coe || c == `Fin.val || c == `Subgroup.toSubmonoid
+      || c == `AddSubgroup.toAddSubmonoid || c == `Submonoid.toSubsemigroup)
       && args.size ≥ 1 then
     return ← tr args.back!
   -- an element of a subtype, Subtype.mk x h, is x

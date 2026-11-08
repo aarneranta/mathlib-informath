@@ -54,7 +54,7 @@ HYGIENE = re.compile(r"([A-Za-z_][A-Za-z0-9_']*)\._@\.[A-Za-z0-9_.']*?_hyg\.\d+"
 # X), other Greek letters spelled out, subscript digits as digits: Informath
 # reads ASCII identifiers only
 LATIN = {'α': 'X', 'β': 'Y', 'γ': 'Z', 'δ': 'W', 'ι': 'I', 'κ': 'J', 'σ': 'S', 'τ': 'T', 'ω': 'U'}
-GREEK = {'ε': 'eps', 'φ': 'phi', 'ψ': 'psi', 'π': 'pi', 'μ': 'mu', 'ν': 'nu', 'λ': 'lam', 'ρ': 'rho',
+GREEK = {'ε': 'epsilon', 'φ': 'phi', 'ψ': 'psi', 'π': 'pi', 'μ': 'mu', 'ν': 'nu', 'λ': 'lambda', 'ρ': 'rho',
          'χ': 'chi', 'θ': 'theta', 'η': 'eta', 'ζ': 'zeta', 'ξ': 'xi', 'ϕ': 'phi', 'Ω': 'Omega'}
 SUBSCRIPT = {chr(0x2080 + i): str(i) for i in range(10)}
 

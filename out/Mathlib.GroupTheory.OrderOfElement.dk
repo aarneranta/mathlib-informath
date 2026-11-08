@@ -504,17 +504,17 @@ CharP__orderOf_eq_two_iff : (R : Set) -> (_ : Proof (Ring R)) -> (_ : Proof (NoZ
 
 (; //LEAN:finEquivPowers ;)
 def finEquivPowers : (hx : Proof (IsOfFinOrder x1)) -> Elem (Equiv (Fin (orderOf x1)) (Subtype (x2 => Membership__mem (Submonoid__powers x1) x2))) :=
-  hx => Equiv__ofBijective (n => pow x1 (Fin__val n)) (finEquivPowers___proof_2 hx).
+  hx => Equiv__ofBijective (n => pow x1 n) (finEquivPowers___proof_2 hx).
 
 (; //LEAN:finEquivMultiples ;)
 finEquivMultiples : (hx : Proof (IsOfFinAddOrder x1)) -> Elem (Equiv (Fin (addOrderOf x1)) (Subtype (x2 => Membership__mem (AddSubmonoid__multiples x1) x2))).
 
 (; //LEAN:finEquivPowers_apply ;)
-def finEquivPowers_apply : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (n : Elem (Fin (orderOf x1))) -> Proof (Eqt (Subtype (x2 => Membership__mem (Submonoid__powers x1) x2)) (finEquivPowers__app hx n) (pow x1 (Fin__val n))) :=
+def finEquivPowers_apply : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (n : Elem (Fin (orderOf x1))) -> Proof (Eqt (Subtype (x2 => Membership__mem (Submonoid__powers x1) x2)) (finEquivPowers__app hx n) (pow x1 n)) :=
   G => x => x1 => hx => n => rfl.
 
 (; //LEAN:finEquivMultiples_apply ;)
-finEquivMultiples_apply : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> (n : Elem (Fin (addOrderOf x1))) -> Proof (Eqt (Subtype (x2 => Membership__mem (AddSubmonoid__multiples x1) x2)) (finEquivMultiples__app hx n) (HSMul__hSMul (Fin__val n) x1)).
+finEquivMultiples_apply : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> (n : Elem (Fin (addOrderOf x1))) -> Proof (Eqt (Subtype (x2 => Membership__mem (AddSubmonoid__multiples x1) x2)) (finEquivMultiples__app hx n) (HSMul__hSMul n x1)).
 
 (; //LEAN:finEquivPowers_symm_apply ;)
 finEquivPowers_symm_apply : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (n : Elem Nat) -> Proof (Eqt (Fin (orderOf x1)) (Equiv__symm__app (finEquivPowers hx) (pow x1 n)) (Fin__mk (HMod__hMod n (orderOf x1)) (Nat__mod_lt n (IsOfFinOrder__orderOf_pos hx)))).
@@ -761,10 +761,10 @@ def IsOfFinOrder__mem_zpowers_iff_mem_range_orderOf : (G : Set) -> (_ : Proof (G
   G => x => x1 => y => hx => Iff__trans (Membership__mem (Subgroup__zpowers x1) y) (Membership__mem (Submonoid__powers x1) y) (Membership__mem (Finset__image (x3 => pow x1 x3) (Finset__range (orderOf x1))) y) (Iff__symm (Membership__mem (Submonoid__powers x1) y) (Membership__mem (Subgroup__zpowers x1) y) (IsOfFinOrder__mem_powers_iff_mem_zpowers G x1 y hx)) (IsOfFinOrder__mem_powers_iff_mem_range_orderOf G x1 y hx).
 
 (; //LEAN:Subgroup.closure_toSubmonoid_of_isOfFinOrder ;)
-Subgroup__closure_toSubmonoid_of_isOfFinOrder : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (powerset G)) -> (hs : Proof (forall G (x1 => if (Membership__mem s x1) (IsOfFinOrder x1)))) -> Proof (Eqt (Submonoid G) (Subgroup__toSubmonoid (Subgroup__closure s)) (Submonoid__closure s)).
+Subgroup__closure_toSubmonoid_of_isOfFinOrder : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (powerset G)) -> (hs : Proof (forall G (x1 => if (Membership__mem s x1) (IsOfFinOrder x1)))) -> Proof (Eqt (Submonoid G) (Subgroup__closure s) (Submonoid__closure s)).
 
 (; //LEAN:AddSubgroup.closure_toAddSubmonoid_of_isOfFinAddOrder ;)
-AddSubgroup__closure_toAddSubmonoid_of_isOfFinAddOrder : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (hs : Proof (forall G (x1 => if (Membership__mem s x1) (IsOfFinAddOrder x1)))) -> Proof (Eqt (AddSubmonoid G) (AddSubgroup__toAddSubmonoid (AddSubgroup__closure s)) (AddSubmonoid__closure s)).
+AddSubgroup__closure_toAddSubmonoid_of_isOfFinAddOrder : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (hs : Proof (forall G (x1 => if (Membership__mem s x1) (IsOfFinAddOrder x1)))) -> Proof (Eqt (AddSubmonoid G) (AddSubgroup__closure s) (AddSubmonoid__closure s)).
 
 (; //LEAN:finEquivZPowers ;)
 def finEquivZPowers : (hx : Proof (IsOfFinOrder x1)) -> Elem (Equiv (Fin (orderOf x1)) (Subtype (x2 => Membership__mem (Subgroup__zpowers x1) x2))) :=
@@ -774,11 +774,11 @@ def finEquivZPowers : (hx : Proof (IsOfFinOrder x1)) -> Elem (Equiv (Fin (orderO
 finEquivZMultiples : (hx : Proof (IsOfFinAddOrder x1)) -> Elem (Equiv (Fin (addOrderOf x1)) (Subtype (x2 => Membership__mem (AddSubgroup__zmultiples x1) x2))).
 
 (; //LEAN:finEquivZPowers_apply ;)
-def finEquivZPowers_apply : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (n : Elem (Fin (orderOf x1))) -> Proof (Eqt (Subtype (x2 => Membership__mem (Subgroup__zpowers x1) x2)) (finEquivZPowers__app hx n) (pow x1 (Fin__val n))) :=
+def finEquivZPowers_apply : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (n : Elem (Fin (orderOf x1))) -> Proof (Eqt (Subtype (x2 => Membership__mem (Subgroup__zpowers x1) x2)) (finEquivZPowers__app hx n) (pow x1 n)) :=
   G => x => x1 => hx => n => rfl.
 
 (; //LEAN:finEquivZMultiples_apply ;)
-finEquivZMultiples_apply : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> (n : Elem (Fin (addOrderOf x1))) -> Proof (Eqt (Subtype (x2 => Membership__mem (AddSubgroup__zmultiples x1) x2)) (finEquivZMultiples__app hx n) (HSMul__hSMul (Fin__val n) x1)).
+finEquivZMultiples_apply : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> (n : Elem (Fin (addOrderOf x1))) -> Proof (Eqt (Subtype (x2 => Membership__mem (AddSubgroup__zmultiples x1) x2)) (finEquivZMultiples__app hx n) (HSMul__hSMul n x1)).
 
 (; //LEAN:finEquivZMultiples_symm_apply ;)
 finEquivZMultiples_symm_apply : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> (n : Elem Nat) -> Proof (Eqt (Fin (addOrderOf x1)) (Equiv__symm__app (finEquivZMultiples hx) (HSMul__hSMul n x1)) (Fin__mk (HMod__hMod n (addOrderOf x1)) (Nat__mod_lt n (IsOfFinAddOrder__addOrderOf_pos hx)))).
@@ -787,10 +787,10 @@ finEquivZMultiples_symm_apply : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : E
 finEquivZPowers_symm_apply : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (n : Elem Nat) -> Proof (Eqt (Fin (orderOf x1)) (Equiv__symm__app (finEquivZPowers hx) (pow x1 n)) (Fin__mk (HMod__hMod n (orderOf x1)) (Nat__mod_lt n (IsOfFinOrder__orderOf_pos hx)))).
 
 (; //LEAN:pow_finEquivZPowers_symm_apply ;)
-pow_finEquivZPowers_symm_apply : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (a : Elem (Subtype (x4 => Membership__mem (Subgroup__zpowers x1) x4))) -> Proof (Eqt G (pow x1 (Fin__val (Equiv__symm__app (finEquivZPowers hx) a))) a).
+pow_finEquivZPowers_symm_apply : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (a : Elem (Subtype (x4 => Membership__mem (Subgroup__zpowers x1) x4))) -> Proof (Eqt G (pow x1 (Equiv__symm__app (finEquivZPowers hx) a)) a).
 
 (; //LEAN:nsmul_finEquivZMultiples_symm_apply ;)
-nsmul_finEquivZMultiples_symm_apply : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> (a : Elem (Subtype (x4 => Membership__mem (AddSubgroup__zmultiples x1) x4))) -> Proof (Eqt G (HSMul__hSMul (Fin__val (Equiv__symm__app (finEquivZMultiples hx) a)) x1) a).
+nsmul_finEquivZMultiples_symm_apply : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> (a : Elem (Subtype (x4 => Membership__mem (AddSubgroup__zmultiples x1) x4))) -> Proof (Eqt G (HSMul__hSMul (Equiv__symm__app (finEquivZMultiples hx) a) x1) a).
 
 (; //LEAN:IsOfFinOrder.mul ;)
 def IsOfFinOrder__mul : (G : Set) -> (_ : Proof (CommMonoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (hy : Proof (IsOfFinOrder y)) -> Proof (IsOfFinOrder (times x1 y)) :=
@@ -1015,10 +1015,10 @@ zmultiples_equiv_zmultiples_apply : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1
 zpowersEquivZPowers_apply : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (y : Elem G) -> (_ : Proof (Finite G)) -> (h1 : Proof (Eq (orderOf x1) (orderOf y))) -> (n : Elem Nat) -> Proof (Eqt (Subtype (x2 => Membership__mem (Subgroup__zpowers y) x2)) (zpowersEquivZPowers__app h1 (pow x1 n)) (pow y n)).
 
 (; //LEAN:Subgroup.closure_toSubmonoid_of_finite ;)
-Subgroup__closure_toSubmonoid_of_finite : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Finite G)) -> (s : Elem (powerset G)) -> Proof (Eqt (Submonoid G) (Subgroup__toSubmonoid (Subgroup__closure s)) (Submonoid__closure s)).
+Subgroup__closure_toSubmonoid_of_finite : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Finite G)) -> (s : Elem (powerset G)) -> Proof (Eqt (Submonoid G) (Subgroup__closure s) (Submonoid__closure s)).
 
 (; //LEAN:AddSubgroup.closure_toAddSubmonoid_of_finite ;)
-AddSubgroup__closure_toAddSubmonoid_of_finite : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (Finite G)) -> (s : Elem (powerset G)) -> Proof (Eqt (AddSubmonoid G) (AddSubgroup__toAddSubmonoid (AddSubgroup__closure s)) (AddSubmonoid__closure s)).
+AddSubgroup__closure_toAddSubmonoid_of_finite : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (Finite G)) -> (s : Elem (powerset G)) -> Proof (Eqt (AddSubmonoid G) (AddSubgroup__closure s) (AddSubmonoid__closure s)).
 
 (; //LEAN:Fintype.card_zpowers ;)
 def Fintype__card_zpowers : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Fintype G)) -> (x2 : Elem G) -> Proof (Eq (Fintype__card (Subtype (x3 => Membership__mem (Subgroup__zpowers x2) x3))) (orderOf x2)) :=

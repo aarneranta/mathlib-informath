@@ -121,7 +121,9 @@ partial def tr (e : Expr) : M String := do
       if let .fvar id := f then
         if let some (nm, carrier) := (← get).opers.get? id then
           if args.size == 2 then
-            return s!"appOper {carrier} {nm} {paren (← tr args[0]!)} {paren (← tr args[1]!)}"
+            let app := if nm == "{|≤|}" || nm == "{|<|}" then "appRel"
+              else if nm == "{|•|}" then "appAction" else "appOper"
+            return s!"{app} {carrier} {nm} {paren (← tr args[0]!)} {paren (← tr args[1]!)}"
           if args.size == 1 then
             let app := if nm == "{|-|}" then "appPrefixUOper" else "appUOper"
             return s!"{app} {carrier} {nm} {paren (← tr args[0]!)}"
@@ -542,6 +544,9 @@ def operName (f : Name) : String :=
   match f.toString with
   | "mul" => "{|*|}" | "add" => "{|+|}" | "div" => "{|/|}" | "sub" => "{|-|}"
   | "one" => "{|1|}" | "zero" => "{|0|}" | "inv" => "{|⁻¹|}" | "neg" => "{|-|}"
+  | "le" => "{|≤|}" | "lt" => "{|<|}" | "sup" => "{|⊔|}" | "inf" => "{|⊓|}"
+  | "max" => "{|⊔|}" | "min" => "{|⊓|}" | "top" => "{|⊤|}" | "bot" => "{|⊥|}"
+  | "smul" => "{|•|}" | "vadd" => "{|+ᵥ|}"
   | s => s
 
 /-- The function that applies a unary operation named by its notation:
@@ -581,6 +586,25 @@ partial def fieldType (t : Expr) : M String := do
     else return s!"{← hypoType a} -> {← fieldType b}"
   | _ => hypoType t
 
+/-- A type argument, also as an out-parameter (α of `FunLike F α β`). -/
+def sortLike (t : Expr) : Bool :=
+  t.isSort || (t.isAppOfArity ``outParam 1 && t.appArg!.isSort)
+
+/-- The type with its k-th binder renamed. -/
+def renameBinder (t : Expr) (k : Nat) (n : Name) : MetaM Expr :=
+  match t, k with
+  | .forallE _ a b bi, 0 => pure (.forallE n a b bi)
+  | .forallE m a b bi, k + 1 => do pure (.forallE m a (← renameBinder b k n) bi)
+  | t, _ => pure t
+
+/-- A type made of the carrier only: G, G → G, G → G → G. -/
+partial def carrierOnly (g t : Expr) : MetaM Bool := do
+  match t with
+  | .forallE _ a b _ =>
+    if b.hasLooseBVars then return false
+    return (← isDefEq a g) && (← carrierOnly g b)
+  | _ => isDefEq t g
+
 /-- The structure declaration of a class, the names of the fields left
 out, and the definition of the class as a predicate of its carrier. With
 a parent `P`, the structure takes `P`'s predicate as a clause and only the
@@ -589,23 +613,79 @@ predicate is `P` and the new fields: their data exist and their laws hold
 (option D). Left out are the fields with a default value, and the laws
 that mention them or (without a parent) any other operation of the
 instance that the stated fields do not give. -/
-def structureDecl (c : Name) (parent : Option Name := none) :
+def structureDecl (c : Name) (parent : Option Name := none) (instParent : Bool := false) :
     M (String × Array Name × Option String) := do
   let env ← getEnv
   let ci ← getConstInfo c
   let (stated0, defaulted) := statedFields env c
-  -- the fields that the parent has are its own, not this structure's
+  -- the fields that the parent has are its own, not this structure's (a parent
+  -- that is an instance argument of the carrier, as AddCommMonoid M of Module R M,
+  -- has none of them)
   let inherited := match parent with
-    | some p => getStructureFieldsFlattened env p (includeSubobjectFields := false)
+    | some p => if instParent then #[] else getStructureFieldsFlattened env p (includeSubobjectFields := false)
     | none => #[]
   let stated := stated0.filter (!inherited.contains ·)
-  forallTelescope ci.type fun xs _ => do
-    let some carrierE := xs[0]? | throwError "{c} has no carrier"
-    -- the carrier as Mathlib names it, but for a Greek letter (Mul α)
+  -- the carrier is the last type argument (M in Module R M), but not an
+  -- out-parameter (F of a hom class, not β); the others are parameters
+  let carrierIdx ← forallTelescope ci.type fun xs _ => do
+    let mut k := none
+    let mut kIn := none
+    for i in [0:xs.size] do
+      let t ← inferType xs[i]!
+      if t.isSort then kIn := some i
+      if sortLike t then k := some i
+    pure (kIn.orElse fun _ => k)
+  let some k := carrierIdx | throwError "{c} has no carrier"
+  -- the carrier as Mathlib names it, but for a Greek letter (Mul α) the textbook's
+  -- letter: R for a ring, K for a field, M for a monoid or a module, G otherwise
+  let cs := c.toString
+  let letter : Name := if (cs.splitOn "Field").length > 1 then `K
+    else if (cs.splitOn "Module").length > 1 then `M
+    else if (cs.splitOn "ing").length > 1 then `R
+    else if (cs.splitOn "Monoid").length > 1 then `M else `G
+  -- Mathlib's name kept, if it is not Greek
+  let orig ← forallTelescope ci.type fun xs _ => do
+    pure (← xs[k]!.fvarId!.getUserName).eraseMacroScopes.toString
+  let ascii (s : String) := s.all (fun (ch : Char) => ch.isAlphanum && ch.toNat < 128)
+  let ty ← if ascii orig then pure ci.type else renameBinder ci.type k letter
+  -- the other Greek arguments too (α of MulAction α β): R, S, T, A, B
+  let names ← forallTelescope ty fun xs _ => xs.mapM fun x => do
+    pure ((← x.fvarId!.getUserName).eraseMacroScopes.toString, sortLike (← inferType x))
+  let mut used := names.toList.map (·.1) ++ [letter.toString]
+  let mut ty := ty
+  for i in [0:names.size] do
+    let (nm, isSort) := names[i]!
+    if i == k || ascii nm then continue
+    -- a Greek argument of another kind (φ, κ): r, s, f, ...
+    let letters := if isSort then ["R", "S", "T", "A", "B", "C"] else ["r", "s", "f", "g", "p", "q", "u", "v"]
+    if let some l := letters.find? (!used.contains ·) then
+      used := l :: used
+      ty ← renameBinder ty i l.toName
+  forallTelescope ty fun xs _ => do
+    let carrierE := xs[k]!
     let n0 := (← carrierE.fvarId!.getUserName).eraseMacroScopes.toString
-    let carrier ← freshName (if n0.all (fun (ch : Char) => ch.isAlphanum && ch.toNat < 128) then n0.toName else `G) false
-    withLocalDecl (Name.mkSimple carrier) .default (← inferType carrierE) fun g => do
-      let cls := mkApp (mkConst c (ci.levelParams.map Level.param)) g
+    let carrier ← freshName (if n0.all (fun (ch : Char) => ch.isAlphanum && ch.toNat < 128) then n0.toName else letter) false
+    -- the parameters (R : Set) and their instances (hR : Proof (Semiring R))
+    let mut paramClauses : Array String := #[]
+    let mut params : Array (Expr × String) := #[]
+    let mut argFields : Array Expr := #[]
+    for i in [0:xs.size] do
+      let x := xs[i]!
+      let xt ← inferType x
+      if i == k then continue
+      if sortLike xt then
+        let pn ← freshName (← x.fvarId!.getUserName).eraseMacroScopes false
+        params := params.push (x, pn)
+        paramClauses := paramClauses.push s!"({pn} : Set)"
+      else if (← x.fvarId!.getBinderInfo).isInstImplicit && !xt.containsFVar carrierE.fvarId! then
+        let pn := match params.back? with | some (_, n) => n | none => "x"
+        paramClauses := paramClauses.push s!"(h{pn} : Proof {paren (← tr xt)})"
+      -- an argument of the carrier, as the relation r of IsPreorder α r: a field
+      else if i > k && (← x.fvarId!.getBinderInfo).isExplicit then
+        argFields := argFields.push x
+    let g := carrierE
+    do
+      let cls := mkAppN (mkConst c (ci.levelParams.map Level.param)) xs
       withLocalDecl `inst .instImplicit cls fun inst => do
         -- the defaulted fields as variables too, to see which laws mention them
         let dvs ← defaulted.mapM fun f => (mkProjection inst f : MetaM Expr)
@@ -619,7 +699,7 @@ def structureDecl (c : Name) (parent : Option Name := none) :
         withLocalDeclsDND ((inh.map (·.appendBefore "parent_")).zip itys) fun ixs => do
         -- the fields stated: (name, type) as declared, and whether data
         let rec go (i : Nat) (done : Array (Expr × Expr)) (acc : Array (String × String × Bool))
-            (left : Array Name) : M (Array (String × String × Bool) × Array Name) := do
+            (left : Array Name) (extra : Array FVarId := #[]) : M (Array (String × String × Bool) × Array Name) := do
           if h : i < stated.size then
             let f := stated[i]
             let v ← mkProjection inst f
@@ -630,34 +710,67 @@ def structureDecl (c : Name) (parent : Option Name := none) :
             -- arguments swapped); the parent's operations are written as the
             -- statements write them (a * b as times a b)
             let tyAll ← replaceFields (done ++ dvs.zip dxs ++ ivs.zip ixs) ty0
-            if tyAll.containsFVar inst.fvarId! || marks.any (fun (m : FVarId) => tyAll.containsFVar m) then
-              return ← go (i + 1) done acc (left.push f)
+            if tyAll.containsFVar inst.fvarId! || (marks ++ extra).any (fun (m : FVarId) => tyAll.containsFVar m) then
+              return ← go (i + 1) done acc (left.push f) extra
+            -- data of other types than the carrier (natCast : ℕ → R, qsmul : ℚ → K → K)
+            -- serve the implementation: left out, with the laws that mention them
+            let rel ← isDefEq ty (← mkArrow g (← mkArrow g (mkSort .zero)))
+            -- an action of a parameter on the carrier: r • x
+            let mut actor : Option String := none
+            for (p, pn) in params do
+              if ← isDefEq ty (← mkArrow p (← mkArrow g g)) then actor := some pn
+            let act := actor.isSome
+            if !rel && !act && !(← isProp ty) && !(← carrierOnly g ty) then
+              return ← withLocalDecl f.eraseMacroScopes .default ty fun x =>
+                go (i + 1) (done.push (v, x)) acc (left.push f) (extra.push x.fvarId!)
             let binop ← isDefEq ty (← mkArrow g (← mkArrow g g))
             let unop ← isDefEq ty (← mkArrow g g)
             let prop ← isProp ty
             -- the bound variables of each field are named afresh
             let names := (← get).names
             let symbolic := operName f != f.toString
-            let oper := binop || (unop && symbolic)
-            let nm ← if binop || symbolic then pure (operName f) else freshName f prop
+            let oper := binop || rel || act || (unop && symbolic)
+            let nm ← if binop || rel || act || symbolic then pure (operName f) else freshName f prop
             withLocalDecl (Name.mkSimple nm) .default ty fun x => do
               if oper then
-                modify fun s => { s with opers := s.opers.insert x.fvarId! (nm, carrier) }
-              let t ← if binop then pure s!"Oper {carrier}"
+                let on := match actor with | some pn => s!"{pn} {carrier}" | none => carrier
+                modify fun s => { s with opers := s.opers.insert x.fvarId! (nm, on) }
+              let t ← if act then pure s!"Action {actor.getD ""} {carrier}"
+                      else if rel then pure s!"Rel {carrier}"
+                      else if binop then pure s!"Oper {carrier}"
                       else if unop && symbolic then pure s!"UOper {carrier}"
                       else if prop then pure s!"Proof {paren (← tr ty)}"
                       -- in parentheses: in Dedukti, (f : A -> B) is the type (f : A) -> B
                       else do let t ← fieldType ty; pure (if (t.splitOn " -> ").length > 1 then s!"({t})" else t)
               modify fun s => { s with names := names.insert nm }
-              go (i + 1) (done.push (v, x)) (acc.push (nm, t, !prop)) left
+              go (i + 1) (done.push (v, x)) (acc.push (nm, t, !prop)) left extra
           else return (acc, left)
         let (fs, left) ← go 0 #[] #[] defaulted
+        -- the parent applied to as many of the parameters and the carrier as it
+        -- has type arguments, the last ones: DistribMulAction R M of Module R M
+        let parentArgs ← match parent with
+          | some p => do
+            let pci ← getConstInfo p
+            let n ← forallTelescope pci.type fun ys _ => do
+              let mut n := 0
+              for y in ys do
+                if sortLike (← inferType y) && (← y.fvarId!.getBinderInfo).isExplicit then n := n + 1
+              pure n
+            let names := params.toList.map (·.2) ++ [carrier]
+            pure (names.drop (names.length - max n 1))
+          | none => pure []
         let parentClause := match parent with
-          | some p => [s!"(h : Proof ({mangle p} {carrier}))"]
+          | some p => [s!"(h : Proof ({mangle p} {" ".intercalate parentArgs}))"]
           | none => []
-        let decl := " -> ".intercalate ([s!"({carrier} : Set)"] ++ parentClause ++
-          (fs.toList.map fun (nm, t, _) => s!"({nm} : {t})") ++ ["Structure"])
-        return (s!"{mangle c}__structure : {decl}.", left, predicateDef c parent carrier fs)
+        let args ← argFields.toList.mapM fun x => do
+          let t ← fieldType (← inferType x)
+          pure s!"({← tr x} : {if (t.splitOn " -> ").length > 1 then s!"({t})" else t})"
+        let decl := " -> ".intercalate (paramClauses.toList ++ [s!"({carrier} : Set)"] ++ parentClause ++
+          args ++ (fs.toList.map fun (nm, t, _) => s!"({nm} : {t})") ++ ["Structure"])
+        -- not with arguments of the carrier, which the predicate's binders do not have
+        let pdef := if argFields.isEmpty then
+          predicateDef c parent carrier fs (params.map (·.2)) (paramClauses.filter (·.startsWith "(h")) parentArgs else none
+        return (s!"{mangle c}__structure : {decl}.", left, pdef)
 
 where
   /-- The class as a predicate (option D): `def C : (G : Set) -> Prop := G =>
@@ -665,7 +778,8 @@ where
   textbook names them (e for the identity element, i for the inverse);
   none without a parent or without laws of its own. -/
   predicateDef (c : Name) (parent : Option Name) (carrier : String)
-      (fs : Array (String × String × Bool)) : Option String := do
+      (fs : Array (String × String × Bool)) (params : Array String := #[])
+      (paramHyps : Array String := #[]) (parentArgs : List String := []) : Option String := do
     let p ← parent
     let laws := fs.filter (!·.2.2) |>.map (·.2.1)
     guard (!laws.isEmpty)
@@ -676,7 +790,9 @@ where
       | "{|⁻¹|}" | "{|-|}" => ("i", s!"{uoperApp nm} {carrier} {nm}")
       | _ => (nm, nm)
     let setOf (t : String) : Option String :=
-      if t.startsWith "UOper " then some s!"({carrier} -> {carrier})"
+      if t.startsWith "Action " then some s!"({(t.drop 7).toString.takeWhile (· != ' ')} -> {carrier} -> {carrier})"
+      else if t.startsWith "Rel " then some s!"({carrier} -> {carrier} -> Prop)"
+      else if t.startsWith "UOper " then some s!"({carrier} -> {carrier})"
       else if t.startsWith "Oper " then some s!"({carrier} -> {carrier} -> {carrier})"
       else if t == s!"Elem {carrier}" then some carrier else none
     -- the names of the data are distinctive ({|1|}, {|⁻¹|}): plain replacement
@@ -694,7 +810,11 @@ where
     for (nm, t, _) in data.reverse do
       let some set := setOf t | none
       body := s!"exists {set} ({(rename nm).1} => {body})"
-    return s!"def {mangle c} : ({carrier} : Set) -> Prop :=\n  {carrier} => and ({mangle p} {carrier}) {paren body}."
+    -- the parameters' instances first: R is a semiring
+    let hyps := paramHyps.toList.map fun h => (((h.splitOn "Proof ").getD 1 "").toList.dropLast |> String.ofList)
+    let whole := hyps.foldr (fun h acc => s!"and {paren h} {paren acc}") s!"and ({mangle p} {" ".intercalate (if parentArgs.isEmpty then [carrier] else parentArgs)}) {paren body}"
+    let binders := (params.toList ++ [carrier]).map (s!"({·} : Set) -> ")
+    return s!"def {mangle c} : {String.join binders}Prop :=\n  {String.join ((params.toList ++ [carrier]).map (s!"{·} => "))}{whole}."
 
 /-- The base of the structure declarations, for out/<Name>-deps.dk. -/
 def structureBase : String :=
@@ -702,7 +822,13 @@ def structureBase : String :=
   "appOper : (A : Set) -> (op : Oper A) -> (x : Elem A) -> (y : Elem A) -> Elem A.\n\n" ++
   "UOper : (A : Set) -> Type.\n\n" ++
   "appUOper : (A : Set) -> (op : UOper A) -> (x : Elem A) -> Elem A.\n\n" ++
-  "appPrefixUOper : (A : Set) -> (op : UOper A) -> (x : Elem A) -> Elem A.\n"
+  "appPrefixUOper : (A : Set) -> (op : UOper A) -> (x : Elem A) -> Elem A.\n\n" ++
+  "Rel : (A : Set) -> Type.\n\n" ++
+  "appRel : (A : Set) -> (r : Rel A) -> (x : Elem A) -> (y : Elem A) -> Prop.\n\n" ++
+  "latticeSup : (A : Set) -> Elem A -> Elem A -> Elem A.\n\n" ++
+  "latticeInf : (A : Set) -> Elem A -> Elem A -> Elem A.\n\n" ++
+  "Action : (A : Set) -> (B : Set) -> Type.\n\n" ++
+  "appAction : (A : Set) -> (B : Set) -> (op : Action A B) -> (r : Elem A) -> (x : Elem B) -> Elem B.\n"
 
 /-- The nouns that name the structures, from structures.dkgf: noun -> class. -/
 def readNouns : IO (List (String × Name)) := do
@@ -756,6 +882,30 @@ where
       | some b => if size p > size b then some p else best
       | none => some p) none
 
+/-- A class among the instance arguments of the carrier that names a
+structure (`AddCommMonoid M` in `Module R M`): the parent of a class that
+extends no exported structure. -/
+def instanceParent (env : Environment) (c : Name) (known : List Name) : Option Name := Id.run do
+  let some ci := env.find? c | return none
+  -- the binders: their types and whether instances; the carrier is the last sort
+  let rec binders (t : Expr) (acc : Array (Expr × Bool)) : Array (Expr × Bool) :=
+    match t with
+    | .forallE _ a b bi => binders b (acc.push (a, bi.isInstImplicit))
+    | _ => acc
+  let bs := binders ci.type #[]
+  let mut last := none
+  for i in [0:bs.size] do
+    if bs[i]!.1.isSort then last := some i
+  let some k := last | return none
+  for i in [k+1:bs.size] do
+    let (t, inst) := bs[i]!
+    if !inst then continue
+    -- the carrier is the variable bound i - 1 - k binders up
+    if t.getAppArgs.back? == some (.bvar (i - 1 - k)) then
+      if let some cl := t.getAppFn.constName? then
+        if known.contains cl then return some cl
+  return none
+
 /-- The tokens of a Dedukti text mapped, its spaces and parentheses kept. -/
 def mapTokens (f : String → String) (s : String) : String := Id.run do
   let mut out := ""
@@ -782,10 +932,9 @@ def additiveText (env : Environment) (m c : Name) (fields : Array Name) (s : Str
      ("times", "plus"), ("1", "0")]
   mapTokens (fun t => match (names ++ notationMap).lookup t with | some u => u | none => t) s
 
-def exportStructures (outName : Name) (mod : Name) (classes : List Name)
+def exportStructures (env : Environment) (outName : Name) (classes : List Name)
     (mapping : Std.HashMap Name String) (keepAll binders : Std.HashSet Name)
     (outDir : String := "out") : IO Unit := do
-  let env ← importModules #[{ module := mod }] {} (loadExts := true)
   let ctx : Core.Context := { fileName := "<export>", fileMap := default, maxHeartbeats := 0,
                               options := {} }
   let st : Core.State := { env }
@@ -811,8 +960,11 @@ def exportStructures (outName : Name) (mod : Name) (classes : List Name)
         pure (Except.ok (add decl, left.map fun f => ((tr (m ++ f)).map (·.getString!.toName)).getD f,
                          pdef.map add, parent.bind tr))
       | none => do
-        let parent := primaryParent env c classes nouns doc
-        let r ← (((structureDecl c parent).run {mapping, binders, keepAll}).run' {} {}).toIO ctx st |>.toBaseIO
+        let fromInstance := (primaryParent env c classes nouns doc).isNone
+        let parent := match primaryParent env c classes nouns doc with
+          | some p => some p
+          | none => instanceParent env c (classes ++ nouns.map (·.2))
+        let r ← (((structureDecl c parent (fromInstance && parent.isSome)).run {mapping, binders, keepAll}).run' {} {}).toIO ctx st |>.toBaseIO
         pure (match r with
           | .ok (((decl, left, pdef), _), _) => Except.ok (decl, left, pdef, parent)
           | .error e => Except.error (toString e))
@@ -833,6 +985,10 @@ def exportStructures (outName : Name) (mod : Name) (classes : List Name)
         (lines.dropWhile (fun l => !(l.splitOn "-/").length > 1 )).drop 1 else lines
     let parents := (getStructureParentInfo env c).map (·.structName.toString)
     let common := s!"\"doc\": {jsonStr doc}, \"statement\": \"\", \"line\": {ranges.range.pos.line}, \"nameLine\": {ranges.selectionRange.pos.line}, \"endLine\": {ranges.range.endPos.line}, \"sourceModule\": {jsonStr m.toString}, \"source\": {jsonStr (strip ("\n".intercalate lines))}, \"url\": {jsonStr (url ++ s!"#L{ranges.selectionRange.pos.line}")}, \"extends\": [{", ".intercalate (parents.toList.map jsonStr)}]"
+    -- in structures, the lattice operations: max and min are ⊔ and ⊓
+    let lattice := mapTokens fun t => match t with
+      | "Max__max" => "latticeSup" | "Min__min" => "latticeInf" | _ => t
+    let res := res.map fun (decl, left, pdef, parent) => (lattice decl, left, pdef.map lattice, parent)
     match res with
     | .ok (decl, defaulted, pdef, parent) =>
       made := made.insert c (decl, defaulted, pdef, parent)
@@ -875,8 +1031,140 @@ deprecated declaration), one line with its Lean name, its Dedukti name, its
 kind, its module, its docstring and its type translated as the statements are,
 with the explicit arguments only. -/
 
+/-- The nouns of the classes worded as "#1 is a monoid" in the symbol
+tables, and the nouns of structures.dkgf: noun -> class. -/
+def readClassNouns (classes : List Name) : IO (List (String × Name)) := do
+  let byDk : Std.HashMap String Name := classes.foldl (fun m c => m.insert (mangle c) c) {}
+  let mut out ← readNouns
+  for file in ["mathlib.dkgf", "definitions.dkgf"] do
+    let path : System.FilePath := file
+    if !(← path.pathExists) then continue
+    for l in ← IO.FS.lines path do
+      match l.splitOn " : \"#1 is " with
+      | [c, rest] =>
+        if let some cl := byDk[c]? then
+          let w := (rest.splitOn "\"").head!
+          for art in ["a ", "an "] do
+            if w.startsWith art then out := out ++ [((w.drop art.length).toString, cl)]
+      | _ => pure ()
+  return out
+
+/-- Lean's notation as LaTeX, token by token; none for a token without one. -/
+def latexToken (t : String) : Option String :=
+  match t with
+  | "≤" => "\\leq" | "≥" => "\\geq" | "<" => "<" | ">" => ">" | "≠" => "\\neq"
+  | "∣" => "\\mid" | "⊆" => "\\subseteq" | "⊂" => "\\subset" | "⊇" => "\\supseteq"
+  | "∩" => "\\cap" | "∪" => "\\cup" | "∈" => "\\in" | "∉" => "\\notin" | "\\" => "\\setminus"
+  | "×" => "\\times" | "∘" => "\\circ" | "⊔" => "\\sqcup" | "⊓" => "\\sqcap"
+  | "⊤" => "\\top" | "⊥" => "\\bot" | "•" => "\\cdot" | "∅" => "\\emptyset" | "∆" => "\\Delta"
+  | "⊗" => "\\otimes" | "⊕" => "\\oplus" | "≃" => "\\simeq" | "≅" => "\\cong" | "≈" => "\\approx"
+  | "≡" => "\\equiv" | "⋆" => "\\star" | "∗" => "\\ast" | "∞" => "\\infty"
+  | "‖" => "\\|" | "⌊" => "\\lfloor" | "⌋" => "\\rfloor" | "⌈" => "\\lceil" | "⌉" => "\\rceil"
+  | "⁻¹" => "^{-1}" | "ᶜ" => "^{c}" | "ᵀ" => "^{T}" | "ᵒᵖ" => "^{op}" | "ᵒᵈ" => "^{\\mathrm{od}}"
+  | "⁺" => "^{+}" | "⁻" => "^{-}" | "√" => "\\sqrt" | "!" => "!" | "|" => "|"
+  | "+" => "+" | "-" => "-" | "*" => "\\cdot" | "/" => "/" | "%" => "\\bmod" | "^" => "^"
+  | "=" => "=" | "(" => "(" | ")" => ")" | "[" => "[" | "]" => "]" | "," => ","
+  | "ℕ" => "\\mathbb{N}" | "ℤ" => "\\mathbb{Z}" | "ℚ" => "\\mathbb{Q}" | "ℝ" => "\\mathbb{R}"
+  | "ℂ" => "\\mathbb{C}" | "0" => "0" | "1" => "1" | "2" => "2"
+  | "≃*" => "\\simeq_{*}" | "≃+" => "\\simeq_{+}" | "≃+*" => "\\simeq_{+*}"
+  | "ℚ≥0" => "\\mathbb{Q}_{\\geq 0}" | "ℝ≥0" => "\\mathbb{R}_{\\geq 0}" | "ℝ≥0∞" => "[0, \\infty]"
+  | "#" => "\\#" | "ℕ∞" => "\\mathbb{N}_{\\infty}" | "ℕ+" => "\\mathbb{N}^{+}"
+  | "⁅" => "[" | "⁆" => "]" | "∫" => "\\int" | "⟪" => "\\langle" | "⟫" => "\\rangle"
+  | _ => if t.startsWith "#" && (t.drop 1).all Char.isDigit then some t else none
+
+/-- The notation of a definition, as Lean prints its application to its
+arguments, in LaTeX with #k for the k-th explicit argument; none if Lean
+prints it as an application of the name, or with binders or words. -/
+def notationOf (n : Name) (ci : ConstantInfo) : MetaM (Option String) := do
+  -- the explicit binders named ARG1, ARG2, ... to find them in the output
+  let rec rename (t : Expr) (k : Nat) : Expr :=
+    match t with
+    | .forallE nm a b bi =>
+      if bi.isExplicit then .forallE (.mkSimple s!"ARG{k}") a (rename b (k + 1)) bi
+      else .forallE nm a (rename b k) bi
+    | _ => t
+  -- the scoped notations of its namespaces too (n ! of Nat)
+  let rec prefixes (m : Name) : List Name := match m with
+    | .str p _ => if p.isAnonymous then [] else p :: prefixes p
+    | _ => []
+  for ns in n :: prefixes n do activateScoped ns
+  forallTelescope (rename ci.type 1) fun xs _ => do
+    let e := mkAppN (mkConst n (ci.levelParams.map Level.param)) xs
+    let fmt ← withOptions (fun o => (o.setBool `pp.fieldNotation false).setBool `pp.notation true) (ppExpr e)
+    let out := toString fmt
+    if out.contains '\n' || (out.splitOn ((n.componentsRev.headD .anonymous).toString)).length > 1 then
+      return none
+    -- tokens: the arguments ARGk, words, brackets, and runs of other symbols
+    -- (≃+*, ℝ≥0, ⁻¹), which are tokens of their own
+    let isWord (c : Char) := c.isAlphanum || c == '_'
+    let brackets := "()[]|‖⌊⌋⌈⌉,".toList
+    let mut toks : Array String := #[]
+    let mut cur := ""
+    for ch in out.toList do
+      let kind (c : Char) : Nat := if isWord c then 0 else 1
+      if ch == ' ' || brackets.contains ch then
+        if cur != "" then toks := toks.push cur
+        cur := ""
+        if ch != ' ' then toks := toks.push ch.toString
+      else if cur != "" && kind ch != kind (cur.back) then
+        toks := toks.push cur; cur := ch.toString
+      else cur := cur.push ch
+    if cur != "" then toks := toks.push cur
+    -- the digit of a symbol run (ℝ≥0) is part of it
+    let mut joined : Array String := #[]
+    for t in toks do
+      match joined.back? with
+      | some prev => if t.all Char.isDigit && !(prev.all isWord) && !brackets.contains prev.front
+                       && prev != "+" && prev != "-" && prev != "*" && prev != "/" && prev != "^" && prev != "=" then
+                       joined := joined.pop.push (prev ++ t)
+                     else joined := joined.push t
+      | none => joined := joined.push t
+    let args := joined.map fun t => if t.startsWith "ARG" && (t.drop 3).all Char.isDigit then "#" ++ (t.drop 3).toString else t
+    let mut parts : Array String := #[]
+    for t in args do
+      match latexToken t with
+      | some l => parts := parts.push l
+      | none => return none
+    -- at least one symbol, not the arguments alone or brackets
+    if parts.all (fun p => p.startsWith "#" || ["(", ")", ",", "[", "]"].contains p) then return none
+    -- an exponent in braces: #1 ^ #2 as {#1}^{#2}
+    let mut res := ""
+    let mut i := 0
+    while i < parts.size do
+      let p := parts[i]!
+      if p == "^" && i + 1 < parts.size then
+        res := res ++ "^{" ++ parts[i+1]! ++ "}"; i := i + 2
+      else
+        res := (if res == "" || p.startsWith "^" || p == "!" then res else res ++ " ") ++ p; i := i + 1
+    -- the arguments of a root in braces; [0, ∞] for ℝ≥0∞
+    let res' := (List.range 9).foldl (fun r k => r.replace s!"\\sqrt #{k+1}" s!"\\sqrt\{#{k+1}}") res
+    let fin := res'.replace "\\mathbb{R}_{\\geq 0} \\infty" "[0, \\infty]"
+    -- not brackets as Lean's subscripts (⊗[R], μ[f|m], f^[n]), which LaTeX writes otherwise
+    if (fin.splitOn " [ ").length > 1 || (fin.splitOn "[ ]").length > 1 || (fin.splitOn "^{[}").length > 1
+       || (fin.splitOn "\\lfloor /").length > 1 || (fin.splitOn "\\lceil /").length > 1 then return none
+    return some s!"${fin}$"
+
+/-- A class as a structure, as on the Structures pages: its structure
+declaration and its predicate definition, or the error. -/
+def classStructure (env : Environment) (mapping : Std.HashMap Name String)
+    (keepAll binders : Std.HashSet Name) (ctx : Core.Context) (st : Core.State)
+    (classes : List Name) (nouns : List (String × Name)) (n : Name) (doc : String) :
+    IO (Except String (String × Option String × Option Name)) := do
+  let primary := primaryParent env n classes nouns doc
+  let parent := match primary with
+    | some p => some p
+    | none => instanceParent env n (nouns.map (·.2))
+  let r ← (((structureDecl n parent (primary.isNone && parent.isSome)).run {mapping, binders, keepAll}).run' {} {}).toIO ctx st |>.toBaseIO
+  -- in structures, the lattice operations: max and min are ⊔ and ⊓
+  let lattice := mapTokens fun t => match t with
+    | "Max__max" => "latticeSup" | "Min__min" => "latticeInf" | _ => t
+  return match r with
+    | .ok (((decl, _, pdef), _), _) => .ok (lattice decl, pdef.map lattice, parent)
+    | .error e => .error (toString e)
+
 def definitionLine (env : Environment) (mapping : Std.HashMap Name String)
     (keepAll binders : Std.HashSet Name) (ctx : Core.Context) (st : Core.State)
+    (classes : List Name) (nouns : List (String × Name))
     (mod n : Name) (ci : ConstantInfo) : IO (Option String) := do
   let res ← (((statement ci.type).run {mapping, binders, keepAll}).run' {} {}).toIO ctx st |>.toBaseIO
   let .ok ((s, _), _) := res | return none
@@ -892,7 +1180,18 @@ def definitionLine (env : Environment) (mapping : Std.HashMap Name String)
         let compiled := ["UNSUPPORTED", "match_", "casesOn", "__rec ", "_private", "_proof_"].any
                           fun w => (vs.splitOn w).length > 1
         if !compiled && vs.length ≤ 3000 then defn := vs
-  return some s!"\{\"lean\": {jsonStr n.toString}, \"dk\": {jsonStr (mangle n)}, \"kind\": {jsonStr (kindOf ci)}, \"module\": {jsonStr mod.toString}, \"class\": {isClass env n}, \"structure\": {isStructure env n}, \"field\": {field}, \"doc\": {jsonStr doc}, \"type\": {jsonStr (asPredicate env n s)}, \"definiens\": {jsonStr defn}}"
+  -- a class as a structure by extension of its parent, and as a predicate
+  let mut asStructure := ""
+  if isClass env n && isStructure env n then
+    asStructure := match ← classStructure env mapping keepAll binders ctx st classes nouns n doc with
+      | .ok (decl, pdef, parent) =>
+        s!", \"structureDecl\": {jsonStr decl}, \"predicateDef\": {jsonStr (pdef.getD "")}, \"parent\": {jsonStr ((parent.map toString).getD "")}"
+      | .error e => s!", \"structureError\": {jsonStr e}"
+  -- Lean's notation for it, in LaTeX
+  let notat := match ← ((notationOf n ci).run' {} {}).toIO ctx st |>.toBaseIO with
+    | .ok (some l, _) => s!", \"notation\": {jsonStr l}"
+    | _ => ""
+  return some s!"\{\"lean\": {jsonStr n.toString}, \"dk\": {jsonStr (mangle n)}, \"kind\": {jsonStr (kindOf ci)}, \"module\": {jsonStr mod.toString}, \"class\": {isClass env n}, \"structure\": {isStructure env n}, \"field\": {field}, \"doc\": {jsonStr doc}, \"type\": {jsonStr (asPredicate env n s)}, \"definiens\": {jsonStr defn}{asStructure}{notat}}"
 
 def exportDefinitions (prefixes : List String) (mapping : Std.HashMap Name String)
     (keepAll binders : Std.HashSet Name) : IO Unit := do
@@ -902,6 +1201,9 @@ def exportDefinitions (prefixes : List String) (mapping : Std.HashMap Name Strin
   let st : Core.State := { env }
   let inScope (m : String) := m.startsWith "Mathlib." &&
     (prefixes.isEmpty || prefixes.any fun p => m == p || m.startsWith (p ++ "."))
+  -- the classes, for the parents of the classes read as structures
+  let classes := env.constants.fold (fun acc n _ => if isClass env n && isStructure env n then n :: acc else acc) []
+  let nouns ← readClassNouns classes
   let mut out := #[]
   let mut failed := 0
   for (mod, data) in env.header.moduleNames.zip env.header.moduleData do
@@ -914,7 +1216,7 @@ def exportDefinitions (prefixes : List String) (mapping : Std.HashMap Name Strin
       if let some sname := env.getProjectionStructureName? n then
         if let .str _ f := n then
           if (isSubobjectField? env sname (.mkSimple f)).isSome then continue
-      match ← definitionLine env mapping keepAll binders ctx st mod n ci with
+      match ← definitionLine env mapping keepAll binders ctx st classes nouns mod n ci with
       | some l => out := out.push l
       | none => failed := failed + 1
   IO.FS.createDirAll "out"
@@ -1058,8 +1360,11 @@ unsafe def main (args : List String) : IO UInt32 := do
   if args.head? == some "--structures" then
     let (mapping, keepAll) ← readMapping
     let binders ← readBinders
-    for (n, m, cs) in ← readStructures do
-      exportStructures n m cs mapping keepAll binders
+    -- the modules of all the pages at once: Lean imports only once in a process
+    let pages ← readStructures
+    let env ← importModules (pages.map fun (_, m, _) => { module := m }).toArray {} (loadExts := true)
+    for (n, _, cs) in pages do
+      exportStructures env n cs mapping keepAll binders
     return 0
   if args.head? == some "--tactics" then
     let (mapping, keepAll) ← readMapping

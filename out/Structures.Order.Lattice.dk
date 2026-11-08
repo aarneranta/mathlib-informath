@@ -1,0 +1,47 @@
+(; Structures.Order.Lattice: Mathlib's classes as Informath's structures, by MathlibInformath/Export.lean ;)
+
+(; //LEAN:Preorder ;)
+Preorder__structure : (G : Set) -> ({|≤|} : Rel G) -> (le_refl : Proof (forall G (a => appRel G {|≤|} a a))) -> (le_trans : Proof (forall G (a => forall G (b => forall G (c => if (appRel G {|≤|} a b) (if (appRel G {|≤|} b c) (appRel G {|≤|} a c))))))) -> Structure.
+
+(; //LEAN:PartialOrder ;)
+PartialOrder__structure : (G : Set) -> (h : Proof (Preorder G)) -> (le_antisymm : Proof (forall G (a => forall G (b => if (Leq a b) (if (Leq b a) (Eqt G a b)))))) -> Structure.
+
+(; //LEAN:PartialOrder (predicate) ;)
+def PartialOrder : (G : Set) -> Prop :=
+  G => and (Preorder G) (forall G (a => forall G (b => if (Leq a b) (if (Leq b a) (Eqt G a b))))).
+
+(; //LEAN:LinearOrder ;)
+LinearOrder__structure : (G : Set) -> (h : Proof (PartialOrder G)) -> (le_total : Proof (forall G (a => forall G (b => or (Leq a b) (Leq b a))))) -> Structure.
+
+(; //LEAN:LinearOrder (predicate) ;)
+def LinearOrder : (G : Set) -> Prop :=
+  G => and (PartialOrder G) (forall G (a => forall G (b => or (Leq a b) (Leq b a)))).
+
+(; //LEAN:SemilatticeSup ;)
+SemilatticeSup__structure : (G : Set) -> (h : Proof (PartialOrder G)) -> ({|⊔|} : Oper G) -> (le_sup_left : Proof (forall G (a => forall G (b => Leq a (appOper G {|⊔|} a b))))) -> (le_sup_right : Proof (forall G (a => forall G (b => Leq b (appOper G {|⊔|} a b))))) -> (sup_le : Proof (forall G (a => forall G (b => forall G (c => if (Leq a c) (if (Leq b c) (Leq (appOper G {|⊔|} a b) c))))))) -> Structure.
+
+(; //LEAN:SemilatticeSup (predicate) ;)
+def SemilatticeSup : (G : Set) -> Prop :=
+  G => and (PartialOrder G) (exists (G -> G -> G) ({|⊔|} => and (forall G (a => forall G (b => Leq a (appOper G {|⊔|} a b)))) (and (forall G (a => forall G (b => Leq b (appOper G {|⊔|} a b)))) (forall G (a => forall G (b => forall G (c => if (Leq a c) (if (Leq b c) (Leq (appOper G {|⊔|} a b) c))))))))).
+
+(; //LEAN:SemilatticeInf ;)
+SemilatticeInf__structure : (G : Set) -> (h : Proof (PartialOrder G)) -> ({|⊓|} : Oper G) -> (inf_le_left : Proof (forall G (a => forall G (b => Leq (appOper G {|⊓|} a b) a)))) -> (inf_le_right : Proof (forall G (a => forall G (b => Leq (appOper G {|⊓|} a b) b)))) -> (le_inf : Proof (forall G (a => forall G (b => forall G (c => if (Leq a b) (if (Leq a c) (Leq a (appOper G {|⊓|} b c)))))))) -> Structure.
+
+(; //LEAN:SemilatticeInf (predicate) ;)
+def SemilatticeInf : (G : Set) -> Prop :=
+  G => and (PartialOrder G) (exists (G -> G -> G) ({|⊓|} => and (forall G (a => forall G (b => Leq (appOper G {|⊓|} a b) a))) (and (forall G (a => forall G (b => Leq (appOper G {|⊓|} a b) b))) (forall G (a => forall G (b => forall G (c => if (Leq a b) (if (Leq a c) (Leq a (appOper G {|⊓|} b c)))))))))).
+
+(; //LEAN:Lattice ;)
+Lattice__structure : (G : Set) -> (h : Proof (SemilatticeSup G)) -> ({|⊓|} : Oper G) -> (inf_le_left : Proof (forall G (a => forall G (b => Leq (appOper G {|⊓|} a b) a)))) -> (inf_le_right : Proof (forall G (a => forall G (b => Leq (appOper G {|⊓|} a b) b)))) -> (le_inf : Proof (forall G (a => forall G (b => forall G (c => if (Leq a b) (if (Leq a c) (Leq a (appOper G {|⊓|} b c)))))))) -> Structure.
+
+(; //LEAN:Lattice (predicate) ;)
+def Lattice : (G : Set) -> Prop :=
+  G => and (SemilatticeSup G) (exists (G -> G -> G) ({|⊓|} => and (forall G (a => forall G (b => Leq (appOper G {|⊓|} a b) a))) (and (forall G (a => forall G (b => Leq (appOper G {|⊓|} a b) b))) (forall G (a => forall G (b => forall G (c => if (Leq a b) (if (Leq a c) (Leq a (appOper G {|⊓|} b c)))))))))).
+
+(; //LEAN:DistribLattice ;)
+DistribLattice__structure : (G : Set) -> (h : Proof (Lattice G)) -> (le_sup_inf : Proof (forall G (x => forall G (y => forall G (z => Leq (latticeInf (latticeSup x y) (latticeSup x z)) (latticeSup x (latticeInf y z))))))) -> Structure.
+
+(; //LEAN:DistribLattice (predicate) ;)
+def DistribLattice : (G : Set) -> Prop :=
+  G => and (Lattice G) (forall G (x => forall G (y => forall G (z => Leq (latticeInf (latticeSup x y) (latticeSup x z)) (latticeSup x (latticeInf y z)))))).
+

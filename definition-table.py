@@ -792,9 +792,17 @@ def main():
 
     with open('definitions.dkgf', 'w') as f:
         f.write('# verbal entries for Mathlib definitions, made by definition-table.py from their\n'
-                '# docstrings and names (do not edit: improve mathlib.dkgf, which overrides it)\n\n')
+                '# docstrings and names, and their notation in Mathlib as symbolic variants\n'
+                '# (do not edit: improve mathlib.dkgf, which overrides it)\n\n')
+        # with Lean's notation as the symbolic variant, as Export.lean prints it
+        # in LaTeX; a definition with a notation but no wording has the notation alone
+        worded = set()
         for d, c, src in table:
-            f.write('%s : "%s"\n' % (d['dk'], c))
+            worded.add(d['dk'])
+            f.write('%s : "%s"%s\n' % (d['dk'], c, ' | ' + d['notation'] if d.get('notation') else ''))
+        for d, cat, nargs, cs in rows:
+            if d.get('notation') and d['dk'] not in worded:
+                f.write('%s : %s\n' % (d['dk'], d['notation']))
     with open('out/definition-table.tsv', 'w') as f:
         f.write('constant\tmodule\tcategory\targuments\tentry\tsource\tother parsing\tnot parsing (unknown words)\n')
         for d, cat, nargs, good, bad in tsv:

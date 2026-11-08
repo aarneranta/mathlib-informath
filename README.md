@@ -61,6 +61,24 @@ be reviewed (its header explains the notation; an empty cell means no word).
 Where a language lacks a word, `build-index.py` keeps the reading made without
 the generated table, which shows the constant symbolically.
 
+Mathlib's own notation is added as a symbolic variant: `lake exe export
+--definitions` prints each definition applied to its arguments with Lean's
+delaborator (the scoped notations of its namespaces opened, as `n !` of `Nat`),
+and where that is notation rather than the name (`n !`, `⌊x⌋`, `s ∆ t`,
+`M ≃* N`, `ℝ≥0`), it is written in LaTeX token by token, into the entry as `|
+$#1!$`, or as the entry alone where there is no wording. Notation that is not
+easily written in LaTeX (binders as `∑ x ∈ s, f x`, Lean's bracket subscripts
+as `⊗[R]` and `f^[n]`) is left out; 42 definitions have one.
+
+A class is shown as on the Structures pages (below): the export writes each
+class's structure, by extension of its parent (the one its docstring names,
+else its ancestor with the most fields), and its predicate. A class worded as a
+noun ("#1 is a monoid") is read as the structure, "A monoid is a semigroup $M$
+with an element $1$ of $M$ such that ...", with its predicate under it, "Let
+$M$ be a set. Then $M$ is a monoid, if ...". Any other class is read as its
+predicate ("$G$ is unique, if ..."). A class whose fields are all technical
+(`TopologicalSpace`, its `IsOpen`) keeps its plain declaration.
+
 `definitions.html` searches all 38,690 definitions by name and wording and
 links to their entries on static pages, `definitions/<Part>-<k>.html` (111
 pages of at most 400 definitions), where each has its wording and its reading
@@ -153,10 +171,12 @@ is the argument of a macro, as in `{k ∈ s | k ≠ 0}`.
 
 ## Algebraic structures
 
-The page `Structures.Algebra` shows Mathlib's classes from magmas to
-commutative groups (`structures.txt`: `Mul`, `CommMagma`, `Semigroup`, ...,
-`Group`, `CommGroup`, `AddCommGroup`) as informal mathematics defines them, by
-extension of a parent (doc/structures, options B, C and D):
+The `Structures` pages show Mathlib's classes (`structures.txt`) as informal
+mathematics defines them, by extension of a parent (doc/structures, options
+B, C and D): `Structures.Algebra.Group` from magmas to commutative groups,
+`Structures.Algebra.Ring` from additive commutative monoids to fields,
+`Structures.Order.Lattice` from preorders to distributive lattices, and
+`Structures.Algebra.Module`:
 
 > A monoid is a semigroup $M$ with an element $1$ of $M$ such that for all
 > elements $a$ of $M$, $1 \times a = a$ and $a \times 1 = a$.
@@ -197,6 +217,17 @@ Left out are the fields with a default value (`npow`, `div`, `zpow`) and the
 laws that mention them (`npow_zero : x ^ 0 = 1`); the page lists them for each
 structure, with its parents and the parent chosen.
 
+A relation field (`≤`, `<`) is a `Rel G` applied with `appRel` ($a \leq b$),
+an action (`•` of a module) an `Action R M` applied with `appAction`, and the
+lattice operations `⊔` and `⊓` are written as such. A data field not built of
+the carrier (`toNNRat` of a division ring, `nnqsmul`) is technical: it is left
+out with its laws. A type parameter other than the carrier (`R` of a module)
+becomes a clause before it, with its instance as a hypothesis, which Informath
+reads as an assumption:
+
+> Let $R$ be a semiring. Then a module over $R$ is an additive commutative
+> monoid $M$ with an action $•$ of $R$ on $M$ such that ...
+
 An additive class whose multiplicative version is exported before it
 (`AddCommGroup` after `CommGroup`) is derived from it by `to_additive`'s
 translations: its name, its parent's and its fields' (`mul_comm` is
@@ -207,9 +238,10 @@ translations: its name, its parent's and its fields' (`mul_comm` is
 Requirements: a Mathlib checkout beside this one (`../mathlib4`, with
 `lake exe cache get` run there), the Lean toolchain of `lean-toolchain`, and
 Informath built (`stack build` or `stack install`) with `INFORMATH_ROOT`
-pointing to it, and its grammar of English, French, Czech and German built in Informath:
+pointing to it, and its grammar of English, French, Czech, German and Swedish built in Informath
+(`share/InformathFull.pgf`):
 
-    cd grammars ; gf --make --probs=Informath.probs InformathEng.gf InformathFre.gf next/InformathCze.gf InformathGer.gf InformathLatex.gf ; mv Informath.pgf ../share/InformathFull.pgf
+    make full_grammar
 
 The French and Czech readings come from the same symbol table: Informath parses
 its English wordings into GF trees and linearizes them in each language, so a

@@ -55,15 +55,61 @@ def wordings(path):
 
 
 def declaration(d):
-    """The Dedukti declaration of a definition, with its definiens if it has one."""
+    """The Dedukti declaration of a definition, with its definiens if it has one;
+    a class read as a structure or a predicate, its block as class_decls makes it."""
+    if d.get('block'):
+        return d['block']
     if d.get('definiens'):
         return '(; //LEAN:%s ;)\ndef %s : %s :=\n  %s.\n' % (d['lean'], d['dk'], d['type'], d['definiens'])
     return '(; //LEAN:%s ;)\n%s : %s.\n' % (d['lean'], d['dk'], d['type'])
 
 
+# ---------------------------------------------------------------- classes
+
+# "#1 is a monoid": the noun of a class, which its structure needs
+CLASS_NOUN = re.compile(r'^#1 is an? (.+)$')
+
+
+def class_nouns(defs, tables):
+    """C__structure -> noun, for the classes worded "#1 is a(n) X" that the
+    tables do not name as structures already (structures.dkgf)."""
+    out = {}
+    for d in defs:
+        m = CLASS_NOUN.match(tables.get(d['dk'], ''))
+        if d.get('structureDecl') and m and d['dk'] + '__structure' not in tables:
+            out[d['dk'] + '__structure'] = m.group(1)
+    return out
+
+
+def class_decls(d, tables):
+    """A class as the Structures pages show it (doc/structures, B+C and D): its
+    structure by extension of its parent, if the class is a noun ("a monoid is
+    a semigroup M with ..."), else its predicate definition; and the predicate
+    apart, as "C (predicate)", if the structure is shown. Other definitions as
+    they are."""
+    # not a structure whose fields are all left out as technical (TopologicalSpace)
+    if not d.get('structureDecl') or not re.search(r'\((?!h\b)[^ ]+ : (?!Set\))', d['structureDecl']):
+        return [d]
+    noun = d['dk'] + '__structure' in tables
+    pdef = d.get('predicateDef')
+    out = []
+    if noun:
+        out.append(dict(d, dk=d['dk'] + '__structure',
+                        block='(; //LEAN:%s ;)\n%s\n' % (d['lean'], d['structureDecl'])))
+        if pdef:
+            out.append(dict(d, lean=d['lean'] + ' (predicate)',
+                            block='(; //LEAN:%s (predicate) ;)\n%s\n' % (d['lean'], pdef)))
+    elif pdef:
+        out.append(dict(d, block='(; //LEAN:%s ;)\n%s\n' % (d['lean'], pdef)))
+    else:
+        out.append(d)
+    return out
+
+
 # ---------------------------------------------------------------- the readings
 
 BI = None
+CLASS_NOUNS = {}      # C__structure -> noun, set by main before the readings
 
 
 def informath():
@@ -74,7 +120,8 @@ def informath():
         BI = load('build_index', 'build-index.py')
         BI.RUN = BI.informath()
         BI.TMP = os.path.join(HERE, '.defs-%d-' % os.getpid())
-        BI.TABLE = BI.write('table.dkgf', ''.join(open(os.path.join(HERE, t)).read() + '\n' for t in BI.TABLES))
+        BI.TABLE = BI.write('table.dkgf', ''.join(open(os.path.join(HERE, t)).read() + '\n' for t in BI.TABLES) +
+                            ''.join('%s : "%s"\n' % kv for kv in CLASS_NOUNS.items()))
         BI.VERBAL = BI.verbal_table()
         BI.LOAD = BI.load_time('Eng')
     return BI
@@ -104,7 +151,8 @@ def read_chunk(job):
     """Lean name -> mode -> reading of a chunk of definitions, in the modes of
     the job (English, a formula, French), None for one over the time limit;
     -force-symbolic for one without a reading otherwise."""
-    decls, modes = job
+    decls, modes, nouns = job
+    CLASS_NOUNS.update(nouns)
     bi = informath()
     blocks = {d['lean']: (d['dk'], declaration(d)) for d in decls}
     out = {n: {} for n in blocks}
@@ -145,7 +193,8 @@ def all_readings(decls, workers, reread, retry=False):
                 del cache[d['lean']][m]
     todo = [d for d in decls if any(m not in cache.get(d['lean'], {}) for m in MODES)]
     chunks = [todo[i:i + CHUNK] for i in range(0, len(todo), CHUNK)]
-    jobs = [(c, [m for m in MODES if any(m not in cache.get(d['lean'], {}) for d in c)]) for c in chunks]
+    jobs = [(c, [m for m in MODES if any(m not in cache.get(d['lean'], {}) for d in c)], CLASS_NOUNS)
+            for c in chunks]
     if chunks:
         print('%d definitions to read, in %d chunks, %d workers' % (len(todo), len(chunks), workers), flush=True)
     with concurrent.futures.ProcessPoolExecutor(workers) as pool:
@@ -192,13 +241,13 @@ def page_file(part, k):
     return '%s/%s-%d.html' % (PAGES, part, k)
 
 
-def entry(bh, r, modules, readings):
+def entry(bh, r, modules, readings, predicate=None):
     name, kind, cat, mi, w, src = r[:6]
     m = modules[mi]
     wording = (html.escape(w).replace('\x01', '<i>').replace('\x02', '</i>') +
                ' <span class=forced>(%s)</span>' % SOURCES.get(src, src)
                if w else '<span class=missing>no wording</span>')
-    def text(mode, what):
+    def text(mode, what, readings=readings):
         t = readings.get(mode, '')
         # a word that the language lacks is shown in English, marked
         word = lambda m: '<span class=noword title="no %s word">%s</span>' % (
@@ -206,16 +255,21 @@ def entry(bh, r, modules, readings):
         return ('<div class=text>%s</div>' % NO_WORD.sub(word, bh.reading_html(t)) if t else
                 '<div class="text missing">%s</div>' % ('generation took over the time limit'
                                                         if t is None else 'no ' + what))
+    # a class shown as a structure: its predicate too
+    pred = ''.join('<div class="row%s"><div class=lab>%s</div>%s</div>' % (cls, lab, text(mode, what, predicate))
+                   for mode, lab, what, cls in (('Eng', 'Predicate', 'reading', ''),
+                                                ('formula', 'Formula', 'formula', ''),
+                                                ('Fre', 'Prédicat', 'reading', ' lang-Fre'))) if predicate else ''
     return ('<div class=entry id="%s"><a class=name href="%s">%s</a><span class="k %s">%s</span>'
             '<span class=src>%s, %s</span>'
             '<button type=button class=langlink data-lang="Fre" title="show or hide French here">French</button>'
             '<div class=row><div class=lab>Wording</div><div class=text>%s</div></div>'
             '<div class=row><div class=lab>English</div>%s</div>'
             '<div class=row><div class=lab>Formula</div>%s</div>'
-            '<div class="row lang-Fre"><div class=lab>French</div>%s</div></div>'
+            '<div class="row lang-Fre"><div class=lab>French</div>%s</div>%s</div>'
             % (html.escape(name), DOCS % (m.replace('.', '/'), name), html.escape(name), kind, kind,
                html.escape(m), CATEGORIES[cat], wording, text('Eng', 'reading'), text('formula', 'formula'),
-               text('Fre', 'reading')))
+               text('Fre', 'reading'), pred))
 
 
 def write_pages(pages, modules, readings, macros):
@@ -229,7 +283,8 @@ def write_pages(pages, modules, readings, macros):
         body = []
         for m, group in _by_module(rs, modules):
             body.append('<h2 id="%s">%s</h2>' % (html.escape(m), html.escape(m)))
-            body += [entry(bh, r, modules, readings.get(r[0], {})) for r in group]
+            body += [entry(bh, r, modules, readings.get(r[0], {}), readings.get(r[0] + ' (predicate)'))
+                     for r in group]
         prev = '<a href="%s">&lsaquo; previous</a>' % os.path.basename(page_file(*pages[i - 1][:2])) if i else ''
         nxt = ('<a href="%s">next &rsaquo;</a>' % os.path.basename(page_file(*pages[i + 1][:2]))
                if i + 1 < len(pages) else '')
@@ -261,6 +316,10 @@ def main():
         cols = l.rstrip('\n').split('\t')
         if len(cols) > 5 and cols[4]:
             source[cols[0]] = cols[5]
+    # the classes as structures: their nouns in the table (structures.dkgf has some)
+    tables = {**made, **hand, **wordings(os.path.join(HERE, 'structures.dkgf'))}
+    CLASS_NOUNS.update(class_nouns(defs, tables))
+    tables.update(CLASS_NOUNS)
     modules, mod_index, rows, decls = [], {}, [], []
     counts = collections.Counter()
     for d in defs:
@@ -284,7 +343,7 @@ def main():
             modules.append(m)
         kind = 'class' if d['class'] else 'structure' if d['structure'] else d['kind']
         rows.append([d['lean'], kind, cat, mod_index[m], w, src])
-        decls.append(d)
+        decls += class_decls(d, tables)
         counts[cat] += 1
         counts[cat + ' worded'] += bool(w)
         if limit and len(rows) >= limit:      # for testing

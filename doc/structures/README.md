@@ -143,7 +143,30 @@ extension (C) and as a defined predicate (D), from one export.
 - Additive classes: `AddCommGroup` is derived from `CommGroup` by
   `to_additive`'s translation of names (class, parent, fields) and notation.
 
+- More of the hierarchy: rings and fields (`Structures.Algebra.Ring`),
+  orders and lattices (`Structures.Order.Lattice`), modules
+  (`Structures.Algebra.Module`). Export.lean: relation fields as `Rel G`
+  (`appRel`), actions as `Action R M` (`appAction`), `⊔`/`⊓`, technical data
+  (fields not built of the carrier) left out with their laws, the parent of an
+  instance argument (`[Semiring R]`) as a hypothesis clause, Greek carrier
+  names (`α`) renamed to a textbook letter. Informath: `ExtensionHyposJmt`
+  for the clauses before the carrier ("Let $R$ be a semiring. Then a module
+  over $R$ is ...").
+
+- The definition pages: every class that `structureDecl` can export (1889
+  of 2009) is shown as a structure by extension of its parent, if worded as
+  a noun, with its predicate under it; else as its predicate. Greek type
+  arguments get textbook letters, out-parameters (`α β` of a hom class) are
+  parameters, and the parent is applied to its type arguments
+  (`DistribMulAction R M`).
+
 ## Still open
+
+- A parent that is an adjective ("cancellative", `IsCancelMulZero` of
+  `IsDomain`) gives the list of clauses, not "a cancellative ... such that".
+- A class whose parent has two type arguments (`Module` in general, by
+  `DistribMulAction R M`) is shown as a list of clauses; the Structures page
+  takes `AddCommMonoid M` as its parent instead.
 
 - "an unary operation": the RGL's English article (`artIndef` in
   gf-rgl/src/english/ResEng.gf) takes "an" for words beginning with "un",

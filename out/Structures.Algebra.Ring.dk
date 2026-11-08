@@ -1,0 +1,54 @@
+(; Structures.Algebra.Ring: Mathlib's classes as Informath's structures, by MathlibInformath/Export.lean ;)
+
+(; //LEAN:AddCommMonoid ;)
+AddCommMonoid__structure : (M : Set) -> ({|0|} : Elem M) -> ({|+|} : Oper M) -> (add_assoc : Proof (forall M (a => forall M (b => forall M (c => Eqt M (appOper M {|+|} (appOper M {|+|} a b) c) (appOper M {|+|} a (appOper M {|+|} b c))))))) -> (zero_add : Proof (forall M (a => Eqt M (appOper M {|+|} {|0|} a) a))) -> (add_zero : Proof (forall M (a => Eqt M (appOper M {|+|} a {|0|}) a))) -> (add_comm : Proof (forall M (a => forall M (b => Eqt M (appOper M {|+|} a b) (appOper M {|+|} b a))))) -> Structure.
+
+(; //LEAN:AddCommGroup ;)
+AddCommGroup__structure : (G : Set) -> (h : Proof (AddCommMonoid G)) -> ({|-|} : UOper G) -> (neg_add_cancel : Proof (forall G (a => Eqt G (plus (appPrefixUOper G {|-|} a) a) 0))) -> Structure.
+
+(; //LEAN:AddCommGroup (predicate) ;)
+def AddCommGroup : (G : Set) -> Prop :=
+  G => and (AddCommMonoid G) (exists (G -> G) (i => forall G (a => Eqt G (plus (i a) a) 0))).
+
+(; //LEAN:Semiring ;)
+Semiring__structure : (R : Set) -> (h : Proof (AddCommMonoid R)) -> ({|1|} : Elem R) -> ({|*|} : Oper R) -> (mul_assoc : Proof (forall R (a => forall R (b => forall R (c => Eqt R (appOper R {|*|} (appOper R {|*|} a b) c) (appOper R {|*|} a (appOper R {|*|} b c))))))) -> (one_mul : Proof (forall R (a => Eqt R (appOper R {|*|} {|1|} a) a))) -> (mul_one : Proof (forall R (a => Eqt R (appOper R {|*|} a {|1|}) a))) -> (zero_mul : Proof (forall R (a => Eqt R (appOper R {|*|} 0 a) 0))) -> (mul_zero : Proof (forall R (a => Eqt R (appOper R {|*|} a 0) 0))) -> (left_distrib : Proof (forall R (a => forall R (b => forall R (c => Eqt R (appOper R {|*|} a (plus b c)) (plus (appOper R {|*|} a b) (appOper R {|*|} a c))))))) -> (right_distrib : Proof (forall R (a => forall R (b => forall R (c => Eqt R (appOper R {|*|} (plus a b) c) (plus (appOper R {|*|} a c) (appOper R {|*|} b c))))))) -> Structure.
+
+(; //LEAN:Semiring (predicate) ;)
+def Semiring : (R : Set) -> Prop :=
+  R => and (AddCommMonoid R) (exists R (e => exists (R -> R -> R) ({|*|} => and (forall R (a => forall R (b => forall R (c => Eqt R (appOper R {|*|} (appOper R {|*|} a b) c) (appOper R {|*|} a (appOper R {|*|} b c)))))) (and (forall R (a => Eqt R (appOper R {|*|} e a) a)) (and (forall R (a => Eqt R (appOper R {|*|} a e) a)) (and (forall R (a => Eqt R (appOper R {|*|} 0 a) 0)) (and (forall R (a => Eqt R (appOper R {|*|} a 0) 0)) (and (forall R (a => forall R (b => forall R (c => Eqt R (appOper R {|*|} a (plus b c)) (plus (appOper R {|*|} a b) (appOper R {|*|} a c)))))) (forall R (a => forall R (b => forall R (c => Eqt R (appOper R {|*|} (plus a b) c) (plus (appOper R {|*|} a c) (appOper R {|*|} b c)))))))))))))).
+
+(; //LEAN:CommSemiring ;)
+CommSemiring__structure : (R : Set) -> (h : Proof (Semiring R)) -> (mul_comm : Proof (forall R (a => forall R (b => Eqt R (times a b) (times b a))))) -> Structure.
+
+(; //LEAN:CommSemiring (predicate) ;)
+def CommSemiring : (R : Set) -> Prop :=
+  R => and (Semiring R) (forall R (a => forall R (b => Eqt R (times a b) (times b a)))).
+
+(; //LEAN:Ring ;)
+Ring__structure : (R : Set) -> (h : Proof (Semiring R)) -> ({|-|} : UOper R) -> (neg_add_cancel : Proof (forall R (a => Eqt R (plus (appPrefixUOper R {|-|} a) a) 0))) -> Structure.
+
+(; //LEAN:Ring (predicate) ;)
+def Ring : (R : Set) -> Prop :=
+  R => and (Semiring R) (exists (R -> R) (i => forall R (a => Eqt R (plus (i a) a) 0))).
+
+(; //LEAN:CommRing ;)
+CommRing__structure : (R : Set) -> (h : Proof (Ring R)) -> (mul_comm : Proof (forall R (a => forall R (b => Eqt R (times a b) (times b a))))) -> Structure.
+
+(; //LEAN:CommRing (predicate) ;)
+def CommRing : (R : Set) -> Prop :=
+  R => and (Ring R) (forall R (a => forall R (b => Eqt R (times a b) (times b a)))).
+
+(; //LEAN:DivisionRing ;)
+DivisionRing__structure : (K : Set) -> (h : Proof (Ring K)) -> ({|⁻¹|} : UOper K) -> (exists_pair_ne : Proof (exists K (x => exists K (y => Neq x y)))) -> (mul_inv_cancel : Proof (forall K (a => if (Neq a 0) (Eqt K (times a (appUOper K {|⁻¹|} a)) 1)))) -> (inv_zero : Proof (Eqt K (appUOper K {|⁻¹|} 0) 0)) -> Structure.
+
+(; //LEAN:DivisionRing (predicate) ;)
+def DivisionRing : (K : Set) -> Prop :=
+  K => and (Ring K) (exists (K -> K) (i => and (exists K (x => exists K (y => Neq x y))) (and (forall K (a => if (Neq a 0) (Eqt K (times a (i a)) 1))) (Eqt K (i 0) 0)))).
+
+(; //LEAN:Field ;)
+Field__structure : (K : Set) -> (h : Proof (CommRing K)) -> ({|⁻¹|} : UOper K) -> (exists_pair_ne : Proof (exists K (x => exists K (y => Neq x y)))) -> (mul_inv_cancel : Proof (forall K (a => if (Neq a 0) (Eqt K (times a (appUOper K {|⁻¹|} a)) 1)))) -> (inv_zero : Proof (Eqt K (appUOper K {|⁻¹|} 0) 0)) -> Structure.
+
+(; //LEAN:Field (predicate) ;)
+def Field : (K : Set) -> Prop :=
+  K => and (CommRing K) (exists (K -> K) (i => and (exists K (x => exists K (y => Neq x y))) (and (forall K (a => if (Neq a 0) (Eqt K (times a (i a)) 1))) (Eqt K (i 0) 0)))).
+

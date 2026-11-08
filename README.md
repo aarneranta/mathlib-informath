@@ -155,25 +155,52 @@ is the argument of a macro, as in `{k ∈ s | k ≠ 0}`.
 
 The page `Structures.Algebra` shows Mathlib's classes from magmas to
 commutative groups (`structures.txt`: `Mul`, `CommMagma`, `Semigroup`, ...,
-`Group`, `CommGroup`, `AddCommGroup`) as Informath's structure definitions, in
-the style of Informath's `test/algebra.dk`: "A semigroup is an algebraic
-structure, where $G$ is a set, $*$ is a binary operation on $G$, and for all
-..." `lake exe export --structures` writes, for each class `C`, a declaration
+`Group`, `CommGroup`, `AddCommGroup`) as informal mathematics defines them, by
+extension of a parent (doc/structures, options B, C and D):
 
-    Semigroup__structure : (G : Set) -> ({|*|} : Oper G) ->
-      (mul_assoc : Proof (forall G (a => ...))) -> Structure.
+> A monoid is a semigroup $M$ with an element $1$ of $M$ such that for all
+> elements $a$ of $M$, $1 \times a = a$ and $a \times 1 = a$.
 
-whose arguments are the fields of the class with those of its parents
-(`extends`) flattened. In the types of the fields, the operations that Lean
-finds by instance resolution (`a * b`, `1`, `a⁻¹`) are the variables of the
-fields; a binary operation is an `Oper G` applied with `appOper`, named by its
-notation (`mul` is `*`, `add` is `+`). Left out are the fields with a default
-value (`npow`, `div`, `zpow`) and the laws that mention them or any other
-operation that the stated fields do not give (`npow_zero : x ^ 0 = 1`); the
-page lists them for each structure, with the parents. The structure is a
-constant of its own, `C__structure`, named by a noun in `structures.dkgf`,
-since the class `C` is exported as a predicate of its carrier (`Group : Set ->
-Prop`, "$G$ is a group"), as the statements that assume it need.
+> Let $G$ be a set. Then $G$ is a commutative group, if $G$ is a group and for
+> all elements $a$ and $b$ of $G$, $a \times b = b \times a$.
+
+`lake exe export --structures` writes, for each class `C`, two declarations:
+the structure, whose clauses are its carrier, its parent's predicate and its
+own fields,
+
+    Monoid__structure : (M : Set) -> (h : Proof (Semigroup M)) -> ({|1|} : Elem M) ->
+      (one_mul : Proof (forall M (a => Eqt M (times {|1|} a) a))) -> ... -> Structure.
+
+which Informath reads with its extension judgement ("a monoid is a semigroup
+$M$ with ... such that ..."), and the class as a predicate of its carrier,
+defined by its parent and its new fields, their data quantified,
+
+    def Monoid : (M : Set) -> Prop :=
+      M => and (Semigroup M) (exists M (e => and (forall M (a => ...)) (forall M (a => ...)))).
+
+shown as a second entry, `Monoid (predicate)`. The class predicate is what
+statements assume ("Assume that $G$ is a group").
+
+The parent is the one the docstring names, as Mathlib's docstrings follow the
+textbooks ("A `Monoid` is a `Semigroup` with an element `1` such that ...", "A
+`Group` is a `Monoid` with an operation `⁻¹` ...", "A commutative monoid is a
+monoid with ..."), if it is one of the exported classes; otherwise the
+exported ancestor with the most fields. A class without one (`Mul`) is a
+structure of all its fields: "A magma is an algebraic structure, where $G$ is
+a set and $*$ is a binary operation on $G$". The parent's operations are
+written as the statements write them (`a * b` is `times a b`); the new fields
+are variables, the operations named by their notation: a binary operation
+(`*`, `+`) an `Oper G` applied with `appOper`, a unary one (`⁻¹`, `-`) a
+`UOper G` applied with `appUOper` ($a^{-1}$) or `appPrefixUOper` ($-a$), and
+the identity element `1` or `0`. In the predicate, they are named $e$ and $i$.
+Left out are the fields with a default value (`npow`, `div`, `zpow`) and the
+laws that mention them (`npow_zero : x ^ 0 = 1`); the page lists them for each
+structure, with its parents and the parent chosen.
+
+An additive class whose multiplicative version is exported before it
+(`AddCommGroup` after `CommGroup`) is derived from it by `to_additive`'s
+translations: its name, its parent's and its fields' (`mul_comm` is
+`add_comm`), and the notation (`*` is `+`, `1` is `0`, $a^{-1}$ is $-a$).
 
 ## Building
 

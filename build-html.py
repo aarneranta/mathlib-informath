@@ -285,7 +285,12 @@ def entry_html(d, languages, commit, where):
         # what the structure definition does not show of the class
         code = lambda ns: ', '.join('<code>%s</code>' % html.escape(n) for n in ns) or '(none)'
         rows[2:2] = [(None, 'Extends', '<div class=text>%s</div>' % code(d.get('extends', []))),
+                     (None, 'Parent', '<div class=text>%s</div>' % (
+                         code([d['parent']]) if d.get('parent') else '(none: the fields are all stated)')),
                      (None, 'Left out', '<div class=text>%s</div>' % code(d.get('defaulted', [])))]
+        if d.get('additiveOf'):
+            rows[4:4] = [(None, 'Derived', '<div class=text>from %s by <code>to_additive</code>\'s '
+                                           'translation of names and notation</div>' % code([d['additiveOf']]))]
     for lang in languages:
         label = 'Proof' if lang == 'Eng' else 'Proof, ' + LANGUAGE_NAMES[lang]
         if d['proof'] and lang in d['proof']:

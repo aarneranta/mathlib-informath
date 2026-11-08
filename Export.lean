@@ -27,6 +27,7 @@ The output is meant to be read by Informath, not checked by Dedukti: dropping
 implicit arguments loses information that a type checker would need.
 -/
 import Lean
+import Mathlib.Tactic.Translate.ToAdditive
 
 open Lean Meta
 
@@ -104,7 +105,7 @@ partial def tr (e : Expr) : M String := do
   | .mdata _ b => tr b
   | .fvar id =>
     if let some (nm, _) := (← get).opers.get? id then return nm
-    return (← id.getUserName).toString  -- names are fixed when bound
+    return (← id.getUserName).toString (escape := false)  -- names are fixed when bound
   | .sort .zero => return "Prop"
   | .sort _ => return "Set"
   | .lit (.natVal n) => return numeral n
@@ -121,6 +122,9 @@ partial def tr (e : Expr) : M String := do
         if let some (nm, carrier) := (← get).opers.get? id then
           if args.size == 2 then
             return s!"appOper {carrier} {nm} {paren (← tr args[0]!)} {paren (← tr args[1]!)}"
+          if args.size == 1 then
+            let app := if nm == "{|-|}" then "appPrefixUOper" else "appUOper"
+            return s!"{app} {carrier} {nm} {paren (← tr args[0]!)}"
       if (← get).proofMode && f.isFVar && (← isProp (← inferType e)) then
         -- a hypothesis applied: an elimination rule for each argument
         let mut cur ← tr f
@@ -508,29 +512,42 @@ def exportModule (env : Environment) (mapping : Std.HashMap Name String)
 
 `lake exe export --structures` reads `structures.txt`, whose lines are
 `<Name> <Module> <Class> ...`, imports each Module and writes
-out/<Name>.dk, .json and -deps.dk: for each class, a declaration in the style
-of Informath's test/algebra.dk,
+out/<Name>.dk, .json and -deps.dk: for each class, a structure declaration
+whose clauses are its carrier, its parent's predicate and its own fields,
 
-    Semigroup__structure : (G : Set) -> ({|*|} : Oper G) ->
-      (mul_assoc : Proof (forall G (a => ...))) -> Structure.
+    Monoid__structure : (M : Set) -> (h : Proof (Semigroup M)) -> ({|1|} : Elem M) ->
+      (one_mul : Proof (forall M (a => Eqt M (times {|1|} a) a))) -> ... -> Structure.
 
-that Informath reads as a structure definition ("A semigroup is an
-algebraic structure, where ..."). The fields are those of the class with its
-parents' (`extends`) flattened, but for the fields with a default value
-(`npow`, `div`, `zpow` and their laws), which Mathlib adds for definitional
-convenience. In the types of the fields, the operations of the instance
-(`a * b`, `1`, `a⁻¹`, found by instance resolution in Lean) become the
-variables of the fields before; a binary operation is an `Oper G`, applied
-with `appOper`, and named by its notation. The structure is a constant of its
-own, `C__structure`, as the class `C` itself is exported as a predicate of
-its carrier, `C : Set -> Prop`, which statements use ("Assume that G is a
-group"). -/
+which Informath reads as a definition by extension ("A monoid is a semigroup
+M with an element 1 of M such that ..."), and the class as a predicate of its
+carrier, defined by its parent and its new fields (`def Monoid : (M : Set) ->
+Prop := M => and (Semigroup M) (exists M (e => ...))`), as the statements
+use it ("Assume that G is a group"); doc/structures has the options.
+
+The parent is the one the docstring names ("A `Monoid` is a `Semigroup` with
+..."), if it is one of the classes exported, else the exported ancestor with
+the most fields; a class without one (`Mul`) states all its fields, flattened
+through `extends`. Left out are the fields with a default value (`npow`, `div`,
+`zpow` and their laws), which Mathlib adds for definitional convenience. In the
+types of the fields, the operations of the instance (`a * b`, `1`, `a⁻¹`, found
+by instance resolution in Lean) become the variables of the fields before, or,
+for the parent's, are written as the statements write them (`times a b`). An
+operation is named by its notation: a binary one is an `Oper G`, applied with
+`appOper`, a unary one a `UOper G`, applied with `appUOper` (a⁻¹) or
+`appPrefixUOper` (-a). An additive class whose multiplicative version is
+exported before it is derived from it by `to_additive`'s translations. -/
 
 /-- The notation that names a binary operation field. -/
 def operName (f : Name) : String :=
   match f.toString with
   | "mul" => "{|*|}" | "add" => "{|+|}" | "div" => "{|/|}" | "sub" => "{|-|}"
+  | "one" => "{|1|}" | "zero" => "{|0|}" | "inv" => "{|⁻¹|}" | "neg" => "{|-|}"
   | s => s
+
+/-- The function that applies a unary operation named by its notation:
+a⁻¹ (appUOper), -a (appPrefixUOper). -/
+def uoperApp (nm : String) : String :=
+  if nm == "{|-|}" then "appPrefixUOper" else "appUOper"
 
 /-- The fields a structure definition states: all fields, flattened through
 `extends`, except those with a default value. -/
@@ -564,13 +581,24 @@ partial def fieldType (t : Expr) : M String := do
     else return s!"{← hypoType a} -> {← fieldType b}"
   | _ => hypoType t
 
-/-- The structure declaration of a class, and the names of the fields left
-out: those with a default value, and the laws that mention them or any
-other operation of the instance that the stated fields do not give. -/
-def structureDecl (c : Name) : M (String × Array Name) := do
+/-- The structure declaration of a class, the names of the fields left
+out, and the definition of the class as a predicate of its carrier. With
+a parent `P`, the structure takes `P`'s predicate as a clause and only the
+fields that `P` does not have (option B of doc/structures), and the
+predicate is `P` and the new fields: their data exist and their laws hold
+(option D). Left out are the fields with a default value, and the laws
+that mention them or (without a parent) any other operation of the
+instance that the stated fields do not give. -/
+def structureDecl (c : Name) (parent : Option Name := none) :
+    M (String × Array Name × Option String) := do
   let env ← getEnv
   let ci ← getConstInfo c
-  let (stated, defaulted) := statedFields env c
+  let (stated0, defaulted) := statedFields env c
+  -- the fields that the parent has are its own, not this structure's
+  let inherited := match parent with
+    | some p => getStructureFieldsFlattened env p (includeSubobjectFields := false)
+    | none => #[]
+  let stated := stated0.filter (!inherited.contains ·)
   forallTelescope ci.type fun xs _ => do
     let some carrierE := xs[0]? | throwError "{c} has no carrier"
     -- the carrier as Mathlib names it, but for a Greek letter (Mul α)
@@ -584,39 +612,175 @@ def structureDecl (c : Name) : M (String × Array Name) := do
         let dtys ← dvs.mapM fun v => (inferType v : MetaM Expr)
         withLocalDeclsDND (defaulted.zip dtys) fun dxs => do
         let marks := dxs.map (·.fvarId!)
-        let rec go (i : Nat) (done : Array (Expr × Expr)) (acc : Array String) (left : Array Name) :
-            M (Array String × Array Name) := do
+        -- and the parent's fields, which the laws may use but the structure does not state
+        let inh := inherited.filter (!defaulted.contains ·)
+        let ivs ← inh.mapM fun f => (mkProjection inst f : MetaM Expr)
+        let itys ← ivs.mapM fun v => (inferType v : MetaM Expr)
+        withLocalDeclsDND ((inh.map (·.appendBefore "parent_")).zip itys) fun ixs => do
+        -- the fields stated: (name, type) as declared, and whether data
+        let rec go (i : Nat) (done : Array (Expr × Expr)) (acc : Array (String × String × Bool))
+            (left : Array Name) : M (Array (String × String × Bool) × Array Name) := do
           if h : i < stated.size then
             let f := stated[i]
             let v ← mkProjection inst f
-            let ty ← replaceFields (done ++ dvs.zip dxs) (← instantiateMVars (← inferType v))
+            let ty0 ← instantiateMVars (← inferType v)
+            let ty ← replaceFields (done ++ dvs.zip dxs) ty0
             -- a law about a defaulted field, or about any other operation of the
-            -- instance than the stated ones (x ^ n is npow, its arguments swapped)
-            if ty.containsFVar inst.fvarId! || marks.any (fun (m : FVarId) => ty.containsFVar m) then
+            -- instance than the stated ones and the parent's (x ^ n is npow, its
+            -- arguments swapped); the parent's operations are written as the
+            -- statements write them (a * b as times a b)
+            let tyAll ← replaceFields (done ++ dvs.zip dxs ++ ivs.zip ixs) ty0
+            if tyAll.containsFVar inst.fvarId! || marks.any (fun (m : FVarId) => tyAll.containsFVar m) then
               return ← go (i + 1) done acc (left.push f)
             let binop ← isDefEq ty (← mkArrow g (← mkArrow g g))
+            let unop ← isDefEq ty (← mkArrow g g)
             let prop ← isProp ty
             -- the bound variables of each field are named afresh
             let names := (← get).names
-            let nm ← if binop then pure (operName f) else freshName f prop
+            let symbolic := operName f != f.toString
+            let oper := binop || (unop && symbolic)
+            let nm ← if binop || symbolic then pure (operName f) else freshName f prop
             withLocalDecl (Name.mkSimple nm) .default ty fun x => do
-              if binop then
+              if oper then
                 modify fun s => { s with opers := s.opers.insert x.fvarId! (nm, carrier) }
               let t ← if binop then pure s!"Oper {carrier}"
+                      else if unop && symbolic then pure s!"UOper {carrier}"
                       else if prop then pure s!"Proof {paren (← tr ty)}"
                       -- in parentheses: in Dedukti, (f : A -> B) is the type (f : A) -> B
                       else do let t ← fieldType ty; pure (if (t.splitOn " -> ").length > 1 then s!"({t})" else t)
               modify fun s => { s with names := names.insert nm }
-              go (i + 1) (done.push (v, x)) (acc.push s!"({nm} : {t})") left
+              go (i + 1) (done.push (v, x)) (acc.push (nm, t, !prop)) left
           else return (acc, left)
         let (fs, left) ← go 0 #[] #[] defaulted
-        let decl := " -> ".intercalate ([s!"({carrier} : Set)"] ++ fs.toList ++ ["Structure"])
-        return (s!"{mangle c}__structure : {decl}.", left)
+        let parentClause := match parent with
+          | some p => [s!"(h : Proof ({mangle p} {carrier}))"]
+          | none => []
+        let decl := " -> ".intercalate ([s!"({carrier} : Set)"] ++ parentClause ++
+          (fs.toList.map fun (nm, t, _) => s!"({nm} : {t})") ++ ["Structure"])
+        return (s!"{mangle c}__structure : {decl}.", left, predicateDef c parent carrier fs)
+
+where
+  /-- The class as a predicate (option D): `def C : (G : Set) -> Prop := G =>
+  and (P G) (exists ... (and ...))`, its new data quantified, named as a
+  textbook names them (e for the identity element, i for the inverse);
+  none without a parent or without laws of its own. -/
+  predicateDef (c : Name) (parent : Option Name) (carrier : String)
+      (fs : Array (String × String × Bool)) : Option String := do
+    let p ← parent
+    let laws := fs.filter (!·.2.2) |>.map (·.2.1)
+    guard (!laws.isEmpty)
+    let data := fs.filter (·.2.2)
+    -- the data as variables of a function type: a⁻¹ as i(a)
+    let rename (nm : String) : String × String := match nm with
+      | "{|1|}" | "{|0|}" => ("e", "e")
+      | "{|⁻¹|}" | "{|-|}" => ("i", s!"{uoperApp nm} {carrier} {nm}")
+      | _ => (nm, nm)
+    let setOf (t : String) : Option String :=
+      if t.startsWith "UOper " then some s!"({carrier} -> {carrier})"
+      else if t.startsWith "Oper " then some s!"({carrier} -> {carrier} -> {carrier})"
+      else if t == s!"Elem {carrier}" then some carrier else none
+    -- the names of the data are distinctive ({|1|}, {|⁻¹|}): plain replacement
+    let subst (law : String) : String := data.foldl (fun l (nm, _, _) =>
+      let (v, pat) := rename nm
+      (l.replace pat v).replace nm v) law
+    -- a law is Proof (P): its proposition P
+    let unparen (l : String) : String :=
+      if l.startsWith "(" && l.endsWith ")" then ((l.drop 1).dropRight 1).toString else l
+    let conj := (laws.map fun t => subst (unparen (t.drop 6).toString)).toList
+    let body := match conj.reverse with
+      | [] => "true"
+      | last :: rest => rest.foldl (fun acc l => s!"and {paren l} {paren acc}") last
+    let mut body := body
+    for (nm, t, _) in data.reverse do
+      let some set := setOf t | none
+      body := s!"exists {set} ({(rename nm).1} => {body})"
+    return s!"def {mangle c} : ({carrier} : Set) -> Prop :=\n  {carrier} => and ({mangle p} {carrier}) {paren body}."
 
 /-- The base of the structure declarations, for out/<Name>-deps.dk. -/
 def structureBase : String :=
   "Structure : Type.\n\nOper : (A : Set) -> Type.\n\n" ++
-  "appOper : (A : Set) -> (op : Oper A) -> (x : Elem A) -> (y : Elem A) -> Elem A.\n"
+  "appOper : (A : Set) -> (op : Oper A) -> (x : Elem A) -> (y : Elem A) -> Elem A.\n\n" ++
+  "UOper : (A : Set) -> Type.\n\n" ++
+  "appUOper : (A : Set) -> (op : UOper A) -> (x : Elem A) -> Elem A.\n\n" ++
+  "appPrefixUOper : (A : Set) -> (op : UOper A) -> (x : Elem A) -> Elem A.\n"
+
+/-- The nouns that name the structures, from structures.dkgf: noun -> class. -/
+def readNouns : IO (List (String × Name)) := do
+  let path : System.FilePath := "structures.dkgf"
+  if !(← path.pathExists) then return []
+  let mut out := []
+  for l in ← IO.FS.lines path do
+    match l.splitOn "__structure : \"" with
+    | [c, rest] => out := out ++ [((rest.splitOn "\"").head!, c.toName)]
+    | _ => pure ()
+  return out
+
+/-- The classes that `c` extends, directly or not, nearest first. -/
+partial def ancestors (env : Environment) (c : Name) : Array Name :=
+  let ps := (getStructureParentInfo env c).map (·.structName)
+  ps ++ ps.foldl (fun acc p => acc ++ ancestors env p) #[]
+
+/-- The parent that the docstring names, as a textbook would: "A `Monoid` is
+a `Semigroup` with ...", "A commutative group is a group with ...". -/
+def docParent (doc : String) (nouns : List (String × Name)) : Option Name := Id.run do
+  let first := (doc.splitOn "\n\n").head!.replace "\n" " "
+  for sep in [" is an ", " is a "] do
+    match first.splitOn sep with
+    | _ :: r :: rs =>
+      let rest := sep.intercalate (r :: rs)
+      if rest.startsWith "`" then
+        return some ((rest.drop 1).takeWhile (· != '`')).toString.toName
+      -- the longest phrase that is a noun: "monoid", "commutative monoid"
+      let words := rest.splitOn " "
+      for k in (List.range (min 4 words.length)).reverse do
+        if let some (_, cl) := nouns.find? (·.1 == " ".intercalate (words.take (k + 1))) then
+          return some cl
+      return none
+    | _ => pure ()
+  return none
+
+/-- The primary parent of a class (doc/structures, "Choosing the parent"):
+the one its docstring names, if it is one of the structures exported; else
+the exported ancestor with the most fields, the nearest first. -/
+def primaryParent (env : Environment) (c : Name) (classes : List Name)
+    (nouns : List (String × Name)) (doc : String) : Option Name :=
+  let anc := ancestors env c
+  let ok (p : Name) := p != c && anc.contains p && classes.contains p
+  match docParent doc nouns with
+  | some p => if ok p then some p else fallback anc ok
+  | none => fallback anc ok
+where
+  fallback (anc : Array Name) (ok : Name → Bool) : Option Name :=
+    let size (p : Name) := (statedFields env p).1.size
+    anc.foldl (fun best p => if !ok p then best else match best with
+      | some b => if size p > size b then some p else best
+      | none => some p) none
+
+/-- The tokens of a Dedukti text mapped, its spaces and parentheses kept. -/
+def mapTokens (f : String → String) (s : String) : String := Id.run do
+  let mut out := ""
+  let mut tok := ""
+  for ch in s.toList do
+    if ch == ' ' || ch == '(' || ch == ')' || ch == '\n' then
+      out := out ++ f tok |>.push ch
+      tok := ""
+    else tok := tok.push ch
+  return out ++ f tok
+
+/-- The additive version of a multiplicative class's declarations, by
+to_additive's translations of its names (the class, its parent, its fields)
+and its notation: + for *, 0 for 1, -a for a⁻¹. -/
+def additiveText (env : Environment) (m c : Name) (fields : Array Name) (s : String) : String :=
+  let tr (n : Name) : Option Name :=
+    Mathlib.Tactic.Translate.findTranslationName? env Mathlib.Tactic.ToAdditive.data n
+  let names : List (String × String) :=
+    [(mangle m ++ "__structure", mangle c ++ "__structure"), (mangle m, mangle c)] ++
+    (ancestors env m).toList.filterMap (fun p => (tr p).map fun q => (mangle p, mangle q)) ++
+    fields.toList.filterMap (fun f => (tr (m ++ f)).map fun g => (f.toString, g.getString!))
+  let notationMap : List (String × String) :=
+    [("{|*|}", "{|+|}"), ("{|1|}", "{|0|}"), ("{|⁻¹|}", "{|-|}"), ("appUOper", "appPrefixUOper"),
+     ("times", "plus"), ("1", "0")]
+  mapTokens (fun t => match (names ++ notationMap).lookup t with | some u => u | none => t) s
 
 def exportStructures (outName : Name) (mod : Name) (classes : List Name)
     (mapping : Std.HashMap Name String) (keepAll binders : Std.HashSet Name)
@@ -627,11 +791,31 @@ def exportStructures (outName : Name) (mod : Name) (classes : List Name)
   let st : Core.State := { env }
   let mathlib := (← IO.getEnv "MATHLIB").getD "../mathlib4"
   let sysroot ← findSysroot
+  let nouns ← readNouns
   let mut dk := s!"(; {outName}: Mathlib's classes as Informath's structures, by MathlibInformath/Export.lean ;)\n\n"
   let mut json := #[]
+  -- the declarations made: class -> structure, left out, predicate, parent
+  let mut made : Std.HashMap Name (String × Array Name × Option String × Option Name) := {}
   for c in classes do
-    let some ci := env.find? c | IO.eprintln s!"{c}: not found"; continue
-    let res ← (((structureDecl c).run {mapping, binders, keepAll}).run' {} {}).toIO ctx st |>.toBaseIO
+    let some _ := env.find? c | IO.eprintln s!"{c}: not found"; continue
+    let doc := (← Lean.findDocString? env c).getD ""
+    -- an additive class is the to_additive translation of a multiplicative one exported before
+    let mult := classes.find? fun m => m != c && made.contains m &&
+      Mathlib.Tactic.Translate.findTranslationName? env Mathlib.Tactic.ToAdditive.data m == some c
+    let res ← match mult with
+      | some m => do
+        let (decl, left, pdef, parent) := made[m]!
+        let fields := getStructureFieldsFlattened env m (includeSubobjectFields := false)
+        let add := additiveText env m c fields
+        let tr (n : Name) := Mathlib.Tactic.Translate.findTranslationName? env Mathlib.Tactic.ToAdditive.data n
+        pure (Except.ok (add decl, left.map fun f => ((tr (m ++ f)).map (·.getString!.toName)).getD f,
+                         pdef.map add, parent.bind tr))
+      | none => do
+        let parent := primaryParent env c classes nouns doc
+        let r ← (((structureDecl c parent).run {mapping, binders, keepAll}).run' {} {}).toIO ctx st |>.toBaseIO
+        pure (match r with
+          | .ok (((decl, left, pdef), _), _) => Except.ok (decl, left, pdef, parent)
+          | .error e => Except.error (toString e))
     let some m := (env.getModuleIdxFor? c).map fun i => env.header.moduleNames[i.toNat]!
       | IO.eprintln s!"{c}: no module"; continue
     -- the source: Mathlib's, or Lean's own (Mul is in Init.Prelude)
@@ -647,20 +831,26 @@ def exportStructures (outName : Name) (mod : Name) (classes : List Name)
     let lines := (src.extract (ranges.range.pos.line - 1) ranges.range.endPos.line).toList
     let lines := if lines.head?.any (fun l => (strip l).startsWith "/--") then
         (lines.dropWhile (fun l => !(l.splitOn "-/").length > 1 )).drop 1 else lines
-    let doc := (← Lean.findDocString? env c).getD ""
     let parents := (getStructureParentInfo env c).map (·.structName.toString)
+    let common := s!"\"doc\": {jsonStr doc}, \"statement\": \"\", \"line\": {ranges.range.pos.line}, \"nameLine\": {ranges.selectionRange.pos.line}, \"endLine\": {ranges.range.endPos.line}, \"sourceModule\": {jsonStr m.toString}, \"source\": {jsonStr (strip ("\n".intercalate lines))}, \"url\": {jsonStr (url ++ s!"#L{ranges.selectionRange.pos.line}")}, \"extends\": [{", ".intercalate (parents.toList.map jsonStr)}]"
     match res with
-    | .ok (((decl, defaulted), _), _) =>
+    | .ok (decl, defaulted, pdef, parent) =>
+      made := made.insert c (decl, defaulted, pdef, parent)
+      let parentJson := match parent with | some p => jsonStr p.toString | none => "null"
+      let derived := match mult with | some m => jsonStr m.toString | none => "null"
       dk := dk ++ s!"(; //LEAN:{c} ;)\n{decl}\n\n"
-      json := json.push s!"\{\"lean\": {jsonStr c.toString}, \"dk\": {jsonStr (mangle c ++ "__structure")}, \"kind\": \"structure\", \"doc\": {jsonStr doc}, \"statement\": \"\", \"line\": {ranges.range.pos.line}, \"nameLine\": {ranges.selectionRange.pos.line}, \"endLine\": {ranges.range.endPos.line}, \"definiens\": false, \"structure\": true, \"sourceModule\": {jsonStr m.toString}, \"source\": {jsonStr (strip ("\n".intercalate lines))}, \"url\": {jsonStr (url ++ s!"#L{ranges.selectionRange.pos.line}")}, \"extends\": [{", ".intercalate (parents.toList.map jsonStr)}], \"defaulted\": [{", ".intercalate (defaulted.toList.map (jsonStr ·.toString))}]}"
+      json := json.push s!"\{\"lean\": {jsonStr c.toString}, \"dk\": {jsonStr (mangle c ++ "__structure")}, \"kind\": \"structure\", {common}, \"definiens\": false, \"structure\": true, \"parent\": {parentJson}, \"additiveOf\": {derived}, \"defaulted\": [{", ".intercalate (defaulted.toList.map (jsonStr ·.toString))}]}"
+      if let some p := pdef then
+        dk := dk ++ s!"(; //LEAN:{c} (predicate) ;)\n{p}\n\n"
+        json := json.push s!"\{\"lean\": {jsonStr (c.toString ++ " (predicate)")}, \"dk\": {jsonStr (mangle c)}, \"kind\": \"class\", {common}, \"definiens\": true, \"structure\": false, \"parent\": {parentJson}, \"additiveOf\": {derived}}"
     | .error e =>
-      dk := dk ++ s!"(; //LEAN:{c} ;)\n(; NOT EXPORTED: {toString e} ;)\n\n"
-      IO.eprintln s!"{c}: {toString e}"
+      dk := dk ++ s!"(; //LEAN:{c} ;)\n(; NOT EXPORTED: {e} ;)\n\n"
+      IO.eprintln s!"{c}: {e}"
   IO.FS.createDirAll outDir
   IO.FS.writeFile s!"{outDir}/{outName}.dk" dk
   IO.FS.writeFile s!"{outDir}/{outName}-deps.dk" structureBase
   IO.FS.writeFile s!"{outDir}/{outName}.json" ("[\n" ++ ",\n".intercalate json.toList ++ "\n]\n")
-  IO.println s!"{outName}: {json.size} structures -> {outDir}/{outName}.dk, {outDir}/{outName}.json"
+  IO.println s!"{outName}: {json.size} structures and predicates -> {outDir}/{outName}.dk, {outDir}/{outName}.json"
 
 /-- The lines of structures.txt: name, module, classes. -/
 def readStructures : IO (List (Name × Name × List Name)) := do

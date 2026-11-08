@@ -1,6 +1,6 @@
 # Structures and inheritance: suggestions and samples
 
-Work in progress (6 November 2026): how Mathlib's classes, with their
+Started 6 November 2026, implemented 8 November (see "Done" at the end): how Mathlib's classes, with their
 `extends`, could be exported and informalized closer to informal
 mathematics. The samples in this directory are read with
 
@@ -114,12 +114,43 @@ Fields named by their notation read better: a variable `{|1|}` prints as
 yet: the variable prints as `\mathrm{{-1}}`, and "an unary operation" has the
 wrong article (both Informath issues to look at).
 
-## Still to do
+## Done (8 November 2026)
 
-- decide between B+C (structures) and D (predicates), or keep both (B/C on
-  the Structures page, D as the definitions of the class predicates)
-- the primary parent from docstrings, in Export.lean (`--structures`)
-- for C: the grammar rule and Dedukti2MathCore
-- additive classes (AddCommGroup etc.): derive from the multiplicative ones
-  by `to_additive`'s notation map instead of exporting both
-- the aggregation "for all a of G, for all b of G" (D) as "for all a, b of G"
+B+C and D, both: the Structures page shows each class as a structure by
+extension (C) and as a defined predicate (D), from one export.
+
+- Informath (MathExtensions): `ExtensionJmt`, `ExtensionPropJmt` and
+  `ExtensionDataJmt` (Label -> defined Kind -> parent Kind -> carrier ->
+  [ArgKind] data -> Prop properties). MathCore2Informath chooses them for a
+  `StructureJmt` whose clauses begin with the carrier and the parent read as
+  a noun; Informath2MathCore turns them back into the structure. The text:
+  "A monoid is a semigroup $M$ with an element $1$ of $M$ such that for all
+  elements $a$ of $M$, $1a = a$ and $a1 = a$."
+- Informath: `aggregate` now goes inside conjunctions ("for all a and b of
+  G" in D), and merges "for all a, P and for all a, Q" into "for all a, P and
+  Q". Not inside disjunctions, where the grouping of adjectives would make
+  "both x and y are even or both are odd" into "x and y are even or odd".
+- Informath: a variable name without letters is printed as it is (`{|⁻¹|}`
+  as ⁻¹, not \mathrm{⁻¹}).
+- Export.lean `--structures`: the primary parent from the docstring (the
+  table above, but Monoid from Semigroup and Group from Monoid), else the
+  exported ancestor with the most fields; the structure with the parent as a
+  clause and its own fields (B); the predicate as a definition (D, `C
+  (predicate)` on the page), its data named e and i; fields named by their
+  notation (1, 0, ⁻¹, -), a unary one as `UOper` with `appUOper` (a⁻¹) or
+  `appPrefixUOper` (-a), "an operation ⁻¹ on G" as Mathlib's docstring says
+  rather than "a unary operation" (see below).
+- Additive classes: `AddCommGroup` is derived from `CommGroup` by
+  `to_additive`'s translation of names (class, parent, fields) and notation.
+
+## Still open
+
+- "an unary operation": the RGL's English article (`artIndef` in
+  gf-rgl/src/english/ResEng.gf) takes "an" for words beginning with "un",
+  which "unary" is not; an exception there ("unary" | "uni" => "a") would fix
+  it for every grammar.
+- The parent's multiplication is written as the statements write it
+  (`times`, $a \times b$); juxtaposition ($ab$) would need a symbol table
+  entry for the structures page alone.
+- Option D' (every element has an inverse) is not generated: D quantifies
+  the data as the fields give them ("there exists a function $i$ ...").

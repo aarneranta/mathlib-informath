@@ -4,32 +4,68 @@
 Mul__structure : (G : Set) -> ({|*|} : Oper G) -> Structure.
 
 (; //LEAN:CommMagma ;)
-CommMagma__structure : (G : Set) -> ({|*|} : Oper G) -> (mul_comm : Proof (forall G (a => forall G (b => Eqt G (appOper G {|*|} a b) (appOper G {|*|} b a))))) -> Structure.
+CommMagma__structure : (G : Set) -> (h : Proof (Mul G)) -> (mul_comm : Proof (forall G (a => forall G (b => Eqt G (times a b) (times b a))))) -> Structure.
+
+(; //LEAN:CommMagma (predicate) ;)
+def CommMagma : (G : Set) -> Prop :=
+  G => and (Mul G) (forall G (a => forall G (b => Eqt G (times a b) (times b a)))).
 
 (; //LEAN:Semigroup ;)
-Semigroup__structure : (G : Set) -> ({|*|} : Oper G) -> (mul_assoc : Proof (forall G (a => forall G (b => forall G (c => Eqt G (appOper G {|*|} (appOper G {|*|} a b) c) (appOper G {|*|} a (appOper G {|*|} b c))))))) -> Structure.
+Semigroup__structure : (G : Set) -> (h : Proof (Mul G)) -> (mul_assoc : Proof (forall G (a => forall G (b => forall G (c => Eqt G (times (times a b) c) (times a (times b c))))))) -> Structure.
+
+(; //LEAN:Semigroup (predicate) ;)
+def Semigroup : (G : Set) -> Prop :=
+  G => and (Mul G) (forall G (a => forall G (b => forall G (c => Eqt G (times (times a b) c) (times a (times b c)))))).
 
 (; //LEAN:CommSemigroup ;)
-CommSemigroup__structure : (G : Set) -> ({|*|} : Oper G) -> (mul_assoc : Proof (forall G (a => forall G (b => forall G (c => Eqt G (appOper G {|*|} (appOper G {|*|} a b) c) (appOper G {|*|} a (appOper G {|*|} b c))))))) -> (mul_comm : Proof (forall G (a => forall G (b => Eqt G (appOper G {|*|} a b) (appOper G {|*|} b a))))) -> Structure.
+CommSemigroup__structure : (G : Set) -> (h : Proof (Semigroup G)) -> (mul_comm : Proof (forall G (a => forall G (b => Eqt G (times a b) (times b a))))) -> Structure.
+
+(; //LEAN:CommSemigroup (predicate) ;)
+def CommSemigroup : (G : Set) -> Prop :=
+  G => and (Semigroup G) (forall G (a => forall G (b => Eqt G (times a b) (times b a)))).
 
 (; //LEAN:MulOneClass ;)
-MulOneClass__structure : (M : Set) -> (one : Elem M) -> ({|*|} : Oper M) -> (one_mul : Proof (forall M (a => Eqt M (appOper M {|*|} one a) a))) -> (mul_one : Proof (forall M (a => Eqt M (appOper M {|*|} a one) a))) -> Structure.
+MulOneClass__structure : (M : Set) -> (h : Proof (Mul M)) -> ({|1|} : Elem M) -> (one_mul : Proof (forall M (a => Eqt M (times {|1|} a) a))) -> (mul_one : Proof (forall M (a => Eqt M (times a {|1|}) a))) -> Structure.
+
+(; //LEAN:MulOneClass (predicate) ;)
+def MulOneClass : (M : Set) -> Prop :=
+  M => and (Mul M) (exists M (e => and (forall M (a => Eqt M (times e a) a)) (forall M (a => Eqt M (times a e) a)))).
 
 (; //LEAN:Monoid ;)
-Monoid__structure : (M : Set) -> (one : Elem M) -> ({|*|} : Oper M) -> (mul_assoc : Proof (forall M (a => forall M (b => forall M (c => Eqt M (appOper M {|*|} (appOper M {|*|} a b) c) (appOper M {|*|} a (appOper M {|*|} b c))))))) -> (one_mul : Proof (forall M (a => Eqt M (appOper M {|*|} one a) a))) -> (mul_one : Proof (forall M (a => Eqt M (appOper M {|*|} a one) a))) -> Structure.
+Monoid__structure : (M : Set) -> (h : Proof (Semigroup M)) -> ({|1|} : Elem M) -> (one_mul : Proof (forall M (a => Eqt M (times {|1|} a) a))) -> (mul_one : Proof (forall M (a => Eqt M (times a {|1|}) a))) -> Structure.
+
+(; //LEAN:Monoid (predicate) ;)
+def Monoid : (M : Set) -> Prop :=
+  M => and (Semigroup M) (exists M (e => and (forall M (a => Eqt M (times e a) a)) (forall M (a => Eqt M (times a e) a)))).
 
 (; //LEAN:CommMonoid ;)
-CommMonoid__structure : (M : Set) -> (one : Elem M) -> ({|*|} : Oper M) -> (mul_assoc : Proof (forall M (a => forall M (b => forall M (c => Eqt M (appOper M {|*|} (appOper M {|*|} a b) c) (appOper M {|*|} a (appOper M {|*|} b c))))))) -> (one_mul : Proof (forall M (a => Eqt M (appOper M {|*|} one a) a))) -> (mul_one : Proof (forall M (a => Eqt M (appOper M {|*|} a one) a))) -> (mul_comm : Proof (forall M (a => forall M (b => Eqt M (appOper M {|*|} a b) (appOper M {|*|} b a))))) -> Structure.
+CommMonoid__structure : (M : Set) -> (h : Proof (Monoid M)) -> (mul_comm : Proof (forall M (a => forall M (b => Eqt M (times a b) (times b a))))) -> Structure.
+
+(; //LEAN:CommMonoid (predicate) ;)
+def CommMonoid : (M : Set) -> Prop :=
+  M => and (Monoid M) (forall M (a => forall M (b => Eqt M (times a b) (times b a)))).
 
 (; //LEAN:DivInvMonoid ;)
-DivInvMonoid__structure : (G : Set) -> (one : Elem G) -> ({|*|} : Oper G) -> (mul_assoc : Proof (forall G (a => forall G (b => forall G (c => Eqt G (appOper G {|*|} (appOper G {|*|} a b) c) (appOper G {|*|} a (appOper G {|*|} b c))))))) -> (one_mul : Proof (forall G (a => Eqt G (appOper G {|*|} one a) a))) -> (mul_one : Proof (forall G (a => Eqt G (appOper G {|*|} a one) a))) -> (inv : (Elem G -> Elem G)) -> Structure.
+DivInvMonoid__structure : (G : Set) -> (h : Proof (Monoid G)) -> ({|⁻¹|} : UOper G) -> Structure.
 
 (; //LEAN:Group ;)
-Group__structure : (G : Set) -> (one : Elem G) -> ({|*|} : Oper G) -> (mul_assoc : Proof (forall G (a => forall G (b => forall G (c => Eqt G (appOper G {|*|} (appOper G {|*|} a b) c) (appOper G {|*|} a (appOper G {|*|} b c))))))) -> (one_mul : Proof (forall G (a => Eqt G (appOper G {|*|} one a) a))) -> (mul_one : Proof (forall G (a => Eqt G (appOper G {|*|} a one) a))) -> (inv : (Elem G -> Elem G)) -> (inv_mul_cancel : Proof (forall G (a => Eqt G (appOper G {|*|} (inv a) a) one))) -> Structure.
+Group__structure : (G : Set) -> (h : Proof (Monoid G)) -> ({|⁻¹|} : UOper G) -> (inv_mul_cancel : Proof (forall G (a => Eqt G (times (appUOper G {|⁻¹|} a) a) 1))) -> Structure.
+
+(; //LEAN:Group (predicate) ;)
+def Group : (G : Set) -> Prop :=
+  G => and (Monoid G) (exists (G -> G) (i => forall G (a => Eqt G (times (i a) a) 1))).
 
 (; //LEAN:CommGroup ;)
-CommGroup__structure : (G : Set) -> (one : Elem G) -> ({|*|} : Oper G) -> (mul_assoc : Proof (forall G (a => forall G (b => forall G (c => Eqt G (appOper G {|*|} (appOper G {|*|} a b) c) (appOper G {|*|} a (appOper G {|*|} b c))))))) -> (one_mul : Proof (forall G (a => Eqt G (appOper G {|*|} one a) a))) -> (mul_one : Proof (forall G (a => Eqt G (appOper G {|*|} a one) a))) -> (inv : (Elem G -> Elem G)) -> (inv_mul_cancel : Proof (forall G (a => Eqt G (appOper G {|*|} (inv a) a) one))) -> (mul_comm : Proof (forall G (a => forall G (b => Eqt G (appOper G {|*|} a b) (appOper G {|*|} b a))))) -> Structure.
+CommGroup__structure : (G : Set) -> (h : Proof (Group G)) -> (mul_comm : Proof (forall G (a => forall G (b => Eqt G (times a b) (times b a))))) -> Structure.
+
+(; //LEAN:CommGroup (predicate) ;)
+def CommGroup : (G : Set) -> Prop :=
+  G => and (Group G) (forall G (a => forall G (b => Eqt G (times a b) (times b a)))).
 
 (; //LEAN:AddCommGroup ;)
-AddCommGroup__structure : (G : Set) -> (zero : Elem G) -> ({|+|} : Oper G) -> (add_assoc : Proof (forall G (a => forall G (b => forall G (c => Eqt G (appOper G {|+|} (appOper G {|+|} a b) c) (appOper G {|+|} a (appOper G {|+|} b c))))))) -> (zero_add : Proof (forall G (a => Eqt G (appOper G {|+|} zero a) a))) -> (add_zero : Proof (forall G (a => Eqt G (appOper G {|+|} a zero) a))) -> (nsmul : (Elem Nat -> Elem G -> Elem G)) -> (nsmul_zero : Proof (forall G (x => Eqt G (nsmul 0 x) zero))) -> (nsmul_succ : Proof (forall Nat (n => forall G (x => Eqt G (nsmul (plus n 1) x) (appOper G {|+|} (nsmul n x) x))))) -> (neg : (Elem G -> Elem G)) -> (zsmul : (Elem Int -> Elem G -> Elem G)) -> (zsmul_zero' : Proof (forall G (a => Eqt G (zsmul 0 a) zero))) -> (zsmul_succ' : Proof (forall Nat (n => forall G (a => Eqt G (zsmul (succ n) a) (appOper G {|+|} (zsmul n a) a))))) -> (zsmul_neg' : Proof (forall Nat (n => forall G (a => Eqt G (zsmul (Int__negSucc n) a) (neg (zsmul (succ n) a)))))) -> (neg_add_cancel : Proof (forall G (a => Eqt G (appOper G {|+|} (neg a) a) zero))) -> (add_comm : Proof (forall G (a => forall G (b => Eqt G (appOper G {|+|} a b) (appOper G {|+|} b a))))) -> Structure.
+AddCommGroup__structure : (G : Set) -> (h : Proof (AddGroup G)) -> (add_comm : Proof (forall G (a => forall G (b => Eqt G (plus a b) (plus b a))))) -> Structure.
+
+(; //LEAN:AddCommGroup (predicate) ;)
+def AddCommGroup : (G : Set) -> Prop :=
+  G => and (AddGroup G) (forall G (a => forall G (b => Eqt G (plus a b) (plus b a)))).
 

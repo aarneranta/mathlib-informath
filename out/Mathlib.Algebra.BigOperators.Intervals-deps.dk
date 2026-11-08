@@ -105,6 +105,12 @@ Finset__sum_congr : (I : Set) -> (M : Set) -> (x : Elem (Finset I)) -> (x1 : Ele
 (; //LEAN:Finset.sum_const ;)
 Finset__sum_const : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (_ : Proof (AddCommMonoid M)) -> (b : Elem M) -> Proof (Eqt M (Finset__sum s (_x => b)) (HSMul__hSMul (Finset__card s) b)).
 
+(; //LEAN:Finset.sum_eq_sum_Ico_succ_bot ;)
+Finset__sum_eq_sum_Ico_succ_bot : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (a : Elem Nat) -> (b : Elem Nat) -> (hab : Proof (Lt a b)) -> (f : (Elem Nat -> M)) -> Proof (Eqt M (Finset__sum (Finset__Ico a b) (k => f k)) (plus (f a) (Finset__sum (Finset__Ico (plus a 1) b) (k1 => f k1)))).
+
+(; //LEAN:Finset.sum_range_succ ;)
+Finset__sum_range_succ : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__sum (Finset__range (plus n 1)) (x1 => f x1)) (plus (Finset__sum (Finset__range n) (x2 => f x2)) (f n))).
+
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
 HSMul__hSMul : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
@@ -147,6 +153,9 @@ PartialOrder : (X : Set) -> Prop.
 (; //LEAN:Trans.trans ;)
 Trans__trans : (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
 
+(; //LEAN:add_comm ;)
+add_comm : (G : Set) -> (_ : Proof (AddCommMagma G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus a b) (plus b a)).
+
 (; //LEAN:add_tsub_cancel_of_le ;)
 add_tsub_cancel_of_le : (X : Set) -> (_ : Proof (AddCommSemigroup X)) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (ExistsAddOfLE X)) -> (_ : Proof (OrderedSub X)) -> (a : Elem X) -> (b : Elem X) -> (h3 : Proof (Leq a b)) -> Proof (Eqt X (plus a (minus b a)) b).
 
@@ -164,6 +173,9 @@ div_eq_iff_eq_mul : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : E
 (; //LEAN:div_eq_iff_eq_mul' ;)
 div_eq_iff_eq_mul' : (G : Set) -> (_ : Proof (CommGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (div a b) c) (Eqt G a (times b c))).
 
+(; //LEAN:eq_add_neg_iff_add_eq ;)
+eq_add_neg_iff_add_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G a (plus b (Neg__neg c))) (Eqt G (plus a c) b)).
+
 (; //LEAN:eq_mul_inv_iff_mul_eq ;)
 eq_mul_inv_iff_mul_eq : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G a (times b (Inv__inv c))) (Eqt G (times a c) b)).
 
@@ -180,4 +192,10 @@ mul_two : (X : Set) -> (_ : Proof (NonAssocSemiring X)) -> (n : Elem X) -> Proof
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)
 rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
+
+(; //LEAN:sub_eq_iff_eq_add ;)
+sub_eq_iff_eq_add : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (minus a b) c) (Eqt G a (plus c b))).
+
+(; //LEAN:sub_eq_iff_eq_add' ;)
+sub_eq_iff_eq_add' : (G : Set) -> (_ : Proof (AddCommGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (minus a b) c) (Eqt G a (plus b c))).
 

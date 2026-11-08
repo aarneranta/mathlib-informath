@@ -177,6 +177,9 @@ Finset__mem_filter : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)
 (; //LEAN:Finset.mem_image_of_mem ;)
 Finset__mem_image_of_mem : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (a : Elem X) -> (h : Proof (Membership__mem s a)) -> Proof (Membership__mem (Finset__image f s) (f a)).
 
+(; //LEAN:Finset.mem_sdiff ;)
+Finset__mem_sdiff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (a : Elem X) -> Proof (iff (Membership__mem (SDiff__sdiff s t) a) (and (Membership__mem s a) (not (Membership__mem t a)))).
+
 (; //LEAN:Finset.mem_sdiff._simp_1 ;)
 Finset__mem_sdiff___simp_1 : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (a : Elem X) -> Proof (Eqt Prop (Membership__mem (SDiff__sdiff s t) a) (and (Membership__mem s a) (not (Membership__mem t a)))).
 
@@ -216,6 +219,9 @@ Finset__subtype : (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Elem (Finse
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
 Finset__sum : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+
+(; //LEAN:Finset.sum_const_zero ;)
+Finset__sum_const_zero : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (_ : Proof (AddCommMonoid M)) -> Proof (Eqt M (Finset__sum s (_x => 0)) 0).
 
 (; //LEAN:Finset.sup_eq_union ;)
 Finset__sup_eq_union : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eqt (Finset X) (Union__union s t) (Union__union s t)).
@@ -354,6 +360,9 @@ List__prod_toFinset___f : (I : Set) -> (M : Set) -> (_ : Proof (CommMonoid M)) -
 (; //LEAN:List.sum ;)
 List__sum : (x2 : Elem (List X)) -> Elem X.
 
+(; //LEAN:List.sum_toFinset._f ;)
+List__sum_toFinset___f : (I : Set) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem I -> M)) -> (x2 : Elem (List I)) -> (f1 : Elem (List__below x2)) -> (h : Proof (List__Nodup x2)) -> Proof (Eqt M (Finset__sum (List__toFinset x2) (x3 => f x3)) (List__sum (List__map f x2))).
+
 (; doc: `toFinset l` removes duplicates from the list `l` to produce a finset. ;)
 (; //LEAN:List.toFinset ;)
 List__toFinset : (l : Elem (List X)) -> Elem (Finset X).
@@ -408,6 +417,9 @@ Multiset__sum : (x1 : Elem (Multiset M)) -> Elem M.
 
 (; //LEAN:Multiset.sum_map_tsub ;)
 Multiset__sum_map_tsub : (I : Set) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (PartialOrder M)) -> (_ : Proof (ExistsAddOfLE M)) -> (_ : Proof (OrderedSub M)) -> (l : Elem (Multiset I)) -> (f : (Elem I -> M)) -> (g : (Elem I -> M)) -> (hfg : Proof (forall I (x4 => if (Membership__mem l x4) (Leq (g x4) (f x4))))) -> Proof (Eqt M (Multiset__sum (Multiset__map (x3 => minus (f x3) (g x3)) l)) (minus (Multiset__sum (Multiset__map f l)) (Multiset__sum (Multiset__map g l)))).
+
+(; //LEAN:Multiset.sum_replicate ;)
+Multiset__sum_replicate : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (n : Elem Nat) -> (a : Elem M) -> Proof (Eqt M (Multiset__sum (Multiset__replicate n a)) (HSMul__hSMul n a)).
 
 (; doc: `toFinset s` removes duplicates from the multiset `s` to produce a finset. ;)
 (; //LEAN:Multiset.toFinset ;)
@@ -562,6 +574,12 @@ Units : (X : Set) -> Set.
 (; //LEAN:Xor ;)
 Xor : (a : Prop) -> (b : Prop) -> Prop.
 
+(; //LEAN:add_zero ;)
+add_zero : (M : Set) -> (_ : Proof (AddZeroClass M)) -> (a : Elem M) -> Proof (Eqt M (plus a 0) a).
+
+(; //LEAN:and_imp ;)
+and_imp : (a : Prop) -> (b : Prop) -> (c : Prop) -> Proof (iff (if (and a b) c) (if a (if b c))).
+
 (; //LEAN:and_imp._simp_1 ;)
 and_imp___simp_1 : (a : Prop) -> (b : Prop) -> (c : Prop) -> Proof (Eqt Prop (if (and a b) c) (if a (if b c))).
 
@@ -585,11 +603,20 @@ div_eq_of_eq_mul' : (G : Set) -> (_ : Proof (CommGroup G)) -> (a : Elem G) -> (b
 (; //LEAN:eq_comm ;)
 eq_comm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X a b) (Eqt X b a)).
 
+(; //LEAN:eq_iff_eq_of_add_eq_add ;)
+eq_iff_eq_of_add_eq_add : (X : Set) -> (_ : Proof (AddCancelCommMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (h : Proof (Eqt X (plus a b) (plus c d))) -> Proof (iff (Eqt X a c) (Eqt X b d)).
+
 (; //LEAN:eq_iff_eq_of_mul_eq_mul ;)
 eq_iff_eq_of_mul_eq_mul : (X : Set) -> (_ : Proof (CancelCommMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (h : Proof (Eqt X (times a b) (times c d))) -> Proof (iff (Eqt X a c) (Eqt X b d)).
 
+(; //LEAN:eq_true ;)
+eq_true : (p : Prop) -> (h : Proof p) -> Proof (Eqt Prop p True).
+
 (; //LEAN:forall_congr ;)
 forall_congr : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h : Proof (forall X (a2 => Eqt Prop (p a2) (q a2)))) -> Proof (Eqt Prop (forall X (a => p a)) (forall X (a1 => q a1))).
+
+(; //LEAN:forall_const ;)
+forall_const : (b : Prop) -> (X : Set) -> Proof (iff (forall X (x => b)) b).
 
 (; //LEAN:forall_const._simp_1 ;)
 forall_const___simp_1 : (b : Prop) -> (X : Set) -> Proof (Eqt Prop (forall X (x => b)) b).
@@ -633,4 +660,10 @@ propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)
 rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
+
+(; //LEAN:sub_eq_of_eq_add' ;)
+sub_eq_of_eq_add' : (G : Set) -> (_ : Proof (AddCommGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> (h : Proof (Eqt G a (plus b c))) -> Proof (Eqt G (minus a b) c).
+
+(; //LEAN:zero_add ;)
+zero_add : (M : Set) -> (_ : Proof (AddZeroClass M)) -> (a : Elem M) -> Proof (Eqt M (plus 0 a) a).
 

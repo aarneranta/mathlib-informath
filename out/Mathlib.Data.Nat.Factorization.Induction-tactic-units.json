@@ -1,0 +1,306 @@
+[
+ {
+  "name": "induction_on_primes",
+  "lean": "induction_on_primes",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "forall Nat (a1 => forall Nat (p1 => forall Nat (n => if (prime p1) (if (not (divide p1 a1)) (if (Lt 0 n) (if (motive a1) (motive (times (pow p1 n) a1))))))))",
+    "by": "refine recOnPrimePow zero one ?_",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "a",
+      "Elem Nat"
+     ],
+     [
+      "p",
+      "Elem Nat"
+     ],
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "hp",
+      "Proof (prime p)"
+     ],
+     [
+      "ha",
+      "Proof (motive a)"
+     ]
+    ],
+    "by": "rintro a p n hp - - ha",
+    "depth": 1
+   },
+   {
+    "unit": "induction",
+    "by": "induction n with",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "motive (times (pow p 0) a)",
+    "by": "simpa using ha",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ih",
+      "Proof (motive (times (pow p n) a))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "motive (times p (times (pow p n) a))",
+    "by": "rw [pow_succ', mul_assoc]",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "motive (times p (times (pow p n) a))",
+    "by": "exact prime_mul _ _ hp ih",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Nat__prime_composite_induction",
+  "lean": "Nat.prime_composite_induction",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "forall Nat (p1 => forall Nat (a1 => if (prime p1) (if (motive a1) (motive (times p1 a1)))))",
+    "by": "refine induction_on_primes zero one ?_ _",
+    "depth": 0
+   },
+   {
+    "unit": "cases",
+    "by": "rintro p (_ | _ | a) hp ha",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "p",
+      "Elem Nat"
+     ],
+     [
+      "hp",
+      "Proof (prime p)"
+     ],
+     [
+      "ha",
+      "Proof (motive 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "motive (times p 0)",
+    "by": "simpa",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ha",
+      "Proof (motive (plus 0 1))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "motive (times p (plus 0 1))",
+    "by": "simpa using prime _ hp",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "a",
+      "Elem Nat"
+     ],
+     [
+      "ha",
+      "Proof (motive (plus (plus a 1) 1))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "motive (times p (plus (plus a 1) 1))",
+    "by": "exact composite _ hp.two_le (prime _ hp) _ a.one_lt_succ_succ ha",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__multiplicative_factorization",
+  "lean": "Nat.multiplicative_factorization",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "and (forall Nat (p => forall Nat (n => if (prime p) (if (Lt 0 n) (if (Neq (pow p n) 0) (Eqt Y (f (pow p n)) (Finsupp__prod (Nat__factorization (pow p n)) (p1 => k => f (pow p1 k))))))))) (and (if (Neq 0 0) (Eqt Y (f 0) (Finsupp__prod (Nat__factorization 0) (p => k => f (pow p k))))) (and (if (Neq 1 0) (Eqt Y (f 1) (Finsupp__prod (Nat__factorization 1) (p => k => f (pow p k))))) (forall Nat (a => forall Nat (b => if (Lt 1 a) (if (Lt 1 b) (if (Nat__Coprime a b) (if (if (Neq a 0) (Eqt Y (f a) (Finsupp__prod (Nat__factorization a) (p2 => k2 => f (pow p2 k2))))) (if (if (Neq b 0) (Eqt Y (f b) (Finsupp__prod (Nat__factorization b) (p1 => k1 => f (pow p1 k1))))) (if (Neq (times a b) 0) (Eqt Y (f (times a b)) (Finsupp__prod (Nat__factorization (times a b)) (p => k => f (pow p k))))))))))))))",
+    "by": "apply Nat.recOnPosPrimePosCoprime",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "p",
+      "Elem Nat"
+     ],
+     [
+      "k",
+      "Elem Nat"
+     ],
+     [
+      "hp",
+      "Proof (prime p)"
+     ]
+    ],
+    "by": "rintro p k hp - -",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt Y (f (pow p k)) (Finsupp__prod (Nat__factorization (pow p k)) (p => k => f (pow p k)))",
+    "by": "simp [Prime.factorization_pow hp, Finsupp.prod_single_index _, hf]",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (Neq 0 0) (Eqt Y (f 0) (Finsupp__prod (Nat__factorization 0) (p => k => f (pow p k))))",
+    "by": "simp",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "_h",
+      "Proof (Neq 1 0)"
+     ]
+    ],
+    "goal": "Eqt Y (f 1) (Finsupp__prod (Nat__factorization 1) (p => k => f (pow p k)))",
+    "by": "rintro -",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt Y 1 (Finsupp__prod 0 (p => k => f (pow p k)))",
+    "by": "rw [factorization_one, hf]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt Y 1 (Finsupp__prod 0 (p => k => f (pow p k)))",
+    "by": "simp",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "a",
+      "Elem Nat"
+     ],
+     [
+      "b",
+      "Elem Nat"
+     ],
+     [
+      "hab",
+      "Proof (Nat__Coprime a b)"
+     ],
+     [
+      "ha",
+      "Proof (if (Neq a 0) (Eqt Y (f a) (Finsupp__prod (Nat__factorization a) (p => k => f (pow p k)))))"
+     ],
+     [
+      "hb",
+      "Proof (if (Neq b 0) (Eqt Y (f b) (Finsupp__prod (Nat__factorization b) (p1 => k1 => f (pow p1 k1)))))"
+     ],
+     [
+      "hab_pos",
+      "Proof (Neq (times a b) 0)"
+     ]
+    ],
+    "by": "intro a b _ _ hab ha hb hab_pos",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Disjoint (Finsupp__support (Nat__factorization a)) (Finsupp__support (Nat__factorization b))",
+    "by": "rw [h_mult a b hab, ha (left_ne_zero_of_mul hab_pos), hb (right_ne_zero_of_mul hab_pos),",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Disjoint (Finsupp__support (Nat__factorization a)) (Finsupp__support (Nat__factorization b))",
+    "by": "exact hab.disjoint_primeFactors",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__multiplicative_factorization'",
+  "lean": "Nat.multiplicative_factorization'",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "obtain rfl | hn := eq_or_ne n 0",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt Y (f 0) (Finsupp__prod (Nat__factorization 0) (p => k => f (pow p k)))",
+    "by": "simpa",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hn",
+      "Proof (Neq n 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt Y (f n) (Finsupp__prod (Nat__factorization n) (p => k => f (pow p k)))",
+    "by": "exact multiplicative_factorization _ h_mult hf1 hn",
+    "depth": 1
+   }
+  ]
+ }
+]

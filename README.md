@@ -145,6 +145,27 @@ units: assumptions ("Assume that $n = 1$"), new variables and facts ("Let $n$ be
 an element of $\mathbb{N}$ such that $p = m \times n$"), closed goals, and what
 is enough to show ("It is enough to show that ..."); `RunInformath
 -tactic-proof` writes them out, each with its tactic as the justification.
+A step that closes a goal or derives a fact says how, where its tactic tells:
+"By rewriting, ..." (`rw`), "By simplification, ..." (`simp`), "By
+computation, ..." (`ring`, `omega`, `norm_num`), "By definition, ..." (`rfl`),
+"By a routine argument, ..." (`grind`, `aesop`); a step that applies a lemma
+(`exact`, `apply`) is left as it is, as its tactic names the lemma. "It is
+enough to show that ..." is not said of the goal as it was (up to the names of
+bound variables), nor of a fact just stated to be verified.
+
+In a term proof, the text names no lemma (`-proof-no-cite`): the margin cites
+every rule, linked to its entry. The rewriting that `simp` and `rw` leave in a
+proof term (`congrArg`, `Eq.mpr`, `of_eq_true` over equations between
+propositions) is one step, "By rewriting, ...", whose margin names the simp
+lemmas it uses; and a lemma that the export applies without its implicit
+arguments (`rfl`) states what it proves where it is used.
+
+An additive theorem that `to_additive` makes from a multiplicative one has the
+proof of its original, translated: a term proof as Lean has it, a tactic proof
+with the goals of each step translated by `to_additive`'s own translation
+(`lake exe export --tactics` writes each step once for the theorem and once for
+each twin, with its `decl`), so that the tactics in its margin are those of the
+original.
 
 Both kinds of proof text are laid out in the same way (`build-index.py`
 passes `-proof-indent` and `-proof-goals`, and for the term proofs also
@@ -193,8 +214,10 @@ mathematics that most of Mathlib imports, in six tiers (`modules.txt`):
 
 All of them are exported with their tactic proofs too. `coverage.md`
 (`python3 coverage.py`) tells, module by module, how much reads well; over
-all modules, 7054 of the 9126 readings are fully worded, and 6445 of the 8472
-theorems have a proof text (3245 from terms, 3200 from tactics). The
+all modules, 7011 of the 9126 readings are fully worded, and 7586 of the 8472
+theorems have a proof text (3640 from terms, 3946 from tactics); 169 proofs
+fail, mostly where a λ proves a proposition that is a ∀ only after a definition
+is unfolded. The
 readings are English only for now (`LANGUAGES` in `build-index.py`).
 
 The statements leave out, besides decidability, the instance hypotheses that

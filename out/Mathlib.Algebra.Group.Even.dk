@@ -5,28 +5,32 @@ def IsSquare : (a : Elem X) -> Prop :=
   a => exists X (r => Eqt X a (times r r)).
 
 (; //LEAN:Even ;)
-Even : (a : Elem X) -> Prop.
+def Even : (a : Elem X) -> Prop :=
+  a => exists X (r => Eqt X a (plus r r)).
 
 (; //LEAN:isSquare_iff_exists_mul_self ;)
 def isSquare_iff_exists_mul_self : (X : Set) -> (a : Elem X) -> Proof (iff (IsSquare a) (exists X (r => Eqt X a (times r r)))) :=
   X => a => Iff__rfl (IsSquare a).
 
 (; //LEAN:even_iff_exists_add_self ;)
-even_iff_exists_add_self : (X : Set) -> (a : Elem X) -> Proof (iff (even a) (exists X (r => Eqt X a (plus r r)))).
+def even_iff_exists_add_self : (X : Set) -> (a : Elem X) -> Proof (iff (even a) (exists X (r => Eqt X a (plus r r)))) :=
+  X => a => Iff__rfl (even a).
 
 (; //LEAN:IsSquare.exists_mul_self ;)
 def IsSquare__exists_mul_self : (X : Set) -> (a : Elem X) -> (h : Proof (IsSquare a)) -> Proof (exists X (r => Eqt X a (times r r))) :=
   X => a => iffEl (IsSquare a) (exists X (r => Eqt X a (times r r))) (isSquare_iff_exists_mul_self X a).
 
 (; //LEAN:Even.exists_add_self ;)
-Even__exists_add_self : (X : Set) -> (a : Elem X) -> (h : Proof (even a)) -> Proof (exists X (r => Eqt X a (plus r r))).
+def Even__exists_add_self : (X : Set) -> (a : Elem X) -> (h : Proof (even a)) -> Proof (exists X (r => Eqt X a (plus r r))) :=
+  X => a => iffEl (even a) (exists X (r => Eqt X a (plus r r))) (even_iff_exists_add_self X a).
 
 (; //LEAN:IsSquare.mul_self ;)
 def IsSquare__mul_self : (X : Set) -> (r : Elem X) -> Proof (IsSquare (times r r)) :=
   X => r => existsI X (r1 => Eqt X (times r r) (times r1 r1)) r rfl.
 
 (; //LEAN:Even.add_self ;)
-Even__add_self : (X : Set) -> (r : Elem X) -> Proof (even (plus r r)).
+def Even__add_self : (X : Set) -> (r : Elem X) -> Proof (even (plus r r)) :=
+  X => r => existsI X (r1 => Eqt X (plus r r) (plus r1 r1)) r rfl.
 
 (; //LEAN:isSquare_op_iff ;)
 isSquare_op_iff : (X : Set) -> (a : Elem X) -> Proof (iff (IsSquare (MulOpposite__op a)) (IsSquare a)).
@@ -35,7 +39,8 @@ isSquare_op_iff : (X : Set) -> (a : Elem X) -> Proof (iff (IsSquare (MulOpposite
 even_op_iff : (X : Set) -> (a : Elem X) -> Proof (iff (even (AddOpposite__op a)) (even a)).
 
 (; //LEAN:even_unop_iff ;)
-even_unop_iff : (X : Set) -> (a : Elem (AddOpposite X)) -> Proof (iff (even (AddOpposite__unop a)) (even a)).
+def even_unop_iff : (X : Set) -> (a : Elem (AddOpposite X)) -> Proof (iff (even (AddOpposite__unop a)) (even a)) :=
+  X => a => Iff__symm (even (AddOpposite__op (AddOpposite__unop a))) (even (AddOpposite__unop a)) (even_op_iff X (AddOpposite__unop a)).
 
 (; //LEAN:isSquare_unop_iff ;)
 def isSquare_unop_iff : (X : Set) -> (a : Elem (MulOpposite X)) -> Proof (iff (IsSquare (MulOpposite__unop a)) (IsSquare a)) :=
@@ -58,7 +63,8 @@ def even_toAdd_iff : (X : Set) -> (a : Elem (Multiplicative X)) -> Proof (iff (e
   X => a => Iff__rfl (even (Multiplicative__toAdd__app a)).
 
 (; //LEAN:Even.zero ;)
-Even__zero : (X : Set) -> (_ : Proof (AddZeroClass X)) -> Proof (even 0).
+def Even__zero : (X : Set) -> (_ : Proof (AddZeroClass X)) -> Proof (even 0) :=
+  X => x => existsI X (r => Eqt X 0 (plus r r)) 0 (Eq__symm X (plus 0 0) 0 (add_zero X 0)).
 
 (; //LEAN:IsSquare.one ;)
 def IsSquare__one : (X : Set) -> (_ : Proof (MulOneClass X)) -> Proof (IsSquare 1) :=
@@ -87,10 +93,12 @@ def IsSquare__exists_sq : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) ->
   X => x => a => iffEl (IsSquare a) (exists X (r => Eqt X a (pow r 2))) (isSquare_iff_exists_sq X a).
 
 (; //LEAN:Even.exists_two_nsmul ;)
-Even__exists_two_nsmul : (X : Set) -> (_ : Proof (AddMonoid X)) -> (a : Elem X) -> (h : Proof (even a)) -> Proof (exists X (r => Eqt X a (HSMul__hSMul 2 r))).
+def Even__exists_two_nsmul : (X : Set) -> (_ : Proof (AddMonoid X)) -> (a : Elem X) -> (h : Proof (even a)) -> Proof (exists X (r => Eqt X a (HSMul__hSMul 2 r))) :=
+  X => x => a => iffEl (even a) (exists X (r => Eqt X a (HSMul__hSMul 2 r))) (even_iff_exists_two_nsmul X a).
 
 (; //LEAN:Even.two_nsmul ;)
-Even__two_nsmul : (X : Set) -> (_ : Proof (AddMonoid X)) -> (r : Elem X) -> Proof (even (HSMul__hSMul 2 r)).
+def Even__two_nsmul : (X : Set) -> (_ : Proof (AddMonoid X)) -> (r : Elem X) -> Proof (even (HSMul__hSMul 2 r)) :=
+  X => x => r => existsI X (r1 => Eqt X (HSMul__hSMul 2 r) (plus r1 r1)) r (two_nsmul X r).
 
 (; //LEAN:IsSquare.sq ;)
 def IsSquare__sq : (X : Set) -> (_ : Proof (Monoid X)) -> (r : Elem X) -> Proof (IsSquare (pow r 2)) :=

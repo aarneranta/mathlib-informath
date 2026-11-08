@@ -19,24 +19,28 @@ dite_pow : (X : Set) -> (Y : Set) -> (p : Prop) -> (a : (Proof p -> X)) -> (b : 
 smul_dite : (X : Set) -> (Y : Set) -> (p : Prop) -> (a : (Proof p -> X)) -> (b : (Proof (not p) -> X)) -> (c : Elem Y) -> Proof (Eqt X (HSMul__hSMul c (dite p (h => a h) (h1 => b h1))) (dite p (h2 => HSMul__hSMul c (a h2)) (h3 => HSMul__hSMul c (b h3)))).
 
 (; //LEAN:ite_vadd ;)
-ite_vadd : (X : Set) -> (Y : Set) -> (p : Prop) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Y) -> Proof (Eqt X (HVAdd__hVAdd (ite p b c) a) (ite p (HVAdd__hVAdd b a) (HVAdd__hVAdd c a))).
+def ite_vadd : (X : Set) -> (Y : Set) -> (p : Prop) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Y) -> Proof (Eqt X (HVAdd__hVAdd (ite p b c) a) (ite p (HVAdd__hVAdd b a) (HVAdd__hVAdd c a))) :=
+  X => Y => p => a => b => c => dite_vadd X Y p a (h => b) (h1 => c).
 
 (; //LEAN:ite_smul ;)
-ite_smul : (X : Set) -> (Y : Set) -> (p : Prop) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Y) -> Proof (Eqt X (HSMul__hSMul (ite p b c) a) (ite p (HSMul__hSMul b a) (HSMul__hSMul c a))).
+def ite_smul : (X : Set) -> (Y : Set) -> (p : Prop) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Y) -> Proof (Eqt X (HSMul__hSMul (ite p b c) a) (ite p (HSMul__hSMul b a) (HSMul__hSMul c a))) :=
+  X => Y => p => a => b => c => dite_smul X Y p a (h => b) (h1 => c).
 
 (; //LEAN:pow_ite ;)
 def pow_ite : (X : Set) -> (Y : Set) -> (p : Prop) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Y) -> Proof (Eqt X (pow a (ite p b c)) (ite p (pow a b) (pow a c))) :=
   X => Y => p => a => b => c => pow_dite X Y p a (h => b) (h1 => c).
 
 (; //LEAN:vadd_ite ;)
-vadd_ite : (X : Set) -> (Y : Set) -> (p : Prop) -> (a : Elem X) -> (b : Elem X) -> (c : Elem Y) -> Proof (Eqt X (HVAdd__hVAdd c (ite p a b)) (ite p (HVAdd__hVAdd c a) (HVAdd__hVAdd c b))).
+def vadd_ite : (X : Set) -> (Y : Set) -> (p : Prop) -> (a : Elem X) -> (b : Elem X) -> (c : Elem Y) -> Proof (Eqt X (HVAdd__hVAdd c (ite p a b)) (ite p (HVAdd__hVAdd c a) (HVAdd__hVAdd c b))) :=
+  X => Y => p => a => b => c => vadd_dite X Y p (h => a) (h1 => b) c.
 
 (; //LEAN:ite_pow ;)
 def ite_pow : (X : Set) -> (Y : Set) -> (p : Prop) -> (a : Elem X) -> (b : Elem X) -> (c : Elem Y) -> Proof (Eqt X (pow (ite p a b) c) (ite p (pow a c) (pow b c))) :=
   X => Y => p => a => b => c => dite_pow X Y p (h => a) (h1 => b) c.
 
 (; //LEAN:smul_ite ;)
-smul_ite : (X : Set) -> (Y : Set) -> (p : Prop) -> (a : Elem X) -> (b : Elem X) -> (c : Elem Y) -> Proof (Eqt X (HSMul__hSMul c (ite p a b)) (ite p (HSMul__hSMul c a) (HSMul__hSMul c b))).
+def smul_ite : (X : Set) -> (Y : Set) -> (p : Prop) -> (a : Elem X) -> (b : Elem X) -> (c : Elem Y) -> Proof (Eqt X (HSMul__hSMul c (ite p a b)) (ite p (HSMul__hSMul c a) (HSMul__hSMul c b))) :=
+  X => Y => p => a => b => c => smul_dite X Y p (h => a) (h1 => b) c.
 
 (; //LEAN:comp_mul_left ;)
 comp_mul_left : (X : Set) -> (_ : Proof (Semigroup X)) -> (x1 : Elem X) -> (y : Elem X) -> Proof (Eqt (Elem X -> X) (Function__comp (x3 => times x1 x3) (x4 => times y x4)) (x5 => times (times x1 y) x5)).
@@ -69,14 +73,16 @@ eq_one_iff_eq_one_of_mul_eq_one : (M : Set) -> (_ : Proof (MulOneClass M)) -> (a
 eq_zero_iff_eq_zero_of_add_eq_zero : (M : Set) -> (_ : Proof (AddZeroClass M)) -> (a : Elem M) -> (b : Elem M) -> (h : Proof (Eqt M (plus a b) 0)) -> Proof (iff (Eqt M a 0) (Eqt M b 0)).
 
 (; //LEAN:zero_add_eq_id ;)
-zero_add_eq_id : (M : Set) -> (_ : Proof (AddZeroClass M)) -> Proof (Eqt (Elem M -> M) (x2 => plus 0 x2) id).
+def zero_add_eq_id : (M : Set) -> (_ : Proof (AddZeroClass M)) -> Proof (Eqt (Elem M -> M) (x2 => plus 0 x2) id) :=
+  M => x => funext M (x1 => M) (x2 => plus 0 x2) id (zero_add M).
 
 (; //LEAN:one_mul_eq_id ;)
 def one_mul_eq_id : (M : Set) -> (_ : Proof (MulOneClass M)) -> Proof (Eqt (Elem M -> M) (x2 => times 1 x2) id) :=
   M => x => funext M (x1 => M) (x2 => times 1 x2) id (one_mul M).
 
 (; //LEAN:add_zero_eq_id ;)
-add_zero_eq_id : (M : Set) -> (_ : Proof (AddZeroClass M)) -> Proof (Eqt (Elem M -> M) (x2 => plus x2 0) id).
+def add_zero_eq_id : (M : Set) -> (_ : Proof (AddZeroClass M)) -> Proof (Eqt (Elem M -> M) (x2 => plus x2 0) id) :=
+  M => x => funext M (x1 => M) (x2 => plus x2 0) id (add_zero M).
 
 (; //LEAN:mul_one_eq_id ;)
 def mul_one_eq_id : (M : Set) -> (_ : Proof (MulOneClass M)) -> Proof (Eqt (Elem M -> M) (x2 => times x2 1) id) :=
@@ -219,7 +225,8 @@ def inv_unique : (M : Set) -> (_ : Proof (CommMonoid M)) -> (x1 : Elem M) -> (y 
   M => x => x1 => y => z => hy => hz => left_inv_eq_right_inv M x1 y z (Trans__trans (mul_comm M y x1) hy) hz.
 
 (; //LEAN:neg_unique ;)
-neg_unique : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (x1 : Elem M) -> (y : Elem M) -> (z : Elem M) -> (hy : Proof (Eqt M (plus x1 y) 0)) -> (hz : Proof (Eqt M (plus x1 z) 0)) -> Proof (Eqt M y z).
+def neg_unique : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (x1 : Elem M) -> (y : Elem M) -> (z : Elem M) -> (hy : Proof (Eqt M (plus x1 y) 0)) -> (hz : Proof (Eqt M (plus x1 z) 0)) -> Proof (Eqt M y z) :=
+  M => x => x1 => y => z => hy => hz => left_neg_eq_right_neg M x1 y z (Trans__trans (add_comm M y x1) hy) hz.
 
 (; //LEAN:mul_pow ;)
 mul_pow : (M : Set) -> (_ : Proof (CommMonoid M)) -> (a : Elem M) -> (b : Elem M) -> (n : Elem Nat) -> Proof (Eqt M (pow (times a b) n) (times (pow a n) (pow b n))).
@@ -232,17 +239,20 @@ def mul_eq_left : (M : Set) -> (_ : Proof (Monoid M)) -> (_ : Proof (IsLeftCance
   M => x => h => a => b => Trans__trans (Eq__mpr (id (congrArg M Prop (times a 1) a (_a => iff (Eqt M (times a b) a) (Eqt M (times a b) _a)) (mul_one M a))) (Iff__rfl (Eqt M (times a b) a))) (mul_left_cancel_iff M a b 1).
 
 (; //LEAN:add_eq_left ;)
-add_eq_left : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsLeftCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Eqt M (plus a b) a) (Eqt M b 0)).
+def add_eq_left : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsLeftCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Eqt M (plus a b) a) (Eqt M b 0)) :=
+  M => x => h => a => b => Trans__trans (Eq__mpr (id (congrArg M Prop (plus a 0) a (_a => iff (Eqt M (plus a b) a) (Eqt M (plus a b) _a)) (add_zero M a))) (Iff__rfl (Eqt M (plus a b) a))) (add_left_cancel_iff M a b 0).
 
 (; //LEAN:left_eq_add ;)
-left_eq_add : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsLeftCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Eqt M a (plus a b)) (Eqt M b 0)).
+def left_eq_add : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsLeftCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Eqt M a (plus a b)) (Eqt M b 0)) :=
+  M => x => h => a => b => Iff__trans (Eqt M a (plus a b)) (Eqt M (plus a b) a) (Eqt M b 0) (eq_comm M a (plus a b)) (add_eq_left M a b).
 
 (; //LEAN:left_eq_mul ;)
 def left_eq_mul : (M : Set) -> (_ : Proof (Monoid M)) -> (_ : Proof (IsLeftCancelMul M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Eqt M a (times a b)) (Eqt M b 1)) :=
   M => x => h => a => b => Iff__trans (Eqt M a (times a b)) (Eqt M (times a b) a) (Eqt M b 1) (eq_comm M a (times a b)) (mul_eq_left M a b).
 
 (; //LEAN:add_ne_left ;)
-add_ne_left : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsLeftCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Neq (plus a b) a) (Neq b 0)).
+def add_ne_left : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsLeftCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Neq (plus a b) a) (Neq b 0)) :=
+  M => x => h => a => b => Iff__not (Eqt M (plus a b) a) (Eqt M b 0) (add_eq_left M a b).
 
 (; //LEAN:mul_ne_left ;)
 def mul_ne_left : (M : Set) -> (_ : Proof (Monoid M)) -> (_ : Proof (IsLeftCancelMul M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Neq (times a b) a) (Neq b 1)) :=
@@ -253,31 +263,36 @@ def left_ne_mul : (M : Set) -> (_ : Proof (Monoid M)) -> (_ : Proof (IsLeftCance
   M => x => h => a => b => Iff__not (Eqt M a (times a b)) (Eqt M b 1) (left_eq_mul M a b).
 
 (; //LEAN:left_ne_add ;)
-left_ne_add : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsLeftCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Neq a (plus a b)) (Neq b 0)).
+def left_ne_add : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsLeftCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Neq a (plus a b)) (Neq b 0)) :=
+  M => x => h => a => b => Iff__not (Eqt M a (plus a b)) (Eqt M b 0) (left_eq_add M a b).
 
 (; //LEAN:mul_eq_right ;)
 def mul_eq_right : (M : Set) -> (_ : Proof (Monoid M)) -> (_ : Proof (IsRightCancelMul M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Eqt M (times a b) b) (Eqt M a 1)) :=
   M => x => h => a => b => Trans__trans (Eq__mpr (id (congrArg M Prop (times 1 b) b (_a => iff (Eqt M (times a b) b) (Eqt M (times a b) _a)) (one_mul M b))) (Iff__rfl (Eqt M (times a b) b))) (mul_right_cancel_iff M b a 1).
 
 (; //LEAN:add_eq_right ;)
-add_eq_right : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsRightCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Eqt M (plus a b) b) (Eqt M a 0)).
+def add_eq_right : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsRightCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Eqt M (plus a b) b) (Eqt M a 0)) :=
+  M => x => h => a => b => Trans__trans (Eq__mpr (id (congrArg M Prop (plus 0 b) b (_a => iff (Eqt M (plus a b) b) (Eqt M (plus a b) _a)) (zero_add M b))) (Iff__rfl (Eqt M (plus a b) b))) (add_right_cancel_iff M b a 0).
 
 (; //LEAN:right_eq_mul ;)
 def right_eq_mul : (M : Set) -> (_ : Proof (Monoid M)) -> (_ : Proof (IsRightCancelMul M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Eqt M b (times a b)) (Eqt M a 1)) :=
   M => x => h => a => b => Iff__trans (Eqt M b (times a b)) (Eqt M (times a b) b) (Eqt M a 1) (eq_comm M b (times a b)) (mul_eq_right M a b).
 
 (; //LEAN:right_eq_add ;)
-right_eq_add : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsRightCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Eqt M b (plus a b)) (Eqt M a 0)).
+def right_eq_add : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsRightCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Eqt M b (plus a b)) (Eqt M a 0)) :=
+  M => x => h => a => b => Iff__trans (Eqt M b (plus a b)) (Eqt M (plus a b) b) (Eqt M a 0) (eq_comm M b (plus a b)) (add_eq_right M a b).
 
 (; //LEAN:mul_ne_right ;)
 def mul_ne_right : (M : Set) -> (_ : Proof (Monoid M)) -> (_ : Proof (IsRightCancelMul M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Neq (times a b) b) (Neq a 1)) :=
   M => x => h => a => b => Iff__not (Eqt M (times a b) b) (Eqt M a 1) (mul_eq_right M a b).
 
 (; //LEAN:add_ne_right ;)
-add_ne_right : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsRightCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Neq (plus a b) b) (Neq a 0)).
+def add_ne_right : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsRightCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Neq (plus a b) b) (Neq a 0)) :=
+  M => x => h => a => b => Iff__not (Eqt M (plus a b) b) (Eqt M a 0) (add_eq_right M a b).
 
 (; //LEAN:right_ne_add ;)
-right_ne_add : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsRightCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Neq b (plus a b)) (Neq a 0)).
+def right_ne_add : (M : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (IsRightCancelAdd M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Neq b (plus a b)) (Neq a 0)) :=
+  M => x => h => a => b => Iff__not (Eqt M b (plus a b)) (Eqt M a 0) (right_eq_add M a b).
 
 (; //LEAN:right_ne_mul ;)
 def right_ne_mul : (M : Set) -> (_ : Proof (Monoid M)) -> (_ : Proof (IsRightCancelMul M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Neq b (times a b)) (Neq a 1)) :=
@@ -296,14 +311,16 @@ ne_iff_ne_of_add_eq_add : (X : Set) -> (_ : Proof (AddCancelCommMonoid X)) -> (a
 ne_iff_ne_of_mul_eq_mul : (X : Set) -> (_ : Proof (CancelCommMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (h : Proof (Eqt X (times a b) (times c d))) -> Proof (iff (Neq a c) (Neq b d)).
 
 (; //LEAN:neg_involutive ;)
-neg_involutive : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> Proof (Function__Involutive Neg__neg).
+def neg_involutive : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> Proof (Function__Involutive Neg__neg) :=
+  G => x => neg_neg G.
 
 (; //LEAN:inv_involutive ;)
 def inv_involutive : (G : Set) -> (_ : Proof (InvolutiveInv G)) -> Proof (Function__Involutive Inv__inv) :=
   G => x => inv_inv G.
 
 (; //LEAN:neg_bijective ;)
-neg_bijective : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> Proof (Function__Bijective Neg__neg).
+def neg_bijective : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> Proof (Function__Bijective Neg__neg) :=
+  G => x => Function__Involutive__bijective G Neg__neg (neg_involutive G).
 
 (; //LEAN:inv_bijective ;)
 def inv_bijective : (G : Set) -> (_ : Proof (InvolutiveInv G)) -> Proof (Function__Bijective Inv__inv) :=
@@ -314,24 +331,28 @@ def inv_surjective : (G : Set) -> (_ : Proof (InvolutiveInv G)) -> Proof (Functi
   G => x => Function__Involutive__surjective G Inv__inv (inv_involutive G).
 
 (; //LEAN:neg_surjective ;)
-neg_surjective : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> Proof (Function__Surjective Neg__neg).
+def neg_surjective : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> Proof (Function__Surjective Neg__neg) :=
+  G => x => Function__Involutive__surjective G Neg__neg (neg_involutive G).
 
 (; //LEAN:inv_injective ;)
 def inv_injective : (G : Set) -> (_ : Proof (InvolutiveInv G)) -> Proof (Function__Injective Inv__inv) :=
   G => x => Function__Involutive__injective G Inv__inv (inv_involutive G).
 
 (; //LEAN:neg_injective ;)
-neg_injective : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> Proof (Function__Injective Neg__neg).
+def neg_injective : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> Proof (Function__Injective Neg__neg) :=
+  G => x => Function__Involutive__injective G Neg__neg (neg_involutive G).
 
 (; //LEAN:neg_inj ;)
-neg_inj : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (Neg__neg a) (Neg__neg b)) (Eqt G a b)).
+def neg_inj : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (Neg__neg a) (Neg__neg b)) (Eqt G a b)) :=
+  G => x => a => b => Function__Injective__eq_iff G G Neg__neg (neg_injective G) a b.
 
 (; //LEAN:inv_inj ;)
 def inv_inj : (G : Set) -> (_ : Proof (InvolutiveInv G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (Inv__inv a) (Inv__inv b)) (Eqt G a b)) :=
   G => x => a => b => Function__Injective__eq_iff G G Inv__inv (inv_injective G) a b.
 
 (; //LEAN:neg_eq_iff_eq_neg ;)
-neg_eq_iff_eq_neg : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (Neg__neg a) b) (Eqt G a (Neg__neg b))).
+def neg_eq_iff_eq_neg : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (Neg__neg a) b) (Eqt G a (Neg__neg b))) :=
+  G => x => a => b => Function__Involutive__eq_iff G Neg__neg (neg_involutive G) a b.
 
 (; //LEAN:inv_eq_iff_eq_inv ;)
 def inv_eq_iff_eq_inv : (G : Set) -> (_ : Proof (InvolutiveInv G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (Inv__inv a) b) (Eqt G a (Inv__inv b))) :=
@@ -342,21 +363,24 @@ def inv_comp_inv : (G : Set) -> (_ : Proof (InvolutiveInv G)) -> Proof (Eqt (Ele
   G => x => Function__Involutive__comp_self G Inv__inv (inv_involutive G).
 
 (; //LEAN:neg_comp_neg ;)
-neg_comp_neg : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> Proof (Eqt (Elem G -> G) (Function__comp Neg__neg Neg__neg) id).
+def neg_comp_neg : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> Proof (Eqt (Elem G -> G) (Function__comp Neg__neg Neg__neg) id) :=
+  G => x => Function__Involutive__comp_self G Neg__neg (neg_involutive G).
 
 (; //LEAN:leftInverse_inv ;)
 def leftInverse_inv : (G : Set) -> (_ : Proof (InvolutiveInv G)) -> Proof (Function__LeftInverse (a => Inv__inv a) (a1 => Inv__inv a1)) :=
   G => x => inv_inv G.
 
 (; //LEAN:leftInverse_neg ;)
-leftInverse_neg : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> Proof (Function__LeftInverse (a => Neg__neg a) (a1 => Neg__neg a1)).
+def leftInverse_neg : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> Proof (Function__LeftInverse (a => Neg__neg a) (a1 => Neg__neg a1)) :=
+  G => x => neg_neg G.
 
 (; //LEAN:rightInverse_inv ;)
 def rightInverse_inv : (G : Set) -> (_ : Proof (InvolutiveInv G)) -> Proof (Function__RightInverse (a => Inv__inv a) (a1 => Inv__inv a1)) :=
   G => x => inv_inv G.
 
 (; //LEAN:rightInverse_neg ;)
-rightInverse_neg : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> Proof (Function__RightInverse (a => Neg__neg a) (a1 => Neg__neg a1)).
+def rightInverse_neg : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> Proof (Function__RightInverse (a => Neg__neg a) (a1 => Neg__neg a1)) :=
+  G => x => neg_neg G.
 
 (; //LEAN:add_zero_sub ;)
 add_zero_sub : (G : Set) -> (_ : Proof (SubNegMonoid G)) -> (x1 : Elem G) -> (y : Elem G) -> Proof (Eqt G (plus x1 (minus 0 y)) (minus x1 y)).
@@ -369,7 +393,8 @@ def mul_div_assoc' : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (a : Elem G) -
   G => x => a => b => c => Eq__symm G (div (times a b) c) (times a (div b c)) (mul_div_assoc G a b c).
 
 (; //LEAN:add_sub_assoc' ;)
-add_sub_assoc' : (G : Set) -> (_ : Proof (SubNegMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (Eqt G (plus a (minus b c)) (minus (plus a b) c)).
+def add_sub_assoc' : (G : Set) -> (_ : Proof (SubNegMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (Eqt G (plus a (minus b c)) (minus (plus a b) c)) :=
+  G => x => a => b => c => Eq__symm G (minus (plus a b) c) (plus a (minus b c)) (add_sub_assoc G a b c).
 
 (; //LEAN:mul_div ;)
 mul_div : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (Eqt G (times a (div b c)) (div (times a b) c)).
@@ -390,7 +415,8 @@ sub_zero : (G : Set) -> (_ : Proof (SubNegZeroMonoid G)) -> (a : Elem G) -> Proo
 div_one : (G : Set) -> (_ : Proof (DivInvOneMonoid G)) -> (a : Elem G) -> Proof (Eqt G (div a 1) a).
 
 (; //LEAN:zero_sub_zero ;)
-zero_sub_zero : (G : Set) -> (_ : Proof (SubNegZeroMonoid G)) -> Proof (Eqt G (minus 0 0) 0).
+def zero_sub_zero : (G : Set) -> (_ : Proof (SubNegZeroMonoid G)) -> Proof (Eqt G (minus 0 0) 0) :=
+  G => x => sub_zero G 0.
 
 (; //LEAN:one_div_one ;)
 def one_div_one : (G : Set) -> (_ : Proof (DivInvOneMonoid G)) -> Proof (Eqt G (div 1 1) 1) :=
@@ -401,7 +427,8 @@ def eq_inv_of_mul_eq_one_right : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> 
   X => x => a => b => h => Eq__symm X (Inv__inv a) b (inv_eq_of_mul_eq_one_right X a b h).
 
 (; //LEAN:eq_neg_of_add_eq_zero_right ;)
-eq_neg_of_add_eq_zero_right : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X (plus a b) 0)) -> Proof (Eqt X b (Neg__neg a)).
+def eq_neg_of_add_eq_zero_right : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X (plus a b) 0)) -> Proof (Eqt X b (Neg__neg a)) :=
+  X => x => a => b => h => Eq__symm X (Neg__neg a) b (neg_eq_of_add_eq_zero_right X a b h).
 
 (; //LEAN:eq_one_div_of_mul_eq_one_left ;)
 eq_one_div_of_mul_eq_one_left : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X (times b a) 1)) -> Proof (Eqt X b (div 1 a)).
@@ -416,7 +443,8 @@ eq_one_div_of_mul_eq_one_right : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> 
 eq_zero_sub_of_add_eq_zero_right : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X (plus a b) 0)) -> Proof (Eqt X b (minus 0 a)).
 
 (; //LEAN:eq_of_sub_eq_zero ;)
-eq_of_sub_eq_zero : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X (minus a b) 0)) -> Proof (Eqt X a b).
+def eq_of_sub_eq_zero : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X (minus a b) 0)) -> Proof (Eqt X a b) :=
+  X => x => a => b => h => neg_injective X a b (neg_eq_of_add_eq_zero_right X a (Neg__neg b) (Eq__mpr (id (congrArg X Prop (plus a (Neg__neg b)) (minus a b) (_a => Eqt X _a 0) (Eq__symm X (minus a b) (plus a (Neg__neg b)) (sub_eq_add_neg X a b)))) h)).
 
 (; //LEAN:eq_of_div_eq_one ;)
 def eq_of_div_eq_one : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X (div a b) 1)) -> Proof (Eqt X a b) :=
@@ -439,7 +467,8 @@ def div_ne_one_of_ne : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> (a : Elem 
   X => x => a => b => mt (Eqt X (div a b) 1) (Eqt X a b) (eq_of_div_eq_one X a b).
 
 (; //LEAN:sub_ne_zero_of_ne ;)
-sub_ne_zero_of_ne : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Neq a b)) -> Proof (Neq (minus a b) 0).
+def sub_ne_zero_of_ne : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Neq a b)) -> Proof (Neq (minus a b) 0) :=
+  X => x => a => b => mt (Eqt X (minus a b) 0) (Eqt X a b) (eq_of_sub_eq_zero X a b).
 
 (; //LEAN:zero_sub_add_zero_sub_rev ;)
 zero_sub_add_zero_sub_rev : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (plus (minus 0 a) (minus 0 b)) (minus 0 (plus b a))).
@@ -476,7 +505,8 @@ def div_eq_div_iff_comm : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> (a : El
   X => x => a => b => c => d => Iff__trans (Eqt X (div a b) (div c d)) (Eqt X (Inv__inv (div a b)) (Inv__inv (div c d))) (Eqt X (div b a) (div d c)) (Iff__symm (Eqt X (Inv__inv (div a b)) (Inv__inv (div c d))) (Eqt X (div a b) (div c d)) (inv_inj X (div a b) (div c d))) (of_eq_true (iff (Eqt X (Inv__inv (div a b)) (Inv__inv (div c d))) (Eqt X (div b a) (div d c))) (Eq__trans Prop (iff (Eqt X (Inv__inv (div a b)) (Inv__inv (div c d))) (Eqt X (div b a) (div d c))) (iff (Eqt X (div b a) (div d c)) (Eqt X (div b a) (div d c))) True (congrFun' Prop Prop (iff (Eqt X (Inv__inv (div a b)) (Inv__inv (div c d)))) (iff (Eqt X (div b a) (div d c))) (congrArg Prop (Prop -> Prop) (Eqt X (Inv__inv (div a b)) (Inv__inv (div c d))) (Eqt X (div b a) (div d c)) iff (congr X Prop (Eq (Inv__inv (div a b))) (Eq (div b a)) (Inv__inv (div c d)) (div d c) (congrArg X (Elem X -> Prop) (Inv__inv (div a b)) (div b a) Eq (inv_div X a b)) (inv_div X c d))) (Eqt X (div b a) (div d c))) (iff_self (Eqt X (div b a) (div d c))))).
 
 (; //LEAN:sub_eq_sub_iff_comm ;)
-sub_eq_sub_iff_comm : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> Proof (iff (Eqt X (minus a b) (minus c d)) (Eqt X (minus b a) (minus d c))).
+def sub_eq_sub_iff_comm : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> Proof (iff (Eqt X (minus a b) (minus c d)) (Eqt X (minus b a) (minus d c))) :=
+  X => x => a => b => c => d => Iff__trans (Eqt X (minus a b) (minus c d)) (Eqt X (Neg__neg (minus a b)) (Neg__neg (minus c d))) (Eqt X (minus b a) (minus d c)) (Iff__symm (Eqt X (Neg__neg (minus a b)) (Neg__neg (minus c d))) (Eqt X (minus a b) (minus c d)) (neg_inj X (minus a b) (minus c d))) (of_eq_true (iff (Eqt X (Neg__neg (minus a b)) (Neg__neg (minus c d))) (Eqt X (minus b a) (minus d c))) (Eq__trans Prop (iff (Eqt X (Neg__neg (minus a b)) (Neg__neg (minus c d))) (Eqt X (minus b a) (minus d c))) (iff (Eqt X (minus b a) (minus d c)) (Eqt X (minus b a) (minus d c))) True (congrFun' Prop Prop (iff (Eqt X (Neg__neg (minus a b)) (Neg__neg (minus c d)))) (iff (Eqt X (minus b a) (minus d c))) (congrArg Prop (Prop -> Prop) (Eqt X (Neg__neg (minus a b)) (Neg__neg (minus c d))) (Eqt X (minus b a) (minus d c)) iff (congr X Prop (Eq (Neg__neg (minus a b))) (Eq (minus b a)) (Neg__neg (minus c d)) (minus d c) (congrArg X (Elem X -> Prop) (Neg__neg (minus a b)) (minus b a) Eq (neg_sub X a b)) (neg_sub X c d))) (Eqt X (minus b a) (minus d c))) (iff_self (Eqt X (minus b a) (minus d c))))).
 
 (; //LEAN:inv_pow ;)
 inv_pow : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> (a : Elem X) -> (n : Elem Nat) -> Proof (Eqt X (pow (Inv__inv a) n) (Inv__inv (pow a n))).
@@ -533,21 +563,24 @@ zsmul_eq_neg_nsmul_natAbs : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a
 zpow_eq_inv_pow_natAbs : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> (a : Elem X) -> (n : Elem Int) -> (hn : Proof (Leq n 0)) -> Proof (Eqt X (pow a n) (pow (Inv__inv a) (Int__natAbs n))).
 
 (; //LEAN:neg_eq_zero ;)
-neg_eq_zero : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> Proof (iff (Eqt X (Neg__neg a) 0) (Eqt X a 0)).
+def neg_eq_zero : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> Proof (iff (Eqt X (Neg__neg a) 0) (Eqt X a 0)) :=
+  X => x => a => Function__Injective__eq_iff' X X Neg__neg (neg_injective X) a 0 0 (neg_zero X).
 
 (; //LEAN:inv_eq_one ;)
 def inv_eq_one : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> (a : Elem X) -> Proof (iff (Eqt X (Inv__inv a) 1) (Eqt X a 1)) :=
   X => x => a => Function__Injective__eq_iff' X X Inv__inv (inv_injective X) a 1 1 (inv_one X).
 
 (; //LEAN:zero_eq_neg ;)
-zero_eq_neg : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> Proof (iff (Eqt X 0 (Neg__neg a)) (Eqt X a 0)).
+def zero_eq_neg : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> Proof (iff (Eqt X 0 (Neg__neg a)) (Eqt X a 0)) :=
+  X => x => a => Iff__trans (Eqt X 0 (Neg__neg a)) (Eqt X (Neg__neg a) 0) (Eqt X a 0) (eq_comm X 0 (Neg__neg a)) (neg_eq_zero X a).
 
 (; //LEAN:one_eq_inv ;)
 def one_eq_inv : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> (a : Elem X) -> Proof (iff (Eqt X 1 (Inv__inv a)) (Eqt X a 1)) :=
   X => x => a => Iff__trans (Eqt X 1 (Inv__inv a)) (Eqt X (Inv__inv a) 1) (Eqt X a 1) (eq_comm X 1 (Inv__inv a)) (inv_eq_one X a).
 
 (; //LEAN:neg_ne_zero ;)
-neg_ne_zero : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> Proof (iff (Neq (Neg__neg a) 0) (Neq a 0)).
+def neg_ne_zero : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> Proof (iff (Neq (Neg__neg a) 0) (Neq a 0)) :=
+  X => x => a => Iff__not (Eqt X (Neg__neg a) 0) (Eqt X a 0) (neg_eq_zero X a).
 
 (; //LEAN:inv_ne_one ;)
 def inv_ne_one : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> (a : Elem X) -> Proof (iff (Neq (Inv__inv a) 1) (Neq a 1)) :=
@@ -764,7 +797,8 @@ div_eq_inv_self : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Ele
 sub_eq_neg_self : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (minus a b) (Neg__neg b)) (Eqt G a 0)).
 
 (; //LEAN:add_left_surjective ;)
-add_left_surjective : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (Function__Surjective (x1 => plus a x1)).
+def add_left_surjective : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (Function__Surjective (x1 => plus a x1)) :=
+  G => x => a => forallI G (x1 => exists G (a2 => Eqt G ((x3 => plus a x3) a2) x1)) (x1 => existsI G (a1 => Eqt G ((x2 => plus a x2) a1) x1) (plus (Neg__neg a) x1) (add_neg_cancel_left G a x1)).
 
 (; //LEAN:mul_left_surjective ;)
 def mul_left_surjective : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> Proof (Function__Surjective (x1 => times a x1)) :=
@@ -775,7 +809,8 @@ def mul_right_surjective : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) ->
   G => x => a => forallI G (x1 => exists G (a2 => Eqt G ((x3 => times x3 a) a2) x1)) (x1 => existsI G (a1 => Eqt G ((x2 => times x2 a) a1) x1) (times x1 (Inv__inv a)) (inv_mul_cancel_right G x1 a)).
 
 (; //LEAN:add_right_surjective ;)
-add_right_surjective : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (Function__Surjective (x1 => plus x1 a)).
+def add_right_surjective : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (Function__Surjective (x1 => plus x1 a)) :=
+  G => x => a => forallI G (x1 => exists G (a2 => Eqt G ((x3 => plus x3 a) a2) x1)) (x1 => existsI G (a1 => Eqt G ((x2 => plus x2 a) a1) x1) (plus x1 (Neg__neg a)) (neg_add_cancel_right G x1 a)).
 
 (; //LEAN:eq_mul_inv_of_mul_eq ;)
 eq_mul_inv_of_mul_eq : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> (h : Proof (Eqt G (times a c) b)) -> Proof (Eqt G a (times b (Inv__inv c))).
@@ -826,7 +861,8 @@ add_eq_of_eq_add_neg : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> 
 mul_eq_of_eq_mul_inv : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> (h : Proof (Eqt G a (times c (Inv__inv b)))) -> Proof (Eqt G (times a b) c).
 
 (; //LEAN:add_eq_zero_iff_eq_neg ;)
-add_eq_zero_iff_eq_neg : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (plus a b) 0) (Eqt G a (Neg__neg b))).
+def add_eq_zero_iff_eq_neg : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (plus a b) 0) (Eqt G a (Neg__neg b))) :=
+  G => x => a => b => iffI (Eqt G (plus a b) 0) (Eqt G a (Neg__neg b)) (eq_neg_of_add_eq_zero_left G a b) (h => Eq__mpr (id (congrArg G Prop a (Neg__neg b) (_a => Eqt G (plus _a b) 0) h)) (Eq__mpr (id (congrArg G Prop (plus (Neg__neg b) b) 0 (_a1 => Eqt G _a1 0) (neg_add_cancel G b))) (Eq__refl 0))).
 
 (; //LEAN:mul_eq_one_iff_eq_inv ;)
 def mul_eq_one_iff_eq_inv : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (times a b) 1) (Eqt G a (Inv__inv b))) :=
@@ -851,21 +887,24 @@ mul_eq_one_iff_inv_eq' : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (
 add_eq_zero_iff_neg_eq' : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (plus a b) 0) (Eqt G (Neg__neg b) a)).
 
 (; //LEAN:eq_neg_iff_add_eq_zero ;)
-eq_neg_iff_add_eq_zero : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G a (Neg__neg b)) (Eqt G (plus a b) 0)).
+def eq_neg_iff_add_eq_zero : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G a (Neg__neg b)) (Eqt G (plus a b) 0)) :=
+  G => x => a => b => Iff__symm (Eqt G (plus a b) 0) (Eqt G a (Neg__neg b)) (add_eq_zero_iff_eq_neg G a b).
 
 (; //LEAN:eq_inv_iff_mul_eq_one ;)
 def eq_inv_iff_mul_eq_one : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G a (Inv__inv b)) (Eqt G (times a b) 1)) :=
   G => x => a => b => Iff__symm (Eqt G (times a b) 1) (Eqt G a (Inv__inv b)) (mul_eq_one_iff_eq_inv G a b).
 
 (; //LEAN:neg_eq_iff_add_eq_zero ;)
-neg_eq_iff_add_eq_zero : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (Neg__neg a) b) (Eqt G (plus a b) 0)).
+def neg_eq_iff_add_eq_zero : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (Neg__neg a) b) (Eqt G (plus a b) 0)) :=
+  G => x => a => b => Iff__symm (Eqt G (plus a b) 0) (Eqt G (Neg__neg a) b) (add_eq_zero_iff_neg_eq G a b).
 
 (; //LEAN:inv_eq_iff_mul_eq_one ;)
 def inv_eq_iff_mul_eq_one : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (Inv__inv a) b) (Eqt G (times a b) 1)) :=
   G => x => a => b => Iff__symm (Eqt G (times a b) 1) (Eqt G (Inv__inv a) b) (mul_eq_one_iff_inv_eq G a b).
 
 (; //LEAN:eq_add_neg_iff_add_eq ;)
-eq_add_neg_iff_add_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G a (plus b (Neg__neg c))) (Eqt G (plus a c) b)).
+def eq_add_neg_iff_add_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G a (plus b (Neg__neg c))) (Eqt G (plus a c) b)) :=
+  G => x => a => b => c => iffI (Eqt G a (plus b (Neg__neg c))) (Eqt G (plus a c) b) (h => Eq__mpr (id (congrArg G Prop a (plus b (Neg__neg c)) (_a => Eqt G (plus _a c) b) h)) (Eq__mpr (id (congrArg G Prop (plus (plus b (Neg__neg c)) c) b (_a1 => Eqt G _a1 b) (neg_add_cancel_right G b c))) (Eq__refl b))) (h1 => Eq__mpr (id (congrArg G Prop b (plus a c) (_a2 => Eqt G a (plus _a2 (Neg__neg c))) (Eq__symm G (plus a c) b h1))) (Eq__mpr (id (congrArg G Prop (plus (plus a c) (Neg__neg c)) a (_a3 => Eqt G a _a3) (add_neg_cancel_right G a c))) (Eq__refl a))).
 
 (; //LEAN:eq_mul_inv_iff_mul_eq ;)
 def eq_mul_inv_iff_mul_eq : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G a (times b (Inv__inv c))) (Eqt G (times a c) b)) :=
@@ -876,17 +915,20 @@ def eq_inv_mul_iff_mul_eq : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -
   G => x => a => b => c => iffI (Eqt G a (times (Inv__inv b) c)) (Eqt G (times b a) c) (h => Eq__mpr (id (congrArg G Prop a (times (Inv__inv b) c) (_a => Eqt G (times b _a) c) h)) (Eq__mpr (id (congrArg G Prop (times b (times (Inv__inv b) c)) c (_a1 => Eqt G _a1 c) (mul_inv_cancel_left G b c))) (Eq__refl c))) (h1 => Eq__mpr (id (congrArg G Prop c (times b a) (_a2 => Eqt G a (times (Inv__inv b) _a2)) (Eq__symm G (times b a) c h1))) (Eq__mpr (id (congrArg G Prop (times (Inv__inv b) (times b a)) a (_a3 => Eqt G a _a3) (inv_mul_cancel_left G b a))) (Eq__refl a))).
 
 (; //LEAN:eq_neg_add_iff_add_eq ;)
-eq_neg_add_iff_add_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G a (plus (Neg__neg b) c)) (Eqt G (plus b a) c)).
+def eq_neg_add_iff_add_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G a (plus (Neg__neg b) c)) (Eqt G (plus b a) c)) :=
+  G => x => a => b => c => iffI (Eqt G a (plus (Neg__neg b) c)) (Eqt G (plus b a) c) (h => Eq__mpr (id (congrArg G Prop a (plus (Neg__neg b) c) (_a => Eqt G (plus b _a) c) h)) (Eq__mpr (id (congrArg G Prop (plus b (plus (Neg__neg b) c)) c (_a1 => Eqt G _a1 c) (add_neg_cancel_left G b c))) (Eq__refl c))) (h1 => Eq__mpr (id (congrArg G Prop c (plus b a) (_a2 => Eqt G a (plus (Neg__neg b) _a2)) (Eq__symm G (plus b a) c h1))) (Eq__mpr (id (congrArg G Prop (plus (Neg__neg b) (plus b a)) a (_a3 => Eqt G a _a3) (neg_add_cancel_left G b a))) (Eq__refl a))).
 
 (; //LEAN:neg_add_eq_iff_eq_add ;)
-neg_add_eq_iff_eq_add : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (plus (Neg__neg a) b) c) (Eqt G b (plus a c))).
+def neg_add_eq_iff_eq_add : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (plus (Neg__neg a) b) c) (Eqt G b (plus a c))) :=
+  G => x => a => b => c => iffI (Eqt G (plus (Neg__neg a) b) c) (Eqt G b (plus a c)) (h => Eq__mpr (id (congrArg G Prop c (plus (Neg__neg a) b) (_a => Eqt G b (plus a _a)) (Eq__symm G (plus (Neg__neg a) b) c h))) (Eq__mpr (id (congrArg G Prop (plus a (plus (Neg__neg a) b)) b (_a1 => Eqt G b _a1) (add_neg_cancel_left G a b))) (Eq__refl b))) (h1 => Eq__mpr (id (congrArg G Prop b (plus a c) (_a2 => Eqt G (plus (Neg__neg a) _a2) c) h1)) (Eq__mpr (id (congrArg G Prop (plus (Neg__neg a) (plus a c)) c (_a3 => Eqt G _a3 c) (neg_add_cancel_left G a c))) (Eq__refl c))).
 
 (; //LEAN:inv_mul_eq_iff_eq_mul ;)
 def inv_mul_eq_iff_eq_mul : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (times (Inv__inv a) b) c) (Eqt G b (times a c))) :=
   G => x => a => b => c => iffI (Eqt G (times (Inv__inv a) b) c) (Eqt G b (times a c)) (h => Eq__mpr (id (congrArg G Prop c (times (Inv__inv a) b) (_a => Eqt G b (times a _a)) (Eq__symm G (times (Inv__inv a) b) c h))) (Eq__mpr (id (congrArg G Prop (times a (times (Inv__inv a) b)) b (_a1 => Eqt G b _a1) (mul_inv_cancel_left G a b))) (Eq__refl b))) (h1 => Eq__mpr (id (congrArg G Prop b (times a c) (_a2 => Eqt G (times (Inv__inv a) _a2) c) h1)) (Eq__mpr (id (congrArg G Prop (times (Inv__inv a) (times a c)) c (_a3 => Eqt G _a3 c) (inv_mul_cancel_left G a c))) (Eq__refl c))).
 
 (; //LEAN:add_neg_eq_iff_eq_add ;)
-add_neg_eq_iff_eq_add : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (plus a (Neg__neg b)) c) (Eqt G a (plus c b))).
+def add_neg_eq_iff_eq_add : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (plus a (Neg__neg b)) c) (Eqt G a (plus c b))) :=
+  G => x => a => b => c => iffI (Eqt G (plus a (Neg__neg b)) c) (Eqt G a (plus c b)) (h => Eq__mpr (id (congrArg G Prop c (plus a (Neg__neg b)) (_a => Eqt G a (plus _a b)) (Eq__symm G (plus a (Neg__neg b)) c h))) (Eq__mpr (id (congrArg G Prop (plus (plus a (Neg__neg b)) b) a (_a1 => Eqt G a _a1) (neg_add_cancel_right G a b))) (Eq__refl a))) (h1 => Eq__mpr (id (congrArg G Prop a (plus c b) (_a2 => Eqt G (plus _a2 (Neg__neg b)) c) h1)) (Eq__mpr (id (congrArg G Prop (plus (plus c b) (Neg__neg b)) c (_a3 => Eqt G _a3 c) (add_neg_cancel_right G c b))) (Eq__refl c))).
 
 (; //LEAN:mul_inv_eq_iff_eq_mul ;)
 def mul_inv_eq_iff_eq_mul : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (times a (Inv__inv b)) c) (Eqt G a (times c b))) :=
@@ -959,7 +1001,8 @@ add_eq_of_eq_sub : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b :
 mul_eq_of_eq_div : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> (h : Proof (Eqt G a (div c b))) -> Proof (Eqt G (times a b) c).
 
 (; //LEAN:sub_right_inj ;)
-sub_right_inj : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (minus a b) (minus a c)) (Eqt G b c)).
+def sub_right_inj : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (minus a b) (minus a c)) (Eqt G b c)) :=
+  G => x => a => b => c => Function__Injective__eq_iff G G (a1 => minus a a1) (sub_right_injective G a) b c.
 
 (; //LEAN:div_right_inj ;)
 def div_right_inj : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (div a b) (div a c)) (Eqt G b c)) :=
@@ -1000,7 +1043,8 @@ def div_eq_one : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem
   G => x => a => b => iffI (Eqt G (div a b) 1) (Eqt G a b) (eq_of_div_eq_one G a b) (h => Eq__mpr (id (congrArg G Prop a b (_a => Eqt G (div _a b) 1) h)) (Eq__mpr (id (congrArg G Prop (div b b) 1 (_a1 => Eqt G _a1 1) (div_self' G b))) (Eq__refl 1))).
 
 (; //LEAN:sub_eq_zero ;)
-sub_eq_zero : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (minus a b) 0) (Eqt G a b)).
+def sub_eq_zero : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (minus a b) 0) (Eqt G a b)) :=
+  G => x => a => b => iffI (Eqt G (minus a b) 0) (Eqt G a b) (eq_of_sub_eq_zero G a b) (h => Eq__mpr (id (congrArg G Prop a b (_a => Eqt G (minus _a b) 0) h)) (Eq__mpr (id (congrArg G Prop (minus b b) 0 (_a1 => Eqt G _a1 0) (sub_self G b))) (Eq__refl 0))).
 
 (; //LEAN:div_eq_one_of_eq ;)
 def div_eq_one_of_eq : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G a b)) -> Proof (Eqt G (div a b) 1) :=
@@ -1011,7 +1055,8 @@ def sub_eq_zero_of_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) ->
   G => x => a => b => iffEr (Eqt G (minus a b) 0) (Eqt G a b) (sub_eq_zero G a b).
 
 (; //LEAN:sub_ne_zero ;)
-sub_ne_zero : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Neq (minus a b) 0) (Neq a b)).
+def sub_ne_zero : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Neq (minus a b) 0) (Neq a b)) :=
+  G => x => a => b => not_congr (Eqt G (minus a b) 0) (Eqt G a b) (sub_eq_zero G a b).
 
 (; //LEAN:div_ne_one ;)
 def div_ne_one : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Neq (div a b) 1) (Neq a b)) :=
@@ -1042,7 +1087,8 @@ eq_iff_eq_of_sub_eq_sub : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) 
 eq_iff_eq_of_div_eq_div : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> (d : Elem G) -> (H : Proof (Eqt G (div a b) (div c d))) -> Proof (iff (Eqt G a b) (Eqt G c d)).
 
 (; //LEAN:leftInverse_sub_add_left ;)
-leftInverse_sub_add_left : (G : Set) -> (_ : Proof (AddGroup G)) -> (c : Elem G) -> Proof (Function__LeftInverse (x1 => minus x1 c) (x2 => plus x2 c)).
+def leftInverse_sub_add_left : (G : Set) -> (_ : Proof (AddGroup G)) -> (c : Elem G) -> Proof (Function__LeftInverse (x1 => minus x1 c) (x2 => plus x2 c)) :=
+  G => x => c => forallI G (x1 => Eqt G (minus (plus x1 c) c) x1) (x1 => add_sub_cancel_right G x1 c).
 
 (; //LEAN:leftInverse_div_mul_left ;)
 def leftInverse_div_mul_left : (G : Set) -> (_ : Proof (Group G)) -> (c : Elem G) -> Proof (Function__LeftInverse (x1 => div x1 c) (x2 => times x2 c)) :=
@@ -1053,17 +1099,20 @@ def leftInverse_mul_left_div : (G : Set) -> (_ : Proof (Group G)) -> (c : Elem G
   G => x => c => forallI G (x1 => Eqt G (times (div x1 c) c) x1) (x1 => div_mul_cancel G x1 c).
 
 (; //LEAN:leftInverse_add_left_sub ;)
-leftInverse_add_left_sub : (G : Set) -> (_ : Proof (AddGroup G)) -> (c : Elem G) -> Proof (Function__LeftInverse (x1 => plus x1 c) (x2 => minus x2 c)).
+def leftInverse_add_left_sub : (G : Set) -> (_ : Proof (AddGroup G)) -> (c : Elem G) -> Proof (Function__LeftInverse (x1 => plus x1 c) (x2 => minus x2 c)) :=
+  G => x => c => forallI G (x1 => Eqt G (plus (minus x1 c) c) x1) (x1 => sub_add_cancel G x1 c).
 
 (; //LEAN:leftInverse_add_right_neg_add ;)
-leftInverse_add_right_neg_add : (G : Set) -> (_ : Proof (AddGroup G)) -> (c : Elem G) -> Proof (Function__LeftInverse (x1 => plus c x1) (x2 => plus (Neg__neg c) x2)).
+def leftInverse_add_right_neg_add : (G : Set) -> (_ : Proof (AddGroup G)) -> (c : Elem G) -> Proof (Function__LeftInverse (x1 => plus c x1) (x2 => plus (Neg__neg c) x2)) :=
+  G => x => c => forallI G (x1 => Eqt G (plus c (plus (Neg__neg c) x1)) x1) (x1 => add_neg_cancel_left G c x1).
 
 (; //LEAN:leftInverse_mul_right_inv_mul ;)
 def leftInverse_mul_right_inv_mul : (G : Set) -> (_ : Proof (Group G)) -> (c : Elem G) -> Proof (Function__LeftInverse (x1 => times c x1) (x2 => times (Inv__inv c) x2)) :=
   G => x => c => forallI G (x1 => Eqt G (times c (times (Inv__inv c) x1)) x1) (x1 => mul_inv_cancel_left G c x1).
 
 (; //LEAN:leftInverse_neg_add_add_right ;)
-leftInverse_neg_add_add_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (c : Elem G) -> Proof (Function__LeftInverse (x1 => plus (Neg__neg c) x1) (x2 => plus c x2)).
+def leftInverse_neg_add_add_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (c : Elem G) -> Proof (Function__LeftInverse (x1 => plus (Neg__neg c) x1) (x2 => plus c x2)) :=
+  G => x => c => forallI G (x1 => Eqt G (plus (Neg__neg c) (plus c x1)) x1) (x1 => neg_add_cancel_left G c x1).
 
 (; //LEAN:leftInverse_inv_mul_mul_right ;)
 def leftInverse_inv_mul_mul_right : (G : Set) -> (_ : Proof (Group G)) -> (c : Elem G) -> Proof (Function__LeftInverse (x1 => times (Inv__inv c) x1) (x2 => times c x2)) :=
@@ -1080,7 +1129,8 @@ def pow_sub : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (m : Elem Na
   G => x => a => m => n => h => eq_mul_inv_of_mul_eq G (pow a (minus m n)) (pow a m) (pow a n) (Eq__mpr (id (congrArg G Prop (times (pow a (minus m n)) (pow a n)) (pow a (plus (minus m n) n)) (_a => Eqt G _a (pow a m)) (Eq__symm G (pow a (plus (minus m n) n)) (times (pow a (minus m n)) (pow a n)) (pow_add G a (minus m n) n)))) (Eq__mpr (id (congrArg Nat Prop (plus (minus m n) n) m (_a1 => Eqt G (pow a _a1) (pow a m)) (Nat__sub_add_cancel m n h))) (Eq__refl (pow a m)))).
 
 (; //LEAN:sub_nsmul ;)
-sub_nsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Leq n m)) -> Proof (Eqt G (HSMul__hSMul (minus m n) a) (plus (HSMul__hSMul m a) (Neg__neg (HSMul__hSMul n a)))).
+def sub_nsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Leq n m)) -> Proof (Eqt G (HSMul__hSMul (minus m n) a) (plus (HSMul__hSMul m a) (Neg__neg (HSMul__hSMul n a)))) :=
+  G => x => a => m => n => h => eq_add_neg_of_add_eq G (HSMul__hSMul (minus m n) a) (HSMul__hSMul m a) (HSMul__hSMul n a) (Eq__mpr (id (congrArg G Prop (plus (HSMul__hSMul (minus m n) a) (HSMul__hSMul n a)) (HSMul__hSMul (plus (minus m n) n) a) (_a => Eqt G _a (HSMul__hSMul m a)) (Eq__symm G (HSMul__hSMul (plus (minus m n) n) a) (plus (HSMul__hSMul (minus m n) a) (HSMul__hSMul n a)) (add_nsmul G a (minus m n) n)))) (Eq__mpr (id (congrArg Nat Prop (plus (minus m n) n) m (_a1 => Eqt G (HSMul__hSMul _a1 a) (HSMul__hSMul m a)) (Nat__sub_add_cancel m n h))) (Eq__refl (HSMul__hSMul m a)))).
 
 (; //LEAN:inv_pow_sub ;)
 inv_pow_sub : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Leq n m)) -> Proof (Eqt G (pow (Inv__inv a) (minus m n)) (times (Inv__inv (pow a m)) (pow a n))).
@@ -1095,7 +1145,8 @@ zpow_add_one : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (n : Elem I
 add_one_zsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (n : Elem Int) -> Proof (Eqt G (HSMul__hSMul (plus n 1) a) (plus (HSMul__hSMul n a) a)).
 
 (; //LEAN:sub_one_zsmul ;)
-sub_one_zsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (n : Elem Int) -> Proof (Eqt G (HSMul__hSMul (minus n 1) a) (plus (HSMul__hSMul n a) (Neg__neg a))).
+def sub_one_zsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (n : Elem Int) -> Proof (Eqt G (HSMul__hSMul (minus n 1) a) (plus (HSMul__hSMul n a) (Neg__neg a))) :=
+  G => x => a => n => Trans__trans (Eq__symm G (plus (plus (HSMul__hSMul (minus n 1) a) a) (Neg__neg a)) (HSMul__hSMul (minus n 1) a) (add_neg_cancel_right G (HSMul__hSMul (minus n 1) a) a)) (Eq__mpr (id (congrArg G Prop (plus (HSMul__hSMul (minus n 1) a) a) (HSMul__hSMul (plus (minus n 1) 1) a) (_a => Eqt G (plus _a (Neg__neg a)) (plus (HSMul__hSMul n a) (Neg__neg a))) (Eq__symm G (HSMul__hSMul (plus (minus n 1) 1) a) (plus (HSMul__hSMul (minus n 1) a) a) (add_one_zsmul G a (minus n 1))))) (Eq__mpr (id (congrArg Int Prop (plus (minus n 1) 1) n (_a1 => Eqt G (plus (HSMul__hSMul _a1 a) (Neg__neg a)) (plus (HSMul__hSMul n a) (Neg__neg a))) (Int__sub_add_cancel n 1))) (Eq__refl (plus (HSMul__hSMul n a) (Neg__neg a))))).
 
 (; //LEAN:zpow_sub_one ;)
 def zpow_sub_one : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (n : Elem Int) -> Proof (Eqt G (pow a (minus n 1)) (times (pow a n) (Inv__inv a))) :=
@@ -1124,7 +1175,8 @@ def mul_zpow_self : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (n : E
   G => x => a => n => Eq__symm G (pow a (plus n 1)) (times (pow a n) a) (zpow_add_one G a n).
 
 (; //LEAN:add_self_zsmul ;)
-add_self_zsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (n : Elem Int) -> Proof (Eqt G (plus (HSMul__hSMul n a) a) (HSMul__hSMul (plus n 1) a)).
+def add_self_zsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (n : Elem Int) -> Proof (Eqt G (plus (HSMul__hSMul n a) a) (HSMul__hSMul (plus n 1) a)) :=
+  G => x => a => n => Eq__symm G (HSMul__hSMul (plus n 1) a) (plus (HSMul__hSMul n a) a) (add_one_zsmul G a n).
 
 (; //LEAN:zpow_sub ;)
 zpow_sub : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (m : Elem Int) -> (n : Elem Int) -> Proof (Eqt G (pow a (minus m n)) (times (pow a m) (Inv__inv (pow a n)))).
@@ -1235,7 +1287,8 @@ def div_div_cancel : (G : Set) -> (_ : Proof (CommGroup G)) -> (a : Elem G) -> (
   G => x => a => b => div_div_self' G a b.
 
 (; //LEAN:sub_sub_cancel ;)
-sub_sub_cancel : (G : Set) -> (_ : Proof (AddCommGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (minus a (minus a b)) b).
+def sub_sub_cancel : (G : Set) -> (_ : Proof (AddCommGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (minus a (minus a b)) b) :=
+  G => x => a => b => sub_sub_self G a b.
 
 (; //LEAN:sub_sub_cancel_left ;)
 sub_sub_cancel_left : (G : Set) -> (_ : Proof (AddCommGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (minus (minus a b) a) (Neg__neg b)).
@@ -1344,7 +1397,8 @@ def const_div_involutive : (G : Set) -> (_ : Proof (CommGroup G)) -> (a : Elem G
   G => x => a => forallI G (x1 => Eqt G (div a (div a x1)) x1) (x1 => div_div_cancel G a x1).
 
 (; //LEAN:const_sub_involutive ;)
-const_sub_involutive : (G : Set) -> (_ : Proof (AddCommGroup G)) -> (a : Elem G) -> Proof (Function__Involutive (x1 => minus a x1)).
+def const_sub_involutive : (G : Set) -> (_ : Proof (AddCommGroup G)) -> (a : Elem G) -> Proof (Function__Involutive (x1 => minus a x1)) :=
+  G => x => a => forallI G (x1 => Eqt G (minus a (minus a x1)) x1) (x1 => sub_sub_cancel G a x1).
 
 (; //LEAN:multiplicative_of_symm_of_total ;)
 multiplicative_of_symm_of_total : (X : Set) -> (Y : Set) -> (_ : Proof (Monoid Y)) -> (p : (Elem X -> Elem X -> Prop)) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Total r)) -> (f : (Elem X -> Elem X -> Y)) -> (_ : Proof (Std__Symm p)) -> (hf_swap : Proof (forall X (a2 => forall X (b2 => if (p a2 b2) (Eqt Y (times (f a2 b2) (f b2 a2)) 1))))) -> (hmul : Proof (forall X (a1 => forall X (b1 => forall X (c1 => if (r a1 b1) (if (r b1 c1) (if (p a1 b1) (if (p b1 c1) (if (p a1 c1) (Eqt Y (f a1 c1) (times (f a1 b1) (f b1 c1)))))))))))) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (pab : Proof (p a b)) -> (pbc : Proof (p b c)) -> (pac : Proof (p a c)) -> Proof (Eqt Y (f a c) (times (f a b) (f b c))).

@@ -15,12 +15,6 @@
     "depth": 1
    },
    {
-    "unit": "enough",
-    "prop": "Eq (Nat__totient n) (Nat__card (Set__Elem (Set__ofPred (m1 => and (Lt m1 n) (Nat__Coprime n m1)))))",
-    "by": "let e : { m | m < n ∧ n.Coprime m } ≃ {x ∈ range n | n.Coprime x} :=",
-    "depth": 0
-   },
-   {
     "unit": "hypos",
     "hypos": [
      [
@@ -35,6 +29,7 @@
     "unit": "conclusion",
     "prop": "Membership__mem (Finset__filter (x => Nat__Coprime n x) (Finset__range n)) m",
     "by": "simpa only [Finset.mem_filter, Finset.mem_range] using! m.property",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -52,24 +47,28 @@
     "unit": "conclusion",
     "prop": "Membership__mem (Set__ofPred (m => and (Lt m n) (Nat__Coprime n m))) m",
     "by": "simpa only [Finset.mem_filter, Finset.mem_range] using! m.property",
+    "method": "simplification",
     "depth": 1
    },
    {
     "unit": "conclusion",
     "prop": "Eqt (Set__Elem (Set__ofPred (m1 => and (Lt m1 n) (Nat__Coprime n m1)))) m m",
     "by": "simp only [Subtype.coe_eta]",
+    "method": "simplification",
     "depth": 1
    },
    {
     "unit": "conclusion",
     "prop": "Eqt (Subtype (x2 => Membership__mem (Finset__filter (x3 => Nat__Coprime n x3) (Finset__range n)) x2)) m m",
     "by": "simp only",
+    "method": "simplification",
     "depth": 1
    },
    {
     "unit": "conclusion",
     "prop": "Eq (Nat__totient n) (Nat__card (Set__Elem (Set__ofPred (m1 => and (Lt m1 n) (Nat__Coprime n m1)))))",
     "by": "rw [totient_eq_card_coprime, card_congr e, card_eq_fintype_card, Fintype.card_coe]",
+    "method": "rewriting",
     "depth": 1
    }
   ]
@@ -82,6 +81,7 @@
     "unit": "conclusion",
     "prop": "iff (Eq (Nat__totient 0) 0) (Eq 0 0)",
     "by": "decide",
+    "method": "computation",
     "depth": 0
    },
    {
@@ -99,6 +99,7 @@
     "unit": "conclusion",
     "prop": "Eq (gcd (plus n 1) (HMod__hMod 1 (plus n 1))) 1",
     "by": "rw [gcd_comm, ← gcd_rec, gcd_one_right]",
+    "method": "rewriting",
     "depth": 1
    },
    {
@@ -116,6 +117,7 @@
     "unit": "conclusion",
     "prop": "iff (Eq (Nat__totient (plus n 1)) 0) (Eq (plus n 1) 0)",
     "by": "simpa [totient, filter_eq_empty_iff]",
+    "method": "simplification",
     "depth": 2
    }
   ]
@@ -128,6 +130,7 @@
     "unit": "conclusion",
     "prop": "iff (Lt 0 (Nat__totient n)) (Lt 0 n)",
     "by": "simp [pos_iff_ne_zero]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -199,6 +202,7 @@
     "unit": "conclusion",
     "prop": "(Leq (Finset__card (Finset__filter (x => Nat__Coprime a x) (Finset__Ico k (plus (plus k (HMod__hMod n a)) (times a i))))) (times (Nat__totient a) (plus i 1)))",
     "by": "simp_rw [← add_assoc] at ih ⊢",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -276,6 +280,7 @@
     "unit": "conclusion",
     "prop": "Eq (Finset__sum Finset__univ (a => ite (Nat__Coprime (ZMod__val a) (plus m 1)) 1 0)) (Finset__sum Finset__univ (i => ite (Nat__Coprime i (plus m 1)) 1 0))",
     "by": "rfl",
+    "method": "definition",
     "depth": 0
    }
   ]
@@ -329,6 +334,7 @@
     "unit": "conclusion",
     "prop": "Eq 2 (orderOf (Neg__neg 1))",
     "by": "rw [← orderOf_units, Units.coe_neg_one, orderOf_neg_one, ringChar.eq (ZMod n) n,",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -382,6 +388,7 @@
     "unit": "conclusion",
     "prop": "Eq (Fintype__card (Units (ZMod (times m n)))) (times (Fintype__card (Units (ZMod m))) (Fintype__card (Units (ZMod n))))",
     "by": "rw [Fintype.card_congr (Units.mapEquiv (ZMod.chineseRemainder h).toMulEquiv).toEquiv,",
+    "method": "rewriting",
     "depth": 1
    }
   ]
@@ -410,6 +417,7 @@
     "unit": "conclusion",
     "prop": "Eq (Nat__totient (div n 0)) (Finset__card (Finset__filter (k => Eq (gcd n k) 0) (Finset__range n)))",
     "by": "simp [eq_zero_of_zero_dvd hnd]",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -487,18 +495,21 @@
     "unit": "conclusion",
     "prop": "Lt (times d a) (times d x)",
     "by": "gcongr",
+    "method": "routine",
     "depth": 2
    },
    {
     "unit": "conclusion",
     "prop": "Eq (gcd (times d x) (times d a)) d",
     "by": "rw [gcd_mul_left, ha2, mul_one]",
+    "method": "rewriting",
     "depth": 2
    },
    {
     "unit": "conclusion",
     "prop": "forall Nat (x => if (Membership__mem (Finset__filter (a1 => Nat__Coprime x a1) (Finset__range x)) x) (forall Nat (x1 => if (Membership__mem (Finset__filter (a => Nat__Coprime x a) (Finset__range x)) x1) (if (Eq (times d x) (times d x1)) (Eq x x1)))))",
     "by": "simp [hd0.ne']",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -579,6 +590,7 @@
     "unit": "conclusion",
     "prop": "Nat__Coprime x q",
     "by": "rwa [gcd_mul_left, mul_eq_left hd0.ne'] at hb2",
+    "method": "rewriting",
     "depth": 1
    }
   ]
@@ -596,6 +608,7 @@
     "unit": "conclusion",
     "prop": "Eq (Finset__sum (Nat__divisors 0) (n => Nat__totient n)) 0",
     "by": "simp",
+    "method": "simplification",
     "depth": 0
    },
    {
@@ -618,12 +631,6 @@
    {
     "unit": "verify",
     "prop": "(Eq n (Finset__sum (Nat__divisors n) (d => Finset__card (Finset__filter (k => Eq (gcd n k) d) (Finset__range n)))))",
-    "by": "have : n = ∑ d ∈ n.divisors, #{k ∈ range n | n.gcd k = d}",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
-    "prop": "Eq (Finset__sum (Nat__divisors n) (d1 => Nat__totient (div n d1))) n",
     "by": "have : n = ∑ d ∈ n.divisors, #{k ∈ range n | n.gcd k = d}",
     "depth": 1
    },
@@ -690,6 +697,7 @@
     "unit": "conclusion",
     "prop": "Eq (Finset__sum (Finset__Ico 0 (succ n)) (a => ite (divide a n) (Nat__totient a) 0)) (Finset__sum (Finset__Ico 1 (plus n 1)) (a1 => ite (divide a1 n) (Nat__totient a1) 0))",
     "by": "rw [sum_eq_sum_Ico_succ_bot] <;> simp",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -793,6 +801,7 @@
     "unit": "conclusion",
     "prop": "(Lt (times p b) (times p (pow p n)))",
     "by": "rw [pow_succ'] at ha",
+    "method": "rewriting",
     "depth": 1
    },
    {
@@ -808,20 +817,8 @@
     "depth": 0
    },
    {
-    "unit": "enough",
-    "prop": "Eq (Finset__card (SDiff__sdiff (Finset__range (pow p (plus n 1))) (Finset__image (x1 => times x1 p) (Finset__range (pow p n))))) (times (pow p n) (minus p 1))",
-    "by": "have h1 : Function.Injective (· * p) := mul_left_injective₀ hp.ne_zero",
-    "depth": 0
-   },
-   {
     "unit": "conclusion",
     "prop": "(Set__Subset (Finset__image (x1 => times x1 p) (Finset__range (pow p n))) (Finset__range (pow p (plus n 1))))",
-    "by": "have h2 : (range (p ^ n)).image (· * p) ⊆ range (p ^ (n + 1)) := fun a => by",
-    "depth": 0
-   },
-   {
-    "unit": "enough",
-    "prop": "Eq (Finset__card (SDiff__sdiff (Finset__range (pow p (plus n 1))) (Finset__image (x2 => times x2 p) (Finset__range (pow p n))))) (times (pow p n) (minus p 1))",
     "by": "have h2 : (range (p ^ n)).image (· * p) ⊆ range (p ^ (n + 1)) := fun a => by",
     "depth": 0
    },
@@ -862,6 +859,7 @@
     "unit": "conclusion",
     "prop": "Eq (Finset__card (SDiff__sdiff (Finset__range (pow p (plus n 1))) (Finset__image (x2 => times x2 p) (Finset__range (pow p n))))) (times (pow p n) (minus p 1))",
     "by": "rw [card_sdiff_of_subset h2, Finset.card_image_of_injective _ h1, card_range, card_range, ←",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -907,6 +905,7 @@
     "unit": "conclusion",
     "prop": "Eq (Nat__totient p) (minus p 1)",
     "by": "rw [← pow_one p, totient_prime_pow hp] <;> simp",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -948,12 +947,14 @@
     "unit": "conclusion",
     "prop": "Leq 1 p",
     "by": "rwa [succ_le_iff]",
+    "method": "rewriting",
     "depth": 1
    },
    {
     "unit": "conclusion",
     "prop": "(Eq 1 0)",
     "by": "rw [totient_one, tsub_self] at h",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -966,6 +967,7 @@
     "unit": "conclusion",
     "prop": "(Eq (Finset__card (Finset__filter (a => Nat__Coprime p a) (Finset__Ico (plus 0 1) p))) (Finset__card (Finset__Ico 1 p)))",
     "by": "rw [totient_eq_card_coprime, range_eq_Ico, ← Finset.insert_Ico_add_one_left_eq_Ico hp.le,",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -1038,6 +1040,7 @@
     "unit": "conclusion",
     "prop": "iff (prime 0) (Eq (Fintype__card (Units (ZMod 0))) (minus 0 1))",
     "by": "simp [ZMod, not_prime_zero, zero_tsub]",
+    "method": "simplification",
     "depth": 0
    },
    {
@@ -1055,6 +1058,7 @@
     "unit": "conclusion",
     "prop": "iff (prime p) (Eq (Fintype__card (Units (ZMod p))) (minus p 1))",
     "by": "rw [ZMod.card_units_eq_totient, Nat.totient_eq_iff_prime <| NeZero.pos p]",
+    "method": "rewriting",
     "depth": 1
    }
   ]
@@ -1079,18 +1083,21 @@
     "unit": "conclusion",
     "prop": "iff (Eq (Nat__totient 0) 1) (or (Eq 0 1) (Eq 0 2))",
     "by": "simp",
+    "method": "simplification",
     "depth": 0
    },
    {
     "unit": "conclusion",
     "prop": "iff (Eq (Nat__totient 1) 1) (or (Eq 1 1) (Eq 1 2))",
     "by": "simp",
+    "method": "simplification",
     "depth": 0
    },
    {
     "unit": "conclusion",
     "prop": "iff (Eq (Nat__totient 2) 1) (or (Eq 2 1) (Eq 2 2))",
     "by": "simp",
+    "method": "simplification",
     "depth": 0
    },
    {
@@ -1150,6 +1157,7 @@
     "unit": "conclusion",
     "prop": "iff (odd (Nat__totient n)) (Eq (Nat__totient n) 1)",
     "by": "simp [Nat.odd_totient_iff, Nat.totient_eq_one_iff]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -1253,6 +1261,7 @@
     "unit": "conclusion",
     "prop": "Eq (Nat__totient (pow p (Nat__factorization__app n p))) (times (pow p (minus (Nat__factorization__app n p) 1)) (minus p 1))",
     "by": "rw [totient_prime_pow (prime_of_mem_primeFactors hp) h]",
+    "method": "rewriting",
     "depth": 1
    }
   ]
@@ -1281,6 +1290,7 @@
     "unit": "conclusion",
     "prop": "Eq (times (Nat__totient n) (Finset__prod (Nat__primeFactors n) (p => p))) (times n (Finset__prod (Nat__primeFactors n) (p1 => minus p1 1)))",
     "by": "simp [hn]",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -1337,12 +1347,14 @@
     "unit": "conclusion",
     "prop": "(Lt 0 (Nat__factorization__app n p))",
     "by": "rw [Finsupp.mem_support_iff, ← zero_lt_iff] at hp",
+    "method": "rewriting",
     "depth": 1
    },
    {
     "unit": "conclusion",
     "prop": "Eq (times (times (pow p (minus (Nat__factorization__app n p) 1)) (minus p 1)) p) (times (pow p (Nat__factorization__app n p)) (minus p 1))",
     "by": "rw [mul_comm, ← mul_assoc, ← pow_succ', Nat.sub_one, Nat.succ_pred_eq_of_pos hp]",
+    "method": "rewriting",
     "depth": 1
    }
   ]
@@ -1389,6 +1401,7 @@
     "unit": "conclusion",
     "prop": "Eq (Nat__totient n) (times n (Finset__prod (Nat__primeFactors n) (p => minus 1 (Inv__inv p))))",
     "by": "simp [hn]",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -1412,17 +1425,12 @@
     "unit": "conclusion",
     "prop": "Neq n 0",
     "by": "simp [hn]",
+    "method": "simplification",
     "depth": 1
    },
    {
     "unit": "verify",
     "prop": "(Neq (Finset__prod (Nat__primeFactors n) (p => p)) 0)",
-    "by": "have hpQ : (∏ p ∈ n.primeFactors, (p : ℚ)) ≠ 0",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
-    "prop": "Eq (Nat__totient n) (times n (Finset__prod (Nat__primeFactors n) (p1 => minus 1 (Inv__inv p1))))",
     "by": "have hpQ : (∏ p ∈ n.primeFactors, (p : ℚ)) ≠ 0",
     "depth": 1
    },
@@ -1481,6 +1489,7 @@
     "unit": "conclusion",
     "prop": "Eq (minus p 1) (times (minus 1 (Inv__inv p)) p)",
     "by": "rw [sub_mul, one_mul, mul_comm, mul_inv_cancel₀ hp', cast_pred hp]",
+    "method": "rewriting",
     "depth": 2
    }
   ]
@@ -1650,6 +1659,7 @@
     "unit": "conclusion",
     "prop": "Leq (times (Nat__totient 0) (Nat__totient b)) (Nat__totient (times 0 b))",
     "by": "simp",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -1707,6 +1717,7 @@
     "unit": "conclusion",
     "prop": "divide (Nat__totient 0) (Nat__totient b)",
     "by": "simp [zero_dvd_iff.1 h]",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -1740,6 +1751,7 @@
     "unit": "conclusion",
     "prop": "divide (Nat__totient a) (Nat__totient 0)",
     "by": "simp",
+    "method": "simplification",
     "depth": 2
    },
    {
@@ -1804,12 +1816,14 @@
     "unit": "conclusion",
     "prop": "(Eq (times (Nat__totient p) (Nat__totient (times p n))) (times (Nat__totient p) (times (Nat__totient n) p)))",
     "by": "rw [gcd_eq_left h, mul_assoc] at h1",
+    "method": "rewriting",
     "depth": 0
    },
    {
     "unit": "conclusion",
     "prop": "Eq (Nat__totient (times p n)) (times p (Nat__totient n))",
     "by": "simpa [(totient_pos.2 hp.pos).ne', mul_comm] using h1",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -1828,6 +1842,7 @@
     "unit": "conclusion",
     "prop": "Nat__Coprime p n",
     "by": "simpa [h] using coprime_or_dvd_of_prime hp n",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -1840,6 +1855,7 @@
     "unit": "conclusion",
     "prop": "Eq (Nat__totient (times 2 n)) (Nat__totient n)",
     "by": "rw [totient_mul_of_prime_of_not_dvd prime_two hn.not_two_dvd_nat, Nat.add_one_sub_one 1, one_mul]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -1868,12 +1884,14 @@
     "unit": "conclusion",
     "prop": "(Eq b 0)",
     "by": "rw [ha, totient_zero, eq_comm, totient_eq_zero] at h'",
+    "method": "rewriting",
     "depth": 1
    },
    {
     "unit": "conclusion",
     "prop": "or (Eq a b) (Eq (times 2 a) b)",
     "by": "simp [ha, h']",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -1907,6 +1925,7 @@
     "unit": "conclusion",
     "prop": "(Eq a 0)",
     "by": "rw [hb, totient_zero, totient_eq_zero] at h'",
+    "method": "rewriting",
     "depth": 2
    },
    {
@@ -1972,6 +1991,7 @@
     "unit": "conclusion",
     "prop": "(or (Eq c 1) (Eq c 2))",
     "by": "rw [totient_mul this, eq_comm, mul_eq_left (totient_eq_zero.not.mpr ha),",
+    "method": "rewriting",
     "depth": 2
    },
    {
@@ -1998,6 +2018,7 @@
     "unit": "conclusion",
     "prop": "or (Eq a (times a 1)) (Eq (times 2 a) (times a 1))",
     "by": "simp",
+    "method": "simplification",
     "depth": 2
    },
    {
@@ -2019,6 +2040,7 @@
     "unit": "conclusion",
     "prop": "or (Eq a (times a 2)) (Eq (times 2 a) (times a 2))",
     "by": "simp [mul_comm]",
+    "method": "simplification",
     "depth": 2
    },
    {
@@ -2078,6 +2100,7 @@
     "unit": "conclusion",
     "prop": "(Eq (Nat__totient a) (Nat__totient (times (times p a) d)))",
     "by": "rw [← mul_assoc, mul_comm a] at h'",
+    "method": "rewriting",
     "depth": 4
    },
    {
@@ -2126,6 +2149,7 @@
     "unit": "conclusion",
     "prop": "Neq (times (times a p) d) 0",
     "by": "rwa [mul_assoc]",
+    "method": "rewriting",
     "depth": 3
    }
   ]
@@ -2154,12 +2178,14 @@
     "unit": "conclusion",
     "prop": "(Eq b 0)",
     "by": "rw [ha', totient_zero, eq_comm, totient_eq_zero] at h'",
+    "method": "rewriting",
     "depth": 1
    },
    {
     "unit": "conclusion",
     "prop": "Eq a b",
     "by": "rw [h', ha']",
+    "method": "rewriting",
     "depth": 1
    },
    {
@@ -2183,6 +2209,7 @@
     "unit": "conclusion",
     "prop": "(Eq 2 1)",
     "by": "rw [← h, totient_mul_of_prime_of_dvd (prime_two) (even_iff_two_dvd.mp ha), eq_comm,",
+    "method": "rewriting",
     "depth": 1
    },
    {
@@ -2243,6 +2270,7 @@
     "unit": "conclusion",
     "prop": "Eq (pow p (minus (minus (times k (times (pow p (minus k 1)) p)) (times k (pow p (minus k 1)))) (pow p (minus k 1)))) (pow p (minus (minus (times (pow p (minus k 1)) (times p k)) (times (pow p (minus k 1)) k)) (pow p (minus k 1))))",
     "by": "ring_nf",
+    "method": "computation",
     "depth": 0
    }
   ]
@@ -2258,21 +2286,10 @@
     "depth": 0
    },
    {
-    "unit": "enough",
-    "prop": "divide (Finset__prod (Nat__primeFactors n) (p1 => pow p1 (div (Nat__totient n) (minus p1 1)))) (pow n (Nat__totient n))",
-    "by": "have := Nat.prod_primeFactors_dvd n",
-    "depth": 0
-   },
-   {
     "unit": "conclusion",
     "prop": "(divide (Finset__prod (Nat__primeFactors n) (x => pow x (Nat__totient n))) (pow n (Nat__totient n)))",
     "by": "rw [← Nat.pow_dvd_pow_iff (Nat.totient_pos.mpr hn).ne', ← Finset.prod_pow] at this",
-    "depth": 0
-   },
-   {
-    "unit": "enough",
-    "prop": "divide (Finset__prod (Nat__primeFactors n) (p => pow p (div (Nat__totient n) (minus p 1)))) (pow n (Nat__totient n))",
-    "by": "rw [← Nat.pow_dvd_pow_iff (Nat.totient_pos.mpr hn).ne', ← Finset.prod_pow] at this",
+    "method": "rewriting",
     "depth": 0
    },
    {

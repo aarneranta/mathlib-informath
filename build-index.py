@@ -48,7 +48,7 @@ CHUNK = 12
 PROOF_TIMEOUT = 300               # seconds for one call of -proof-text in the fast languages
 # the proof texts indented by the assumptions open at each line, with the goals
 # of the assumptions, and the variables and hypotheses of a scope in one line
-PROOF_FLAGS = ['-proof-indent', '-proof-goals', '-proof-merge-hypos']
+PROOF_FLAGS = ['-proof-indent', '-proof-goals', '-proof-merge-hypos', '-proof-no-cite']
 TACTIC_LANGUAGES = LANGUAGES     # the languages of the proof texts of tactic proofs
 TMP = '.index-'                   # prefix of the temporary files
 OUT = 'out'                       # the directory of the exported modules

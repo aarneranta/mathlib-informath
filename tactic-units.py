@@ -39,6 +39,20 @@ INTRO = ('intro', 'intros', 'rintro', 'introv')
 DERIVED = ('have', 'haveI', 'obtain', 'rcases', 'specialize', 'replace', 'choose', 'lift')
 CASES = ('by_cases', 'byCases', 'cases', 'rcases', 'casesm', 'obtain', 'match', 'split')
 INDUCTION = ('induction', 'induction\'')
+# how a step that closes a goal proves it, by its tactic: "by rewriting, P"
+# (RunInformath reads the method); a step that applies a lemma (exact, apply)
+# has none, as its tactic names the lemma
+METHODS = {
+    'definition': ('rfl', 'eq_self_iff_true', 'unfold', 'delta'),
+    'rewriting': ('rw', 'rwa', 'rewrite', 'erw', 'nth_rw', 'nth_rewrite', 'simp_rw', 'conv', 'conv_lhs', 'conv_rhs'),
+    'simplification': ('simp', 'simpa', 'simp_all', 'dsimp', 'field_simp', 'simp_arith', 'norm_cast', 'push_cast',
+                       'push_neg', 'simp?', 'simpa?'),
+    'computation': ('ring', 'ring_nf', 'norm_num', 'omega', 'linarith', 'nlinarith', 'positivity', 'decide',
+                    'abel', 'group', 'noncomm_ring', 'linear_combination', 'polyrith', 'zify', 'qify', 'interval_cases'),
+    'routine': ('grind', 'aesop', 'tauto', 'trivial', 'itauto', 'cc', 'subsingleton', 'gcongr', 'bound',
+                'continuity', 'fun_prop', 'measurability', 'mono', 'exact_mod_cast', 'assumption_mod_cast', 'contradiction'),
+}
+METHOD = {t: m for m, ts in METHODS.items() for t in ts}
 
 
 def tactic_name(step):
@@ -73,6 +87,28 @@ def hyps(goal):
 
 def target(goal):
     return clean(goal['target'])
+
+
+def method(st, name):
+    """The method of a step that closes a goal or derives a fact, if its tactic tells one."""
+    if re.match(r'exact\s+rfl\b', st['tactic'].strip()):
+        return 'definition'
+    return METHOD.get(name.rstrip('!'))
+
+
+BINDER = re.compile(r"([A-Za-z_][A-Za-z0-9_']*)\s*=>")
+
+
+def alpha(target):
+    """A target with its bound variables named by their order: two targets
+    that differ only in those names are the same goal."""
+    names = []
+    for b in BINDER.findall(target):
+        if b not in names:
+            names.append(b)
+    ren = {b: '_b%d' % i for i, b in enumerate(names)}
+    return re.sub(r"(?<![A-Za-z0-9_'])[A-Za-z_][A-Za-z0-9_']*(?![A-Za-z0-9_'])",
+                  lambda m: ren.get(m.group(0), m.group(0)), target)
 
 
 def is_prop(ty):
@@ -191,15 +227,15 @@ def units_of_proof(steps):
                     unit['goal'] = target(main)
                 add(unit, hyps(main))
             elif all(is_prop(t) for _, t in new):
-                add({'unit': 'conclusion', 'prop': conj([t[len('Proof '):] for _, t in new]),
-                     'by': st['tactic']}, hyps(main) if main else hb)
+                add(with_method({'unit': 'conclusion', 'prop': conj([t[len('Proof '):] for _, t in new]),
+                                 'by': st['tactic']}, st, name), hyps(main) if main else hb)
             else:
                 add({'unit': 'hypos', 'hypos': new, 'by': st['tactic']}, hyps(main) if main else hb)
         if closed:
-            add({'unit': 'conclusion', 'prop': target(before), 'by': st['tactic']}, hb)
+            add(with_method({'unit': 'conclusion', 'prop': target(before), 'by': st['tactic']}, st, name), hb)
             if open_substs:
                 open_substs.pop()
-        elif main and target(main) != target(before) or len(new_goals) > 1:
+        elif main and alpha(target(main)) != alpha(target(before)) or len(new_goals) > 1:
             if name in INTRO:
                 # an assumption that substitutes (rintro rfl) leaves no hypothesis
                 ab = split_if(target(before))
@@ -208,9 +244,19 @@ def units_of_proof(steps):
                     add({'unit': 'hypos', 'hypos': [['_h', 'Proof (%s)' % ab[0]]],
                          'goal': ab[1], 'by': st['tactic']}, hb)
             else:
-                targets = [target(g) for g in new_goals]
-                add({'unit': 'enough', 'prop': conj(targets), 'by': st['tactic']}, hb)
+                # not the goal as it was, nor a fact just stated to be verified
+                said = {alpha(target(before))} | {alpha(u['prop']) for u in units[-1:] if u['unit'] == 'verify'}
+                targets = [target(g) for g in new_goals if alpha(target(g)) not in said]
+                if targets:
+                    add({'unit': 'enough', 'prop': conj(targets), 'by': st['tactic']}, hb)
     return units
+
+
+def with_method(unit, st, name):
+    m = method(st, name)
+    if m:
+        unit['method'] = m
+    return unit
 
 
 def inside(s, c):
@@ -224,10 +270,14 @@ def main():
     decls = json.load(open('%s/%s.json' % (outdir, mod)))
     steps = json.load(open('%s/%s-tactics.json' % (outdir, mod)))
     proofs = []
+    names = {d['lean'] for d in decls}
     for d in decls:
         if d['kind'] != 'theorem' or d.get('definiens'):
             continue
-        mine = [s for s in steps if d['line'] <= s['line'] <= d['endLine']]
+        # the steps of the theorem by name (an additive twin has its
+        # original's, translated), else by their lines
+        mine = [s for s in steps if s.get('decl') == d['lean']] or \
+               [s for s in steps if d['line'] <= s['line'] <= d['endLine'] and s.get('decl') not in names]
         # the tactics inside t <;> u are told by the combination itself
         combined = [s for s in mine if '<;>' in s['kind']]
         mine = [s for s in mine if not any(inside(s, c) for c in combined)]

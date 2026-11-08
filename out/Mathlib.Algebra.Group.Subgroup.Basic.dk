@@ -7,7 +7,8 @@ div_mem_comm_iff : (G : Set) -> (_ : Proof (Group G)) -> (S : Set) -> (H : Elem 
 sub_mem_comm_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (S : Set) -> (H : Elem S) -> (_ : Proof (AddSubgroupClass S G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Membership__mem H (minus a b)) (Membership__mem H (minus b a))).
 
 (; //LEAN:AddSubgroup.sub_mem_comm_iff ;)
-AddSubgroup__sub_mem_comm_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Membership__mem H (minus a b)) (Membership__mem H (minus b a))).
+def AddSubgroup__sub_mem_comm_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Membership__mem H (minus a b)) (Membership__mem H (minus b a))) :=
+  G => x => H => a => b => sub_mem_comm_iff G (AddSubgroup G) H a b.
 
 (; //LEAN:Subgroup.div_mem_comm_iff ;)
 def Subgroup__div_mem_comm_iff : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Membership__mem H (div a b)) (Membership__mem H (div b a))) :=
@@ -18,17 +19,20 @@ def Subgroup__prod : (H : Elem (Subgroup G)) -> (K : Elem (Subgroup N)) -> Elem 
   H => K => Subgroup__mk (Submonoid__prod H K) (Subgroup__prod___proof_1 H K).
 
 (; //LEAN:AddSubgroup.prod ;)
-AddSubgroup__prod : (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup N)) -> Elem (AddSubgroup (Prod G N)).
+def AddSubgroup__prod : (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup N)) -> Elem (AddSubgroup (Prod G N)) :=
+  H => K => AddSubgroup__mk (AddSubmonoid__prod H K) (AddSubgroup__prod___proof_1 H K).
 
 (; //LEAN:Subgroup.coe_prod ;)
 def Subgroup__coe_prod : (G : Set) -> (_ : Proof (Group G)) -> (N : Set) -> (_ : Proof (Group N)) -> (H : Elem (Subgroup G)) -> (K : Elem (Subgroup N)) -> Proof (Eqt (powerset (Prod G N)) (Subgroup__prod H K) (SProd__sprod H K)) :=
   G => x => N => x1 => H => K => rfl.
 
 (; //LEAN:AddSubgroup.coe_prod ;)
-AddSubgroup__coe_prod : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup N)) -> Proof (Eqt (powerset (Prod G N)) (AddSubgroup__prod H K) (SProd__sprod H K)).
+def AddSubgroup__coe_prod : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup N)) -> Proof (Eqt (powerset (Prod G N)) (AddSubgroup__prod H K) (SProd__sprod H K)) :=
+  G => x => N => x1 => H => K => rfl.
 
 (; //LEAN:AddSubgroup.mem_prod ;)
-AddSubgroup__mem_prod : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup N)) -> (p : Elem (Prod G N)) -> Proof (iff (Membership__mem (AddSubgroup__prod H K) p) (and (Membership__mem H (Prod__fst p)) (Membership__mem K (Prod__snd p)))).
+def AddSubgroup__mem_prod : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup N)) -> (p : Elem (Prod G N)) -> Proof (iff (Membership__mem (AddSubgroup__prod H K) p) (and (Membership__mem H (Prod__fst p)) (Membership__mem K (Prod__snd p)))) :=
+  G => x => N => x1 => H => K => p => Iff__rfl (Membership__mem (AddSubgroup__prod H K) p).
 
 (; //LEAN:Subgroup.mem_prod ;)
 def Subgroup__mem_prod : (G : Set) -> (_ : Proof (Group G)) -> (N : Set) -> (_ : Proof (Group N)) -> (H : Elem (Subgroup G)) -> (K : Elem (Subgroup N)) -> (p : Elem (Prod G N)) -> Proof (iff (Membership__mem (Subgroup__prod H K) p) (and (Membership__mem H (Prod__fst p)) (Membership__mem K (Prod__snd p)))) :=
@@ -39,17 +43,20 @@ def Subgroup__prod_mono : (G : Set) -> (_ : Proof (Group G)) -> (N : Set) -> (_ 
   G => x => N => x1 => forallI (Subgroup G) (_s => forall (Subgroup G) (_s'1 => if (Leq _s _s'1) (forall (Subgroup N) (_t3 => forall (Subgroup N) (_t'4 => if (Leq _t3 _t'4) (Set__Subset (SProd__sprod _s _t3) (SProd__sprod _s'1 _t'4))))))) (_s => forallI (Subgroup G) (_s' => if (Leq _s _s') (forall (Subgroup N) (_t2 => forall (Subgroup N) (_t'3 => if (Leq _t2 _t'3) (Set__Subset (SProd__sprod _s _t2) (SProd__sprod _s' _t'3)))))) (_s' => ifI ((x4 => x5 => Leq x4 x5) _s _s') (forall (Subgroup N) (_t1 => forall (Subgroup N) (_t'2 => if (Leq _t1 _t'2) (Set__Subset (SProd__sprod _s _t1) (SProd__sprod _s' _t'2))))) (hs => forallI (Subgroup N) (_t => forall (Subgroup N) (_t'1 => if (Leq _t _t'1) (Set__Subset (SProd__sprod _s _t) (SProd__sprod _s' _t'1)))) (_t => forallI (Subgroup N) (_t' => if (Leq _t _t') (Set__Subset (SProd__sprod _s _t) (SProd__sprod _s' _t'))) (_t' => ifI ((x2 => x3 => Leq x2 x3) _t _t') (Set__Subset (SProd__sprod _s _t) (SProd__sprod _s' _t')) (ht => Set__prod_mono G N _s _s' _t _t' hs ht)))))).
 
 (; //LEAN:AddSubgroup.prod_mono ;)
-AddSubgroup__prod_mono : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> Proof (Relator__LiftFun (x2 => x3 => Leq x2 x3) (Relator__LiftFun (x4 => x5 => Leq x4 x5) (x6 => x7 => Leq x6 x7)) AddSubgroup__prod AddSubgroup__prod).
+def AddSubgroup__prod_mono : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> Proof (Relator__LiftFun (x2 => x3 => Leq x2 x3) (Relator__LiftFun (x4 => x5 => Leq x4 x5) (x6 => x7 => Leq x6 x7)) AddSubgroup__prod AddSubgroup__prod) :=
+  G => x => N => x1 => forallI (AddSubgroup G) (_s => forall (AddSubgroup G) (_s'1 => if (Leq _s _s'1) (forall (AddSubgroup N) (_t3 => forall (AddSubgroup N) (_t'4 => if (Leq _t3 _t'4) (Set__Subset (SProd__sprod _s _t3) (SProd__sprod _s'1 _t'4))))))) (_s => forallI (AddSubgroup G) (_s' => if (Leq _s _s') (forall (AddSubgroup N) (_t2 => forall (AddSubgroup N) (_t'3 => if (Leq _t2 _t'3) (Set__Subset (SProd__sprod _s _t2) (SProd__sprod _s' _t'3)))))) (_s' => ifI ((x4 => x5 => Leq x4 x5) _s _s') (forall (AddSubgroup N) (_t1 => forall (AddSubgroup N) (_t'2 => if (Leq _t1 _t'2) (Set__Subset (SProd__sprod _s _t1) (SProd__sprod _s' _t'2))))) (hs => forallI (AddSubgroup N) (_t => forall (AddSubgroup N) (_t'1 => if (Leq _t _t'1) (Set__Subset (SProd__sprod _s _t) (SProd__sprod _s' _t'1)))) (_t => forallI (AddSubgroup N) (_t' => if (Leq _t _t') (Set__Subset (SProd__sprod _s _t) (SProd__sprod _s' _t'))) (_t' => ifI ((x2 => x3 => Leq x2 x3) _t _t') (Set__Subset (SProd__sprod _s _t) (SProd__sprod _s' _t')) (ht => Set__prod_mono G N _s _s' _t _t' hs ht)))))).
 
 (; //LEAN:AddSubgroup.prod_mono_right ;)
-AddSubgroup__prod_mono_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (K : Elem (AddSubgroup G)) -> Proof (Monotone (t => AddSubgroup__prod K t)).
+def AddSubgroup__prod_mono_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (K : Elem (AddSubgroup G)) -> Proof (Monotone (t => AddSubgroup__prod K t)) :=
+  G => x => N => x1 => K => AddSubgroup__prod_mono G N K K (le_refl (AddSubgroup G) K).
 
 (; //LEAN:Subgroup.prod_mono_right ;)
 def Subgroup__prod_mono_right : (G : Set) -> (_ : Proof (Group G)) -> (N : Set) -> (_ : Proof (Group N)) -> (K : Elem (Subgroup G)) -> Proof (Monotone (t => Subgroup__prod K t)) :=
   G => x => N => x1 => K => Subgroup__prod_mono G N K K (le_refl (Subgroup G) K).
 
 (; //LEAN:AddSubgroup.prod_mono_left ;)
-AddSubgroup__prod_mono_left : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (H : Elem (AddSubgroup N)) -> Proof (Monotone (K => AddSubgroup__prod K H)).
+def AddSubgroup__prod_mono_left : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (H : Elem (AddSubgroup N)) -> Proof (Monotone (K => AddSubgroup__prod K H)) :=
+  G => x => N => x1 => H => forallI (AddSubgroup G) (x2 => forall (AddSubgroup G) (x8 => if (Leq x2 x8) ((x9 => x10 => Leq x9 x10) (AddSubgroup__prod x2 H) (AddSubgroup__prod x8 H)))) (x2 => forallI (AddSubgroup G) (x3 => if (Leq x2 x3) ((x6 => x7 => Leq x6 x7) (AddSubgroup__prod x2 H) (AddSubgroup__prod x3 H))) (x3 => ifI (Leq x2 x3) ((x4 => x5 => Leq x4 x5) (AddSubgroup__prod x2 H) (AddSubgroup__prod x3 H)) (hs => AddSubgroup__prod_mono G N x2 x3 hs H H (le_refl (AddSubgroup N) H)))).
 
 (; //LEAN:Subgroup.prod_mono_left ;)
 def Subgroup__prod_mono_left : (G : Set) -> (_ : Proof (Group G)) -> (N : Set) -> (_ : Proof (Group N)) -> (H : Elem (Subgroup N)) -> Proof (Monotone (K => Subgroup__prod K H)) :=
@@ -59,23 +66,27 @@ def Subgroup__prod_mono_left : (G : Set) -> (_ : Proof (Group G)) -> (N : Set) -
 Subgroup__prod_top : (G : Set) -> (_ : Proof (Group G)) -> (N : Set) -> (_ : Proof (Group N)) -> (K : Elem (Subgroup G)) -> Proof (Eqt (Subgroup (Prod G N)) (Subgroup__prod K Top__top) (Subgroup__comap (MonoidHom__fst G N) K)).
 
 (; //LEAN:AddSubgroup.prod_top ;)
-AddSubgroup__prod_top : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (K : Elem (AddSubgroup G)) -> Proof (Eqt (AddSubgroup (Prod G N)) (AddSubgroup__prod K Top__top) (AddSubgroup__comap (AddMonoidHom__fst G N) K)).
+def AddSubgroup__prod_top : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (K : Elem (AddSubgroup G)) -> Proof (Eqt (AddSubgroup (Prod G N)) (AddSubgroup__prod K Top__top) (AddSubgroup__comap (AddMonoidHom__fst G N) K)) :=
+  G => x => N => x1 => K => AddSubgroup__ext (Prod G N) (AddSubgroup__prod K Top__top) (AddSubgroup__comap (AddMonoidHom__fst G N) K) (forallI (Prod G N) (x2 => iff (Membership__mem (AddSubgroup__prod K Top__top) x2) (Membership__mem (AddSubgroup__comap (AddMonoidHom__fst G N) K) x2)) (x2 => of_eq_true (iff (Membership__mem (AddSubgroup__prod K Top__top) x2) (Membership__mem (AddSubgroup__comap (AddMonoidHom__fst G N) K) x2)) (Eq__trans Prop (iff (Membership__mem (AddSubgroup__prod K Top__top) x2) (Membership__mem (AddSubgroup__comap (AddMonoidHom__fst G N) K) x2)) (iff (Membership__mem K (Prod__fst x2)) (Membership__mem K (Prod__fst x2))) True (congr Prop Prop (iff (Membership__mem (AddSubgroup__prod K Top__top) x2)) (iff (Membership__mem K (Prod__fst x2))) (Membership__mem (AddSubgroup__comap (AddMonoidHom__fst G N) K) x2) (Membership__mem K (Prod__fst x2)) (congrArg Prop (Prop -> Prop) (Membership__mem (AddSubgroup__prod K Top__top) x2) (Membership__mem K (Prod__fst x2)) iff (Eq__trans Prop (Membership__mem (AddSubgroup__prod K Top__top) x2) (and (Membership__mem K (Prod__fst x2)) (Membership__mem Top__top (Prod__snd x2))) (Membership__mem K (Prod__fst x2)) (propext (AddSubgroup__mem_prod G N K Top__top x2)) (Eq__trans Prop (and (Membership__mem K (Prod__fst x2)) (Membership__mem Top__top (Prod__snd x2))) (and (Membership__mem K (Prod__fst x2)) True) (Membership__mem K (Prod__fst x2)) (congrArg Prop Prop (Membership__mem Top__top (Prod__snd x2)) True (and (Membership__mem K (Prod__fst x2))) (eq_true (Membership__mem Top__top (Prod__snd x2)) (AddSubgroup__mem_top N (Prod__snd x2)))) (and_true (Membership__mem K (Prod__fst x2)))))) (propext (AddSubgroup__mem_comap (Prod G N) G K (AddMonoidHom__fst G N) x2))) (iff_self (Membership__mem K (Prod__fst x2)))))).
 
 (; //LEAN:AddSubgroup.top_prod ;)
-AddSubgroup__top_prod : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (H : Elem (AddSubgroup N)) -> Proof (Eqt (AddSubgroup (Prod G N)) (AddSubgroup__prod Top__top H) (AddSubgroup__comap (AddMonoidHom__snd G N) H)).
+def AddSubgroup__top_prod : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (H : Elem (AddSubgroup N)) -> Proof (Eqt (AddSubgroup (Prod G N)) (AddSubgroup__prod Top__top H) (AddSubgroup__comap (AddMonoidHom__snd G N) H)) :=
+  G => x => N => x1 => H => AddSubgroup__ext (Prod G N) (AddSubgroup__prod Top__top H) (AddSubgroup__comap (AddMonoidHom__snd G N) H) (forallI (Prod G N) (x2 => iff (Membership__mem (AddSubgroup__prod Top__top H) x2) (Membership__mem (AddSubgroup__comap (AddMonoidHom__snd G N) H) x2)) (x2 => of_eq_true (iff (Membership__mem (AddSubgroup__prod Top__top H) x2) (Membership__mem (AddSubgroup__comap (AddMonoidHom__snd G N) H) x2)) (Eq__trans Prop (iff (Membership__mem (AddSubgroup__prod Top__top H) x2) (Membership__mem (AddSubgroup__comap (AddMonoidHom__snd G N) H) x2)) (iff (Membership__mem H (Prod__snd x2)) (Membership__mem H (Prod__snd x2))) True (congr Prop Prop (iff (Membership__mem (AddSubgroup__prod Top__top H) x2)) (iff (Membership__mem H (Prod__snd x2))) (Membership__mem (AddSubgroup__comap (AddMonoidHom__snd G N) H) x2) (Membership__mem H (Prod__snd x2)) (congrArg Prop (Prop -> Prop) (Membership__mem (AddSubgroup__prod Top__top H) x2) (Membership__mem H (Prod__snd x2)) iff (Eq__trans Prop (Membership__mem (AddSubgroup__prod Top__top H) x2) (and (Membership__mem Top__top (Prod__fst x2)) (Membership__mem H (Prod__snd x2))) (Membership__mem H (Prod__snd x2)) (propext (AddSubgroup__mem_prod G N Top__top H x2)) (Eq__trans Prop (and (Membership__mem Top__top (Prod__fst x2)) (Membership__mem H (Prod__snd x2))) (and True (Membership__mem H (Prod__snd x2))) (Membership__mem H (Prod__snd x2)) (congrFun' Prop Prop (and (Membership__mem Top__top (Prod__fst x2))) (and True) (congrArg Prop (Prop -> Prop) (Membership__mem Top__top (Prod__fst x2)) True and (eq_true (Membership__mem Top__top (Prod__fst x2)) (AddSubgroup__mem_top G (Prod__fst x2)))) (Membership__mem H (Prod__snd x2))) (true_and (Membership__mem H (Prod__snd x2)))))) (propext (AddSubgroup__mem_comap (Prod G N) N H (AddMonoidHom__snd G N) x2))) (iff_self (Membership__mem H (Prod__snd x2)))))).
 
 (; //LEAN:Subgroup.top_prod ;)
 Subgroup__top_prod : (G : Set) -> (_ : Proof (Group G)) -> (N : Set) -> (_ : Proof (Group N)) -> (H : Elem (Subgroup N)) -> Proof (Eqt (Subgroup (Prod G N)) (Subgroup__prod Top__top H) (Subgroup__comap (MonoidHom__snd G N) H)).
 
 (; //LEAN:AddSubgroup.top_prod_top ;)
-AddSubgroup__top_prod_top : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> Proof (Eqt (AddSubgroup (Prod G N)) (AddSubgroup__prod Top__top Top__top) Top__top).
+def AddSubgroup__top_prod_top : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> Proof (Eqt (AddSubgroup (Prod G N)) (AddSubgroup__prod Top__top Top__top) Top__top) :=
+  G => x => N => x1 => Eq__trans (AddSubgroup (Prod G N)) (AddSubgroup__prod Top__top Top__top) (AddSubgroup__comap (AddMonoidHom__snd G N) Top__top) Top__top (AddSubgroup__top_prod G N Top__top) (AddSubgroup__comap_top (Prod G N) N (AddMonoidHom__snd G N)).
 
 (; //LEAN:Subgroup.top_prod_top ;)
 def Subgroup__top_prod_top : (G : Set) -> (_ : Proof (Group G)) -> (N : Set) -> (_ : Proof (Group N)) -> Proof (Eqt (Subgroup (Prod G N)) (Subgroup__prod Top__top Top__top) Top__top) :=
   G => x => N => x1 => Eq__trans (Subgroup (Prod G N)) (Subgroup__prod Top__top Top__top) (Subgroup__comap (MonoidHom__snd G N) Top__top) Top__top (Subgroup__top_prod G N Top__top) (Subgroup__comap_top (Prod G N) N (MonoidHom__snd G N)).
 
 (; //LEAN:AddSubgroup.bot_prod_bot ;)
-AddSubgroup__bot_prod_bot : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> Proof (Eqt (AddSubgroup (Prod G N)) (AddSubgroup__prod Bot__bot Bot__bot) Bot__bot).
+def AddSubgroup__bot_prod_bot : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> Proof (Eqt (AddSubgroup (Prod G N)) (AddSubgroup__prod Bot__bot Bot__bot) Bot__bot) :=
+  G => x => N => x1 => SetLike__coe_injective (AddSubgroup (Prod G N)) (Prod G N) (AddSubgroup__prod Bot__bot Bot__bot) Bot__bot (of_eq_true (Eqt (powerset (Prod G N)) (AddSubgroup__prod Bot__bot Bot__bot) (Singleton__singleton 0)) (Eq__trans Prop (Eqt (powerset (Prod G N)) (AddSubgroup__prod Bot__bot Bot__bot) (Singleton__singleton 0)) (Eqt (Prod G N) (Prod__mk 0 0) 0) True (Eq__trans Prop (Eqt (powerset (Prod G N)) (AddSubgroup__prod Bot__bot Bot__bot) (Singleton__singleton 0)) (Eqt (powerset (Prod G N)) (Singleton__singleton (Prod__mk 0 0)) (Singleton__singleton 0)) (Eqt (Prod G N) (Prod__mk 0 0) 0) (congrFun' (powerset (Prod G N)) Prop (Eq (AddSubgroup__prod Bot__bot Bot__bot)) (Eq (Singleton__singleton (Prod__mk 0 0))) (congrArg (powerset (Prod G N)) (Elem (powerset (Prod G N)) -> Prop) (AddSubgroup__prod Bot__bot Bot__bot) (Singleton__singleton (Prod__mk 0 0)) Eq (Set__singleton_prod_singleton G N 0 0)) (Singleton__singleton 0)) (propext (Set__singleton_eq_singleton_iff (Prod G N) (Prod__mk 0 0) 0))) (Eq__trans Prop (Eqt (Prod G N) (Prod__mk 0 0) 0) (and (Eqt G 0 0) (Eqt N 0 0)) True (propext (Prod__mk_eq_zero G N 0 0)) (Eq__trans Prop (and (Eqt G 0 0) (Eqt N 0 0)) (and True True) True (congr Prop Prop (and (Eqt G 0 0)) (and True) (Eqt N 0 0) True (congrArg Prop (Prop -> Prop) (Eqt G 0 0) True and (eq_self G 0)) (eq_self N 0)) (and_self True))))).
 
 (; //LEAN:Subgroup.bot_prod_bot ;)
 def Subgroup__bot_prod_bot : (G : Set) -> (_ : Proof (Group G)) -> (N : Set) -> (_ : Proof (Group N)) -> Proof (Eqt (Subgroup (Prod G N)) (Subgroup__prod Bot__bot Bot__bot) Bot__bot) :=
@@ -110,56 +121,65 @@ def Subgroup__prodEquiv : (H : Elem (Subgroup G)) -> (K : Elem (Subgroup N)) -> 
   H => K => MulEquiv__mk (Equiv__Set__prod H K) (Subgroup__prodEquiv___proof_1 H K).
 
 (; //LEAN:AddSubgroup.prodEquiv ;)
-AddSubgroup__prodEquiv : (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup N)) -> Elem (AddEquiv (Subtype (x2 => Membership__mem (AddSubgroup__prod H K) x2)) (Prod (Subtype (x3 => Membership__mem H x3)) (Subtype (x4 => Membership__mem K x4)))).
+def AddSubgroup__prodEquiv : (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup N)) -> Elem (AddEquiv (Subtype (x2 => Membership__mem (AddSubgroup__prod H K) x2)) (Prod (Subtype (x3 => Membership__mem H x3)) (Subtype (x4 => Membership__mem K x4)))) :=
+  H => K => AddEquiv__mk (Equiv__Set__prod H K) (AddSubgroup__prodEquiv___proof_1 H K).
 
 (; //LEAN:Subgroup.pi ;)
 def Subgroup__pi : (I : Elem (powerset X)) -> (H : ((i1 : Elem X) -> Subgroup (f i1))) -> Elem (Subgroup ((i : Elem X) -> f i)) :=
   I => H => Subgroup__mk (Submonoid__pi I (i => H i)) (Subgroup__pi___proof_1 I H).
 
 (; //LEAN:AddSubgroup.pi ;)
-AddSubgroup__pi : (I : Elem (powerset X)) -> (H : ((i1 : Elem X) -> AddSubgroup (f i1))) -> Elem (AddSubgroup ((i : Elem X) -> f i)).
+def AddSubgroup__pi : (I : Elem (powerset X)) -> (H : ((i1 : Elem X) -> AddSubgroup (f i1))) -> Elem (AddSubgroup ((i : Elem X) -> f i)) :=
+  I => H => AddSubgroup__mk (AddSubmonoid__pi I (i => H i)) (AddSubgroup__pi___proof_1 I H).
 
 (; //LEAN:AddSubgroup.coe_pi ;)
-AddSubgroup__coe_pi : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i3 : Elem X) -> AddGroup (f i3))) -> (I : Elem (powerset X)) -> (H : ((i2 : Elem X) -> AddSubgroup (f i2))) -> Proof (Eqt (powerset ((i : Elem X) -> f i)) (AddSubgroup__pi I H) (Set__pi I (i1 => H i1))).
+def AddSubgroup__coe_pi : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i3 : Elem X) -> AddGroup (f i3))) -> (I : Elem (powerset X)) -> (H : ((i2 : Elem X) -> AddSubgroup (f i2))) -> Proof (Eqt (powerset ((i : Elem X) -> f i)) (AddSubgroup__pi I H) (Set__pi I (i1 => H i1))) :=
+  X => f => x => I => H => rfl.
 
 (; //LEAN:Subgroup.coe_pi ;)
 def Subgroup__coe_pi : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i3 : Elem X) -> Group (f i3))) -> (I : Elem (powerset X)) -> (H : ((i2 : Elem X) -> Subgroup (f i2))) -> Proof (Eqt (powerset ((i : Elem X) -> f i)) (Subgroup__pi I H) (Set__pi I (i1 => H i1))) :=
   X => f => x => I => H => rfl.
 
 (; //LEAN:AddSubgroup.mem_pi ;)
-AddSubgroup__mem_pi : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i3 : Elem X) -> AddGroup (f i3))) -> (I : Elem (powerset X)) -> (H : ((i2 : Elem X) -> AddSubgroup (f i2))) -> (p : ((i1 : Elem X) -> f i1)) -> Proof (iff (Membership__mem (AddSubgroup__pi I H) p) (forall X (i => if (Membership__mem I i) (Membership__mem (H i) (p i))))).
+def AddSubgroup__mem_pi : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i3 : Elem X) -> AddGroup (f i3))) -> (I : Elem (powerset X)) -> (H : ((i2 : Elem X) -> AddSubgroup (f i2))) -> (p : ((i1 : Elem X) -> f i1)) -> Proof (iff (Membership__mem (AddSubgroup__pi I H) p) (forall X (i => if (Membership__mem I i) (Membership__mem (H i) (p i))))) :=
+  X => f => x => I => H => p => Iff__rfl (Membership__mem (AddSubgroup__pi I H) p).
 
 (; //LEAN:Subgroup.mem_pi ;)
 def Subgroup__mem_pi : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i3 : Elem X) -> Group (f i3))) -> (I : Elem (powerset X)) -> (H : ((i2 : Elem X) -> Subgroup (f i2))) -> (p : ((i1 : Elem X) -> f i1)) -> Proof (iff (Membership__mem (Subgroup__pi I H) p) (forall X (i => if (Membership__mem I i) (Membership__mem (H i) (p i))))) :=
   X => f => x => I => H => p => Iff__rfl (Membership__mem (Subgroup__pi I H) p).
 
 (; //LEAN:AddSubgroup.pi_top ;)
-AddSubgroup__pi_top : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i2 : Elem X) -> AddGroup (f i2))) -> (I : Elem (powerset X)) -> Proof (Eqt (AddSubgroup ((i : Elem X) -> f i)) (AddSubgroup__pi I (i1 => Top__top)) Top__top).
+def AddSubgroup__pi_top : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i2 : Elem X) -> AddGroup (f i2))) -> (I : Elem (powerset X)) -> Proof (Eqt (AddSubgroup ((i : Elem X) -> f i)) (AddSubgroup__pi I (i1 => Top__top)) Top__top) :=
+  X => f => x => I => AddSubgroup__ext ((i : Elem X) -> f i) (AddSubgroup__pi I (i1 => Top__top)) Top__top (forallI ((i11 : Elem X) -> f i11) (x1 => iff (Membership__mem (AddSubgroup__pi I (i12 => Top__top)) x1) (Membership__mem Top__top x1)) (x1 => of_eq_true (iff (Membership__mem (AddSubgroup__pi I (i2 => Top__top)) x1) (Membership__mem Top__top x1)) (Eq__trans Prop (iff (Membership__mem (AddSubgroup__pi I (i3 => Top__top)) x1) (Membership__mem Top__top x1)) (iff True True) True (congr Prop Prop (iff (Membership__mem (AddSubgroup__pi I (i4 => Top__top)) x1)) (iff True) (Membership__mem Top__top x1) True (congrArg Prop (Prop -> Prop) (Membership__mem (AddSubgroup__pi I (i5 => Top__top)) x1) True iff (Eq__trans Prop (Membership__mem (AddSubgroup__pi I (i6 => Top__top)) x1) (forall X (i7 => if (Membership__mem I i7) (Membership__mem Top__top (x1 i7)))) True (propext (AddSubgroup__mem_pi X f I (i8 => Top__top) x1)) (Eq__trans Prop (forall X (a => if (Membership__mem I a) (Membership__mem Top__top (x1 a)))) (forall X (a1 => True)) True (forall_congr X (a2 => if (Membership__mem I a2) (Membership__mem Top__top (x1 a2))) (a3 => True) (forallI X (i9 => Eqt Prop (if (Membership__mem I i9) (Membership__mem Top__top (x1 i9))) True) (i9 => Eq__trans Prop (if (Membership__mem I i9) (Membership__mem Top__top (x1 i9))) (if (Membership__mem I i9) True) True (implies_congr (Membership__mem I i9) (Membership__mem I i9) (Membership__mem Top__top (x1 i9)) True (Eq__refl (Membership__mem I i9)) (eq_true (Membership__mem Top__top (x1 i9)) (AddSubgroup__mem_top (f i9) (x1 i9)))) (implies_true (Membership__mem I i9))))) (implies_true X)))) (eq_true (Membership__mem Top__top x1) (AddSubgroup__mem_top ((i10 : Elem X) -> f i10) x1))) (iff_self True)))).
 
 (; //LEAN:Subgroup.pi_top ;)
 Subgroup__pi_top : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i2 : Elem X) -> Group (f i2))) -> (I : Elem (powerset X)) -> Proof (Eqt (Subgroup ((i : Elem X) -> f i)) (Subgroup__pi I (i1 => Top__top)) Top__top).
 
 (; //LEAN:AddSubgroup.pi_empty ;)
-AddSubgroup__pi_empty : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i2 : Elem X) -> AddGroup (f i2))) -> (H : ((i1 : Elem X) -> AddSubgroup (f i1))) -> Proof (Eqt (AddSubgroup ((i : Elem X) -> f i)) (AddSubgroup__pi EmptyCollection__emptyCollection H) Top__top).
+def AddSubgroup__pi_empty : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i2 : Elem X) -> AddGroup (f i2))) -> (H : ((i1 : Elem X) -> AddSubgroup (f i1))) -> Proof (Eqt (AddSubgroup ((i : Elem X) -> f i)) (AddSubgroup__pi EmptyCollection__emptyCollection H) Top__top) :=
+  X => f => x => H => AddSubgroup__ext ((i : Elem X) -> f i) (AddSubgroup__pi EmptyCollection__emptyCollection H) Top__top (forallI ((i4 : Elem X) -> f i4) (x1 => iff (Membership__mem (AddSubgroup__pi EmptyCollection__emptyCollection H) x1) (Membership__mem Top__top x1)) (x1 => of_eq_true (iff (Membership__mem (AddSubgroup__pi EmptyCollection__emptyCollection H) x1) (Membership__mem Top__top x1)) (Eq__trans Prop (iff (Membership__mem (AddSubgroup__pi EmptyCollection__emptyCollection H) x1) (Membership__mem Top__top x1)) (iff True True) True (congr Prop Prop (iff (Membership__mem (AddSubgroup__pi EmptyCollection__emptyCollection H) x1)) (iff True) (Membership__mem Top__top x1) True (congrArg Prop (Prop -> Prop) (Membership__mem (AddSubgroup__pi EmptyCollection__emptyCollection H) x1) True iff (Eq__trans Prop (Membership__mem (AddSubgroup__pi EmptyCollection__emptyCollection H) x1) (forall X (i1 => if (Membership__mem EmptyCollection__emptyCollection i1) (Membership__mem (H i1) (x1 i1)))) True (propext (AddSubgroup__mem_pi X f EmptyCollection__emptyCollection H x1)) (Eq__trans Prop (forall X (a => if (Membership__mem EmptyCollection__emptyCollection a) (Membership__mem (H a) (x1 a)))) (forall X (a1 => True)) True (forall_congr X (a2 => if (Membership__mem EmptyCollection__emptyCollection a2) (Membership__mem (H a2) (x1 a2))) (a3 => True) (forallI X (i2 => Eqt Prop (if (Membership__mem EmptyCollection__emptyCollection i2) (Membership__mem (H i2) (x1 i2))) True) (i2 => Eq__trans Prop (if (Membership__mem EmptyCollection__emptyCollection i2) (Membership__mem (H i2) (x1 i2))) (if false (Membership__mem (H i2) (x1 i2))) True (implies_congr (Membership__mem EmptyCollection__emptyCollection i2) false (Membership__mem (H i2) (x1 i2)) (Membership__mem (H i2) (x1 i2)) (propext (Set__mem_empty_iff_false X i2)) (Eq__refl (Membership__mem (H i2) (x1 i2)))) (propext (IsEmpty__forall_iff false (a4 => Membership__mem (H i2) (x1 i2))))))) (implies_true X)))) (eq_true (Membership__mem Top__top x1) (AddSubgroup__mem_top ((i3 : Elem X) -> f i3) x1))) (iff_self True)))).
 
 (; //LEAN:Subgroup.pi_empty ;)
 Subgroup__pi_empty : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i2 : Elem X) -> Group (f i2))) -> (H : ((i1 : Elem X) -> Subgroup (f i1))) -> Proof (Eqt (Subgroup ((i : Elem X) -> f i)) (Subgroup__pi EmptyCollection__emptyCollection H) Top__top).
 
 (; //LEAN:AddSubgroup.pi_bot ;)
-AddSubgroup__pi_bot : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i2 : Elem X) -> AddGroup (f i2))) -> Proof (Eqt (AddSubgroup ((i : Elem X) -> f i)) (AddSubgroup__pi Set__univ (i1 => Bot__bot)) Bot__bot).
+def AddSubgroup__pi_bot : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i2 : Elem X) -> AddGroup (f i2))) -> Proof (Eqt (AddSubgroup ((i : Elem X) -> f i)) (AddSubgroup__pi Set__univ (i1 => Bot__bot)) Bot__bot) :=
+  X => f => x => AddSubgroup__ext ((i : Elem X) -> f i) (AddSubgroup__pi Set__univ (i1 => Bot__bot)) Bot__bot (forallI ((i16 : Elem X) -> f i16) (x1 => iff (Membership__mem (AddSubgroup__pi Set__univ (i17 => Bot__bot)) x1) (Membership__mem Bot__bot x1)) (x1 => of_eq_true (iff (Membership__mem (AddSubgroup__pi Set__univ (i2 => Bot__bot)) x1) (Membership__mem Bot__bot x1)) (Eq__trans Prop (iff (Membership__mem (AddSubgroup__pi Set__univ (i3 => Bot__bot)) x1) (Membership__mem Bot__bot x1)) (iff (forall X (i4 => Eqt (f i4) (x1 i4) 0)) (forall X (x2 => Eqt (f x2) (x1 x2) 0))) True (congr Prop Prop (iff (Membership__mem (AddSubgroup__pi Set__univ (i5 => Bot__bot)) x1)) (iff (forall X (i6 => Eqt (f i6) (x1 i6) 0))) (Membership__mem Bot__bot x1) (forall X (x3 => Eqt (f x3) (x1 x3) 0)) (congrArg Prop (Prop -> Prop) (Membership__mem (AddSubgroup__pi Set__univ (i7 => Bot__bot)) x1) (forall X (i8 => Eqt (f i8) (x1 i8) 0)) iff (Eq__trans Prop (Membership__mem (AddSubgroup__pi Set__univ (i9 => Bot__bot)) x1) (forall X (i10 => if (Membership__mem Set__univ i10) (Membership__mem Bot__bot (x1 i10)))) (forall X (a => Eqt (f a) (x1 a) 0)) (propext (AddSubgroup__mem_pi X f Set__univ (i11 => Bot__bot) x1)) (forall_congr X (a1 => if (Membership__mem Set__univ a1) (Membership__mem Bot__bot (x1 a1))) (a2 => Eqt (f a2) (x1 a2) 0) (forallI X (i12 => Eqt Prop (if (Membership__mem Set__univ i12) (Membership__mem Bot__bot (x1 i12))) (Eqt (f i12) (x1 i12) 0)) (i12 => Eq__trans Prop (if (Membership__mem Set__univ i12) (Membership__mem Bot__bot (x1 i12))) (if True (Eqt (f i12) (x1 i12) 0)) (Eqt (f i12) (x1 i12) 0) (implies_congr (Membership__mem Set__univ i12) True (Membership__mem Bot__bot (x1 i12)) (Eqt (f i12) (x1 i12) 0) (eq_true (Membership__mem Set__univ i12) (Set__mem_univ X i12)) (propext (AddSubgroup__mem_bot (f i12) (x1 i12)))) (propext (forall_const (Eqt (f i12) (x1 i12) 0) True))))))) (Eq__trans Prop (Membership__mem Bot__bot x1) (Eqt ((i13 : Elem X) -> f i13) x1 0) (forall X (x4 => Eqt (f x4) (x1 x4) 0)) (propext (AddSubgroup__mem_bot ((i14 : Elem X) -> f i14) x1)) (propext (funext_iff X f x1 0)))) (iff_self (forall X (i15 => Eqt (f i15) (x1 i15) 0)))))).
 
 (; //LEAN:Subgroup.pi_bot ;)
 Subgroup__pi_bot : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i2 : Elem X) -> Group (f i2))) -> Proof (Eqt (Subgroup ((i : Elem X) -> f i)) (Subgroup__pi Set__univ (i1 => Bot__bot)) Bot__bot).
 
 (; //LEAN:AddSubgroup.le_pi_iff ;)
-AddSubgroup__le_pi_iff : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i3 : Elem X) -> AddGroup (f i3))) -> (I : Elem (powerset X)) -> (H : ((i2 : Elem X) -> AddSubgroup (f i2))) -> (J : Elem (AddSubgroup ((i1 : Elem X) -> f i1))) -> Proof (iff (Leq J (AddSubgroup__pi I H)) (forall X (i => if (Membership__mem I i) (Leq J (AddSubgroup__comap (Pi__evalAddMonoidHom f i) (H i)))))).
+def AddSubgroup__le_pi_iff : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i3 : Elem X) -> AddGroup (f i3))) -> (I : Elem (powerset X)) -> (H : ((i2 : Elem X) -> AddSubgroup (f i2))) -> (J : Elem (AddSubgroup ((i1 : Elem X) -> f i1))) -> Proof (iff (Leq J (AddSubgroup__pi I H)) (forall X (i => if (Membership__mem I i) (Leq J (AddSubgroup__comap (Pi__evalAddMonoidHom f i) (H i)))))) :=
+  X => f => x => I => H => J => Set__subset_pi_iff X f I (i => AddSubsemigroup__carrier (AddSubmonoid__toAddSubsemigroup ((i1 => H i1) i))) J.
 
 (; //LEAN:Subgroup.le_pi_iff ;)
 def Subgroup__le_pi_iff : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i3 : Elem X) -> Group (f i3))) -> (I : Elem (powerset X)) -> (H : ((i2 : Elem X) -> Subgroup (f i2))) -> (J : Elem (Subgroup ((i1 : Elem X) -> f i1))) -> Proof (iff (Leq J (Subgroup__pi I H)) (forall X (i => if (Membership__mem I i) (Leq J (Subgroup__comap (Pi__evalMonoidHom f i) (H i)))))) :=
   X => f => x => I => H => J => Set__subset_pi_iff X f I (i => Subsemigroup__carrier ((i1 => H i1) i)) J.
 
 (; //LEAN:AddSubgroup.single_mem_pi ;)
-AddSubgroup__single_mem_pi : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i2 : Elem X) -> AddGroup (f i2))) -> (I : Elem (powerset X)) -> (H : ((i1 : Elem X) -> AddSubgroup (f i1))) -> (i : Elem X) -> (x2 : Elem (f i)) -> Proof (iff (Membership__mem (AddSubgroup__pi I H) (Pi__single i x2)) (if (Membership__mem I i) (Membership__mem (H i) x2))).
+def AddSubgroup__single_mem_pi : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i2 : Elem X) -> AddGroup (f i2))) -> (I : Elem (powerset X)) -> (H : ((i1 : Elem X) -> AddSubgroup (f i1))) -> (i : Elem X) -> (x2 : Elem (f i)) -> Proof (iff (Membership__mem (AddSubgroup__pi I H) (Pi__single i x2)) (if (Membership__mem I i) (Membership__mem (H i) x2))) :=
+  X => f => x => I => H => i => x2 => Set__update_mem_pi_iff_of_mem X f I (i1 => AddSubsemigroup__carrier (AddSubmonoid__toAddSubsemigroup ((i2 => H i2) i1))) 0 i x2 (ZeroMemClass__zero_mem (AddSubgroup ((i3 : Elem X) -> f i3)) ((i4 : Elem X) -> f i4) AddZero__toZero AddSubgroup__instSetLike (AddSubgroup__pi I H)).
 
 (; //LEAN:Subgroup.mulSingle_mem_pi ;)
 def Subgroup__mulSingle_mem_pi : (X : Set) -> (f : (Elem X -> Set)) -> (_ : Proof ((i2 : Elem X) -> Group (f i2))) -> (I : Elem (powerset X)) -> (H : ((i1 : Elem X) -> Subgroup (f i1))) -> (i : Elem X) -> (x2 : Elem (f i)) -> Proof (iff (Membership__mem (Subgroup__pi I H) (Pi__mulSingle i x2)) (if (Membership__mem I i) (Membership__mem (H i) x2))) :=
@@ -190,14 +210,16 @@ AddSubgroup__Characteristic__mk : (A : Set) -> (_ : Proof (AddGroup A)) -> (H : 
 AddSubgroup__Characteristic__fixed : (A : Set) -> (_ : Proof (AddGroup A)) -> (H : Elem (AddSubgroup A)) -> (self : Proof (AddSubgroup__Characteristic H)) -> (x1 : Elem (AddEquiv A A)) -> Proof (Eqt (AddSubgroup A) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x1) H) H).
 
 (; //LEAN:AddSubgroup.characteristic_iff_comap_eq ;)
-AddSubgroup__characteristic_iff_comap_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (iff (AddSubgroup__Characteristic H) (forall (AddEquiv G G) (x1 => Eqt (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x1) H) H))).
+def AddSubgroup__characteristic_iff_comap_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (iff (AddSubgroup__Characteristic H) (forall (AddEquiv G G) (x1 => Eqt (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x1) H) H))) :=
+  G => x => H => iffI (AddSubgroup__Characteristic H) (forall (AddEquiv G G) (x1 => Eqt (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x1) H) H)) (AddSubgroup__Characteristic__fixed G H) AddSubgroup__Characteristic__mk.
 
 (; //LEAN:Subgroup.characteristic_iff_comap_eq ;)
 def Subgroup__characteristic_iff_comap_eq : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> Proof (iff (Subgroup__Characteristic H) (forall (MulEquiv G G) (x1 => Eqt (Subgroup G) (Subgroup__comap (MulEquiv__toMonoidHom x1) H) H))) :=
   G => x => H => iffI (Subgroup__Characteristic H) (forall (MulEquiv G G) (x1 => Eqt (Subgroup G) (Subgroup__comap (MulEquiv__toMonoidHom x1) H) H)) (Subgroup__Characteristic__fixed G H) Subgroup__Characteristic__mk.
 
 (; //LEAN:AddSubgroup.characteristic_iff_comap_le ;)
-AddSubgroup__characteristic_iff_comap_le : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (iff (AddSubgroup__Characteristic H) (forall (AddEquiv G G) (x1 => Leq (AddSubgroup__comap (AddEquiv__toAddMonoidHom x1) H) H))).
+def AddSubgroup__characteristic_iff_comap_le : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (iff (AddSubgroup__Characteristic H) (forall (AddEquiv G G) (x1 => Leq (AddSubgroup__comap (AddEquiv__toAddMonoidHom x1) H) H))) :=
+  G => x => H => Iff__trans (AddSubgroup__Characteristic H) (forall (AddEquiv G G) (x1 => Eqt (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x1) H) H)) (forall (AddEquiv G G) (x2 => Leq (AddSubgroup__comap (AddEquiv__toAddMonoidHom x2) H) H)) (AddSubgroup__characteristic_iff_comap_eq G H) (iffI (forall (AddEquiv G G) (x3 => Eqt (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x3) H) H)) (forall (AddEquiv G G) (x4 => Leq (AddSubgroup__comap (AddEquiv__toAddMonoidHom x4) H) H)) (h => forallI (AddEquiv G G) (x5 => Leq (AddSubgroup__comap (AddEquiv__toAddMonoidHom x5) H) H) (x5 => le_of_eq (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x5) H) H (forallE (AddEquiv G G) (x6 => Eqt (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x6) H) H) h x5))) (h1 => forallI (AddEquiv G G) (x7 => Eqt (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x7) H) H) (x7 => le_antisymm (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x7) H) H (forallE (AddEquiv G G) (x8 => Leq (AddSubgroup__comap (AddEquiv__toAddMonoidHom x8) H) H) h1 x7) (forallI G (g => if (Membership__mem H g) (Membership__mem H (AddEquiv__toAddMonoidHom__app x7 g))) (g => ifI (Membership__mem H g) (Membership__mem H (AddEquiv__toAddMonoidHom__app x7 g)) (hg => ifE (Membership__mem (AddSubgroup__comap (AddEquiv__toAddMonoidHom (AddEquiv__symm x7)) H) (AddEquiv__toAddMonoidHom__app x7 g)) (Membership__mem H (AddEquiv__toAddMonoidHom__app x7 g)) (forallE G (x10 => if (Membership__mem (AddSubgroup__comap (AddEquiv__toAddMonoidHom (AddEquiv__symm x7)) H) x10) (Membership__mem H x10)) (forallE (AddEquiv G G) (x9 => Leq (AddSubgroup__comap (AddEquiv__toAddMonoidHom x9) H) H) h1 (AddEquiv__symm x7)) (AddEquiv__toAddMonoidHom__app x7 g)) (Eq__mpr (id (congrArg G Prop (AddEquiv__symm__app x7 (x7 g)) g (Membership__mem H) (AddEquiv__symm_apply_apply G G x7 g))) hg))))))).
 
 (; //LEAN:Subgroup.characteristic_iff_comap_le ;)
 def Subgroup__characteristic_iff_comap_le : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> Proof (iff (Subgroup__Characteristic H) (forall (MulEquiv G G) (x1 => Leq (Subgroup__comap (MulEquiv__toMonoidHom x1) H) H))) :=
@@ -208,7 +230,8 @@ def Subgroup__characteristic_iff_le_comap : (G : Set) -> (_ : Proof (Group G)) -
   G => x => H => Iff__trans (Subgroup__Characteristic H) (forall (MulEquiv G G) (x1 => Eqt (Subgroup G) (Subgroup__comap (MulEquiv__toMonoidHom x1) H) H)) (forall (MulEquiv G G) (x2 => Leq H (Subgroup__comap (MulEquiv__toMonoidHom x2) H))) (Subgroup__characteristic_iff_comap_eq G H) (iffI (forall (MulEquiv G G) (x3 => Eqt (Subgroup G) (Subgroup__comap (MulEquiv__toMonoidHom x3) H) H)) (forall (MulEquiv G G) (x4 => Leq H (Subgroup__comap (MulEquiv__toMonoidHom x4) H))) (h => forallI (MulEquiv G G) (x5 => Leq H (Subgroup__comap (MulEquiv__toMonoidHom x5) H)) (x5 => ge_of_eq (Subgroup G) (Subgroup__comap (MulEquiv__toMonoidHom x5) H) H (forallE (MulEquiv G G) (x6 => Eqt (Subgroup G) (Subgroup__comap (MulEquiv__toMonoidHom x6) H) H) h x5))) (h1 => forallI (MulEquiv G G) (x7 => Eqt (Subgroup G) (Subgroup__comap (MulEquiv__toMonoidHom x7) H) H) (x7 => le_antisymm (Subgroup G) (Subgroup__comap (MulEquiv__toMonoidHom x7) H) H (forallI G (g => if (Membership__mem H (x7 g)) (Membership__mem H g)) (g => ifI (Membership__mem H (x7 g)) (Membership__mem H g) (hg => Eq__mp (id (congrArg G Prop (MulEquiv__symm__app x7 (x7 g)) g (Membership__mem H) (MulEquiv__symm_apply_apply G G x7 g))) (ifE (Membership__mem H (x7 g)) (Membership__mem (Subgroup__comap (MulEquiv__toMonoidHom (MulEquiv__symm x7)) H) (x7 g)) (forallE G (x9 => if (Membership__mem H x9) (Membership__mem (Subgroup__comap (MulEquiv__toMonoidHom (MulEquiv__symm x7)) H) x9)) (forallE (MulEquiv G G) (x8 => Leq H (Subgroup__comap (MulEquiv__toMonoidHom x8) H)) h1 (MulEquiv__symm x7)) (x7 g)) hg)))) (forallE (MulEquiv G G) (x10 => Leq H (Subgroup__comap (MulEquiv__toMonoidHom x10) H)) h1 x7)))).
 
 (; //LEAN:AddSubgroup.characteristic_iff_le_comap ;)
-AddSubgroup__characteristic_iff_le_comap : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (iff (AddSubgroup__Characteristic H) (forall (AddEquiv G G) (x1 => Leq H (AddSubgroup__comap (AddEquiv__toAddMonoidHom x1) H)))).
+def AddSubgroup__characteristic_iff_le_comap : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (iff (AddSubgroup__Characteristic H) (forall (AddEquiv G G) (x1 => Leq H (AddSubgroup__comap (AddEquiv__toAddMonoidHom x1) H)))) :=
+  G => x => H => Iff__trans (AddSubgroup__Characteristic H) (forall (AddEquiv G G) (x1 => Eqt (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x1) H) H)) (forall (AddEquiv G G) (x2 => Leq H (AddSubgroup__comap (AddEquiv__toAddMonoidHom x2) H))) (AddSubgroup__characteristic_iff_comap_eq G H) (iffI (forall (AddEquiv G G) (x3 => Eqt (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x3) H) H)) (forall (AddEquiv G G) (x4 => Leq H (AddSubgroup__comap (AddEquiv__toAddMonoidHom x4) H))) (h => forallI (AddEquiv G G) (x5 => Leq H (AddSubgroup__comap (AddEquiv__toAddMonoidHom x5) H)) (x5 => ge_of_eq (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x5) H) H (forallE (AddEquiv G G) (x6 => Eqt (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x6) H) H) h x5))) (h1 => forallI (AddEquiv G G) (x7 => Eqt (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x7) H) H) (x7 => le_antisymm (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x7) H) H (forallI G (g => if (Membership__mem H (x7 g)) (Membership__mem H g)) (g => ifI (Membership__mem H (x7 g)) (Membership__mem H g) (hg => Eq__mp (id (congrArg G Prop (AddEquiv__symm__app x7 (x7 g)) g (Membership__mem H) (AddEquiv__symm_apply_apply G G x7 g))) (ifE (Membership__mem H (x7 g)) (Membership__mem (AddSubgroup__comap (AddEquiv__toAddMonoidHom (AddEquiv__symm x7)) H) (x7 g)) (forallE G (x9 => if (Membership__mem H x9) (Membership__mem (AddSubgroup__comap (AddEquiv__toAddMonoidHom (AddEquiv__symm x7)) H) x9)) (forallE (AddEquiv G G) (x8 => Leq H (AddSubgroup__comap (AddEquiv__toAddMonoidHom x8) H)) h1 (AddEquiv__symm x7)) (x7 g)) hg)))) (forallE (AddEquiv G G) (x10 => Leq H (AddSubgroup__comap (AddEquiv__toAddMonoidHom x10) H)) h1 x7)))).
 
 (; //LEAN:AddSubgroup.characteristic_iff_map_eq ;)
 AddSubgroup__characteristic_iff_map_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (iff (AddSubgroup__Characteristic H) (forall (AddEquiv G G) (x1 => Eqt (AddSubgroup G) (AddSubgroup__map (AddEquiv__toAddMonoidHom x1) H) H))).
@@ -260,7 +283,8 @@ def MulAut__characteristic : (H : Elem (Subgroup G)) -> Elem (MonoidHom (MulAut 
 AddAut__characteristic_apply_apply_coe : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Characteristic H)) -> (x1 : Elem (AddAut G)) -> (h1 : Elem (Subtype (x5 => Membership__mem H x5))) -> Proof (Eqt G (DFunLike__coe__app (AddAut__characteristic H) x1 h1) (x1 h1)).
 
 (; //LEAN:AddAut.characteristic ;)
-AddAut__characteristic : (H : Elem (AddSubgroup G)) -> Elem (AddMonoidHom (AddAut G) (AddAut (Subtype (x1 => Membership__mem H x1)))).
+def AddAut__characteristic : (H : Elem (AddSubgroup G)) -> Elem (AddMonoidHom (AddAut G) (AddAut (Subtype (x1 => Membership__mem H x1)))) :=
+  H => AddMonoidHom__mk (ZeroHom__mk (x1 => AddEquiv__mk (Equiv__mk (h1 => x1 h1) (h2 => AddEquiv__symm__app x1 h2) (AddAut__characteristic___proof_4 H x1) (AddAut__characteristic___proof_6 H x1)) (AddAut__characteristic___proof_8 H x1)) (AddAut__characteristic___proof_17 H)) (AddAut__characteristic___proof_26 H).
 
 (; //LEAN:AddAut.characteristic_apply_symm_apply_coe ;)
 AddAut__characteristic_apply_symm_apply_coe : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Characteristic H)) -> (x1 : Elem (AddAut G)) -> (h1 : Elem (Subtype (x6 => Membership__mem H x6))) -> Proof (Eqt G (AddEquiv__symm__app (AddAut__characteristic__app H x1) h1) (AddEquiv__symm__app x1 h1)).
@@ -272,7 +296,8 @@ MulAut__characteristic_apply_symm_apply_coe : (G : Set) -> (_ : Proof (Group G))
 MulAut__characteristic_apply_apply_coe : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (_ : Proof (Subgroup__Characteristic H)) -> (x1 : Elem (MulAut G)) -> (h1 : Elem (Subtype (x5 => Membership__mem H x5))) -> Proof (Eqt G (DFunLike__coe__app (MulAut__characteristic H) x1 h1) (x1 h1)).
 
 (; //LEAN:AddSubgroup.normalizer_empty ;)
-AddSubgroup__normalizer_empty : (G : Set) -> (_ : Proof (AddGroup G)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalizer EmptyCollection__emptyCollection) Top__top).
+def AddSubgroup__normalizer_empty : (G : Set) -> (_ : Proof (AddGroup G)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalizer EmptyCollection__emptyCollection) Top__top) :=
+  G => x => AddSubgroup__ext G (AddSubgroup__normalizer EmptyCollection__emptyCollection) Top__top (forallI G (x1 => iff (Membership__mem (AddSubgroup__normalizer EmptyCollection__emptyCollection) x1) (Membership__mem Top__top x1)) (x1 => iffI (Membership__mem (AddSubgroup__normalizer EmptyCollection__emptyCollection) x1) (Membership__mem Top__top x1) (h => trivial) (h1 => forallI G (x2 => iff (Membership__mem EmptyCollection__emptyCollection x2) (Membership__mem EmptyCollection__emptyCollection x2)) (x2 => Iff__rfl (Membership__mem EmptyCollection__emptyCollection x2))))).
 
 (; //LEAN:Subgroup.normalizer_empty ;)
 def Subgroup__normalizer_empty : (G : Set) -> (_ : Proof (Group G)) -> Proof (Eqt (Subgroup G) (Subgroup__normalizer EmptyCollection__emptyCollection) Top__top) :=
@@ -291,7 +316,8 @@ Subgroup__mem_normalizer_iff_conj_image_eq : (G : Set) -> (_ : Proof (Group G)) 
 AddSubgroup__mem_normalizer_iff_addConj_image_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (g : Elem G) -> Proof (iff (Membership__mem (AddSubgroup__normalizer s) g) (Eqt (powerset G) (Set__image (AddAut__addConj__app g) s) s)).
 
 (; //LEAN:AddSubgroup.mem_normalizer_iff_map_addConj_eq ;)
-AddSubgroup__mem_normalizer_iff_map_addConj_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (g : Elem G) -> Proof (iff (Membership__mem (AddSubgroup__normalizer H) g) (Eqt (AddSubgroup G) (AddSubgroup__map (AddMonoidHom__ofClass (AddAut__addConj__app g)) H) H)).
+def AddSubgroup__mem_normalizer_iff_map_addConj_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (g : Elem G) -> Proof (iff (Membership__mem (AddSubgroup__normalizer H) g) (Eqt (AddSubgroup G) (AddSubgroup__map (AddMonoidHom__ofClass (AddAut__addConj__app g)) H) H)) :=
+  G => x => H => g => Iff__trans (Membership__mem (AddSubgroup__normalizer H) g) (Eqt (powerset G) (Set__image (AddAut__addConj__app g) H) H) (Eqt (AddSubgroup G) (AddSubgroup__map (AddMonoidHom__ofClass (AddAut__addConj__app g)) H) H) (AddSubgroup__mem_normalizer_iff_addConj_image_eq G H g) (Iff__symm (Eqt (AddSubgroup G) (AddSubgroup__map (AddMonoidHom__ofClass (AddAut__addConj__app g)) H) H) (Eqt (powerset G) (Set__image (AddAut__addConj__app g) H) H) (SetLike__ext'_iff (AddSubgroup G) G (AddSubgroup__map (AddMonoidHom__ofClass (AddAut__addConj__app g)) H) H)).
 
 (; //LEAN:Subgroup.mem_normalizer_iff_map_conj_eq ;)
 def Subgroup__mem_normalizer_iff_map_conj_eq : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (g : Elem G) -> Proof (iff (Membership__mem (Subgroup__normalizer H) g) (Eqt (Subgroup G) (Subgroup__map (MonoidHom__ofClass (MulAut__conj__app g)) H) H)) :=
@@ -310,7 +336,8 @@ Subgroup__normalizer_eq_top_iff : (G : Set) -> (_ : Proof (Group G)) -> (H : Ele
 AddSubgroup__normalizer_eq_top_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (iff (Eqt (AddSubgroup G) (AddSubgroup__normalizer H) Top__top) (AddSubgroup__Normal H)).
 
 (; //LEAN:AddSubgroup.normalizer_eq_top ;)
-AddSubgroup__normalizer_eq_top : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal H)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalizer H) Top__top).
+def AddSubgroup__normalizer_eq_top : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal H)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalizer H) Top__top) :=
+  G => x => H => h => iffEr (Eqt (AddSubgroup G) (AddSubgroup__normalizer H) Top__top) (AddSubgroup__Normal H) (AddSubgroup__normalizer_eq_top_iff G H) h.
 
 (; //LEAN:Subgroup.normalizer_eq_top ;)
 def Subgroup__normalizer_eq_top : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (_ : Proof (Subgroup__Normal H)) -> Proof (Eqt (Subgroup G) (Subgroup__normalizer H) Top__top) :=
@@ -323,7 +350,8 @@ Subgroup__normal_iff_map_conj_eq : (G : Set) -> (_ : Proof (Group G)) -> (H : El
 AddSubgroup__normal_iff_map_addConj_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (iff (AddSubgroup__Normal H) (forall G (g => Eqt (AddSubgroup G) (AddSubgroup__map (AddMonoidHom__ofClass (AddAut__addConj__app g)) H) H))).
 
 (; //LEAN:AddSubgroup.Normal.map_addConj_eq ;)
-AddSubgroup__Normal__map_addConj_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal H)) -> (g : Elem G) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__map (AddMonoidHom__ofClass (AddAut__addConj__app g)) H) H).
+def AddSubgroup__Normal__map_addConj_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal H)) -> (g : Elem G) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__map (AddMonoidHom__ofClass (AddAut__addConj__app g)) H) H) :=
+  G => x => H => h => g => iffEl (AddSubgroup__Normal H) (forall G (g1 => Eqt (AddSubgroup G) (AddSubgroup__map (AddMonoidHom__ofClass (AddAut__addConj__app g1)) H) H)) (AddSubgroup__normal_iff_map_addConj_eq G H) h g.
 
 (; //LEAN:Subgroup.Normal.map_conj_eq ;)
 def Subgroup__Normal__map_conj_eq : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (_ : Proof (Subgroup__Normal H)) -> (g : Elem G) -> Proof (Eqt (Subgroup G) (Subgroup__map (MonoidHom__ofClass (MulAut__conj__app g)) H) H) :=
@@ -370,7 +398,8 @@ def Subgroup__subgroupOf_normalizer_eq : (G : Set) -> (_ : Proof (Group G)) -> (
   G => x => H => N => h => Subgroup__comap_normalizer_eq_of_le_range G H (Subtype (x1 => Membership__mem N x1)) (Subgroup__subtype N) (LE__le__trans_eq (Subgroup G) H N (MonoidHom__range (Subgroup__subtype N)) h (Eq__symm (Subgroup G) (MonoidHom__range (Subgroup__subtype N)) N (Subgroup__range_subtype G N))).
 
 (; //LEAN:AddSubgroup.addSubgroupOf_normalizer_eq ;)
-AddSubgroup__addSubgroupOf_normalizer_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (N : Elem (AddSubgroup G)) -> (h : Proof (Leq H N)) -> Proof (Eqt (AddSubgroup (Subtype (x1 => Membership__mem N x1))) (AddSubgroup__addSubgroupOf (AddSubgroup__normalizer H) N) (AddSubgroup__normalizer (AddSubgroup__addSubgroupOf H N))).
+def AddSubgroup__addSubgroupOf_normalizer_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (N : Elem (AddSubgroup G)) -> (h : Proof (Leq H N)) -> Proof (Eqt (AddSubgroup (Subtype (x1 => Membership__mem N x1))) (AddSubgroup__addSubgroupOf (AddSubgroup__normalizer H) N) (AddSubgroup__normalizer (AddSubgroup__addSubgroupOf H N))) :=
+  G => x => H => N => h => AddSubgroup__comap_normalizer_eq_of_le_range G H (Subtype (x1 => Membership__mem N x1)) (AddSubgroup__subtype N) (LE__le__trans_eq (AddSubgroup G) H N (AddMonoidHom__range (AddSubgroup__subtype N)) h (Eq__symm (AddSubgroup G) (AddMonoidHom__range (AddSubgroup__subtype N)) N (AddSubgroup__range_subtype G N))).
 
 (; //LEAN:AddSubgroup.normal_addSubgroupOf_iff_le_normalizer ;)
 AddSubgroup__normal_addSubgroupOf_iff_le_normalizer : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> (h : Proof (Leq H K)) -> Proof (iff (AddSubgroup__Normal (AddSubgroup__addSubgroupOf H K)) (Leq K (AddSubgroup__normalizer H))).
@@ -385,14 +414,16 @@ Subgroup__normal_subgroupOf_iff_le_normalizer_inf : (G : Set) -> (_ : Proof (Gro
 AddSubgroup__normal_addSubgroupOf_iff_le_normalizer_inf : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> Proof (iff (AddSubgroup__Normal (AddSubgroup__addSubgroupOf H K)) (Leq K (AddSubgroup__normalizer (Min__min H K)))).
 
 (; //LEAN:AddSubgroup.maximal_normal_addSubgroupOf_normalizer ;)
-AddSubgroup__maximal_normal_addSubgroupOf_normalizer : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (Maximal (x1 => AddSubgroup__Normal (AddSubgroup__addSubgroupOf H x1)) (AddSubgroup__normalizer H)).
+def AddSubgroup__maximal_normal_addSubgroupOf_normalizer : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (Maximal (x1 => AddSubgroup__Normal (AddSubgroup__addSubgroupOf H x1)) (AddSubgroup__normalizer H)) :=
+  G => x => H => andI ((x1 => AddSubgroup__Normal (AddSubgroup__addSubgroupOf H x1)) (AddSubgroup__normalizer H)) (forall (AddSubgroup G) (y => if ((x2 => AddSubgroup__Normal (AddSubgroup__addSubgroupOf H x2)) y) (if (Leq (AddSubgroup__normalizer H) y) (Leq y (AddSubgroup__normalizer H))))) inferInstance (x3 => ifI ((x4 => AddSubgroup__Normal (AddSubgroup__addSubgroupOf H x4)) x3) (if (Leq (AddSubgroup__normalizer H) x3) (Leq x3 (AddSubgroup__normalizer H))) (hnormal => ifI (Leq (AddSubgroup__normalizer H) x3) (Leq x3 (AddSubgroup__normalizer H)) (hle => iffEl (AddSubgroup__Normal (AddSubgroup__addSubgroupOf H x3)) (Leq x3 (AddSubgroup__normalizer H)) (AddSubgroup__normal_addSubgroupOf_iff_le_normalizer G H x3 (LE__le__trans (AddSubgroup G) H (AddSubgroup__normalizer H) x3 (AddSubgroup__le_normalizer G H) hle)) hnormal))).
 
 (; //LEAN:Subgroup.maximal_normal_subgroupOf_normalizer ;)
 def Subgroup__maximal_normal_subgroupOf_normalizer : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> Proof (Maximal (x1 => Subgroup__Normal (Subgroup__subgroupOf H x1)) (Subgroup__normalizer H)) :=
   G => x => H => andI ((x1 => Subgroup__Normal (Subgroup__subgroupOf H x1)) (Subgroup__normalizer H)) (forall (Subgroup G) (y => if ((x2 => Subgroup__Normal (Subgroup__subgroupOf H x2)) y) (if (Leq (Subgroup__normalizer H) y) (Leq y (Subgroup__normalizer H))))) inferInstance (x3 => ifI ((x4 => Subgroup__Normal (Subgroup__subgroupOf H x4)) x3) (if (Leq (Subgroup__normalizer H) x3) (Leq x3 (Subgroup__normalizer H))) (hnormal => ifI (Leq (Subgroup__normalizer H) x3) (Leq x3 (Subgroup__normalizer H)) (hle => iffEl (Subgroup__Normal (Subgroup__subgroupOf H x3)) (Leq x3 (Subgroup__normalizer H)) (Subgroup__normal_subgroupOf_iff_le_normalizer G H x3 (LE__le__trans (Subgroup G) H (Subgroup__normalizer H) x3 (Subgroup__le_normalizer G H) hle)) hnormal))).
 
 (; //LEAN:AddSubgroup.le_normalizer_of_normal_addSubgroupOf ;)
-AddSubgroup__le_normalizer_of_normal_addSubgroupOf : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal (AddSubgroup__addSubgroupOf H K))) -> (HK : Proof (Leq H K)) -> Proof (Leq K (AddSubgroup__normalizer H)).
+def AddSubgroup__le_normalizer_of_normal_addSubgroupOf : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal (AddSubgroup__addSubgroupOf H K))) -> (HK : Proof (Leq H K)) -> Proof (Leq K (AddSubgroup__normalizer H)) :=
+  G => x => H => K => hK => HK => iffEl (AddSubgroup__Normal (AddSubgroup__addSubgroupOf H K)) (Leq K (AddSubgroup__normalizer H)) (AddSubgroup__normal_addSubgroupOf_iff_le_normalizer G H K HK) hK.
 
 (; //LEAN:Subgroup.le_normalizer_of_normal_subgroupOf ;)
 def Subgroup__le_normalizer_of_normal_subgroupOf : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (K : Elem (Subgroup G)) -> (_ : Proof (Subgroup__Normal (Subgroup__subgroupOf H K))) -> (HK : Proof (Leq H K)) -> Proof (Leq K (Subgroup__normalizer H)) :=
@@ -409,7 +440,8 @@ def Subgroup__le_normalizer_of_normal : (G : Set) -> (_ : Proof (Group G)) -> (H
   G => x => H => K => h => Subgroup__subset_normalizer_of_normal G H K.
 
 (; //LEAN:AddSubgroup.le_normalizer_of_normal ;)
-AddSubgroup__le_normalizer_of_normal : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal H)) -> Proof (Leq K (AddSubgroup__normalizer H)).
+def AddSubgroup__le_normalizer_of_normal : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal H)) -> Proof (Leq K (AddSubgroup__normalizer H)) :=
+  G => x => H => K => h => AddSubgroup__subset_normalizer_of_normal G H K.
 
 (; //LEAN:AddSubgroup.inf_normalizer_le_normalizer_sup ;)
 AddSubgroup__inf_normalizer_le_normalizer_sup : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> Proof (Leq (Min__min (AddSubgroup__normalizer H) (AddSubgroup__normalizer K)) (AddSubgroup__normalizer (Max__max H K))).
@@ -418,7 +450,8 @@ AddSubgroup__inf_normalizer_le_normalizer_sup : (G : Set) -> (_ : Proof (AddGrou
 Subgroup__inf_normalizer_le_normalizer_sup : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (K : Elem (Subgroup G)) -> Proof (Leq (Min__min (Subgroup__normalizer H) (Subgroup__normalizer K)) (Subgroup__normalizer (Max__max H K))).
 
 (; //LEAN:AddSubgroup.inf_normalizer_le_normalizer_inf ;)
-AddSubgroup__inf_normalizer_le_normalizer_inf : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> Proof (Leq (Min__min (AddSubgroup__normalizer H) (AddSubgroup__normalizer K)) (AddSubgroup__normalizer (Min__min H K))).
+def AddSubgroup__inf_normalizer_le_normalizer_inf : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> Proof (Leq (Min__min (AddSubgroup__normalizer H) (AddSubgroup__normalizer K)) (AddSubgroup__normalizer (Min__min H K))) :=
+  G => x => H => K => forallI G (x1 => if (Membership__mem (Min__min (AddSubgroup__normalizer H) (AddSubgroup__normalizer K)) x1) (forall G (g2 => iff (and (Membership__mem H g2) (Membership__mem K g2)) (and (Membership__mem H (plus (plus x1 g2) (Neg__neg x1))) (Membership__mem K (plus (plus x1 g2) (Neg__neg x1))))))) (x1 => ifI (Membership__mem (Min__min (AddSubgroup__normalizer H) (AddSubgroup__normalizer K)) x1) (forall G (g1 => iff (and (Membership__mem H g1) (Membership__mem K g1)) (and (Membership__mem H (plus (plus x1 g1) (Neg__neg x1))) (Membership__mem K (plus (plus x1 g1) (Neg__neg x1)))))) (h => forallI G (g => iff (and (Membership__mem H g) (Membership__mem K g)) (and (Membership__mem H (plus (plus x1 g) (Neg__neg x1))) (Membership__mem K (plus (plus x1 g) (Neg__neg x1))))) (g => and_congr (Membership__mem H g) (Membership__mem H (plus (plus x1 g) (Neg__neg x1))) (Membership__mem K g) (Membership__mem K (plus (plus x1 g) (Neg__neg x1))) (andEl (Membership__mem (AddSubgroup__normalizer H) x1) (Membership__mem (AddSubgroup__normalizer K) x1) h g) (andEr (Membership__mem (AddSubgroup__normalizer H) x1) (Membership__mem (AddSubgroup__normalizer K) x1) h g)))).
 
 (; //LEAN:Subgroup.inf_normalizer_le_normalizer_inf ;)
 def Subgroup__inf_normalizer_le_normalizer_inf : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (K : Elem (Subgroup G)) -> Proof (Leq (Min__min (Subgroup__normalizer H) (Subgroup__normalizer K)) (Subgroup__normalizer (Min__min H K))) :=
@@ -435,7 +468,8 @@ def NormalizerCondition : (G : Set) -> Prop :=
   G => forall (Subgroup G) (H => if (Lt H Top__top) (Lt H (Subgroup__normalizer H))).
 
 (; //LEAN:AddNormalizerCondition ;)
-AddNormalizerCondition : (G : Set) -> Prop.
+def AddNormalizerCondition : (G : Set) -> Prop :=
+  G => forall (AddSubgroup G) (H => if (Lt H Top__top) (Lt H (AddSubgroup__normalizer H))).
 
 (; //LEAN:normalizerCondition_iff_only_full_group_self_normalizing ;)
 normalizerCondition_iff_only_full_group_self_normalizing : (G : Set) -> (_ : Proof (Group G)) -> Proof (iff (NormalizerCondition G) (forall (Subgroup G) (H => if (Eqt (Subgroup G) (Subgroup__normalizer H) H) (Eqt (Subgroup G) H Top__top)))).
@@ -448,7 +482,8 @@ def Group__conjugatesOfSet : (s : Elem (powerset G)) -> Elem (powerset G) :=
   s => Set__iUnion (a => Set__iUnion (h => conjugatesOf a)).
 
 (; //LEAN:AddGroup.addConjugatesOfSet ;)
-AddGroup__addConjugatesOfSet : (s : Elem (powerset G)) -> Elem (powerset G).
+def AddGroup__addConjugatesOfSet : (s : Elem (powerset G)) -> Elem (powerset G) :=
+  s => Set__iUnion (a => Set__iUnion (h => addConjugatesOf a)).
 
 (; //LEAN:Group.mem_conjugatesOfSet_iff ;)
 Group__mem_conjugatesOfSet_iff : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (powerset G)) -> (x1 : Elem G) -> Proof (iff (Membership__mem (Group__conjugatesOfSet s) x1) (exists G (a => and (Membership__mem s a) (IsConj a x1)))).
@@ -457,7 +492,8 @@ Group__mem_conjugatesOfSet_iff : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem
 AddGroup__mem_addConjugatesOfSet_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (x1 : Elem G) -> Proof (iff (Membership__mem (AddGroup__addConjugatesOfSet s) x1) (exists G (a => and (Membership__mem s a) (IsAddConj a x1)))).
 
 (; //LEAN:AddGroup.subset_addConjugatesOfSet ;)
-AddGroup__subset_addConjugatesOfSet : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> Proof (Set__Subset s (AddGroup__addConjugatesOfSet s)).
+def AddGroup__subset_addConjugatesOfSet : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> Proof (Set__Subset s (AddGroup__addConjugatesOfSet s)) :=
+  G => x => s => forallI G (x1 => if (Membership__mem s x1) (Membership__mem (AddGroup__addConjugatesOfSet s) x1)) (x1 => ifI (Membership__mem s x1) (Membership__mem (AddGroup__addConjugatesOfSet s) x1) (h => iffEr (Membership__mem (AddGroup__addConjugatesOfSet s) x1) (exists G (a => and (Membership__mem s a) (IsAddConj a x1))) (AddGroup__mem_addConjugatesOfSet_iff G s x1) (existsI G (a1 => and (Membership__mem s a1) (IsAddConj a1 x1)) x1 (andI (Membership__mem s x1) (IsAddConj x1 x1) h (IsAddConj__refl G x1))))).
 
 (; //LEAN:Group.subset_conjugatesOfSet ;)
 def Group__subset_conjugatesOfSet : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (powerset G)) -> Proof (Set__Subset s (Group__conjugatesOfSet s)) :=
@@ -468,7 +504,8 @@ def Group__conjugatesOfSet_mono : (G : Set) -> (_ : Proof (Group G)) -> (s : Ele
   G => x => s => t => h => Set__biUnion_subset_biUnion_left G G s t conjugatesOf h.
 
 (; //LEAN:AddGroup.addConjugatesOfSet_mono ;)
-AddGroup__addConjugatesOfSet_mono : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (t : Elem (powerset G)) -> (h : Proof (Set__Subset s t)) -> Proof (Set__Subset (AddGroup__addConjugatesOfSet s) (AddGroup__addConjugatesOfSet t)).
+def AddGroup__addConjugatesOfSet_mono : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (t : Elem (powerset G)) -> (h : Proof (Set__Subset s t)) -> Proof (Set__Subset (AddGroup__addConjugatesOfSet s) (AddGroup__addConjugatesOfSet t)) :=
+  G => x => s => t => h => Set__biUnion_subset_biUnion_left G G s t addConjugatesOf h.
 
 (; //LEAN:AddGroup.addConjugates_subset_normal ;)
 AddGroup__addConjugates_subset_normal : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> (a : Elem G) -> (h : Proof (Membership__mem N a)) -> Proof (Set__Subset (addConjugatesOf a) N).
@@ -477,7 +514,8 @@ AddGroup__addConjugates_subset_normal : (G : Set) -> (_ : Proof (AddGroup G)) ->
 Group__conjugates_subset_normal : (G : Set) -> (_ : Proof (Group G)) -> (N : Elem (Subgroup G)) -> (_ : Proof (Subgroup__Normal N)) -> (a : Elem G) -> (h : Proof (Membership__mem N a)) -> Proof (Set__Subset (conjugatesOf a) N).
 
 (; //LEAN:AddGroup.addConjugatesOfSet_subset ;)
-AddGroup__addConjugatesOfSet_subset : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> (h1 : Proof (Set__Subset s N)) -> Proof (Set__Subset (AddGroup__addConjugatesOfSet s) N).
+def AddGroup__addConjugatesOfSet_subset : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> (h1 : Proof (Set__Subset s N)) -> Proof (Set__Subset (AddGroup__addConjugatesOfSet s) N) :=
+  G => x => s => N => h => h1 => Set__iUnion_u2082__subset G G (Membership__mem s) (a => h2 => addConjugatesOf a) N (forallI G (_x => if (Membership__mem s _x) (Set__Subset (addConjugatesOf _x) N)) (_x => ifI (Membership__mem s _x) (Set__Subset (addConjugatesOf _x) N) (H => AddGroup__addConjugates_subset_normal G N _x (ifE (Membership__mem s _x) (Membership__mem N _x) (forallE G (a1 => if (Membership__mem s a1) (Membership__mem N a1)) h1 _x) H)))).
 
 (; //LEAN:Group.conjugatesOfSet_subset ;)
 def Group__conjugatesOfSet_subset : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (powerset G)) -> (N : Elem (Subgroup G)) -> (_ : Proof (Subgroup__Normal N)) -> (h1 : Proof (Set__Subset s N)) -> Proof (Set__Subset (Group__conjugatesOfSet s) N) :=
@@ -500,24 +538,28 @@ def Subgroup__normalClosure : (s : Elem (powerset G)) -> Elem (Subgroup G) :=
   s => Subgroup__closure (Group__conjugatesOfSet s).
 
 (; //LEAN:AddSubgroup.normalClosure ;)
-AddSubgroup__normalClosure : (s : Elem (powerset G)) -> Elem (AddSubgroup G).
+def AddSubgroup__normalClosure : (s : Elem (powerset G)) -> Elem (AddSubgroup G) :=
+  s => AddSubgroup__closure (AddGroup__addConjugatesOfSet s).
 
 (; //LEAN:AddSubgroup.addConjugatesOfSet_subset_normalClosure ;)
-AddSubgroup__addConjugatesOfSet_subset_normalClosure : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> Proof (Set__Subset (AddGroup__addConjugatesOfSet s) (AddSubgroup__normalClosure s)).
+def AddSubgroup__addConjugatesOfSet_subset_normalClosure : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> Proof (Set__Subset (AddGroup__addConjugatesOfSet s) (AddSubgroup__normalClosure s)) :=
+  G => x => s => AddSubgroup__subset_closure G (AddGroup__addConjugatesOfSet s).
 
 (; //LEAN:Subgroup.conjugatesOfSet_subset_normalClosure ;)
 def Subgroup__conjugatesOfSet_subset_normalClosure : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (powerset G)) -> Proof (Set__Subset (Group__conjugatesOfSet s) (Subgroup__normalClosure s)) :=
   G => x => s => Subgroup__subset_closure G (Group__conjugatesOfSet s).
 
 (; //LEAN:AddSubgroup.subset_normalClosure ;)
-AddSubgroup__subset_normalClosure : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> Proof (Set__Subset s (AddSubgroup__normalClosure s)).
+def AddSubgroup__subset_normalClosure : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> Proof (Set__Subset s (AddSubgroup__normalClosure s)) :=
+  G => x => s => Set__Subset__trans G s (AddGroup__addConjugatesOfSet s) (AddSubgroup__normalClosure s) (AddGroup__subset_addConjugatesOfSet G s) (AddSubgroup__addConjugatesOfSet_subset_normalClosure G s).
 
 (; //LEAN:Subgroup.subset_normalClosure ;)
 def Subgroup__subset_normalClosure : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (powerset G)) -> Proof (Set__Subset s (Subgroup__normalClosure s)) :=
   G => x => s => Set__Subset__trans G s (Group__conjugatesOfSet s) (Subgroup__normalClosure s) (Group__subset_conjugatesOfSet G s) (Subgroup__conjugatesOfSet_subset_normalClosure G s).
 
 (; //LEAN:AddSubgroup.le_normalClosure ;)
-AddSubgroup__le_normalClosure : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (Leq H (AddSubgroup__normalClosure H)).
+def AddSubgroup__le_normalClosure : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (Leq H (AddSubgroup__normalClosure H)) :=
+  G => x => H => forallI G (x1 => if (Membership__mem H x1) (Membership__mem (AddSubgroup__normalClosure H) x1)) (x1 => ifI (Membership__mem H x1) (Membership__mem (AddSubgroup__normalClosure H) x1) (h => AddSubgroup__subset_normalClosure G H x1 h)).
 
 (; //LEAN:Subgroup.le_normalClosure ;)
 def Subgroup__le_normalClosure : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> Proof (Leq H (Subgroup__normalClosure H)) :=
@@ -534,20 +576,23 @@ def Subgroup__normalClosure_subset_iff : (G : Set) -> (_ : Proof (Group G)) -> (
   G => x => s => N => h => iffI (Set__Subset s N) (Leq (Subgroup__normalClosure s) N) (Subgroup__normalClosure_le_normal G s N) (Set__Subset__trans G s (Subgroup__normalClosure s) N (Subgroup__subset_normalClosure G s)).
 
 (; //LEAN:AddSubgroup.normalClosure_subset_iff ;)
-AddSubgroup__normalClosure_subset_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> Proof (iff (Set__Subset s N) (Leq (AddSubgroup__normalClosure s) N)).
+def AddSubgroup__normalClosure_subset_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> Proof (iff (Set__Subset s N) (Leq (AddSubgroup__normalClosure s) N)) :=
+  G => x => s => N => h => iffI (Set__Subset s N) (Leq (AddSubgroup__normalClosure s) N) (AddSubgroup__normalClosure_le_normal G s N) (Set__Subset__trans G s (AddSubgroup__normalClosure s) N (AddSubgroup__subset_normalClosure G s)).
 
 (; //LEAN:Subgroup.normalClosure_eq_bot_iff ;)
 Subgroup__normalClosure_eq_bot_iff : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (powerset G)) -> Proof (iff (Eqt (Subgroup G) (Subgroup__normalClosure s) Bot__bot) (Set__Subset s (Singleton__singleton 1))).
 
 (; //LEAN:AddSubgroup.normalClosure_mono ;)
-AddSubgroup__normalClosure_mono : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (t : Elem (powerset G)) -> (h : Proof (Set__Subset s t)) -> Proof (Leq (AddSubgroup__normalClosure s) (AddSubgroup__normalClosure t)).
+def AddSubgroup__normalClosure_mono : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (t : Elem (powerset G)) -> (h : Proof (Set__Subset s t)) -> Proof (Leq (AddSubgroup__normalClosure s) (AddSubgroup__normalClosure t)) :=
+  G => x => s => t => h => AddSubgroup__normalClosure_le_normal G s (AddSubgroup__normalClosure t) (Set__Subset__trans G s t (AddSubgroup__normalClosure t) h (AddSubgroup__subset_normalClosure G t)).
 
 (; //LEAN:Subgroup.normalClosure_mono ;)
 def Subgroup__normalClosure_mono : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (powerset G)) -> (t : Elem (powerset G)) -> (h : Proof (Set__Subset s t)) -> Proof (Leq (Subgroup__normalClosure s) (Subgroup__normalClosure t)) :=
   G => x => s => t => h => Subgroup__normalClosure_le_normal G s (Subgroup__normalClosure t) (Set__Subset__trans G s t (Subgroup__normalClosure t) h (Subgroup__subset_normalClosure G t)).
 
 (; //LEAN:AddSubgroup.normalClosure_eq_iInf ;)
-AddSubgroup__normalClosure_eq_iInf : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalClosure s) (iInf (N => iInf (h => iInf (h1 => N))))).
+def AddSubgroup__normalClosure_eq_iInf : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalClosure s) (iInf (N => iInf (h => iInf (h1 => N))))) :=
+  G => x => s => le_antisymm (AddSubgroup G) (AddSubgroup__normalClosure s) (iInf (N => iInf (h => iInf (h1 => N)))) (le_iInf (AddSubgroup G) (AddSubgroup G) (N1 => iInf (h2 => iInf (h3 => N1))) (AddSubgroup__normalClosure s) (forallI (AddSubgroup G) (x1 => Leq (AddSubgroup__normalClosure s) (iInf (h9 => iInf (h10 => x1)))) (x1 => le_iInf (AddSubgroup G) (AddSubgroup__Normal x1) (h4 => iInf (h5 => x1)) (AddSubgroup__normalClosure s) (ifI (AddSubgroup__Normal x1) (Leq (AddSubgroup__normalClosure s) (iInf (h8 => x1))) (h6 => le_iInf (AddSubgroup G) (Set__Subset s x1) (h7 => x1) (AddSubgroup__normalClosure s) (AddSubgroup__normalClosure_le_normal G s x1)))))) (iInf_le_of_le (AddSubgroup G) (AddSubgroup G) (N2 => iInf (h11 => iInf (h12 => N2))) (AddSubgroup__normalClosure s) (AddSubgroup__normalClosure s) (iInf_le_of_le (AddSubgroup G) (AddSubgroup__Normal (AddSubgroup__normalClosure s)) (h13 => iInf (h14 => AddSubgroup__normalClosure s)) (AddSubgroup__normalClosure s) inferInstance (iInf_le_of_le (AddSubgroup G) (Set__Subset s (AddSubgroup__normalClosure s)) (h15 => AddSubgroup__normalClosure s) (AddSubgroup__normalClosure s) (AddSubgroup__subset_normalClosure G s) (le_rfl (AddSubgroup G) (AddSubgroup__normalClosure s))))).
 
 (; //LEAN:Subgroup.normalClosure_eq_iInf ;)
 def Subgroup__normalClosure_eq_iInf : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (powerset G)) -> Proof (Eqt (Subgroup G) (Subgroup__normalClosure s) (iInf (N => iInf (h => iInf (h1 => N))))) :=
@@ -558,14 +603,16 @@ def Subgroup__normalClosure_eq_self : (G : Set) -> (_ : Proof (Group G)) -> (H :
   G => x => H => h => le_antisymm (Subgroup G) (Subgroup__normalClosure H) H (Subgroup__normalClosure_le_normal G H H (Eq__subset (powerset G) H H rfl)) (Subgroup__le_normalClosure G H).
 
 (; //LEAN:AddSubgroup.normalClosure_eq_self ;)
-AddSubgroup__normalClosure_eq_self : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal H)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalClosure H) H).
+def AddSubgroup__normalClosure_eq_self : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal H)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalClosure H) H) :=
+  G => x => H => h => le_antisymm (AddSubgroup G) (AddSubgroup__normalClosure H) H (AddSubgroup__normalClosure_le_normal G H H (Eq__subset (powerset G) H H rfl)) (AddSubgroup__le_normalClosure G H).
 
 (; //LEAN:Subgroup.normalClosure_idempotent ;)
 def Subgroup__normalClosure_idempotent : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (powerset G)) -> Proof (Eqt (Subgroup G) (Subgroup__normalClosure (Subgroup__normalClosure s)) (Subgroup__normalClosure s)) :=
   G => x => s => Subgroup__normalClosure_eq_self G (Subgroup__normalClosure s).
 
 (; //LEAN:AddSubgroup.normalClosure_idempotent ;)
-AddSubgroup__normalClosure_idempotent : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalClosure (AddSubgroup__normalClosure s)) (AddSubgroup__normalClosure s)).
+def AddSubgroup__normalClosure_idempotent : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalClosure (AddSubgroup__normalClosure s)) (AddSubgroup__normalClosure s)) :=
+  G => x => s => AddSubgroup__normalClosure_eq_self G (AddSubgroup__normalClosure s).
 
 (; //LEAN:Subgroup.closure_le_normalClosure ;)
 Subgroup__closure_le_normalClosure : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (powerset G)) -> Proof (Leq (Subgroup__closure s) (Subgroup__normalClosure s)).
@@ -574,7 +621,8 @@ Subgroup__closure_le_normalClosure : (G : Set) -> (_ : Proof (Group G)) -> (s : 
 AddSubgroup__closure_le_normalClosure : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> Proof (Leq (AddSubgroup__closure s) (AddSubgroup__normalClosure s)).
 
 (; //LEAN:AddSubgroup.normalClosure_closure_eq_normalClosure ;)
-AddSubgroup__normalClosure_closure_eq_normalClosure : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalClosure (AddSubgroup__closure s)) (AddSubgroup__normalClosure s)).
+def AddSubgroup__normalClosure_closure_eq_normalClosure : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalClosure (AddSubgroup__closure s)) (AddSubgroup__normalClosure s)) :=
+  G => x => s => le_antisymm (AddSubgroup G) (AddSubgroup__normalClosure (AddSubgroup__closure s)) (AddSubgroup__normalClosure s) (AddSubgroup__normalClosure_le_normal G (AddSubgroup__closure s) (AddSubgroup__normalClosure s) (AddSubgroup__closure_le_normalClosure G s)) (AddSubgroup__normalClosure_mono G s (AddSubgroup__closure s) (AddSubgroup__subset_closure G s)).
 
 (; //LEAN:Subgroup.normalClosure_closure_eq_normalClosure ;)
 def Subgroup__normalClosure_closure_eq_normalClosure : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (powerset G)) -> Proof (Eqt (Subgroup G) (Subgroup__normalClosure (Subgroup__closure s)) (Subgroup__normalClosure s)) :=
@@ -597,17 +645,20 @@ def Subgroup__normalCore : (H : Elem (Subgroup G)) -> Elem (Subgroup G) :=
   H => Subgroup__mk (Submonoid__mk (Subsemigroup__mk (Set__ofPred (a => forall G (b => Membership__mem H (times (times b a) (Inv__inv b))))) (Subgroup__normalCore___proof_2 H)) (a1 => Subgroup__normalCore___proof_1 H a1)) (Subgroup__normalCore___proof_3 H).
 
 (; //LEAN:AddSubgroup.normalCore ;)
-AddSubgroup__normalCore : (H : Elem (AddSubgroup G)) -> Elem (AddSubgroup G).
+def AddSubgroup__normalCore : (H : Elem (AddSubgroup G)) -> Elem (AddSubgroup G) :=
+  H => AddSubgroup__mk (AddSubmonoid__mk (AddSubsemigroup__mk (Set__ofPred (a => forall G (b => Membership__mem H (plus (plus b a) (Neg__neg b))))) (AddSubgroup__normalCore___proof_2 H)) (a1 => AddSubgroup__normalCore___proof_1 H a1)) (AddSubgroup__normalCore___proof_3 H).
 
 (; //LEAN:AddSubgroup.normalCore_le ;)
-AddSubgroup__normalCore_le : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (Leq (AddSubgroup__normalCore H) H).
+def AddSubgroup__normalCore_le : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (Leq (AddSubgroup__normalCore H) H) :=
+  G => x => H => forallI G (a => if (Membership__mem (AddSubgroup__normalCore H) a) (Membership__mem H a)) (a => ifI (Membership__mem (AddSubgroup__normalCore H) a) (Membership__mem H a) (h => Eq__mpr (id (congrArg G Prop a (plus a 0) (_a => Membership__mem H _a) (Eq__symm G (plus a 0) a (add_zero G a)))) (Eq__mpr (id (congrArg G Prop 0 (Neg__neg 0) (_a1 => Membership__mem H (plus a _a1)) (Eq__symm G (Neg__neg 0) 0 (neg_zero G)))) (Eq__mpr (id (congrArg G Prop a (plus 0 a) (_a2 => Membership__mem H (plus _a2 (Neg__neg 0))) (Eq__symm G (plus 0 a) a (zero_add G a)))) (forallE G (b => Membership__mem H (plus (plus b a) (Neg__neg b))) h 0))))).
 
 (; //LEAN:Subgroup.normalCore_le ;)
 def Subgroup__normalCore_le : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> Proof (Leq (Subgroup__normalCore H) H) :=
   G => x => H => forallI G (a => if (Membership__mem (Subgroup__normalCore H) a) (Membership__mem H a)) (a => ifI (Membership__mem (Subgroup__normalCore H) a) (Membership__mem H a) (h => Eq__mpr (id (congrArg G Prop a (times a 1) (_a => Membership__mem H _a) (Eq__symm G (times a 1) a (mul_one G a)))) (Eq__mpr (id (congrArg G Prop 1 (Inv__inv 1) (_a1 => Membership__mem H (times a _a1)) (Eq__symm G (Inv__inv 1) 1 (inv_one G)))) (Eq__mpr (id (congrArg G Prop a (times 1 a) (_a2 => Membership__mem H (times _a2 (Inv__inv 1))) (Eq__symm G (times 1 a) a (one_mul G a)))) (forallE G (b => Membership__mem H (times (times b a) (Inv__inv b))) h 1))))).
 
 (; //LEAN:AddSubgroup.normal_le_normalCore ;)
-AddSubgroup__normal_le_normalCore : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> Proof (iff (Leq N (AddSubgroup__normalCore H)) (Leq N H)).
+def AddSubgroup__normal_le_normalCore : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> Proof (iff (Leq N (AddSubgroup__normalCore H)) (Leq N H)) :=
+  G => x => H => N => hN => iffI (Leq N (AddSubgroup__normalCore H)) (Leq N H) (ge_trans (AddSubgroup G) H (AddSubgroup__normalCore H) N (AddSubgroup__normalCore_le G H)) (h_le => forallI G (n => if (Membership__mem N n) (forall G (g2 => Membership__mem H (plus (plus g2 n) (Neg__neg g2))))) (n => ifI (Membership__mem N n) (forall G (g1 => Membership__mem H (plus (plus g1 n) (Neg__neg g1)))) (hn => forallI G (g => Membership__mem H (plus (plus g n) (Neg__neg g))) (g => ifE (Membership__mem N (plus (plus g n) (Neg__neg g))) (Membership__mem H (plus (plus g n) (Neg__neg g))) (forallE G (x1 => if (Membership__mem N x1) (Membership__mem H x1)) h_le (plus (plus g n) (Neg__neg g))) (AddSubgroup__Normal__conj_mem G x N n hn g))))).
 
 (; //LEAN:Subgroup.normal_le_normalCore ;)
 def Subgroup__normal_le_normalCore : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (N : Elem (Subgroup G)) -> (_ : Proof (Subgroup__Normal N)) -> Proof (iff (Leq N (Subgroup__normalCore H)) (Leq N H)) :=
@@ -618,24 +669,28 @@ def Subgroup__normalCore_mono : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem 
   G => x => H => K => h => iffEr (Leq (Subgroup__normalCore H) (Subgroup__normalCore K)) (Leq (Subgroup__normalCore H) K) (Subgroup__normal_le_normalCore G K (Subgroup__normalCore H)) (LE__le__trans (Subgroup G) (Subgroup__normalCore H) H K (Subgroup__normalCore_le G H) h).
 
 (; //LEAN:AddSubgroup.normalCore_mono ;)
-AddSubgroup__normalCore_mono : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> (h : Proof (Leq H K)) -> Proof (Leq (AddSubgroup__normalCore H) (AddSubgroup__normalCore K)).
+def AddSubgroup__normalCore_mono : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> (h : Proof (Leq H K)) -> Proof (Leq (AddSubgroup__normalCore H) (AddSubgroup__normalCore K)) :=
+  G => x => H => K => h => iffEr (Leq (AddSubgroup__normalCore H) (AddSubgroup__normalCore K)) (Leq (AddSubgroup__normalCore H) K) (AddSubgroup__normal_le_normalCore G K (AddSubgroup__normalCore H)) (LE__le__trans (AddSubgroup G) (AddSubgroup__normalCore H) H K (AddSubgroup__normalCore_le G H) h).
 
 (; //LEAN:Subgroup.normalCore_eq_iSup ;)
 def Subgroup__normalCore_eq_iSup : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> Proof (Eqt (Subgroup G) (Subgroup__normalCore H) (iSup (N => iSup (h => iSup (h1 => N))))) :=
   G => x => H => le_antisymm (Subgroup G) (Subgroup__normalCore H) (iSup (N => iSup (h => iSup (h1 => N)))) (le_iSup_of_le (Subgroup G) (Subgroup G) (N1 => iSup (h2 => iSup (h3 => N1))) (Subgroup__normalCore H) (Subgroup__normalCore H) (le_iSup_of_le (Subgroup G) (Subgroup__Normal (Subgroup__normalCore H)) (h4 => iSup (h5 => Subgroup__normalCore H)) (Subgroup__normalCore H) (Subgroup__normalCore_normal G H) (le_iSup_of_le (Subgroup G) (Leq (Subgroup__normalCore H) H) (h6 => Subgroup__normalCore H) (Subgroup__normalCore H) (Subgroup__normalCore_le G H) (le_rfl (Subgroup G) (Subgroup__normalCore H))))) (iSup_le (Subgroup G) (Subgroup G) (N2 => iSup (h7 => iSup (h8 => N2))) (Subgroup__normalCore H) (forallI (Subgroup G) (x1 => Leq (iSup (h14 => iSup (h15 => x1))) (Subgroup__normalCore H)) (x1 => iSup_le (Subgroup G) (Subgroup__Normal x1) (h9 => iSup (h10 => x1)) (Subgroup__normalCore H) (ifI (Subgroup__Normal x1) (Leq (iSup (h13 => x1)) (Subgroup__normalCore H)) (h11 => iSup_le (Subgroup G) (Leq x1 H) (h12 => x1) (Subgroup__normalCore H) (iffEr (Leq x1 (Subgroup__normalCore H)) (Leq x1 H) (Subgroup__normal_le_normalCore G H x1))))))).
 
 (; //LEAN:AddSubgroup.normalCore_eq_iSup ;)
-AddSubgroup__normalCore_eq_iSup : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalCore H) (iSup (N => iSup (h => iSup (h1 => N))))).
+def AddSubgroup__normalCore_eq_iSup : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalCore H) (iSup (N => iSup (h => iSup (h1 => N))))) :=
+  G => x => H => le_antisymm (AddSubgroup G) (AddSubgroup__normalCore H) (iSup (N => iSup (h => iSup (h1 => N)))) (le_iSup_of_le (AddSubgroup G) (AddSubgroup G) (N1 => iSup (h2 => iSup (h3 => N1))) (AddSubgroup__normalCore H) (AddSubgroup__normalCore H) (le_iSup_of_le (AddSubgroup G) (AddSubgroup__Normal (AddSubgroup__normalCore H)) (h4 => iSup (h5 => AddSubgroup__normalCore H)) (AddSubgroup__normalCore H) (AddSubgroup__normalCore_normal G H) (le_iSup_of_le (AddSubgroup G) (Leq (AddSubgroup__normalCore H) H) (h6 => AddSubgroup__normalCore H) (AddSubgroup__normalCore H) (AddSubgroup__normalCore_le G H) (le_rfl (AddSubgroup G) (AddSubgroup__normalCore H))))) (iSup_le (AddSubgroup G) (AddSubgroup G) (N2 => iSup (h7 => iSup (h8 => N2))) (AddSubgroup__normalCore H) (forallI (AddSubgroup G) (x1 => Leq (iSup (h14 => iSup (h15 => x1))) (AddSubgroup__normalCore H)) (x1 => iSup_le (AddSubgroup G) (AddSubgroup__Normal x1) (h9 => iSup (h10 => x1)) (AddSubgroup__normalCore H) (ifI (AddSubgroup__Normal x1) (Leq (iSup (h13 => x1)) (AddSubgroup__normalCore H)) (h11 => iSup_le (AddSubgroup G) (Leq x1 H) (h12 => x1) (AddSubgroup__normalCore H) (iffEr (Leq x1 (AddSubgroup__normalCore H)) (Leq x1 H) (AddSubgroup__normal_le_normalCore G H x1))))))).
 
 (; //LEAN:Subgroup.normalCore_eq_self ;)
 def Subgroup__normalCore_eq_self : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (_ : Proof (Subgroup__Normal H)) -> Proof (Eqt (Subgroup G) (Subgroup__normalCore H) H) :=
   G => x => H => h => le_antisymm (Subgroup G) (Subgroup__normalCore H) H (Subgroup__normalCore_le G H) (iffEr (Leq H (Subgroup__normalCore H)) (Leq H H) (Subgroup__normal_le_normalCore G H H) (le_rfl (Subgroup G) H)).
 
 (; //LEAN:AddSubgroup.normalCore_eq_self ;)
-AddSubgroup__normalCore_eq_self : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal H)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalCore H) H).
+def AddSubgroup__normalCore_eq_self : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal H)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalCore H) H) :=
+  G => x => H => h => le_antisymm (AddSubgroup G) (AddSubgroup__normalCore H) H (AddSubgroup__normalCore_le G H) (iffEr (Leq H (AddSubgroup__normalCore H)) (Leq H H) (AddSubgroup__normal_le_normalCore G H H) (le_rfl (AddSubgroup G) H)).
 
 (; //LEAN:AddSubgroup.normalCore_idempotent ;)
-AddSubgroup__normalCore_idempotent : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalCore (AddSubgroup__normalCore H)) (AddSubgroup__normalCore H)).
+def AddSubgroup__normalCore_idempotent : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__normalCore (AddSubgroup__normalCore H)) (AddSubgroup__normalCore H)) :=
+  G => x => H => AddSubgroup__normalCore_eq_self G (AddSubgroup__normalCore H).
 
 (; //LEAN:Subgroup.normalCore_idempotent ;)
 def Subgroup__normalCore_idempotent : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> Proof (Eqt (Subgroup G) (Subgroup__normalCore (Subgroup__normalCore H)) (Subgroup__normalCore H)) :=
@@ -658,7 +713,8 @@ def MonoidHom__prodMap_comap_prod : (G : Set) -> (_ : Proof (Group G)) -> (N : S
   G => x => N => x1 => G' => N' => x2 => x3 => f => g => S => S' => SetLike__coe_injective (Subgroup (Prod G G')) (Prod G G') (Subgroup__comap (MonoidHom__prodMap f g) (Subgroup__prod S S')) (Subgroup__prod (Subgroup__comap f S) (Subgroup__comap g S')) (Set__preimage_prod_map_prod G N G' N' f g S S').
 
 (; //LEAN:AddMonoidHom.prodMap_comap_prod ;)
-AddMonoidHom__prodMap_comap_prod : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (G' : Set) -> (N' : Set) -> (_ : Proof (AddGroup G')) -> (_ : Proof (AddGroup N')) -> (f : Elem (AddMonoidHom G N)) -> (g : Elem (AddMonoidHom G' N')) -> (S : Elem (AddSubgroup N)) -> (S' : Elem (AddSubgroup N')) -> Proof (Eqt (AddSubgroup (Prod G G')) (AddSubgroup__comap (AddMonoidHom__prodMap f g) (AddSubgroup__prod S S')) (AddSubgroup__prod (AddSubgroup__comap f S) (AddSubgroup__comap g S'))).
+def AddMonoidHom__prodMap_comap_prod : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (G' : Set) -> (N' : Set) -> (_ : Proof (AddGroup G')) -> (_ : Proof (AddGroup N')) -> (f : Elem (AddMonoidHom G N)) -> (g : Elem (AddMonoidHom G' N')) -> (S : Elem (AddSubgroup N)) -> (S' : Elem (AddSubgroup N')) -> Proof (Eqt (AddSubgroup (Prod G G')) (AddSubgroup__comap (AddMonoidHom__prodMap f g) (AddSubgroup__prod S S')) (AddSubgroup__prod (AddSubgroup__comap f S) (AddSubgroup__comap g S'))) :=
+  G => x => N => x1 => G' => N' => x2 => x3 => f => g => S => S' => SetLike__coe_injective (AddSubgroup (Prod G G')) (Prod G G') (AddSubgroup__comap (AddMonoidHom__prodMap f g) (AddSubgroup__prod S S')) (AddSubgroup__prod (AddSubgroup__comap f S) (AddSubgroup__comap g S')) (Set__preimage_prod_map_prod G N G' N' f g S S').
 
 (; //LEAN:AddMonoidHom.ker_prodMap ;)
 AddMonoidHom__ker_prodMap : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (G' : Set) -> (N' : Set) -> (_ : Proof (AddGroup G')) -> (_ : Proof (AddGroup N')) -> (f : Elem (AddMonoidHom G N)) -> (g : Elem (AddMonoidHom G' N')) -> Proof (Eqt (AddSubgroup (Prod G G')) (AddMonoidHom__ker (AddMonoidHom__prodMap f g)) (AddSubgroup__prod (AddMonoidHom__ker f) (AddMonoidHom__ker g))).
@@ -667,7 +723,8 @@ AddMonoidHom__ker_prodMap : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -
 MonoidHom__ker_prodMap : (G : Set) -> (_ : Proof (Group G)) -> (N : Set) -> (_ : Proof (Group N)) -> (G' : Set) -> (N' : Set) -> (_ : Proof (Group G')) -> (_ : Proof (Group N')) -> (f : Elem (MonoidHom G N)) -> (g : Elem (MonoidHom G' N')) -> Proof (Eqt (Subgroup (Prod G G')) (MonoidHom__ker (MonoidHom__prodMap f g)) (Subgroup__prod (MonoidHom__ker f) (MonoidHom__ker g))).
 
 (; //LEAN:AddMonoidHom.ker_fst ;)
-AddMonoidHom__ker_fst : (G : Set) -> (G' : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (AddGroup G')) -> Proof (Eqt (AddSubgroup (Prod G G')) (AddMonoidHom__ker (AddMonoidHom__fst G G')) (AddSubgroup__prod Bot__bot Top__top)).
+def AddMonoidHom__ker_fst : (G : Set) -> (G' : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (AddGroup G')) -> Proof (Eqt (AddSubgroup (Prod G G')) (AddMonoidHom__ker (AddMonoidHom__fst G G')) (AddSubgroup__prod Bot__bot Top__top)) :=
+  G => G' => x => x1 => SetLike__ext (AddSubgroup (Prod G G')) (Prod G G') (AddMonoidHom__ker (AddMonoidHom__fst G G')) (AddSubgroup__prod Bot__bot Top__top) (forallI (Prod G G') (x2 => iff (Membership__mem (AddMonoidHom__ker (AddMonoidHom__fst G G')) x2) (and (Membership__mem (AddMonoidHom__ker (AddMonoidHom__fst G G')) x2) True)) (x2 => Iff__symm (and (Membership__mem (AddMonoidHom__ker (AddMonoidHom__fst G G')) x2) True) (Membership__mem (AddMonoidHom__ker (AddMonoidHom__fst G G')) x2) (iff_of_eq (and (Membership__mem (AddMonoidHom__ker (AddMonoidHom__fst G G')) x2) True) (Membership__mem (AddMonoidHom__ker (AddMonoidHom__fst G G')) x2) (and_true (Membership__mem (AddMonoidHom__ker (AddMonoidHom__fst G G')) x2))))).
 
 (; //LEAN:MonoidHom.ker_fst ;)
 def MonoidHom__ker_fst : (G : Set) -> (G' : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Group G')) -> Proof (Eqt (Subgroup (Prod G G')) (MonoidHom__ker (MonoidHom__fst G G')) (Subgroup__prod Bot__bot Top__top)) :=
@@ -678,10 +735,12 @@ def MonoidHom__ker_snd : (G : Set) -> (G' : Set) -> (_ : Proof (Group G)) -> (_ 
   G => G' => x => x1 => SetLike__ext (Subgroup (Prod G G')) (Prod G G') (MonoidHom__ker (MonoidHom__snd G G')) (Subgroup__prod Top__top Bot__bot) (forallI (Prod G G') (x2 => iff (Membership__mem (MonoidHom__ker (MonoidHom__snd G G')) x2) (and True (Membership__mem (MonoidHom__ker (MonoidHom__snd G G')) x2))) (x2 => Iff__symm (and True (Membership__mem (MonoidHom__ker (MonoidHom__snd G G')) x2)) (Membership__mem (MonoidHom__ker (MonoidHom__snd G G')) x2) (iff_of_eq (and True (Membership__mem (MonoidHom__ker (MonoidHom__snd G G')) x2)) (Membership__mem (MonoidHom__ker (MonoidHom__snd G G')) x2) (true_and (Membership__mem (MonoidHom__ker (MonoidHom__snd G G')) x2))))).
 
 (; //LEAN:AddMonoidHom.ker_snd ;)
-AddMonoidHom__ker_snd : (G : Set) -> (G' : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (AddGroup G')) -> Proof (Eqt (AddSubgroup (Prod G G')) (AddMonoidHom__ker (AddMonoidHom__snd G G')) (AddSubgroup__prod Top__top Bot__bot)).
+def AddMonoidHom__ker_snd : (G : Set) -> (G' : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (AddGroup G')) -> Proof (Eqt (AddSubgroup (Prod G G')) (AddMonoidHom__ker (AddMonoidHom__snd G G')) (AddSubgroup__prod Top__top Bot__bot)) :=
+  G => G' => x => x1 => SetLike__ext (AddSubgroup (Prod G G')) (Prod G G') (AddMonoidHom__ker (AddMonoidHom__snd G G')) (AddSubgroup__prod Top__top Bot__bot) (forallI (Prod G G') (x2 => iff (Membership__mem (AddMonoidHom__ker (AddMonoidHom__snd G G')) x2) (and True (Membership__mem (AddMonoidHom__ker (AddMonoidHom__snd G G')) x2))) (x2 => Iff__symm (and True (Membership__mem (AddMonoidHom__ker (AddMonoidHom__snd G G')) x2)) (Membership__mem (AddMonoidHom__ker (AddMonoidHom__snd G G')) x2) (iff_of_eq (and True (Membership__mem (AddMonoidHom__ker (AddMonoidHom__snd G G')) x2)) (Membership__mem (AddMonoidHom__ker (AddMonoidHom__snd G G')) x2) (true_and (Membership__mem (AddMonoidHom__ker (AddMonoidHom__snd G G')) x2))))).
 
 (; //LEAN:AddMonoidHom.range_prodMap ;)
-AddMonoidHom__range_prodMap : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (G' : Set) -> (N' : Set) -> (_ : Proof (AddGroup G')) -> (_ : Proof (AddGroup N')) -> (f : Elem (AddMonoidHom G N)) -> (g : Elem (AddMonoidHom G' N')) -> Proof (Eqt (AddSubgroup (Prod N N')) (AddMonoidHom__range (AddMonoidHom__prodMap f g)) (AddSubgroup__prod (AddMonoidHom__range f) (AddMonoidHom__range g))).
+def AddMonoidHom__range_prodMap : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (G' : Set) -> (N' : Set) -> (_ : Proof (AddGroup G')) -> (_ : Proof (AddGroup N')) -> (f : Elem (AddMonoidHom G N)) -> (g : Elem (AddMonoidHom G' N')) -> Proof (Eqt (AddSubgroup (Prod N N')) (AddMonoidHom__range (AddMonoidHom__prodMap f g)) (AddSubgroup__prod (AddMonoidHom__range f) (AddMonoidHom__range g))) :=
+  G => x => N => x1 => G' => N' => x2 => x3 => f => g => SetLike__coe_injective (AddSubgroup (Prod N N')) (Prod N N') (AddMonoidHom__range (AddMonoidHom__prodMap f g)) (AddSubgroup__prod (AddMonoidHom__range f) (AddMonoidHom__range g)) (Set__range_prodMap G G' N N' (ZeroHom__toFun (AddMonoidHom__toZeroHom f)) (ZeroHom__toFun (AddMonoidHom__toZeroHom g))).
 
 (; //LEAN:MonoidHom.range_prodMap ;)
 def MonoidHom__range_prodMap : (G : Set) -> (_ : Proof (Group G)) -> (N : Set) -> (_ : Proof (Group N)) -> (G' : Set) -> (N' : Set) -> (_ : Proof (Group G')) -> (_ : Proof (Group N')) -> (f : Elem (MonoidHom G N)) -> (g : Elem (MonoidHom G' N')) -> Proof (Eqt (Subgroup (Prod N N')) (MonoidHom__range (MonoidHom__prodMap f g)) (Subgroup__prod (MonoidHom__range f) (MonoidHom__range g))) :=
@@ -698,7 +757,8 @@ def Subgroup__comap_normalizer_eq_of_surjective : (G : Set) -> (_ : Proof (Group
   G => x => N => x1 => H => f => hf => Subgroup__comap_normalizer_eq_of_le_range G H N f (forallI G (x2 => if (Membership__mem H x2) (exists N (a2 => Eqt G (f a2) x2))) (x2 => ifI (Membership__mem H x2) (exists N (a1 => Eqt G (f a1) x2)) (h => forallE G (b => exists N (a => Eqt G (f a) b)) hf x2))).
 
 (; //LEAN:AddSubgroup.comap_normalizer_eq_of_surjective ;)
-AddSubgroup__comap_normalizer_eq_of_surjective : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (H : Elem (AddSubgroup G)) -> (f : Elem (AddMonoidHom N G)) -> (hf : Proof (Function__Surjective f)) -> Proof (Eqt (AddSubgroup N) (AddSubgroup__comap f (AddSubgroup__normalizer H)) (AddSubgroup__normalizer (AddSubgroup__comap f H))).
+def AddSubgroup__comap_normalizer_eq_of_surjective : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (H : Elem (AddSubgroup G)) -> (f : Elem (AddMonoidHom N G)) -> (hf : Proof (Function__Surjective f)) -> Proof (Eqt (AddSubgroup N) (AddSubgroup__comap f (AddSubgroup__normalizer H)) (AddSubgroup__normalizer (AddSubgroup__comap f H))) :=
+  G => x => N => x1 => H => f => hf => AddSubgroup__comap_normalizer_eq_of_le_range G H N f (forallI G (x2 => if (Membership__mem H x2) (exists N (a2 => Eqt G (f a2) x2))) (x2 => ifI (Membership__mem H x2) (exists N (a1 => Eqt G (f a1) x2)) (h => forallE G (b => exists N (a => Eqt G (f a) b)) hf x2))).
 
 (; //LEAN:Subgroup.map_equiv_normalizer_eq ;)
 Subgroup__map_equiv_normalizer_eq : (G : Set) -> (_ : Proof (Group G)) -> (N : Set) -> (_ : Proof (Group N)) -> (H : Elem (Subgroup G)) -> (f : Elem (MulEquiv G N)) -> Proof (Eqt (Subgroup N) (Subgroup__map (MulEquiv__toMonoidHom f) (Subgroup__normalizer H)) (Subgroup__normalizer (Subgroup__map (MulEquiv__toMonoidHom f) H))).
@@ -711,14 +771,16 @@ def Subgroup__map_normalizer_eq_of_bijective : (G : Set) -> (_ : Proof (Group G)
   G => x => N => x1 => H => f => hf => Subgroup__map_equiv_normalizer_eq G N H (MulEquiv__ofBijective f hf).
 
 (; //LEAN:AddSubgroup.map_normalizer_eq_of_bijective ;)
-AddSubgroup__map_normalizer_eq_of_bijective : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (H : Elem (AddSubgroup G)) -> (f : Elem (AddMonoidHom G N)) -> (hf : Proof (Function__Bijective f)) -> Proof (Eqt (AddSubgroup N) (AddSubgroup__map f (AddSubgroup__normalizer H)) (AddSubgroup__normalizer (AddSubgroup__map f H))).
+def AddSubgroup__map_normalizer_eq_of_bijective : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (H : Elem (AddSubgroup G)) -> (f : Elem (AddMonoidHom G N)) -> (hf : Proof (Function__Bijective f)) -> Proof (Eqt (AddSubgroup N) (AddSubgroup__map f (AddSubgroup__normalizer H)) (AddSubgroup__normalizer (AddSubgroup__map f H))) :=
+  G => x => N => x1 => H => f => hf => AddSubgroup__map_equiv_normalizer_eq G N H (AddEquiv__ofBijective f hf).
 
 (; //LEAN:MonoidHom.liftOfRightInverseAux ;)
 def MonoidHom__liftOfRightInverseAux : (f : Elem (MonoidHom X X1)) -> (f_inv : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse f_inv f)) -> (g : Elem (MonoidHom X X2)) -> (hg : Proof (Leq (MonoidHom__ker f) (MonoidHom__ker g))) -> Elem (MonoidHom X1 X2) :=
   f => f_inv => hf => g => hg => MonoidHom__mk (OneHom__mk (b => g (f_inv b)) (MonoidHom__liftOfRightInverseAux___proof_2 f f_inv hf g hg)) (MonoidHom__liftOfRightInverseAux___proof_1 f f_inv hf g hg).
 
 (; //LEAN:AddMonoidHom.liftOfRightInverseAux ;)
-AddMonoidHom__liftOfRightInverseAux : (f : Elem (AddMonoidHom X X1)) -> (f_neg : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse f_neg f)) -> (g : Elem (AddMonoidHom X X2)) -> (hg : Proof (Leq (AddMonoidHom__ker f) (AddMonoidHom__ker g))) -> Elem (AddMonoidHom X1 X2).
+def AddMonoidHom__liftOfRightInverseAux : (f : Elem (AddMonoidHom X X1)) -> (f_neg : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse f_neg f)) -> (g : Elem (AddMonoidHom X X2)) -> (hg : Proof (Leq (AddMonoidHom__ker f) (AddMonoidHom__ker g))) -> Elem (AddMonoidHom X1 X2) :=
+  f => f_neg => hf => g => hg => AddMonoidHom__mk (ZeroHom__mk (b => g (f_neg b)) (AddMonoidHom__liftOfRightInverseAux___proof_2 f f_neg hf g hg)) (AddMonoidHom__liftOfRightInverseAux___proof_1 f f_neg hf g hg).
 
 (; //LEAN:MonoidHom.liftOfRightInverseAux_comp_apply ;)
 MonoidHom__liftOfRightInverseAux_comp_apply : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (_ : Proof (Group X)) -> (_ : Proof (Group X1)) -> (_ : Proof (Group X2)) -> (f : Elem (MonoidHom X X1)) -> (f_inv : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse f_inv f)) -> (g : Elem (MonoidHom X X2)) -> (hg : Proof (Leq (MonoidHom__ker f) (MonoidHom__ker g))) -> (x3 : Elem X) -> Proof (Eqt X2 (MonoidHom__liftOfRightInverseAux__app f f_inv hf g hg (f x3)) (g x3)).
@@ -731,17 +793,20 @@ def MonoidHom__liftOfRightInverse : (f : Elem (MonoidHom X X1)) -> (f_inv : (Ele
   f => f_inv => hf => Equiv__mk (g => MonoidHom__liftOfRightInverseAux f f_inv hf g (MonoidHom__liftOfRightInverse___proof_2 f g)) (x3 => MonoidHom__comp x3 f) (g1 => MonoidHom__liftOfRightInverse___proof_3 f f_inv hf g1) (x4 => MonoidHom__liftOfRightInverse___proof_4 f f_inv hf x4).
 
 (; //LEAN:AddMonoidHom.liftOfRightInverse ;)
-AddMonoidHom__liftOfRightInverse : (f : Elem (AddMonoidHom X X1)) -> (f_neg : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse f_neg f)) -> Elem (Equiv (Subtype (g => Leq (AddMonoidHom__ker f) (AddMonoidHom__ker g))) (AddMonoidHom X1 X2)).
+def AddMonoidHom__liftOfRightInverse : (f : Elem (AddMonoidHom X X1)) -> (f_neg : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse f_neg f)) -> Elem (Equiv (Subtype (g => Leq (AddMonoidHom__ker f) (AddMonoidHom__ker g))) (AddMonoidHom X1 X2)) :=
+  f => f_neg => hf => Equiv__mk (g => AddMonoidHom__liftOfRightInverseAux f f_neg hf g (AddMonoidHom__liftOfRightInverse___proof_2 f g)) (x3 => AddMonoidHom__comp x3 f) (g1 => AddMonoidHom__liftOfRightInverse___proof_3 f f_neg hf g1) (x4 => AddMonoidHom__liftOfRightInverse___proof_4 f f_neg hf x4).
 
 (; //LEAN:MonoidHom.liftOfSurjective ;)
 def MonoidHom__liftOfSurjective : (f : Elem (MonoidHom X X1)) -> (hf : Proof (Function__Surjective f)) -> Elem (Equiv (Subtype (g => Leq (MonoidHom__ker f) (MonoidHom__ker g))) (MonoidHom X1 X2)) :=
   f => hf => MonoidHom__liftOfRightInverse f (Function__surjInv hf) (MonoidHom__liftOfSurjective___proof_1 f hf).
 
 (; //LEAN:AddMonoidHom.liftOfSurjective ;)
-AddMonoidHom__liftOfSurjective : (f : Elem (AddMonoidHom X X1)) -> (hf : Proof (Function__Surjective f)) -> Elem (Equiv (Subtype (g => Leq (AddMonoidHom__ker f) (AddMonoidHom__ker g))) (AddMonoidHom X1 X2)).
+def AddMonoidHom__liftOfSurjective : (f : Elem (AddMonoidHom X X1)) -> (hf : Proof (Function__Surjective f)) -> Elem (Equiv (Subtype (g => Leq (AddMonoidHom__ker f) (AddMonoidHom__ker g))) (AddMonoidHom X1 X2)) :=
+  f => hf => AddMonoidHom__liftOfRightInverse f (Function__surjInv hf) (AddMonoidHom__liftOfSurjective___proof_1 f hf).
 
 (; //LEAN:AddMonoidHom.liftOfRightInverse_comp_apply ;)
-AddMonoidHom__liftOfRightInverse_comp_apply : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (_ : Proof (AddGroup X)) -> (_ : Proof (AddGroup X1)) -> (_ : Proof (AddGroup X2)) -> (f : Elem (AddMonoidHom X X1)) -> (f_neg : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse f_neg f)) -> (g : Elem (Subtype (g4 => Leq (AddMonoidHom__ker f) (AddMonoidHom__ker g4)))) -> (x3 : Elem X) -> Proof (Eqt X2 (DFunLike__coe__app (AddMonoidHom__liftOfRightInverse f f_neg hf) g (f x3)) (Subtype__val__app g x3)).
+def AddMonoidHom__liftOfRightInverse_comp_apply : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (_ : Proof (AddGroup X)) -> (_ : Proof (AddGroup X1)) -> (_ : Proof (AddGroup X2)) -> (f : Elem (AddMonoidHom X X1)) -> (f_neg : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse f_neg f)) -> (g : Elem (Subtype (g4 => Leq (AddMonoidHom__ker f) (AddMonoidHom__ker g4)))) -> (x3 : Elem X) -> Proof (Eqt X2 (DFunLike__coe__app (AddMonoidHom__liftOfRightInverse f f_neg hf) g (f x3)) (Subtype__val__app g x3)) :=
+  X => X1 => X2 => x => x1 => x2 => f => f_neg => hf => g => x3 => AddMonoidHom__liftOfRightInverseAux_comp_apply X X1 X2 f f_neg hf g (Subtype__property (AddMonoidHom X X2) (g1 => Leq (AddMonoidHom__ker f) (AddMonoidHom__ker g1)) g) x3.
 
 (; //LEAN:MonoidHom.liftOfRightInverse_comp_apply ;)
 def MonoidHom__liftOfRightInverse_comp_apply : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (_ : Proof (Group X)) -> (_ : Proof (Group X1)) -> (_ : Proof (Group X2)) -> (f : Elem (MonoidHom X X1)) -> (f_inv : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse f_inv f)) -> (g : Elem (Subtype (g4 => Leq (MonoidHom__ker f) (MonoidHom__ker g4)))) -> (x3 : Elem X) -> Proof (Eqt X2 (DFunLike__coe__app (MonoidHom__liftOfRightInverse f f_inv hf) g (f x3)) (Subtype__val__app g x3)) :=
@@ -752,7 +817,8 @@ def MonoidHom__liftOfRightInverse_comp : (X : Set) -> (X1 : Set) -> (X2 : Set) -
   X => X1 => X2 => x => x1 => x2 => f => f_inv => hf => g => MonoidHom__ext X X2 (MonoidHom__comp (MonoidHom__liftOfRightInverse__app f f_inv hf g) f) g (MonoidHom__liftOfRightInverse_comp_apply X X1 X2 f f_inv hf g).
 
 (; //LEAN:AddMonoidHom.liftOfRightInverse_comp ;)
-AddMonoidHom__liftOfRightInverse_comp : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (_ : Proof (AddGroup X)) -> (_ : Proof (AddGroup X1)) -> (_ : Proof (AddGroup X2)) -> (f : Elem (AddMonoidHom X X1)) -> (f_neg : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse f_neg f)) -> (g : Elem (Subtype (g2 => Leq (AddMonoidHom__ker f) (AddMonoidHom__ker g2)))) -> Proof (Eqt (AddMonoidHom X X2) (AddMonoidHom__comp (AddMonoidHom__liftOfRightInverse__app f f_neg hf g) f) g).
+def AddMonoidHom__liftOfRightInverse_comp : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (_ : Proof (AddGroup X)) -> (_ : Proof (AddGroup X1)) -> (_ : Proof (AddGroup X2)) -> (f : Elem (AddMonoidHom X X1)) -> (f_neg : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse f_neg f)) -> (g : Elem (Subtype (g2 => Leq (AddMonoidHom__ker f) (AddMonoidHom__ker g2)))) -> Proof (Eqt (AddMonoidHom X X2) (AddMonoidHom__comp (AddMonoidHom__liftOfRightInverse__app f f_neg hf g) f) g) :=
+  X => X1 => X2 => x => x1 => x2 => f => f_neg => hf => g => AddMonoidHom__ext X X2 (AddMonoidHom__comp (AddMonoidHom__liftOfRightInverse__app f f_neg hf g) f) g (AddMonoidHom__liftOfRightInverse_comp_apply X X1 X2 f f_neg hf g).
 
 (; //LEAN:AddMonoidHom.eq_liftOfRightInverse ;)
 AddMonoidHom__eq_liftOfRightInverse : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (_ : Proof (AddGroup X)) -> (_ : Proof (AddGroup X1)) -> (_ : Proof (AddGroup X2)) -> (f : Elem (AddMonoidHom X X1)) -> (f_neg : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse f_neg f)) -> (g : Elem (AddMonoidHom X X2)) -> (hg : Proof (Leq (AddMonoidHom__ker f) (AddMonoidHom__ker g))) -> (h : Elem (AddMonoidHom X1 X2)) -> (hh : Proof (Eqt (AddMonoidHom X X2) (AddMonoidHom__comp h f) g)) -> Proof (Eqt (AddMonoidHom X1 X2) h (AddMonoidHom__liftOfRightInverse__app f f_neg hf g)).
@@ -765,14 +831,16 @@ def Subgroup__Normal__comap : (G : Set) -> (_ : Proof (Group G)) -> (N : Set) ->
   G => x => N => x1 => H => hH => f => Subgroup__Normal__mk (forallI G (x2 => if (Membership__mem (Subgroup__comap f H) x2) (forall G (a8 => Membership__mem (Subgroup__comap f H) (times (times a8 x2) (Inv__inv a8))))) (x2 => of_eq_true (if (Membership__mem (Subgroup__comap f H) x2) (forall G (a => Membership__mem (Subgroup__comap f H) (times (times a x2) (Inv__inv a))))) (Eq__trans Prop (if (Membership__mem (Subgroup__comap f H) x2) (forall G (a1 => Membership__mem (Subgroup__comap f H) (times (times a1 x2) (Inv__inv a1))))) (if (Membership__mem H (f x2)) True) True (implies_congr_ctx (Membership__mem (Subgroup__comap f H) x2) (Membership__mem H (f x2)) (forall G (a2 => Membership__mem (Subgroup__comap f H) (times (times a2 x2) (Inv__inv a2)))) True (Subgroup__mem_comap___simp_2 G N H f x2) (ifI (Membership__mem H (f x2)) (Eqt Prop (forall G (a7 => Membership__mem (Subgroup__comap f H) (times (times a7 x2) (Inv__inv a7)))) True) (h3 => Eq__trans Prop (forall G (a3 => Membership__mem (Subgroup__comap f H) (times (times a3 x2) (Inv__inv a3)))) (forall G (a4 => True)) True (forall_congr G (a5 => Membership__mem (Subgroup__comap f H) (times (times a5 x2) (Inv__inv a5))) (a6 => True) (forallI G (g => Eqt Prop (Membership__mem (Subgroup__comap f H) (times (times g x2) (Inv__inv g))) True) (g => Eq__trans Prop (Membership__mem (Subgroup__comap f H) (times (times g x2) (Inv__inv g))) (Membership__mem H (f (times (times g x2) (Inv__inv g)))) True (Subgroup__mem_comap___simp_2 G N H f (times (times g x2) (Inv__inv g))) (Eq__trans Prop (Membership__mem H (f (times (times g x2) (Inv__inv g)))) (Membership__mem H (times (times (f g) (f x2)) (Inv__inv (f g)))) True (congrArg N Prop (f (times (times g x2) (Inv__inv g))) (times (times (f g) (f x2)) (Inv__inv (f g))) (Membership__mem H) (Eq__trans N (f (times (times g x2) (Inv__inv g))) (times (f (times g x2)) (f (Inv__inv g))) (times (times (f g) (f x2)) (Inv__inv (f g))) (map_mul G N (MonoidHom G N) f (times g x2) (Inv__inv g)) (congr N N (times (f (times g x2))) (times (times (f g) (f x2))) (f (Inv__inv g)) (Inv__inv (f g)) (congrArg N (Elem N -> N) (f (times g x2)) (times (f g) (f x2)) times (map_mul G N (MonoidHom G N) f g x2)) (map_inv G N (MonoidHom G N) f g)))) ((forallI N (n => if (Membership__mem H n) (forall N (g3 => Eqt Prop (Membership__mem H (times (times g3 n) (Inv__inv g3))) True))) (n => ifI (Membership__mem H n) (forall N (g2 => Eqt Prop (Membership__mem H (times (times g2 n) (Inv__inv g2))) True)) (h4 => forallI N (g1 => Eqt Prop (Membership__mem H (times (times g1 n) (Inv__inv g1))) True) (g1 => eq_true (Membership__mem H (times (times g1 n) (Inv__inv g1))) (Subgroup__Normal__conj_mem N x1 H n h4 g1))))) (f x2) h3 (f g)))))) (implies_true G)))) (implies_true (Membership__mem H (f x2)))))).
 
 (; //LEAN:AddSubgroup.Normal.comap ;)
-AddSubgroup__Normal__comap : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (H : Elem (AddSubgroup N)) -> (hH : Proof (AddSubgroup__Normal H)) -> (f : Elem (AddMonoidHom G N)) -> Proof (AddSubgroup__Normal (AddSubgroup__comap f H)).
+def AddSubgroup__Normal__comap : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (H : Elem (AddSubgroup N)) -> (hH : Proof (AddSubgroup__Normal H)) -> (f : Elem (AddMonoidHom G N)) -> Proof (AddSubgroup__Normal (AddSubgroup__comap f H)) :=
+  G => x => N => x1 => H => hH => f => AddSubgroup__Normal__mk (forallI G (x2 => if (Membership__mem (AddSubgroup__comap f H) x2) (forall G (a8 => Membership__mem (AddSubgroup__comap f H) (plus (plus a8 x2) (Neg__neg a8))))) (x2 => of_eq_true (if (Membership__mem (AddSubgroup__comap f H) x2) (forall G (a => Membership__mem (AddSubgroup__comap f H) (plus (plus a x2) (Neg__neg a))))) (Eq__trans Prop (if (Membership__mem (AddSubgroup__comap f H) x2) (forall G (a1 => Membership__mem (AddSubgroup__comap f H) (plus (plus a1 x2) (Neg__neg a1))))) (if (Membership__mem H (f x2)) True) True (implies_congr_ctx (Membership__mem (AddSubgroup__comap f H) x2) (Membership__mem H (f x2)) (forall G (a2 => Membership__mem (AddSubgroup__comap f H) (plus (plus a2 x2) (Neg__neg a2)))) True (propext (AddSubgroup__mem_comap G N H f x2)) (ifI (Membership__mem H (f x2)) (Eqt Prop (forall G (a7 => Membership__mem (AddSubgroup__comap f H) (plus (plus a7 x2) (Neg__neg a7)))) True) (h3 => Eq__trans Prop (forall G (a3 => Membership__mem (AddSubgroup__comap f H) (plus (plus a3 x2) (Neg__neg a3)))) (forall G (a4 => True)) True (forall_congr G (a5 => Membership__mem (AddSubgroup__comap f H) (plus (plus a5 x2) (Neg__neg a5))) (a6 => True) (forallI G (g => Eqt Prop (Membership__mem (AddSubgroup__comap f H) (plus (plus g x2) (Neg__neg g))) True) (g => Eq__trans Prop (Membership__mem (AddSubgroup__comap f H) (plus (plus g x2) (Neg__neg g))) (Membership__mem H (f (plus (plus g x2) (Neg__neg g)))) True (propext (AddSubgroup__mem_comap G N H f (plus (plus g x2) (Neg__neg g)))) (Eq__trans Prop (Membership__mem H (f (plus (plus g x2) (Neg__neg g)))) (Membership__mem H (plus (plus (f g) (f x2)) (Neg__neg (f g)))) True (congrArg N Prop (f (plus (plus g x2) (Neg__neg g))) (plus (plus (f g) (f x2)) (Neg__neg (f g))) (Membership__mem H) (Eq__trans N (f (plus (plus g x2) (Neg__neg g))) (plus (f (plus g x2)) (f (Neg__neg g))) (plus (plus (f g) (f x2)) (Neg__neg (f g))) (map_add G N (AddMonoidHom G N) f (plus g x2) (Neg__neg g)) (congr N N (plus (f (plus g x2))) (plus (plus (f g) (f x2))) (f (Neg__neg g)) (Neg__neg (f g)) (congrArg N (Elem N -> N) (f (plus g x2)) (plus (f g) (f x2)) plus (map_add G N (AddMonoidHom G N) f g x2)) (map_neg G N (AddMonoidHom G N) f g)))) ((forallI N (n => if (Membership__mem H n) (forall N (g3 => Eqt Prop (Membership__mem H (plus (plus g3 n) (Neg__neg g3))) True))) (n => ifI (Membership__mem H n) (forall N (g2 => Eqt Prop (Membership__mem H (plus (plus g2 n) (Neg__neg g2))) True)) (h4 => forallI N (g1 => Eqt Prop (Membership__mem H (plus (plus g1 n) (Neg__neg g1))) True) (g1 => eq_true (Membership__mem H (plus (plus g1 n) (Neg__neg g1))) (AddSubgroup__Normal__conj_mem N x1 H n h4 g1))))) (f x2) h3 (f g)))))) (implies_true G)))) (implies_true (Membership__mem H (f x2)))))).
 
 (; //LEAN:Subgroup.Normal.subgroupOf ;)
 def Subgroup__Normal__subgroupOf : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (hH : Proof (Subgroup__Normal H)) -> (K : Elem (Subgroup G)) -> Proof (Subgroup__Normal (Subgroup__subgroupOf H K)) :=
   G => x => H => hH => K => Subgroup__Normal__comap (Subtype (x1 => Membership__mem K x1)) G H hH (Subgroup__subtype K).
 
 (; //LEAN:AddSubgroup.Normal.addSubgroupOf ;)
-AddSubgroup__Normal__addSubgroupOf : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (hH : Proof (AddSubgroup__Normal H)) -> (K : Elem (AddSubgroup G)) -> Proof (AddSubgroup__Normal (AddSubgroup__addSubgroupOf H K)).
+def AddSubgroup__Normal__addSubgroupOf : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (hH : Proof (AddSubgroup__Normal H)) -> (K : Elem (AddSubgroup G)) -> Proof (AddSubgroup__Normal (AddSubgroup__addSubgroupOf H K)) :=
+  G => x => H => hH => K => AddSubgroup__Normal__comap (Subtype (x1 => Membership__mem K x1)) G H hH (AddSubgroup__subtype K).
 
 (; //LEAN:AddSubgroup.comap_normalClosure_image_ge ;)
 AddSubgroup__comap_normalClosure_image_ge : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Set) -> (_ : Proof (AddGroup N)) -> (s : Elem (powerset G)) -> (f : Elem (AddMonoidHom G N)) -> Proof (Leq (AddSubgroup__normalClosure s) (AddSubgroup__comap f (AddSubgroup__normalClosure (Set__image f s)))).
@@ -812,7 +880,8 @@ Subgroup__normal_comap_iff_of_surjective : (G : Set) -> (_ : Proof (Group G)) ->
 MulEquiv__normal_map_iff : (G : Set) -> (G' : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Group G')) -> (f : Elem (MulEquiv G G')) -> (H : Elem (Subgroup G)) -> Proof (iff (Subgroup__Normal (Subgroup__map (MonoidHom__ofClass f) H)) (Subgroup__Normal H)).
 
 (; //LEAN:AddSubgroup.normal_addSubgroupOf_iff ;)
-AddSubgroup__normal_addSubgroupOf_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> (hHK : Proof (Leq H K)) -> Proof (iff (AddSubgroup__Normal (AddSubgroup__addSubgroupOf H K)) (forall G (h => forall G (k => if (Membership__mem H h) (if (Membership__mem K k) (Membership__mem H (plus (plus k h) (Neg__neg k)))))))).
+def AddSubgroup__normal_addSubgroupOf_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> (hHK : Proof (Leq H K)) -> Proof (iff (AddSubgroup__Normal (AddSubgroup__addSubgroupOf H K)) (forall G (h => forall G (k => if (Membership__mem H h) (if (Membership__mem K k) (Membership__mem H (plus (plus k h) (Neg__neg k)))))))) :=
+  G => x => H => K => hHK => iffI (AddSubgroup__Normal (AddSubgroup__addSubgroupOf H K)) (forall G (h => forall G (k => if (Membership__mem H h) (if (Membership__mem K k) (Membership__mem H (plus (plus k h) (Neg__neg k))))))) (hN => forallI G (h3 => forall G (k2 => forall (Proof (Membership__mem H h3)) (hH2 => forall (Proof (Membership__mem K k2)) (hK3 => Membership__mem (AddSubgroup__addSubgroupOf H K) (plus (plus k2 h3) (Neg__neg k2)))))) (h3 => forallI G (k1 => forall (Proof (Membership__mem H h3)) (hH1 => forall (Proof (Membership__mem K k1)) (hK2 => Membership__mem (AddSubgroup__addSubgroupOf H K) (plus (plus k1 h3) (Neg__neg k1))))) (k1 => ifI (Membership__mem H h3) (forall (Proof (Membership__mem K k1)) (hK1 => Membership__mem (AddSubgroup__addSubgroupOf H K) (plus (plus k1 h3) (Neg__neg k1)))) (hH => ifI (Membership__mem K k1) (Membership__mem (AddSubgroup__addSubgroupOf H K) (plus (plus k1 h3) (Neg__neg k1))) (hK => AddSubgroup__Normal__conj_mem (Subtype (x1 => Membership__mem K x1)) (AddSubgroup__toAddGroup K) (AddSubgroup__addSubgroupOf H K) h3 hH k1))))) (hN1 => AddSubgroup__Normal__mk (forallI (Subtype (x5 => Membership__mem K x5)) (h4 => if (Membership__mem (AddSubgroup__addSubgroupOf H K) h4) (forall (Subtype (x6 => Membership__mem K x6)) (k7 => Membership__mem H (plus (plus k7 h4) (Neg__neg k7))))) (h4 => ifI (Membership__mem (AddSubgroup__addSubgroupOf H K) h4) (forall (Subtype (x4 => Membership__mem K x4)) (k6 => Membership__mem H (plus (plus k6 h4) (Neg__neg k6)))) (hm => forallI (Subtype (x3 => Membership__mem K x3)) (k3 => Membership__mem H (plus (plus k3 h4) (Neg__neg k3))) (k3 => ifE (Membership__mem K k3) (Membership__mem H (plus (plus k3 h4) (Neg__neg k3))) (ifE (Membership__mem H h4) (if (Membership__mem K k3) (Membership__mem H (plus (plus k3 h4) (Neg__neg k3)))) (forallE G (k5 => if (Membership__mem H h4) (if (Membership__mem K k5) (Membership__mem H (plus (plus k5 h4) (Neg__neg k5))))) (forallE G (h5 => forall G (k4 => if (Membership__mem H h5) (if (Membership__mem K k4) (Membership__mem H (plus (plus k4 h5) (Neg__neg k4)))))) hN1 h4) k3) hm) (Subtype__property G (x2 => Membership__mem K x2) k3)))))).
 
 (; //LEAN:Subgroup.normal_subgroupOf_iff ;)
 def Subgroup__normal_subgroupOf_iff : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (K : Elem (Subgroup G)) -> (hHK : Proof (Leq H K)) -> Proof (iff (Subgroup__Normal (Subgroup__subgroupOf H K)) (forall G (h => forall G (k => if (Membership__mem H h) (if (Membership__mem K k) (Membership__mem H (times (times k h) (Inv__inv k)))))))) :=

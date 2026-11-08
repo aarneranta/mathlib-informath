@@ -71,9 +71,16 @@ AddMonoid : (M : Set) -> Prop.
 (; //LEAN:AddMonoidHom ;)
 AddMonoidHom : (M : Set) -> (N : Set) -> Set.
 
+(; //LEAN:AddMonoidHom.fiberEquivKer._proof_2 ;)
+AddMonoidHom__fiberEquivKer___proof_2 : (X : Set) -> (_ : Proof (AddGroup X)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (f : Elem (AddMonoidHom X H)) -> (a : Elem X) -> Proof (Eqt (powerset X) (Set__preimage f (Singleton__singleton (f a))) (HVAdd__hVAdd a (AddMonoidHom__ker f))).
+
 (; doc: The additive kernel of an `AddMonoid` homomorphism is the `AddSubgroup` of elements such that `f x = 0` ;)
 (; //LEAN:AddMonoidHom.ker ;)
 AddMonoidHom__ker : (f : Elem (AddMonoidHom G M)) -> Elem (AddSubgroup G).
+
+(; doc: Additive opposite of a type. This type inherits all multiplicative structures on `α` and reverses left and right in addition. ;)
+(; //LEAN:AddOpposite ;)
+AddOpposite : (X : Set) -> Set.
 
 (; doc: The element of `αᵃᵒᵖ` that represents `x : α`. ;)
 (; //LEAN:AddOpposite.op ;)
@@ -91,6 +98,18 @@ AddSubgroup : (G : Set) -> Set.
 (; //LEAN:AddSubgroup.Normal ;)
 AddSubgroup__Normal : (H : Elem (AddSubgroup A)) -> Prop.
 
+(; //LEAN:AddSubgroup.Normal.mem_comm_iff ;)
+AddSubgroup__Normal__mem_comm_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (nH : Proof (AddSubgroup__Normal H)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Membership__mem H (plus a b)) (Membership__mem H (plus b a))).
+
+(; //LEAN:AddSubgroup.Normal.mk ;)
+AddSubgroup__Normal__mk : (A : Set) -> (_ : Proof (AddGroup A)) -> (H : Elem (AddSubgroup A)) -> (conj_mem : Proof (forall A (n => if (Membership__mem H n) (forall A (g => Membership__mem H (plus (plus g n) (Neg__neg g))))))) -> Proof (AddSubgroup__Normal H).
+
+(; //LEAN:AddSubgroup.addGroupEquivQuotientProdAddSubgroup._proof_1 ;)
+AddSubgroup__addGroupEquivQuotientProdAddSubgroup___proof_1 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (L : Elem (HasQuotient__Quotient X s)) -> Proof (Eqt Set (Equiv (Subtype (x1 => Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk x1) L)) (Set__Elem (HVAdd__hVAdd (Quotient__out L) s))) (Equiv (Subtype (x2 => Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk x2) L)) (Set__Elem (Set__ofPred (x3 => Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk x3) (QuotientAddGroup__mk (Quotient__out L))))))).
+
+(; //LEAN:AddSubgroup.addGroupEquivQuotientProdAddSubgroup._proof_2 ;)
+AddSubgroup__addGroupEquivQuotientProdAddSubgroup___proof_2 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (L : Elem (HasQuotient__Quotient X s)) -> Proof (Eqt Set (Equiv (Subtype (x1 => Eqt (Quotient (QuotientAddGroup__leftRel s)) (Quotient__mk'' x1) L)) (Subtype (x2 => Eqt (Quotient (QuotientAddGroup__leftRel s)) (Quotient__mk'' x2) (Quotient__mk'' (Quotient__out L))))) (Equiv (Subtype (x3 => Eqt (Quotient (QuotientAddGroup__leftRel s)) (Quotient__mk'' x3) L)) (Subtype (x4 => Eqt (Quotient (QuotientAddGroup__leftRel s)) (Quotient__mk'' x4) L)))).
+
 (; doc: For any subgroups `H` and `K`, view `H ⊓ K` as a subgroup of `K`. ;)
 (; //LEAN:AddSubgroup.addSubgroupOf ;)
 AddSubgroup__addSubgroupOf : (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> Elem (AddSubgroup (Subtype (x1 => Membership__mem K x1))).
@@ -98,6 +117,20 @@ AddSubgroup__addSubgroupOf : (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgrou
 (; doc: The preimage of an `AddSubgroup` along an `AddMonoid` homomorphism is an `AddSubgroup`. ;)
 (; //LEAN:AddSubgroup.comap ;)
 AddSubgroup__comap : (f : Elem (AddMonoidHom G N)) -> (H : Elem (AddSubgroup N)) -> Elem (AddSubgroup G).
+
+(; doc: The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. ;)
+(; //LEAN:AddSubgroup.inclusion ;)
+AddSubgroup__inclusion : (h : Proof (Leq H K)) -> Elem (AddMonoidHom (Subtype (x1 => Membership__mem H x1)) (Subtype (x2 => Membership__mem K x2))).
+
+(; //LEAN:AddSubgroup.leftCosetEquivAddSubgroup._proof_4 ;)
+AddSubgroup__leftCosetEquivAddSubgroup___proof_4 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (g : Elem X) -> (x1 : Elem (Set__Elem (HVAdd__hVAdd g s))) -> Proof (Eqt (Set__Elem (HVAdd__hVAdd g s)) (plus g (plus (Neg__neg g) x1)) x1).
+
+(; //LEAN:AddSubgroup.leftCosetEquivAddSubgroup._proof_8 ;)
+AddSubgroup__leftCosetEquivAddSubgroup___proof_8 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (g : Elem X) -> (x1 : Elem (Subtype (x3 => Membership__mem s x3))) -> Proof (Eqt (Subtype (x2 => Membership__mem s x2)) (plus (Neg__neg g) (plus g x1)) x1).
+
+(; doc: An `AddSubgroup` is closed under inverse. ;)
+(; //LEAN:AddSubgroup.neg_mem ;)
+AddSubgroup__neg_mem : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (x1 : Elem G) -> (h : Proof (Membership__mem H x1)) -> Proof (Membership__mem H (Neg__neg x1)).
 
 (; doc: A version of `Set.pi` for `AddSubgroup`s. Given an index set `I` and a family of submodules `s : Π i, AddSubgroup f i`, `pi I s` is the `AddSubgroup` of dependent functions `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`. ;)
 (; //LEAN:AddSubgroup.pi ;)
@@ -107,11 +140,26 @@ AddSubgroup__pi : (I : Elem (powerset X)) -> (H : ((i1 : Elem X) -> AddSubgroup 
 (; //LEAN:AddSubgroup.prod ;)
 AddSubgroup__prod : (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup N)) -> Elem (AddSubgroup (Prod G N)).
 
+(; //LEAN:AddSubgroup.quotientAddSubgroupOfEmbeddingOfLE._proof_2 ;)
+AddSubgroup__quotientAddSubgroupOfEmbeddingOfLE___proof_2 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (AddSubgroup X)) -> (H : Elem (AddSubgroup X)) -> (h : Proof (Leq s t)) -> (a : Elem (Subtype (x4 => Membership__mem s x4))) -> (b : Elem (Subtype (x3 => Membership__mem s x3))) -> (h1 : Proof (Setoid__r a b)) -> Proof (Setoid__r (AddSubgroup__inclusion__app h a) (AddSubgroup__inclusion__app h b)).
+
+(; //LEAN:AddSubgroup.quotientAddSubgroupOfEmbeddingOfLE._proof_3 ;)
+AddSubgroup__quotientAddSubgroupOfEmbeddingOfLE___proof_3 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (AddSubgroup X)) -> (H : Elem (AddSubgroup X)) -> (h : Proof (Leq s t)) -> (x1 : Elem (Quotient (QuotientAddGroup__leftRel (AddSubgroup__addSubgroupOf H s)))) -> (x2 : Elem (Quotient (QuotientAddGroup__leftRel (AddSubgroup__addSubgroupOf H s)))) -> (h1 : Proof (Eqt (HasQuotient__Quotient (Subtype (x4 => Membership__mem t x4)) (AddSubgroup__addSubgroupOf H t)) (Quotient__map' (AddSubgroup__inclusion h) (a => b => AddSubgroup__quotientAddSubgroupOfEmbeddingOfLE___proof_2 H h a b) x1) (Quotient__map' (AddSubgroup__inclusion h) (a1 => b1 => AddSubgroup__quotientAddSubgroupOfEmbeddingOfLE___proof_2 H h a1 b1) x2))) -> Proof (Eqt (HasQuotient__Quotient (Subtype (x3 => Membership__mem s x3)) (AddSubgroup__addSubgroupOf H s)) x1 x2).
+
+(; //LEAN:AddSubgroup.quotientAddSubgroupOfMapOfLE._proof_1 ;)
+AddSubgroup__quotientAddSubgroupOfMapOfLE___proof_1 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (AddSubgroup X)) -> (H : Elem (AddSubgroup X)) -> (h : Proof (Leq s t)) -> (a : Elem (Subtype (x2 => Membership__mem H x2))) -> (b : Elem (Subtype (x1 => Membership__mem H x1))) -> (h1 : Proof (Setoid__r a b)) -> Proof (Setoid__r (id a) (id b)).
+
 (; //LEAN:AddSubgroup.quotientEquivProdOfLE'._proof_1 ;)
 AddSubgroup__quotientEquivProdOfLE'___proof_1 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (AddSubgroup X)) -> (h_le : Proof (Leq s t)) -> (f : (Elem (HasQuotient__Quotient X t) -> X)) -> (hf : Proof (Function__RightInverse f QuotientAddGroup__mk)) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Setoid__r b c)) -> Proof (Setoid__r (plus (Neg__neg (f (Quotient__mk'' b))) b) (plus (Neg__neg (f (Quotient__mk'' c))) c)).
 
 (; //LEAN:AddSubgroup.quotientEquivProdOfLE'._proof_2 ;)
 AddSubgroup__quotientEquivProdOfLE'___proof_2 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (AddSubgroup X)) -> (f : (Elem (HasQuotient__Quotient X t) -> X)) -> (a : Elem (Prod (HasQuotient__Quotient X t) (HasQuotient__Quotient (Subtype (x3 => Membership__mem t x3)) (AddSubgroup__addSubgroupOf s t)))) -> (b : Elem (Subtype (x2 => Membership__mem t x2))) -> (c : Elem (Subtype (x1 => Membership__mem t x1))) -> (h : Proof (Setoid__r b c)) -> Proof (Setoid__r (plus (f (Prod__fst a)) b) (plus (f (Prod__fst a)) c)).
+
+(; //LEAN:AddSubgroup.quotientEquivProdOfLE'._proof_3 ;)
+AddSubgroup__quotientEquivProdOfLE'___proof_3 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (AddSubgroup X)) -> (h_le : Proof (Leq s t)) -> (f : (Elem (HasQuotient__Quotient X t) -> X)) -> (hf : Proof (Function__RightInverse f QuotientAddGroup__mk)) -> Proof (Function__LeftInverse (a => Quotient__map' (b => plus (f (Prod__fst a)) b) (b1 => c => h => AddSubgroup__quotientEquivProdOfLE'___proof_2 f a b1 c h) (Prod__snd a)) (a1 => Prod__mk (Quotient__map' id (x1 => x2 => h1 => iffEr (Setoid__r (id x1) (id x2)) (Membership__mem t (plus (Neg__neg (id x1)) (id x2))) QuotientAddGroup__leftRel_apply (h_le (plus (Neg__neg (id x1)) (id x2)) (iffEl (Setoid__r (id x1) (id x2)) (Membership__mem s (plus (Neg__neg (id x1)) (id x2))) QuotientAddGroup__leftRel_apply h1))) a1) (Quotient__map' (g => plus (Neg__neg (f (Quotient__mk'' g))) g) (b2 => c1 => h2 => AddSubgroup__quotientEquivProdOfLE'___proof_1 h_le f hf b2 c1 h2) a1))).
+
+(; //LEAN:AddSubgroup.quotientEquivProdOfLE'._proof_4 ;)
+AddSubgroup__quotientEquivProdOfLE'___proof_4 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (AddSubgroup X)) -> (h_le : Proof (Leq s t)) -> (f : (Elem (HasQuotient__Quotient X t) -> X)) -> (hf : Proof (Function__RightInverse f QuotientAddGroup__mk)) -> Proof (Function__RightInverse (a => Quotient__map' (b => plus (f (Prod__fst a)) b) (b1 => c => h => AddSubgroup__quotientEquivProdOfLE'___proof_2 f a b1 c h) (Prod__snd a)) (a1 => Prod__mk (Quotient__map' id (x1 => x2 => h1 => iffEr (Setoid__r (id x1) (id x2)) (Membership__mem t (plus (Neg__neg (id x1)) (id x2))) QuotientAddGroup__leftRel_apply (h_le (plus (Neg__neg (id x1)) (id x2)) (iffEl (Setoid__r (id x1) (id x2)) (Membership__mem s (plus (Neg__neg (id x1)) (id x2))) QuotientAddGroup__leftRel_apply h1))) a1) (Quotient__map' (g => plus (Neg__neg (f (Quotient__mk'' g))) g) (b2 => c1 => h2 => AddSubgroup__quotientEquivProdOfLE'___proof_1 h_le f hf b2 c1 h2) a1))).
 
 (; //LEAN:AddSubgroup.quotientEquivProdOfLE'._proof_5 ;)
 AddSubgroup__quotientEquivProdOfLE'___proof_5 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (AddSubgroup X)) -> (h_le : Proof (Leq s t)) -> (x1 : Elem X) -> (x2 : Elem X) -> (h : Proof (Setoid__r x1 x2)) -> Proof (Setoid__r (id x1) (id x2)).
@@ -122,13 +170,35 @@ AddSubgroup__quotientEquivProdOfLE___proof_1 : (X : Set) -> (_ : Proof (AddGroup
 (; //LEAN:AddSubgroup.quotientiInfAddSubgroupOfEmbedding._proof_1 ;)
 AddSubgroup__quotientiInfAddSubgroupOfEmbedding___proof_1 : (X : Set) -> (_ : Proof (AddGroup X)) -> (I : Set) -> (f : (Elem I -> AddSubgroup X)) -> (i : Elem I) -> Proof (Leq (iInf f) (f i)).
 
+(; //LEAN:AddSubgroup.quotientiInfAddSubgroupOfEmbedding._proof_2 ;)
+AddSubgroup__quotientiInfAddSubgroupOfEmbedding___proof_2 : (X : Set) -> (_ : Proof (AddGroup X)) -> (I : Set) -> (f : (Elem I -> AddSubgroup X)) -> (H : Elem (AddSubgroup X)) -> (x1 : Elem (Quotient (QuotientAddGroup__leftRel (AddSubgroup__addSubgroupOf (iInf (i5 => f i5)) H)))) -> (x2 : Elem (Quotient (QuotientAddGroup__leftRel (AddSubgroup__addSubgroupOf (iInf (i4 => f i4)) H)))) -> (h : Proof (Eqt ((i1 : Elem I) -> HasQuotient__Quotient (Subtype (x4 => Membership__mem H x4)) (AddSubgroup__addSubgroupOf (f i1) H)) (i2 => AddSubgroup__quotientAddSubgroupOfMapOfLE H (AddSubgroup__quotientiInfAddSubgroupOfEmbedding___proof_1 f i2) x1) (i3 => AddSubgroup__quotientAddSubgroupOfMapOfLE H (AddSubgroup__quotientiInfAddSubgroupOfEmbedding___proof_1 f i3) x2))) -> Proof (Eqt (HasQuotient__Quotient (Subtype (x3 => Membership__mem H x3)) (AddSubgroup__addSubgroupOf (iInf (i => f i)) H)) x1 x2).
+
+(; //LEAN:AddSubgroup.quotientiInfEmbedding._proof_1 ;)
+AddSubgroup__quotientiInfEmbedding___proof_1 : (X : Set) -> (_ : Proof (AddGroup X)) -> (I : Set) -> (f : (Elem I -> AddSubgroup X)) -> (x1 : Elem (Quotient (QuotientAddGroup__leftRel (iInf (i5 => f i5))))) -> (x2 : Elem (Quotient (QuotientAddGroup__leftRel (iInf (i4 => f i4))))) -> (h : Proof (Eqt ((i1 : Elem I) -> HasQuotient__Quotient X (f i1)) (i2 => AddSubgroup__quotientMapOfLE (AddSubgroup__quotientiInfAddSubgroupOfEmbedding___proof_1 f i2) x1) (i3 => AddSubgroup__quotientMapOfLE (AddSubgroup__quotientiInfAddSubgroupOfEmbedding___proof_1 f i3) x2))) -> Proof (Eqt (HasQuotient__Quotient X (iInf (i => f i))) x1 x2).
+
+(; //LEAN:AddSubgroup.rightCosetEquivAddSubgroup._proof_6 ;)
+AddSubgroup__rightCosetEquivAddSubgroup___proof_6 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (g : Elem X) -> (x1 : Elem (Set__Elem (HVAdd__hVAdd (AddOpposite__op g) s))) -> Proof (Eqt (Set__Elem (HVAdd__hVAdd (AddOpposite__op g) s)) (plus (plus x1 (Neg__neg g)) g) x1).
+
+(; //LEAN:AddSubgroup.rightCosetEquivAddSubgroup._proof_8 ;)
+AddSubgroup__rightCosetEquivAddSubgroup___proof_8 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (g : Elem X) -> (x1 : Elem (Subtype (x3 => Membership__mem s x3))) -> Proof (Eqt (Subtype (x2 => Membership__mem s x2)) (plus (plus x1 g) (Neg__neg g)) x1).
+
 (; doc: The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`. ;)
 (; //LEAN:AddSubgroup.subtype ;)
 AddSubgroup__subtype : (H : Elem (AddSubgroup G)) -> Elem (AddMonoidHom (Subtype (x1 => Membership__mem H x1)) G).
 
+(; doc: An `AddSubgroup` contains the group's 0. ;)
+(; //LEAN:AddSubgroup.zero_mem ;)
+AddSubgroup__zero_mem : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (Membership__mem H 0).
+
 (; doc: An additive submonoid of an additive monoid `M` is a subset containing 0 and closed under addition. ;)
 (; //LEAN:AddSubmonoid ;)
 AddSubmonoid : (M : Set) -> Set.
+
+(; //LEAN:AddSubmonoid.instSetLike ;)
+AddSubmonoid__instSetLike : Proof (SetLike (AddSubmonoid M) M).
+
+(; //LEAN:AddZero.toZero ;)
+AddZero__toZero : Proof (Zero M).
 
 (; doc: The bot (`⊥`, `\bot`) element  Conventions for notations in identifiers:   * The recommended spelling of `⊥` in identifiers is `bot`. ;)
 (; //LEAN:Bot.bot ;)
@@ -308,6 +378,9 @@ Quotient__mk'' : (a : Elem X) -> Elem (Quotient x).
 (; //LEAN:Quotient.out ;)
 Quotient__out : (x : Elem (Quotient s)) -> Elem X.
 
+(; //LEAN:QuotientAddGroup.eq ;)
+QuotientAddGroup__eq : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk a) (QuotientAddGroup__mk b)) (Membership__mem s (plus (Neg__neg a) b))).
+
 (; doc: The equivalence relation corresponding to the partition of a group by left cosets of a subgroup. ;)
 (; //LEAN:QuotientAddGroup.leftRel ;)
 QuotientAddGroup__leftRel : (s : Elem (AddSubgroup X)) -> Proof (Setoid X).
@@ -315,6 +388,21 @@ QuotientAddGroup__leftRel : (s : Elem (AddSubgroup X)) -> Proof (Setoid X).
 (; doc: The canonical map from an `AddGroup` `α` to the quotient `α ⧸ s`. ;)
 (; //LEAN:QuotientAddGroup.mk ;)
 QuotientAddGroup__mk : (a : Elem X) -> Elem (HasQuotient__Quotient X s).
+
+(; //LEAN:QuotientAddGroup.preimageMkEquivAddSubgroupProdSet._proof_10 ;)
+QuotientAddGroup__preimageMkEquivAddSubgroupProdSet___proof_10 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (powerset (HasQuotient__Quotient X s))) -> (x1 : Elem (Prod (Subtype (x3 => Membership__mem s x3)) (Set__Elem t))) -> Proof (Eqt (Prod (Subtype (x2 => Membership__mem s x2)) (Set__Elem t)) (Prod__mk (plus (Neg__neg (Quotient__out (QuotientAddGroup__mk (plus (Quotient__out (Prod__snd x1)) (Prod__fst x1))))) (plus (Quotient__out (Prod__snd x1)) (Prod__fst x1))) (QuotientAddGroup__mk (plus (Quotient__out (Prod__snd x1)) (Prod__fst x1)))) x1).
+
+(; //LEAN:QuotientAddGroup.preimageMkEquivAddSubgroupProdSet._proof_4 ;)
+QuotientAddGroup__preimageMkEquivAddSubgroupProdSet___proof_4 : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (powerset (HasQuotient__Quotient X s))) -> (x1 : Elem (Set__Elem (Set__preimage QuotientAddGroup__mk t))) -> Proof (Eqt (Set__Elem (Set__preimage QuotientAddGroup__mk t)) (plus (Quotient__out (Prod__snd (Prod__mk (plus (Neg__neg (Quotient__out (QuotientAddGroup__mk x1))) x1) (QuotientAddGroup__mk x1)))) (Prod__fst (Prod__mk (plus (Neg__neg (Quotient__out (QuotientAddGroup__mk x1))) x1) (QuotientAddGroup__mk x1)))) x1).
+
+(; //LEAN:QuotientAddGroup.quotientEquivSelf._proof_2 ;)
+QuotientAddGroup__quotientEquivSelf___proof_2 : (X : Set) -> (_ : Proof (AddGroup X)) -> (x1 : Elem X) -> (y : Elem X) -> (h : Proof (Setoid__r x1 y)) -> Proof (Eqt X (id x1) (id y)).
+
+(; //LEAN:QuotientAddGroup.quotientEquivSelf._proof_3 ;)
+QuotientAddGroup__quotientEquivSelf___proof_3 : (X : Set) -> (_ : Proof (AddGroup X)) -> (x1 : Elem (HasQuotient__Quotient X Bot__bot)) -> Proof (Eqt (HasQuotient__Quotient X Bot__bot) (QuotientAddGroup__mk (Quotient__lift id (x2 => y => h => eq_of_neg_add_eq_zero (QuotientAddGroup__quotientEquivSelf___proof_1 X x2 y h)) x1)) x1).
+
+(; //LEAN:QuotientAddGroup.quotientEquivSelf._proof_4 ;)
+QuotientAddGroup__quotientEquivSelf___proof_4 : (X : Set) -> (_ : Proof (AddGroup X)) -> (x1 : Elem X) -> Proof (Eqt X (Quotient__lift id (x2 => y => h => eq_of_neg_add_eq_zero (QuotientAddGroup__quotientEquivSelf___proof_1 X x2 y h)) (QuotientAddGroup__mk x1)) x1).
 
 (; doc: The equivalence relation corresponding to the partition of a group by right cosets of a subgroup. ;)
 (; //LEAN:QuotientAddGroup.rightRel ;)
@@ -526,6 +614,23 @@ Trans__trans : (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
 (; //LEAN:True ;)
 True : Prop.
 
+(; doc: By definition, if we have `ZeroMemClass S M`, we have `0 ∈ s` for all `s : S`. ;)
+(; //LEAN:ZeroMemClass.zero_mem ;)
+ZeroMemClass__zero_mem : (S : Set) -> (M : Elem (outParam Set)) -> (x : Proof (Zero M)) -> (x1 : Proof (SetLike S M)) -> (_ : Proof (ZeroMemClass S M)) -> (s : Elem S) -> Proof (Membership__mem s 0).
+
+(; //LEAN:add_mem_cancel_left ;)
+add_mem_cancel_left : (G : Set) -> (_ : Proof (AddGroup G)) -> (S : Set) -> (H : Elem S) -> (_ : Proof (AddSubgroupClass S G)) -> (x2 : Elem G) -> (y : Elem G) -> (h1 : Proof (Membership__mem H x2)) -> Proof (iff (Membership__mem H (plus x2 y)) (Membership__mem H y)).
+
+(; //LEAN:add_mem_cancel_right ;)
+add_mem_cancel_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (S : Set) -> (H : Elem S) -> (_ : Proof (AddSubgroupClass S G)) -> (x2 : Elem G) -> (y : Elem G) -> (h1 : Proof (Membership__mem H x2)) -> Proof (iff (Membership__mem H (plus y x2)) (Membership__mem H y)).
+
+(; //LEAN:add_zero ;)
+add_zero : (M : Set) -> (_ : Proof (AddZeroClass M)) -> (a : Elem M) -> Proof (Eqt M (plus a 0) a).
+
+(; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:congr ;)
+congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
+
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
 congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
@@ -576,4 +681,10 @@ propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)
 rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
+
+(; //LEAN:zero_add ;)
+zero_add : (M : Set) -> (_ : Proof (AddZeroClass M)) -> (a : Elem M) -> Proof (Eqt M (plus 0 a) a).
+
+(; //LEAN:zero_vadd ;)
+zero_vadd : (M : Set) -> (X : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (AddAction M X)) -> (b : Elem X) -> Proof (Eqt X (HVAdd__hVAdd 0 b) b).
 

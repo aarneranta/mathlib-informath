@@ -32,6 +32,10 @@ AddGroup : (A : Set) -> Prop.
 (; //LEAN:AddMemClass ;)
 AddMemClass : (S : Set) -> (M : Elem (outParam Set)) -> Prop.
 
+(; doc: A substructure satisfying `AddMemClass` is closed under addition. ;)
+(; //LEAN:AddMemClass.add_mem ;)
+AddMemClass__add_mem : (S : Set) -> (M : Elem (outParam Set)) -> (x : Proof (Add M)) -> (x1 : Proof (SetLike S M)) -> (_ : Proof (AddMemClass S M)) -> (s : Elem S) -> (a : Elem M) -> (b : Elem M) -> (h : Proof (Membership__mem s a)) -> (h1 : Proof (Membership__mem s b)) -> Proof (Membership__mem s (plus a b)).
+
 (; doc: `M →+ N` is the type of functions `M → N` that preserve the `AddZero` structure.  `AddMonoidHom` is also used for group homomorphisms.  When possible, instead of parametrizing results over `(f : M →+ N)`, you should parametrize over `(F : Type*) [AddMonoidHomClass F M N] (f : F)`.  When you extend this structure, make sure to extend `AddMonoidHomClass`.  [Wikidata Q868169](https://www.wikidata.org/wiki/Q868169) ;)
 (; //LEAN:AddMonoidHom ;)
 AddMonoidHom : (M : Set) -> (N : Set) -> Set.
@@ -40,9 +44,79 @@ AddMonoidHom : (M : Set) -> (N : Set) -> Set.
 (; //LEAN:AddMonoidHom.comp ;)
 AddMonoidHom__comp : (hnp : Elem (AddMonoidHom N P)) -> (hmn : Elem (AddMonoidHom M N)) -> Elem (AddMonoidHom M P).
 
+(; //LEAN:AddMonoidHom.mk ;)
+AddMonoidHom__mk : (toZeroHom : Elem (ZeroHom M N)) -> (map_add' : Proof (forall M (x2 => forall M (y => Eqt N (ZeroHom__toFun toZeroHom (plus x2 y)) (plus (ZeroHom__toFun toZeroHom x2) (ZeroHom__toFun toZeroHom y)))))) -> Elem (AddMonoidHom M N).
+
+(; doc: Makes an additive group homomorphism from a proof that the map preserves addition. ;)
+(; //LEAN:AddMonoidHom.mk' ;)
+AddMonoidHom__mk' : (f : (Elem M -> G)) -> (map_add : Proof (forall M (a => forall M (b => Eqt G (f (plus a b)) (plus (f a) (f b)))))) -> Elem (AddMonoidHom M G).
+
+(; //LEAN:AddSubgroup.copy._proof_1 ;)
+AddSubgroup__copy___proof_1 : (G : Set) -> (_ : Proof (AddGroup G)) -> (K : Elem (AddSubgroup G)) -> (s : Elem (powerset G)) -> (hs : Proof (Eqt (powerset G) s K)) -> (x1 : Elem G) -> (hx : Proof (Membership__mem s x1)) -> Proof (Membership__mem s (Neg__neg x1)).
+
+(; //LEAN:AddSubgroup.copy._proof_2 ;)
+AddSubgroup__copy___proof_2 : (G : Set) -> (_ : Proof (AddGroup G)) -> (K : Elem (AddSubgroup G)) -> (s : Elem (powerset G)) -> (hs : Proof (Eqt (powerset G) s K)) -> (x1 : Elem G) -> (x2 : Elem G) -> (h : Proof (Membership__mem s x1)) -> (h1 : Proof (Membership__mem s x2)) -> Proof (Membership__mem s (plus x1 x2)).
+
+(; //LEAN:AddSubgroup.copy._proof_3 ;)
+AddSubgroup__copy___proof_3 : (G : Set) -> (_ : Proof (AddGroup G)) -> (K : Elem (AddSubgroup G)) -> (s : Elem (powerset G)) -> (hs : Proof (Eqt (powerset G) s K)) -> Proof (Membership__mem s 0).
+
+(; //LEAN:AddSubgroup.inclusion._proof_3 ;)
+AddSubgroup__inclusion___proof_3 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> (h : Proof (Leq H K)) -> (x1 : Elem (Subtype (x5 => Membership__mem H x5))) -> (x2 : Elem (Subtype (x4 => Membership__mem H x4))) -> Proof (Eqt (Subtype (x3 => Membership__mem K x3)) (plus x1 x2) (plus x1 x2)).
+
+(; //LEAN:AddSubgroup.instSetLike ;)
+AddSubgroup__instSetLike : Proof (SetLike (AddSubgroup G) G).
+
+(; //LEAN:AddSubgroup.normalizer._proof_1 ;)
+AddSubgroup__normalizer___proof_1 : (G : Set) -> (_ : Proof (AddGroup G)) -> (S : Elem (powerset G)) -> (a : Elem G) -> (b : Elem G) -> (ha : Proof (forall G (n2 => iff (Membership__mem S n2) (Membership__mem S (plus (plus a n2) (Neg__neg a)))))) -> (hb : Proof (forall G (n1 => iff (Membership__mem S n1) (Membership__mem S (plus (plus b n1) (Neg__neg b)))))) -> (n : Elem G) -> Proof (iff (Membership__mem S n) (Membership__mem S (plus (plus (plus a b) n) (Neg__neg (plus a b))))).
+
+(; //LEAN:AddSubgroup.normalizer._proof_2 ;)
+AddSubgroup__normalizer___proof_2 : (G : Set) -> (_ : Proof (AddGroup G)) -> (S : Elem (powerset G)) -> Proof (Membership__mem (Set__ofPred (g => forall G (n => iff (Membership__mem S n) (Membership__mem S (plus (plus g n) (Neg__neg g)))))) 0).
+
+(; //LEAN:AddSubgroup.normalizer._proof_3 ;)
+AddSubgroup__normalizer___proof_3 : (G : Set) -> (_ : Proof (AddGroup G)) -> (S : Elem (powerset G)) -> (a : Elem G) -> (ha : Proof (forall G (n1 => iff (Membership__mem S n1) (Membership__mem S (plus (plus a n1) (Neg__neg a)))))) -> (n : Elem G) -> Proof (iff (Membership__mem S n) (Membership__mem S (plus (plus (Neg__neg a) n) (Neg__neg (Neg__neg a))))).
+
+(; //LEAN:AddSubgroup.ofClass._proof_1 ;)
+AddSubgroup__ofClass___proof_1 : (S : Set) -> (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (AddSubgroupClass S G)) -> (s : Elem S) -> (x2 : Elem G) -> (x3 : Elem G) -> (h1 : Proof (Membership__mem s x2)) -> (h2 : Proof (Membership__mem s x3)) -> Proof (Membership__mem s (plus x2 x3)).
+
+(; //LEAN:AddSubgroup.ofClass._proof_2 ;)
+AddSubgroup__ofClass___proof_2 : (S : Set) -> (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (AddSubgroupClass S G)) -> (s : Elem S) -> Proof (Membership__mem s 0).
+
+(; //LEAN:AddSubgroup.ofClass._proof_3 ;)
+AddSubgroup__ofClass___proof_3 : (S : Set) -> (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (AddSubgroupClass S G)) -> (s : Elem S) -> (x2 : Elem G) -> (h1 : Proof (Membership__mem s x2)) -> Proof (Membership__mem s (Neg__neg x2)).
+
+(; //LEAN:AddSubgroup.ofSub._proof_3 ;)
+AddSubgroup__ofSub___proof_3 : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (hsn : Proof (Set__Nonempty s)) -> (hs : Proof (forall G (x1 => if (Membership__mem s x1) (forall G (y => if (Membership__mem s y) (Membership__mem s (plus x1 (Neg__neg y)))))))) -> Proof (Membership__mem s 0).
+
+(; //LEAN:AddSubgroup.ofSub._proof_4 ;)
+AddSubgroup__ofSub___proof_4 : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (hs : Proof (forall G (x2 => if (Membership__mem s x2) (forall G (y => if (Membership__mem s y) (Membership__mem s (plus x2 (Neg__neg y)))))))) -> (zero_mem : Proof (Membership__mem s 0)) -> (x1 : Elem G) -> (hx : Proof (Membership__mem s x1)) -> Proof (Membership__mem s (Neg__neg x1)).
+
+(; //LEAN:AddSubgroup.ofSub._proof_5 ;)
+AddSubgroup__ofSub___proof_5 : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (hs : Proof (forall G (x4 => if (Membership__mem s x4) (forall G (y => if (Membership__mem s y) (Membership__mem s (plus x4 (Neg__neg y)))))))) -> (neg_mem : Proof (forall G (x3 => if (Membership__mem s x3) (Membership__mem s (Neg__neg x3))))) -> (x1 : Elem G) -> (x2 : Elem G) -> (hx : Proof (Membership__mem s x1)) -> (hy : Proof (Membership__mem s x2)) -> Proof (Membership__mem s (plus x1 x2)).
+
+(; //LEAN:AddSubgroup.subtype._proof_2 ;)
+AddSubgroup__subtype___proof_2 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (Eqt G 0 0).
+
+(; //LEAN:AddSubgroup.subtype._proof_3 ;)
+AddSubgroup__subtype___proof_3 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (x1 : Elem (Subtype (x4 => Membership__mem H x4))) -> (x2 : Elem (Subtype (x3 => Membership__mem H x3))) -> Proof (Eqt G (plus x1 x2) (plus x1 x2)).
+
+(; //LEAN:AddSubgroupClass.inclusion._proof_3 ;)
+AddSubgroupClass__inclusion___proof_3 : (G : Set) -> (_ : Proof (AddGroup G)) -> (S : Set) -> (_ : Proof (AddSubgroupClass S G)) -> (_ : Proof (LE S)) -> (_ : Proof (IsConcreteLE S G)) -> (H : Elem S) -> (K : Elem S) -> (h2 : Proof (Leq H K)) -> (x3 : Elem (Subtype (x7 => Membership__mem H x7))) -> (x4 : Elem (Subtype (x6 => Membership__mem H x6))) -> Proof (Eqt (Subtype (x5 => Membership__mem K x5)) (plus x3 x4) (plus x3 x4)).
+
+(; //LEAN:AddSubgroupClass.subtype._proof_1 ;)
+AddSubgroupClass__subtype___proof_1 : (G : Set) -> (_ : Proof (AddGroup G)) -> (S : Set) -> (H : Elem S) -> (_ : Proof (AddSubgroupClass S G)) -> Proof (Eqt G 0 0).
+
+(; //LEAN:AddSubgroupClass.subtype._proof_2 ;)
+AddSubgroupClass__subtype___proof_2 : (G : Set) -> (_ : Proof (AddGroup G)) -> (S : Set) -> (H : Elem S) -> (_ : Proof (AddSubgroupClass S G)) -> (x2 : Elem (Subtype (x5 => Membership__mem H x5))) -> (x3 : Elem (Subtype (x4 => Membership__mem H x4))) -> Proof (Eqt G (plus x2 x3) (plus x2 x3)).
+
 (; doc: An additive submonoid of an additive monoid `M` is a subset containing 0 and closed under addition. ;)
 (; //LEAN:AddSubmonoid ;)
 AddSubmonoid : (M : Set) -> Set.
+
+(; //LEAN:AddSubmonoid.mk ;)
+AddSubmonoid__mk : (toAddSubsemigroup : Elem (AddSubsemigroup M)) -> (zero_mem' : Proof (Membership__mem (AddSubsemigroup__carrier toAddSubsemigroup) 0)) -> Elem (AddSubmonoid M).
+
+(; //LEAN:AddSubmonoid.mk_eq_zero ;)
+AddSubmonoid__mk_eq_zero : (M : Set) -> (_ : Proof (AddZeroClass M)) -> (S : Elem (AddSubmonoid M)) -> (a : Elem M) -> (ha : Proof (Membership__mem S a)) -> Proof (iff (Eqt (Subtype (x1 => Membership__mem S x1)) a 0) (Eqt M a 0)).
 
 (; doc: An additive submonoid of an additive monoid `M` can be considered as an additive subsemigroup of that additive monoid. ;)
 (; //LEAN:AddSubmonoid.toAddSubsemigroup ;)
@@ -55,6 +129,12 @@ AddSubmonoidClass : (S : Set) -> (M : Elem (outParam Set)) -> Prop.
 (; doc: The carrier of an additive subsemigroup. ;)
 (; //LEAN:AddSubsemigroup.carrier ;)
 AddSubsemigroup__carrier : (self : Elem (AddSubsemigroup M)) -> Elem (powerset M).
+
+(; //LEAN:AddSubsemigroup.mk ;)
+AddSubsemigroup__mk : (carrier : Elem (powerset M)) -> (add_mem' : Proof (forall M (a => forall M (b => if (Membership__mem carrier a) (if (Membership__mem carrier b) (Membership__mem carrier (plus a b))))))) -> Elem (AddSubsemigroup M).
+
+(; //LEAN:AddZero.toAdd ;)
+AddZero__toAdd : Proof (Add M).
 
 (; doc: A `DivInvMonoid` is a `Monoid` with operations `/` and `⁻¹` satisfying `div_eq_mul_inv : ∀ a b, a / b = a * b⁻¹`.  This deduplicates the name `div_eq_mul_inv`. The default for `div` is such that `a / b = a * b⁻¹` holds by definition.  Adding `div` as a field rather than defining `a / b := a * b⁻¹` allows us to avoid certain classes of unification failures, for example: Let `Foo X` be a type with a `∀ X, Div (Foo X)` instance but no `∀ X, Inv (Foo X)`, e.g. when `Foo X` is a `EuclideanDomain`. Suppose we also have an instance `∀ X [Cromulent X], GroupWithZero (Foo X)`. Then the `(/)` coming from `GroupWithZero.div` cannot be definitionally equal to the `(/)` coming from `Foo.Div`.  In the same way, adding a `zpow` field makes it possible to avoid definitional failures in diamonds. See the definition of `Monoid` and Note [forgetful inheritance] for more explanations on this. ;)
 (; //LEAN:DivInvMonoid ;)
@@ -169,6 +249,12 @@ Neg : (X : Set) -> Prop.
 (; //LEAN:Neg.neg ;)
 Neg__neg : (x : Elem X) -> Elem X.
 
+(; //LEAN:NegZeroClass.toNeg ;)
+NegZeroClass__toNeg : Proof (Neg G).
+
+(; //LEAN:NegZeroClass.toZero ;)
+NegZeroClass__toZero : Proof (Zero G).
+
 (; //LEAN:OneHom.mk ;)
 OneHom__mk : (toFun : (Elem M -> N)) -> (map_one' : Proof (Eqt N (toFun 1) 1)) -> Elem (OneHom M N).
 
@@ -237,6 +323,9 @@ StrictMono__monotone : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder X)) ->
 (; doc: A `SubNegMonoid` is an `AddMonoid` with unary `-` and binary `-` operations satisfying `sub_eq_add_neg : ∀ a b, a - b = a + -b`.  The default for `sub` is such that `a - b = a + -b` holds by definition.  Adding `sub` as a field rather than defining `a - b := a + -b` allows us to avoid certain classes of unification failures, for example: Let `foo X` be a type with a `∀ X, Sub (Foo X)` instance but no `∀ X, Neg (Foo X)`. Suppose we also have an instance `∀ X [Cromulent X], AddGroup (Foo X)`. Then the `(-)` coming from `AddGroup.sub` cannot be definitionally equal to the `(-)` coming from `Foo.Sub`.  In the same way, adding a `zsmul` field makes it possible to avoid definitional failures in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] for more explanations on this. ;)
 (; //LEAN:SubNegMonoid ;)
 SubNegMonoid : (G : Set) -> Prop.
+
+(; //LEAN:SubNegMonoid.toNeg ;)
+SubNegMonoid__toNeg : Proof (Neg G).
 
 (; //LEAN:Subgroup.copy._proof_1 ;)
 Subgroup__copy___proof_1 : (G : Set) -> (_ : Proof (Group G)) -> (K : Elem (Subgroup G)) -> (s : Elem (powerset G)) -> (hs : Proof (Eqt (powerset G) s K)) -> (x1 : Elem G) -> (hx : Proof (Membership__mem s x1)) -> Proof (Membership__mem s (Inv__inv x1)).
@@ -327,9 +416,22 @@ Subtype__coe_injective : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Function_
 (; //LEAN:Union.union ;)
 Union__union : (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
+(; //LEAN:ZeroHom.mk ;)
+ZeroHom__mk : (toFun : (Elem M -> N)) -> (map_zero' : Proof (Eqt N (toFun 0) 0)) -> Elem (ZeroHom M N).
+
 (; doc: `ZeroMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `0 ∈ s` for all `s`. ;)
 (; //LEAN:ZeroMemClass ;)
 ZeroMemClass : (S : Set) -> (M : Elem (outParam Set)) -> Prop.
+
+(; doc: By definition, if we have `ZeroMemClass S M`, we have `0 ∈ s` for all `s : S`. ;)
+(; //LEAN:ZeroMemClass.zero_mem ;)
+ZeroMemClass__zero_mem : (S : Set) -> (M : Elem (outParam Set)) -> (x : Proof (Zero M)) -> (x1 : Proof (SetLike S M)) -> (_ : Proof (ZeroMemClass S M)) -> (s : Elem S) -> Proof (Membership__mem s 0).
+
+(; //LEAN:add_assoc ;)
+add_assoc : (G : Set) -> (_ : Proof (AddSemigroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (Eqt G (plus (plus a b) c) (plus a (plus b c))).
+
+(; //LEAN:add_neg_cancel_right ;)
+add_neg_cancel_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus (plus a b) (Neg__neg b)) a).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
@@ -354,6 +456,15 @@ mul_assoc : (G : Set) -> (_ : Proof (Semigroup G)) -> (a : Elem G) -> (b : Elem 
 
 (; //LEAN:mul_inv_cancel_right ;)
 mul_inv_cancel_right : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (times (times a b) (Inv__inv b)) a).
+
+(; //LEAN:neg_add_cancel_left ;)
+neg_add_cancel_left : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus (Neg__neg a) (plus a b)) b).
+
+(; //LEAN:neg_add_cancel_right ;)
+neg_add_cancel_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus (plus a (Neg__neg b)) b) a).
+
+(; //LEAN:nsmul_mem ;)
+nsmul_mem : (M : Set) -> (A : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (AddSubmonoidClass A M)) -> (S : Elem A) -> (x2 : Elem M) -> (hx : Proof (Membership__mem S x2)) -> (n : Elem Nat) -> Proof (Membership__mem S (HSMul__hSMul n x2)).
 
 (; doc: Gadget for marking output parameters in type classes.  For example, the `Membership` class is defined as: ``` class Membership (α : outParam (Type u)) (γ : Type v) ``` This means that whenever a typeclass goal of the form `Membership ?α ?γ` comes up, Lean will wait to solve it until `?γ` is known, but then it will run typeclass inference, and take the first solution it finds, for any value of `?α`, which thereby determines what `?α` should be.  This expresses that in a term like `a ∈ s`, `s` might be a `Set α` or `List α` or some other type with a membership operation, and in each case the "member" type `α` is determined by looking at the container type. ;)
 (; //LEAN:outParam ;)

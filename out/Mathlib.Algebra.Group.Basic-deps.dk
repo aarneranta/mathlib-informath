@@ -256,6 +256,33 @@ Trans__trans : (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
 (; //LEAN:True ;)
 True : Prop.
 
+(; //LEAN:add_comm ;)
+add_comm : (G : Set) -> (_ : Proof (AddCommMagma G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus a b) (plus b a)).
+
+(; //LEAN:add_left_cancel_iff ;)
+add_left_cancel_iff : (G : Set) -> (_ : Proof (IsLeftCancelAdd G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (plus a b) (plus a c)) (Eqt G b c)).
+
+(; //LEAN:add_neg_cancel_left ;)
+add_neg_cancel_left : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus a (plus (Neg__neg a) b)) b).
+
+(; //LEAN:add_neg_cancel_right ;)
+add_neg_cancel_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus (plus a b) (Neg__neg b)) a).
+
+(; //LEAN:add_nsmul ;)
+add_nsmul : (M : Set) -> (_ : Proof (AddMonoid M)) -> (a : Elem M) -> (m : Elem Nat) -> (n : Elem Nat) -> Proof (Eqt M (HSMul__hSMul (plus m n) a) (plus (HSMul__hSMul m a) (HSMul__hSMul n a))).
+
+(; //LEAN:add_right_cancel_iff ;)
+add_right_cancel_iff : (G : Set) -> (_ : Proof (IsRightCancelAdd G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (plus b a) (plus c a)) (Eqt G b c)).
+
+(; //LEAN:add_sub_assoc ;)
+add_sub_assoc : (G : Set) -> (_ : Proof (SubNegMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (Eqt G (minus (plus a b) c) (plus a (minus b c))).
+
+(; //LEAN:add_sub_cancel_right ;)
+add_sub_cancel_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (minus (plus a b) b) a).
+
+(; //LEAN:add_zero ;)
+add_zero : (M : Set) -> (_ : Proof (AddZeroClass M)) -> (a : Elem M) -> Proof (Eqt M (plus a 0) a).
+
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
 congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
@@ -287,6 +314,9 @@ eq_comm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X a b) (E
 
 (; //LEAN:eq_inv_of_mul_eq_one_left ;)
 eq_inv_of_mul_eq_one_left : (G : Set) -> (_ : Proof (DivisionMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G (times a b) 1)) -> Proof (Eqt G a (Inv__inv b)).
+
+(; //LEAN:eq_neg_of_add_eq_zero_left ;)
+eq_neg_of_add_eq_zero_left : (G : Set) -> (_ : Proof (SubtractionMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G (plus a b) 0)) -> Proof (Eqt G a (Neg__neg b)).
 
 (; //LEAN:eq_self ;)
 eq_self : (X : Set) -> (a : Elem X) -> Proof (Eqt Prop (Eqt X a a) True).
@@ -327,6 +357,9 @@ ite : (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
 (; //LEAN:left_inv_eq_right_inv ;)
 left_inv_eq_right_inv : (M : Set) -> (_ : Proof (Monoid M)) -> (a : Elem M) -> (b : Elem M) -> (c : Elem M) -> (hba : Proof (Eqt M (times b a) 1)) -> (hac : Proof (Eqt M (times a c) 1)) -> Proof (Eqt M b c).
 
+(; //LEAN:left_neg_eq_right_neg ;)
+left_neg_eq_right_neg : (M : Set) -> (_ : Proof (AddMonoid M)) -> (a : Elem M) -> (b : Elem M) -> (c : Elem M) -> (hba : Proof (Eqt M (plus b a) 0)) -> (hac : Proof (Eqt M (plus a c) 0)) -> Proof (Eqt M b c).
+
 (; //LEAN:mt ;)
 mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
 
@@ -354,6 +387,24 @@ mul_one : (M : Set) -> (_ : Proof (MulOneClass M)) -> (a : Elem M) -> Proof (Eqt
 (; //LEAN:mul_right_cancel_iff ;)
 mul_right_cancel_iff : (G : Set) -> (_ : Proof (IsRightCancelMul G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (times b a) (times c a)) (Eqt G b c)).
 
+(; //LEAN:neg_add_cancel ;)
+neg_add_cancel : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (Eqt G (plus (Neg__neg a) a) 0).
+
+(; //LEAN:neg_add_cancel_left ;)
+neg_add_cancel_left : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus (Neg__neg a) (plus a b)) b).
+
+(; //LEAN:neg_add_cancel_right ;)
+neg_add_cancel_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus (plus a (Neg__neg b)) b) a).
+
+(; //LEAN:neg_eq_of_add_eq_zero_right ;)
+neg_eq_of_add_eq_zero_right : (G : Set) -> (_ : Proof (SubtractionMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G (plus a b) 0)) -> Proof (Eqt G (Neg__neg a) b).
+
+(; //LEAN:neg_neg ;)
+neg_neg : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> (a : Elem G) -> Proof (Eqt G (Neg__neg (Neg__neg a)) a).
+
+(; //LEAN:neg_zero ;)
+neg_zero : (G : Set) -> (_ : Proof (NegZeroClass G)) -> Proof (Eqt G (Neg__neg 0) 0).
+
 (; //LEAN:not_congr ;)
 not_congr : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff (not a) (not b)).
 
@@ -365,6 +416,19 @@ one_mul : (M : Set) -> (_ : Proof (MulOneClass M)) -> (a : Elem M) -> Proof (Eqt
 
 (; //LEAN:pow_add ;)
 pow_add : (M : Set) -> (_ : Proof (Monoid M)) -> (a : Elem M) -> (m : Elem Nat) -> (n : Elem Nat) -> Proof (Eqt M (pow a (plus m n)) (times (pow a m) (pow a n))).
+
+(; //LEAN:sub_add_cancel ;)
+sub_add_cancel : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus (minus a b) b) a).
+
+(; doc: Subtracting an element is the same as adding by its negative. This is a duplicate of `SubNegMonoid.sub_eq_add_neg` ensuring that the types unfold better. ;)
+(; //LEAN:sub_eq_add_neg ;)
+sub_eq_add_neg : (G : Set) -> (_ : Proof (SubNegMonoid G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (minus a b) (plus a (Neg__neg b))).
+
+(; //LEAN:sub_self ;)
+sub_self : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (Eqt G (minus a a) 0).
+
+(; //LEAN:zero_add ;)
+zero_add : (M : Set) -> (_ : Proof (AddZeroClass M)) -> (a : Elem M) -> Proof (Eqt M (plus 0 a) a).
 
 (; //LEAN:zpow_natCast ;)
 zpow_natCast : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (a : Elem G) -> (n : Elem Nat) -> Proof (Eqt G (pow a n) (pow a n)).

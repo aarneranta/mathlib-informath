@@ -497,6 +497,16 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
   let decls := ranged.toList.map fun (n, ci, _) => (n, ci)
   let lineOf : Std.HashMap Name DeclarationRanges :=
     ranged.foldl (fun m (n, _, r) => m.insert n r) {}
+  -- the additive twins that `to_additive` makes of the module's theorems:
+  -- a twin's source is its original's, whose position the twin's range does
+  -- not have (it is the attribute's)
+  let twinOf : Std.HashMap Name Name := decls.foldl (init := {}) fun m (n, _) =>
+    match Mathlib.Tactic.Translate.findTranslationName? env Mathlib.Tactic.ToAdditive.data n with
+    | some t => if t != n then m.insert t n else m
+    | none => m
+  let rec original (fuel : Nat) (n : Name) : Name := match fuel, twinOf.get? n with
+    | fuel + 1, some m => original fuel m
+    | _, _ => n
   let mut dk := s!"(; {mod}: statements exported from Mathlib by MathlibInformath/Export.lean ;)\n\n"
   let mut json := #[]
   let mut used : Std.HashSet Name := {}
@@ -512,11 +522,12 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
       used := stt.used.fold (fun acc c => acc.insert c) used
       derived := stt.derived.fold (fun acc k v => acc.insert k v) derived
       let r := lineOf.get! n
+      let orig := original 3 n
       -- the definiens too, where the source has a term and it translates
       let isThm := ci matches .thmInfo _
       let mut defn := ""
       if let some v := ci.value? (allowOpaque := true) then
-        if termDefiniens src r && !isClass env n then
+        if termDefiniens src (lineOf.getD orig r) && !isClass env n then
           let vres ← (((value ci.type v).run {mapping, binders, keepAll, proofMode := isThm}).run' {} {}).toIO ctx st
                      |>.toBaseIO
           if let .ok ((vs, vst), _) := vres then
@@ -531,7 +542,7 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
               derived := vst.derived.fold (fun acc k v => acc.insert k v) derived
       dk := dk ++ (if defn.isEmpty then s!"(; //LEAN:{n} ;)\n{mangle n} : {asPredicate env n s}.\n\n"
                    else s!"(; //LEAN:{n} ;)\ndef {mangle n} : {asPredicate env n s} :=\n  {defn}.\n\n")
-      json := json.push s!"\{\"lean\": {jsonStr n.toString}, \"dk\": {jsonStr (mangle n)}, \"kind\": {jsonStr (kindOf ci)}, \"doc\": {jsonStr (doc.getD "")}, \"statement\": {jsonStr ppStr}, \"line\": {r.range.pos.line}, \"nameLine\": {r.selectionRange.pos.line}, \"endLine\": {r.range.endPos.line}, \"definiens\": {if defn.isEmpty then "false" else "true"}}"
+      json := json.push s!"\{\"lean\": {jsonStr n.toString}, \"dk\": {jsonStr (mangle n)}, \"kind\": {jsonStr (kindOf ci)}, \"doc\": {jsonStr (doc.getD "")}, \"statement\": {jsonStr ppStr}, \"line\": {r.range.pos.line}, \"nameLine\": {r.selectionRange.pos.line}, \"endLine\": {r.range.endPos.line}, \"definiens\": {if defn.isEmpty then "false" else "true"}{if orig != n then s!", \"additiveOf\": {jsonStr orig.toString}" else ""}}"
     | .error e =>
       dk := dk ++ s!"(; //LEAN:{n} ;)\n(; NOT EXPORTED: {toString e} ;)\n\n"
   -- the constants used but neither exported nor mapped
@@ -1288,23 +1299,34 @@ position and text, the main goal before it and the goals after it, each with
 its hypotheses and target translated to Dedukti. -/
 
 open Lean.Elab in
-/-- The goal as JSON: its hypotheses (name and Dedukti type) and target. -/
+/-- The goal as JSON: its hypotheses (name and Dedukti type) and target;
+translated by `to_additive` as many times as `translate` says, for the
+additive twin of a theorem (twice for the twin of a twin). -/
 def goalJson (ci : ContextInfo) (mctx : MetavarContext) (g : MVarId)
-    (mapping : Std.HashMap Name String) (keepAll binders : Std.HashSet Name) : IO String := do
+    (mapping : Std.HashMap Name String) (keepAll binders : Std.HashSet Name)
+    (translate : Nat := 0) : IO String := do
   let act : MetaM String := do
     let decl ← g.getDecl
     withLCtx decl.lctx decl.localInstances do
-      let m : M String := do
+      let locals := decl.lctx.foldl (init := #[]) fun acc d =>
+        if d.isImplementationDetail then acc else acc.push d
+      let m (ds : Array LocalDecl) (target : Expr) : M String := do
         let mut hs := #[]
-        for d in decl.lctx do
-          if d.isImplementationDetail then continue
+        for d in ds do
           let nm := d.userName.eraseMacroScopes.toString (escape := false)
           let ty ← hypoType (← Core.betaReduce (← instantiateMVars d.type))
           hs := hs.push s!"[{jsonStr nm}, {jsonStr ty}, {if d.userName.hasMacroScopes then "true" else "false"}]"
         -- β-reduced: a goal often has (fun x => P x) a after a rewrite
-        let tgt ← tr (← Core.betaReduce (← instantiateMVars decl.type))
+        let tgt ← tr (← Core.betaReduce (← instantiateMVars target))
         return s!"\{\"hyps\": [{", ".intercalate hs.toList}], \"target\": {jsonStr tgt}}"
-      m.run' {mapping, binders, keepAll, proofMode := true}
+      let run (ds : Array LocalDecl) (target : Expr) : MetaM String :=
+        (m ds target).run' {mapping, binders, keepAll, proofMode := true}
+      if translate == 0 then run locals decl.type else
+      let mut e ← instantiateMVars (← mkForallFVars (locals.map (·.toExpr)) decl.type)
+      for _ in [0:translate] do
+        e := (← Mathlib.Tactic.Translate.applyReplacementForall Mathlib.Tactic.ToAdditive.data [] e).1
+      forallTelescope e fun xs body => do
+        run (← xs.mapM (·.fvarId!.getDecl)) body
   try
     ({ ci with mctx := mctx }).runMetaM decl0 act
   catch e => return s!"\{\"error\": {jsonStr (toString e)}}"
@@ -1353,13 +1375,24 @@ def elaborate (path : System.FilePath) (mapping : Std.HashMap Name String)
       let p := fileMap.toPosition pos
       let e := fileMap.toPosition endPos
       let text := (String.Pos.Raw.extract input pos endPos)
-      let before ← match ti.goalsBefore with
-        | g :: _ => goalJson ci ti.mctxBefore g mapping keepAll binders
-        | [] => pure "null"
-      let mut after := #[]
-      for g in ti.goalsAfter do
-        after := after.push (← goalJson ci ti.mctxAfter g mapping keepAll binders)
-      out := out.push s!"\{\"line\": {p.line}, \"col\": {p.column}, \"endLine\": {e.line}, \"kind\": {jsonStr ti.stx.getKind.toString}, \"nBefore\": {ti.goalsBefore.length}, \"tactic\": {jsonStr text}, \"before\": {before}, \"after\": [{", ".intercalate after.toList}]}"
+      -- the theorem the step proves, and its additive twins (`to_additive`
+      -- makes them from its proof): the step once for each, its goals
+      -- translated for a twin
+      let decl := ci.parentDecl?.getD .anonymous
+      let mut decls := #[decl]
+      while decls.size < 3 do
+        match Mathlib.Tactic.Translate.findTranslationName? s.commandState.env
+                Mathlib.Tactic.ToAdditive.data decls.back! with
+        | some t => decls := decls.push t
+        | none => break
+      for k in [0:decls.size] do
+        let before ← match ti.goalsBefore with
+          | g :: _ => goalJson ci ti.mctxBefore g mapping keepAll binders k
+          | [] => pure "null"
+        let mut after := #[]
+        for g in ti.goalsAfter do
+          after := after.push (← goalJson ci ti.mctxAfter g mapping keepAll binders k)
+        out := out.push s!"\{\"line\": {p.line}, \"col\": {p.column}, \"endLine\": {e.line}, \"decl\": {jsonStr decls[k]!.toString}, \"kind\": {jsonStr ti.stx.getKind.toString}, \"nBefore\": {ti.goalsBefore.length}, \"tactic\": {jsonStr text}, \"before\": {before}, \"after\": [{", ".intercalate after.toList}]}"
   return (s.commandState.env, s.commandState.messages, out)
 
 def writeTactics (outDir : String) (mod : Name) (steps : Array String) : IO Unit := do

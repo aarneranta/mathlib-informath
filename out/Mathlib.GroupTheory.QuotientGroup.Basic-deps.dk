@@ -95,6 +95,13 @@ AddCommGroup : (G : Set) -> Prop.
 (; //LEAN:AddEquiv ;)
 AddEquiv : (A : Set) -> (B : Set) -> Set.
 
+(; //LEAN:AddEquiv.mk ;)
+AddEquiv__mk : (toEquiv : Elem (Equiv A B)) -> (map_add' : Proof (forall A (x2 => forall A (y => Eqt B (Equiv__toFun toEquiv (plus x2 y)) (plus (Equiv__toFun toEquiv x2) (Equiv__toFun toEquiv y)))))) -> Elem (AddEquiv A B).
+
+(; doc: A bijective `AddSemigroup` homomorphism is an isomorphism ;)
+(; //LEAN:AddEquiv.ofBijective ;)
+AddEquiv__ofBijective : (f : Elem F) -> (hf : Proof (Function__Bijective f)) -> Elem (AddEquiv M N).
+
 (; doc: The identity map is an additive isomorphism. ;)
 (; //LEAN:AddEquiv.refl ;)
 AddEquiv__refl : (M : Set) -> Elem (AddEquiv M M).
@@ -102,6 +109,10 @@ AddEquiv__refl : (M : Set) -> Elem (AddEquiv M M).
 (; doc: The inverse of an isomorphism is an isomorphism. ;)
 (; //LEAN:AddEquiv.symm ;)
 AddEquiv__symm : (h : Elem (AddEquiv M N)) -> Elem (AddEquiv N M).
+
+(; doc: Extract the forward direction of an additive equivalence as an addition-preserving function. ;)
+(; //LEAN:AddEquiv.toAddMonoidHom ;)
+AddEquiv__toAddMonoidHom : (h : Elem (AddEquiv M N)) -> Elem (AddMonoidHom M N).
 
 (; doc: Transitivity of addition-preserving isomorphisms ;)
 (; //LEAN:AddEquiv.trans ;)
@@ -123,6 +134,9 @@ AddMonoidHom__comp : (hnp : Elem (AddMonoidHom N P)) -> (hmn : Elem (AddMonoidHo
 (; //LEAN:AddMonoidHom.domRestrictHom ;)
 AddMonoidHom__domRestrictHom : (M' : Elem S) -> (A : Set) -> Elem (AddMonoidHom (AddMonoidHom M A) (AddMonoidHom (Subtype (x3 => Membership__mem M' x3)) A)).
 
+(; //LEAN:AddMonoidHom.ext ;)
+AddMonoidHom__ext : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> (g : Elem (AddMonoidHom M N)) -> (h : Proof (forall M (x2 => Eqt N (f x2) (g x2)))) -> Proof (Eqt (AddMonoidHom M N) f g).
+
 (; doc: The identity map from an additive monoid to itself. ;)
 (; //LEAN:AddMonoidHom.id ;)
 AddMonoidHom__id : (M : Set) -> Elem (AddMonoidHom M M).
@@ -131,9 +145,32 @@ AddMonoidHom__id : (M : Set) -> Elem (AddMonoidHom M M).
 (; //LEAN:AddMonoidHom.ker ;)
 AddMonoidHom__ker : (f : Elem (AddMonoidHom G M)) -> Elem (AddSubgroup G).
 
+(; doc: If `f` is an additive monoid homomorphism then `f (a + b) = f a + f b`. ;)
+(; //LEAN:AddMonoidHom.map_add ;)
+AddMonoidHom__map_add : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> (a : Elem M) -> (b : Elem M) -> Proof (Eqt N (f (plus a b)) (plus (f a) (f b))).
+
+(; doc: Additive group homomorphisms preserve negation. ;)
+(; //LEAN:AddMonoidHom.map_neg ;)
+AddMonoidHom__map_neg : (X : Set) -> (Y : Set) -> (_ : Proof (AddGroup X)) -> (_ : Proof (SubtractionMonoid Y)) -> (f : Elem (AddMonoidHom X Y)) -> (a : Elem X) -> Proof (Eqt Y (f (Neg__neg a)) (Neg__neg (f a))).
+
+(; //LEAN:AddMonoidHom.mem_ker ;)
+AddMonoidHom__mem_ker : (G : Set) -> (_ : Proof (AddGroup G)) -> (M : Set) -> (_ : Proof (AddZeroClass M)) -> (f : Elem (AddMonoidHom G M)) -> (x2 : Elem G) -> Proof (iff (Membership__mem (AddMonoidHom__ker f) x2) (Eqt M (f x2) 0)).
+
+(; doc: Turn an element of a type `F` satisfying `AddMonoidHomClass F M N` into an actual `AddMonoidHom`. This is declared as the default coercion from `F` to `M →+ N`. ;)
+(; //LEAN:AddMonoidHom.ofClass ;)
+AddMonoidHom__ofClass : (f : Elem F) -> Elem (AddMonoidHom M N).
+
 (; doc: The range of an `AddMonoidHom` from an `AddGroup` is an `AddSubgroup`. ;)
 (; //LEAN:AddMonoidHom.range ;)
 AddMonoidHom__range : (f : Elem (AddMonoidHom G N)) -> Elem (AddSubgroup N).
+
+(; doc: The canonical surjective `AddGroup` homomorphism `G →+ f(G)` induced by a group homomorphism `G →+ N`. ;)
+(; //LEAN:AddMonoidHom.rangeRestrict ;)
+AddMonoidHom__rangeRestrict : (f : Elem (AddMonoidHom G N)) -> Elem (AddMonoidHom G (Subtype (x2 => Membership__mem (AddMonoidHom__range f) x2))).
+
+(; doc: Given a pair of additive monoid homomorphisms `f`, `g` such that `g.comp f = id` and `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`.  This constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive monoid homomorphisms. ;)
+(; //LEAN:AddMonoidHom.toAddEquiv ;)
+AddMonoidHom__toAddEquiv : (f : Elem (AddMonoidHom M N)) -> (g : Elem (AddMonoidHom N M)) -> (h : Proof (Eqt (AddMonoidHom M M) (AddMonoidHom__comp g f) (AddMonoidHom__id M))) -> (h1 : Proof (Eqt (AddMonoidHom N N) (AddMonoidHom__comp f g) (AddMonoidHom__id N))) -> Elem (AddEquiv M N).
 
 (; doc: An additive subgroup of an additive group `G` is a subset containing 0, closed under addition and additive inverse.  [Wikidata Q466109](https://www.wikidata.org/wiki/Q466109) ;)
 (; //LEAN:AddSubgroup ;)
@@ -155,9 +192,22 @@ AddSubgroup__addSubgroupOf : (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgrou
 (; //LEAN:AddSubgroup.center ;)
 AddSubgroup__center : (G : Set) -> Elem (AddSubgroup G).
 
+(; //LEAN:AddSubgroup.characteristic_iff_comap_eq ;)
+AddSubgroup__characteristic_iff_comap_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (iff (AddSubgroup__Characteristic H) (forall (AddEquiv G G) (x1 => Eqt (AddSubgroup G) (AddSubgroup__comap (AddEquiv__toAddMonoidHom x1) H) H))).
+
+(; //LEAN:AddSubgroup.characteristic_iff_map_eq ;)
+AddSubgroup__characteristic_iff_map_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> Proof (iff (AddSubgroup__Characteristic H) (forall (AddEquiv G G) (x1 => Eqt (AddSubgroup G) (AddSubgroup__map (AddEquiv__toAddMonoidHom x1) H) H))).
+
 (; doc: The preimage of an `AddSubgroup` along an `AddMonoid` homomorphism is an `AddSubgroup`. ;)
 (; //LEAN:AddSubgroup.comap ;)
 AddSubgroup__comap : (f : Elem (AddMonoidHom G N)) -> (H : Elem (AddSubgroup N)) -> Elem (AddSubgroup G).
+
+(; doc: The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. ;)
+(; //LEAN:AddSubgroup.inclusion ;)
+AddSubgroup__inclusion : (h : Proof (Leq H K)) -> Elem (AddMonoidHom (Subtype (x1 => Membership__mem H x1)) (Subtype (x2 => Membership__mem K x2))).
+
+(; //LEAN:AddSubgroup.le_normalizer_of_normal ;)
+AddSubgroup__le_normalizer_of_normal : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal H)) -> Proof (Leq K (AddSubgroup__normalizer H)).
 
 (; doc: The image of an `AddSubgroup` along an `AddMonoid` homomorphism is an `AddSubgroup`. ;)
 (; //LEAN:AddSubgroup.map ;)
@@ -174,6 +224,10 @@ AddSubgroup__op : (H : Elem (AddSubgroup G)) -> Elem (AddSubgroup (AddOpposite G
 (; doc: Given `AddSubgroup`s `H`, `K` of `AddGroup`s `A`, `B` respectively, `H × K` as an `AddSubgroup` of `A × B`. ;)
 (; //LEAN:AddSubgroup.prod ;)
 AddSubgroup__prod : (H : Elem (AddSubgroup G)) -> (K : Elem (AddSubgroup N)) -> Elem (AddSubgroup (Prod G N)).
+
+(; doc: If two subgroups `M` and `N` of `G` are equal, their quotients are in bijection. ;)
+(; //LEAN:AddSubgroup.quotientEquivOfEq ;)
+AddSubgroup__quotientEquivOfEq : (h : Proof (Eqt (AddSubgroup X) s t)) -> Elem (Equiv (HasQuotient__Quotient X s) (HasQuotient__Quotient X t)).
 
 (; doc: The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`. ;)
 (; //LEAN:AddSubgroup.subtype ;)
@@ -347,6 +401,10 @@ MulEquiv__toMonoidHom : (h : Elem (MulEquiv M N)) -> Elem (MonoidHom M N).
 (; //LEAN:MulEquiv.trans ;)
 MulEquiv__trans : (h1 : Elem (MulEquiv M N)) -> (h2 : Elem (MulEquiv N P)) -> Elem (MulEquiv M P).
 
+(; doc: `-a` computes the negative or opposite of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `-` in identifiers is `neg` (when used as a unary operator). ;)
+(; //LEAN:Neg.neg ;)
+Neg__neg : (x : Elem X) -> Elem X.
+
 (; doc: A unital but not-necessarily-associative ring. ;)
 (; //LEAN:NonAssocRing ;)
 NonAssocRing : (X : Set) -> Prop.
@@ -398,6 +456,78 @@ Quotient__mk'' : (a : Elem X) -> Elem (Quotient x).
 (; //LEAN:Quotient.sound' ;)
 Quotient__sound' : (X : Set) -> (x : Proof (Setoid X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Setoid__r a b)) -> Proof (Eqt (Quotient x) (Quotient__mk'' a) (Quotient__mk'' b)).
 
+(; //LEAN:QuotientAddGroup.addEquivPiModRangeNSMulAddMonoidHom._proof_5 ;)
+QuotientAddGroup__addEquivPiModRangeNSMulAddMonoidHom___proof_5 : (I : Set) -> (A : (Elem I -> Set)) -> (_ : Proof ((i1 : Elem I) -> AddCommGroup (A i1))) -> (n : Elem Nat) -> Proof (Eqt (AddSubgroup ((i : Elem I) -> A i)) (AddMonoidHom__range (nsmulAddMonoidHom n)) (AddMonoidHom__ker (AddMonoidHom__mk (ZeroHom__mk (x1 => x2 => QuotientAddGroup__mk (x1 x2)) (QuotientAddGroup__addEquivPiModRangeNSMulAddMonoidHom___proof_1 A n)) (x3 => y => QuotientAddGroup__addEquivPiModRangeNSMulAddMonoidHom___proof_2 A n x3 y)))).
+
+(; //LEAN:QuotientAddGroup.addEquivPiModRangeNSMulAddMonoidHom._proof_7 ;)
+QuotientAddGroup__addEquivPiModRangeNSMulAddMonoidHom___proof_7 : (I : Set) -> (A : (Elem I -> Set)) -> (_ : Proof ((i10 : Elem I) -> AddCommGroup (A i10))) -> (n : Elem Nat) -> (y : ((i9 : Elem I) -> HasQuotient__Quotient (A i9) (AddMonoidHom__range (nsmulAddMonoidHom n)))) -> Proof (exists ((i8 : Elem I) -> A i8) (a => Eqt ((i : Elem I) -> HasQuotient__Quotient (A i) (AddMonoidHom__range (nsmulAddMonoidHom n))) (AddMonoidHom__mk__app (ZeroHom__mk (x5 => x6 => QuotientAddGroup__mk (x5 x6)) (QuotientAddGroup__addEquivPiModRangeNSMulAddMonoidHom___proof_1 A n)) (x7 => y2 => QuotientAddGroup__addEquivPiModRangeNSMulAddMonoidHom___proof_2 A n x7 y2) a) y)).
+
+(; doc: Two `AddMonoidHom`s from an additive quotient group are equal if their compositions with `AddQuotientGroup.mk'` are equal.  See note [partially-applied ext lemmas]. ;)
+(; //LEAN:QuotientAddGroup.addMonoidHom_ext ;)
+QuotientAddGroup__addMonoidHom_ext : (G : Set) -> (M : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (AddMonoid M)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> (f : Elem (AddMonoidHom (HasQuotient__Quotient G N) M)) -> (g : Elem (AddMonoidHom (HasQuotient__Quotient G N) M)) -> (h : Proof (Eqt (AddMonoidHom G M) (AddMonoidHom__comp f (QuotientAddGroup__mk' N)) (AddMonoidHom__comp g (QuotientAddGroup__mk' N)))) -> Proof (Eqt (AddMonoidHom (HasQuotient__Quotient G N) M) f g).
+
+(; //LEAN:QuotientAddGroup.comapMk'OrderIso._proof_1 ;)
+QuotientAddGroup__comapMk'OrderIso___proof_1 : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> (H' : Elem (AddSubgroup (HasQuotient__Quotient G N))) -> Proof (Eqt (AddSubgroup (HasQuotient__Quotient G N)) (AddSubgroup__map (QuotientAddGroup__mk' N) (AddSubgroup__comap (QuotientAddGroup__mk' N) H')) H').
+
+(; //LEAN:QuotientAddGroup.comapMk'OrderIso._proof_5 ;)
+QuotientAddGroup__comapMk'OrderIso___proof_5 : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> (x1 : Elem (Set__Elem (Set__Ici N))) -> Proof (Eqt (Set__Elem (Set__Ici N)) (AddSubgroup__comap (QuotientAddGroup__mk' N) (AddSubgroup__map (QuotientAddGroup__mk' N) x1)) x1).
+
+(; //LEAN:QuotientAddGroup.comapMk'OrderIso._proof_6 ;)
+QuotientAddGroup__comapMk'OrderIso___proof_6 : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> (x1 : Elem (AddSubgroup (HasQuotient__Quotient G N))) -> (x2 : Elem (AddSubgroup (HasQuotient__Quotient G N))) -> Proof (iff (Leq (AddSubgroup__comap (QuotientAddGroup__mk' N) x1) (AddSubgroup__comap (QuotientAddGroup__mk' N) x2)) (Leq x1 x2)).
+
+(; doc: `QuotientAddGroup.congr` lifts the isomorphism `e : G ≃ H` to `G ⧸ G' ≃ H ⧸ H'`, given that `e` maps `G` to `H`. ;)
+(; //LEAN:QuotientAddGroup.congr ;)
+QuotientAddGroup__congr : (G' : Elem (AddSubgroup G)) -> (H' : Elem (AddSubgroup H)) -> (e : Elem (AddEquiv G H)) -> (he : Proof (Eqt (AddSubgroup H) (AddSubgroup__map (AddMonoidHom__ofClass e) G') H')) -> Elem (AddEquiv (HasQuotient__Quotient G G') (HasQuotient__Quotient H H')).
+
+(; //LEAN:QuotientAddGroup.eq ;)
+QuotientAddGroup__eq : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk a) (QuotientAddGroup__mk b)) (Membership__mem s (plus (Neg__neg a) b))).
+
+(; //LEAN:QuotientAddGroup.equivQuotientAddSubgroupOfOfEq._proof_1 ;)
+QuotientAddGroup__equivQuotientAddSubgroupOfOfEq___proof_1 : (G : Set) -> (_ : Proof (AddGroup G)) -> (A' : Elem (AddSubgroup G)) -> (A : Elem (AddSubgroup G)) -> (B' : Elem (AddSubgroup G)) -> (B : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal (AddSubgroup__addSubgroupOf A' A))) -> (_ : Proof (AddSubgroup__Normal (AddSubgroup__addSubgroupOf B' B))) -> (h' : Proof (Eqt (AddSubgroup G) A' B')) -> (h : Proof (Eqt (AddSubgroup G) A B)) -> Proof (Eqt (AddMonoidHom (HasQuotient__Quotient (Subtype (x1 => Membership__mem A x1)) (AddSubgroup__addSubgroupOf A' A)) (HasQuotient__Quotient (Subtype (x2 => Membership__mem A x2)) (AddSubgroup__addSubgroupOf A' A))) (AddMonoidHom__comp (QuotientAddGroup__quotientMapAddSubgroupOfOfLe (Eq__ge h') (Eq__ge h)) (QuotientAddGroup__quotientMapAddSubgroupOfOfLe (Eq__le h') (Eq__le h))) (AddMonoidHom__id (HasQuotient__Quotient (Subtype (x3 => Membership__mem A x3)) (AddSubgroup__addSubgroupOf A' A)))).
+
+(; //LEAN:QuotientAddGroup.equivQuotientAddSubgroupOfOfEq._proof_2 ;)
+QuotientAddGroup__equivQuotientAddSubgroupOfOfEq___proof_2 : (G : Set) -> (_ : Proof (AddGroup G)) -> (A' : Elem (AddSubgroup G)) -> (A : Elem (AddSubgroup G)) -> (B' : Elem (AddSubgroup G)) -> (B : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal (AddSubgroup__addSubgroupOf A' A))) -> (_ : Proof (AddSubgroup__Normal (AddSubgroup__addSubgroupOf B' B))) -> (h' : Proof (Eqt (AddSubgroup G) A' B')) -> (h : Proof (Eqt (AddSubgroup G) A B)) -> Proof (Eqt (AddMonoidHom (HasQuotient__Quotient (Subtype (x1 => Membership__mem B x1)) (AddSubgroup__addSubgroupOf B' B)) (HasQuotient__Quotient (Subtype (x2 => Membership__mem B x2)) (AddSubgroup__addSubgroupOf B' B))) (AddMonoidHom__comp (QuotientAddGroup__quotientMapAddSubgroupOfOfLe (Eq__le h') (Eq__le h)) (QuotientAddGroup__quotientMapAddSubgroupOfOfLe (Eq__ge h') (Eq__ge h))) (AddMonoidHom__id (HasQuotient__Quotient (Subtype (x3 => Membership__mem B x3)) (AddSubgroup__addSubgroupOf B' B)))).
+
+(; //LEAN:QuotientAddGroup.equivQuotientAddSubgroupOfOfEq._proof_3 ;)
+QuotientAddGroup__equivQuotientAddSubgroupOfOfEq___proof_3 : (G : Set) -> (_ : Proof (AddGroup G)) -> (A' : Elem (AddSubgroup G)) -> (B' : Elem (AddSubgroup G)) -> (h' : Proof (Eqt (AddSubgroup G) A' B')) -> Proof (Leq A' B').
+
+(; //LEAN:QuotientAddGroup.equivQuotientAddSubgroupOfOfEq._proof_4 ;)
+QuotientAddGroup__equivQuotientAddSubgroupOfOfEq___proof_4 : (G : Set) -> (_ : Proof (AddGroup G)) -> (A' : Elem (AddSubgroup G)) -> (B' : Elem (AddSubgroup G)) -> (h' : Proof (Eqt (AddSubgroup G) A' B')) -> Proof (Leq B' A').
+
+(; //LEAN:QuotientAddGroup.equivQuotientZSMulOfEquiv._proof_3 ;)
+QuotientAddGroup__equivQuotientZSMulOfEquiv___proof_3 : (A : Set) -> (B : Set) -> (_ : Proof (AddCommGroup A)) -> (_ : Proof (AddCommGroup B)) -> (e : Elem (AddEquiv A B)) -> (n : Elem Int) -> Proof (Eqt (AddMonoidHom (HasQuotient__Quotient A (AddMonoidHom__range (zsmulAddGroupHom n))) (HasQuotient__Quotient A (AddMonoidHom__range (zsmulAddGroupHom n)))) (AddMonoidHom__comp (QuotientAddGroup__homQuotientZSMulOfHom (AddMonoidHom__ofClass (AddEquiv__symm e)) n) (QuotientAddGroup__homQuotientZSMulOfHom (AddMonoidHom__ofClass e) n)) (AddMonoidHom__id (HasQuotient__Quotient A (AddMonoidHom__range (zsmulAddGroupHom n))))).
+
+(; //LEAN:QuotientAddGroup.equivQuotientZSMulOfEquiv._proof_4 ;)
+QuotientAddGroup__equivQuotientZSMulOfEquiv___proof_4 : (A : Set) -> (B : Set) -> (_ : Proof (AddCommGroup A)) -> (_ : Proof (AddCommGroup B)) -> (e : Elem (AddEquiv A B)) -> (n : Elem Int) -> Proof (Eqt (AddMonoidHom (HasQuotient__Quotient B (AddMonoidHom__range (zsmulAddGroupHom n))) (HasQuotient__Quotient B (AddMonoidHom__range (zsmulAddGroupHom n)))) (AddMonoidHom__comp (QuotientAddGroup__homQuotientZSMulOfHom (AddMonoidHom__ofClass e) n) (QuotientAddGroup__homQuotientZSMulOfHom (AddMonoidHom__ofClass (AddEquiv__symm e)) n)) (AddMonoidHom__id (HasQuotient__Quotient B (AddMonoidHom__range (zsmulAddGroupHom n))))).
+
+(; //LEAN:QuotientAddGroup.homQuotientZSMulOfHom._proof_2 ;)
+QuotientAddGroup__homQuotientZSMulOfHom___proof_2 : (A : Set) -> (B : Set) -> (_ : Proof (AddCommGroup A)) -> (_ : Proof (AddCommGroup B)) -> (f : Elem (AddMonoidHom A B)) -> (n : Elem Int) -> (g : Elem A) -> (h : Proof (Membership__mem (AddMonoidHom__range (zsmulAddGroupHom n)) g)) -> Proof (Membership__mem (AddMonoidHom__ker (AddMonoidHom__comp (QuotientAddGroup__mk' (AddMonoidHom__range (zsmulAddGroupHom n))) f)) g).
+
+(; //LEAN:QuotientAddGroup.kerLift._proof_2 ;)
+QuotientAddGroup__kerLift___proof_2 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (x2 : Elem (AddMonoidHom G H)) -> (_g : Elem G) -> (h : Proof (Membership__mem (AddMonoidHom__ker x2) _g)) -> Proof (Eqt H (x2 _g) 0).
+
+(; doc: The equivalence relation corresponding to the partition of a group by left cosets of a subgroup. ;)
+(; //LEAN:QuotientAddGroup.leftRel ;)
+QuotientAddGroup__leftRel : (s : Elem (AddSubgroup X)) -> Proof (Setoid X).
+
+(; //LEAN:QuotientAddGroup.leftRel_apply ;)
+QuotientAddGroup__leftRel_apply : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (x1 : Elem X) -> (y : Elem X) -> Proof (iff (Setoid__r x1 y) (Membership__mem s (plus (Neg__neg x1) y))).
+
+(; doc: An `AddGroup` homomorphism `φ : G →+ M` with `N ⊆ ker(φ)` descends (i.e. `lift`s) to an `AddGroup` homomorphism `G/N →+ M`. ;)
+(; //LEAN:QuotientAddGroup.lift ;)
+QuotientAddGroup__lift : (N : Elem (AddSubgroup G)) -> (x2 : Elem (AddMonoidHom G M)) -> (HN : Proof (Leq N (AddMonoidHom__ker x2))) -> Elem (AddMonoidHom (HasQuotient__Quotient G N) M).
+
+(; doc: A surjective `AddGroup` homomorphism `φ : G →+ H` with `N = ker(φ)` descends (i.e. `lift`s) to an `AddGroup` isomorphism `G/N ≃+ H`. ;)
+(; //LEAN:QuotientAddGroup.liftEquiv ;)
+QuotientAddGroup__liftEquiv : (N : Elem (AddSubgroup G)) -> (h : Proof (Function__Surjective x2)) -> (HN : Proof (Eqt (AddSubgroup G) N (AddMonoidHom__ker x2))) -> Elem (AddEquiv (HasQuotient__Quotient G N) H).
+
+(; //LEAN:QuotientAddGroup.lift_mk' ;)
+QuotientAddGroup__lift_mk' : (G : Set) -> (M : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (AddMonoid M)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> (x2 : Elem (AddMonoidHom G M)) -> (HN : Proof (Leq N (AddMonoidHom__ker x2))) -> (g : Elem G) -> Proof (Eqt M (QuotientAddGroup__lift__app N x2 HN (QuotientAddGroup__mk g)) (x2 g)).
+
+(; doc: An `AddGroup` homomorphism `f : G →+ H` induces a map `G/N →+ H/M` if `N ⊆ f⁻¹(M)`. ;)
+(; //LEAN:QuotientAddGroup.map ;)
+QuotientAddGroup__map : (N : Elem (AddSubgroup G)) -> (M : Elem (AddSubgroup H)) -> (f : Elem (AddMonoidHom G H)) -> (h1 : Proof (Leq N (AddSubgroup__comap f M))) -> Elem (AddMonoidHom (HasQuotient__Quotient G N) (HasQuotient__Quotient H M)).
+
 (; doc: The canonical map from an `AddGroup` `α` to the quotient `α ⧸ s`. ;)
 (; //LEAN:QuotientAddGroup.mk ;)
 QuotientAddGroup__mk : (a : Elem X) -> Elem (HasQuotient__Quotient X s).
@@ -405,6 +535,9 @@ QuotientAddGroup__mk : (a : Elem X) -> Elem (HasQuotient__Quotient X s).
 (; doc: The additive group homomorphism from `G` to `G/N`. ;)
 (; //LEAN:QuotientAddGroup.mk' ;)
 QuotientAddGroup__mk' : (N : Elem (AddSubgroup G)) -> Elem (AddMonoidHom G (HasQuotient__Quotient G N)).
+
+(; //LEAN:QuotientAddGroup.prodAddEquiv._proof_1 ;)
+QuotientAddGroup__prodAddEquiv___proof_1 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (A : Elem (AddSubgroup G)) -> (B : Elem (AddSubgroup H)) -> (_ : Proof (AddSubgroup__Normal A)) -> (_ : Proof (AddSubgroup__Normal B)) -> (x2 : Elem (HasQuotient__Quotient (Prod G H) (AddSubgroup__prod A B))) -> (x3 : Elem (HasQuotient__Quotient (Prod G H) (AddSubgroup__prod A B))) -> Proof (Eqt (Prod (HasQuotient__Quotient G A) (HasQuotient__Quotient H B)) (Equiv__toFun (QuotientAddGroup__prodEquiv A B) (plus x2 x3)) (plus (Equiv__toFun (QuotientAddGroup__prodEquiv A B) x2) (Equiv__toFun (QuotientAddGroup__prodEquiv A B) x3))).
 
 (; //LEAN:QuotientAddGroup.prodEquiv._proof_10 ;)
 QuotientAddGroup__prodEquiv___proof_10 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (A : Elem (AddSubgroup G)) -> (B : Elem (AddSubgroup H)) -> (x2 : Elem G) -> (x3 : Elem H) -> (x4 : Elem G) -> (x5 : Elem H) -> (h : Proof (Setoid__r x2 x4)) -> (h1 : Proof (Setoid__r x3 x5)) -> Proof (Eqt (HasQuotient__Quotient (Prod G H) (AddSubgroup__prod A B)) (QuotientAddGroup__mk (Prod__mk x2 x3)) (QuotientAddGroup__mk (Prod__mk x4 x5))).
@@ -414,6 +547,58 @@ QuotientAddGroup__prodEquiv___proof_8 : (G : Set) -> (_ : Proof (AddGroup G)) ->
 
 (; //LEAN:QuotientAddGroup.prodEquiv.match_1 ;)
 QuotientAddGroup__prodEquiv__match_1 : (motive : (Elem (Prod G H) -> Set)) -> (x : Elem (Prod G H)) -> (h_1 : ((g : Elem G) -> (h : Elem H) -> motive (Prod__mk g h))) -> Elem (motive x).
+
+(; //LEAN:QuotientAddGroup.quotientAddEquivOfEq._proof_1 ;)
+QuotientAddGroup__quotientAddEquivOfEq___proof_1 : (G : Set) -> (_ : Proof (AddGroup G)) -> (M : Elem (AddSubgroup G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal M)) -> (_ : Proof (AddSubgroup__Normal N)) -> (h2 : Proof (Eqt (AddSubgroup G) M N)) -> (q : Elem (HasQuotient__Quotient G M)) -> (r : Elem (HasQuotient__Quotient G M)) -> Proof (Eqt (HasQuotient__Quotient G N) (Equiv__toFun (AddSubgroup__quotientEquivOfEq h2) (plus q r)) (plus (Equiv__toFun (AddSubgroup__quotientEquivOfEq h2) q) (Equiv__toFun (AddSubgroup__quotientEquivOfEq h2) r))).
+
+(; //LEAN:QuotientAddGroup.quotientBot._proof_1 ;)
+QuotientAddGroup__quotientBot___proof_1 : (G : Set) -> (_ : Proof (AddGroup G)) -> (_x : Elem G) -> Proof (Eqt G (AddMonoidHom__id__app G (id _x)) (AddMonoidHom__id__app G (id _x))).
+
+(; //LEAN:QuotientAddGroup.quotientInfEquivSumNormalizerQuotient._proof_1 ;)
+QuotientAddGroup__quotientInfEquivSumNormalizerQuotient___proof_1 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (N : Elem (AddSubgroup G)) -> Proof (Leq H (Max__max H N)).
+
+(; //LEAN:QuotientAddGroup.quotientInfEquivSumNormalizerQuotient._proof_2 ;)
+QuotientAddGroup__quotientInfEquivSumNormalizerQuotient___proof_2 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (N : Elem (AddSubgroup G)) -> (hLE : Proof (Leq H (AddSubgroup__normalizer N))) -> Proof (Eqt (AddSubgroup (Subtype (x1 => Membership__mem H x1))) (AddSubgroup__addSubgroupOf N H) (AddMonoidHom__ker (AddMonoidHom__comp (QuotientAddGroup__mk' (AddSubgroup__addSubgroupOf N (Max__max H N))) (AddSubgroup__inclusion le_sup_left)))).
+
+(; //LEAN:QuotientAddGroup.quotientInfEquivSumNormalizerQuotient._proof_3 ;)
+QuotientAddGroup__quotientInfEquivSumNormalizerQuotient___proof_3 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (N : Elem (AddSubgroup G)) -> (hLE : Proof (Leq H (AddSubgroup__normalizer N))) -> (x1 : Elem (HasQuotient__Quotient (Subtype (x10 => Membership__mem (Max__max H N) x10)) (AddSubgroup__addSubgroupOf N (Max__max H N)))) -> Proof (exists (Subtype (x9 => Membership__mem H x9)) (a => Eqt (HasQuotient__Quotient (Subtype (x2 => Membership__mem (Max__max H N) x2)) (AddSubgroup__addSubgroupOf N (Max__max H N))) (AddMonoidHom__comp__app (QuotientAddGroup__mk' (AddSubgroup__addSubgroupOf N (Max__max H N))) (AddSubgroup__inclusion (QuotientAddGroup__quotientInfEquivSumNormalizerQuotient___proof_1 H N)) a) x1)).
+
+(; //LEAN:QuotientAddGroup.quotientKerEquivOfRightInverse._proof_2 ;)
+QuotientAddGroup__quotientKerEquivOfRightInverse___proof_2 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (x2 : Elem (AddMonoidHom G H)) -> (x3 : (Elem H -> G)) -> (h : Proof (Function__RightInverse x3 x2)) -> (x4 : Elem (HasQuotient__Quotient G (AddMonoidHom__ker x2))) -> Proof (Eqt (HasQuotient__Quotient G (AddMonoidHom__ker x2)) (Function__comp QuotientAddGroup__mk x3 (QuotientAddGroup__kerLift__app x2 x4)) x4).
+
+(; //LEAN:QuotientAddGroup.quotientKerEquivOfRightInverse._proof_3 ;)
+QuotientAddGroup__quotientKerEquivOfRightInverse___proof_3 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (x2 : Elem (AddMonoidHom G H)) -> (x3 : Elem (HasQuotient__Quotient G (AddMonoidHom__ker x2))) -> (y : Elem (HasQuotient__Quotient G (AddMonoidHom__ker x2))) -> Proof (Eqt H (ZeroHom__toFun (AddMonoidHom__toZeroHom (QuotientAddGroup__kerLift x2)) (plus x3 y)) (plus (ZeroHom__toFun (AddMonoidHom__toZeroHom (QuotientAddGroup__kerLift x2)) x3) (ZeroHom__toFun (AddMonoidHom__toZeroHom (QuotientAddGroup__kerLift x2)) y))).
+
+(; //LEAN:QuotientAddGroup.quotientKerEquivOfSurjective._proof_1 ;)
+QuotientAddGroup__quotientKerEquivOfSurjective___proof_1 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (x2 : Elem (AddMonoidHom G H)) -> (h : Proof (Function__Surjective x2)) -> Proof (Function__HasRightInverse x2).
+
+(; //LEAN:QuotientAddGroup.quotientKerEquivOfSurjective._proof_2 ;)
+QuotientAddGroup__quotientKerEquivOfSurjective___proof_2 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (x2 : Elem (AddMonoidHom G H)) -> (h : Proof (Function__Surjective x2)) -> Proof (Function__RightInverse (Exists__choose (QuotientAddGroup__quotientKerEquivOfSurjective___proof_1 x2 h)) x2).
+
+(; //LEAN:QuotientAddGroup.quotientKerEquivRange._proof_2 ;)
+QuotientAddGroup__quotientKerEquivRange___proof_2 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (x2 : Elem (AddMonoidHom G H)) -> Proof (and (Function__Injective (QuotientAddGroup__rangeKerLift x2)) (Function__Surjective (QuotientAddGroup__rangeKerLift x2))).
+
+(; //LEAN:QuotientAddGroup.quotientMapAddSubgroupOfOfLe._proof_1 ;)
+QuotientAddGroup__quotientMapAddSubgroupOfOfLe___proof_1 : (G : Set) -> (_ : Proof (AddGroup G)) -> (A' : Elem (AddSubgroup G)) -> (A : Elem (AddSubgroup G)) -> (B' : Elem (AddSubgroup G)) -> (h' : Proof (Leq A' B')) -> Proof (Leq (AddSubgroup__comap (AddSubgroup__subtype A) A') (AddSubgroup__comap (AddSubgroup__subtype A) B')).
+
+(; //LEAN:QuotientAddGroup.quotientQuotientEquivQuotient._proof_1 ;)
+QuotientAddGroup__quotientQuotientEquivQuotient___proof_1 : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> (M : Elem (AddSubgroup G)) -> Proof (Leq M (AddSubgroup__comap (QuotientAddGroup__mk' N) (AddSubgroup__map (QuotientAddGroup__mk' N) M))).
+
+(; //LEAN:QuotientAddGroup.quotientQuotientEquivQuotient._proof_2 ;)
+QuotientAddGroup__quotientQuotientEquivQuotient___proof_2 : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> (M : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal M)) -> (h : Proof (Leq N M)) -> Proof (Eqt (AddMonoidHom (HasQuotient__Quotient (HasQuotient__Quotient G N) (AddSubgroup__map (QuotientAddGroup__mk' N) M)) (HasQuotient__Quotient (HasQuotient__Quotient G N) (AddSubgroup__map (QuotientAddGroup__mk' N) M))) (AddMonoidHom__comp (QuotientAddGroup__map M (AddSubgroup__map (QuotientAddGroup__mk' N) M) (QuotientAddGroup__mk' N) (AddSubgroup__le_comap_map (QuotientAddGroup__mk' N) M)) (QuotientAddGroup__quotientQuotientEquivQuotientAux N M h)) (AddMonoidHom__id (HasQuotient__Quotient (HasQuotient__Quotient G N) (AddSubgroup__map (QuotientAddGroup__mk' N) M)))).
+
+(; //LEAN:QuotientAddGroup.quotientQuotientEquivQuotient._proof_3 ;)
+QuotientAddGroup__quotientQuotientEquivQuotient___proof_3 : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> (M : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal M)) -> (h : Proof (Leq N M)) -> Proof (Eqt (AddMonoidHom (HasQuotient__Quotient G M) (HasQuotient__Quotient G M)) (AddMonoidHom__comp (QuotientAddGroup__quotientQuotientEquivQuotientAux N M h) (QuotientAddGroup__map M (AddSubgroup__map (QuotientAddGroup__mk' N) M) (QuotientAddGroup__mk' N) (AddSubgroup__le_comap_map (QuotientAddGroup__mk' N) M))) (AddMonoidHom__id (HasQuotient__Quotient G M))).
+
+(; //LEAN:QuotientAddGroup.quotientQuotientEquivQuotientAux._proof_1 ;)
+QuotientAddGroup__quotientQuotientEquivQuotientAux___proof_1 : (G : Set) -> (_ : Proof (AddGroup G)) -> (N : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal N)) -> (M : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal M)) -> (h : Proof (Leq N M)) -> Proof (Leq (AddSubgroup__map (QuotientAddGroup__mk' N) M) (AddMonoidHom__ker (QuotientAddGroup__map N M (AddMonoidHom__id G) h))).
+
+(; //LEAN:QuotientAddGroup.rangeKerLift._proof_3 ;)
+QuotientAddGroup__rangeKerLift___proof_3 : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (x2 : Elem (AddMonoidHom G H)) -> (g : Elem G) -> (hg : Proof (Membership__mem (AddMonoidHom__ker x2) g)) -> Proof (Eqt (Subtype (x3 => Membership__mem (AddMonoidHom__range x2) x3)) (AddMonoidHom__rangeRestrict__app x2 g) 0).
+
+(; doc: Given an additive subgroup `s`, the function that sends an additive subgroup `t` to the pair consisting of its intersection with `s` and its image in the quotient `α ⧸ s` is strictly monotone, even though it is not injective in general. ;)
+(; //LEAN:QuotientAddGroup.strictMono_comap_prod_image ;)
+QuotientAddGroup__strictMono_comap_prod_image : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> Proof (StrictMono (t => Prod__mk (AddSubgroup__comap (AddSubgroup__subtype s) t) (Set__image QuotientAddGroup__mk t))).
 
 (; //LEAN:QuotientGroup.comapMk'OrderIso._proof_1 ;)
 QuotientGroup__comapMk'OrderIso___proof_1 : (G : Set) -> (_ : Proof (Group G)) -> (N : Elem (Subgroup G)) -> (_ : Proof (Subgroup__Normal N)) -> (H' : Elem (Subgroup (HasQuotient__Quotient G N))) -> Proof (Eqt (Subgroup (HasQuotient__Quotient G N)) (Subgroup__map (QuotientGroup__mk' N) (Subgroup__comap (QuotientGroup__mk' N) H')) H').
@@ -680,6 +865,15 @@ inv_one : (G : Set) -> (_ : Proof (InvOneClass G)) -> Proof (Eqt G (Inv__inv 1) 
 (; //LEAN:map_prod ;)
 map_prod : (I : Set) -> (M : Set) -> (N : Set) -> (_ : Proof (CommMonoid M)) -> (_ : Proof (CommMonoid N)) -> (G : Set) -> (g : Elem G) -> (f : (Elem I -> M)) -> (s : Elem (Finset I)) -> Proof (Eqt N (g (Finset__prod s (x3 => f x3))) (Finset__prod s (x4 => g (f x4)))).
 
+(; //LEAN:map_sum ;)
+map_sum : (I : Set) -> (M : Set) -> (N : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (AddCommMonoid N)) -> (G : Set) -> (g : Elem G) -> (f : (Elem I -> M)) -> (s : Elem (Finset I)) -> Proof (Eqt N (g (Finset__sum s (x3 => f x3))) (Finset__sum s (x4 => g (f x4)))).
+
+(; //LEAN:neg_add_cancel ;)
+neg_add_cancel : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (Eqt G (plus (Neg__neg a) a) 0).
+
+(; //LEAN:neg_zero ;)
+neg_zero : (G : Set) -> (_ : Proof (NegZeroClass G)) -> Proof (Eqt G (Neg__neg 0) 0).
+
 (; doc: Multiplication by a natural `n` on a commutative additive monoid, considered as a morphism of additive monoids. ;)
 (; //LEAN:nsmulAddMonoidHom ;)
 nsmulAddMonoidHom : (n : Elem Nat) -> Elem (AddMonoidHom X X).
@@ -701,6 +895,9 @@ rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
 
 (; //LEAN:top_unique ;)
 top_unique : (X : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (OrderTop X)) -> (a : Elem X) -> (h : Proof (Leq Top__top a)) -> Proof (Eqt X a Top__top).
+
+(; //LEAN:zero_add ;)
+zero_add : (M : Set) -> (_ : Proof (AddZeroClass M)) -> (a : Elem M) -> Proof (Eqt M (plus 0 a) a).
 
 (; doc: The `n`-th power map (for an integer `n`) on a commutative group, considered as a group homomorphism. ;)
 (; //LEAN:zpowGroupHom ;)

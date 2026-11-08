@@ -7,6 +7,33 @@
     "unit": "conclusion",
     "prop": "iff (Function__IsPeriodicPt (x => times x x) n 1) (Eqt G (pow x n) 1)",
     "by": "rw [IsPeriodicPt, IsFixedPt, mul_left_iterate_apply_one]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isPeriodicPt_add_iff_nsmul_eq_zero",
+  "lean": "isPeriodicPt_add_iff_nsmul_eq_zero",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Function__IsPeriodicPt (x => plus x x) n 0) (Eqt G (HSMul__hSMul n x) 0)",
+    "by": "rw [IsPeriodicPt, IsFixedPt, mul_left_iterate_apply_one]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isOfFinAddOrder_iff_nsmul_eq_zero",
+  "lean": "isOfFinAddOrder_iff_nsmul_eq_zero",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (IsOfFinAddOrder x) (exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n x) 0)))",
+    "by": "simp [IsOfFinOrder, mem_periodicPts, isPeriodicPt_mul_iff_pow_eq_one]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -19,6 +46,7 @@
     "unit": "conclusion",
     "prop": "iff (IsOfFinOrder x) (exists Nat (n => and (Lt 0 n) (Eqt G (pow x n) 1)))",
     "by": "simp [IsOfFinOrder, mem_periodicPts, isPeriodicPt_mul_iff_pow_eq_one]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -78,6 +106,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x (Int__natAbs n)) 1",
     "by": "rwa [h, zpow_natCast] at hn'",
+    "method": "rewriting",
     "depth": 2
    },
    {
@@ -95,6 +124,85 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x (Int__natAbs n)) 1",
     "by": "rwa [h, zpow_neg, inv_eq_one, zpow_natCast] at hn'",
+    "method": "rewriting",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "isOfFinAddOrder_iff_zsmul_eq_zero",
+  "lean": "isOfFinAddOrder_iff_zsmul_eq_zero",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n x) 0))) (exists Int (n1 => and (Neq n1 0) (Eqt G (HSMul__hSMul n1 x) 0)))",
+    "by": "rw [isOfFinOrder_iff_pow_eq_one]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Int"
+     ],
+     [
+      "hn",
+      "Proof (Neq n 0)"
+     ],
+     [
+      "hn'",
+      "Proof (Eqt G (HSMul__hSMul n x) 0)"
+     ]
+    ],
+    "by": "refine ⟨fun ⟨n, hn, hn'⟩ ↦ ⟨n, Int.natCast_ne_zero_iff_pos.mpr hn, zpow_natCast x n ▸ hn'⟩,",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G (HSMul__hSMul (Int__natAbs n) x) 0",
+    "by": "refine ⟨fun ⟨n, hn, hn'⟩ ↦ ⟨n, Int.natCast_ne_zero_iff_pos.mpr hn, zpow_natCast x n ▸ hn'⟩,",
+    "depth": 0
+   },
+   {
+    "unit": "cases",
+    "by": "rcases (Int.natAbs_eq_iff (a := n)).mp rfl with h | h",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Eq n (Int__natAbs n))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (Int__natAbs n) x) 0",
+    "by": "rwa [h, zpow_natCast] at hn'",
+    "method": "rewriting",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Eq n (Neg__neg (Int__natAbs n)))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (Int__natAbs n) x) 0",
+    "by": "rwa [h, zpow_neg, inv_eq_one, zpow_natCast] at hn'",
+    "method": "rewriting",
     "depth": 2
    }
   ]
@@ -132,12 +240,14 @@
     "unit": "conclusion",
     "prop": "(Eqt G (pow x n) (pow x 0))",
     "by": "rw [← pow_zero x] at hnx",
+    "method": "rewriting",
     "depth": 0
    },
    {
     "unit": "conclusion",
     "prop": "(Lt 0 0)",
     "by": "rw [h hnx] at hn_pos",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -145,6 +255,101 @@
     "prop": "false",
     "by": "exact irrefl 0 hn_pos",
     "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "not_isOfFinAddOrder_of_injective_nsmul",
+  "lean": "not_isOfFinAddOrder_of_injective_nsmul",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "not (Eqt G (HSMul__hSMul x x) 0)",
+    "by": "simp_rw [isOfFinOrder_iff_pow_eq_one, not_exists, not_and]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "hn_pos",
+      "Proof (Lt 0 n)"
+     ],
+     [
+      "hnx",
+      "Proof (Eqt G (HSMul__hSMul n x) 0)"
+     ]
+    ],
+    "by": "intro n hn_pos hnx",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eqt G (HSMul__hSMul n x) (HSMul__hSMul 0 x))",
+    "by": "rw [← pow_zero x] at hnx",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt 0 0)",
+    "by": "rw [h hnx] at hn_pos",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exact irrefl 0 hn_pos",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsOfFinAddOrder__nsmul",
+  "lean": "IsOfFinAddOrder.nsmul",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "exists Nat (n1 => and (Lt 0 n1) (Eqt G (HSMul__hSMul n1 (HSMul__hSMul n a)) 0))",
+    "by": "simp_rw [isOfFinOrder_iff_pow_eq_one]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "m",
+      "Elem Nat"
+     ],
+     [
+      "hm",
+      "Proof (Lt 0 m)"
+     ],
+     [
+      "ha",
+      "Proof (Eqt G (HSMul__hSMul m a) 0)"
+     ]
+    ],
+    "by": "rintro ⟨m, hm, ha⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n (HSMul__hSMul n a)) 0))",
+    "by": "exact ⟨m, hm, by simp [pow_right_comm _ n, ha]⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul m (HSMul__hSMul n a)) 0",
+    "by": "simp [pow_right_comm _ n, ha]",
+    "method": "simplification",
+    "depth": 1
    }
   ]
  },
@@ -187,6 +392,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow (pow a n) m) 1",
     "by": "simp [pow_right_comm _ n, ha]",
+    "method": "simplification",
     "depth": 1
    }
   ]
@@ -199,6 +405,7 @@
     "unit": "conclusion",
     "prop": "(exists Nat (n => and (Lt 0 n) (Eqt G (pow (pow a n) n) 1)))",
     "by": "rw [isOfFinOrder_iff_pow_eq_one] at *",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -227,12 +434,6 @@
     "depth": 0
    },
    {
-    "unit": "enough",
-    "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (pow a n) 1))",
-    "by": "rcases h with ⟨m, hm, ha⟩",
-    "depth": 0
-   },
-   {
     "unit": "conclusion",
     "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (pow a n) 1))",
     "by": "exact ⟨n * m, mul_pos hn.bot_lt hm, by rwa [pow_mul]⟩",
@@ -242,6 +443,58 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow a (times n m)) 1",
     "by": "rwa [pow_mul]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsOfFinAddOrder__of_nsmul",
+  "lean": "IsOfFinAddOrder.of_nsmul",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n (HSMul__hSMul n a)) 0)))",
+    "by": "rw [isOfFinOrder_iff_pow_eq_one] at *",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Nat (n1 => and (Lt 0 n1) (Eqt G (HSMul__hSMul n1 a) 0))",
+    "by": "rw [isOfFinOrder_iff_pow_eq_one] at *",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "m",
+      "Elem Nat"
+     ],
+     [
+      "hm",
+      "Proof (Lt 0 m)"
+     ],
+     [
+      "ha",
+      "Proof (Eqt G (HSMul__hSMul m (HSMul__hSMul n a)) 0)"
+     ]
+    ],
+    "by": "rcases h with ⟨m, hm, ha⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n a) 0))",
+    "by": "exact ⟨n * m, mul_pos hn.bot_lt hm, by rwa [pow_mul]⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (times n m) a) 0",
+    "by": "rwa [pow_mul]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -259,6 +512,7 @@
     "unit": "conclusion",
     "prop": "iff (IsOfFinOrder (pow a 0)) (or (IsOfFinOrder a) (Eq 0 0))",
     "by": "simp",
+    "method": "simplification",
     "depth": 0
    },
    {
@@ -276,6 +530,79 @@
     "unit": "conclusion",
     "prop": "iff (IsOfFinOrder (pow a n)) (or (IsOfFinOrder a) (Eq n 0))",
     "by": "exact ⟨fun h ↦ .inl <| h.of_pow hn, fun h ↦ (h.resolve_right hn).pow⟩",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "isOfFinAddOrder_nsmul",
+  "lean": "isOfFinAddOrder_nsmul",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "rcases Decidable.eq_or_ne n 0 with rfl | hn",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (IsOfFinAddOrder (HSMul__hSMul 0 a)) (or (IsOfFinAddOrder a) (Eq 0 0))",
+    "by": "simp",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hn",
+      "Proof (Neq n 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (IsOfFinAddOrder (HSMul__hSMul n a)) (or (IsOfFinAddOrder a) (Eq n 0))",
+    "by": "exact ⟨fun h ↦ .inl <| h.of_pow hn, fun h ↦ (h.resolve_right hn).pow⟩",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "not_isOfFinAddOrder_of_isAddTorsionFree",
+  "lean": "not_isOfFinAddOrder_of_isAddTorsionFree",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "not (exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n a) 0)))",
+    "by": "rw [isOfFinOrder_iff_pow_eq_one]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "hn",
+      "Proof (Lt 0 n)"
+     ],
+     [
+      "han",
+      "Proof (Eqt G (HSMul__hSMul n a) 0)"
+     ]
+    ],
+    "by": "rintro ⟨n, hn, han⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "simp [ha, hn.ne'] at han",
+    "method": "simplification",
     "depth": 1
    }
   ]
@@ -313,7 +640,26 @@
     "unit": "conclusion",
     "prop": "false",
     "by": "simp [ha, hn.ne'] at han",
+    "method": "simplification",
     "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "IsOfFinAddOrder__eq_zero'",
+  "lean": "IsOfFinAddOrder.eq_zero'",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "not (IsOfFinAddOrder a)",
+    "by": "contrapose! ha",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "not (IsOfFinAddOrder a)",
+    "by": "apply not_isOfFinOrder_of_isMulTorsionFree ha",
+    "depth": 0
    }
   ]
  },
@@ -349,6 +695,26 @@
     "unit": "conclusion",
     "prop": "iff (exists Nat (n => and (Lt 0 n) (Eqt G (pow x n) 1))) (exists Nat (n1 => and (Lt 0 n1) (Eqt (Subtype (x1 => Membership__mem H x1)) (pow x n1) 1)))",
     "by": "norm_cast",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddSubmonoid__isOfFinAddOrder_coe",
+  "lean": "AddSubmonoid.isOfFinAddOrder_coe",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n x) 0))) (exists Nat (n1 => and (Lt 0 n1) (Eqt (Subtype (x1 => Membership__mem H x1)) (HSMul__hSMul n1 x) 0)))",
+    "by": "rw [isOfFinOrder_iff_pow_eq_one, isOfFinOrder_iff_pow_eq_one]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n x) 0))) (exists Nat (n1 => and (Lt 0 n1) (Eqt (Subtype (x1 => Membership__mem H x1)) (HSMul__hSMul n1 x) 0)))",
+    "by": "norm_cast",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -435,6 +801,45 @@
     "unit": "conclusion",
     "prop": "Eqt H (pow (f x) n) 1",
     "by": "rw [← f.map_pow, hn, f.map_one]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddMonoidHom__isOfFinAddOrder",
+  "lean": "AddMonoidHom.isOfFinAddOrder",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "npos",
+      "Proof (Lt 0 n)"
+     ],
+     [
+      "hn",
+      "Proof (Eqt G (HSMul__hSMul n x) 0)"
+     ]
+    ],
+    "by": "obtain ⟨n, npos, hn⟩ := h.exists_pow_eq_one",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Nat (n => and (Lt 0 n) (Eqt H (HSMul__hSMul n (f x)) 0))",
+    "by": "exact ⟨n, npos, by rw [← f.map_pow, hn, f.map_one]⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt H (HSMul__hSMul n (f x)) 0",
+    "by": "rw [← f.map_pow, hn, f.map_one]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -463,14 +868,39 @@
     "depth": 0
    },
    {
-    "unit": "enough",
+    "unit": "conclusion",
     "prop": "forall eta (i3 => IsOfFinOrder (x i3))",
+    "by": "exact fun _ => isOfFinOrder_iff_pow_eq_one.mpr ⟨n, npos, congr($hn.symm _).symm⟩",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsOfFinAddOrder__apply",
+  "lean": "IsOfFinAddOrder.apply",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "npos",
+      "Proof (Lt 0 n)"
+     ],
+     [
+      "hn",
+      "Proof (Eqt ((i2 : Elem eta) -> Gs i2) (HSMul__hSMul n x) 0)"
+     ]
+    ],
     "by": "obtain ⟨n, npos, hn⟩ := h.exists_pow_eq_one",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "forall eta (i3 => IsOfFinOrder (x i3))",
+    "prop": "IsOfFinAddOrder (x i)",
     "by": "exact fun _ => isOfFinOrder_iff_pow_eq_one.mpr ⟨n, npos, congr($hn.symm _).symm⟩",
     "depth": 0
    }
@@ -484,6 +914,39 @@
     "unit": "conclusion",
     "prop": "Eq (orderOf x) 1",
     "by": "simp [orderOf, nontriviality]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Subsingleton__addOrderOf_eq",
+  "lean": "Subsingleton.addOrderOf_eq",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf x) 1",
+    "by": "simp [orderOf, nontriviality]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_nsmul_eq_zero",
+  "lean": "addOrderOf_nsmul_eq_zero",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eqt G (HSMul__hSMul (addOrderOf x) x) (Nat__iterate (x => plus x x) (Function__minimalPeriod (x1 => plus x x1) 0) 0)",
+    "by": "convert Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (addOrderOf x) x) (Nat__iterate (x => plus x x) (Function__minimalPeriod (x1 => plus x x1) 0) 0)",
+    "by": "rw [orderOf, mul_left_iterate_apply_one]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -502,6 +965,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x (orderOf x)) (Nat__iterate (x => times x x) (Function__minimalPeriod (x1 => times x x1) 1) 1)",
     "by": "rw [orderOf, mul_left_iterate_apply_one]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -514,6 +978,20 @@
     "unit": "conclusion",
     "prop": "Eq (orderOf x) 0",
     "by": "rwa [orderOf, minimalPeriod, dite_eq_right]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_eq_zero",
+  "lean": "addOrderOf_eq_zero",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf x) 0",
+    "by": "rwa [orderOf, minimalPeriod, dite_eq_right]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -526,6 +1004,20 @@
     "unit": "conclusion",
     "prop": "iff (Eq (orderOf x) 0) (forall Nat (n => if (Lt 0 n) (Neq (pow x n) 1)))",
     "by": "simp_rw [orderOf_eq_zero_iff, isOfFinOrder_iff_pow_eq_one, not_exists, not_and]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_eq_zero_iff'",
+  "lean": "addOrderOf_eq_zero_iff'",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eq (addOrderOf x) 0) (forall Nat (n => if (Lt 0 n) (Neq (HSMul__hSMul n x) 0)))",
+    "by": "simp_rw [orderOf_eq_zero_iff, isOfFinOrder_iff_pow_eq_one, not_exists, not_and]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -544,7 +1036,102 @@
     "unit": "conclusion",
     "prop": "not (exists Nat (n => and (Lt 0 n) (Eqt M0 (pow 0 n) 1)))",
     "by": "simp +contextual [ne_of_gt]",
+    "method": "simplification",
     "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_eq_iff",
+  "lean": "addOrderOf_eq_iff",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (Eq (dite (Membership__mem (Function__periodicPts (x => plus x x)) 0) (h => Nat__find h) (h1 => 0)) n) (and (Function__IsPeriodicPt (x1 => plus x x1) n 0) (forall Nat (m => if (Lt m n) (if (Lt 0 m) (not (Function__IsPeriodicPt (x2 => plus x x2) m 0))))))",
+    "by": "simp_rw [Ne, ← isPeriodicPt_mul_iff_pow_eq_one, orderOf, minimalPeriod]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h1",
+      "Proof (Membership__mem (Function__periodicPts (x => plus x x)) 0)"
+     ]
+    ],
+    "by": "split_ifs with h1",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (iff (Eq (Nat__find h1) n) (and (Function__IsPeriodicPt (x1 => plus x x1) n 0) (forall Nat (m => if (Lt m n) (if (Lt 0 m) (not (Function__IsPeriodicPt (x2 => plus x x2) m 0))))))) (iff (Eq 0 n) (and (Function__IsPeriodicPt (x1 => plus x x1) n 0) (forall Nat (m => if (Lt m n) (if (Lt 0 m) (not (Function__IsPeriodicPt (x2 => plus x x2) m 0)))))))",
+    "by": "split_ifs with h1",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h1",
+      "Proof (Membership__mem (Function__periodicPts (x => plus x x)) 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eq (Nat__find h1) n) (and (Function__IsPeriodicPt (x1 => plus x x1) n 0) (forall Nat (m => if (Lt m n) (if (Lt 0 m) (not (Function__IsPeriodicPt (x2 => plus x x2) m 0))))))",
+    "by": "classical",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (and (and (Gt n 0) (Function__IsPeriodicPt (x1 => plus x x1) n 0)) (forall Nat (n => if (Lt n n) (not (and (Gt n 0) (Function__IsPeriodicPt (x2 => plus x x2) n 0)))))) (and (Function__IsPeriodicPt (x3 => plus x x3) n 0) (forall Nat (m => if (Lt m n) (if (Lt 0 m) (not (Function__IsPeriodicPt (x4 => plus x x4) m 0))))))",
+    "by": "rw [find_eq_iff]",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (and (and (Gt n 0) (Function__IsPeriodicPt (x1 => plus x x1) n 0)) (forall Nat (n => if (Lt n n) (not (and (Gt n 0) (Function__IsPeriodicPt (x2 => plus x x2) n 0)))))) (and (Function__IsPeriodicPt (x3 => plus x x3) n 0) (forall Nat (m => if (Lt m n) (if (Lt 0 m) (not (Function__IsPeriodicPt (x4 => plus x x4) m 0))))))",
+    "by": "simp only [h, true_and, not_and]",
+    "method": "simplification",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h1",
+      "Proof (not (Membership__mem (Function__periodicPts (x => plus x x)) 0))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "not (and (Function__IsPeriodicPt (x1 => plus x x1) n 0) (forall Nat (m => if (Lt m n) (if (Lt 0 m) (not (Function__IsPeriodicPt (x2 => plus x x2) m 0))))))",
+    "by": "rw [iff_false_left h.ne]",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h'",
+      "Proof (Function__IsPeriodicPt (x1 => plus x x1) n 0)"
+     ]
+    ],
+    "by": "rintro ⟨h', -⟩",
+    "goal": "false",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exact h1 ⟨n, h, h'⟩",
+    "depth": 2
    }
   ]
  },
@@ -602,6 +1189,7 @@
     "unit": "conclusion",
     "prop": "iff (and (and (Gt n 0) (Function__IsPeriodicPt (x1 => times x x1) n 1)) (forall Nat (n => if (Lt n n) (not (and (Gt n 0) (Function__IsPeriodicPt (x2 => times x x2) n 1)))))) (and (Function__IsPeriodicPt (x3 => times x x3) n 1) (forall Nat (m => if (Lt m n) (if (Lt 0 m) (not (Function__IsPeriodicPt (x4 => times x x4) m 1))))))",
     "by": "simp only [h, true_and, not_and]",
+    "method": "simplification",
     "depth": 2
    },
    {
@@ -649,6 +1237,20 @@
     "unit": "conclusion",
     "prop": "iff (Lt 0 (orderOf x)) (IsOfFinOrder x)",
     "by": "rw [iff_not_comm.mp orderOf_eq_zero_iff, pos_iff_ne_zero]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_pos_iff",
+  "lean": "addOrderOf_pos_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Lt 0 (addOrderOf x)) (IsOfFinAddOrder x)",
+    "by": "rw [iff_not_comm.mp orderOf_eq_zero_iff, pos_iff_ne_zero]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -661,6 +1263,7 @@
     "unit": "conclusion",
     "prop": "(Lt 0 (orderOf x))",
     "by": "rw [← orderOf_pos_iff] at hx ⊢",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -678,6 +1281,44 @@
   ]
  },
  {
+  "name": "IsOfFinAddOrder__mono",
+  "lean": "IsOfFinAddOrder.mono",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Lt 0 (addOrderOf x))",
+    "by": "rw [← orderOf_pos_iff] at hx ⊢",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt 0 (addOrderOf y)",
+    "by": "rw [← orderOf_pos_iff] at hx ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt 0 (addOrderOf y)",
+    "by": "exact Nat.pos_of_dvd_of_pos h hx",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_zero",
+  "lean": "addOrderOf_zero",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf 0) 1",
+    "by": "rw [orderOf, ← minimalPeriod_id (x := (1 : G)), ← one_mul_eq_id]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
   "name": "orderOf_one",
   "lean": "orderOf_one",
   "steps": [
@@ -685,6 +1326,7 @@
     "unit": "conclusion",
     "prop": "Eq (orderOf 1) 1",
     "by": "rw [orderOf, ← minimalPeriod_id (x := (1 : G)), ← one_mul_eq_id]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -697,6 +1339,20 @@
     "unit": "conclusion",
     "prop": "iff (Eq (orderOf x) 1) (Eqt G x 1)",
     "by": "rw [orderOf, minimalPeriod_eq_one_iff_isFixedPt, IsFixedPt, mul_one]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddMonoid__addOrderOf_eq_one_iff",
+  "lean": "AddMonoid.addOrderOf_eq_one_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eq (addOrderOf x) 1) (Eqt G x 0)",
+    "by": "rw [orderOf, minimalPeriod_eq_one_iff_isFixedPt, IsFixedPt, mul_one]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -736,12 +1392,14 @@
     "unit": "conclusion",
     "prop": "Eq (times 2 (plus r 1)) (plus (plus (times 2 r) 1) 1)",
     "by": "omega",
+    "method": "computation",
     "depth": 0
    },
    {
     "unit": "conclusion",
     "prop": "Eqt G (pow x (times 2 (plus r 1))) x",
     "by": "rw [h2, pow_succ, hx, one_mul]",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -754,6 +1412,67 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x n) (pow x (times 2 (times (plus r 1) n)))",
     "by": "rw [← mul_assoc, pow_mul, key]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "exists_nsmul_eq_nsmul_two_add",
+  "lean": "exists_nsmul_eq_nsmul_two_add",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "r",
+      "Elem Nat"
+     ],
+     [
+      "hx",
+      "Proof (Eqt G (HSMul__hSMul (plus (times 2 r) 1) x) 0)"
+     ]
+    ],
+    "by": "obtain ⟨r, rfl⟩ := hp",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(Eqt G (HSMul__hSMul (times 2 (plus r 1)) x) x)",
+    "by": "have key : x ^ (2 * (r + 1)) = x",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(Eq (times 2 (plus r 1)) (plus (plus (times 2 r) 1) 1))",
+    "by": "have h2 : 2 * (r + 1) = 2 * r + 1 + 1 := by omega",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times 2 (plus r 1)) (plus (plus (times 2 r) 1) 1)",
+    "by": "omega",
+    "method": "computation",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (times 2 (plus r 1)) x) x",
+    "by": "rw [h2, pow_succ, hx, one_mul]",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Nat (m => Eqt G (HSMul__hSMul n x) (HSMul__hSMul (times 2 m) x))",
+    "by": "exact ⟨(r + 1) * n, by rw [← mul_assoc, pow_mul, key]⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul n x) (HSMul__hSMul (times 2 (times (plus r 1) n)) x)",
+    "by": "rw [← mul_assoc, pow_mul, key]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -766,6 +1485,33 @@
     "unit": "conclusion",
     "prop": "divide (orderOf (pow x n)) (orderOf x)",
     "by": "rw [orderOf_dvd_iff_pow_eq_one, pow_right_comm, pow_orderOf_eq_one, one_pow]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_smul_dvd",
+  "lean": "addOrderOf_smul_dvd",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "divide (addOrderOf (HSMul__hSMul n x)) (addOrderOf x)",
+    "by": "rw [orderOf_dvd_iff_pow_eq_one, pow_right_comm, pow_orderOf_eq_one, one_pow]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "nsmul_injOn_Iio_addOrderOf",
+  "lean": "nsmul_injOn_Iio_addOrderOf",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Set__InjOn (x => HSMul__hSMul x x) (Set__Iio (addOrderOf x))",
+    "by": "simpa only [mul_left_iterate_apply_one]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -778,6 +1524,148 @@
     "unit": "conclusion",
     "prop": "Set__InjOn (x => pow x x) (Set__Iio (orderOf x))",
     "by": "simpa only [mul_left_iterate_apply_one]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "nsmul_eq_nsmul_of_modEq",
+  "lean": "nsmul_eq_nsmul_of_modEq",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "obtain hle | hle := le_total a b",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hle",
+      "Proof (Leq a b)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul a x) (HSMul__hSMul b x)",
+    "by": "all_goals",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "c",
+      "Elem Nat"
+     ],
+     [
+      "h",
+      "Proof (Nat__ModEq n a (plus a c))"
+     ],
+     [
+      "hle",
+      "Proof (Leq a (plus a c))"
+     ]
+    ],
+    "by": "obtain ⟨c, rfl⟩ := le_iff_exists_add.mp hle",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G (HSMul__hSMul a x) (HSMul__hSMul (plus a c) x)",
+    "by": "obtain ⟨c, rfl⟩ := le_iff_exists_add.mp hle",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "and ((Nat__ModEq n a (plus a (times n c)))) ((Leq a (plus a (times n c))))",
+    "by": "obtain ⟨c, rfl⟩ : n ∣ c := by simpa using h",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G (HSMul__hSMul a x) (HSMul__hSMul (plus a (times n c)) x)",
+    "by": "obtain ⟨c, rfl⟩ : n ∣ c := by simpa using h",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide n c",
+    "by": "simpa using h",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul a x) (HSMul__hSMul (plus a (times n c)) x)",
+    "by": "simp [pow_add, pow_mul, hx]",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hle",
+      "Proof (Leq b a)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "c",
+      "Elem Nat"
+     ],
+     [
+      "h",
+      "Proof (Nat__ModEq n (plus b c) b)"
+     ],
+     [
+      "hle",
+      "Proof (Leq b (plus b c))"
+     ]
+    ],
+    "by": "obtain ⟨c, rfl⟩ := le_iff_exists_add.mp hle",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G (HSMul__hSMul (plus b c) x) (HSMul__hSMul b x)",
+    "by": "obtain ⟨c, rfl⟩ := le_iff_exists_add.mp hle",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "and ((Nat__ModEq n (plus b (times n c)) b)) ((Leq b (plus b (times n c))))",
+    "by": "obtain ⟨c, rfl⟩ : n ∣ c := by simpa using h",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G (HSMul__hSMul (plus b (times n c)) x) (HSMul__hSMul b x)",
+    "by": "obtain ⟨c, rfl⟩ : n ∣ c := by simpa using h",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide n c",
+    "by": "simpa using h",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (plus b (times n c)) x) (HSMul__hSMul b x)",
+    "by": "simp [pow_add, pow_mul, hx]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -849,12 +1737,14 @@
     "unit": "conclusion",
     "prop": "divide n c",
     "by": "simpa using h",
+    "method": "simplification",
     "depth": 0
    },
    {
     "unit": "conclusion",
     "prop": "Eqt G (pow x a) (pow x (plus a (times n c)))",
     "by": "simp [pow_add, pow_mul, hx]",
+    "method": "simplification",
     "depth": 0
    },
    {
@@ -909,12 +1799,14 @@
     "unit": "conclusion",
     "prop": "divide n c",
     "by": "simpa using h",
+    "method": "simplification",
     "depth": 0
    },
    {
     "unit": "conclusion",
     "prop": "Eqt G (pow x (plus b (times n c))) (pow x b)",
     "by": "simp [pow_add, pow_mul, hx]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -927,6 +1819,44 @@
     "unit": "conclusion",
     "prop": "iff (Eqt G (pow x n) 1) (Nat__ModEq (orderOf x) n 0)",
     "by": "rw [modEq_zero_iff_dvd, orderOf_dvd_iff_pow_eq_one]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "nsmul_eq_zero_iff_modEq",
+  "lean": "nsmul_eq_zero_iff_modEq",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eqt G (HSMul__hSMul n x) 0) (Nat__ModEq (addOrderOf x) n 0)",
+    "by": "rw [modEq_zero_iff_dvd, orderOf_dvd_iff_pow_eq_one]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_map_dvd",
+  "lean": "addOrderOf_map_dvd",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eqt H (HSMul__hSMul (addOrderOf x) (psi x)) 0",
+    "by": "apply orderOf_dvd_of_pow_eq_one",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt H (psi 0) 0",
+    "by": "rw [← map_pow, pow_orderOf_eq_one]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt H (psi 0) 0",
+    "by": "apply map_one",
     "depth": 0
    }
   ]
@@ -979,6 +1909,7 @@
     "unit": "conclusion",
     "prop": "(Eq n 1)",
     "by": "rw [h0, coprime_zero_right] at h",
+    "method": "rewriting",
     "depth": 1
    },
    {
@@ -991,6 +1922,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow (pow x n) 1) x",
     "by": "rw [h, pow_one, pow_one]",
+    "method": "rewriting",
     "depth": 1
    },
    {
@@ -1030,6 +1962,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow (pow x n) 0) x",
     "by": "rw [orderOf_eq_one_iff.mp h1, one_pow, one_pow]",
+    "method": "rewriting",
     "depth": 2
    },
    {
@@ -1074,6 +2007,134 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow (pow x n) m) x",
     "by": "rw [← pow_mul, ← pow_mod_orderOf, h, pow_one]",
+    "method": "rewriting",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "exists_nsmul_eq_self_of_coprime",
+  "lean": "exists_nsmul_eq_self_of_coprime",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "by_cases h0 : orderOf x = 0",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h0",
+      "Proof (Eq (addOrderOf x) 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eq n 1)",
+    "by": "rw [h0, coprime_zero_right] at h",
+    "method": "rewriting",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Nat (m => Eqt G (HSMul__hSMul m (HSMul__hSMul n x)) x)",
+    "by": "exact ⟨1, by rw [h, pow_one, pow_one]⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul 1 (HSMul__hSMul n x)) x",
+    "by": "rw [h, pow_one, pow_one]",
+    "method": "rewriting",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h0",
+      "Proof (not (Eq (addOrderOf x) 0))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "cases",
+    "by": "by_cases h1 : orderOf x = 1",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h1",
+      "Proof (Eq (addOrderOf x) 1)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Nat (m => Eqt G (HSMul__hSMul m (HSMul__hSMul n x)) x)",
+    "by": "exact ⟨0, by rw [orderOf_eq_one_iff.mp h1, one_pow, one_pow]⟩",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul 0 (HSMul__hSMul n x)) x",
+    "by": "rw [orderOf_eq_one_iff.mp h1, one_pow, one_pow]",
+    "method": "rewriting",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h1",
+      "Proof (not (Eq (addOrderOf x) 1))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "m",
+      "Elem Nat"
+     ],
+     [
+      "h",
+      "Proof (Eq (HMod__hMod (times n m) (addOrderOf x)) 1)"
+     ]
+    ],
+    "by": "obtain ⟨m, -, h⟩ := exists_mul_mod_eq_one_of_coprime h (by lia)",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt 1 (addOrderOf x)",
+    "by": "lia",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Nat (m => Eqt G (HSMul__hSMul m (HSMul__hSMul n x)) x)",
+    "by": "exact ⟨m, by rw [← pow_mul, ← pow_mod_orderOf, h, pow_one]⟩",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul m (HSMul__hSMul n x)) x",
+    "by": "rw [← pow_mul, ← pow_mod_orderOf, h, pow_one]",
+    "method": "rewriting",
     "depth": 2
    }
   ]
@@ -1118,6 +2179,7 @@
     "unit": "conclusion",
     "prop": "Eq (orderOf x) n",
     "by": "simp [this, ha]",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -1162,6 +2224,7 @@
     "unit": "conclusion",
     "prop": "(Eq n (times (times (orderOf x) b) (Nat__minFac a)))",
     "by": "rw [hb, ← mul_assoc] at ha",
+    "method": "rewriting",
     "depth": 1
    },
    {
@@ -1203,6 +2266,132 @@
   ]
  },
  {
+  "name": "addOrderOf_eq_of_nsmul_and_div_prime_nsmul",
+  "lean": "addOrderOf_eq_of_nsmul_and_div_prime_nsmul",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "a",
+      "Elem Nat"
+     ],
+     [
+      "ha",
+      "Proof (Eq n (times (addOrderOf x) a))"
+     ]
+    ],
+    "by": "obtain ⟨a, ha⟩ := exists_eq_mul_right_of_dvd (orderOf_dvd_of_pow_eq_one hx)",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq a 1",
+    "by": "suffices a = 1 by simp [this, ha]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "this",
+      "Proof (Eq a 1)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf x) n",
+    "by": "simp [this, ha]",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (not (Eq a 1))"
+     ]
+    ],
+    "by": "by_contra h",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "false",
+    "by": "by_contra h",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(divide (Nat__minFac a) n)",
+    "by": "have a_min_fac_dvd_p_sub_one : a.minFac ∣ n",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "b",
+      "Elem Nat"
+     ],
+     [
+      "hb",
+      "Proof (Eq a (times b (Nat__minFac a)))"
+     ]
+    ],
+    "by": "obtain ⟨b, hb⟩ : ∃ b : ℕ, a = b * a.minFac := exists_eq_mul_left_of_dvd a.minFac_dvd",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eq n (times (times (addOrderOf x) b) (Nat__minFac a)))",
+    "by": "rw [hb, ← mul_assoc] at ha",
+    "method": "rewriting",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (Nat__minFac a) n",
+    "by": "exact Dvd.intro_left (orderOf x * b) ha.symm",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G (HSMul__hSMul (div n (Nat__minFac a)) x) 0",
+    "by": "refine hd a.minFac (Nat.minFac_prime h) a_min_fac_dvd_p_sub_one ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (divide (Nat__minFac a) a) (IsOfFinAddOrder x)",
+    "by": "rw [← orderOf_dvd_iff_pow_eq_one, Nat.dvd_div_iff_mul_dvd a_min_fac_dvd_p_sub_one, ha, mul_comm,",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (Nat__minFac a) a",
+    "by": "exact Nat.minFac_dvd a",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n x) 0))",
+    "by": "rw [isOfFinOrder_iff_pow_eq_one]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n x) 0))",
+    "by": "exact Exists.intro n (id ⟨hn, hx⟩)",
+    "depth": 1
+   }
+  ]
+ },
+ {
   "name": "orderOf_eq_orderOf_iff",
   "lean": "orderOf_eq_orderOf_iff",
   "steps": [
@@ -1210,6 +2399,20 @@
     "unit": "conclusion",
     "prop": "iff (Eq (orderOf x) (orderOf y)) (forall Nat (n => iff (Eqt G (pow x n) 1) (Eqt H (pow y n) 1)))",
     "by": "simp_rw [← isPeriodicPt_mul_iff_pow_eq_one, ← minimalPeriod_eq_minimalPeriod_iff, orderOf]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_eq_addOrderOf_iff",
+  "lean": "addOrderOf_eq_addOrderOf_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eq (addOrderOf x) (addOrderOf y)) (forall Nat (n => iff (Eqt G (HSMul__hSMul n x) 0) (Eqt H (HSMul__hSMul n y) 0)))",
+    "by": "simp_rw [← isPeriodicPt_mul_iff_pow_eq_one, ← minimalPeriod_eq_minimalPeriod_iff, orderOf]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -1222,6 +2425,33 @@
     "unit": "conclusion",
     "prop": "Eq (orderOf (f x)) (orderOf x)",
     "by": "simp_rw [orderOf_eq_orderOf_iff, ← f.map_pow, ← f.map_one, hf.eq_iff, forall_const]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_injective",
+  "lean": "addOrderOf_injective",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf (f x)) (addOrderOf x)",
+    "by": "simp_rw [orderOf_eq_orderOf_iff, ← f.map_pow, ← f.map_one, hf.eq_iff, forall_const]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Function__Injective__isOfFinAddOrder_iff",
+  "lean": "Function.Injective.isOfFinAddOrder_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (IsOfFinAddOrder (f x)) (IsOfFinAddOrder x)",
+    "by": "rw [← orderOf_pos_iff, orderOf_injective f hf x, ← orderOf_pos_iff]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -1234,6 +2464,20 @@
     "unit": "conclusion",
     "prop": "iff (IsOfFinOrder (f x)) (IsOfFinOrder x)",
     "by": "rw [← orderOf_pos_iff, orderOf_injective f hf x, ← orderOf_pos_iff]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsAddUnit__addOrderOf_eq_zero",
+  "lean": "IsAddUnit.addOrderOf_eq_zero",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf x) 1",
+    "by": "simp [isUnit_iff_eq_one.mp h]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -1246,6 +2490,26 @@
     "unit": "conclusion",
     "prop": "Eq (orderOf x) 1",
     "by": "simp [isUnit_iff_eq_one.mp h]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_nsmul'",
+  "lean": "addOrderOf_nsmul'",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eq (Function__minimalPeriod (x => plus (HSMul__hSMul n x) x) 0) (div (Function__minimalPeriod (x1 => plus x x1) 0) (gcd (Function__minimalPeriod (x2 => plus x x2) 0) n))",
+    "by": "unfold orderOf",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Function__minimalPeriod (x => plus (HSMul__hSMul n x) x) 0) (div (Function__minimalPeriod (x1 => plus x x1) 0) (gcd (Function__minimalPeriod (x2 => plus x x2) 0) n))",
+    "by": "rw [← minimalPeriod_iterate_eq_div_gcd h, mul_left_iterate]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -1264,6 +2528,20 @@
     "unit": "conclusion",
     "prop": "Eq (Function__minimalPeriod (x => times (pow x n) x) 1) (div (Function__minimalPeriod (x1 => times x x1) 1) (gcd (Function__minimalPeriod (x2 => times x x2) 1) n))",
     "by": "rw [← minimalPeriod_iterate_eq_div_gcd h, mul_left_iterate]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_nsmul_of_dvd",
+  "lean": "addOrderOf_nsmul_of_dvd",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf (HSMul__hSMul n x)) (div (addOrderOf x) n)",
+    "by": "rw [orderOf_pow' _ hn, Nat.gcd_eq_right dvd]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -1276,6 +2554,7 @@
     "unit": "conclusion",
     "prop": "Eq (orderOf (pow x n)) (div (orderOf x) n)",
     "by": "rw [orderOf_pow' _ hn, Nat.gcd_eq_right dvd]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -1294,12 +2573,57 @@
     "unit": "conclusion",
     "prop": "(Neq (times (div (orderOf x) n) n) 0)",
     "by": "rw [← Nat.div_mul_cancel hn] at hx",
+    "method": "rewriting",
     "depth": 0
    },
    {
     "unit": "conclusion",
     "prop": "Neq (div (orderOf x) n) 0",
     "by": "exact left_ne_zero_of_mul hx",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_nsmul_addOrderOf_sub",
+  "lean": "addOrderOf_nsmul_addOrderOf_sub",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Neq (div (addOrderOf x) n) 0",
+    "by": "rw [orderOf_pow_of_dvd _ (Nat.div_dvd_of_dvd hn), Nat.div_div_self hn hx]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Neq (times (div (addOrderOf x) n) n) 0)",
+    "by": "rw [← Nat.div_mul_cancel hn] at hx",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Neq (div (addOrderOf x) n) 0",
+    "by": "exact left_ne_zero_of_mul hx",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsOfFinAddOrder__addOrderOf_nsmul",
+  "lean": "IsOfFinAddOrder.addOrderOf_nsmul",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eq (Function__minimalPeriod (x => plus (HSMul__hSMul n x) x) 0) (div (Function__minimalPeriod (x1 => plus x x1) 0) (gcd (Function__minimalPeriod (x2 => plus x x2) 0) n))",
+    "by": "unfold orderOf",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Function__minimalPeriod (x => plus (HSMul__hSMul n x) x) 0) (div (Function__minimalPeriod (x1 => plus x x1) 0) (gcd (Function__minimalPeriod (x2 => plus x x2) 0) n))",
+    "by": "rw [← minimalPeriod_iterate_eq_div_gcd' h, mul_left_iterate]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -1318,7 +2642,55 @@
     "unit": "conclusion",
     "prop": "Eq (Function__minimalPeriod (x => times (pow x n) x) 1) (div (Function__minimalPeriod (x1 => times x x1) 1) (gcd (Function__minimalPeriod (x2 => times x x2) 1) n))",
     "by": "rw [← minimalPeriod_iterate_eq_div_gcd' h, mul_left_iterate]",
+    "method": "rewriting",
     "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__Coprime__addOrderOf_nsmul",
+  "lean": "Nat.Coprime.addOrderOf_nsmul",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "by_cases hg : IsOfFinOrder y",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hg",
+      "Proof (IsOfFinAddOrder y)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf (HSMul__hSMul m y)) (addOrderOf y)",
+    "by": "rw [hg.orderOf_pow y m, h.gcd_eq_one, Nat.div_one]",
+    "method": "rewriting",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hg",
+      "Proof (not (IsOfFinAddOrder y))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf (HSMul__hSMul m y)) (addOrderOf y)",
+    "by": "rw [m.coprime_zero_left.1 (orderOf_eq_zero hg ▸ h), pow_one]",
+    "method": "rewriting",
+    "depth": 1
    }
   ]
  },
@@ -1346,6 +2718,7 @@
     "unit": "conclusion",
     "prop": "Eq (orderOf (pow y m)) (orderOf y)",
     "by": "rw [hg.orderOf_pow y m, h.gcd_eq_one, Nat.div_one]",
+    "method": "rewriting",
     "depth": 1
    },
    {
@@ -1363,7 +2736,27 @@
     "unit": "conclusion",
     "prop": "Eq (orderOf (pow y m)) (orderOf y)",
     "by": "rw [m.coprime_zero_left.1 (orderOf_eq_zero hg ▸ h), pow_one]",
+    "method": "rewriting",
     "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "IsOfFinAddOrder__natCard_multiples_le_addOrderOf",
+  "lean": "IsOfFinAddOrder.natCard_multiples_le_addOrderOf",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__card (Set__Elem (AddSubmonoid__multiples a))) (addOrderOf a)",
+    "by": "classical",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__card (Set__Elem (AddSubmonoid__multiples a))) (addOrderOf a)",
+    "by": "simpa [ha.powers_eq_image_range_orderOf, Finset.card_range, Nat.Iio_eq_range]",
+    "method": "simplification",
+    "depth": 0
    }
   ]
  },
@@ -1381,6 +2774,7 @@
     "unit": "conclusion",
     "prop": "Leq (Nat__card (Set__Elem (Submonoid__powers a))) (orderOf a)",
     "by": "simpa [ha.powers_eq_image_range_orderOf, Finset.card_range, Nat.Iio_eq_range]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -1410,6 +2804,48 @@
   ]
  },
  {
+  "name": "IsOfFinAddOrder__finite_multiples",
+  "lean": "IsOfFinAddOrder.finite_multiples",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Set__Finite (AddSubmonoid__multiples a)",
+    "by": "classical rw [ha.powers_eq_image_range_orderOf]; exact Finset.finite_toSet _",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Finite (Finset__image (x => HSMul__hSMul x a) (Finset__range (addOrderOf a)))",
+    "by": "rw [ha.powers_eq_image_range_orderOf]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Finite (Finset__image (x => HSMul__hSMul x a) (Finset__range (addOrderOf a)))",
+    "by": "exact Finset.finite_toSet _",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddCommute__addOrderOf_add_dvd_lcm",
+  "lean": "AddCommute.addOrderOf_add_dvd_lcm",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "divide (Function__minimalPeriod (Function__comp (x => plus x x) (x1 => plus y x1)) 0) (Nat__lcm (addOrderOf x) (addOrderOf y))",
+    "by": "rw [orderOf, ← comp_mul_left]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (Function__minimalPeriod (Function__comp (x => plus x x) (x1 => plus y x1)) 0) (Nat__lcm (addOrderOf x) (addOrderOf y))",
+    "by": "exact Function.Commute.minimalPeriod_of_comp_dvd_lcm h.function_commute_mul_left",
+    "depth": 0
+   }
+  ]
+ },
+ {
   "name": "Commute__orderOf_mul_dvd_lcm",
   "lean": "Commute.orderOf_mul_dvd_lcm",
   "steps": [
@@ -1424,6 +2860,63 @@
     "prop": "divide (Function__minimalPeriod (Function__comp (x => times x x) (x1 => times y x1)) 1) (Nat__lcm (orderOf x) (orderOf y))",
     "by": "exact Function.Commute.minimalPeriod_of_comp_dvd_lcm h.function_commute_mul_left",
     "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddCommute__addOrderOf_dvd_lcm_add",
+  "lean": "AddCommute.addOrderOf_dvd_lcm_add",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "by_cases h0 : orderOf x = 0",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h0",
+      "Proof (Eq (addOrderOf x) 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "divide (addOrderOf y) 0",
+    "by": "rw [h0, lcm_zero_left]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (addOrderOf y) 0",
+    "by": "apply dvd_zero",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h0",
+      "Proof (not (Eq (addOrderOf x) 0))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "divide (addOrderOf (plus (HSMul__hSMul (Nat__pred (addOrderOf x)) x) (plus x y))) (Nat__lcm (addOrderOf x) (addOrderOf (plus x y)))",
+    "by": "conv_lhs =>",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (addOrderOf (plus (HSMul__hSMul (Nat__pred (addOrderOf x)) x) (plus x y))) (Nat__lcm (addOrderOf x) (addOrderOf (plus x y)))",
+    "by": "exact",
+    "depth": 1
    }
   ]
  },
@@ -1481,6 +2974,24 @@
     "prop": "divide (orderOf (times (pow x (Nat__pred (orderOf x))) (times x y))) (Nat__lcm (orderOf x) (orderOf (times x y)))",
     "by": "exact",
     "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "AddCommute__addOrderOf_add_eq_mul_addOrderOf_of_coprime",
+  "lean": "AddCommute.addOrderOf_add_eq_mul_addOrderOf_of_coprime",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eq (Function__minimalPeriod (Function__comp (x => plus x x) (x1 => plus y x1)) 0) (times (addOrderOf x) (addOrderOf y))",
+    "by": "rw [orderOf, ← comp_mul_left]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Function__minimalPeriod (Function__comp (x => plus x x) (x1 => plus y x1)) 0) (times (addOrderOf x) (addOrderOf y))",
+    "by": "exact h.function_commute_mul_left.minimalPeriod_of_comp_eq_mul_of_coprime hco",
+    "depth": 0
    }
   ]
  },
@@ -1596,6 +3107,106 @@
   ]
  },
  {
+  "name": "AddCommute__addOrderOf_add_eq_right_of_forall_prime_mul_dvd",
+  "lean": "AddCommute.addOrderOf_add_eq_right_of_forall_prime_mul_dvd",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Lt 0 (addOrderOf y))",
+    "by": "have hoy := hy.orderOf_pos",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(divide (addOrderOf x) (addOrderOf y))",
+    "by": "have hxy := dvd_of_forall_prime_mul_dvd hdvd",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "and (divide (addOrderOf (plus x y)) (addOrderOf y)) (not (divide (addOrderOf (plus x y)) (div (addOrderOf y) p)))",
+    "by": "apply orderOf_eq_of_pow_and_pow_div_prime hoy <;> simp only [Ne, ← orderOf_dvd_iff_pow_eq_one]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (addOrderOf (plus x y)) (addOrderOf y)",
+    "by": "exact h.orderOf_mul_dvd_lcm.trans (Nat.lcm_dvd hxy dvd_rfl)",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "p",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hp",
+      "Proof (prime p)"
+     ],
+     [
+      "hpy",
+      "Proof (divide p (addOrderOf y))"
+     ],
+     [
+      "hd",
+      "Proof (divide (addOrderOf (plus x y)) (div (addOrderOf y) p))"
+     ]
+    ],
+    "by": "refine fun p hp hpy hd => hp.ne_one ?_",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq p 1",
+    "by": "refine fun p hp hpy hd => hp.ne_one ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "divide (addOrderOf y) (div (addOrderOf y) p)",
+    "by": "rw [← Nat.dvd_one, ← mul_dvd_mul_iff_right hoy.ne', one_mul, ← dvd_div_iff_mul_dvd hpy]",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "divide (times p (addOrderOf x)) (addOrderOf y)",
+    "by": "refine (orderOf_dvd_lcm_mul h).trans (Nat.lcm_dvd ((dvd_div_iff_mul_dvd hpy).2 ?_) hd)",
+    "depth": 2
+   },
+   {
+    "unit": "cases",
+    "by": "by_cases h : p ∣ orderOf x",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (divide p (addOrderOf x))"
+     ]
+    ],
+    "by": "",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (times p (addOrderOf x)) (addOrderOf y)",
+    "by": "exacts [hdvd p hp h, (hp.coprime_iff_not_dvd.2 h).mul_dvd_of_dvd_of_dvd hpy hxy]",
+    "depth": 3
+   }
+  ]
+ },
+ {
   "name": "Commute__orderOf_mul_eq_left_of_forall_prime_mul_dvd",
   "lean": "Commute.orderOf_mul_eq_left_of_forall_prime_mul_dvd",
   "steps": [
@@ -1603,6 +3214,33 @@
     "unit": "conclusion",
     "prop": "Eq (orderOf (times x y)) (orderOf x)",
     "by": "simpa [h.eq] using",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddCommute__addOrderOf_add_eq_left_of_forall_prime_mul_dvd",
+  "lean": "AddCommute.addOrderOf_add_eq_left_of_forall_prime_mul_dvd",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf (plus x y)) (addOrderOf x)",
+    "by": "simpa [h.eq] using",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_eq_prime_iff",
+  "lean": "addOrderOf_eq_prime_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eq (addOrderOf x) p) (and (Eqt G (HSMul__hSMul p x) 0) (Neq x 0))",
+    "by": "rw [orderOf, minimalPeriod_eq_prime_iff, isPeriodicPt_mul_iff_pow_eq_one, IsFixedPt, mul_one]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -1615,6 +3253,7 @@
     "unit": "conclusion",
     "prop": "iff (Eq (orderOf x) p) (and (Eqt G (pow x p) 1) (Neq x 1))",
     "by": "rw [orderOf, minimalPeriod_eq_prime_iff, isPeriodicPt_mul_iff_pow_eq_one, IsFixedPt, mul_one]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -1632,6 +3271,63 @@
   ]
  },
  {
+  "name": "addOrderOf_eq_prime_pow",
+  "lean": "addOrderOf_eq_prime_pow",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf x) (pow p (plus n 1))",
+    "by": "apply minimalPeriod_eq_prime_pow <;> rwa [isPeriodicPt_mul_iff_pow_eq_one]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "exists_addOrderOf_eq_prime_pow_iff",
+  "lean": "exists_addOrderOf_eq_prime_pow_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (pow p k) x) 0",
+    "by": "rw [← hk, pow_orderOf_eq_one]",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hm",
+      "Proof (Eqt G (HSMul__hSMul (pow p w') x) 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ],
+     [
+      "hk",
+      "Proof (Eq (addOrderOf x) (pow p k))"
+     ]
+    ],
+    "by": "obtain ⟨k, _, hk⟩ := (Nat.dvd_prime_pow hp.elim).mp (orderOf_dvd_of_pow_eq_one hm)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Nat (k => Eq (addOrderOf x) (pow p k))",
+    "by": "exact ⟨k, hk⟩",
+    "depth": 1
+   }
+  ]
+ },
+ {
   "name": "exists_orderOf_eq_prime_pow_iff",
   "lean": "exists_orderOf_eq_prime_pow_iff",
   "steps": [
@@ -1639,6 +3335,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x (pow p k)) 1",
     "by": "rw [← hk, pow_orderOf_eq_one]",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -1711,6 +3408,7 @@
     "unit": "conclusion",
     "prop": "Eq (orderOf (Neg__neg 1)) 1",
     "by": "rw [neg_one_eq_one_iff.2 h, orderOf_one]",
+    "method": "rewriting",
     "depth": 2
    },
    {
@@ -1734,12 +3432,14 @@
     "unit": "conclusion",
     "prop": "Eqt R (pow (Neg__neg 1) 2) 1",
     "by": "simp",
+    "method": "simplification",
     "depth": 1
    },
    {
     "unit": "conclusion",
     "prop": "Neq (Neg__neg 1) 1",
     "by": "simpa [neg_one_eq_one_iff] using h",
+    "method": "simplification",
     "depth": 1
    }
   ]
@@ -1782,6 +3482,107 @@
     "unit": "conclusion",
     "prop": "Eqt (Fin (orderOf x)) (Equiv__symm__app (finEquivPowers hx) (pow x n)) (Fin__mk (HMod__hMod n (orderOf x)) (Nat__mod_lt n (IsOfFinOrder__orderOf_pos G x hx)))",
     "by": "rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, ← pow_mod_orderOf, Fin.val_mk]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "finEquivMultiples_symm_apply",
+  "lean": "finEquivMultiples_symm_apply",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Fin (addOrderOf x)) (Equiv__symm__app (finEquivMultiples hx) (HSMul__hSMul n x)) (Fin__mk (HMod__hMod n (addOrderOf x)) (Nat__mod_lt n (IsOfFinAddOrder__addOrderOf_pos G x hx)))",
+    "by": "rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, ← pow_mod_orderOf, Fin.val_mk]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsOfFinAddOrder__nsmul_eq_nsmul_iff_modEq",
+  "lean": "IsOfFinAddOrder.nsmul_eq_nsmul_iff_modEq",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "this",
+      "Proof (forall Nat (n => forall Nat (m => if (Leq m n) (iff (Eqt G (HSMul__hSMul n x) (HSMul__hSMul m x)) (Nat__ModEq (addOrderOf x) n m)))))"
+     ],
+     [
+      "hmn",
+      "Proof (not (Leq m n))"
+     ]
+    ],
+    "by": "wlog hmn : m ≤ n generalizing m n",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "this",
+      "Proof (forall Nat (n => forall Nat (m => if (Leq m n) (iff (Eqt G (HSMul__hSMul n x) (HSMul__hSMul m x)) (Nat__ModEq (addOrderOf x) n m)))))"
+     ],
+     [
+      "hmn",
+      "Proof (not (Leq m n))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eqt G (HSMul__hSMul n x) (HSMul__hSMul m x)) (Nat__ModEq (addOrderOf x) n m)",
+    "by": "rw [eq_comm, ModEq.comm, this (le_of_not_ge hmn)]",
+    "method": "rewriting",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hmn",
+      "Proof (Leq m n)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ],
+     [
+      "hmn",
+      "Proof (Leq m (plus m k))"
+     ]
+    ],
+    "by": "obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (Eqt G (HSMul__hSMul (plus m k) x) (HSMul__hSMul m x)) (Nat__ModEq (addOrderOf x) (plus m k) m)",
+    "by": "obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (Nat__ModEq (addOrderOf x) k 0) (Nat__ModEq (addOrderOf x) (plus m k) m)",
+    "by": "rw [pow_add, (hx.isUnit.pow _).mul_eq_left, pow_eq_one_iff_modEq]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq (addOrderOf x) k 0) (Nat__ModEq (addOrderOf x) (plus m k) m)",
+    "by": "exact ⟨fun h ↦ Nat.ModEq.add_left _ h, fun h ↦ Nat.ModEq.add_left_cancel' _ h⟩",
     "depth": 0
    }
   ]
@@ -1806,12 +3607,6 @@
     "depth": 1
    },
    {
-    "unit": "enough",
-    "prop": "and (iff (Eqt G (pow x n) (pow x m)) (Nat__ModEq (orderOf x) n m)) (iff (Eqt G (pow x n) (pow x m)) (Nat__ModEq (orderOf x) n m))",
-    "by": "wlog hmn : m ≤ n generalizing m n",
-    "depth": 0
-   },
-   {
     "unit": "hypos",
     "hypos": [
      [
@@ -1830,6 +3625,7 @@
     "unit": "conclusion",
     "prop": "iff (Eqt G (pow x n) (pow x m)) (Nat__ModEq (orderOf x) n m)",
     "by": "rw [eq_comm, ModEq.comm, this (le_of_not_ge hmn)]",
+    "method": "rewriting",
     "depth": 2
    },
    {
@@ -1898,12 +3694,6 @@
     "depth": 1
    },
    {
-    "unit": "enough",
-    "prop": "and (iff (Eqt G (pow x n) (pow x m)) (Nat__ModEq (orderOf x) n m)) (iff (Eqt G (pow x n) (pow x m)) (Nat__ModEq (orderOf x) n m))",
-    "by": "wlog hmn : m ≤ n generalizing m n",
-    "depth": 0
-   },
-   {
     "unit": "hypos",
     "hypos": [
      [
@@ -1922,6 +3712,7 @@
     "unit": "conclusion",
     "prop": "iff (Eqt G (pow x n) (pow x m)) (Nat__ModEq (orderOf x) n m)",
     "by": "rw [eq_comm, ModEq.comm, this (le_of_not_ge hmn)]",
+    "method": "rewriting",
     "depth": 2
    },
    {
@@ -1971,6 +3762,93 @@
   ]
  },
  {
+  "name": "nsmul_eq_nsmul_iff_modEq",
+  "lean": "nsmul_eq_nsmul_iff_modEq",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "this",
+      "Proof (forall Nat (m => forall Nat (n => if (Leq m n) (iff (Eqt G (HSMul__hSMul n x) (HSMul__hSMul m x)) (Nat__ModEq (addOrderOf x) n m)))))"
+     ],
+     [
+      "hmn",
+      "Proof (not (Leq m n))"
+     ]
+    ],
+    "by": "wlog hmn : m ≤ n generalizing m n",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "this",
+      "Proof (forall Nat (m => forall Nat (n => if (Leq m n) (iff (Eqt G (HSMul__hSMul n x) (HSMul__hSMul m x)) (Nat__ModEq (addOrderOf x) n m)))))"
+     ],
+     [
+      "hmn",
+      "Proof (not (Leq m n))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eqt G (HSMul__hSMul n x) (HSMul__hSMul m x)) (Nat__ModEq (addOrderOf x) n m)",
+    "by": "rw [eq_comm, ModEq.comm, this (le_of_not_ge hmn)]",
+    "method": "rewriting",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hmn",
+      "Proof (Leq m n)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ],
+     [
+      "hmn",
+      "Proof (Leq m (plus m k))"
+     ]
+    ],
+    "by": "obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (Eqt G (HSMul__hSMul (plus m k) x) (HSMul__hSMul m x)) (Nat__ModEq (addOrderOf x) (plus m k) m)",
+    "by": "obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (Nat__ModEq (addOrderOf x) k 0) (Nat__ModEq (addOrderOf x) (plus m k) m)",
+    "by": "rw [← mul_one (x ^ m), pow_add, mul_left_cancel_iff, pow_eq_one_iff_modEq]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq (addOrderOf x) k 0) (Nat__ModEq (addOrderOf x) (plus m k) m)",
+    "by": "exact ⟨fun h => Nat.ModEq.add_left _ h, fun h => Nat.ModEq.add_left_cancel' _ h⟩",
+    "depth": 0
+   }
+  ]
+ },
+ {
   "name": "injective_pow_iff_not_isOfFinOrder",
   "lean": "injective_pow_iff_not_isOfFinOrder",
   "steps": [
@@ -2007,6 +3885,49 @@
     "unit": "conclusion",
     "prop": "Eq n m",
     "by": "rwa [pow_eq_pow_iff_modEq, orderOf_eq_zero_iff.mpr h, modEq_zero_iff] at hnm",
+    "method": "rewriting",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "injective_nsmul_iff_not_isOfFinAddOrder",
+  "lean": "injective_nsmul_iff_not_isOfFinAddOrder",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (not (IsOfFinAddOrder x))"
+     ],
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "m",
+      "Elem Nat"
+     ],
+     [
+      "hnm",
+      "Proof (Eqt G (HSMul__hSMul n x) (HSMul__hSMul m x))"
+     ]
+    ],
+    "by": "refine ⟨fun h => not_isOfFinOrder_of_injective_pow h, fun h n m hnm => ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq n m",
+    "by": "refine ⟨fun h => not_isOfFinOrder_of_injective_pow h, fun h n m hnm => ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq n m",
+    "by": "rwa [pow_eq_pow_iff_modEq, orderOf_eq_zero_iff.mpr h, modEq_zero_iff] at hnm",
+    "method": "rewriting",
     "depth": 1
    }
   ]
@@ -2019,6 +3940,20 @@
     "unit": "conclusion",
     "prop": "iff (Eqt G (pow x n) (pow x m)) (Eq n m)",
     "by": "rw [pow_eq_pow_iff_modEq, h, modEq_zero_iff]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "nsmul_inj_iff_of_addOrderOf_eq_zero",
+  "lean": "nsmul_inj_iff_of_addOrderOf_eq_zero",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eqt G (HSMul__hSMul n x) (HSMul__hSMul m x)) (Eq n m)",
+    "by": "rw [pow_eq_pow_iff_modEq, h, modEq_zero_iff]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -2041,12 +3976,6 @@
    {
     "unit": "verify",
     "prop": "(Set__Subset s (Set__ofPred (y => not (IsOfFinOrder y))))",
-    "by": "have hs : s ⊆ { y : G | ¬IsOfFinOrder y }",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
-    "prop": "Set__Infinite (Set__ofPred (y1 => not (IsOfFinOrder y1)))",
     "by": "have hs : s ⊆ { y : G | ¬IsOfFinOrder y }",
     "depth": 1
    },
@@ -2079,6 +4008,7 @@
     "unit": "conclusion",
     "prop": "(exists Nat (n => and (Lt 0 n) (Eqt G (pow (pow x n) n) 1)))",
     "by": "rw [isOfFinOrder_iff_pow_eq_one] at contra ⊢",
+    "method": "rewriting",
     "depth": 1
    },
    {
@@ -2107,12 +4037,6 @@
     "depth": 1
    },
    {
-    "unit": "enough",
-    "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (pow x n) 1))",
-    "by": "obtain ⟨m, hm, hm'⟩ := contra",
-    "depth": 1
-   },
-   {
     "unit": "conclusion",
     "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (pow x n) 1))",
     "by": "exact ⟨n * m, mul_pos hn hm, by rwa [pow_mul]⟩",
@@ -2122,6 +4046,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x (times n m)) 1",
     "by": "rwa [pow_mul]",
+    "method": "rewriting",
     "depth": 1
    },
    {
@@ -2167,12 +4092,6 @@
    },
    {
     "unit": "enough",
-    "prop": "not (Function__Injective (n1 => pow x n1))",
-    "by": "have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) h",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
     "prop": "Set__InjOn (n1 => pow x n1) (Set__Ioi 0)",
     "by": "contrapose this",
     "depth": 1
@@ -2187,6 +4106,204 @@
     "unit": "conclusion",
     "prop": "IsOfFinOrder x",
     "by": "rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this",
+    "method": "rewriting",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "infinite_not_isOfFinAddOrder",
+  "lean": "infinite_not_isOfFinAddOrder",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "if (Set__Subset (Set__image (n => HSMul__hSMul n x) (Set__ofPred (n1 => Lt 0 n1))) (Set__ofPred (y1 => not (IsOfFinAddOrder y1)))) (Set__Infinite (Set__ofPred (y => not (IsOfFinAddOrder y))))",
+    "by": "have hs : s ⊆ { y : G | ¬IsOfFinOrder y }",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "hn",
+      "Proof (Lt 0 n)"
+     ],
+     [
+      "contra",
+      "Proof (IsOfFinAddOrder (HSMul__hSMul n x))"
+     ]
+    ],
+    "by": "rintro - ⟨n, hn : 0 < n, rfl⟩ (contra : IsOfFinOrder (x ^ n))",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "IsOfFinAddOrder x",
+    "by": "apply h",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n (HSMul__hSMul n x)) 0)))",
+    "by": "rw [isOfFinOrder_iff_pow_eq_one] at contra ⊢",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Nat (n1 => and (Lt 0 n1) (Eqt G (HSMul__hSMul n1 x) 0))",
+    "by": "rw [isOfFinOrder_iff_pow_eq_one] at contra ⊢",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "m",
+      "Elem Nat"
+     ],
+     [
+      "hm",
+      "Proof (Lt 0 m)"
+     ],
+     [
+      "hm'",
+      "Proof (Eqt G (HSMul__hSMul m (HSMul__hSMul n x)) 0)"
+     ]
+    ],
+    "by": "obtain ⟨m, hm, hm'⟩ := contra",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n x) 0))",
+    "by": "exact ⟨n * m, mul_pos hn hm, by rwa [pow_mul]⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (times n m) x) 0",
+    "by": "rwa [pow_mul]",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (Set__Subset (Set__image (n2 => HSMul__hSMul n2 x) (Set__ofPred (n3 => Lt 0 n3))) (Set__ofPred (y => not (IsOfFinAddOrder y)))) (Set__Infinite (Set__image (n => HSMul__hSMul n x) (Set__ofPred (n1 => Lt 0 n1))))",
+    "by": "suffices s.Infinite by exact this.mono hs",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (Set__Subset (Set__image (n2 => HSMul__hSMul n2 x) (Set__ofPred (n3 => Lt 0 n3))) (Set__ofPred (y1 => not (IsOfFinAddOrder y1)))) (if (Set__Infinite (Set__image (n => HSMul__hSMul n x) (Set__ofPred (n1 => Lt 0 n1)))) (Set__Infinite (Set__ofPred (y => not (IsOfFinAddOrder y)))))",
+    "by": "exact this.mono hs",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (Set__Subset (Set__image (n2 => HSMul__hSMul n2 x) (Set__ofPred (n3 => Lt 0 n3))) (Set__ofPred (y => not (IsOfFinAddOrder y)))) (if (Set__Finite (Set__image (n => HSMul__hSMul n x) (Set__ofPred (n1 => Lt 0 n1)))) (IsOfFinAddOrder x))",
+    "by": "contrapose! h",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (Set__Subset (Set__image (n3 => HSMul__hSMul n3 x) (Set__ofPred (n4 => Lt 0 n4))) (Set__ofPred (y => not (IsOfFinAddOrder y)))) (if (Set__Finite (Set__image (n1 => HSMul__hSMul n1 x) (Set__ofPred (n2 => Lt 0 n2)))) (if (not (Function__Injective (n => HSMul__hSMul n x))) (IsOfFinAddOrder x)))",
+    "by": "have : ¬Injective fun n : ℕ => x ^ n",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (Set__Subset (Set__image (n4 => HSMul__hSMul n4 x) (Set__ofPred (n5 => Lt 0 n5))) (Set__ofPred (y => not (IsOfFinAddOrder y)))) (if (Set__Finite (Set__image (n2 => HSMul__hSMul n2 x) (Set__ofPred (n3 => Lt 0 n3)))) (if (not (Set__InjOn (n1 => HSMul__hSMul n1 x) (Set__Ioi 0))) (not (Function__Injective (n => HSMul__hSMul n x)))))",
+    "by": "have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) h",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (Set__Subset (Set__image (n4 => HSMul__hSMul n4 x) (Set__ofPred (n5 => Lt 0 n5))) (Set__ofPred (y => not (IsOfFinAddOrder y)))) (if (Set__Finite (Set__image (n2 => HSMul__hSMul n2 x) (Set__ofPred (n3 => Lt 0 n3)))) (if (Function__Injective (n1 => HSMul__hSMul n1 x)) (Set__InjOn (n => HSMul__hSMul n x) (Set__Ioi 0))))",
+    "by": "contrapose this",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (Set__Subset (Set__image (n4 => HSMul__hSMul n4 x) (Set__ofPred (n5 => Lt 0 n5))) (Set__ofPred (y => not (IsOfFinAddOrder y)))) (if (Set__Finite (Set__image (n2 => HSMul__hSMul n2 x) (Set__ofPred (n3 => Lt 0 n3)))) (if (Function__Injective (n1 => HSMul__hSMul n1 x)) (Set__InjOn (n => HSMul__hSMul n x) (Set__Ioi 0))))",
+    "by": "exact Set.injOn_of_injective this",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (Set__Subset (Set__image (n3 => HSMul__hSMul n3 x) (Set__ofPred (n4 => Lt 0 n4))) (Set__ofPred (y => not (IsOfFinAddOrder y)))) (if (Set__Finite (Set__image (n1 => HSMul__hSMul n1 x) (Set__ofPred (n2 => Lt 0 n2)))) (if (not (Function__Injective (n => HSMul__hSMul n x))) (IsOfFinAddOrder x)))",
+    "by": "rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "finite_multiples",
+  "lean": "finite_multiples",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Set__Finite (AddSubmonoid__multiples a))"
+     ]
+    ],
+    "by": "refine ⟨fun h ↦ ?_, IsOfFinOrder.finite_powers⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "IsOfFinAddOrder a",
+    "by": "refine ⟨fun h ↦ ?_, IsOfFinOrder.finite_powers⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "m",
+      "Elem Nat"
+     ],
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "hmn",
+      "Proof (Lt m n)"
+     ],
+     [
+      "ha",
+      "Proof (Eqt G (HSMul__hSMul m a) (HSMul__hSMul n a))"
+     ]
+    ],
+    "by": "obtain ⟨m, n, hmn, ha⟩ := h.exists_lt_map_eq_of_forall_mem (f := fun n : ℕ ↦ a ^ n)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (AddSubmonoid__multiples a) (HSMul__hSMul n a)",
+    "by": "simp [mem_powers_iff]",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G (HSMul__hSMul (minus n m) a) 0",
+    "by": "refine isOfFinOrder_iff_pow_eq_one.2 ⟨n - m, tsub_pos_iff_lt.2 hmn, ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (minus n m) a) 0",
+    "by": "rw [← mul_left_cancel_iff (a := a ^ m), ← pow_add, add_tsub_cancel_of_le hmn.le, ha, mul_one]",
+    "method": "rewriting",
     "depth": 1
    }
   ]
@@ -2239,6 +4356,7 @@
     "unit": "conclusion",
     "prop": "Membership__mem (Submonoid__powers a) (pow a n)",
     "by": "simp [mem_powers_iff]",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -2251,6 +4369,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow a (minus n m)) 1",
     "by": "rw [← mul_left_cancel_iff (a := a ^ m), ← pow_add, add_tsub_cancel_of_le hmn.le, ha, mul_one]",
+    "method": "rewriting",
     "depth": 1
    }
   ]
@@ -2285,6 +4404,7 @@
     "unit": "conclusion",
     "prop": "Eq (Nat__card (Fin (orderOf a))) (orderOf a)",
     "by": "simp",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -2308,6 +4428,66 @@
     "unit": "conclusion",
     "prop": "Eq (Nat__card (Subtype (x => Membership__mem (Submonoid__powers a) x))) (orderOf a)",
     "by": "rw [orderOf_eq_zero ha, Nat.card_eq_zero_of_infinite]",
+    "method": "rewriting",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__card_addSubmonoidMultiples",
+  "lean": "Nat.card_addSubmonoidMultiples",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "by_cases ha : IsOfFinOrder a",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ha",
+      "Proof (IsOfFinAddOrder a)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__card (Subtype (x => Membership__mem (AddSubmonoid__multiples a) x))) (addOrderOf a)",
+    "by": "exact (Nat.card_congr (finEquivPowers ha).symm).trans <| by simp",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__card (Fin (addOrderOf a))) (addOrderOf a)",
+    "by": "simp",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ha",
+      "Proof (not (IsOfFinAddOrder a))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Infinite (Set__Elem (AddSubmonoid__multiples a)))",
+    "by": "have := (infinite_powers.2 ha).to_subtype",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__card (Subtype (x => Membership__mem (AddSubmonoid__multiples a) x))) (addOrderOf a)",
+    "by": "rw [orderOf_eq_zero ha, Nat.card_eq_zero_of_infinite]",
+    "method": "rewriting",
     "depth": 1
    }
   ]
@@ -2332,12 +4512,6 @@
     "depth": 1
    },
    {
-    "unit": "enough",
-    "prop": "and (iff (Eqt G (pow x n) (pow x m)) (Nat__ModEq (orderOf x) n m)) (iff (Eqt G (pow x n) (pow x m)) (Nat__ModEq (orderOf x) n m))",
-    "by": "wlog hmn : m ≤ n generalizing m n",
-    "depth": 0
-   },
-   {
     "unit": "hypos",
     "hypos": [
      [
@@ -2356,6 +4530,7 @@
     "unit": "conclusion",
     "prop": "iff (Eqt G (pow x n) (pow x m)) (Nat__ModEq (orderOf x) n m)",
     "by": "rw [eq_comm, Nat.ModEq.comm, this (le_of_not_ge hmn)]",
+    "method": "rewriting",
     "depth": 2
    },
    {
@@ -2430,12 +4605,14 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x (plus k m)) (pow x (plus m k))",
     "by": "simp [Nat.add_comm]",
+    "method": "simplification",
     "depth": 1
    },
    {
     "unit": "conclusion",
     "prop": "Eqt G (pow x m) (times 1 (pow x m))",
     "by": "simp",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -2448,6 +4625,7 @@
     "unit": "conclusion",
     "prop": "Nat__ModEq (orderOf x) (plus m k) m",
     "by": "simpa using Nat.ModEq.add_left m (pow_eq_one_iff_modEq.1 hk)",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -2484,6 +4662,7 @@
     "unit": "conclusion",
     "prop": "Nat__ModEq (orderOf x) (plus m k) (plus m 0)",
     "by": "simpa using h",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -2496,12 +4675,209 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x (plus m k)) (times (pow x m) (pow x k))",
     "by": "rw [pow_add]",
+    "method": "rewriting",
     "depth": 1
    },
    {
     "unit": "conclusion",
     "prop": "Eqt G (times (pow x m) (pow x k)) (pow x m)",
     "by": "simp [hk]",
+    "method": "simplification",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "AddRightCancelMonoid__nsmul_eq_nsmul_iff_modEq",
+  "lean": "AddRightCancelMonoid.nsmul_eq_nsmul_iff_modEq",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "this",
+      "Proof (forall Nat (m => forall Nat (n => if (Leq m n) (iff (Eqt G (HSMul__hSMul n x) (HSMul__hSMul m x)) (Nat__ModEq (addOrderOf x) n m)))))"
+     ],
+     [
+      "hmn",
+      "Proof (not (Leq m n))"
+     ]
+    ],
+    "by": "wlog hmn : m ≤ n generalizing m n",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "this",
+      "Proof (forall Nat (m => forall Nat (n => if (Leq m n) (iff (Eqt G (HSMul__hSMul n x) (HSMul__hSMul m x)) (Nat__ModEq (addOrderOf x) n m)))))"
+     ],
+     [
+      "hmn",
+      "Proof (not (Leq m n))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eqt G (HSMul__hSMul n x) (HSMul__hSMul m x)) (Nat__ModEq (addOrderOf x) n m)",
+    "by": "rw [eq_comm, Nat.ModEq.comm, this (le_of_not_ge hmn)]",
+    "method": "rewriting",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hmn",
+      "Proof (Leq m n)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ],
+     [
+      "hmn",
+      "Proof (Leq m (plus m k))"
+     ]
+    ],
+    "by": "obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (Eqt G (HSMul__hSMul (plus m k) x) (HSMul__hSMul m x)) (Nat__ModEq (addOrderOf x) (plus m k) m)",
+    "by": "obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Nat__ModEq (addOrderOf x) (plus m k) m) (Eqt G (HSMul__hSMul (plus m k) x) (HSMul__hSMul m x))",
+    "by": "constructor",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Eqt G (HSMul__hSMul (plus m k) x) (HSMul__hSMul m x))"
+     ]
+    ],
+    "by": "intro h",
+    "goal": "Nat__ModEq (addOrderOf x) (plus m k) m",
+    "depth": 1
+   },
+   {
+    "unit": "verify",
+    "prop": "(Eqt G (HSMul__hSMul k x) 0)",
+    "by": "have hk : x ^ k = 1",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G (plus (HSMul__hSMul k x) (HSMul__hSMul m x)) (plus 0 (HSMul__hSMul m x))",
+    "by": "apply (mul_right_cancel_iff (a := x ^ m)).1",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (plus (HSMul__hSMul k x) (HSMul__hSMul m x)) (plus 0 (HSMul__hSMul m x))",
+    "by": "calc",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (plus k m) x) (HSMul__hSMul (plus m k) x)",
+    "by": "simp [Nat.add_comm]",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul m x) (plus 0 (HSMul__hSMul m x))",
+    "by": "simp",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq (addOrderOf x) (plus m k) m",
+    "by": "exact by simpa using Nat.ModEq.add_left m (pow_eq_one_iff_modEq.1 hk)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq (addOrderOf x) (plus m k) m",
+    "by": "simpa using Nat.ModEq.add_left m (pow_eq_one_iff_modEq.1 hk)",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Nat__ModEq (addOrderOf x) (plus m k) m)"
+     ]
+    ],
+    "by": "intro h",
+    "goal": "Eqt G (HSMul__hSMul (plus m k) x) (HSMul__hSMul m x)",
+    "depth": 1
+   },
+   {
+    "unit": "verify",
+    "prop": "(Eqt G (HSMul__hSMul k x) 0)",
+    "by": "have hk : x ^ k = 1",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Nat__ModEq (addOrderOf x) k 0",
+    "by": "apply pow_eq_one_iff_modEq.2",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq (addOrderOf x) k 0",
+    "by": "exact Nat.ModEq.add_left_cancel' m (by simpa using h)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq (addOrderOf x) (plus m k) (plus m 0)",
+    "by": "simpa using h",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (plus m k) x) (HSMul__hSMul m x)",
+    "by": "calc",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (plus m k) x) (plus (HSMul__hSMul m x) (HSMul__hSMul k x))",
+    "by": "rw [pow_add]",
+    "method": "rewriting",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (plus (HSMul__hSMul m x) (HSMul__hSMul k x)) (HSMul__hSMul m x)",
+    "by": "simp [hk]",
+    "method": "simplification",
     "depth": 1
    }
   ]
@@ -2543,7 +4919,63 @@
     "unit": "conclusion",
     "prop": "Eq n m",
     "by": "rwa [pow_eq_pow_iff_modEq, orderOf_eq_zero_iff.mpr h, Nat.modEq_zero_iff] at hnm",
+    "method": "rewriting",
     "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "AddRightCancelMonoid__injective_nsmul_iff_not_isOfFinAddOrder",
+  "lean": "AddRightCancelMonoid.injective_nsmul_iff_not_isOfFinAddOrder",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (not (IsOfFinAddOrder x))"
+     ],
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "m",
+      "Elem Nat"
+     ],
+     [
+      "hnm",
+      "Proof (Eqt G (HSMul__hSMul n x) (HSMul__hSMul m x))"
+     ]
+    ],
+    "by": "refine ⟨fun h => not_isOfFinOrder_of_injective_pow h, fun h n m hnm => ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq n m",
+    "by": "refine ⟨fun h => not_isOfFinOrder_of_injective_pow h, fun h n m hnm => ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq n m",
+    "by": "rwa [pow_eq_pow_iff_modEq, orderOf_eq_zero_iff.mpr h, Nat.modEq_zero_iff] at hnm",
+    "method": "rewriting",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "AddRightCancelMonoid__nsmul_inj_iff_of_addOrderOf_eq_zero",
+  "lean": "AddRightCancelMonoid.nsmul_inj_iff_of_addOrderOf_eq_zero",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eqt G (HSMul__hSMul n x) (HSMul__hSMul m x)) (Eq n m)",
+    "by": "rw [pow_eq_pow_iff_modEq, h, Nat.modEq_zero_iff]",
+    "method": "rewriting",
+    "depth": 0
    }
   ]
  },
@@ -2555,6 +4987,138 @@
     "unit": "conclusion",
     "prop": "iff (Eqt G (pow x n) (pow x m)) (Eq n m)",
     "by": "rw [pow_eq_pow_iff_modEq, h, Nat.modEq_zero_iff]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddRightCancelMonoid__infinite_not_isOfFinAddOrder",
+  "lean": "AddRightCancelMonoid.infinite_not_isOfFinAddOrder",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "if (Set__Subset (Set__image (n => HSMul__hSMul n x) (Set__ofPred (n1 => Lt 0 n1))) (Set__ofPred (y1 => not (IsOfFinAddOrder y1)))) (Set__Infinite (Set__ofPred (y => not (IsOfFinAddOrder y))))",
+    "by": "have hs : s ⊆ { y : G | ¬IsOfFinOrder y }",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "hn",
+      "Proof (Lt 0 n)"
+     ],
+     [
+      "contra",
+      "Proof (IsOfFinAddOrder (HSMul__hSMul n x))"
+     ]
+    ],
+    "by": "rintro - ⟨n, hn : 0 < n, rfl⟩ (contra : IsOfFinOrder (x ^ n))",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "IsOfFinAddOrder x",
+    "by": "apply h",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n (HSMul__hSMul n x)) 0)))",
+    "by": "rw [isOfFinOrder_iff_pow_eq_one] at contra ⊢",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Nat (n1 => and (Lt 0 n1) (Eqt G (HSMul__hSMul n1 x) 0))",
+    "by": "rw [isOfFinOrder_iff_pow_eq_one] at contra ⊢",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "m",
+      "Elem Nat"
+     ],
+     [
+      "hm",
+      "Proof (Lt 0 m)"
+     ],
+     [
+      "hm'",
+      "Proof (Eqt G (HSMul__hSMul m (HSMul__hSMul n x)) 0)"
+     ]
+    ],
+    "by": "obtain ⟨m, hm, hm'⟩ := contra",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n x) 0))",
+    "by": "exact ⟨n * m, mul_pos hn hm, by rwa [pow_mul]⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (times n m) x) 0",
+    "by": "rwa [pow_mul]",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (Set__Subset (Set__image (n2 => HSMul__hSMul n2 x) (Set__ofPred (n3 => Lt 0 n3))) (Set__ofPred (y => not (IsOfFinAddOrder y)))) (Set__Infinite (Set__image (n => HSMul__hSMul n x) (Set__ofPred (n1 => Lt 0 n1))))",
+    "by": "suffices s.Infinite by exact this.mono hs",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (Set__Subset (Set__image (n2 => HSMul__hSMul n2 x) (Set__ofPred (n3 => Lt 0 n3))) (Set__ofPred (y1 => not (IsOfFinAddOrder y1)))) (if (Set__Infinite (Set__image (n => HSMul__hSMul n x) (Set__ofPred (n1 => Lt 0 n1)))) (Set__Infinite (Set__ofPred (y => not (IsOfFinAddOrder y)))))",
+    "by": "exact this.mono hs",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (Set__Subset (Set__image (n2 => HSMul__hSMul n2 x) (Set__ofPred (n3 => Lt 0 n3))) (Set__ofPred (y => not (IsOfFinAddOrder y)))) (if (Set__Finite (Set__image (n => HSMul__hSMul n x) (Set__ofPred (n1 => Lt 0 n1)))) (IsOfFinAddOrder x))",
+    "by": "contrapose! h",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (Set__Subset (Set__image (n3 => HSMul__hSMul n3 x) (Set__ofPred (n4 => Lt 0 n4))) (Set__ofPred (y => not (IsOfFinAddOrder y)))) (if (Set__Finite (Set__image (n1 => HSMul__hSMul n1 x) (Set__ofPred (n2 => Lt 0 n2)))) (if (not (Function__Injective (n => HSMul__hSMul n x))) (IsOfFinAddOrder x)))",
+    "by": "have : ¬Function.Injective fun n : ℕ => x ^ n",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (Set__Subset (Set__image (n4 => HSMul__hSMul n4 x) (Set__ofPred (n5 => Lt 0 n5))) (Set__ofPred (y => not (IsOfFinAddOrder y)))) (if (Set__Finite (Set__image (n2 => HSMul__hSMul n2 x) (Set__ofPred (n3 => Lt 0 n3)))) (if (not (Set__InjOn (n1 => HSMul__hSMul n1 x) (Set__Ioi 0))) (not (Function__Injective (n => HSMul__hSMul n x)))))",
+    "by": "have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) h",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (Set__Subset (Set__image (n4 => HSMul__hSMul n4 x) (Set__ofPred (n5 => Lt 0 n5))) (Set__ofPred (y => not (IsOfFinAddOrder y)))) (if (Set__Finite (Set__image (n2 => HSMul__hSMul n2 x) (Set__ofPred (n3 => Lt 0 n3)))) (if (Function__Injective (n1 => HSMul__hSMul n1 x)) (Set__InjOn (n => HSMul__hSMul n x) (Set__Ioi 0))))",
+    "by": "contrapose this",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (Set__Subset (Set__image (n4 => HSMul__hSMul n4 x) (Set__ofPred (n5 => Lt 0 n5))) (Set__ofPred (y => not (IsOfFinAddOrder y)))) (if (Set__Finite (Set__image (n2 => HSMul__hSMul n2 x) (Set__ofPred (n3 => Lt 0 n3)))) (if (Function__Injective (n1 => HSMul__hSMul n1 x)) (Set__InjOn (n => HSMul__hSMul n x) (Set__Ioi 0))))",
+    "by": "exact Set.injOn_of_injective this",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (Set__Subset (Set__image (n3 => HSMul__hSMul n3 x) (Set__ofPred (n4 => Lt 0 n4))) (Set__ofPred (y => not (IsOfFinAddOrder y)))) (if (Set__Finite (Set__image (n1 => HSMul__hSMul n1 x) (Set__ofPred (n2 => Lt 0 n2)))) (if (not (Function__Injective (n => HSMul__hSMul n x))) (IsOfFinAddOrder x)))",
+    "by": "rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -2577,12 +5141,6 @@
    {
     "unit": "verify",
     "prop": "(Set__Subset s (Set__ofPred (y => not (IsOfFinOrder y))))",
-    "by": "have hs : s ⊆ { y : G | ¬IsOfFinOrder y }",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
-    "prop": "Set__Infinite (Set__ofPred (y1 => not (IsOfFinOrder y1)))",
     "by": "have hs : s ⊆ { y : G | ¬IsOfFinOrder y }",
     "depth": 1
    },
@@ -2615,6 +5173,7 @@
     "unit": "conclusion",
     "prop": "(exists Nat (n => and (Lt 0 n) (Eqt G (pow (pow x n) n) 1)))",
     "by": "rw [isOfFinOrder_iff_pow_eq_one] at contra ⊢",
+    "method": "rewriting",
     "depth": 1
    },
    {
@@ -2643,12 +5202,6 @@
     "depth": 1
    },
    {
-    "unit": "enough",
-    "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (pow x n) 1))",
-    "by": "obtain ⟨m, hm, hm'⟩ := contra",
-    "depth": 1
-   },
-   {
     "unit": "conclusion",
     "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (pow x n) 1))",
     "by": "exact ⟨n * m, mul_pos hn hm, by rwa [pow_mul]⟩",
@@ -2658,6 +5211,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x (times n m)) 1",
     "by": "rwa [pow_mul]",
+    "method": "rewriting",
     "depth": 1
    },
    {
@@ -2703,12 +5257,6 @@
    },
    {
     "unit": "enough",
-    "prop": "not (Function__Injective (n1 => pow x n1))",
-    "by": "have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) h",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
     "prop": "Set__InjOn (n1 => pow x n1) (Set__Ioi 0)",
     "by": "contrapose this",
     "depth": 1
@@ -2723,6 +5271,92 @@
     "unit": "conclusion",
     "prop": "IsOfFinOrder x",
     "by": "rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this",
+    "method": "rewriting",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "AddRightCancelMonoid__finite_multiples",
+  "lean": "AddRightCancelMonoid.finite_multiples",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Set__Finite (AddSubmonoid__multiples a))"
+     ]
+    ],
+    "by": "refine ⟨fun h ↦ ?_, IsOfFinOrder.finite_powers⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "IsOfFinAddOrder a",
+    "by": "refine ⟨fun h ↦ ?_, IsOfFinOrder.finite_powers⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "m",
+      "Elem Nat"
+     ],
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "hmn",
+      "Proof (Lt m n)"
+     ],
+     [
+      "ha",
+      "Proof (Eqt G (HSMul__hSMul m a) (HSMul__hSMul n a))"
+     ]
+    ],
+    "by": "obtain ⟨m, n, hmn, ha⟩ := h.exists_lt_map_eq_of_forall_mem (f := fun n : ℕ ↦ a ^ n)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (AddSubmonoid__multiples a) (HSMul__hSMul n a)",
+    "by": "simp [mem_powers_iff]",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G (HSMul__hSMul (minus n m) a) 0",
+    "by": "refine isOfFinOrder_iff_pow_eq_one.2 ⟨n - m, tsub_pos_iff_lt.2 hmn, ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G (plus (HSMul__hSMul (minus n m) a) (HSMul__hSMul m a)) (plus 0 (HSMul__hSMul m a))",
+    "by": "apply (mul_right_cancel_iff (a := a ^ m)).1",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (plus (HSMul__hSMul (minus n m) a) (HSMul__hSMul m a)) (plus 0 (HSMul__hSMul m a))",
+    "by": "calc",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (plus (minus n m) m) a) (HSMul__hSMul n a)",
+    "by": "simp [tsub_add_cancel_of_le hmn.le]",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul m a) (plus 0 (HSMul__hSMul m a))",
+    "by": "simp",
+    "method": "simplification",
     "depth": 1
    }
   ]
@@ -2775,6 +5409,7 @@
     "unit": "conclusion",
     "prop": "Membership__mem (Submonoid__powers a) (pow a n)",
     "by": "simp [mem_powers_iff]",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -2799,12 +5434,14 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow a (plus (minus n m) m)) (pow a n)",
     "by": "simp [tsub_add_cancel_of_le hmn.le]",
+    "method": "simplification",
     "depth": 1
    },
    {
     "unit": "conclusion",
     "prop": "Eqt G (pow a m) (times 1 (pow a m))",
     "by": "simp",
+    "method": "simplification",
     "depth": 1
    }
   ]
@@ -2839,6 +5476,7 @@
     "unit": "conclusion",
     "prop": "Eq (Nat__card (Fin (orderOf a))) (orderOf a)",
     "by": "simp",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -2862,6 +5500,66 @@
     "unit": "conclusion",
     "prop": "Eq (Nat__card (Subtype (x => Membership__mem (Submonoid__powers a) x))) (orderOf a)",
     "by": "rw [orderOf_eq_zero ha, Nat.card_eq_zero_of_infinite]",
+    "method": "rewriting",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "AddRightCancelMonoid__Nat__card_addSubmonoidMultiples",
+  "lean": "AddRightCancelMonoid.Nat.card_addSubmonoidMultiples",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "by_cases ha : IsOfFinOrder a",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ha",
+      "Proof (IsOfFinAddOrder a)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__card (Subtype (x => Membership__mem (AddSubmonoid__multiples a) x))) (addOrderOf a)",
+    "by": "exact (Nat.card_congr (finEquivPowers ha).symm).trans <| by simp",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__card (Fin (addOrderOf a))) (addOrderOf a)",
+    "by": "simp",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ha",
+      "Proof (not (IsOfFinAddOrder a))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Infinite (Set__Elem (AddSubmonoid__multiples a)))",
+    "by": "have := (infinite_powers.2 ha).to_subtype",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__card (Subtype (x => Membership__mem (AddSubmonoid__multiples a) x))) (addOrderOf a)",
+    "by": "rw [orderOf_eq_zero ha, Nat.card_eq_zero_of_infinite]",
+    "method": "rewriting",
     "depth": 1
    }
   ]
@@ -2874,7 +5572,57 @@
     "unit": "conclusion",
     "prop": "iff (IsOfFinOrder (Inv__inv x)) (IsOfFinOrder x)",
     "by": "simp [isOfFinOrder_iff_pow_eq_one]",
+    "method": "simplification",
     "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isOfFinAddOrder_neg_iff",
+  "lean": "isOfFinAddOrder_neg_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (IsOfFinAddOrder (Neg__neg x)) (IsOfFinAddOrder x)",
+    "by": "simp [isOfFinOrder_iff_pow_eq_one]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_dvd_iff_zsmul_eq_zero",
+  "lean": "addOrderOf_dvd_iff_zsmul_eq_zero",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "rcases Int.eq_nat_or_neg i with ⟨i, rfl | rfl⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "i",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (divide (addOrderOf x) i) (Eqt G (HSMul__hSMul i x) 0)",
+    "by": "rw [Int.natCast_dvd_natCast, orderOf_dvd_iff_pow_eq_one, zpow_natCast]",
+    "method": "rewriting",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (divide (addOrderOf x) (Neg__neg i)) (Eqt G (HSMul__hSMul (Neg__neg i) x) 0)",
+    "by": "rw [dvd_neg, Int.natCast_dvd_natCast, zpow_neg, inv_eq_one, zpow_natCast,",
+    "method": "rewriting",
+    "depth": 1
    }
   ]
  },
@@ -2902,13 +5650,28 @@
     "unit": "conclusion",
     "prop": "iff (divide (orderOf x) i) (Eqt G (pow x i) 1)",
     "by": "rw [Int.natCast_dvd_natCast, orderOf_dvd_iff_pow_eq_one, zpow_natCast]",
+    "method": "rewriting",
     "depth": 1
    },
    {
     "unit": "conclusion",
     "prop": "iff (divide (orderOf x) (Neg__neg i)) (Eqt G (pow x (Neg__neg i)) 1)",
     "by": "rw [dvd_neg, Int.natCast_dvd_natCast, zpow_neg, inv_eq_one, zpow_natCast,",
+    "method": "rewriting",
     "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_neg",
+  "lean": "addOrderOf_neg",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf (Neg__neg x)) (addOrderOf x)",
+    "by": "simp [orderOf_eq_orderOf_iff]",
+    "method": "simplification",
+    "depth": 0
    }
   ]
  },
@@ -2920,6 +5683,20 @@
     "unit": "conclusion",
     "prop": "Eq (orderOf (Inv__inv x)) (orderOf x)",
     "by": "simp [orderOf_eq_orderOf_iff]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_dvd_sub_iff_zsmul_eq_zsmul",
+  "lean": "addOrderOf_dvd_sub_iff_zsmul_eq_zsmul",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (divide (addOrderOf x) (minus a b)) (Eqt G (HSMul__hSMul a x) (HSMul__hSMul b x))",
+    "by": "rw [orderOf_dvd_iff_zpow_eq_one, zpow_sub, mul_inv_eq_one]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -2932,6 +5709,7 @@
     "unit": "conclusion",
     "prop": "iff (divide (orderOf x) (minus a b)) (Eqt G (pow x a) (pow x b))",
     "by": "rw [orderOf_dvd_iff_zpow_eq_one, zpow_sub, mul_inv_eq_one]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -2973,6 +5751,7 @@
     "unit": "conclusion",
     "prop": "or (Eq (orderOf a) 1) (Eq (orderOf a) 2)",
     "by": "grind [hfin.orderOf_pos]",
+    "method": "routine",
     "depth": 1
    },
    {
@@ -2995,6 +5774,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow a 2) 1",
     "by": "simp [orderOf_eq_one_iff.mp h₁]",
+    "method": "simplification",
     "depth": 2
    },
    {
@@ -3012,6 +5792,90 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow a 2) 1",
     "by": "rw [← h₂, pow_orderOf_eq_one a]",
+    "method": "rewriting",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "isSelfNeg_iff_isOfFinAddOrder_and_addOrderOf_le_two",
+  "lean": "isSelfNeg_iff_isOfFinAddOrder_and_addOrderOf_le_two",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (Eqt G (HSMul__hSMul 2 a) 0) (and (IsOfFinAddOrder a) (Leq (addOrderOf a) 2))",
+    "by": "rw [isSelfInv_iff_sq_eq_one]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hfin",
+      "Proof (IsOfFinAddOrder a)"
+     ]
+    ],
+    "by": "refine ⟨fun h ↦ ⟨isOfFinOrder_iff_pow_eq_one.mpr ⟨2, zero_lt_two, h⟩,",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G (HSMul__hSMul 2 a) 0",
+    "by": "refine ⟨fun h ↦ ⟨isOfFinOrder_iff_pow_eq_one.mpr ⟨2, zero_lt_two, h⟩,",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(or (Eq (addOrderOf a) 1) (Eq (addOrderOf a) 2))",
+    "by": "have : orderOf a = 1 ∨ orderOf a = 2 := by grind [hfin.orderOf_pos]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "or (Eq (addOrderOf a) 1) (Eq (addOrderOf a) 2)",
+    "by": "grind [hfin.orderOf_pos]",
+    "method": "routine",
+    "depth": 1
+   },
+   {
+    "unit": "cases",
+    "by": "rcases this with h₁ | h₂",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h1",
+      "Proof (Eq (addOrderOf a) 1)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul 2 a) 0",
+    "by": "simp [orderOf_eq_one_iff.mp h₁]",
+    "method": "simplification",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h2",
+      "Proof (Eq (addOrderOf a) 2)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul 2 a) 0",
+    "by": "rw [← h₂, pow_orderOf_eq_one a]",
+    "method": "rewriting",
     "depth": 2
    }
   ]
@@ -3024,7 +5888,68 @@
     "unit": "conclusion",
     "prop": "iff (IsSelfInv a) (Leq (orderOf a) 2)",
     "by": "rw [isSelfInv_iff_isOfFinOrder_and_orderOf_le_two, and_iff_right h]",
+    "method": "rewriting",
     "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsOfFinAddOrder__isSelfNeg_iff",
+  "lean": "IsOfFinAddOrder.isSelfNeg_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (IsSelfNeg a) (Leq (addOrderOf a) 2)",
+    "by": "rw [isSelfInv_iff_isOfFinOrder_and_orderOf_le_two, and_iff_right h]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "zsmul_smul_addOrderOf",
+  "lean": "zsmul_smul_addOrderOf",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "by_cases h : IsOfFinOrder x",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (IsOfFinAddOrder x)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (addOrderOf x) (HSMul__hSMul i x)) 0",
+    "by": "rw [← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast, pow_orderOf_eq_one, one_zpow]",
+    "method": "rewriting",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (not (IsOfFinAddOrder x))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (addOrderOf x) (HSMul__hSMul i x)) 0",
+    "by": "rw [orderOf_eq_zero h, _root_.pow_zero]",
+    "method": "rewriting",
+    "depth": 1
    }
   ]
  },
@@ -3052,6 +5977,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow (pow x i) (orderOf x)) 1",
     "by": "rw [← zpow_natCast, ← zpow_mul, mul_comm, zpow_mul, zpow_natCast, pow_orderOf_eq_one, one_zpow]",
+    "method": "rewriting",
     "depth": 1
    },
    {
@@ -3069,6 +5995,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow (pow x i) (orderOf x)) 1",
     "by": "rw [orderOf_eq_zero h, _root_.pow_zero]",
+    "method": "rewriting",
     "depth": 1
    }
   ]
@@ -3102,6 +6029,78 @@
     "unit": "conclusion",
     "prop": "IsOfFinOrder (pow x k)",
     "by": "exact h.zpow",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsOfFinAddOrder__of_mem_zmultiples",
+  "lean": "IsOfFinAddOrder.of_mem_zmultiples",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Int"
+     ],
+     [
+      "h'",
+      "Proof (Membership__mem (AddSubgroup__zmultiples x) (HSMul__hSMul k x))"
+     ]
+    ],
+    "by": "obtain ⟨k, rfl⟩ := Subgroup.mem_zpowers_iff.mp h'",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "IsOfFinAddOrder (HSMul__hSMul k x)",
+    "by": "obtain ⟨k, rfl⟩ := Subgroup.mem_zpowers_iff.mp h'",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsOfFinAddOrder (HSMul__hSMul k x)",
+    "by": "exact h.zpow",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_dvd_of_mem_zmultiples",
+  "lean": "addOrderOf_dvd_of_mem_zmultiples",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Int"
+     ],
+     [
+      "h",
+      "Proof (Membership__mem (AddSubgroup__zmultiples x) (HSMul__hSMul k x))"
+     ]
+    ],
+    "by": "obtain ⟨k, rfl⟩ := Subgroup.mem_zpowers_iff.mp h",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "divide (addOrderOf (HSMul__hSMul k x)) (addOrderOf x)",
+    "by": "obtain ⟨k, rfl⟩ := Subgroup.mem_zpowers_iff.mp h",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G (HSMul__hSMul (addOrderOf x) (HSMul__hSMul k x)) 0",
+    "by": "rw [orderOf_dvd_iff_pow_eq_one]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (addOrderOf x) (HSMul__hSMul k x)) 0",
+    "by": "exact zpow_pow_orderOf",
     "depth": 0
    }
   ]
@@ -3191,6 +6190,86 @@
   ]
  },
  {
+  "name": "vadd_eq_self_of_mem_zmultiples",
+  "lean": "vadd_eq_self_of_mem_zmultiples",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Int"
+     ],
+     [
+      "hx",
+      "Proof (Membership__mem (AddSubgroup__zmultiples y) (HSMul__hSMul k y))"
+     ]
+    ],
+    "by": "obtain ⟨k, rfl⟩ := Subgroup.mem_zpowers_iff.mp hx",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt X (HVAdd__hVAdd (HSMul__hSMul k y) a) a",
+    "by": "obtain ⟨k, rfl⟩ := Subgroup.mem_zpowers_iff.mp hx",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt X (HPow__hPow__app (AddAction__toPerm y) k a) a",
+    "by": "rw [← MulAction.toPerm_apply, ← MulAction.toPermHom_apply, map_zpow _ y k,",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt X (HPow__hPow__app (AddAction__toPerm y) k a) a",
+    "by": "exact Function.IsFixedPt.perm_zpow (by exact hs) k",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Function__IsFixedPt (AddAction__toPerm y) a",
+    "by": "exact hs",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsOfFinAddOrder__mem_multiples_iff_mem_zmultiples",
+  "lean": "IsOfFinAddOrder.mem_multiples_iff_mem_zmultiples",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul n x) y",
+    "by": "simp_all",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "i",
+      "Elem Int"
+     ],
+     [
+      "hi",
+      "Proof (Eqt G (HSMul__hSMul i x) y)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (Int__natAbs (HMod__hMod i (addOrderOf x))) x) y",
+    "by": "rwa [← zpow_natCast, Int.natAbs_of_nonneg <| Int.emod_nonneg _ <|",
+    "method": "rewriting",
+    "depth": 1
+   }
+  ]
+ },
+ {
   "name": "IsOfFinOrder__mem_powers_iff_mem_zpowers",
   "lean": "IsOfFinOrder.mem_powers_iff_mem_zpowers",
   "steps": [
@@ -3198,6 +6277,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x n) y",
     "by": "simp_all",
+    "method": "simplification",
     "depth": 0
    },
    {
@@ -3219,6 +6299,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x (Int__natAbs (HMod__hMod i (orderOf x)))) y",
     "by": "rwa [← zpow_natCast, Int.natAbs_of_nonneg <| Int.emod_nonneg _ <|",
+    "method": "rewriting",
     "depth": 1
    }
   ]
@@ -3270,7 +6351,85 @@
     "unit": "conclusion",
     "prop": "Membership__mem (Submonoid__powers (Inv__inv x)) x",
     "by": "simp [(hs _ hx).mem_powers_iff_mem_zpowers]",
+    "method": "simplification",
     "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "AddSubgroup__closure_toAddSubmonoid_of_isOfFinAddOrder",
+  "lean": "AddSubgroup.closure_toAddSubmonoid_of_isOfFinAddOrder",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Leq (AddSubgroup__closure s) (AddSubmonoid__closure s)",
+    "by": "refine le_antisymm ?_ (le_closure_toSubmonoid s)",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (AddSubmonoid__closure (Union__union s (Neg__neg s))) (AddSubmonoid__closure s)",
+    "by": "rw [closure_toSubmonoid]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem G"
+     ],
+     [
+      "hx",
+      "Proof (Membership__mem s (Neg__neg x))"
+     ]
+    ],
+    "by": "refine Submonoid.closure_le.mpr <| Set.union_subset Submonoid.subset_closure",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (AddSubmonoid__closure s) x",
+    "by": "refine Submonoid.closure_le.mpr <| Set.union_subset Submonoid.subset_closure",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (AddSubmonoid__multiples (Neg__neg x)) x",
+    "by": "apply Submonoid.powers_le.mpr (Submonoid.subset_closure hx)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (AddSubmonoid__multiples (Neg__neg x)) x",
+    "by": "simp [(hs _ hx).mem_powers_iff_mem_zpowers]",
+    "method": "simplification",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "finEquivZMultiples_symm_apply",
+  "lean": "finEquivZMultiples_symm_apply",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul n x) (HSMul__hSMul n x)",
+    "by": "simp",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt (Fin (addOrderOf x)) (Equiv__symm__app (finEquivMultiples hx) (Equiv__symm__app (Set__equivOfEq (IsOfFinAddOrder__multiples_eq_zmultiples G x hx)) (HSMul__hSMul n x))) (Fin__mk (HMod__hMod n (addOrderOf x)) (Nat__mod_lt n (IsOfFinAddOrder__addOrderOf_pos G x hx)))",
+    "by": "rw [finEquivZPowers, Equiv.symm_trans_apply]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Fin (addOrderOf x)) (Equiv__symm__app (finEquivMultiples hx) (Equiv__symm__app (Set__equivOfEq (IsOfFinAddOrder__multiples_eq_zmultiples G x hx)) (HSMul__hSMul n x))) (Fin__mk (HMod__hMod n (addOrderOf x)) (Nat__mod_lt n (IsOfFinAddOrder__addOrderOf_pos G x hx)))",
+    "by": "exact finEquivPowers_symm_apply _ n",
+    "depth": 0
    }
   ]
  },
@@ -3282,6 +6441,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x n) (pow x n)",
     "by": "simp",
+    "method": "simplification",
     "depth": 0
    },
    {
@@ -3306,6 +6466,20 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x (Equiv__symm__app (finEquivZPowers hx) a)) a",
     "by": "simpa only [finEquivZPowers_apply] using",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "nsmul_finEquivZMultiples_symm_apply",
+  "lean": "nsmul_finEquivZMultiples_symm_apply",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (Equiv__symm__app (finEquivZMultiples hx) a) x) a",
+    "by": "simpa only [finEquivZPowers_apply] using",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -3355,6 +6529,7 @@
     "unit": "conclusion",
     "prop": "(Eqt G (div (pow a n) (pow b n)) 1)",
     "by": "rw [← div_eq_one] at hab ⊢",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -3378,6 +6553,87 @@
   ]
  },
  {
+  "name": "isAddTorsionFree_iff_not_isOfFinAddOrder",
+  "lean": "isAddTorsionFree_iff_not_isOfFinAddOrder",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "hn",
+      "Proof (Neq n 0)"
+     ],
+     [
+      "a",
+      "Elem G"
+     ],
+     [
+      "b",
+      "Elem G"
+     ],
+     [
+      "h",
+      "Proof (AddCommute a b)"
+     ],
+     [
+      "hab",
+      "Proof (Eqt G (HSMul__hSMul n a) (HSMul__hSMul n b))"
+     ]
+    ],
+    "by": "refine ⟨fun n hn a b (h : Commute a b) hab ↦ ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G a b",
+    "by": "refine ⟨fun n hn a b (h : Commute a b) hab ↦ ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eqt G (minus (HSMul__hSMul n a) (HSMul__hSMul n b)) 0)",
+    "by": "rw [← div_eq_one] at hab ⊢",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G (minus a b) 0",
+    "by": "rw [← div_eq_one] at hab ⊢",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists G (a => and (Neq a 0) (IsOfFinAddOrder a))",
+    "by": "contrapose! hG",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists G (a => and (Neq a 0) (IsOfFinAddOrder a))",
+    "by": "exact ⟨a / b, hG, isOfFinOrder_iff_pow_eq_one.mpr ⟨n, hn.pos, (h.div_pow n).trans hab⟩⟩",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "not_isAddTorsionFree_iff_isOfFinAddOrder",
+  "lean": "not_isAddTorsionFree_iff_isOfFinAddOrder",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (not (IsAddTorsionFree G)) (exists G (a => and (Neq a 0) (IsOfFinAddOrder a)))",
+    "by": "simp [isMulTorsionFree_iff_not_isOfFinOrder]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
   "name": "not_isMulTorsionFree_iff_isOfFinOrder",
   "lean": "not_isMulTorsionFree_iff_isOfFinOrder",
   "steps": [
@@ -3385,6 +6641,50 @@
     "unit": "conclusion",
     "prop": "iff (not (IsMulTorsionFree G)) (exists G (a => and (Neq a 1) (IsOfFinOrder a)))",
     "by": "simp [isMulTorsionFree_iff_not_isOfFinOrder]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsAddTorsionFree__addOrderOf_nonpos",
+  "lean": "IsAddTorsionFree.addOrderOf_nonpos",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "obtain rfl | ha := eq_or_ne g 1",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (addOrderOf 0) 1",
+    "by": "simp",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ha",
+      "Proof (Neq g 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eq (addOrderOf g) 0)",
+    "by": "rw [ne_eq, ← isOfFinOrder_iff_eq_one, ← orderOf_eq_zero_iff] at ha",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (addOrderOf g) 1",
+    "by": "simp [ha]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -3402,6 +6702,7 @@
     "unit": "conclusion",
     "prop": "Leq (orderOf 1) 1",
     "by": "simp",
+    "method": "simplification",
     "depth": 0
    },
    {
@@ -3419,12 +6720,14 @@
     "unit": "conclusion",
     "prop": "(Eq (orderOf g) 0)",
     "by": "rw [ne_eq, ← isOfFinOrder_iff_eq_one, ← orderOf_eq_zero_iff] at ha",
+    "method": "rewriting",
     "depth": 0
    },
    {
     "unit": "conclusion",
     "prop": "Leq (orderOf g) 1",
     "by": "simp [ha]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -3443,6 +6746,7 @@
     "unit": "conclusion",
     "prop": "Set__PairwiseDisjoint (Nat__divisors n) (m => Finset__filter (x => Eq (orderOf x) m) Finset__univ)",
     "by": "simp +contextual [Set.PairwiseDisjoint, Set.Pairwise, disjoint_iff, Finset.ext_iff]",
+    "method": "simplification",
     "depth": 0
    },
    {
@@ -3461,6 +6765,45 @@
     "unit": "conclusion",
     "prop": "iff (Membership__mem (Finset__biUnion (Nat__divisors n) (m => Finset__filter (x => Eq (orderOf x) m) Finset__univ)) a') (Membership__mem (Finset__filter (x1 => Eqt G (pow x1 n) 1) Finset__univ) a')",
     "by": "simp [hn, orderOf_dvd_iff_pow_eq_one]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "sum_card_addOrderOf_eq_card_nsmul_eq_zero",
+  "lean": "sum_card_addOrderOf_eq_card_nsmul_eq_zero",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "and (Set__PairwiseDisjoint (Nat__divisors n) (m => Finset__filter (x => Eq (addOrderOf x) m) Finset__univ)) (Eq (Finset__card (Finset__biUnion (Nat__divisors n) (m => Finset__filter (x => Eq (addOrderOf x) m) Finset__univ))) (Finset__card (Finset__filter (x1 => Eqt G (HSMul__hSMul n x1) 0) Finset__univ)))",
+    "by": "refine (Finset.card_biUnion ?_).symm.trans ?_",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__PairwiseDisjoint (Nat__divisors n) (m => Finset__filter (x => Eq (addOrderOf x) m) Finset__univ)",
+    "by": "simp +contextual [Set.PairwiseDisjoint, Set.Pairwise, disjoint_iff, Finset.ext_iff]",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt (Finset G) (Finset__biUnion (Nat__divisors n) (m => Finset__filter (x => Eq (addOrderOf x) m) Finset__univ)) (Finset__filter (x1 => Eqt G (HSMul__hSMul n x1) 0) Finset__univ)",
+    "by": "congr",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (Membership__mem (Finset__biUnion (Nat__divisors n) (m => Finset__filter (x => Eq (addOrderOf x) m) Finset__univ)) a') (Membership__mem (Finset__filter (x1 => Eqt G (HSMul__hSMul n x1) 0) Finset__univ) a')",
+    "by": "ext",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Membership__mem (Finset__biUnion (Nat__divisors n) (m => Finset__filter (x => Eq (addOrderOf x) m) Finset__univ)) a') (Membership__mem (Finset__filter (x1 => Eqt G (HSMul__hSMul n x1) 0) Finset__univ) a')",
+    "by": "simp [hn, orderOf_dvd_iff_pow_eq_one]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -3473,7 +6816,50 @@
     "unit": "conclusion",
     "prop": "Leq (orderOf x) (Nat__card G)",
     "by": "simpa using orderOf_le_card_univ",
+    "method": "simplification",
     "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_le_card",
+  "lean": "addOrderOf_le_card",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Leq (addOrderOf x) (Nat__card G)",
+    "by": "simpa using orderOf_le_card_univ",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isOfFinAddOrder_of_finite",
+  "lean": "isOfFinAddOrder_of_finite",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (not (IsOfFinAddOrder x))"
+     ]
+    ],
+    "by": "by_contra h",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "false",
+    "by": "by_contra h",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exact infinite_not_isOfFinOrder h <| Set.toFinite _",
+    "depth": 1
    }
   ]
  },
@@ -3520,6 +6906,26 @@
     "unit": "conclusion",
     "prop": "Eqt (Fin (orderOf y)) (finCongr__app h (Fin__mk (HMod__hMod n (orderOf x)) (Nat__mod_lt n (IsOfFinOrder__orderOf_pos G x (isOfFinOrder_of_finite G x))))) (Fin__mk (HMod__hMod n (orderOf y)) (Nat__mod_lt n (IsOfFinOrder__orderOf_pos G y (isOfFinOrder_of_finite G y))))",
     "by": "simp [h]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "multiplesEquivMultiples_apply",
+  "lean": "multiplesEquivMultiples_apply",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eqt (Fin (addOrderOf y)) (finCongr__app h (Fin__mk (HMod__hMod n (addOrderOf x)) (Nat__mod_lt n (IsOfFinAddOrder__addOrderOf_pos G x (isOfFinAddOrder_of_finite G x))))) (Fin__mk (HMod__hMod n (addOrderOf y)) (Nat__mod_lt n (IsOfFinAddOrder__addOrderOf_pos G y (isOfFinAddOrder_of_finite G y))))",
+    "by": "rw [powersEquivPowers, Equiv.trans_apply, Equiv.trans_apply, finEquivPowers_symm_apply, ←",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Fin (addOrderOf y)) (finCongr__app h (Fin__mk (HMod__hMod n (addOrderOf x)) (Nat__mod_lt n (IsOfFinAddOrder__addOrderOf_pos G x (isOfFinAddOrder_of_finite G x))))) (Fin__mk (HMod__hMod n (addOrderOf y)) (Nat__mod_lt n (IsOfFinAddOrder__addOrderOf_pos G y (isOfFinAddOrder_of_finite G y))))",
+    "by": "simp [h]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -3573,6 +6979,7 @@
     "unit": "conclusion",
     "prop": "iff (Eq (orderOf a) 0) (Eqt G0 a 0)",
     "by": "simp [isOfFinOrder_iff_isUnit]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -3590,6 +6997,18 @@
   ]
  },
  {
+  "name": "addOrderOf_nsmul_natAbs",
+  "lean": "addOrderOf_nsmul_natAbs",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf (HSMul__hSMul (Int__natAbs n) x)) (addOrderOf (HSMul__hSMul n x))",
+    "by": "cases n <;> simp",
+    "depth": 0
+   }
+  ]
+ },
+ {
   "name": "orderOf_zpow'",
   "lean": "orderOf_zpow'",
   "steps": [
@@ -3597,6 +7016,33 @@
     "unit": "conclusion",
     "prop": "Eq (orderOf (pow x n)) (div (orderOf x) (gcd (orderOf x) (Int__natAbs n)))",
     "by": "rw [← orderOf_pow' _ (Int.natAbs_ne_zero.mpr h), orderOf_pow_natAbs]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_zsmul'",
+  "lean": "addOrderOf_zsmul'",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf (HSMul__hSMul n x)) (div (addOrderOf x) (gcd (addOrderOf x) (Int__natAbs n)))",
+    "by": "rw [← orderOf_pow' _ (Int.natAbs_ne_zero.mpr h), orderOf_pow_natAbs]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "zsmul_eq_zero_iff_modEq",
+  "lean": "zsmul_eq_zero_iff_modEq",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eqt G (HSMul__hSMul n x) 0) (Int__ModEq (addOrderOf x) n 0)",
+    "by": "rw [Int.modEq_zero_iff_dvd, orderOf_dvd_iff_zpow_eq_one]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -3609,6 +7055,7 @@
     "unit": "conclusion",
     "prop": "iff (Eqt G (pow x n) 1) (Int__ModEq (orderOf x) n 0)",
     "by": "rw [Int.modEq_zero_iff_dvd, orderOf_dvd_iff_zpow_eq_one]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -3621,7 +7068,105 @@
     "unit": "conclusion",
     "prop": "iff (Eqt G (pow x m) (pow x n)) (Int__ModEq (orderOf x) m n)",
     "by": "rw [← mul_inv_eq_one, ← zpow_sub, zpow_eq_one_iff_modEq, Int.modEq_iff_dvd, Int.modEq_iff_dvd,",
+    "method": "rewriting",
     "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "zsmul_eq_zsmul_iff_modEq",
+  "lean": "zsmul_eq_zsmul_iff_modEq",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eqt G (HSMul__hSMul m x) (HSMul__hSMul n x)) (Int__ModEq (addOrderOf x) m n)",
+    "by": "rw [← mul_inv_eq_one, ← zpow_sub, zpow_eq_one_iff_modEq, Int.modEq_iff_dvd, Int.modEq_iff_dvd,",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "injective_zsmul_iff_not_isOfFinAddOrder",
+  "lean": "injective_zsmul_iff_not_isOfFinAddOrder",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "and (not (IsOfFinAddOrder x)) (Eq n m)",
+    "by": "refine ⟨?_, fun h n m hnm => ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "not (exists Nat (n1 => and (Lt 0 n1) (Eqt G (HSMul__hSMul n1 x) 0)))",
+    "by": "simp_rw [isOfFinOrder_iff_pow_eq_one]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Function__Injective (n => HSMul__hSMul n x))"
+     ],
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "hn",
+      "Proof (Lt 0 n)"
+     ],
+     [
+      "hx",
+      "Proof (Eqt G (HSMul__hSMul n x) 0)"
+     ]
+    ],
+    "by": "rintro h ⟨n, hn, hx⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exact Nat.cast_ne_zero.2 hn.ne' (h <| by simpa using hx)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul n x) (HSMul__hSMul 0 x)",
+    "by": "simpa using hx",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (not (IsOfFinAddOrder x))"
+     ],
+     [
+      "n",
+      "Elem Int"
+     ],
+     [
+      "m",
+      "Elem Int"
+     ],
+     [
+      "hnm",
+      "Proof (Eqt G (HSMul__hSMul n x) (HSMul__hSMul m x))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq n m",
+    "by": "rwa [zpow_eq_zpow_iff_modEq, orderOf_eq_zero_iff.2 h, Nat.cast_zero, Int.modEq_zero_iff] at hnm",
+    "method": "rewriting",
+    "depth": 1
    }
   ]
  },
@@ -3674,6 +7219,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x n) (pow x 0)",
     "by": "simpa using hx",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -3703,7 +7249,133 @@
     "unit": "conclusion",
     "prop": "Eq n m",
     "by": "rwa [zpow_eq_zpow_iff_modEq, orderOf_eq_zero_iff.2 h, Nat.cast_zero, Int.modEq_zero_iff] at hnm",
+    "method": "rewriting",
     "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "AddSubgroup__zmultiples_eq_zmultiples_iff",
+  "lean": "AddSubgroup.zmultiples_eq_zmultiples_iff",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Eqt (AddSubgroup G) (AddSubgroup__zmultiples x) (AddSubgroup__zmultiples y))"
+     ]
+    ],
+    "by": "refine ⟨fun h ↦ ?_, by rintro (rfl | rfl) <;> simp⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "or (Eqt G x y) (Eqt G (Neg__neg x) y)",
+    "by": "refine ⟨fun h ↦ ?_, by rintro (rfl | rfl) <;> simp⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (AddSubgroup G) (AddSubgroup__zmultiples x) (AddSubgroup__zmultiples y)",
+    "by": "rintro (rfl | rfl) <;> simp",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(Membership__mem (AddSubgroup__zmultiples y) x)",
+    "by": "have hx_mem : x ∈ zpowers y := by simp [← h]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (AddSubgroup__zmultiples y) x",
+    "by": "simp [← h]",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "verify",
+    "prop": "(Membership__mem (AddSubgroup__zmultiples x) y)",
+    "by": "have hy_mem : y ∈ zpowers x := by simp [h]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (AddSubgroup__zmultiples x) y",
+    "by": "simp [h]",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Int"
+     ],
+     [
+      "h",
+      "Proof (Eqt (AddSubgroup G) (AddSubgroup__zmultiples x) (AddSubgroup__zmultiples (HSMul__hSMul k x)))"
+     ],
+     [
+      "hx_mem",
+      "Proof (Membership__mem (AddSubgroup__zmultiples (HSMul__hSMul k x)) x)"
+     ],
+     [
+      "hy_mem",
+      "Proof (Membership__mem (AddSubgroup__zmultiples x) (HSMul__hSMul k x))"
+     ]
+    ],
+    "by": "obtain ⟨k, rfl⟩ := mem_zpowers_iff.mp hy_mem",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "or (Eqt G x (HSMul__hSMul k x)) (Eqt G (Neg__neg x) (HSMul__hSMul k x))",
+    "by": "obtain ⟨k, rfl⟩ := mem_zpowers_iff.mp hy_mem",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "l",
+      "Elem Int"
+     ],
+     [
+      "hl",
+      "Proof (Eqt G (HSMul__hSMul l (HSMul__hSMul k x)) x)"
+     ]
+    ],
+    "by": "obtain ⟨l, hl⟩ := mem_zpowers_iff.mp hx_mem",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eqt G (HSMul__hSMul (times k l) x) x)",
+    "by": "rw [← zpow_mul] at hl",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eqt G (HSMul__hSMul (times k l) x) (HSMul__hSMul 1 x))",
+    "by": "nth_rewrite 2 [← zpow_one x] at hl",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eq (times k l) 1)",
+    "by": "have h1 := (injective_zpow_iff_not_isOfFinOrder.mpr hx) hl",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "or (Eqt G x (HSMul__hSMul k x)) (Eqt G (Neg__neg x) (HSMul__hSMul k x))",
+    "by": "rcases (Int.mul_eq_one_iff_eq_one_or_neg_one).mp h1 with (h | h) <;> simp [h.1]",
+    "depth": 0
    }
   ]
  },
@@ -3744,6 +7416,7 @@
     "unit": "conclusion",
     "prop": "Membership__mem (Subgroup__zpowers y) x",
     "by": "simp [← h]",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -3756,6 +7429,7 @@
     "unit": "conclusion",
     "prop": "Membership__mem (Subgroup__zpowers x) y",
     "by": "simp [h]",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -3806,12 +7480,14 @@
     "unit": "conclusion",
     "prop": "(Eqt G (pow x (times k l)) x)",
     "by": "rw [← zpow_mul] at hl",
+    "method": "rewriting",
     "depth": 0
    },
    {
     "unit": "conclusion",
     "prop": "(Eqt G (pow x (times k l)) (pow x 1))",
     "by": "nth_rewrite 2 [← zpow_one x] at hl",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -3836,6 +7512,20 @@
     "unit": "conclusion",
     "prop": "iff (Membership__mem (Subgroup__zpowers (pow g k)) g) (Eq (Int__gcd k (orderOf g)) 1)",
     "by": "simp_rw [← Nat.dvd_one, Int.gcd_dvd_iff, Nat.cast_one, ← Int.sub_eq_iff_eq_add', ← dvd_def,",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "mem_zmultiples_zsmul_iff",
+  "lean": "mem_zmultiples_zsmul_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Membership__mem (AddSubgroup__zmultiples (HSMul__hSMul k g)) g) (Eq (Int__gcd k (addOrderOf g)) 1)",
+    "by": "simp_rw [← Nat.dvd_one, Int.gcd_dvd_iff, Nat.cast_one, ← Int.sub_eq_iff_eq_add', ← dvd_def,",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -3848,6 +7538,20 @@
     "unit": "conclusion",
     "prop": "iff (Membership__mem (Subgroup__zpowers (pow g k)) g) (Eq (gcd k (orderOf g)) 1)",
     "by": "rw [← zpow_natCast g k, mem_zpowers_zpow_iff, Int.gcd_natCast_natCast]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "mem_zmultiples_nsmul_iff",
+  "lean": "mem_zmultiples_nsmul_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Membership__mem (AddSubgroup__zmultiples (HSMul__hSMul k g)) g) (Eq (gcd k (addOrderOf g)) 1)",
+    "by": "rw [← zpow_natCast g k, mem_zpowers_zpow_iff, Int.gcd_natCast_natCast]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -3860,6 +7564,57 @@
     "unit": "conclusion",
     "prop": "Eq (orderOf (pow x n)) (div (orderOf x) (gcd (orderOf x) (Int__natAbs n)))",
     "by": "rw [← orderOf_pow, orderOf_pow_natAbs]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_zsmul",
+  "lean": "addOrderOf_zsmul",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (addOrderOf (HSMul__hSMul n x)) (div (addOrderOf x) (gcd (addOrderOf x) (Int__natAbs n)))",
+    "by": "rw [← orderOf_pow, orderOf_pow_natAbs]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "exists_zsmul_eq_zero",
+  "lean": "exists_zsmul_eq_zero",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "w",
+      "Elem Nat"
+     ],
+     [
+      "hw1",
+      "Proof (Gt w 0)"
+     ],
+     [
+      "hw2",
+      "Proof (Function__IsPeriodicPt (x => plus x x) w 0)"
+     ]
+    ],
+    "by": "obtain ⟨w, hw1, hw2⟩ := isOfFinOrder_of_finite x",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt G (HSMul__hSMul w x) 0",
+    "by": "refine ⟨w, Int.natCast_ne_zero.mpr (_root_.ne_of_gt hw1), ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul w x) 0",
+    "by": "exact (isPeriodicPt_mul_iff_pow_eq_one _).mp hw2",
     "depth": 0
    }
   ]
@@ -3902,6 +7657,25 @@
   ]
  },
  {
+  "name": "zmultiples_equiv_zmultiples_apply",
+  "lean": "zmultiples_equiv_zmultiples_apply",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eqt (Fin (addOrderOf y)) (finCongr__app h (Fin__mk (HMod__hMod n (addOrderOf x)) (Nat__mod_lt n (IsOfFinAddOrder__addOrderOf_pos G x (zmultiplesEquivZMultiples___proof_1 G x))))) (Fin__mk (HMod__hMod n (addOrderOf y)) (Nat__mod_lt n (IsOfFinAddOrder__addOrderOf_pos G y (zmultiplesEquivZMultiples___proof_1 G y))))",
+    "by": "rw [zpowersEquivZPowers, Equiv.trans_apply, Equiv.trans_apply, finEquivZPowers_symm_apply, ←",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Fin (addOrderOf y)) (finCongr__app h (Fin__mk (HMod__hMod n (addOrderOf x)) (Nat__mod_lt n (IsOfFinAddOrder__addOrderOf_pos G x (zmultiplesEquivZMultiples___proof_1 G x))))) (Fin__mk (HMod__hMod n (addOrderOf y)) (Nat__mod_lt n (IsOfFinAddOrder__addOrderOf_pos G y (zmultiplesEquivZMultiples___proof_1 G y))))",
+    "by": "simp [h]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
   "name": "zpowersEquivZPowers_apply",
   "lean": "zpowersEquivZPowers_apply",
   "steps": [
@@ -3915,6 +7689,7 @@
     "unit": "conclusion",
     "prop": "Eqt (Fin (orderOf y)) (finCongr__app h (Fin__mk (HMod__hMod n (orderOf x)) (Nat__mod_lt n (IsOfFinOrder__orderOf_pos G x (zpowersEquivZPowers___proof_1 G x))))) (Fin__mk (HMod__hMod n (orderOf y)) (Nat__mod_lt n (IsOfFinOrder__orderOf_pos G y (zpowersEquivZPowers___proof_1 G y))))",
     "by": "simp [h]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -3927,6 +7702,25 @@
     "unit": "conclusion",
     "prop": "forall G (x => if (Membership__mem s x) (IsOfFinOrder x))",
     "by": "simp [isOfFinOrder_of_finite]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "card_zmultiples_le",
+  "lean": "card_zmultiples_le",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Leq (addOrderOf a) k",
+    "by": "rw [Fintype.card_zpowers]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (addOrderOf a) k",
+    "by": "apply orderOf_le_of_pow_eq_one k_pos.bot_lt ha",
     "depth": 0
    }
   ]
@@ -3950,6 +7744,25 @@
   ]
  },
  {
+  "name": "addOrderOf_dvd_card",
+  "lean": "addOrderOf_dvd_card",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eq (Fintype__card G) (times (addOrderOf x) (Fintype__card (HasQuotient__Quotient G (AddSubgroup__zmultiples x))))",
+    "by": "use Fintype.card (G ⧸ zpowers x)",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Fintype__card G) (times (addOrderOf x) (Fintype__card (HasQuotient__Quotient G (AddSubgroup__zmultiples x))))",
+    "by": "rw [← card_zpowers, mul_comm, ← Fintype.card_prod,",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
   "name": "orderOf_dvd_card",
   "lean": "orderOf_dvd_card",
   "steps": [
@@ -3963,6 +7776,7 @@
     "unit": "conclusion",
     "prop": "Eq (Fintype__card G) (times (orderOf x) (Fintype__card (HasQuotient__Quotient G (Subgroup__zpowers x))))",
     "by": "rw [← card_zpowers, mul_comm, ← Fintype.card_prod,",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -3991,6 +7805,7 @@
     "unit": "conclusion",
     "prop": "divide (orderOf x) (Nat__card G)",
     "by": "simp only [Nat.card_eq_fintype_card, orderOf_dvd_card]",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -4008,6 +7823,54 @@
     "unit": "conclusion",
     "prop": "divide (orderOf x) (Nat__card G)",
     "by": "simp only [card_eq_zero_of_infinite, dvd_zero]",
+    "method": "simplification",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "addOrderOf_dvd_natCard",
+  "lean": "addOrderOf_dvd_natCard",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "obtain h | h := fintypeOrInfinite G",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Fintype G)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (addOrderOf x) (Nat__card G)",
+    "by": "simp only [Nat.card_eq_fintype_card, orderOf_dvd_card]",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Infinite G)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (addOrderOf x) (Nat__card G)",
+    "by": "simp only [card_eq_zero_of_infinite, dvd_zero]",
+    "method": "simplification",
     "depth": 1
    }
   ]
@@ -4020,6 +7883,20 @@
     "unit": "conclusion",
     "prop": "divide (orderOf x) (Nat__card (Subtype (x => Membership__mem s x)))",
     "by": "simpa using orderOf_dvd_natCard (⟨x, hx⟩ : s)",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddSubgroup__addOrderOf_dvd_natCard",
+  "lean": "AddSubgroup.addOrderOf_dvd_natCard",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "divide (addOrderOf x) (Nat__card (Subtype (x => Membership__mem s x)))",
+    "by": "simpa using orderOf_dvd_natCard (⟨x, hx⟩ : s)",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -4043,6 +7920,24 @@
   ]
  },
  {
+  "name": "AddSubmonoid__addOrderOf_le_card",
+  "lean": "AddSubmonoid.addOrderOf_le_card",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Leq (Nat__card (Subtype (x => Membership__mem (AddSubmonoid__multiples x) x))) (Nat__card (Subtype (x1 => Membership__mem s x1)))",
+    "by": "rw [← Nat.card_submonoidPowers]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__card (Subtype (x => Membership__mem (AddSubmonoid__multiples x) x))) (Nat__card (Subtype (x1 => Membership__mem s x1)))",
+    "by": "exact Nat.card_mono hs <| powers_le.2 hx",
+    "depth": 0
+   }
+  ]
+ },
+ {
   "name": "pow_card_eq_one",
   "lean": "pow_card_eq_one",
   "steps": [
@@ -4050,6 +7945,20 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x (Fintype__card G)) 1",
     "by": "rw [← Nat.card_eq_fintype_card, pow_card_eq_one']",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "card_nsmul_eq_zero",
+  "lean": "card_nsmul_eq_zero",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (Fintype__card G) x) 0",
+    "by": "rw [← Nat.card_eq_fintype_card, pow_card_eq_one']",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -4062,6 +7971,20 @@
     "unit": "conclusion",
     "prop": "Membership__mem H (pow g (Subgroup__index H))",
     "by": "rw [← eq_one_iff, QuotientGroup.mk_pow H, index, pow_card_eq_one']",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddSubgroup__nsmul_index_mem",
+  "lean": "AddSubgroup.nsmul_index_mem",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem H (HSMul__hSMul (AddSubgroup__index H) g)",
+    "by": "rw [← eq_one_iff, QuotientGroup.mk_pow H, index, pow_card_eq_one']",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -4074,6 +7997,33 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow a (HMod__hMod n (Fintype__card G))) (pow a n)",
     "by": "rw [eq_comm, ← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n orderOf_dvd_card, pow_mod_orderOf]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "mod_card_nsmul",
+  "lean": "mod_card_nsmul",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (HMod__hMod n (Fintype__card G)) a) (HSMul__hSMul n a)",
+    "by": "rw [eq_comm, ← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n orderOf_dvd_card, pow_mod_orderOf]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "mod_card_zsmul",
+  "lean": "mod_card_zsmul",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (HMod__hMod n (Fintype__card G)) a) (HSMul__hSMul n a)",
+    "by": "rw [eq_comm, ← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -4086,6 +8036,20 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow a (HMod__hMod n (Fintype__card G))) (pow a n)",
     "by": "rw [eq_comm, ← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "mod_natCard_nsmul",
+  "lean": "mod_natCard_nsmul",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (HMod__hMod n (Nat__card G)) a) (HSMul__hSMul n a)",
+    "by": "rw [eq_comm, ← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n <| orderOf_dvd_natCard _, pow_mod_orderOf]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -4098,6 +8062,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow a (HMod__hMod n (Nat__card G))) (pow a n)",
     "by": "rw [eq_comm, ← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n <| orderOf_dvd_natCard _, pow_mod_orderOf]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -4110,6 +8075,20 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow a (HMod__hMod n (Nat__card G))) (pow a n)",
     "by": "rw [eq_comm, ← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n <|",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "mod_natCard_zsmul",
+  "lean": "mod_natCard_zsmul",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul (HMod__hMod n (Nat__card G)) a) (HSMul__hSMul n a)",
+    "by": "rw [eq_comm, ← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n <|",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -4128,6 +8107,7 @@
     "unit": "conclusion",
     "prop": "(Leq (HSMul__hSMul g a) a)",
     "by": "rw [smul_smul, ← _root_.pow_succ',",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -4152,6 +8132,7 @@
     "unit": "conclusion",
     "prop": "(Leq a (HSMul__hSMul g a))",
     "by": "rw [smul_smul, ← _root_.pow_succ',",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -4232,6 +8213,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow (abs x) n) 1",
     "by": "simpa only [abs_one, abs_pow] using congr(abs $hx)",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -4299,6 +8281,7 @@
     "unit": "conclusion",
     "prop": "Leq (orderOf x) 2",
     "by": "simp [orderOf_abs_ne_one h]",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -4332,6 +8315,7 @@
     "unit": "conclusion",
     "prop": "Leq (orderOf 1) 2",
     "by": "simp",
+    "method": "simplification",
     "depth": 1
    },
    {
@@ -4355,6 +8339,7 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow (Neg__neg 1) 2) 1",
     "by": "simp",
+    "method": "simplification",
     "depth": 1
    }
   ]
@@ -4367,6 +8352,20 @@
     "unit": "conclusion",
     "prop": "if (IsOfFinOrder a) (if (IsOfFinOrder b) (IsOfFinOrder (Prod__mk a b)))",
     "by": "simpa only [← orderOf_pos_iff, Prod.orderOf] using Nat.lcm_pos",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsOfFinAddOrder__prod_mk",
+  "lean": "IsOfFinAddOrder.prod_mk",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "IsOfFinAddOrder (Prod__mk a b)",
+    "by": "simpa only [← orderOf_pos_iff, Prod.orderOf] using Nat.lcm_pos",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -4391,6 +8390,38 @@
     "unit": "conclusion",
     "prop": "if (forall I (i3 => Neq (orderOf (x i3)) 0)) (Neq (Finset__lcm Finset__univ (i2 => orderOf (x i2))) 0)",
     "by": "simp [Finset.lcm_eq_zero_iff]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsOfFinAddOrder__pi",
+  "lean": "IsOfFinAddOrder.pi",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Fintype I)",
+    "by": "have := Fintype.ofFinite ι",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (forall I (i2 => IsOfFinAddOrder (x i2))) (IsOfFinAddOrder x)",
+    "by": "have := Fintype.ofFinite ι",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (forall I (i3 => Neq (addOrderOf (x i3)) 0)) (Neq (Finset__lcm Finset__univ (i2 => addOrderOf (x i2))) 0)",
+    "by": "simp only [← orderOf_ne_zero_iff, Pi.orderOf]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (forall I (i3 => Neq (addOrderOf (x i3)) 0)) (Neq (Finset__lcm Finset__univ (i2 => addOrderOf (x i2))) 0)",
+    "by": "simp [Finset.lcm_eq_zero_iff]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -4403,6 +8434,7 @@
     "unit": "conclusion",
     "prop": "Eqt R (Fintype__card R) 0",
     "by": "rw [← nsmul_one, card_nsmul_eq_zero]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -4415,6 +8447,7 @@
     "unit": "conclusion",
     "prop": "iff (Eqt R n 0) (divide (addOrderOf 1) n)",
     "by": "rw [← Nat.smul_one_eq_cast, addOrderOf_dvd_iff_nsmul_eq_zero]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -4433,6 +8466,7 @@
     "unit": "conclusion",
     "prop": "Eqt R p 0",
     "by": "rw [← hn, Nat.cast_card_eq_zero]",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -4457,6 +8491,7 @@
     "unit": "conclusion",
     "prop": "(Eqt R (HMod__hMod n p) 0)",
     "by": "rw [← Nat.mod_add_div n p, Nat.cast_add, Nat.cast_mul, H, zero_mul, add_zero] at h",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -4499,6 +8534,7 @@
     "unit": "conclusion",
     "prop": "Eqt R (times p n) 0",
     "by": "rw [Nat.cast_mul, H, zero_mul]",
+    "method": "rewriting",
     "depth": 1
    }
   ]
@@ -4532,6 +8568,7 @@
     "unit": "conclusion",
     "prop": "divide c (pow p n)",
     "by": "rw [← CharP.cast_eq_zero_iff R c, ← hn, Nat.cast_card_eq_zero]",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -4561,6 +8598,7 @@
     "unit": "conclusion",
     "prop": "exists Nat (i1 => and (Leq i1 n) (Eq c (pow p i1)))",
     "by": "rwa [Nat.dvd_prime_pow hp.1] at hcpn",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -4579,6 +8617,7 @@
     "unit": "conclusion",
     "prop": "Eqt R (pow p i) 0",
     "by": "rw [← Nat.cast_pow, CharP.cast_eq_zero]",
+    "method": "rewriting",
     "depth": 0
    },
    {
@@ -4586,6 +8625,35 @@
     "prop": "CharP R (pow p i)",
     "by": "assumption",
     "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddSemiconjBy__addOrderOf_eq",
+  "lean": "AddSemiconjBy.addOrderOf_eq",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ]
+    ],
+    "by": "rw [orderOf_eq_orderOf_iff]",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (Eqt G (HSMul__hSMul n x) 0) (Eqt G (HSMul__hSMul n y) 0)",
+    "by": "rw [orderOf_eq_orderOf_iff]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eqt G (HSMul__hSMul n x) 0) (Eqt G (HSMul__hSMul n y) 0)",
+    "by": "exact (h.pow_right n).eq_one_iff",
+    "depth": 1
    }
   ]
  },

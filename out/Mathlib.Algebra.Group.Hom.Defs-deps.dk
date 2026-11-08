@@ -1,7 +1,7 @@
 (; constants used by Mathlib.Algebra.Group.Hom.Defs, declared with their translated types ;)
 
 (; a constant applied as a function: DFunLike.coe ;)
-AddHom__comp__app : (a1 : Elem (AddHom N P)) -> (a2 : Elem (AddHom M N)) -> (a3 : Elem M) -> Elem P.
+AddHom__comp__app : (a1 : Elem (AddHom N N)) -> (a2 : Elem (AddHom M N)) -> (a3 : Elem M) -> Elem N.
 
 (; a constant applied as a function: DFunLike.coe ;)
 AddHom__id__app : (a1 : Set) -> (a2 : Elem M) -> Elem M.
@@ -10,13 +10,19 @@ AddHom__id__app : (a1 : Set) -> (a2 : Elem M) -> Elem M.
 AddHom__inverse__app : (a1 : Elem (AddHom M N)) -> (a2 : (Elem N -> M)) -> (a3 : Proof (Function__LeftInverse g f)) -> (a4 : Proof (Function__RightInverse g f)) -> (a5 : Elem N) -> Elem M.
 
 (; a constant applied as a function: DFunLike.coe ;)
-AddMonoidHom__comp__app : (a1 : Elem (AddMonoidHom N P)) -> (a2 : Elem (AddMonoidHom M N)) -> (a3 : Elem M) -> Elem P.
+AddHom__mk__app : (a1 : (Elem M -> N)) -> (a2 : Proof (forall M (x3 => forall M (y => Eqt N (f (plus x3 y)) (plus (f x3) (f y)))))) -> (a3 : Elem M) -> Elem N.
+
+(; a constant applied as a function: DFunLike.coe ;)
+AddMonoidHom__comp__app : (a1 : Elem (AddMonoidHom N N)) -> (a2 : Elem (AddMonoidHom M N)) -> (a3 : Elem M) -> Elem N.
 
 (; a constant applied as a function: DFunLike.coe ;)
 AddMonoidHom__id__app : (a1 : Set) -> (a2 : Elem M) -> Elem M.
 
 (; a constant applied as a function: DFunLike.coe ;)
 AddMonoidHom__inverse__app : (a1 : Elem (AddMonoidHom A B)) -> (a2 : (Elem B -> A)) -> (a3 : Proof (Function__LeftInverse g f)) -> (a4 : Proof (Function__RightInverse g f)) -> (a5 : Elem B) -> Elem A.
+
+(; a constant applied as a function: DFunLike.coe ;)
+AddMonoidHom__mk__app : (a1 : Elem (ZeroHom M N)) -> (a2 : Proof (forall M (x3 => forall M (y => Eqt N (ZeroHom__toFun (ZeroHomClass__toZeroHom f) (plus x3 y)) (plus (ZeroHom__toFun (ZeroHomClass__toZeroHom f) x3) (ZeroHom__toFun (ZeroHomClass__toZeroHom f) y)))))) -> (a3 : Elem M) -> Elem N.
 
 (; a constant applied as a function: DFunLike.coe ;)
 MonoidHom__comp__app : (a1 : Elem (MonoidHom N N)) -> (a2 : Elem (MonoidHom M N)) -> (a3 : Elem M) -> Elem N.
@@ -58,7 +64,7 @@ OneHom__inverse__app : (a1 : Elem (OneHom M N)) -> (a2 : (Elem N -> M)) -> (a3 :
 OneHom__mk__app : (a1 : (Elem M -> N)) -> (a2 : Proof (Eqt N (f 1) 1)) -> (a3 : Elem M) -> Elem N.
 
 (; a constant applied as a function: DFunLike.coe ;)
-ZeroHom__comp__app : (a1 : Elem (ZeroHom N P)) -> (a2 : Elem (ZeroHom M N)) -> (a3 : Elem M) -> Elem P.
+ZeroHom__comp__app : (a1 : Elem (ZeroHom N N)) -> (a2 : Elem (ZeroHom M N)) -> (a3 : Elem M) -> Elem N.
 
 (; a constant applied as a function: DFunLike.coe ;)
 ZeroHom__id__app : (a1 : Set) -> (a2 : Elem M) -> Elem M.
@@ -66,17 +72,66 @@ ZeroHom__id__app : (a1 : Set) -> (a2 : Elem M) -> Elem M.
 (; a constant applied as a function: DFunLike.coe ;)
 ZeroHom__inverse__app : (a1 : Elem (ZeroHom M N)) -> (a2 : (Elem N -> M)) -> (a3 : Proof (Function__LeftInverse g f)) -> (a4 : Elem N) -> Elem M.
 
+(; a constant applied as a function: DFunLike.coe ;)
+ZeroHom__mk__app : (a1 : (Elem M -> N)) -> (a2 : Proof (Eqt N (f 0) 0)) -> (a3 : Elem M) -> Elem N.
+
 (; doc: The homogeneous version of `HAdd`: `a + b : α` where `a b : α`. ;)
 (; //LEAN:Add ;)
 Add : (X : Set) -> Prop.
+
+(; doc: Two elements additively commute if `a + b = b + a` ;)
+(; //LEAN:AddCommute ;)
+AddCommute : (a : Elem M) -> (b : Elem M) -> Prop.
 
 (; doc: An `AddGroup` is an `AddMonoid` with a unary `-` satisfying `-a + a = 0`.  There is also a binary operation `-` such that `a - b = a + -b`, with a default so that `a - b = a + -b` holds by definition.  Use `AddGroup.ofLeftAxioms` or `AddGroup.ofRightAxioms` to define an additive group structure on a type with the minimum proof obligations.  [Wikidata Q83478](https://www.wikidata.org/wiki/Q83478) ;)
 (; //LEAN:AddGroup ;)
 AddGroup : (A : Set) -> Prop.
 
+(; //LEAN:AddHom.comp._proof_1 ;)
+AddHom__comp___proof_1 : (M : Set) -> (N : Set) -> (P : Set) -> (hnp : Elem (AddHom N P)) -> (hmn : Elem (AddHom M N)) -> (x3 : Elem M) -> (y : Elem M) -> Proof (Eqt P (hnp (hmn (plus x3 y))) (plus (hnp (hmn x3)) (hnp (hmn y)))).
+
+(; //LEAN:AddHom.copy._proof_1 ;)
+AddHom__copy___proof_1 : (M : Set) -> (N : Set) -> (f : Elem (AddHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> (x2 : Elem M) -> (y : Elem M) -> Proof (Eqt N (f' (plus x2 y)) (plus (f' x2) (f' y))).
+
+(; //LEAN:AddHom.id._proof_1 ;)
+AddHom__id___proof_1 : (M : Set) -> (x1 : Elem M) -> (x2 : Elem M) -> Proof (Eqt M (plus x1 x2) (plus x1 x2)).
+
+(; //LEAN:AddHom.inverse._proof_3 ;)
+AddHom__inverse___proof_3 : (M : Set) -> (N : Set) -> (f : Elem (AddHom M N)) -> (g : (Elem N -> M)) -> (h : Proof (Function__LeftInverse g f)) -> (h1 : Proof (Function__RightInverse g f)) -> (x2 : Elem N) -> (y : Elem N) -> Proof (Eqt M (g (plus x2 y)) (plus (g x2) (g y))).
+
 (; doc: An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. ;)
 (; //LEAN:AddMonoid ;)
 AddMonoid : (M : Set) -> Prop.
+
+(; //LEAN:AddMonoidHom.comp._proof_1 ;)
+AddMonoidHom__comp___proof_1 : (M : Set) -> (N : Set) -> (P : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (_ : Proof (AddZero P)) -> (hnp : Elem (AddMonoidHom N P)) -> (hmn : Elem (AddMonoidHom M N)) -> Proof (Eqt P (hnp (hmn 0)) 0).
+
+(; //LEAN:AddMonoidHom.comp._proof_2 ;)
+AddMonoidHom__comp___proof_2 : (M : Set) -> (N : Set) -> (P : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (_ : Proof (AddZero P)) -> (hnp : Elem (AddMonoidHom N P)) -> (hmn : Elem (AddMonoidHom M N)) -> (x3 : Elem M) -> (y : Elem M) -> Proof (Eqt P (hnp (hmn (plus x3 y))) (plus (hnp (hmn x3)) (hnp (hmn y)))).
+
+(; //LEAN:AddMonoidHom.copy._proof_1 ;)
+AddMonoidHom__copy___proof_1 : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> (x2 : Elem M) -> (y : Elem M) -> Proof (Eqt N (AddHom__toFun (AddHom__copy (AddMonoidHom__toAddHom f) f' h) (plus x2 y)) (plus (AddHom__toFun (AddHom__copy (AddMonoidHom__toAddHom f) f' h) x2) (AddHom__toFun (AddHom__copy (AddMonoidHom__toAddHom f) f' h) y))).
+
+(; //LEAN:AddMonoidHom.id._proof_1 ;)
+AddMonoidHom__id___proof_1 : (M : Set) -> (_ : Proof (AddZero M)) -> Proof (Eqt M 0 0).
+
+(; //LEAN:AddMonoidHom.id._proof_2 ;)
+AddMonoidHom__id___proof_2 : (M : Set) -> (_ : Proof (AddZero M)) -> (x1 : Elem M) -> (x2 : Elem M) -> Proof (Eqt M (plus x1 x2) (plus x1 x2)).
+
+(; //LEAN:AddMonoidHom.inverse._proof_3 ;)
+AddMonoidHom__inverse___proof_3 : (A : Set) -> (B : Set) -> (_ : Proof (AddMonoid A)) -> (_ : Proof (AddMonoid B)) -> (f : Elem (AddMonoidHom A B)) -> (g : (Elem B -> A)) -> (h : Proof (Function__LeftInverse g f)) -> Proof (Eqt A (ZeroHom__toFun (ZeroHom__inverse (ZeroHomClass__toZeroHom f) g h) 0) 0).
+
+(; //LEAN:AddMonoidHom.inverse._proof_4 ;)
+AddMonoidHom__inverse___proof_4 : (A : Set) -> (B : Set) -> (_ : Proof (AddMonoid A)) -> (_ : Proof (AddMonoid B)) -> (f : Elem (AddMonoidHom A B)) -> (g : (Elem B -> A)) -> (h : Proof (Function__LeftInverse g f)) -> (h1 : Proof (Function__RightInverse g f)) -> (x2 : Elem B) -> (y : Elem B) -> Proof (Eqt A (AddHom__toFun (AddHom__inverse (AddHomClass__toAddHom f) g h h1) (plus x2 y)) (plus (AddHom__toFun (AddHom__inverse (AddHomClass__toAddHom f) g h h1) x2) (AddHom__toFun (AddHom__inverse (AddHomClass__toAddHom f) g h h1) y))).
+
+(; //LEAN:AddMonoidHom.mk'._proof_1 ;)
+AddMonoidHom__mk'___proof_1 : (M : Set) -> (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (AddZeroClass M)) -> (f : (Elem M -> G)) -> (map_add : Proof (forall M (a => forall M (b => Eqt G (f (plus a b)) (plus (f a) (f b)))))) -> Proof (Eqt G (f 0) 0).
+
+(; //LEAN:AddMonoidHom.ofClass._proof_1 ;)
+AddMonoidHom__ofClass___proof_1 : (M : Set) -> (N : Set) -> (F : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem F) -> Proof (Eqt N (ZeroHom__toFun (ZeroHomClass__toZeroHom f) 0) 0).
+
+(; //LEAN:AddMonoidHom.ofClass._proof_2 ;)
+AddMonoidHom__ofClass___proof_2 : (M : Set) -> (N : Set) -> (F : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem F) -> (x3 : Elem M) -> (y : Elem M) -> Proof (Eqt N (AddHom__toFun (AddHomClass__toAddHom f) (plus x3 y)) (plus (AddHom__toFun (AddHomClass__toAddHom f) x3) (AddHom__toFun (AddHomClass__toAddHom f) y))).
 
 (; doc: Bundling an `Add` and `Zero` structure together without any axioms about their compatibility. See `AddZeroClass` for the additional assumption that 0 is an identity. ;)
 (; //LEAN:AddZero ;)
@@ -179,6 +234,12 @@ HSMul__hSMul : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
 (; //LEAN:HasUniqueDiv ;)
 HasUniqueDiv : (M : Set) -> Prop.
 
+(; //LEAN:HasUniqueDiv.mk ;)
+HasUniqueDiv__mk : (M : Set) -> (_ : Proof (AddMonoid M)) -> (nsmul_right_injective : Proof (forall Nat (n => if (Neq n 0) (Function__Injective (a => HSMul__hSMul n a))))) -> Proof (HasUniqueDiv M).
+
+(; //LEAN:HasUniqueDiv.nsmul_right_injective ;)
+HasUniqueDiv__nsmul_right_injective : (M : Set) -> (x : Proof (AddMonoid M)) -> (_ : Proof (HasUniqueDiv M)) -> (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (Function__Injective (a => HSMul__hSMul n a)).
+
 (; doc: A monoid has unique roots if exponentiation by every non-zero element `n : ℕ` is injective. This is the uniqueness counterpart to `RootableBy` which asserts existence.  `HasUniqueRoots` is stronger than `IsMulTorsionFree` for general monoids, but equivalent to it for commutative ones. Prefer using `HasUniqueRoots` for commutative monoids, so that typeclass-search can derive both `HasUniqueRoots` and `IsMulTorsionFree` without us needing to introduce an expensive `[CommMonoid M] [IsMulTorsionFree M] : HasUniqueRoots M` instance loop.  TODO: Generalize this definition to semigroups once we have the `PNat` action. ;)
 (; //LEAN:HasUniqueRoots ;)
 HasUniqueRoots : (M : Set) -> Prop.
@@ -209,9 +270,18 @@ IsAddCommutative : (M : Set) -> Prop.
 (; //LEAN:IsAddTorsionFree ;)
 IsAddTorsionFree : (M : Set) -> Prop.
 
+(; //LEAN:IsAddTorsionFree.eq_of_nsmul_eq_nsmul_of_addCommute ;)
+IsAddTorsionFree__eq_of_nsmul_eq_nsmul_of_addCommute : (M : Set) -> (x : Proof (AddMonoid M)) -> (_ : Proof (IsAddTorsionFree M)) -> (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> (a : Elem M) -> (b : Elem M) -> (hab : Proof (AddCommute a b)) -> (hn1 : Proof (Eqt M (HSMul__hSMul n a) (HSMul__hSMul n b))) -> Proof (Eqt M a b).
+
+(; //LEAN:IsAddTorsionFree.mk ;)
+IsAddTorsionFree__mk : (M : Set) -> (_ : Proof (AddMonoid M)) -> (eq_of_nsmul_eq_nsmul_of_addCommute : Proof (forall Nat (n => if (Neq n 0) (forall M (a => forall M (b => if (AddCommute a b) (if (Eqt M (HSMul__hSMul n a) (HSMul__hSMul n b)) (Eqt M a b)))))))) -> Proof (IsAddTorsionFree M).
+
 (; doc: An additive monoid is Dedekind-finite if every left inverse is also a right inverse. Also called von Neumann-finite or directly finite. ;)
 (; //LEAN:IsDedekindFiniteAddMonoid ;)
 IsDedekindFiniteAddMonoid : (M : Set) -> Prop.
+
+(; //LEAN:IsDedekindFiniteAddMonoid.mk ;)
+IsDedekindFiniteAddMonoid__mk : (M : Set) -> (_ : Proof (AddZero M)) -> (add_eq_zero_symm : Proof (forall M (a => forall M (b => if (Eqt M (plus a b) 0) (Eqt M (plus b a) 0))))) -> Proof (IsDedekindFiniteAddMonoid M).
 
 (; doc: A monoid is Dedekind-finite if every left inverse is also a right inverse. It is more common to talk about Dedekind-finite rings, but https://arxiv.org/abs/2102.01598 does define Dedekind-finite monoids in §2.2. ;)
 (; //LEAN:IsDedekindFiniteMonoid ;)
@@ -339,6 +409,25 @@ True : Prop.
 (; //LEAN:Zero ;)
 Zero : (X : Set) -> Prop.
 
+(; //LEAN:ZeroHom.comp._proof_1 ;)
+ZeroHom__comp___proof_1 : (M : Set) -> (N : Set) -> (P : Set) -> (hnp : Elem (ZeroHom N P)) -> (hmn : Elem (ZeroHom M N)) -> Proof (Eqt P (hnp (hmn 0)) 0).
+
+(; //LEAN:ZeroHom.copy._proof_1 ;)
+ZeroHom__copy___proof_1 : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Proof (Eqt N (f' 0) 0).
+
+(; //LEAN:ZeroHom.id._proof_1 ;)
+ZeroHom__id___proof_1 : (M : Set) -> Proof (Eqt M 0 0).
+
+(; //LEAN:ZeroHom.inverse._proof_1 ;)
+ZeroHom__inverse___proof_1 : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> (g : (Elem N -> M)) -> (h : Proof (Function__LeftInverse g f)) -> Proof (Eqt M (g 0) 0).
+
+(; doc: Two elements `a` and `b` additively commute if `a + b = b + a`. ;)
+(; //LEAN:addCommute_iff_eq ;)
+addCommute_iff_eq : (M : Set) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (AddCommute a b) (Eqt M (plus a b) (plus b a))).
+
+(; //LEAN:add_eq_zero_comm ;)
+add_eq_zero_comm : (M : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (IsDedekindFiniteAddMonoid M)) -> (a : Elem M) -> (b : Elem M) -> Proof (iff (Eqt M (plus a b) 0) (Eqt M (plus b a) 0)).
+
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
 congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
@@ -347,8 +436,15 @@ congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) ->
 (; //LEAN:congrArg ;)
 congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
 
+(; doc: **Alias** of `congrArg`. ;)
+(; //LEAN:congr_arg ;)
+congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+
 (; //LEAN:eq_inv_of_mul_eq_one_left ;)
 eq_inv_of_mul_eq_one_left : (G : Set) -> (_ : Proof (DivisionMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G (times a b) 1)) -> Proof (Eqt G a (Inv__inv b)).
+
+(; //LEAN:eq_neg_of_add_eq_zero_left ;)
+eq_neg_of_add_eq_zero_left : (G : Set) -> (_ : Proof (SubtractionMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G (plus a b) 0)) -> Proof (Eqt G a (Neg__neg b)).
 
 (; //LEAN:eq_self ;)
 eq_self : (X : Set) -> (a : Elem X) -> Proof (Eqt Prop (Eqt X a a) True).
@@ -363,12 +459,19 @@ inv_mul_cancel : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> Proof (Eq
 (; //LEAN:ne_of_apply_ne ;)
 ne_of_apply_ne : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x : Elem X) -> (y : Elem X) -> (h : Proof (Neq (f x) (f y))) -> Proof (Neq x y).
 
+(; //LEAN:neg_add_cancel ;)
+neg_add_cancel : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (Eqt G (plus (Neg__neg a) a) 0).
+
 (; //LEAN:of_eq_true ;)
 of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
 
 (; doc: Gadget for marking output parameters in type classes.  For example, the `Membership` class is defined as: ``` class Membership (α : outParam (Type u)) (γ : Type v) ``` This means that whenever a typeclass goal of the form `Membership ?α ?γ` comes up, Lean will wait to solve it until `?γ` is known, but then it will run typeclass inference, and take the first solution it finds, for any value of `?α`, which thereby determines what `?α` should be.  This expresses that in a term like `a ∈ s`, `s` might be a `Set α` or `List α` or some other type with a membership operation, and in each case the "member" type `α` is determined by looking at the container type. ;)
 (; //LEAN:outParam ;)
 outParam : (X : Set) -> Set.
+
+(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
+(; //LEAN:propext ;)
+propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a b).
 
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)

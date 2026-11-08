@@ -1,0 +1,958 @@
+[
+ {
+  "name": "Nat__prime_mul_iff",
+  "lean": "Nat.prime_mul_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (prime (times a b)) (or (and (prime a) (Eq b 1)) (and (prime b) (Eq a 1)))",
+    "by": "simp only [irreducible_mul_iff, ← irreducible_iff_nat_prime, Nat.isUnit_iff]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__not_prime_mul",
+  "lean": "Nat.not_prime_mul",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "not (prime (times a b))",
+    "by": "simp [prime_mul_iff, *]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__dvd_iff_eq",
+  "lean": "Nat.Prime.dvd_iff_eq",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "if (divide a p) (Eq p a)",
+    "by": "refine ⟨?_, by rintro rfl; rfl⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "_h",
+      "Proof (Eq p a)"
+     ]
+    ],
+    "goal": "divide a p",
+    "by": "rintro rfl",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide p p",
+    "by": "rfl",
+    "method": "definition",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "j",
+      "Elem Nat"
+     ]
+    ],
+    "by": "rintro ⟨j, rfl⟩",
+    "depth": 1
+   },
+   {
+    "unit": "cases",
+    "by": "rcases prime_mul_iff.mp hp with (⟨_, rfl⟩ | ⟨_, rfl⟩)",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hp",
+      "Proof (prime (times a 1))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times a 1) a",
+    "by": "exact mul_one _",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "a1",
+      "Proof (Neq 1 1)"
+     ],
+     [
+      "hp",
+      "Proof (prime (times 1 j))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times 1 j) 1",
+    "by": "exact (a1 rfl).elim",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__five_le_of_ne_two_of_ne_three",
+  "lean": "Nat.Prime.five_le_of_ne_two_of_ne_three",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Lt p 5)"
+     ]
+    ],
+    "by": "by_contra! h",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "false",
+    "by": "by_contra! h",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (prime p) (if (Neq p 2) (if (Neq p 3) false))",
+    "by": "revert h_two h_three hp",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (prime p) (if (Neq p 2) (if (Neq p 3) false))",
+    "by": "decide +revert",
+    "method": "computation",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__not_prime_iff_exists_mul_eq",
+  "lean": "Nat.not_prime_iff_exists_mul_eq",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (not (prime n)) (exists Nat (a => exists Nat (b => and (Lt a n) (and (Lt b n) (Eq (times a b) n)))))",
+    "by": "rw [prime_iff_not_exists_mul_eq, and_iff_right h, Classical.not_not]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__dvd_of_forall_prime_mul_dvd",
+  "lean": "Nat.dvd_of_forall_prime_mul_dvd",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "obtain rfl | ha := eq_or_ne a 1",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hdvd",
+      "Proof (forall Nat (p => if (prime p) (if (divide p 1) (divide (times p 1) b))))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide 1 b",
+    "by": "apply one_dvd",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ha",
+      "Proof (Neq a 1)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "p",
+      "Elem Nat"
+     ],
+     [
+      "hp",
+      "Proof (and (prime p) (divide p a))"
+     ]
+    ],
+    "by": "obtain ⟨p, hp⟩ := exists_prime_and_dvd ha",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide a b",
+    "by": "exact _root_.trans (dvd_mul_left a p) (hdvd p hp.1 hp.2)",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__even_iff",
+  "lean": "Nat.Prime.even_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (even p) (Eq p 2)",
+    "by": "rw [even_iff_two_dvd, prime_dvd_prime_iff_eq prime_two hp, eq_comm]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__odd_iff",
+  "lean": "Nat.Prime.odd_iff",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (Eq p 2) (Lt p 3)",
+    "by": "rw [← not_iff_not, not_odd_iff_even, hp.even_iff, not_le]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eq p 2) (Lt p 3)",
+    "by": "grind [hp.two_le]",
+    "method": "routine",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__even_sub_one",
+  "lean": "Nat.Prime.even_sub_one",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (minus p 1) (plus n n)",
+    "by": "rw [hn, Nat.add_sub_cancel, two_mul]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__forall_prime_iff_two_and_odd",
+  "lean": "Nat.forall_prime_iff_two_and_odd",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (and (P 2) (forall Nat (p => if (prime p) (if (odd p) (P p)))))"
+     ],
+     [
+      "p",
+      "Elem Nat"
+     ],
+     [
+      "hp",
+      "Proof (prime p)"
+     ]
+    ],
+    "by": "refine ⟨fun h ↦ ⟨h 2 prime_two, fun p hp _ ↦ h p hp⟩, fun h p hp ↦ ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "P p",
+    "by": "refine ⟨fun h ↦ ⟨h 2 prime_two, fun p hp _ ↦ h p hp⟩, fun h p hp ↦ ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "cases",
+    "by": "obtain rfl | hne := eq_or_ne p 2",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hp",
+      "Proof (prime 2)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "P 2",
+    "by": "exact h.1",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hne",
+      "Proof (Neq p 2)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "P p",
+    "by": "exact h.2 p hp (hp.odd_of_ne_two hne)",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__mod_two_eq_one_iff_ne_two",
+  "lean": "Nat.Prime.mod_two_eq_one_iff_ne_two",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Eq (HMod__hMod p 2) 1)"
+     ],
+     [
+      "hf",
+      "Proof (Eq p 2)"
+     ]
+    ],
+    "by": "refine ⟨fun h hf => ?_, hp.eq_two_or_odd.resolve_left⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "false",
+    "by": "refine ⟨fun h hf => ?_, hp.eq_two_or_odd.resolve_left⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eq (HMod__hMod 2 2) 1)",
+    "by": "rw [hf] at h",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "simp at h",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__not_coprime_iff_dvd",
+  "lean": "Nat.Prime.not_coprime_iff_dvd",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "and (if (not (Nat__Coprime m n)) (exists Nat (p => and (prime p) (and (divide p m) (divide p n))))) (if (exists Nat (p => and (prime p) (and (divide p m) (divide p n)))) (not (Nat__Coprime m n)))",
+    "by": "apply Iff.intro",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (not (Nat__Coprime m n))"
+     ]
+    ],
+    "by": "intro h",
+    "goal": "exists Nat (p => and (prime p) (and (divide p m) (divide p n)))",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Nat (p => and (prime p) (and (divide p m) (divide p n)))",
+    "by": "exact",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (exists Nat (p => and (prime p) (and (divide p m) (divide p n))))"
+     ]
+    ],
+    "by": "intro h",
+    "goal": "not (Nat__Coprime m n)",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "p",
+      "Elem Nat"
+     ],
+     [
+      "hp",
+      "Proof (and (prime p) (and (divide p m) (divide p n)))"
+     ]
+    ],
+    "by": "obtain ⟨p, hp⟩ := h",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "not (Nat__Coprime m n)",
+    "by": "apply Nat.not_coprime_of_dvd_of_dvd (Prime.one_lt hp.1) hp.2.1 hp.2.2",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__coprime_of_lt_minFac",
+  "lean": "Nat.coprime_of_lt_minFac",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "not (exists Nat (p => and (prime p) (and (divide p n) (divide p m))))",
+    "by": "rw [← not_not (a := n.Coprime m), Prime.not_coprime_iff_dvd]",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "forall Nat (p => if (prime p) (if (divide p n) (not (divide p m))))",
+    "by": "push Not",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "forall Nat (p => if (prime p) (if (divide p n) (not (divide p m))))",
+    "by": "exact fun p hp hn hm ↦",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "p",
+      "Elem Nat"
+     ],
+     [
+      "hp",
+      "Proof (prime p)"
+     ],
+     [
+      "hn",
+      "Proof (divide p n)"
+     ],
+     [
+      "hm",
+      "Proof (divide p m)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt 0 m",
+    "by": "lia",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__coprime_two_left",
+  "lean": "Nat.coprime_two_left",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__Coprime 2 n) (odd n)",
+    "by": "rw [prime_two.coprime_iff_not_dvd, ← not_even_iff_odd, even_iff_two_dvd]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__pow_eq_iff",
+  "lean": "Nat.Prime.pow_eq_iff",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Eq (pow a k) p)"
+     ]
+    ],
+    "by": "refine ⟨fun h => ?_, fun h => by rw [h.1, h.2, pow_one]⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Eq a p) (Eq k 1)",
+    "by": "refine ⟨fun h => ?_, fun h => by rw [h.1, h.2, pow_one]⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (and (Eq a p) (Eq k 1))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (pow a k) p",
+    "by": "rw [h.1, h.2, pow_one]",
+    "method": "rewriting",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(prime (pow a k))",
+    "by": "rw [← h] at hp",
+    "method": "rewriting",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "and (Eq a p) (Eq k 1)",
+    "by": "rw [← h, hp.eq_one_of_pow, eq_self_iff_true, _root_.and_true, pow_one]",
+    "method": "rewriting",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__mul_eq_prime_sq_iff",
+  "lean": "Nat.Prime.mul_eq_prime_sq_iff",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Eq (times x y) (pow p 2))"
+     ]
+    ],
+    "by": "refine ⟨fun h => ?_, fun ⟨h₁, h₂⟩ => h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Eq x p) (Eq y p)",
+    "by": "refine ⟨fun h => ?_, fun ⟨h₁, h₂⟩ => h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(divide p (times x y))",
+    "by": "have pdvdxy : p ∣ x * y := by rw [h]; simp [sq]",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "divide p (pow p 2)",
+    "by": "rw [h]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide p (pow p 2)",
+    "by": "simp [sq]",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "forall Nat (x' => forall Nat (y' => if (Neq x' 1) (if (Neq y' 1) (if (Eq (times x' y') (pow p 2)) (if (divide p x') (and (Eq x' p) (Eq y' p)))))))",
+    "by": "suffices ∀ x' y' : ℕ, x' ≠ 1 → y' ≠ 1 → x' * y' = p ^ 2 → p ∣ x' → x' = p ∧ y' = p by",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "a",
+      "Elem Nat"
+     ],
+     [
+      "ha",
+      "Proof (Eq x (times p a))"
+     ]
+    ],
+    "by": "rintro x y hx hy h ⟨a, ha⟩",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(divide a p)",
+    "by": "have : a ∣ p := ⟨y, by rwa [ha, sq, mul_assoc, mul_right_inj' hp.ne_zero, eq_comm] at h⟩",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq p (times a y)",
+    "by": "rwa [ha, sq, mul_assoc, mul_right_inj' hp.ne_zero, eq_comm] at h",
+    "method": "rewriting",
+    "depth": 2
+   },
+   {
+    "unit": "cases",
+    "by": "obtain rfl | hap := (Nat.dvd_prime hp).mp ‹a ∣ p›",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ha",
+      "Proof (Eq x (times p 1))"
+     ],
+     [
+      "this",
+      "Proof (divide 1 p)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eq x p)",
+    "by": "rw [mul_one] at ha",
+    "method": "rewriting",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Eq x x) (Eq y x)",
+    "by": "subst ha",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eq y x)",
+    "by": "simp only [sq, mul_right_inj' hp.ne_zero] at h",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Eq y y) (Eq y y)",
+    "by": "subst h",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "and (Eq y y) (Eq y y)",
+    "by": "exact ⟨rfl, rfl⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hap",
+      "Proof (Eq a p)"
+     ]
+    ],
+    "by": "",
+    "depth": 3
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq y 1",
+    "by": "refine (hy ?_).elim",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eq y 1)",
+    "by": "rw [sq, Nat.mul_eq_left (Nat.mul_ne_zero hp.ne_zero hp.ne_zero)] at h",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq y 1",
+    "by": "exact h",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__coprime_or_dvd_of_prime",
+  "lean": "Nat.coprime_or_dvd_of_prime",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "or (Nat__Coprime p i) (not (Nat__Coprime p i))",
+    "by": "rw [pp.dvd_iff_not_coprime]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "or (Nat__Coprime p i) (not (Nat__Coprime p i))",
+    "by": "apply em",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__dvd_prime_pow",
+  "lean": "Nat.dvd_prime_pow",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (divide i (pow p m)) (exists Nat (k => and (Leq k m) (Eq i (pow p k))))",
+    "by": "simp_rw [_root_.dvd_prime_pow (prime_iff.mp pp) m, associated_eq_eq]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__eq_prime_pow_of_dvd_least_prime_pow",
+  "lean": "Nat.eq_prime_pow_of_dvd_least_prime_pow",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "l",
+      "Elem Nat"
+     ],
+     [
+      "h",
+      "Proof (Leq l (plus k 1))"
+     ],
+     [
+      "h1",
+      "Proof (not (divide (pow p l) (pow p k)))"
+     ],
+     [
+      "h2",
+      "Proof (divide (pow p l) (pow p (plus k 1)))"
+     ]
+    ],
+    "by": "obtain ⟨l, ⟨h, rfl⟩⟩ := (dvd_prime_pow pp).1 h₂",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (pow p l) (pow p (plus k 1))",
+    "by": "obtain ⟨l, ⟨h, rfl⟩⟩ := (dvd_prime_pow pp).1 h₂",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq l (plus k 1)",
+    "by": "congr",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq l (plus k 1)",
+    "by": "exact le_antisymm h (not_le.1 ((not_congr (pow_dvd_pow_iff_le_right (Prime.one_lt pp))).1 h₁))",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ne_one_iff_exists_prime_dvd",
+  "lean": "Nat.ne_one_iff_exists_prime_dvd",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Neq 0 1) (exists Nat (p => and (prime p) (divide p 0)))",
+    "by": "simpa using Exists.intro 2 Nat.prime_two",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Neq 1 1) (exists Nat (p => and (prime p) (divide p 1)))",
+    "by": "simp [Nat.not_prime_one]",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "a",
+      "Elem Nat"
+     ]
+    ],
+    "by": "let a := n + 2",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Neq a 1)",
+    "by": "have ha : a ≠ 1 := Nat.succ_succ_ne_one n",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Nat (p => and (prime p) (divide p (plus n 2)))",
+    "by": "simp only [a, true_iff, Ne, not_false_iff, ha]",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Nat (p => and (prime p) (divide p (plus n 2)))",
+    "by": "exact ⟨a.minFac, Nat.minFac_prime ha, a.minFac_dvd⟩",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Nat__eq_one_iff_not_exists_prime_dvd",
+  "lean": "Nat.eq_one_iff_not_exists_prime_dvd",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eq n 1) (forall Nat (p => if (prime p) (not (divide p n))))",
+    "by": "simpa using not_iff_not.mpr ne_one_iff_exists_prime_dvd",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul",
+  "lean": "Nat.succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul",
+  "steps": [
+   {
+    "unit": "verify",
+    "prop": "(divide (times (pow p (plus k l)) p) (times m n))",
+    "by": "have hpd : p ^ (k + l) * p ∣ m * n := by rwa [pow_succ] at hpmn",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (times (pow p (plus k l)) p) (times m n)",
+    "by": "rwa [pow_succ] at hpmn",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(divide p (div (times m n) (pow p (plus k l))))",
+    "by": "have hpd2 : p ∣ m * n / p ^ (k + l) := dvd_div_of_mul_dvd hpd",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(divide p (div (times m n) (times (pow p k) (pow p l))))",
+    "by": "have hpd3 : p ∣ m * n / (p ^ k * p ^ l) := by simpa [pow_add] using hpd2",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide p (div (times m n) (times (pow p k) (pow p l)))",
+    "by": "simpa [pow_add] using hpd2",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(divide p (times (div m (pow p k)) (div n (pow p l))))",
+    "by": "have hpd4 : p ∣ m / p ^ k * (n / p ^ l) := by simpa [Nat.div_mul_div_comm hpm hpn] using hpd3",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide p (times (div m (pow p k)) (div n (pow p l)))",
+    "by": "simpa [Nat.div_mul_div_comm hpm hpn] using hpd3",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(or (divide p (div m (pow p k))) (divide p (div n (pow p l))))",
+    "by": "have hpd5 : p ∣ m / p ^ k ∨ p ∣ n / p ^ l :=",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "or (divide (times (pow p k) p) m) (divide (times (pow p l) p) n)",
+    "by": "suffices p ^ k * p ∣ m ∨ p ^ l * p ∣ n by rwa [_root_.pow_succ, _root_.pow_succ]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "this",
+      "Proof (or (divide (times (pow p k) p) m) (divide (times (pow p l) p) n))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "or (divide (pow p (plus k 1)) m) (divide (pow p (plus l 1)) n)",
+    "by": "rwa [_root_.pow_succ, _root_.pow_succ]",
+    "method": "rewriting",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "or (divide (times (pow p k) p) m) (divide (times (pow p l) p) n)",
+    "by": "exact hpd5.elim (fun h : p ∣ m / p ^ k => Or.inl <| mul_dvd_of_dvd_div hpm h)",
+    "depth": 0
+   }
+  ]
+ }
+]

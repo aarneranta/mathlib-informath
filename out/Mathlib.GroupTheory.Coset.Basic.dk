@@ -1,7 +1,8 @@
 (; Mathlib.GroupTheory.Coset.Basic: statements exported from Mathlib by MathlibInformath/Export.lean ;)
 
 (; //LEAN:mem_leftAddCoset ;)
-mem_leftAddCoset : (X : Set) -> (s : Elem (powerset X)) -> (x1 : Elem X) -> (a : Elem X) -> (hxS : Proof (Membership__mem s x1)) -> Proof (Membership__mem (HVAdd__hVAdd a s) (plus a x1)).
+def mem_leftAddCoset : (X : Set) -> (s : Elem (powerset X)) -> (x1 : Elem X) -> (a : Elem X) -> (hxS : Proof (Membership__mem s x1)) -> Proof (Membership__mem (HVAdd__hVAdd a s) (plus a x1)) :=
+  X => s => x1 => a => hxS => Set__mem_image_of_mem X X (b => plus a b) x1 s hxS.
 
 (; //LEAN:mem_leftCoset ;)
 def mem_leftCoset : (X : Set) -> (s : Elem (powerset X)) -> (x1 : Elem X) -> (a : Elem X) -> (hxS : Proof (Membership__mem s x1)) -> Proof (Membership__mem (HSMul__hSMul a s) (times a x1)) :=
@@ -12,17 +13,20 @@ def mem_rightCoset : (X : Set) -> (s : Elem (powerset X)) -> (x1 : Elem X) -> (a
   X => s => x1 => a => hxS => Set__mem_image_of_mem X X (b => times b a) x1 s hxS.
 
 (; //LEAN:mem_rightAddCoset ;)
-mem_rightAddCoset : (X : Set) -> (s : Elem (powerset X)) -> (x1 : Elem X) -> (a : Elem X) -> (hxS : Proof (Membership__mem s x1)) -> Proof (Membership__mem (HVAdd__hVAdd (AddOpposite__op a) s) (plus x1 a)).
+def mem_rightAddCoset : (X : Set) -> (s : Elem (powerset X)) -> (x1 : Elem X) -> (a : Elem X) -> (hxS : Proof (Membership__mem s x1)) -> Proof (Membership__mem (HVAdd__hVAdd (AddOpposite__op a) s) (plus x1 a)) :=
+  X => s => x1 => a => hxS => Set__mem_image_of_mem X X (b => plus b a) x1 s hxS.
 
 (; //LEAN:LeftCosetEquivalence ;)
 def LeftCosetEquivalence : (s : Elem (powerset X)) -> (a : Elem X) -> (b : Elem X) -> Prop :=
   s => a => b => Eqt (powerset X) (HSMul__hSMul a s) (HSMul__hSMul b s).
 
 (; //LEAN:LeftAddCosetEquivalence ;)
-LeftAddCosetEquivalence : (s : Elem (powerset X)) -> (a : Elem X) -> (b : Elem X) -> Prop.
+def LeftAddCosetEquivalence : (s : Elem (powerset X)) -> (a : Elem X) -> (b : Elem X) -> Prop :=
+  s => a => b => Eqt (powerset X) (HVAdd__hVAdd a s) (HVAdd__hVAdd b s).
 
 (; //LEAN:leftAddCosetEquivalence_rel ;)
-leftAddCosetEquivalence_rel : (X : Set) -> (s : Elem (powerset X)) -> Proof (Equivalence (LeftAddCosetEquivalence s)).
+def leftAddCosetEquivalence_rel : (X : Set) -> (s : Elem (powerset X)) -> Proof (Equivalence (LeftAddCosetEquivalence s)) :=
+  X => s => Equivalence__mk (forallI X (x1 => Eqt (powerset X) (HVAdd__hVAdd x1 s) (HVAdd__hVAdd x1 s)) (x1 => rfl)) (forallI X (x2 => forall X (x4 => if (Eqt (powerset X) (HVAdd__hVAdd x2 s) (HVAdd__hVAdd x4 s)) (Eqt (powerset X) (HVAdd__hVAdd x4 s) (HVAdd__hVAdd x2 s)))) (x2 => forallI X (x3 => if (Eqt (powerset X) (HVAdd__hVAdd x2 s) (HVAdd__hVAdd x3 s)) (Eqt (powerset X) (HVAdd__hVAdd x3 s) (HVAdd__hVAdd x2 s))) (x3 => Eq__symm (powerset X) (HVAdd__hVAdd x2 s) (HVAdd__hVAdd x3 s)))) (forallI X (x5 => forall X (x9 => forall X (x10 => if (Eqt (powerset X) (HVAdd__hVAdd x5 s) (HVAdd__hVAdd x9 s)) (if (Eqt (powerset X) (HVAdd__hVAdd x9 s) (HVAdd__hVAdd x10 s)) (Eqt (powerset X) (HVAdd__hVAdd x5 s) (HVAdd__hVAdd x10 s)))))) (x5 => forallI X (x6 => forall X (x8 => if (Eqt (powerset X) (HVAdd__hVAdd x5 s) (HVAdd__hVAdd x6 s)) (if (Eqt (powerset X) (HVAdd__hVAdd x6 s) (HVAdd__hVAdd x8 s)) (Eqt (powerset X) (HVAdd__hVAdd x5 s) (HVAdd__hVAdd x8 s))))) (x6 => forallI X (x7 => if (Eqt (powerset X) (HVAdd__hVAdd x5 s) (HVAdd__hVAdd x6 s)) (if (Eqt (powerset X) (HVAdd__hVAdd x6 s) (HVAdd__hVAdd x7 s)) (Eqt (powerset X) (HVAdd__hVAdd x5 s) (HVAdd__hVAdd x7 s)))) (x7 => Eq__trans (powerset X) (HVAdd__hVAdd x5 s) (HVAdd__hVAdd x6 s) (HVAdd__hVAdd x7 s))))).
 
 (; //LEAN:leftCosetEquivalence_rel ;)
 def leftCosetEquivalence_rel : (X : Set) -> (s : Elem (powerset X)) -> Proof (Equivalence (LeftCosetEquivalence s)) :=
@@ -33,14 +37,16 @@ def RightCosetEquivalence : (s : Elem (powerset X)) -> (a : Elem X) -> (b : Elem
   s => a => b => Eqt (powerset X) (HSMul__hSMul (MulOpposite__op a) s) (HSMul__hSMul (MulOpposite__op b) s).
 
 (; //LEAN:RightAddCosetEquivalence ;)
-RightAddCosetEquivalence : (s : Elem (powerset X)) -> (a : Elem X) -> (b : Elem X) -> Prop.
+def RightAddCosetEquivalence : (s : Elem (powerset X)) -> (a : Elem X) -> (b : Elem X) -> Prop :=
+  s => a => b => Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op a) s) (HVAdd__hVAdd (AddOpposite__op b) s).
 
 (; //LEAN:rightCosetEquivalence_rel ;)
 def rightCosetEquivalence_rel : (X : Set) -> (s : Elem (powerset X)) -> Proof (Equivalence (RightCosetEquivalence s)) :=
   X => s => Equivalence__mk (forallI X (_a => Eqt (powerset X) (HSMul__hSMul (MulOpposite__op _a) s) (HSMul__hSMul (MulOpposite__op _a) s)) (_a => rfl)) (forallI X (x1 => forall X (x3 => if (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op x1) s) (HSMul__hSMul (MulOpposite__op x3) s)) (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op x3) s) (HSMul__hSMul (MulOpposite__op x1) s)))) (x1 => forallI X (x2 => if (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op x1) s) (HSMul__hSMul (MulOpposite__op x2) s)) (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op x2) s) (HSMul__hSMul (MulOpposite__op x1) s))) (x2 => Eq__symm (powerset X) (HSMul__hSMul (MulOpposite__op x1) s) (HSMul__hSMul (MulOpposite__op x2) s)))) (forallI X (x4 => forall X (x8 => forall X (x9 => if (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op x4) s) (HSMul__hSMul (MulOpposite__op x8) s)) (if (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op x8) s) (HSMul__hSMul (MulOpposite__op x9) s)) (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op x4) s) (HSMul__hSMul (MulOpposite__op x9) s)))))) (x4 => forallI X (x5 => forall X (x7 => if (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op x4) s) (HSMul__hSMul (MulOpposite__op x5) s)) (if (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op x5) s) (HSMul__hSMul (MulOpposite__op x7) s)) (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op x4) s) (HSMul__hSMul (MulOpposite__op x7) s))))) (x5 => forallI X (x6 => if (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op x4) s) (HSMul__hSMul (MulOpposite__op x5) s)) (if (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op x5) s) (HSMul__hSMul (MulOpposite__op x6) s)) (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op x4) s) (HSMul__hSMul (MulOpposite__op x6) s)))) (x6 => Eq__trans (powerset X) (HSMul__hSMul (MulOpposite__op x4) s) (HSMul__hSMul (MulOpposite__op x5) s) (HSMul__hSMul (MulOpposite__op x6) s))))).
 
 (; //LEAN:rightAddCosetEquivalence_rel ;)
-rightAddCosetEquivalence_rel : (X : Set) -> (s : Elem (powerset X)) -> Proof (Equivalence (RightAddCosetEquivalence s)).
+def rightAddCosetEquivalence_rel : (X : Set) -> (s : Elem (powerset X)) -> Proof (Equivalence (RightAddCosetEquivalence s)) :=
+  X => s => Equivalence__mk (forallI X (_a => Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op _a) s) (HVAdd__hVAdd (AddOpposite__op _a) s)) (_a => rfl)) (forallI X (x1 => forall X (x3 => if (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op x1) s) (HVAdd__hVAdd (AddOpposite__op x3) s)) (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op x3) s) (HVAdd__hVAdd (AddOpposite__op x1) s)))) (x1 => forallI X (x2 => if (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op x1) s) (HVAdd__hVAdd (AddOpposite__op x2) s)) (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op x2) s) (HVAdd__hVAdd (AddOpposite__op x1) s))) (x2 => Eq__symm (powerset X) (HVAdd__hVAdd (AddOpposite__op x1) s) (HVAdd__hVAdd (AddOpposite__op x2) s)))) (forallI X (x4 => forall X (x8 => forall X (x9 => if (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op x4) s) (HVAdd__hVAdd (AddOpposite__op x8) s)) (if (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op x8) s) (HVAdd__hVAdd (AddOpposite__op x9) s)) (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op x4) s) (HVAdd__hVAdd (AddOpposite__op x9) s)))))) (x4 => forallI X (x5 => forall X (x7 => if (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op x4) s) (HVAdd__hVAdd (AddOpposite__op x5) s)) (if (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op x5) s) (HVAdd__hVAdd (AddOpposite__op x7) s)) (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op x4) s) (HVAdd__hVAdd (AddOpposite__op x7) s))))) (x5 => forallI X (x6 => if (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op x4) s) (HVAdd__hVAdd (AddOpposite__op x5) s)) (if (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op x5) s) (HVAdd__hVAdd (AddOpposite__op x6) s)) (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op x4) s) (HVAdd__hVAdd (AddOpposite__op x6) s)))) (x6 => Eq__trans (powerset X) (HVAdd__hVAdd (AddOpposite__op x4) s) (HVAdd__hVAdd (AddOpposite__op x5) s) (HVAdd__hVAdd (AddOpposite__op x6) s))))).
 
 (; //LEAN:leftAddCoset_assoc ;)
 leftAddCoset_assoc : (X : Set) -> (_ : Proof (AddSemigroup X)) -> (s : Elem (powerset X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt (powerset X) (HVAdd__hVAdd a (HVAdd__hVAdd b s)) (HVAdd__hVAdd (plus a b) s)).
@@ -65,17 +71,20 @@ def one_leftCoset : (X : Set) -> (_ : Proof (Monoid X)) -> (s : Elem (powerset X
   X => x => s => Set__ext X (HSMul__hSMul 1 s) s (of_eq_true (forall X (a => iff (Membership__mem (HSMul__hSMul 1 s) a) (Membership__mem s a))) (Eq__trans Prop (forall X (a1 => iff (Membership__mem (HSMul__hSMul 1 s) a1) (Membership__mem s a1))) (forall X (a2 => True)) True (forall_congr X (a3 => iff (Membership__mem (HSMul__hSMul 1 s) a3) (Membership__mem s a3)) (a4 => True) (forallI X (x1 => Eqt Prop (iff (Membership__mem (HSMul__hSMul 1 s) x1) (Membership__mem s x1)) True) (x1 => Eq__trans Prop (iff (Membership__mem (HSMul__hSMul 1 s) x1) (Membership__mem s x1)) (iff (Membership__mem s x1) (Membership__mem s x1)) True (congrFun' Prop Prop (iff (Membership__mem (HSMul__hSMul 1 s) x1)) (iff (Membership__mem s x1)) (congrArg Prop (Prop -> Prop) (Membership__mem (HSMul__hSMul 1 s) x1) (Membership__mem s x1) iff (congrFun' X Prop (Membership__mem (HSMul__hSMul 1 s)) (Membership__mem s) (congrArg (powerset X) (Elem X -> Prop) (HSMul__hSMul 1 s) s Membership__mem (one_smul X (powerset X) s)) x1)) (Membership__mem s x1)) (iff_self (Membership__mem s x1))))) (implies_true X))).
 
 (; //LEAN:zero_leftAddCoset ;)
-zero_leftAddCoset : (X : Set) -> (_ : Proof (AddMonoid X)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (HVAdd__hVAdd 0 s) s).
+def zero_leftAddCoset : (X : Set) -> (_ : Proof (AddMonoid X)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (HVAdd__hVAdd 0 s) s) :=
+  X => x => s => Set__ext X (HVAdd__hVAdd 0 s) s (of_eq_true (forall X (a => iff (Membership__mem (HVAdd__hVAdd 0 s) a) (Membership__mem s a))) (Eq__trans Prop (forall X (a1 => iff (Membership__mem (HVAdd__hVAdd 0 s) a1) (Membership__mem s a1))) (forall X (a2 => True)) True (forall_congr X (a3 => iff (Membership__mem (HVAdd__hVAdd 0 s) a3) (Membership__mem s a3)) (a4 => True) (forallI X (x1 => Eqt Prop (iff (Membership__mem (HVAdd__hVAdd 0 s) x1) (Membership__mem s x1)) True) (x1 => Eq__trans Prop (iff (Membership__mem (HVAdd__hVAdd 0 s) x1) (Membership__mem s x1)) (iff (Membership__mem s x1) (Membership__mem s x1)) True (congrFun' Prop Prop (iff (Membership__mem (HVAdd__hVAdd 0 s) x1)) (iff (Membership__mem s x1)) (congrArg Prop (Prop -> Prop) (Membership__mem (HVAdd__hVAdd 0 s) x1) (Membership__mem s x1) iff (congrFun' X Prop (Membership__mem (HVAdd__hVAdd 0 s)) (Membership__mem s) (congrArg (powerset X) (Elem X -> Prop) (HVAdd__hVAdd 0 s) s Membership__mem (zero_vadd X (powerset X) s)) x1)) (Membership__mem s x1)) (iff_self (Membership__mem s x1))))) (implies_true X))).
 
 (; //LEAN:rightAddCoset_zero ;)
-rightAddCoset_zero : (X : Set) -> (_ : Proof (AddMonoid X)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op 0) s) s).
+def rightAddCoset_zero : (X : Set) -> (_ : Proof (AddMonoid X)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op 0) s) s) :=
+  X => x => s => Set__ext X (HVAdd__hVAdd (AddOpposite__op 0) s) s (of_eq_true (forall X (a => iff (Membership__mem (HVAdd__hVAdd (AddOpposite__op 0) s) a) (Membership__mem s a))) (Eq__trans Prop (forall X (a1 => iff (Membership__mem (HVAdd__hVAdd (AddOpposite__op 0) s) a1) (Membership__mem s a1))) (forall X (a2 => True)) True (forall_congr X (a3 => iff (Membership__mem (HVAdd__hVAdd (AddOpposite__op 0) s) a3) (Membership__mem s a3)) (a4 => True) (forallI X (x1 => Eqt Prop (iff (Membership__mem (HVAdd__hVAdd (AddOpposite__op 0) s) x1) (Membership__mem s x1)) True) (x1 => Eq__trans Prop (iff (Membership__mem (HVAdd__hVAdd (AddOpposite__op 0) s) x1) (Membership__mem s x1)) (iff (Membership__mem s x1) (Membership__mem s x1)) True (congrFun' Prop Prop (iff (Membership__mem (HVAdd__hVAdd (AddOpposite__op 0) s) x1)) (iff (Membership__mem s x1)) (congrArg Prop (Prop -> Prop) (Membership__mem (HVAdd__hVAdd (AddOpposite__op 0) s) x1) (Membership__mem s x1) iff (congrFun' X Prop (Membership__mem (HVAdd__hVAdd (AddOpposite__op 0) s)) (Membership__mem s) (congrArg (powerset X) (Elem X -> Prop) (HVAdd__hVAdd (AddOpposite__op 0) s) s Membership__mem (zero_vadd (AddOpposite X) (powerset X) s)) x1)) (Membership__mem s x1)) (iff_self (Membership__mem s x1))))) (implies_true X))).
 
 (; //LEAN:rightCoset_one ;)
 def rightCoset_one : (X : Set) -> (_ : Proof (Monoid X)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op 1) s) s) :=
   X => x => s => Set__ext X (HSMul__hSMul (MulOpposite__op 1) s) s (of_eq_true (forall X (a => iff (Membership__mem (HSMul__hSMul (MulOpposite__op 1) s) a) (Membership__mem s a))) (Eq__trans Prop (forall X (a1 => iff (Membership__mem (HSMul__hSMul (MulOpposite__op 1) s) a1) (Membership__mem s a1))) (forall X (a2 => True)) True (forall_congr X (a3 => iff (Membership__mem (HSMul__hSMul (MulOpposite__op 1) s) a3) (Membership__mem s a3)) (a4 => True) (forallI X (x1 => Eqt Prop (iff (Membership__mem (HSMul__hSMul (MulOpposite__op 1) s) x1) (Membership__mem s x1)) True) (x1 => Eq__trans Prop (iff (Membership__mem (HSMul__hSMul (MulOpposite__op 1) s) x1) (Membership__mem s x1)) (iff (Membership__mem s x1) (Membership__mem s x1)) True (congrFun' Prop Prop (iff (Membership__mem (HSMul__hSMul (MulOpposite__op 1) s) x1)) (iff (Membership__mem s x1)) (congrArg Prop (Prop -> Prop) (Membership__mem (HSMul__hSMul (MulOpposite__op 1) s) x1) (Membership__mem s x1) iff (congrFun' X Prop (Membership__mem (HSMul__hSMul (MulOpposite__op 1) s)) (Membership__mem s) (congrArg (powerset X) (Elem X -> Prop) (HSMul__hSMul (MulOpposite__op 1) s) s Membership__mem (one_smul (MulOpposite X) (powerset X) s)) x1)) (Membership__mem s x1)) (iff_self (Membership__mem s x1))))) (implies_true X))).
 
 (; //LEAN:mem_own_leftAddCoset ;)
-mem_own_leftAddCoset : (X : Set) -> (_ : Proof (AddMonoid X)) -> (s : Elem (AddSubmonoid X)) -> (a : Elem X) -> Proof (Membership__mem (HVAdd__hVAdd a s) a).
+def mem_own_leftAddCoset : (X : Set) -> (_ : Proof (AddMonoid X)) -> (s : Elem (AddSubmonoid X)) -> (a : Elem X) -> Proof (Membership__mem (HVAdd__hVAdd a s) a) :=
+  X => x => s => a => Eq__mp (congrArg X Prop (plus a 0) a (Membership__mem (HVAdd__hVAdd a s)) (add_zero X a)) (mem_leftAddCoset X s 0 a (ZeroMemClass__zero_mem (AddSubmonoid X) X AddZero__toZero AddSubmonoid__instSetLike s)).
 
 (; //LEAN:mem_own_leftCoset ;)
 def mem_own_leftCoset : (X : Set) -> (_ : Proof (Monoid X)) -> (s : Elem (Submonoid X)) -> (a : Elem X) -> Proof (Membership__mem (HSMul__hSMul a s) a) :=
@@ -86,7 +95,8 @@ def mem_own_rightCoset : (X : Set) -> (_ : Proof (Monoid X)) -> (s : Elem (Submo
   X => x => s => a => Eq__mp (congrArg X Prop (times 1 a) a (Membership__mem (HSMul__hSMul (MulOpposite__op a) s)) (one_mul X a)) (mem_rightCoset X s 1 a (OneMemClass__one_mem (Submonoid X) X MulOne__toOne Submonoid__instSetLike s)).
 
 (; //LEAN:mem_own_rightAddCoset ;)
-mem_own_rightAddCoset : (X : Set) -> (_ : Proof (AddMonoid X)) -> (s : Elem (AddSubmonoid X)) -> (a : Elem X) -> Proof (Membership__mem (HVAdd__hVAdd (AddOpposite__op a) s) a).
+def mem_own_rightAddCoset : (X : Set) -> (_ : Proof (AddMonoid X)) -> (s : Elem (AddSubmonoid X)) -> (a : Elem X) -> Proof (Membership__mem (HVAdd__hVAdd (AddOpposite__op a) s) a) :=
+  X => x => s => a => Eq__mp (congrArg X Prop (plus 0 a) a (Membership__mem (HVAdd__hVAdd (AddOpposite__op a) s)) (zero_add X a)) (mem_rightAddCoset X s 0 a (ZeroMemClass__zero_mem (AddSubmonoid X) X AddZero__toZero AddSubmonoid__instSetLike s)).
 
 (; //LEAN:mem_leftAddCoset_leftAddCoset ;)
 mem_leftAddCoset_leftAddCoset : (X : Set) -> (_ : Proof (AddMonoid X)) -> (s : Elem (AddSubmonoid X)) -> (a : Elem X) -> (ha : Proof (Eqt (powerset X) (HVAdd__hVAdd a s) s)) -> Proof (Membership__mem s a).
@@ -116,10 +126,12 @@ mem_rightAddCoset_iff : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (powe
 leftCoset_mem_leftCoset : (X : Set) -> (_ : Proof (Group X)) -> (s : Elem (Subgroup X)) -> (a : Elem X) -> (ha : Proof (Membership__mem s a)) -> Proof (Eqt (powerset X) (HSMul__hSMul a s) s).
 
 (; //LEAN:leftAddCoset_mem_leftAddCoset ;)
-leftAddCoset_mem_leftAddCoset : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (a : Elem X) -> (ha : Proof (Membership__mem s a)) -> Proof (Eqt (powerset X) (HVAdd__hVAdd a s) s).
+def leftAddCoset_mem_leftAddCoset : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (a : Elem X) -> (ha : Proof (Membership__mem s a)) -> Proof (Eqt (powerset X) (HVAdd__hVAdd a s) s) :=
+  X => x => s => a => ha => Set__ext X (HVAdd__hVAdd a s) s (of_eq_true (forall X (a1 => iff (Membership__mem (HVAdd__hVAdd a s) a1) (Membership__mem s a1))) (Eq__trans Prop (forall X (a2 => iff (Membership__mem (HVAdd__hVAdd a s) a2) (Membership__mem s a2))) (forall X (a3 => True)) True (forall_congr X (a4 => iff (Membership__mem (HVAdd__hVAdd a s) a4) (Membership__mem s a4)) (a5 => True) (forallI X (x1 => Eqt Prop (iff (Membership__mem (HVAdd__hVAdd a s) x1) (Membership__mem s x1)) True) (x1 => Eq__trans Prop (iff (Membership__mem (HVAdd__hVAdd a s) x1) (Membership__mem s x1)) (iff (Membership__mem s x1) (Membership__mem s x1)) True (congr Prop Prop (iff (Membership__mem (HVAdd__hVAdd a s) x1)) (iff (Membership__mem s x1)) (Membership__mem s x1) (Membership__mem s x1) (congrArg Prop (Prop -> Prop) (Membership__mem (HVAdd__hVAdd a s) x1) (Membership__mem s x1) iff (Eq__trans Prop (Membership__mem (HVAdd__hVAdd a s) x1) (Membership__mem s (plus (Neg__neg a) x1)) (Membership__mem s x1) (propext (mem_leftAddCoset_iff X s x1 a)) (Eq__trans Prop (Membership__mem s (plus (Neg__neg a) x1)) (Membership__mem s (plus (Neg__neg a) x1)) (Membership__mem s x1) (propext (SetLike__mem_coe (AddSubgroup X) X s (plus (Neg__neg a) x1))) ((forallI X (x_0 => Eqt Prop (Membership__mem s (plus (Neg__neg a) x_0)) (Membership__mem s x_0)) (x_0 => propext ((forallI X (x_01 => iff (Membership__mem s (plus (Neg__neg a) x_01)) (Membership__mem s x_01)) (x_01 => add_mem_cancel_left X (AddSubgroup X) s (Neg__neg a) x_01 (AddSubgroup__neg_mem X s a ha))) x_0))) x1)))) (propext (SetLike__mem_coe (AddSubgroup X) X s x1))) (iff_self (Membership__mem s x1))))) (implies_true X))).
 
 (; //LEAN:rightAddCoset_mem_rightAddCoset ;)
-rightAddCoset_mem_rightAddCoset : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (a : Elem X) -> (ha : Proof (Membership__mem s a)) -> Proof (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op a) s) s).
+def rightAddCoset_mem_rightAddCoset : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (a : Elem X) -> (ha : Proof (Membership__mem s a)) -> Proof (Eqt (powerset X) (HVAdd__hVAdd (AddOpposite__op a) s) s) :=
+  X => x => s => a => ha => Set__ext X (HVAdd__hVAdd (AddOpposite__op a) s) s (forallI X (b => iff (Membership__mem (HVAdd__hVAdd (AddOpposite__op a) s) b) (Membership__mem s b)) (b => of_eq_true (iff (Membership__mem (HVAdd__hVAdd (AddOpposite__op a) s) b) (Membership__mem s b)) (Eq__trans Prop (iff (Membership__mem (HVAdd__hVAdd (AddOpposite__op a) s) b) (Membership__mem s b)) (iff (Membership__mem s b) (Membership__mem s b)) True (congr Prop Prop (iff (Membership__mem (HVAdd__hVAdd (AddOpposite__op a) s) b)) (iff (Membership__mem s b)) (Membership__mem s b) (Membership__mem s b) (congrArg Prop (Prop -> Prop) (Membership__mem (HVAdd__hVAdd (AddOpposite__op a) s) b) (Membership__mem s b) iff (Eq__trans Prop (Membership__mem (HVAdd__hVAdd (AddOpposite__op a) s) b) (Membership__mem s (plus b (Neg__neg a))) (Membership__mem s b) (propext (mem_rightAddCoset_iff X s b a)) (Eq__trans Prop (Membership__mem s (plus b (Neg__neg a))) (Membership__mem s (plus b (Neg__neg a))) (Membership__mem s b) (propext (SetLike__mem_coe (AddSubgroup X) X s (plus b (Neg__neg a)))) ((forallI X (x_0 => Eqt Prop (Membership__mem s (plus x_0 (Neg__neg a))) (Membership__mem s x_0)) (x_0 => propext ((forallI X (x_01 => iff (Membership__mem s (plus x_01 (Neg__neg a))) (Membership__mem s x_01)) (x_01 => add_mem_cancel_right X (AddSubgroup X) s (Neg__neg a) x_01 (AddSubgroup__neg_mem X s a ha))) x_0))) b)))) (propext (SetLike__mem_coe (AddSubgroup X) X s b))) (iff_self (Membership__mem s b))))).
 
 (; //LEAN:rightCoset_mem_rightCoset ;)
 rightCoset_mem_rightCoset : (X : Set) -> (_ : Proof (Group X)) -> (s : Elem (Subgroup X)) -> (a : Elem X) -> (ha : Proof (Membership__mem s a)) -> Proof (Eqt (powerset X) (HSMul__hSMul (MulOpposite__op a) s) s).
@@ -135,23 +147,27 @@ def orbit_subgroup_eq_self_of_mem : (X : Set) -> (_ : Proof (Group X)) -> (s : E
   X => x => s => a => ha => Eq__trans (powerset X) (MulAction__orbit (Subtype (x1 => Membership__mem s x1)) a) (HSMul__hSMul (MulOpposite__op a) s) s (orbit_subgroup_eq_rightCoset X s a) (rightCoset_mem_rightCoset X s a ha).
 
 (; //LEAN:orbit_addSubgroup_eq_self_of_mem ;)
-orbit_addSubgroup_eq_self_of_mem : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (a : Elem X) -> (ha : Proof (Membership__mem s a)) -> Proof (Eqt (powerset X) (AddAction__orbit (Subtype (x1 => Membership__mem s x1)) a) s).
+def orbit_addSubgroup_eq_self_of_mem : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (a : Elem X) -> (ha : Proof (Membership__mem s a)) -> Proof (Eqt (powerset X) (AddAction__orbit (Subtype (x1 => Membership__mem s x1)) a) s) :=
+  X => x => s => a => ha => Eq__trans (powerset X) (AddAction__orbit (Subtype (x1 => Membership__mem s x1)) a) (HVAdd__hVAdd (AddOpposite__op a) s) s (orbit_addSubgroup_eq_rightCoset X s a) (rightAddCoset_mem_rightAddCoset X s a ha).
 
 (; //LEAN:orbit_subgroup_one_eq_self ;)
 def orbit_subgroup_one_eq_self : (X : Set) -> (_ : Proof (Group X)) -> (s : Elem (Subgroup X)) -> Proof (Eqt (powerset X) (MulAction__orbit (Subtype (x1 => Membership__mem s x1)) 1) s) :=
   X => x => s => orbit_subgroup_eq_self_of_mem X s 1 (Subgroup__one_mem X s).
 
 (; //LEAN:orbit_addSubgroup_zero_eq_self ;)
-orbit_addSubgroup_zero_eq_self : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> Proof (Eqt (powerset X) (AddAction__orbit (Subtype (x1 => Membership__mem s x1)) 0) s).
+def orbit_addSubgroup_zero_eq_self : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> Proof (Eqt (powerset X) (AddAction__orbit (Subtype (x1 => Membership__mem s x1)) 0) s) :=
+  X => x => s => orbit_addSubgroup_eq_self_of_mem X s 0 (AddSubgroup__zero_mem X s).
 
 (; //LEAN:eq_addCosets_of_normal ;)
-eq_addCosets_of_normal : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (N : Proof (AddSubgroup__Normal s)) -> (g : Elem X) -> Proof (Eqt (powerset X) (HVAdd__hVAdd g s) (HVAdd__hVAdd (AddOpposite__op g) s)).
+def eq_addCosets_of_normal : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (N : Proof (AddSubgroup__Normal s)) -> (g : Elem X) -> Proof (Eqt (powerset X) (HVAdd__hVAdd g s) (HVAdd__hVAdd (AddOpposite__op g) s)) :=
+  X => x => s => N => g => Set__ext X (HVAdd__hVAdd g s) (HVAdd__hVAdd (AddOpposite__op g) s) (forallI X (a => iff (Membership__mem (HVAdd__hVAdd g s) a) (Membership__mem (HVAdd__hVAdd (AddOpposite__op g) s) a)) (a => of_eq_true (iff (Membership__mem (HVAdd__hVAdd g s) a) (Membership__mem (HVAdd__hVAdd (AddOpposite__op g) s) a)) (Eq__trans Prop (iff (Membership__mem (HVAdd__hVAdd g s) a) (Membership__mem (HVAdd__hVAdd (AddOpposite__op g) s) a)) (iff (Membership__mem s (plus a (Neg__neg g))) (Membership__mem s (plus a (Neg__neg g)))) True (congr Prop Prop (iff (Membership__mem (HVAdd__hVAdd g s) a)) (iff (Membership__mem s (plus a (Neg__neg g)))) (Membership__mem (HVAdd__hVAdd (AddOpposite__op g) s) a) (Membership__mem s (plus a (Neg__neg g))) (congrArg Prop (Prop -> Prop) (Membership__mem (HVAdd__hVAdd g s) a) (Membership__mem s (plus a (Neg__neg g))) iff (Eq__trans Prop (Membership__mem (HVAdd__hVAdd g s) a) (Membership__mem s (plus (Neg__neg g) a)) (Membership__mem s (plus a (Neg__neg g))) (propext (mem_leftAddCoset_iff X s a g)) (Eq__trans Prop (Membership__mem s (plus (Neg__neg g) a)) (Membership__mem s (plus (Neg__neg g) a)) (Membership__mem s (plus a (Neg__neg g))) (propext (SetLike__mem_coe (AddSubgroup X) X s (plus (Neg__neg g) a))) ((forallI X (x_0 => forall X (x_13 => Eqt Prop (Membership__mem s (plus x_0 x_13)) (Membership__mem s (plus x_13 x_0)))) (x_0 => forallI X (x_1 => Eqt Prop (Membership__mem s (plus x_0 x_1)) (Membership__mem s (plus x_1 x_0))) (x_1 => propext ((forallI X (x_01 => forall X (x_12 => iff (Membership__mem s (plus x_01 x_12)) (Membership__mem s (plus x_12 x_01)))) (x_01 => forallI X (x_11 => iff (Membership__mem s (plus x_01 x_11)) (Membership__mem s (plus x_11 x_01))) (x_11 => AddSubgroup__Normal__mem_comm_iff X s N x_01 x_11))) x_0 x_1)))) (Neg__neg g) a)))) (Eq__trans Prop (Membership__mem (HVAdd__hVAdd (AddOpposite__op g) s) a) (Membership__mem s (plus a (Neg__neg g))) (Membership__mem s (plus a (Neg__neg g))) (propext (mem_rightAddCoset_iff X s a g)) (propext (SetLike__mem_coe (AddSubgroup X) X s (plus a (Neg__neg g)))))) (iff_self (Membership__mem s (plus a (Neg__neg g))))))).
 
 (; //LEAN:eq_cosets_of_normal ;)
 eq_cosets_of_normal : (X : Set) -> (_ : Proof (Group X)) -> (s : Elem (Subgroup X)) -> (N : Proof (Subgroup__Normal s)) -> (g : Elem X) -> Proof (Eqt (powerset X) (HSMul__hSMul g s) (HSMul__hSMul (MulOpposite__op g) s)).
 
 (; //LEAN:normal_of_eq_addCosets ;)
-normal_of_eq_addCosets : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (h : Proof (forall X (g => Eqt (powerset X) (HVAdd__hVAdd g s) (HVAdd__hVAdd (AddOpposite__op g) s)))) -> Proof (AddSubgroup__Normal s).
+def normal_of_eq_addCosets : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (h : Proof (forall X (g => Eqt (powerset X) (HVAdd__hVAdd g s) (HVAdd__hVAdd (AddOpposite__op g) s)))) -> Proof (AddSubgroup__Normal s) :=
+  X => x => s => h => AddSubgroup__Normal__mk (forallI X (a => if (Membership__mem s a) (forall X (g3 => Membership__mem s (plus (plus g3 a) (Neg__neg g3))))) (a => ifI (Membership__mem s a) (forall X (g2 => Membership__mem s (plus (plus g2 a) (Neg__neg g2)))) (ha => forallI X (g => Membership__mem s (plus (plus g a) (Neg__neg g))) (g => Eq__mpr (id (congrArg Prop Prop (Membership__mem s (plus (plus g a) (Neg__neg g))) (Membership__mem (HVAdd__hVAdd (AddOpposite__op g) s) (plus g a)) (_a => _a) (Eq__symm Prop (Membership__mem (HVAdd__hVAdd (AddOpposite__op g) s) (plus g a)) (Membership__mem s (plus (plus g a) (Neg__neg g))) (propext (mem_rightAddCoset_iff X s (plus g a) g))))) (Eq__mpr (id (congrArg (powerset X) Prop (HVAdd__hVAdd (AddOpposite__op g) s) (HVAdd__hVAdd g s) (_a1 => Membership__mem _a1 (plus g a)) (Eq__symm (powerset X) (HVAdd__hVAdd g s) (HVAdd__hVAdd (AddOpposite__op g) s) (forallE X (g1 => Eqt (powerset X) (HVAdd__hVAdd g1 s) (HVAdd__hVAdd (AddOpposite__op g1) s)) h g)))) (mem_leftAddCoset X s a g ha)))))).
 
 (; //LEAN:normal_of_eq_cosets ;)
 def normal_of_eq_cosets : (X : Set) -> (_ : Proof (Group X)) -> (s : Elem (Subgroup X)) -> (h : Proof (forall X (g => Eqt (powerset X) (HSMul__hSMul g s) (HSMul__hSMul (MulOpposite__op g) s)))) -> Proof (Subgroup__Normal s) :=
@@ -162,7 +178,8 @@ def normal_iff_eq_cosets : (X : Set) -> (_ : Proof (Group X)) -> (s : Elem (Subg
   X => x => s => iffI (Subgroup__Normal s) (forall X (g => Eqt (powerset X) (HSMul__hSMul g s) (HSMul__hSMul (MulOpposite__op g) s))) (eq_cosets_of_normal X s) (normal_of_eq_cosets X s).
 
 (; //LEAN:normal_iff_eq_addCosets ;)
-normal_iff_eq_addCosets : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> Proof (iff (AddSubgroup__Normal s) (forall X (g => Eqt (powerset X) (HVAdd__hVAdd g s) (HVAdd__hVAdd (AddOpposite__op g) s)))).
+def normal_iff_eq_addCosets : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> Proof (iff (AddSubgroup__Normal s) (forall X (g => Eqt (powerset X) (HVAdd__hVAdd g s) (HVAdd__hVAdd (AddOpposite__op g) s)))) :=
+  X => x => s => iffI (AddSubgroup__Normal s) (forall X (g => Eqt (powerset X) (HVAdd__hVAdd g s) (HVAdd__hVAdd (AddOpposite__op g) s))) (eq_addCosets_of_normal X s) (normal_of_eq_addCosets X s).
 
 (; //LEAN:leftCoset_eq_iff ;)
 leftCoset_eq_iff : (X : Set) -> (_ : Proof (Group X)) -> (s : Elem (Subgroup X)) -> (x1 : Elem X) -> (y : Elem X) -> Proof (iff (Eqt (powerset X) (HSMul__hSMul x1 s) (HSMul__hSMul y s)) (Membership__mem s (times (Inv__inv x1) y))).
@@ -213,7 +230,8 @@ QuotientGroup__strictMono_comap_prod_image : (X : Set) -> (_ : Proof (Group X)) 
 QuotientAddGroup__strictMono_comap_prod_image : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> Proof (StrictMono (t => Prod__mk (AddSubgroup__comap (AddSubgroup__subtype s) t) (Set__image QuotientAddGroup__mk t))).
 
 (; //LEAN:QuotientAddGroup.eq_class_eq_leftCoset ;)
-QuotientAddGroup__eq_class_eq_leftCoset : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (g : Elem X) -> Proof (Eqt (powerset X) (Set__ofPred (x1 => Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk x1) (QuotientAddGroup__mk g))) (HVAdd__hVAdd g s)).
+def QuotientAddGroup__eq_class_eq_leftCoset : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (g : Elem X) -> Proof (Eqt (powerset X) (Set__ofPred (x1 => Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk x1) (QuotientAddGroup__mk g))) (HVAdd__hVAdd g s)) :=
+  X => x => s => g => Set__ext X (Set__ofPred (x1 => Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk x1) (QuotientAddGroup__mk g))) (HVAdd__hVAdd g s) (forallI X (z => iff (Membership__mem (Set__ofPred (x4 => Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk x4) (QuotientAddGroup__mk g))) z) (Membership__mem (HVAdd__hVAdd g s) z)) (z => Eq__mpr (id (congrArg Prop Prop (Membership__mem (HVAdd__hVAdd g s) z) (Membership__mem s (plus (Neg__neg g) z)) (_a => iff (Membership__mem (Set__ofPred (x2 => Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk x2) (QuotientAddGroup__mk g))) z) _a) (propext (mem_leftAddCoset_iff X s z g)))) (Eq__mpr (id (congrArg Prop Prop (Membership__mem (Set__ofPred (y => Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk y) (QuotientAddGroup__mk g))) z) (Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk z) (QuotientAddGroup__mk g)) (_a1 => iff _a1 (Membership__mem s (plus (Neg__neg g) z))) (Set__mem_ofPred_eq X z (x3 => Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk x3) (QuotientAddGroup__mk g))))) (Eq__mpr (id (congrArg Prop Prop (Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk z) (QuotientAddGroup__mk g)) (Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk g) (QuotientAddGroup__mk z)) (_a2 => iff _a2 (Membership__mem s (plus (Neg__neg g) z))) (propext (eq_comm (HasQuotient__Quotient X s) (QuotientAddGroup__mk z) (QuotientAddGroup__mk g))))) (Eq__mpr (id (congrArg Prop Prop (Eqt (HasQuotient__Quotient X s) (QuotientAddGroup__mk g) (QuotientAddGroup__mk z)) (Membership__mem s (plus (Neg__neg g) z)) (_a3 => iff _a3 (Membership__mem s (plus (Neg__neg g) z))) (propext (QuotientAddGroup__eq X s g z)))) (Eq__mpr (id (congrArg Prop Prop (Membership__mem s (plus (Neg__neg g) z)) (Membership__mem s (plus (Neg__neg g) z)) (_a4 => iff (Membership__mem s (plus (Neg__neg g) z)) _a4) (propext (SetLike__mem_coe (AddSubgroup X) X s (plus (Neg__neg g) z))))) (Iff__rfl (Membership__mem s (plus (Neg__neg g) z))))))))).
 
 (; //LEAN:QuotientGroup.eq_class_eq_leftCoset ;)
 def QuotientGroup__eq_class_eq_leftCoset : (X : Set) -> (_ : Proof (Group X)) -> (s : Elem (Subgroup X)) -> (g : Elem X) -> Proof (Eqt (powerset X) (Set__ofPred (x1 => Eqt (HasQuotient__Quotient X s) (QuotientGroup__mk x1) (QuotientGroup__mk g))) (HSMul__hSMul g s)) :=
@@ -236,21 +254,24 @@ def Subgroup__leftCosetEquivSubgroup : (g : Elem X) -> Elem (Equiv (Set__Elem (H
   g => Equiv__mk (x1 => times (Inv__inv g) x1) (x2 => times g x2) (Subgroup__leftCosetEquivSubgroup___proof_4 g) (Subgroup__leftCosetEquivSubgroup___proof_8 g).
 
 (; //LEAN:AddSubgroup.leftCosetEquivAddSubgroup ;)
-AddSubgroup__leftCosetEquivAddSubgroup : (g : Elem X) -> Elem (Equiv (Set__Elem (HVAdd__hVAdd g s)) (Subtype (x1 => Membership__mem s x1))).
+def AddSubgroup__leftCosetEquivAddSubgroup : (g : Elem X) -> Elem (Equiv (Set__Elem (HVAdd__hVAdd g s)) (Subtype (x1 => Membership__mem s x1))) :=
+  g => Equiv__mk (x1 => plus (Neg__neg g) x1) (x2 => plus g x2) (AddSubgroup__leftCosetEquivAddSubgroup___proof_4 g) (AddSubgroup__leftCosetEquivAddSubgroup___proof_8 g).
 
 (; //LEAN:Subgroup.rightCosetEquivSubgroup ;)
 def Subgroup__rightCosetEquivSubgroup : (g : Elem X) -> Elem (Equiv (Set__Elem (HSMul__hSMul (MulOpposite__op g) s)) (Subtype (x1 => Membership__mem s x1))) :=
   g => Equiv__mk (x1 => times x1 (Inv__inv g)) (x2 => times x2 g) (Subgroup__rightCosetEquivSubgroup___proof_6 g) (Subgroup__rightCosetEquivSubgroup___proof_8 g).
 
 (; //LEAN:AddSubgroup.rightCosetEquivAddSubgroup ;)
-AddSubgroup__rightCosetEquivAddSubgroup : (g : Elem X) -> Elem (Equiv (Set__Elem (HVAdd__hVAdd (AddOpposite__op g) s)) (Subtype (x1 => Membership__mem s x1))).
+def AddSubgroup__rightCosetEquivAddSubgroup : (g : Elem X) -> Elem (Equiv (Set__Elem (HVAdd__hVAdd (AddOpposite__op g) s)) (Subtype (x1 => Membership__mem s x1))) :=
+  g => Equiv__mk (x1 => plus x1 (Neg__neg g)) (x2 => plus x2 g) (AddSubgroup__rightCosetEquivAddSubgroup___proof_6 g) (AddSubgroup__rightCosetEquivAddSubgroup___proof_8 g).
 
 (; //LEAN:Subgroup.groupEquivQuotientProdSubgroup ;)
 def Subgroup__groupEquivQuotientProdSubgroup : Elem (Equiv X (Prod (HasQuotient__Quotient X s) (Subtype (x1 => Membership__mem s x1)))) :=
   Trans__trans (Trans__trans (Trans__trans (Equiv__symm (Equiv__sigmaFiberEquiv QuotientGroup__mk)) (Equiv__sigmaCongrRight (L => Eq__mpr (Subgroup__groupEquivQuotientProdSubgroup___proof_1 L) (id (Eq__mpr (Subgroup__groupEquivQuotientProdSubgroup___proof_2 L) (Equiv__refl (Subtype (x1 => Eqt (Quotient (QuotientGroup__leftRel s)) (Quotient__mk'' x1) L)))))))) (Equiv__sigmaCongrRight (x2 => Subgroup__leftCosetEquivSubgroup (Quotient__out x2)))) (Equiv__sigmaEquivProd (HasQuotient__Quotient X s) (Subtype (x3 => Membership__mem s x3))).
 
 (; //LEAN:AddSubgroup.addGroupEquivQuotientProdAddSubgroup ;)
-AddSubgroup__addGroupEquivQuotientProdAddSubgroup : Elem (Equiv X (Prod (HasQuotient__Quotient X s) (Subtype (x1 => Membership__mem s x1)))).
+def AddSubgroup__addGroupEquivQuotientProdAddSubgroup : Elem (Equiv X (Prod (HasQuotient__Quotient X s) (Subtype (x1 => Membership__mem s x1)))) :=
+  Trans__trans (Trans__trans (Trans__trans (Equiv__symm (Equiv__sigmaFiberEquiv QuotientAddGroup__mk)) (Equiv__sigmaCongrRight (L => Eq__mpr (AddSubgroup__addGroupEquivQuotientProdAddSubgroup___proof_1 L) (id (Eq__mpr (AddSubgroup__addGroupEquivQuotientProdAddSubgroup___proof_2 L) (Equiv__refl (Subtype (x1 => Eqt (Quotient (QuotientAddGroup__leftRel s)) (Quotient__mk'' x1) L)))))))) (Equiv__sigmaCongrRight (x2 => AddSubgroup__leftCosetEquivAddSubgroup (Quotient__out x2)))) (Equiv__sigmaEquivProd (HasQuotient__Quotient X s) (Subtype (x3 => Membership__mem s x3))).
 
 (; //LEAN:Subgroup.quotientEquivProdOfLE' ;)
 def Subgroup__quotientEquivProdOfLE' : (h_le : Proof (Leq s t)) -> (f : (Elem (HasQuotient__Quotient X t) -> X)) -> (hf : Proof (Function__RightInverse f QuotientGroup__mk)) -> Elem (Equiv (HasQuotient__Quotient X s) (Prod (HasQuotient__Quotient X t) (HasQuotient__Quotient (Subtype (x1 => Membership__mem t x1)) (Subgroup__subgroupOf s t)))) :=
@@ -266,7 +287,8 @@ AddSubgroup__quotientEquivProdOfLE'_symm_apply : (X : Set) -> (_ : Proof (AddGro
 Subgroup__quotientEquivProdOfLE'_apply : (X : Set) -> (_ : Proof (Group X)) -> (s : Elem (Subgroup X)) -> (t : Elem (Subgroup X)) -> (h_le : Proof (Leq s t)) -> (f : (Elem (HasQuotient__Quotient X t) -> X)) -> (hf : Proof (Function__RightInverse f QuotientGroup__mk)) -> (a : Elem (HasQuotient__Quotient X s)) -> Proof (Eqt (Prod (HasQuotient__Quotient X t) (HasQuotient__Quotient (Subtype (x1 => Membership__mem t x1)) (Subgroup__subgroupOf s t))) (Subgroup__quotientEquivProdOfLE'__app h_le f hf a) (Prod__mk (Quotient__map' id (Subgroup__quotientEquivProdOfLE'___proof_5 h_le) a) (Quotient__map' (g => times (Inv__inv (f (Quotient__mk'' g))) g) (b => c => h => Subgroup__quotientEquivProdOfLE'___proof_1 h_le f hf b c h) a))).
 
 (; //LEAN:AddSubgroup.quotientEquivProdOfLE' ;)
-AddSubgroup__quotientEquivProdOfLE' : (h_le : Proof (Leq s t)) -> (f : (Elem (HasQuotient__Quotient X t) -> X)) -> (hf : Proof (Function__RightInverse f QuotientAddGroup__mk)) -> Elem (Equiv (HasQuotient__Quotient X s) (Prod (HasQuotient__Quotient X t) (HasQuotient__Quotient (Subtype (x1 => Membership__mem t x1)) (AddSubgroup__addSubgroupOf s t)))).
+def AddSubgroup__quotientEquivProdOfLE' : (h_le : Proof (Leq s t)) -> (f : (Elem (HasQuotient__Quotient X t) -> X)) -> (hf : Proof (Function__RightInverse f QuotientAddGroup__mk)) -> Elem (Equiv (HasQuotient__Quotient X s) (Prod (HasQuotient__Quotient X t) (HasQuotient__Quotient (Subtype (x1 => Membership__mem t x1)) (AddSubgroup__addSubgroupOf s t)))) :=
+  h_le => f => hf => Equiv__mk (a => Prod__mk (Quotient__map' id (AddSubgroup__quotientEquivProdOfLE'___proof_5 h_le) a) (Quotient__map' (g => plus (Neg__neg (f (Quotient__mk'' g))) g) (b => c => h => AddSubgroup__quotientEquivProdOfLE'___proof_1 h_le f hf b c h) a)) (a1 => Quotient__map' (b1 => plus (f (Prod__fst a1)) b1) (b2 => c1 => h1 => AddSubgroup__quotientEquivProdOfLE'___proof_2 f a1 b2 c1 h1) (Prod__snd a1)) (AddSubgroup__quotientEquivProdOfLE'___proof_3 h_le f hf) (AddSubgroup__quotientEquivProdOfLE'___proof_4 h_le f hf).
 
 (; //LEAN:Subgroup.quotientEquivProdOfLE'_symm_apply ;)
 Subgroup__quotientEquivProdOfLE'_symm_apply : (X : Set) -> (_ : Proof (Group X)) -> (s : Elem (Subgroup X)) -> (t : Elem (Subgroup X)) -> (h_le : Proof (Leq s t)) -> (f : (Elem (HasQuotient__Quotient X t) -> X)) -> (hf : Proof (Function__RightInverse f QuotientGroup__mk)) -> (a : Elem (Prod (HasQuotient__Quotient X t) (HasQuotient__Quotient (Subtype (x3 => Membership__mem t x3)) (Subgroup__subgroupOf s t)))) -> Proof (Eqt (Quotient (QuotientGroup__leftRel s)) (Equiv__symm__app (Subgroup__quotientEquivProdOfLE' h_le f hf) a) (Quotient__map' (b => times (f (Prod__fst a)) b) (b1 => c => h => Subgroup__quotientEquivProdOfLE'___proof_2 f a b1 c h) (Prod__snd a))).
@@ -276,7 +298,8 @@ def Subgroup__quotientEquivProdOfLE : (h_le : Proof (Leq s t)) -> Elem (Equiv (H
   h_le => Subgroup__quotientEquivProdOfLE' h_le Quotient__out Subgroup__quotientEquivProdOfLE___proof_1.
 
 (; //LEAN:AddSubgroup.quotientEquivProdOfLE ;)
-AddSubgroup__quotientEquivProdOfLE : (h_le : Proof (Leq s t)) -> Elem (Equiv (HasQuotient__Quotient X s) (Prod (HasQuotient__Quotient X t) (HasQuotient__Quotient (Subtype (x1 => Membership__mem t x1)) (AddSubgroup__addSubgroupOf s t)))).
+def AddSubgroup__quotientEquivProdOfLE : (h_le : Proof (Leq s t)) -> Elem (Equiv (HasQuotient__Quotient X s) (Prod (HasQuotient__Quotient X t) (HasQuotient__Quotient (Subtype (x1 => Membership__mem t x1)) (AddSubgroup__addSubgroupOf s t)))) :=
+  h_le => AddSubgroup__quotientEquivProdOfLE' h_le Quotient__out AddSubgroup__quotientEquivProdOfLE___proof_1.
 
 (; //LEAN:Subgroup.quotientEquivProdOfLE_apply ;)
 Subgroup__quotientEquivProdOfLE_apply : (X : Set) -> (_ : Proof (Group X)) -> (s : Elem (Subgroup X)) -> (t : Elem (Subgroup X)) -> (h_le : Proof (Leq s t)) -> (a : Elem (HasQuotient__Quotient X s)) -> Proof (Eqt (Prod (HasQuotient__Quotient X t) (HasQuotient__Quotient (Subtype (x1 => Membership__mem t x1)) (Subgroup__subgroupOf s t))) (Subgroup__quotientEquivProdOfLE__app h_le a) (Prod__mk (Quotient__map' id (Subgroup__quotientEquivProdOfLE'___proof_5 h_le) a) (Quotient__map' (g => times (Inv__inv (Quotient__out (Quotient__mk'' g))) g) (b => c => h => Subgroup__quotientEquivProdOfLE'___proof_1 h_le Quotient__out Subgroup__quotientEquivProdOfLE___proof_1 b c h) a))).
@@ -295,24 +318,28 @@ def Subgroup__quotientSubgroupOfEmbeddingOfLE : (H : Elem (Subgroup X)) -> (h : 
   H => h => Function__Embedding__mk (Quotient__map' (Subgroup__inclusion h) (a => b => Subgroup__quotientSubgroupOfEmbeddingOfLE___proof_2 H h a b)) (Subgroup__quotientSubgroupOfEmbeddingOfLE___proof_3 H h).
 
 (; //LEAN:AddSubgroup.quotientAddSubgroupOfEmbeddingOfLE ;)
-AddSubgroup__quotientAddSubgroupOfEmbeddingOfLE : (H : Elem (AddSubgroup X)) -> (h : Proof (Leq s t)) -> Elem (Function__Embedding (HasQuotient__Quotient (Subtype (x1 => Membership__mem s x1)) (AddSubgroup__addSubgroupOf H s)) (HasQuotient__Quotient (Subtype (x2 => Membership__mem t x2)) (AddSubgroup__addSubgroupOf H t))).
+def AddSubgroup__quotientAddSubgroupOfEmbeddingOfLE : (H : Elem (AddSubgroup X)) -> (h : Proof (Leq s t)) -> Elem (Function__Embedding (HasQuotient__Quotient (Subtype (x1 => Membership__mem s x1)) (AddSubgroup__addSubgroupOf H s)) (HasQuotient__Quotient (Subtype (x2 => Membership__mem t x2)) (AddSubgroup__addSubgroupOf H t))) :=
+  H => h => Function__Embedding__mk (Quotient__map' (AddSubgroup__inclusion h) (a => b => AddSubgroup__quotientAddSubgroupOfEmbeddingOfLE___proof_2 H h a b)) (AddSubgroup__quotientAddSubgroupOfEmbeddingOfLE___proof_3 H h).
 
 (; //LEAN:Subgroup.quotientSubgroupOfEmbeddingOfLE_apply_mk ;)
 def Subgroup__quotientSubgroupOfEmbeddingOfLE_apply_mk : (X : Set) -> (_ : Proof (Group X)) -> (s : Elem (Subgroup X)) -> (t : Elem (Subgroup X)) -> (H : Elem (Subgroup X)) -> (h : Proof (Leq s t)) -> (g : Elem (Subtype (x6 => Membership__mem s x6))) -> Proof (Eqt (HasQuotient__Quotient (Subtype (x1 => Membership__mem t x1)) (Subgroup__subgroupOf H t)) (Subgroup__quotientSubgroupOfEmbeddingOfLE__app H h (QuotientGroup__mk g)) (QuotientGroup__mk (Subgroup__inclusion__app h g))) :=
   X => x => s => t => H => h => g => rfl.
 
 (; //LEAN:AddSubgroup.quotientAddSubgroupOfEmbeddingOfLE_apply_mk ;)
-AddSubgroup__quotientAddSubgroupOfEmbeddingOfLE_apply_mk : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (AddSubgroup X)) -> (H : Elem (AddSubgroup X)) -> (h : Proof (Leq s t)) -> (g : Elem (Subtype (x6 => Membership__mem s x6))) -> Proof (Eqt (HasQuotient__Quotient (Subtype (x1 => Membership__mem t x1)) (AddSubgroup__addSubgroupOf H t)) (AddSubgroup__quotientAddSubgroupOfEmbeddingOfLE__app H h (QuotientAddGroup__mk g)) (QuotientAddGroup__mk (AddSubgroup__inclusion__app h g))).
+def AddSubgroup__quotientAddSubgroupOfEmbeddingOfLE_apply_mk : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (AddSubgroup X)) -> (H : Elem (AddSubgroup X)) -> (h : Proof (Leq s t)) -> (g : Elem (Subtype (x6 => Membership__mem s x6))) -> Proof (Eqt (HasQuotient__Quotient (Subtype (x1 => Membership__mem t x1)) (AddSubgroup__addSubgroupOf H t)) (AddSubgroup__quotientAddSubgroupOfEmbeddingOfLE__app H h (QuotientAddGroup__mk g)) (QuotientAddGroup__mk (AddSubgroup__inclusion__app h g))) :=
+  X => x => s => t => H => h => g => rfl.
 
 (; //LEAN:Subgroup.quotientSubgroupOfMapOfLE ;)
 def Subgroup__quotientSubgroupOfMapOfLE : (H : Elem (Subgroup X)) -> (h : Proof (Leq s t)) -> (x1 : Elem (HasQuotient__Quotient (Subtype (x3 => Membership__mem H x3)) (Subgroup__subgroupOf s H))) -> Elem (HasQuotient__Quotient (Subtype (x2 => Membership__mem H x2)) (Subgroup__subgroupOf t H)) :=
   H => h => Quotient__map' id (a => b => Subgroup__quotientSubgroupOfMapOfLE___proof_1 H h a b).
 
 (; //LEAN:AddSubgroup.quotientAddSubgroupOfMapOfLE ;)
-AddSubgroup__quotientAddSubgroupOfMapOfLE : (H : Elem (AddSubgroup X)) -> (h : Proof (Leq s t)) -> (x1 : Elem (HasQuotient__Quotient (Subtype (x3 => Membership__mem H x3)) (AddSubgroup__addSubgroupOf s H))) -> Elem (HasQuotient__Quotient (Subtype (x2 => Membership__mem H x2)) (AddSubgroup__addSubgroupOf t H)).
+def AddSubgroup__quotientAddSubgroupOfMapOfLE : (H : Elem (AddSubgroup X)) -> (h : Proof (Leq s t)) -> (x1 : Elem (HasQuotient__Quotient (Subtype (x3 => Membership__mem H x3)) (AddSubgroup__addSubgroupOf s H))) -> Elem (HasQuotient__Quotient (Subtype (x2 => Membership__mem H x2)) (AddSubgroup__addSubgroupOf t H)) :=
+  H => h => Quotient__map' id (a => b => AddSubgroup__quotientAddSubgroupOfMapOfLE___proof_1 H h a b).
 
 (; //LEAN:AddSubgroup.quotientAddSubgroupOfMapOfLE_apply_mk ;)
-AddSubgroup__quotientAddSubgroupOfMapOfLE_apply_mk : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (AddSubgroup X)) -> (H : Elem (AddSubgroup X)) -> (h : Proof (Leq s t)) -> (g : Elem (Subtype (x2 => Membership__mem H x2))) -> Proof (Eqt (HasQuotient__Quotient (Subtype (x1 => Membership__mem H x1)) (AddSubgroup__addSubgroupOf t H)) (AddSubgroup__quotientAddSubgroupOfMapOfLE H h (QuotientAddGroup__mk g)) (QuotientAddGroup__mk g)).
+def AddSubgroup__quotientAddSubgroupOfMapOfLE_apply_mk : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (AddSubgroup X)) -> (H : Elem (AddSubgroup X)) -> (h : Proof (Leq s t)) -> (g : Elem (Subtype (x2 => Membership__mem H x2))) -> Proof (Eqt (HasQuotient__Quotient (Subtype (x1 => Membership__mem H x1)) (AddSubgroup__addSubgroupOf t H)) (AddSubgroup__quotientAddSubgroupOfMapOfLE H h (QuotientAddGroup__mk g)) (QuotientAddGroup__mk g)) :=
+  X => x => s => t => H => h => g => rfl.
 
 (; //LEAN:Subgroup.quotientSubgroupOfMapOfLE_apply_mk ;)
 def Subgroup__quotientSubgroupOfMapOfLE_apply_mk : (X : Set) -> (_ : Proof (Group X)) -> (s : Elem (Subgroup X)) -> (t : Elem (Subgroup X)) -> (H : Elem (Subgroup X)) -> (h : Proof (Leq s t)) -> (g : Elem (Subtype (x2 => Membership__mem H x2))) -> Proof (Eqt (HasQuotient__Quotient (Subtype (x1 => Membership__mem H x1)) (Subgroup__subgroupOf t H)) (Subgroup__quotientSubgroupOfMapOfLE H h (QuotientGroup__mk g)) (QuotientGroup__mk g)) :=
@@ -323,21 +350,24 @@ def Subgroup__quotientMapOfLE : (h : Proof (Leq s t)) -> (x1 : Elem (HasQuotient
   h => Quotient__map' id (a => b => Subgroup__quotientEquivProdOfLE'___proof_5 h a b).
 
 (; //LEAN:AddSubgroup.quotientMapOfLE ;)
-AddSubgroup__quotientMapOfLE : (h : Proof (Leq s t)) -> (x1 : Elem (HasQuotient__Quotient X s)) -> Elem (HasQuotient__Quotient X t).
+def AddSubgroup__quotientMapOfLE : (h : Proof (Leq s t)) -> (x1 : Elem (HasQuotient__Quotient X s)) -> Elem (HasQuotient__Quotient X t) :=
+  h => Quotient__map' id (a => b => AddSubgroup__quotientEquivProdOfLE'___proof_5 h a b).
 
 (; //LEAN:Subgroup.quotientMapOfLE_apply_mk ;)
 def Subgroup__quotientMapOfLE_apply_mk : (X : Set) -> (_ : Proof (Group X)) -> (s : Elem (Subgroup X)) -> (t : Elem (Subgroup X)) -> (h : Proof (Leq s t)) -> (g : Elem X) -> Proof (Eqt (HasQuotient__Quotient X t) (Subgroup__quotientMapOfLE h (QuotientGroup__mk g)) (QuotientGroup__mk g)) :=
   X => x => s => t => h => g => rfl.
 
 (; //LEAN:AddSubgroup.quotientMapOfLE_apply_mk ;)
-AddSubgroup__quotientMapOfLE_apply_mk : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (AddSubgroup X)) -> (h : Proof (Leq s t)) -> (g : Elem X) -> Proof (Eqt (HasQuotient__Quotient X t) (AddSubgroup__quotientMapOfLE h (QuotientAddGroup__mk g)) (QuotientAddGroup__mk g)).
+def AddSubgroup__quotientMapOfLE_apply_mk : (X : Set) -> (_ : Proof (AddGroup X)) -> (s : Elem (AddSubgroup X)) -> (t : Elem (AddSubgroup X)) -> (h : Proof (Leq s t)) -> (g : Elem X) -> Proof (Eqt (HasQuotient__Quotient X t) (AddSubgroup__quotientMapOfLE h (QuotientAddGroup__mk g)) (QuotientAddGroup__mk g)) :=
+  X => x => s => t => h => g => rfl.
 
 (; //LEAN:Subgroup.quotientiInfSubgroupOfEmbedding ;)
 def Subgroup__quotientiInfSubgroupOfEmbedding : (f : (Elem I -> Subgroup X)) -> (H : Elem (Subgroup X)) -> Elem (Function__Embedding (HasQuotient__Quotient (Subtype (x1 => Membership__mem H x1)) (Subgroup__subgroupOf (iInf (i => f i)) H)) ((i1 : Elem I) -> HasQuotient__Quotient (Subtype (x2 => Membership__mem H x2)) (Subgroup__subgroupOf (f i1) H))) :=
   f => H => Function__Embedding__mk (q => i => Subgroup__quotientSubgroupOfMapOfLE H (Subgroup__quotientiInfSubgroupOfEmbedding___proof_1 f i) q) (Subgroup__quotientiInfSubgroupOfEmbedding___proof_2 f H).
 
 (; //LEAN:AddSubgroup.quotientiInfAddSubgroupOfEmbedding ;)
-AddSubgroup__quotientiInfAddSubgroupOfEmbedding : (f : (Elem I -> AddSubgroup X)) -> (H : Elem (AddSubgroup X)) -> Elem (Function__Embedding (HasQuotient__Quotient (Subtype (x1 => Membership__mem H x1)) (AddSubgroup__addSubgroupOf (iInf (i => f i)) H)) ((i1 : Elem I) -> HasQuotient__Quotient (Subtype (x2 => Membership__mem H x2)) (AddSubgroup__addSubgroupOf (f i1) H))).
+def AddSubgroup__quotientiInfAddSubgroupOfEmbedding : (f : (Elem I -> AddSubgroup X)) -> (H : Elem (AddSubgroup X)) -> Elem (Function__Embedding (HasQuotient__Quotient (Subtype (x1 => Membership__mem H x1)) (AddSubgroup__addSubgroupOf (iInf (i => f i)) H)) ((i1 : Elem I) -> HasQuotient__Quotient (Subtype (x2 => Membership__mem H x2)) (AddSubgroup__addSubgroupOf (f i1) H))) :=
+  f => H => Function__Embedding__mk (q => i => AddSubgroup__quotientAddSubgroupOfMapOfLE H (AddSubgroup__quotientiInfAddSubgroupOfEmbedding___proof_1 f i) q) (AddSubgroup__quotientiInfAddSubgroupOfEmbedding___proof_2 f H).
 
 (; //LEAN:AddSubgroup.quotientiInfAddSubgroupOfEmbedding_apply ;)
 AddSubgroup__quotientiInfAddSubgroupOfEmbedding_apply : (X : Set) -> (_ : Proof (AddGroup X)) -> (I : Set) -> (f : (Elem I -> AddSubgroup X)) -> (H : Elem (AddSubgroup X)) -> (q : Elem (HasQuotient__Quotient (Subtype (x5 => Membership__mem H x5)) (AddSubgroup__addSubgroupOf (iInf (i2 => f i2)) H))) -> (i : Elem I) -> Proof (Eqt (HasQuotient__Quotient (Subtype (x1 => Membership__mem H x1)) (AddSubgroup__addSubgroupOf (f i) H)) (AddSubgroup__quotientiInfAddSubgroupOfEmbedding__app f H q i) (AddSubgroup__quotientAddSubgroupOfMapOfLE H (AddSubgroup__quotientiInfAddSubgroupOfEmbedding___proof_1 f i) q)).
@@ -346,7 +376,8 @@ AddSubgroup__quotientiInfAddSubgroupOfEmbedding_apply : (X : Set) -> (_ : Proof 
 Subgroup__quotientiInfSubgroupOfEmbedding_apply : (X : Set) -> (_ : Proof (Group X)) -> (I : Set) -> (f : (Elem I -> Subgroup X)) -> (H : Elem (Subgroup X)) -> (q : Elem (HasQuotient__Quotient (Subtype (x5 => Membership__mem H x5)) (Subgroup__subgroupOf (iInf (i2 => f i2)) H))) -> (i : Elem I) -> Proof (Eqt (HasQuotient__Quotient (Subtype (x1 => Membership__mem H x1)) (Subgroup__subgroupOf (f i) H)) (Subgroup__quotientiInfSubgroupOfEmbedding__app f H q i) (Subgroup__quotientSubgroupOfMapOfLE H (Subgroup__quotientiInfSubgroupOfEmbedding___proof_1 f i) q)).
 
 (; //LEAN:AddSubgroup.quotientiInfAddSubgroupOfEmbedding_apply_mk ;)
-AddSubgroup__quotientiInfAddSubgroupOfEmbedding_apply_mk : (X : Set) -> (_ : Proof (AddGroup X)) -> (I : Set) -> (f : (Elem I -> AddSubgroup X)) -> (H : Elem (AddSubgroup X)) -> (g : Elem (Subtype (x5 => Membership__mem H x5))) -> (i : Elem I) -> Proof (Eqt (HasQuotient__Quotient (Subtype (x1 => Membership__mem H x1)) (AddSubgroup__addSubgroupOf (f i) H)) (AddSubgroup__quotientiInfAddSubgroupOfEmbedding__app f H (QuotientAddGroup__mk g) i) (QuotientAddGroup__mk g)).
+def AddSubgroup__quotientiInfAddSubgroupOfEmbedding_apply_mk : (X : Set) -> (_ : Proof (AddGroup X)) -> (I : Set) -> (f : (Elem I -> AddSubgroup X)) -> (H : Elem (AddSubgroup X)) -> (g : Elem (Subtype (x5 => Membership__mem H x5))) -> (i : Elem I) -> Proof (Eqt (HasQuotient__Quotient (Subtype (x1 => Membership__mem H x1)) (AddSubgroup__addSubgroupOf (f i) H)) (AddSubgroup__quotientiInfAddSubgroupOfEmbedding__app f H (QuotientAddGroup__mk g) i) (QuotientAddGroup__mk g)) :=
+  X => x => I => f => H => g => i => rfl.
 
 (; //LEAN:Subgroup.quotientiInfSubgroupOfEmbedding_apply_mk ;)
 def Subgroup__quotientiInfSubgroupOfEmbedding_apply_mk : (X : Set) -> (_ : Proof (Group X)) -> (I : Set) -> (f : (Elem I -> Subgroup X)) -> (H : Elem (Subgroup X)) -> (g : Elem (Subtype (x5 => Membership__mem H x5))) -> (i : Elem I) -> Proof (Eqt (HasQuotient__Quotient (Subtype (x1 => Membership__mem H x1)) (Subgroup__subgroupOf (f i) H)) (Subgroup__quotientiInfSubgroupOfEmbedding__app f H (QuotientGroup__mk g) i) (QuotientGroup__mk g)) :=
@@ -360,13 +391,15 @@ def Subgroup__quotientiInfEmbedding : (f : (Elem I -> Subgroup X)) -> Elem (Func
 AddSubgroup__quotientiInfEmbedding_apply : (X : Set) -> (_ : Proof (AddGroup X)) -> (I : Set) -> (f : (Elem I -> AddSubgroup X)) -> (q : Elem (HasQuotient__Quotient X (iInf (i2 => f i2)))) -> (i : Elem I) -> Proof (Eqt (HasQuotient__Quotient X (f i)) (AddSubgroup__quotientiInfEmbedding__app f q i) (AddSubgroup__quotientMapOfLE (AddSubgroup__quotientiInfAddSubgroupOfEmbedding___proof_1 f i) q)).
 
 (; //LEAN:AddSubgroup.quotientiInfEmbedding ;)
-AddSubgroup__quotientiInfEmbedding : (f : (Elem I -> AddSubgroup X)) -> Elem (Function__Embedding (HasQuotient__Quotient X (iInf (i => f i))) ((i1 : Elem I) -> HasQuotient__Quotient X (f i1))).
+def AddSubgroup__quotientiInfEmbedding : (f : (Elem I -> AddSubgroup X)) -> Elem (Function__Embedding (HasQuotient__Quotient X (iInf (i => f i))) ((i1 : Elem I) -> HasQuotient__Quotient X (f i1))) :=
+  f => Function__Embedding__mk (q => i => AddSubgroup__quotientMapOfLE (AddSubgroup__quotientiInfAddSubgroupOfEmbedding___proof_1 f i) q) (AddSubgroup__quotientiInfEmbedding___proof_1 f).
 
 (; //LEAN:Subgroup.quotientiInfEmbedding_apply ;)
 Subgroup__quotientiInfEmbedding_apply : (X : Set) -> (_ : Proof (Group X)) -> (I : Set) -> (f : (Elem I -> Subgroup X)) -> (q : Elem (HasQuotient__Quotient X (iInf (i2 => f i2)))) -> (i : Elem I) -> Proof (Eqt (HasQuotient__Quotient X (f i)) (Subgroup__quotientiInfEmbedding__app f q i) (Subgroup__quotientMapOfLE (Subgroup__quotientiInfSubgroupOfEmbedding___proof_1 f i) q)).
 
 (; //LEAN:AddSubgroup.quotientiInfEmbedding_apply_mk ;)
-AddSubgroup__quotientiInfEmbedding_apply_mk : (X : Set) -> (_ : Proof (AddGroup X)) -> (I : Set) -> (f : (Elem I -> AddSubgroup X)) -> (g : Elem X) -> (i : Elem I) -> Proof (Eqt (HasQuotient__Quotient X (f i)) (AddSubgroup__quotientiInfEmbedding__app f (QuotientAddGroup__mk g) i) (QuotientAddGroup__mk g)).
+def AddSubgroup__quotientiInfEmbedding_apply_mk : (X : Set) -> (_ : Proof (AddGroup X)) -> (I : Set) -> (f : (Elem I -> AddSubgroup X)) -> (g : Elem X) -> (i : Elem I) -> Proof (Eqt (HasQuotient__Quotient X (f i)) (AddSubgroup__quotientiInfEmbedding__app f (QuotientAddGroup__mk g) i) (QuotientAddGroup__mk g)) :=
+  X => x => I => f => g => i => rfl.
 
 (; //LEAN:Subgroup.quotientiInfEmbedding_apply_mk ;)
 def Subgroup__quotientiInfEmbedding_apply_mk : (X : Set) -> (_ : Proof (Group X)) -> (I : Set) -> (f : (Elem I -> Subgroup X)) -> (g : Elem X) -> (i : Elem I) -> Proof (Eqt (HasQuotient__Quotient X (f i)) (Subgroup__quotientiInfEmbedding__app f (QuotientGroup__mk g) i) (QuotientGroup__mk g)) :=
@@ -377,17 +410,20 @@ def MonoidHom__fiberEquivKer : (f : Elem (MonoidHom X H)) -> (a : Elem X) -> Ele
   f => a => Equiv__trans (Set__equivOfEq (MonoidHom__fiberEquivKer___proof_2 f a)) (Subgroup__leftCosetEquivSubgroup a).
 
 (; //LEAN:AddMonoidHom.fiberEquivKer ;)
-AddMonoidHom__fiberEquivKer : (f : Elem (AddMonoidHom X H)) -> (a : Elem X) -> Elem (Equiv (Set__Elem (Set__preimage f (Singleton__singleton (f a)))) (Subtype (x2 => Membership__mem (AddMonoidHom__ker f) x2))).
+def AddMonoidHom__fiberEquivKer : (f : Elem (AddMonoidHom X H)) -> (a : Elem X) -> Elem (Equiv (Set__Elem (Set__preimage f (Singleton__singleton (f a)))) (Subtype (x2 => Membership__mem (AddMonoidHom__ker f) x2))) :=
+  f => a => Equiv__trans (Set__equivOfEq (AddMonoidHom__fiberEquivKer___proof_2 f a)) (AddSubgroup__leftCosetEquivAddSubgroup a).
 
 (; //LEAN:AddMonoidHom.fiberEquivKer_apply ;)
-AddMonoidHom__fiberEquivKer_apply : (X : Set) -> (_ : Proof (AddGroup X)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (f : Elem (AddMonoidHom X H)) -> (a : Elem X) -> (g : Elem (Set__Elem (Set__preimage f (Singleton__singleton (f a))))) -> Proof (Eqt X (AddMonoidHom__fiberEquivKer__app f a g) (plus (Neg__neg a) g)).
+def AddMonoidHom__fiberEquivKer_apply : (X : Set) -> (_ : Proof (AddGroup X)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (f : Elem (AddMonoidHom X H)) -> (a : Elem X) -> (g : Elem (Set__Elem (Set__preimage f (Singleton__singleton (f a))))) -> Proof (Eqt X (AddMonoidHom__fiberEquivKer__app f a g) (plus (Neg__neg a) g)) :=
+  X => x => H => x1 => f => a => g => rfl.
 
 (; //LEAN:MonoidHom.fiberEquivKer_apply ;)
 def MonoidHom__fiberEquivKer_apply : (X : Set) -> (_ : Proof (Group X)) -> (H : Set) -> (_ : Proof (Group H)) -> (f : Elem (MonoidHom X H)) -> (a : Elem X) -> (g : Elem (Set__Elem (Set__preimage f (Singleton__singleton (f a))))) -> Proof (Eqt X (MonoidHom__fiberEquivKer__app f a g) (times (Inv__inv a) g)) :=
   X => x => H => x1 => f => a => g => rfl.
 
 (; //LEAN:AddMonoidHom.fiberEquivKer_symm_apply ;)
-AddMonoidHom__fiberEquivKer_symm_apply : (X : Set) -> (_ : Proof (AddGroup X)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (f : Elem (AddMonoidHom X H)) -> (a : Elem X) -> (g : Elem (Subtype (x4 => Membership__mem (AddMonoidHom__ker f) x4))) -> Proof (Eqt X (Equiv__symm__app (AddMonoidHom__fiberEquivKer f a) g) (plus a g)).
+def AddMonoidHom__fiberEquivKer_symm_apply : (X : Set) -> (_ : Proof (AddGroup X)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (f : Elem (AddMonoidHom X H)) -> (a : Elem X) -> (g : Elem (Subtype (x4 => Membership__mem (AddMonoidHom__ker f) x4))) -> Proof (Eqt X (Equiv__symm__app (AddMonoidHom__fiberEquivKer f a) g) (plus a g)) :=
+  X => x => H => x1 => f => a => g => rfl.
 
 (; //LEAN:MonoidHom.fiberEquivKer_symm_apply ;)
 def MonoidHom__fiberEquivKer_symm_apply : (X : Set) -> (_ : Proof (Group X)) -> (H : Set) -> (_ : Proof (Group H)) -> (f : Elem (MonoidHom X H)) -> (a : Elem X) -> (g : Elem (Subtype (x4 => Membership__mem (MonoidHom__ker f) x4))) -> Proof (Eqt X (Equiv__symm__app (MonoidHom__fiberEquivKer f a) g) (times a g)) :=
@@ -404,17 +440,20 @@ def MonoidHom__fiberEquiv : (f : Elem (MonoidHom X H)) -> (a : Elem X) -> (b : E
   f => a => b => Equiv__trans (MonoidHom__fiberEquivKer f a) (Equiv__symm (MonoidHom__fiberEquivKer f b)).
 
 (; //LEAN:AddMonoidHom.fiberEquiv ;)
-AddMonoidHom__fiberEquiv : (f : Elem (AddMonoidHom X H)) -> (a : Elem X) -> (b : Elem X) -> Elem (Equiv (Set__Elem (Set__preimage f (Singleton__singleton (f a)))) (Set__Elem (Set__preimage f (Singleton__singleton (f b))))).
+def AddMonoidHom__fiberEquiv : (f : Elem (AddMonoidHom X H)) -> (a : Elem X) -> (b : Elem X) -> Elem (Equiv (Set__Elem (Set__preimage f (Singleton__singleton (f a)))) (Set__Elem (Set__preimage f (Singleton__singleton (f b))))) :=
+  f => a => b => Equiv__trans (AddMonoidHom__fiberEquivKer f a) (Equiv__symm (AddMonoidHom__fiberEquivKer f b)).
 
 (; //LEAN:MonoidHom.fiberEquiv_apply ;)
 def MonoidHom__fiberEquiv_apply : (X : Set) -> (_ : Proof (Group X)) -> (H : Set) -> (_ : Proof (Group H)) -> (f : Elem (MonoidHom X H)) -> (a : Elem X) -> (b : Elem X) -> (g : Elem (Set__Elem (Set__preimage f (Singleton__singleton (f a))))) -> Proof (Eqt X (MonoidHom__fiberEquiv__app f a b g) (times b (times (Inv__inv a) g))) :=
   X => x => H => x1 => f => a => b => g => rfl.
 
 (; //LEAN:AddMonoidHom.fiberEquiv_apply ;)
-AddMonoidHom__fiberEquiv_apply : (X : Set) -> (_ : Proof (AddGroup X)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (f : Elem (AddMonoidHom X H)) -> (a : Elem X) -> (b : Elem X) -> (g : Elem (Set__Elem (Set__preimage f (Singleton__singleton (f a))))) -> Proof (Eqt X (AddMonoidHom__fiberEquiv__app f a b g) (plus b (plus (Neg__neg a) g))).
+def AddMonoidHom__fiberEquiv_apply : (X : Set) -> (_ : Proof (AddGroup X)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (f : Elem (AddMonoidHom X H)) -> (a : Elem X) -> (b : Elem X) -> (g : Elem (Set__Elem (Set__preimage f (Singleton__singleton (f a))))) -> Proof (Eqt X (AddMonoidHom__fiberEquiv__app f a b g) (plus b (plus (Neg__neg a) g))) :=
+  X => x => H => x1 => f => a => b => g => rfl.
 
 (; //LEAN:AddMonoidHom.fiberEquiv_symm_apply ;)
-AddMonoidHom__fiberEquiv_symm_apply : (X : Set) -> (_ : Proof (AddGroup X)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (f : Elem (AddMonoidHom X H)) -> (a : Elem X) -> (b : Elem X) -> (g : Elem (Set__Elem (Set__preimage f (Singleton__singleton (f b))))) -> Proof (Eqt X (Equiv__symm__app (AddMonoidHom__fiberEquiv f a b) g) (plus a (plus (Neg__neg b) g))).
+def AddMonoidHom__fiberEquiv_symm_apply : (X : Set) -> (_ : Proof (AddGroup X)) -> (H : Set) -> (_ : Proof (AddGroup H)) -> (f : Elem (AddMonoidHom X H)) -> (a : Elem X) -> (b : Elem X) -> (g : Elem (Set__Elem (Set__preimage f (Singleton__singleton (f b))))) -> Proof (Eqt X (Equiv__symm__app (AddMonoidHom__fiberEquiv f a b) g) (plus a (plus (Neg__neg b) g))) :=
+  X => x => H => x1 => f => a => b => g => rfl.
 
 (; //LEAN:MonoidHom.fiberEquiv_symm_apply ;)
 def MonoidHom__fiberEquiv_symm_apply : (X : Set) -> (_ : Proof (Group X)) -> (H : Set) -> (_ : Proof (Group H)) -> (f : Elem (MonoidHom X H)) -> (a : Elem X) -> (b : Elem X) -> (g : Elem (Set__Elem (Set__preimage f (Singleton__singleton (f b))))) -> Proof (Eqt X (Equiv__symm__app (MonoidHom__fiberEquiv f a b) g) (times a (times (Inv__inv b) g))) :=
@@ -425,14 +464,16 @@ def MonoidHom__fiberEquivOfSurjective : (hf : Proof (Function__Surjective f)) ->
   hf => h => h' => Equiv__trans (MonoidHom__fiberEquivKerOfSurjective hf h) (Equiv__symm (MonoidHom__fiberEquivKerOfSurjective hf h')).
 
 (; //LEAN:AddMonoidHom.fiberEquivOfSurjective ;)
-AddMonoidHom__fiberEquivOfSurjective : (hf : Proof (Function__Surjective f)) -> (h : Elem H) -> (h' : Elem H) -> Elem (Equiv (Set__Elem (Set__preimage f (Singleton__singleton h))) (Set__Elem (Set__preimage f (Singleton__singleton h')))).
+def AddMonoidHom__fiberEquivOfSurjective : (hf : Proof (Function__Surjective f)) -> (h : Elem H) -> (h' : Elem H) -> Elem (Equiv (Set__Elem (Set__preimage f (Singleton__singleton h))) (Set__Elem (Set__preimage f (Singleton__singleton h')))) :=
+  hf => h => h' => Equiv__trans (AddMonoidHom__fiberEquivKerOfSurjective hf h) (Equiv__symm (AddMonoidHom__fiberEquivKerOfSurjective hf h')).
 
 (; //LEAN:QuotientGroup.preimageMkEquivSubgroupProdSet ;)
 def QuotientGroup__preimageMkEquivSubgroupProdSet : (s : Elem (Subgroup X)) -> (t : Elem (powerset (HasQuotient__Quotient X s))) -> Elem (Equiv (Set__Elem (Set__preimage QuotientGroup__mk t)) (Prod (Subtype (x1 => Membership__mem s x1)) (Set__Elem t))) :=
   s => t => Equiv__mk (a => Prod__mk (times (Inv__inv (Quotient__out (QuotientGroup__mk a))) a) (QuotientGroup__mk a)) (a1 => times (Quotient__out (Prod__snd a1)) (Prod__fst a1)) (QuotientGroup__preimageMkEquivSubgroupProdSet___proof_4 s t) (QuotientGroup__preimageMkEquivSubgroupProdSet___proof_10 s t).
 
 (; //LEAN:QuotientAddGroup.preimageMkEquivAddSubgroupProdSet ;)
-QuotientAddGroup__preimageMkEquivAddSubgroupProdSet : (s : Elem (AddSubgroup X)) -> (t : Elem (powerset (HasQuotient__Quotient X s))) -> Elem (Equiv (Set__Elem (Set__preimage QuotientAddGroup__mk t)) (Prod (Subtype (x1 => Membership__mem s x1)) (Set__Elem t))).
+def QuotientAddGroup__preimageMkEquivAddSubgroupProdSet : (s : Elem (AddSubgroup X)) -> (t : Elem (powerset (HasQuotient__Quotient X s))) -> Elem (Equiv (Set__Elem (Set__preimage QuotientAddGroup__mk t)) (Prod (Subtype (x1 => Membership__mem s x1)) (Set__Elem t))) :=
+  s => t => Equiv__mk (a => Prod__mk (plus (Neg__neg (Quotient__out (QuotientAddGroup__mk a))) a) (QuotientAddGroup__mk a)) (a1 => plus (Quotient__out (Prod__snd a1)) (Prod__fst a1)) (QuotientAddGroup__preimageMkEquivAddSubgroupProdSet___proof_4 s t) (QuotientAddGroup__preimageMkEquivAddSubgroupProdSet___proof_10 s t).
 
 (; //LEAN:QuotientGroup.univ_eq_iUnion_smul ;)
 QuotientGroup__univ_eq_iUnion_smul : (X : Set) -> (_ : Proof (Group X)) -> (H : Elem (Subgroup X)) -> Proof (Eqt (powerset X) Set__univ (Set__iUnion (x1 => HSMul__hSMul (Quotient__out x1) H))).
@@ -445,5 +486,6 @@ def QuotientGroup__quotientEquivSelf : (X : Set) -> Elem (Equiv (HasQuotient__Qu
   X => Equiv__mk (Quotient__lift id (QuotientGroup__quotientEquivSelf___proof_2 X)) QuotientGroup__mk (x1 => QuotientGroup__quotientEquivSelf___proof_3 X x1) (x2 => QuotientGroup__quotientEquivSelf___proof_4 X x2).
 
 (; //LEAN:QuotientAddGroup.quotientEquivSelf ;)
-QuotientAddGroup__quotientEquivSelf : (X : Set) -> Elem (Equiv (HasQuotient__Quotient X Bot__bot) X).
+def QuotientAddGroup__quotientEquivSelf : (X : Set) -> Elem (Equiv (HasQuotient__Quotient X Bot__bot) X) :=
+  X => Equiv__mk (Quotient__lift id (QuotientAddGroup__quotientEquivSelf___proof_2 X)) QuotientAddGroup__mk (x1 => QuotientAddGroup__quotientEquivSelf___proof_3 X x1) (x2 => QuotientAddGroup__quotientEquivSelf___proof_4 X x2).
 

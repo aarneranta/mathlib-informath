@@ -1,0 +1,145 @@
+[
+ {
+  "name": "Nat__Prime__dvd_factorial",
+  "lean": "Nat.Prime.dvd_factorial",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (or (divide p (plus n 1)) (Leq p n)) (Leq p (plus n 1))",
+    "by": "rw [factorial_succ, hp.dvd_mul, Prime.dvd_factorial hp]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (or (divide p (plus n 1)) (Leq p n)) (Leq p (plus n 1))",
+    "by": "exact",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Leq p (plus n 1))"
+     ],
+     [
+      "h",
+      "Proof (Eq p (plus n 1))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide p (plus n 1)",
+    "by": "rw [h]",
+    "method": "rewriting",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__coprime_factorial_iff",
+  "lean": "Nat.coprime_factorial_iff",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (Leq (Nat__minFac m) n) (exists Nat (p => and (prime p) (and (divide p m) (divide p (factorial n)))))",
+    "by": "rw [← not_le, iff_not_comm, Nat.Prime.not_coprime_iff_dvd]",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "and (if (Leq (Nat__minFac m) n) (exists Nat (p => and (prime p) (and (divide p m) (divide p (factorial n)))))) (if (exists Nat (p => and (prime p) (and (divide p m) (divide p (factorial n))))) (Leq (Nat__minFac m) n))",
+    "by": "constructor",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Leq (Nat__minFac m) n)"
+     ]
+    ],
+    "by": "intro h",
+    "goal": "exists Nat (p => and (prime p) (and (divide p m) (divide p (factorial n))))",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Nat (p => and (prime p) (and (divide p m) (divide p (factorial n))))",
+    "by": "exact ⟨m.minFac, minFac_prime hm, minFac_dvd m, Nat.dvd_factorial (minFac_pos m) h⟩",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "p",
+      "Elem Nat"
+     ],
+     [
+      "hp",
+      "Proof (prime p)"
+     ],
+     [
+      "hdvd",
+      "Proof (divide p m)"
+     ],
+     [
+      "hdvd'",
+      "Proof (divide p (factorial n))"
+     ]
+    ],
+    "by": "rintro ⟨p, hp, hdvd, hdvd'⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__minFac m) n",
+    "by": "exact le_trans (minFac_le_of_dvd hp.two_le hdvd) (hp.dvd_factorial.mp hdvd')",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__coprime_factorial_of_lt",
+  "lean": "Nat.Prime.coprime_factorial_of_lt",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Nat__Coprime p (factorial n)",
+    "by": "rwa [hp.coprime_iff_not_dvd, hp.dvd_factorial, not_le]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__coprime_descFactorial_of_lt_of_le",
+  "lean": "Nat.Prime.coprime_descFactorial_of_lt_of_le",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Nat__Coprime p (div (factorial n) (factorial (minus n k)))",
+    "by": "rw [Nat.descFactorial_eq_div hk]",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "divide (factorial (minus n k)) (factorial n)",
+    "by": "refine (hp.coprime_factorial_of_lt hn).coprime_div_right ?_",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (factorial (minus n k)) (factorial n)",
+    "by": "simp [Nat.factorial_dvd_factorial]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ }
+]

@@ -1,0 +1,1247 @@
+[
+ {
+  "name": "Nat__primeFactorsList_count_eq",
+  "lean": "Nat.primeFactorsList_count_eq",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (List__count p (Nat__primeFactorsList n)) (Nat__factorization__app n p)",
+    "by": "simp [factorization]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_def",
+  "lean": "Nat.factorization_def",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eq (List__count p (Nat__primeFactorsList n)) (padicValNat p n)",
+    "by": "rw [← primeFactorsList_count_eq]",
+    "depth": 0
+   },
+   {
+    "unit": "cases",
+    "by": "rcases n.eq_zero_or_pos with (rfl | hn0)",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (List__count p (Nat__primeFactorsList 0)) (padicValNat p 0)",
+    "by": "simp [count]",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hn0",
+      "Proof (Gt n 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Leq (List__count p (Nat__primeFactorsList n)) (padicValNat p n)) (Leq (padicValNat p n) (List__count p (Nat__primeFactorsList n)))",
+    "by": "apply _root_.le_antisymm",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "List__Subperm (List__replicate (List__count p (Nat__primeFactorsList n)) p) (Nat__primeFactorsList n)",
+    "by": "rw [le_padicValNat_iff_replicate_subperm_primeFactorsList pp hn0.ne']",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "List__Subperm (List__replicate (List__count p (Nat__primeFactorsList n)) p) (Nat__primeFactorsList n)",
+    "by": "exact List.replicate_sublist_iff.mpr le_rfl |>.subperm",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "not (List__Subperm (List__replicate (plus (List__count p (Nat__primeFactorsList n)) 1) p) (Nat__primeFactorsList n))",
+    "by": "rw [← Nat.lt_add_one_iff, lt_iff_not_ge,",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (List__Subperm (List__replicate (plus (List__count p (Nat__primeFactorsList n)) 1) p) (Nat__primeFactorsList n))"
+     ]
+    ],
+    "by": "intro h",
+    "goal": "false",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Leq (List__count p (List__replicate (plus (List__count p (Nat__primeFactorsList n)) 1) p)) (List__count p (Nat__primeFactorsList n)))",
+    "by": "have := h.count_le p",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "simp at this",
+    "method": "simplification",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_le_padicValNat",
+  "lean": "Nat.factorization_le_padicValNat",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "by_cases pp : p.Prime",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "pp",
+      "Proof (prime p)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__factorization__app n p) (padicValNat p n)",
+    "by": "exact (factorization_def n pp).le",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "pp",
+      "Proof (not (prime p))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__factorization__app n p) (padicValNat p n)",
+    "by": "simp [n.factorization.notMem_support_iff.mp (mt prime_of_mem_primeFactors pp)]",
+    "method": "simplification",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__factorization_pos_of_dvd",
+  "lean": "Nat.Prime.factorization_pos_of_dvd",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Lt 0 (Nat__factorization__app n p)",
+    "by": "rwa [← primeFactorsList_count_eq, count_pos_iff, mem_primeFactorsList_iff_dvd hn hp]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__multiplicity_eq_factorization",
+  "lean": "Nat.multiplicity_eq_factorization",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (multiplicity p n) (Nat__factorization__app n p)",
+    "by": "rw [factorization_def n pp, padicValNat_def]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__prod_factorization_pow_eq_self",
+  "lean": "Nat.prod_factorization_pow_eq_self",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eq (Finsupp__prod (Multiset__toFinsupp__app (Multiset__ofList (Nat__primeFactorsList n))) (x => x1 => pow x x1)) n",
+    "by": "rw [factorization_eq_primeFactorsList_multiset n]",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (List__prod (Nat__primeFactorsList n)) n",
+    "by": "simp only [← prod_toMultiset, Multiset.prod_coe, Multiset.toFinsupp_toMultiset]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (List__prod (Nat__primeFactorsList n)) n",
+    "by": "exact prod_primeFactorsList hn",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__eq_of_factorization_eq",
+  "lean": "Nat.eq_of_factorization_eq",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "List__Perm (Nat__primeFactorsList a) (Nat__primeFactorsList b)",
+    "by": "simpa only [List.perm_iff_count, primeFactorsList_count_eq] using h",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_zero",
+  "lean": "Nat.factorization_zero",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eq (Nat__factorization__app 0 a') (OfNat__ofNat__app 0 a')",
+    "by": "ext",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__factorization__app 0 a') (OfNat__ofNat__app 0 a')",
+    "by": "simp [factorization]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_one",
+  "lean": "Nat.factorization_one",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eq (Nat__factorization__app 1 a') (OfNat__ofNat__app 0 a')",
+    "by": "ext",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__factorization__app 1 a') (OfNat__ofNat__app 0 a')",
+    "by": "simp [factorization]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_eq_zero_iff",
+  "lean": "Nat.factorization_eq_zero_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eq (Nat__factorization__app n p) 0) (or (not (prime p)) (or (not (divide p n)) (Eq n 0)))",
+    "by": "simp_rw [← notMem_support_iff, support_factorization, mem_primeFactors, not_and_or, not_ne_iff]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_eq_zero_of_not_prime",
+  "lean": "Nat.factorization_eq_zero_of_not_prime",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__factorization__app n p) 0",
+    "by": "simp [factorization_eq_zero_iff, hp]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_eq_zero_of_not_dvd",
+  "lean": "Nat.factorization_eq_zero_of_not_dvd",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__factorization__app n p) 0",
+    "by": "simp [factorization_eq_zero_iff, h]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_eq_zero_of_remainder",
+  "lean": "Nat.factorization_eq_zero_of_remainder",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "not (divide p (plus (times p i) r))",
+    "by": "apply factorization_eq_zero_of_not_dvd",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "not (divide p (plus (times p i) r))",
+    "by": "rwa [← Nat.dvd_add_iff_right (Dvd.intro i rfl)]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_mul",
+  "lean": "Nat.factorization_mul",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "p",
+      "Elem Nat"
+     ]
+    ],
+    "by": "ext p",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (Nat__factorization__app (times a b) p) (HAdd__hAdd__app (Nat__factorization a) (Nat__factorization b) p)",
+    "by": "ext p",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__factorization__app (times a b) p) (HAdd__hAdd__app (Nat__factorization a) (Nat__factorization b) p)",
+    "by": "simp only [add_apply, ← primeFactorsList_count_eq,",
+    "method": "simplification",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_le_iff_dvd",
+  "lean": "Nat.factorization_le_iff_dvd",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hdn",
+      "Proof (Leq (Nat__factorization d) (Nat__factorization n))"
+     ]
+    ],
+    "by": "refine ⟨fun hdn ↦ ?_, fun ⟨c, h⟩ ↦ ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (divide d n) (Leq (Nat__factorization d) (Nat__factorization n))",
+    "by": "refine ⟨fun hdn ↦ ?_, fun ⟨c, h⟩ ↦ ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hdn",
+      "Proof (Leq (Nat__factorization d) (Nat__factorization n))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "divide (Finsupp__prod (Nat__factorization d) (x => x1 => pow x x1)) (Finsupp__prod (Nat__factorization n) (x2 => x3 => pow x2 x3))",
+    "by": "rw [← prod_factorization_pow_eq_self hn, ← prod_factorization_pow_eq_self hd]",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (Finsupp__prod (Nat__factorization d) (x => x1 => pow x x1)) (Finsupp__prod (Nat__factorization n) (x2 => x3 => pow x2 x3))",
+    "by": "exact prod_dvd_prod_of_subset_of_dvd (support_mono hdn) fun a _ ↦ pow_dvd_pow a (hdn a)",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "c",
+      "Elem Nat"
+     ],
+     [
+      "h",
+      "Proof (Eq n (times d c))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (Nat__factorization d) (Nat__factorization (times d c))",
+    "by": "subst h",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (Nat__factorization d) (plus (Nat__factorization d) (Nat__factorization c))",
+    "by": "rw [factorization_mul hd <| right_ne_zero_of_mul hn]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__factorization d) (plus (Nat__factorization d) (Nat__factorization c))",
+    "by": "apply self_le_add_right",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_prod",
+  "lean": "Nat.factorization_prod",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Finsupp Nat Nat) (Nat__factorization (Finset__prod S (x2 => g x2))) (Finset__sum S (x3 => Nat__factorization (g x3)))",
+    "by": "classical",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Eqt (Finsupp Nat Nat) (Nat__factorization (Finset__prod EmptyCollection__emptyCollection (x2 => g x2))) (Finset__sum EmptyCollection__emptyCollection (x3 => Nat__factorization (g x3)))) (forall X (a => forall (Finset X) (s => if (Membership__mem S a) (if (Set__Subset s S) (if (not (Membership__mem s a)) (if (Eqt (Finsupp Nat Nat) (Nat__factorization (Finset__prod s (x4 => g x4))) (Finset__sum s (x5 => Nat__factorization (g x5)))) (Eqt (Finsupp Nat Nat) (Nat__factorization (Finset__prod (Insert__insert a s) (x2 => g x2))) (Finset__sum (Insert__insert a s) (x3 => Nat__factorization (g x3))))))))))",
+    "by": "refine Finset.induction_on' S ?_ ?_",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Finsupp Nat Nat) (Nat__factorization (Finset__prod EmptyCollection__emptyCollection (x2 => g x2))) (Finset__sum EmptyCollection__emptyCollection (x3 => Nat__factorization (g x3)))",
+    "by": "simp",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "T",
+      "Elem (Finset X)"
+     ],
+     [
+      "hxS",
+      "Proof (Membership__mem S x)"
+     ],
+     [
+      "hTS",
+      "Proof (Set__Subset T S)"
+     ],
+     [
+      "hxT",
+      "Proof (not (Membership__mem T x))"
+     ],
+     [
+      "IH",
+      "Proof (Eqt (Finsupp Nat Nat) (Nat__factorization (Finset__prod T (x2 => g x2))) (Finset__sum T (x3 => Nat__factorization (g x3))))"
+     ]
+    ],
+    "by": "intro x T hxS hTS hxT IH",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Neq (Finset__prod T (x4 => g x4)) 0)",
+    "by": "have hT : T.prod g ≠ 0 := prod_ne_zero_iff.mpr fun x hx => hS x (hTS hx)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Finsupp Nat Nat) (Nat__factorization (Finset__prod (Insert__insert x T) (x5 => g x5))) (Finset__sum (Insert__insert x T) (x6 => Nat__factorization (g x6)))",
+    "by": "simp [prod_insert hxT, sum_insert hxT, IH, factorization_mul (hS x hxS) hT]",
+    "method": "simplification",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_pow",
+  "lean": "Nat.factorization_pow",
+  "steps": [
+   {
+    "unit": "induction",
+    "by": "induction k with",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Finsupp Nat Nat) (Nat__factorization (pow n 0)) (HSMul__hSMul 0 (Nat__factorization n))",
+    "by": "simp",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ih",
+      "Proof (Eqt (Finsupp Nat Nat) (Nat__factorization (pow n k)) (HSMul__hSMul k (Nat__factorization n)))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "cases",
+    "by": "rcases eq_or_ne n 0 with (rfl | hn)",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ih",
+      "Proof (Eqt (Finsupp Nat Nat) (Nat__factorization (pow 0 k)) (HSMul__hSMul k (Nat__factorization 0)))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Finsupp Nat Nat) (Nat__factorization (pow 0 (plus k 1))) (HSMul__hSMul (plus k 1) (Nat__factorization 0))",
+    "by": "simp",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hn",
+      "Proof (Neq n 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Finsupp Nat Nat) (Nat__factorization (pow n (plus k 1))) (HSMul__hSMul (plus k 1) (Nat__factorization n))",
+    "by": "rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih,",
+    "method": "rewriting",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Nat__isSquare_iff_even_factorization",
+  "lean": "Nat.isSquare_iff_even_factorization",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "by_cases h0 : n = 0",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h0",
+      "Proof (Eq n 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (IsSquare n) (forall Nat (p => if (prime p) (even (Nat__factorization__app n p))))",
+    "by": "simp [h0]",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h0",
+      "Proof (not (Eq n 0))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (if (IsSquare n) (forall Nat (p => if (prime p) (even (Nat__factorization__app n p))))) (if (forall Nat (p => if (prime p) (even (Nat__factorization__app n p)))) (IsSquare n))",
+    "by": "constructor",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "m",
+      "Elem Nat"
+     ],
+     [
+      "hmn",
+      "Proof (Eq n (times m m))"
+     ],
+     [
+      "p",
+      "Elem Nat"
+     ],
+     [
+      "hp",
+      "Proof (prime p)"
+     ]
+    ],
+    "by": "intro ⟨m, hmn⟩ p hp",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Neq m 0)",
+    "by": "have hm : m ≠ 0 := mul_self_ne_zero.mp (hmn ▸ h0)",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "even (Nat__factorization__app n p)",
+    "by": "simp [hmn, factorization_mul hm hm]",
+    "method": "simplification",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (forall Nat (p => if (prime p) (even (Nat__factorization__app n p))))"
+     ]
+    ],
+    "by": "refine fun h ↦ ⟨n.factorization.prod fun a b ↦ a ^ (b / 2), ?_⟩",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq n (times (Finsupp__prod (Nat__factorization n) (a => b => pow a (div b 2))) (Finsupp__prod (Nat__factorization n) (a1 => b1 => pow a1 (div b1 2))))",
+    "by": "refine fun h ↦ ⟨n.factorization.prod fun a b ↦ a ^ (b / 2), ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq n (Finsupp__prod (Nat__factorization n) (a => b => powMonoidHom__app 2 (pow a (div b 2))))",
+    "by": "rw [← pow_two, ← powMonoidHom_apply, map_finsuppProd]",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (Finsupp__prod (Nat__factorization n) (x => x1 => pow x x1)) (Finsupp__prod (Nat__factorization n) (a => b => powMonoidHom__app 2 (pow a (div b 2))))",
+    "by": "nth_rw 1 [← prod_factorization_pow_eq_self h0]",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "p",
+      "Elem Nat"
+     ],
+     [
+      "hp",
+      "Proof (Membership__mem (Finsupp__support (Nat__factorization n)) p)"
+     ]
+    ],
+    "by": "refine Finsupp.prod_congr fun p hp ↦ ?_",
+    "depth": 3
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (pow p (Nat__factorization__app n p)) (powMonoidHom__app 2 (pow p (div (Nat__factorization__app n p) 2)))",
+    "by": "refine Finsupp.prod_congr fun p hp ↦ ?_",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (pow p (Nat__factorization__app n p)) (powMonoidHom__app 2 (pow p (div (Nat__factorization__app n p) 2)))",
+    "by": "rw [powMonoidHom_apply, ← pow_mul, div_two_mul_two_of_even (h p (prime_of_mem_primeFactors hp))]",
+    "method": "rewriting",
+    "depth": 3
+   }
+  ]
+ },
+ {
+  "name": "Int__isSquare_iff_nonneg_even_factorization",
+  "lean": "Int.isSquare_iff_nonneg_even_factorization",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "and (if (IsSquare n) (and (Leq 0 n) (forall Nat (p => if (prime p) (even (Nat__factorization__app (Int__natAbs n) p)))))) (if (and (Leq 0 n) (forall Nat (p => if (prime p) (even (Nat__factorization__app (Int__natAbs n) p))))) (IsSquare n))",
+    "by": "constructor",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "m",
+      "Elem Int"
+     ],
+     [
+      "hmn",
+      "Proof (Eq n (times m m))"
+     ]
+    ],
+    "by": "intro ⟨m, hmn⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "and (Leq 0 n) (forall Nat (p => if (prime p) (even (Nat__factorization__app (Int__natAbs n) p))))",
+    "by": "exact ⟨by simpa [hmn] using Int.mul_nonneg_of_nonneg_or_nonpos (by omega),",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq 0 n",
+    "by": "simpa [hmn] using Int.mul_nonneg_of_nonneg_or_nonpos (by omega)",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "or (and (Leq 0 m) (Leq 0 m)) (and (Leq m 0) (Leq m 0))",
+    "by": "omega",
+    "method": "computation",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "p",
+      "Elem Nat"
+     ],
+     [
+      "hp",
+      "Proof (prime p)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Int__natAbs n) (times (Int__natAbs m) (Int__natAbs m))",
+    "by": "grind",
+    "method": "routine",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h0",
+      "Proof (Leq 0 n)"
+     ],
+     [
+      "h",
+      "Proof (forall Nat (p => if (prime p) (even (Nat__factorization__app (Int__natAbs n) p))))"
+     ]
+    ],
+    "by": "intro ⟨h0, h⟩",
+    "goal": "IsSquare n",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "r",
+      "Elem Nat"
+     ],
+     [
+      "hr",
+      "Proof (Eq (Int__natAbs n) (times r r))"
+     ]
+    ],
+    "by": "obtain ⟨r, hr⟩ := Nat.isSquare_iff_even_factorization.mpr h",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsSquare n",
+    "by": "exact ⟨r, (by rw [← natAbs_of_nonneg h0, hr, Nat.cast_mul])⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq n (times r r)",
+    "by": "rw [← natAbs_of_nonneg h0, hr, Nat.cast_mul]",
+    "method": "rewriting",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__factorization",
+  "lean": "Nat.Prime.factorization",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "q",
+      "Elem Nat"
+     ]
+    ],
+    "by": "ext q",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (Nat__factorization__app p q) (Finsupp__single__app p 1 q)",
+    "by": "ext q",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__factorization__app p q) (Finsupp__single__app p 1 q)",
+    "by": "rw [← primeFactorsList_count_eq, primeFactorsList_prime hp, single_apply, count_singleton',",
+    "method": "rewriting",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__Prime__factorization_pow",
+  "lean": "Nat.Prime.factorization_pow",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Finsupp Nat Nat) (Nat__factorization (pow p k)) (Finsupp__single p k)",
+    "by": "simp [hp]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__pow_succ_factorization_not_dvd",
+  "lean": "Nat.pow_succ_factorization_not_dvd",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (divide (pow p (plus (Nat__factorization__app n p) 1)) n)"
+     ]
+    ],
+    "by": "intro h",
+    "goal": "false",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Leq (Nat__factorization (pow p (plus (Nat__factorization__app n p) 1))) (Nat__factorization n))",
+    "by": "rw [← factorization_le_iff_dvd (pow_ne_zero _ hp.ne_zero) hn] at h",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "simpa [hp.factorization] using h p",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_minFac_ne_zero",
+  "lean": "Nat.factorization_minFac_ne_zero",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "not (or (not (prime (Nat__minFac n))) (or (not (divide (Nat__minFac n) n)) (Eq n 0)))",
+    "by": "refine mt (factorization_eq_zero_iff _ _).mp ?_",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "and (prime (Nat__minFac n)) (and (divide (Nat__minFac n) n) (Neq n 0))",
+    "by": "push Not",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "and (prime (Nat__minFac n)) (and (divide (Nat__minFac n) n) (Neq n 0))",
+    "by": "exact ⟨minFac_prime (by lia), minFac_dvd n, Nat.ne_zero_of_lt hn⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Neq n 1",
+    "by": "lia",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_prod_pow_eq_self",
+  "lean": "Nat.factorization_prod_pow_eq_self",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eqt (Finsupp Nat Nat) (Finset__sum (Finsupp__support f) (x => Finsupp__single x (f x))) f",
+    "by": "rw [Finsupp.prod, factorization_prod (pow_ne_zero _ <| hf · · |>.ne_zero),",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Finsupp Nat Nat) (Finset__sum (Finsupp__support f) (x => Finsupp__single x (f x))) f",
+    "by": "exact sum_single f",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__eq_factorization_iff",
+  "lean": "Nat.eq_factorization_iff",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "and (Eq (Finsupp__prod (Nat__factorization n) (x => x1 => pow x x1)) n) (Eqt (Finsupp Nat Nat) f (Nat__factorization (Finsupp__prod f (x2 => x3 => pow x2 x3))))",
+    "by": "constructor <;> rintro rfl",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hf",
+      "Proof (forall Nat (p => if (Membership__mem (Finsupp__support (Nat__factorization n)) p) (prime p)))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Finsupp__prod (Nat__factorization n) (x => x1 => pow x x1)) n",
+    "by": "exacts [prod_factorization_pow_eq_self hn, factorization_prod_pow_eq_self hf |>.symm]",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__prod_pow_dvd_of_le_factorization",
+  "lean": "Nat.prod_pow_dvd_of_le_factorization",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "rcases eq_or_ne n 0 with (rfl | hn)",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hf",
+      "Proof (Leq f (Nat__factorization 0))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (Finsupp__prod f (x => x1 => pow x x1)) 0",
+    "by": "simp",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hn",
+      "Proof (Neq n 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Neq (Finsupp__prod f (x => x1 => pow x x1)) 0",
+    "by": "rwa [← factorization_le_iff_dvd ?_ hn, factorization_prod_pow_eq_self_of_le_factorization hf]",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hp",
+      "Proof (Membership__mem (Finsupp__support f) x')"
+     ]
+    ],
+    "by": "refine f.prod_ne_zero_iff.mpr fun _ hp ↦ ?_",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Neq (pow x' (f x')) 0",
+    "by": "refine f.prod_ne_zero_iff.mpr fun _ hp ↦ ?_",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Neq (pow x' (f x')) 0",
+    "by": "exact pow_ne_zero _ (prime_of_mem_primeFactors <| support_mono hf hp).ne_zero",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Nat__dvd_prod_pow_of_factorization_le",
+  "lean": "Nat.dvd_prod_pow_of_factorization_le",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "divide n (times n (Finsupp__prod (minus f (Nat__factorization n)) (x => x1 => pow x x1)))",
+    "by": "rw [← add_tsub_cancel_of_le hf, Finsupp.prod_add_index' (by simp) Nat.pow_add,",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "forall Nat (a => Eq (pow a 0) 1)",
+    "by": "simp",
+    "method": "simplification",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide n (times n (Finsupp__prod (minus f (Nat__factorization n)) (x => x1 => pow x x1)))",
+    "by": "apply n.dvd_mul_right",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__dvd_iff_exists_le_factorization",
+  "lean": "Nat.dvd_iff_exists_le_factorization",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (Leq (Nat__factorization d) (Nat__factorization n)) (exists (Finsupp Nat Nat) (f => and (Leq f (Nat__factorization n)) (Eq d (Finsupp__prod f (x => x1 => pow x x1)))))",
+    "by": "rw [← factorization_le_iff_dvd hd hn]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "f",
+      "Elem (Finsupp Nat Nat)"
+     ],
+     [
+      "hle",
+      "Proof (Leq f (Nat__factorization n))"
+     ],
+     [
+      "hprod",
+      "Proof (Eq d (Finsupp__prod f (x2 => x3 => pow x2 x3)))"
+     ]
+    ],
+    "by": "refine ⟨fun h ↦ ⟨_, h, prod_factorization_pow_eq_self hd |>.symm⟩, fun ⟨f, hle, hprod⟩ ↦ ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (Nat__factorization d) (Nat__factorization n)",
+    "by": "refine ⟨fun h ↦ ⟨_, h, prod_factorization_pow_eq_self hd |>.symm⟩, fun ⟨f, hle, hprod⟩ ↦ ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__factorization d) (Nat__factorization n)",
+    "by": "rwa [hprod, factorization_prod_pow_eq_self_of_le_factorization hle]",
+    "method": "rewriting",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_mul_apply_of_coprime",
+  "lean": "Nat.factorization_mul_apply_of_coprime",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__factorization__app (times a b) p) (plus (Nat__factorization__app a p) (Nat__factorization__app b p))",
+    "by": "simp only [← primeFactorsList_count_eq,",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorization_mul_of_coprime",
+  "lean": "Nat.factorization_mul_of_coprime",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "q",
+      "Elem Nat"
+     ]
+    ],
+    "by": "ext q",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (Nat__factorization__app (times a b) q) (HAdd__hAdd__app (Nat__factorization a) (Nat__factorization b) q)",
+    "by": "ext q",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__factorization__app (times a b) q) (HAdd__hAdd__app (Nat__factorization a) (Nat__factorization b) q)",
+    "by": "rw [Finsupp.add_apply, factorization_mul_apply_of_coprime hab]",
+    "method": "rewriting",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__ordProj_dvd",
+  "lean": "Nat.ordProj_dvd",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hp",
+      "Proof (prime p)"
+     ]
+    ],
+    "by": "if hp : p.Prime then ?_ else simp [hp]",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hp",
+      "Proof (not (prime p))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (pow p (Nat__factorization__app n p)) n",
+    "by": "simp [hp]",
+    "method": "simplification",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "divide (pow p (List__count p (Nat__primeFactorsList n))) n",
+    "by": "rw [← primeFactorsList_count_eq]",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "List__Subperm (Nat__primeFactorsList (pow p (List__count p (Nat__primeFactorsList n)))) (Nat__primeFactorsList n)",
+    "by": "apply dvd_of_primeFactorsList_subperm (pow_ne_zero _ hp.ne_zero)",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "forall Nat (x => if (Membership__mem (List__replicate (List__count p (Nat__primeFactorsList n)) p) x) (Leq (List__count x (List__replicate (List__count p (Nat__primeFactorsList n)) p)) (List__count x (Nat__primeFactorsList n))))",
+    "by": "rw [hp.primeFactorsList_pow, List.subperm_ext_iff]",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "q",
+      "Elem Nat"
+     ],
+     [
+      "hq",
+      "Proof (Membership__mem (List__replicate (List__count p (Nat__primeFactorsList n)) p) q)"
+     ]
+    ],
+    "by": "intro q hq",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (List__count q (List__replicate (List__count p (Nat__primeFactorsList n)) p)) (List__count q (Nat__primeFactorsList n))",
+    "by": "simp [List.eq_of_mem_replicate hq]",
+    "method": "simplification",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Nat__ordProj_dvd_ordProj_iff_dvd",
+  "lean": "Nat.ordProj_dvd_ordProj_iff_dvd",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (forall Nat (p => divide (pow p (Nat__factorization__app a p)) (pow p (Nat__factorization__app b p)))) (forall Nat (i => Leq (Nat__factorization__app a i) (Nat__factorization__app b i)))",
+    "by": "rw [← factorization_le_iff_dvd ha hb, Finsupp.le_def]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "p",
+      "Elem Nat"
+     ]
+    ],
+    "by": "congr! 1 with p",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (divide (pow p (Nat__factorization__app a p)) (pow p (Nat__factorization__app b p))) (Leq (Nat__factorization__app a p) (Nat__factorization__app b p))",
+    "by": "congr! 1 with p",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (divide (pow p (Nat__factorization__app a p)) (pow p (Nat__factorization__app b p))) (Leq (Nat__factorization__app a p) (Nat__factorization__app b p))",
+    "by": "obtain _ | _ | p := p <;> simp [Nat.pow_dvd_pow_iff_le_right]",
+    "depth": 1
+   }
+  ]
+ }
+]

@@ -1,5 +1,24 @@
 [
  {
+  "name": "HasMemOrNegMem__neg_mem_of_notMem",
+  "lean": "HasMemOrNegMem.neg_mem_of_notMem",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(or (Membership__mem s x) (Membership__mem s (Neg__neg x)))",
+    "by": "have := mem_or_inv_mem s x",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem s (Neg__neg x)",
+    "by": "simp_all",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
   "name": "HasMemOrInvMem__inv_mem_of_notMem",
   "lean": "HasMemOrInvMem.inv_mem_of_notMem",
   "steps": [
@@ -13,6 +32,7 @@
     "unit": "conclusion",
     "prop": "Membership__mem s (Inv__inv x)",
     "by": "simp_all",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -31,6 +51,26 @@
     "unit": "conclusion",
     "prop": "Membership__mem s x",
     "by": "simp_all",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "HasMemOrNegMem__mem_of_neg_notMem",
+  "lean": "HasMemOrNegMem.mem_of_neg_notMem",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(or (Membership__mem s x) (Membership__mem s (Neg__neg x)))",
+    "by": "have := mem_or_inv_mem s x",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem s x",
+    "by": "simp_all",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -48,6 +88,24 @@
    {
     "unit": "conclusion",
     "prop": "Membership__mem H (times x (Inv__inv y))",
+    "by": "exact mul_mem hx (inv_mem hy)",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "sub_mem",
+  "lean": "sub_mem",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Membership__mem H (plus x (Neg__neg y))",
+    "by": "rw [div_eq_mul_inv]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem H (plus x (Neg__neg y))",
     "by": "exact mul_mem hx (inv_mem hy)",
     "depth": 0
    }
@@ -73,6 +131,42 @@
     "unit": "conclusion",
     "prop": "Membership__mem K (Inv__inv (pow x (plus n 1)))",
     "by": "exact inv_mem (pow_mem hx n.succ)",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "zsmul_mem",
+  "lean": "zsmul_mem",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem K (HSMul__hSMul n x)",
+    "by": "exact pow_mem hx n",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem K (Neg__neg (HSMul__hSMul (plus n 1) x))",
+    "by": "rw [zpow_negSucc]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem K (Neg__neg (HSMul__hSMul (plus n 1) x))",
+    "by": "exact inv_mem (pow_mem hx n.succ)",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "exists_neg_mem_iff_exists_mem",
+  "lean": "exists_neg_mem_iff_exists_mem",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (exists G (x1 => and (Membership__mem H x1) (P (Neg__neg x1)))) (exists G (x2 => and (Membership__mem H x2) (P x2)))",
+    "by": "constructor <;>",
     "depth": 0
    }
   ]
@@ -125,6 +219,54 @@
   ]
  },
  {
+  "name": "AddSubgroupClass__subset_union",
+  "lean": "AddSubgroupClass.subset_union",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Set__Subset H (Union__union K L))"
+     ]
+    ],
+    "by": "refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "or (Leq H K) (Leq H L)",
+    "by": "refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Subset H L",
+    "by": "rw [or_iff_not_imp_left, IsConcreteLE.not_le_iff_exists, ← SetLike.coe_subset_coe]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset H L",
+    "by": "exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "AddSubgroupClass__coe_subtype",
+  "lean": "AddSubgroupClass.coe_subtype",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Elem (Subtype (x => Membership__mem H x)) -> G) (AddSubgroupClass__subtype H) (x1 => Membership__mem H x1)",
+    "by": "rfl",
+    "method": "definition",
+    "depth": 0
+   }
+  ]
+ },
+ {
   "name": "SubgroupClass__coe_subtype",
   "lean": "SubgroupClass.coe_subtype",
   "steps": [
@@ -132,6 +274,7 @@
     "unit": "conclusion",
     "prop": "Eqt (Elem (Subtype (x => Membership__mem H x)) -> G) (SubgroupClass__subtype H) (x1 => Membership__mem H x1)",
     "by": "rfl",
+    "method": "definition",
     "depth": 0
    }
   ]
@@ -150,6 +293,45 @@
     "unit": "conclusion",
     "prop": "Eqt (Subtype (x => Membership__mem H x)) (SubgroupClass__inclusion__app le_rfl val') val'",
     "by": "rfl",
+    "method": "definition",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddSubgroupClass__inclusion_self",
+  "lean": "AddSubgroupClass.inclusion_self",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eqt (Subtype (x => Membership__mem H x)) (AddSubgroupClass__inclusion__app le_rfl val') val'",
+    "by": "cases x",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Subtype (x => Membership__mem H x)) (AddSubgroupClass__inclusion__app le_rfl val') val'",
+    "by": "rfl",
+    "method": "definition",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddSubgroupClass__inclusion_right",
+  "lean": "AddSubgroupClass.inclusion_right",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eqt (Subtype (x => Membership__mem K x)) (AddSubgroupClass__inclusion__app h val') val'",
+    "by": "cases x",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Subtype (x => Membership__mem K x)) (AddSubgroupClass__inclusion__app h val') val'",
+    "by": "rfl",
+    "method": "definition",
     "depth": 0
    }
   ]
@@ -168,6 +350,7 @@
     "unit": "conclusion",
     "prop": "Eqt (Subtype (x => Membership__mem K x)) (SubgroupClass__inclusion__app h val') val'",
     "by": "rfl",
+    "method": "definition",
     "depth": 0
    }
   ]
@@ -186,6 +369,7 @@
     "unit": "conclusion",
     "prop": "Eqt (Subtype (x => Membership__mem L x)) (SubgroupClass__inclusion__app hKL (SubgroupClass__inclusion__app hHK val')) (SubgroupClass__inclusion__app (LE__le__trans hHK hKL) val')",
     "by": "rfl",
+    "method": "definition",
     "depth": 0
    }
   ]
@@ -198,6 +382,20 @@
     "unit": "conclusion",
     "prop": "Eqt G (pow x n) (pow x n)",
     "by": "dsimp",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddSubgroup__coe_zsmul",
+  "lean": "AddSubgroup.coe_zsmul",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G (HSMul__hSMul n x) (HSMul__hSMul n x)",
+    "by": "dsimp",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -216,6 +414,26 @@
     "unit": "conclusion",
     "prop": "Eqt G g (Inv__inv (Inv__inv g))",
     "by": "rw [inv_inv]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddSubgroup__Normal__addConj_mem'",
+  "lean": "AddSubgroup.Normal.addConj_mem'",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eqt G g (Neg__neg (Neg__neg g))",
+    "by": "convert nH.conj_mem n hn g⁻¹",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G g (Neg__neg (Neg__neg g))",
+    "by": "rw [inv_inv]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -234,6 +452,39 @@
     "unit": "conclusion",
     "prop": "Membership__mem H (times b a)",
     "by": "simpa",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddSubgroup__Normal__mem_comm",
+  "lean": "AddSubgroup.Normal.mem_comm",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Membership__mem H (plus (plus (Neg__neg a) (plus a b)) (Neg__neg (Neg__neg a))))",
+    "by": "have : a⁻¹ * (a * b) * a⁻¹⁻¹ ∈ H := nH.conj_mem (a * b) h a⁻¹",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem H (plus b a)",
+    "by": "simpa",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddSubgroup__mem_set_normalizer_iff''",
+  "lean": "AddSubgroup.mem_set_normalizer_iff''",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Membership__mem (AddSubgroup__normalizer S) g) (forall G (h => iff (Membership__mem S h) (Membership__mem S (plus (plus (Neg__neg g) h) g))))",
+    "by": "rw [← inv_mem_iff, mem_set_normalizer_iff, inv_inv]",
+    "method": "rewriting",
     "depth": 0
    }
   ]
@@ -246,7 +497,64 @@
     "unit": "conclusion",
     "prop": "iff (Membership__mem (Subgroup__normalizer S) g) (forall G (h => iff (Membership__mem S h) (Membership__mem S (times (times (Inv__inv g) h) g))))",
     "by": "rw [← inv_mem_iff, mem_set_normalizer_iff, inv_inv]",
+    "method": "rewriting",
     "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Set__injOn_iff_map_eq_zero",
+  "lean": "Set.injOn_iff_map_eq_zero",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eqt H (f a) (f 0)",
+    "by": "refine h ha (one_mem s) ?_",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt H (f a) (f 0)",
+    "by": "rwa [map_one]",
+    "method": "rewriting",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (forall G (a => if (Membership__mem s a) (if (Eqt H (f a) 0) (Eqt G a 0))))"
+     ],
+     [
+      "x",
+      "Elem G"
+     ],
+     [
+      "hx",
+      "Proof (Membership__mem s x)"
+     ],
+     [
+      "y",
+      "Elem G"
+     ],
+     [
+      "hy",
+      "Proof (Membership__mem s y)"
+     ],
+     [
+      "hxy",
+      "Proof (Eqt H (f x) (f y))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt G x y",
+    "by": "refine mul_inv_eq_one.1 <| h _ (mul_mem ?_ (inv_mem ?_)) ?_ <;> simp_all",
+    "depth": 1
    }
   ]
  },
@@ -264,6 +572,7 @@
     "unit": "conclusion",
     "prop": "Eqt H (f a) (f 1)",
     "by": "rwa [map_one]",
+    "method": "rewriting",
     "depth": 0
    },
    {

@@ -75,7 +75,7 @@ def Set__preimage_const_of_notMem : (X : Set) -> (Y : Set) -> (b : Elem Y) -> (s
 Set__preimage_const : (X : Set) -> (Y : Set) -> (b : Elem Y) -> (s : Elem (powerset Y)) -> Proof (Eqt (powerset X) (Set__preimage (x1 => b) s) (ite (Membership__mem s b) Set__univ EmptyCollection__emptyCollection)).
 
 (; //LEAN:Set.exists_eq_const_of_preimage_singleton ;)
-Set__exists_eq_const_of_preimage_singleton : (X : Set) -> (Y : Set) -> (_ : Proof (Nonempty Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (forall Y (b1 => or (Eqt (powerset X) (Set__preimage f (Singleton__singleton b1)) EmptyCollection__emptyCollection) (Eqt (powerset X) (Set__preimage f (Singleton__singleton b1)) Set__univ)))) -> Proof (exists Y (b => Eqt (Elem X -> Y) f (Function__const X b))).
+Set__exists_eq_const_of_preimage_singleton : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (forall Y (b1 => or (Eqt (powerset X) (Set__preimage f (Singleton__singleton b1)) EmptyCollection__emptyCollection) (Eqt (powerset X) (Set__preimage f (Singleton__singleton b1)) Set__univ)))) -> Proof (exists Y (b => Eqt (Elem X -> Y) f (Function__const X b))).
 
 (; //LEAN:Set.preimage_comp ;)
 def Set__preimage_comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> Z)) -> (s : Elem (powerset Z)) -> Proof (Eqt (powerset X) (Set__preimage (Function__comp g f) s) (Set__preimage f (Set__preimage g s))) :=
@@ -479,8 +479,8 @@ Set__range_comp_subset_range : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem
 Set__range_nonempty_iff_nonempty : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> Proof (iff (Set__Nonempty (Set__range f)) (Nonempty I)).
 
 (; //LEAN:Set.range_nonempty ;)
-def Set__range_nonempty : (X : Set) -> (I : Set) -> (_ : Proof (Nonempty I)) -> (f : (Elem I -> X)) -> Proof (Set__Nonempty (Set__range f)) :=
-  X => I => h => f => iffEr (Set__Nonempty (Set__range f)) (Nonempty I) (Set__range_nonempty_iff_nonempty X I f) h.
+def Set__range_nonempty : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> Proof (Set__Nonempty (Set__range f)) :=
+  X => I => f => iffEr (Set__Nonempty (Set__range f)) (Nonempty I) (Set__range_nonempty_iff_nonempty X I f) h.
 
 (; //LEAN:Set.range_eq_empty_iff ;)
 Set__range_eq_empty_iff : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> Proof (iff (Eqt (powerset X) (Set__range f) EmptyCollection__emptyCollection) (IsEmpty I)).
@@ -490,11 +490,11 @@ def Set__range_eq_empty : (X : Set) -> (I : Set) -> (_ : Proof (IsEmpty I)) -> (
   X => I => h => f => iffEr (Eqt (powerset X) (Set__range f) EmptyCollection__emptyCollection) (IsEmpty I) (Set__range_eq_empty_iff X I f) h.
 
 (; //LEAN:Set.range_eq_singleton_iff ;)
-Set__range_eq_singleton_iff : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (_ : Proof (Nonempty I)) -> (y : Elem X) -> Proof (iff (Eqt (powerset X) (Set__range f) (Singleton__singleton y)) (forall I (x => Eqt X (f x) y))).
+Set__range_eq_singleton_iff : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (y : Elem X) -> Proof (iff (Eqt (powerset X) (Set__range f) (Singleton__singleton y)) (forall I (x => Eqt X (f x) y))).
 
 (; //LEAN:Set.range_eq_singleton ;)
-def Set__range_eq_singleton : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (_ : Proof (Nonempty I)) -> (y : Elem X) -> (hy : Proof (forall I (x => Eqt X (f x) y))) -> Proof (Eqt (powerset X) (Set__range f) (Singleton__singleton y)) :=
-  X => I => f => h => y => hy => iffEr (Eqt (powerset X) (Set__range f) (Singleton__singleton y)) (forall I (x => Eqt X (f x) y)) (Set__range_eq_singleton_iff X I f y) hy.
+def Set__range_eq_singleton : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (y : Elem X) -> (hy : Proof (forall I (x => Eqt X (f x) y))) -> Proof (Eqt (powerset X) (Set__range f) (Singleton__singleton y)) :=
+  X => I => f => y => hy => iffEr (Eqt (powerset X) (Set__range f) (Singleton__singleton y)) (forall I (x => Eqt X (f x) y)) (Set__range_eq_singleton_iff X I f y) hy.
 
 (; //LEAN:Set.image_union_image_compl_eq_range ;)
 Set__image_union_image_compl_eq_range : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> Proof (Eqt (powerset Y) (Union__union (Set__image f s) (Set__image f (Compl__compl s))) (Set__range f)).
@@ -552,12 +552,12 @@ def Set__range_id' : (X : Set) -> Proof (Eqt (powerset X) (Set__range (x => x)) 
   X => Set__range_id X.
 
 (; //LEAN:Prod.range_fst ;)
-def Prod__range_fst : (X : Set) -> (Y : Set) -> (_ : Proof (Nonempty Y)) -> Proof (Eqt (powerset X) (Set__range Prod__fst) Set__univ) :=
-  X => Y => h => Function__Surjective__range_eq X (Prod X Y) Prod__fst (Prod__fst_surjective X Y).
+def Prod__range_fst : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset X) (Set__range Prod__fst) Set__univ) :=
+  X => Y => Function__Surjective__range_eq X (Prod X Y) Prod__fst (Prod__fst_surjective X Y).
 
 (; //LEAN:Prod.range_snd ;)
-def Prod__range_snd : (X : Set) -> (Y : Set) -> (_ : Proof (Nonempty X)) -> Proof (Eqt (powerset Y) (Set__range Prod__snd) Set__univ) :=
-  X => Y => h => Function__Surjective__range_eq Y (Prod X Y) Prod__snd (Prod__snd_surjective X Y).
+def Prod__range_snd : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset Y) (Set__range Prod__snd) Set__univ) :=
+  X => Y => Function__Surjective__range_eq Y (Prod X Y) Prod__snd (Prod__snd_surjective X Y).
 
 (; //LEAN:Set.range_eval ;)
 def Set__range_eval : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof (forall I (i1 => Nonempty (x i1)))) -> (i : Elem I) -> Proof (Eqt (powerset (x i)) (Set__range (Function__eval i)) Set__univ) :=
@@ -650,8 +650,8 @@ def Set__range_const_subset : (X : Set) -> (I : Set) -> (c : Elem X) -> Proof (S
   X => I => c => iffEr (Set__Subset (Set__range (x => c)) (Singleton__singleton c)) (forall I (y => Membership__mem (Singleton__singleton c) c)) (Set__range_subset_iff X I (x1 => c) (Singleton__singleton c)) (x2 => rfl).
 
 (; //LEAN:Set.range_const ;)
-def Set__range_const : (X : Set) -> (I : Set) -> (_ : Proof (Nonempty I)) -> (c : Elem X) -> Proof (Eqt (powerset X) (Set__range (x => c)) (Singleton__singleton c)) :=
-  X => I => h => c => Set__range_eq_singleton X I (x => c) c (forallI I (x1 => Eqt X c c) (x1 => rfl)).
+def Set__range_const : (X : Set) -> (I : Set) -> (c : Elem X) -> Proof (Eqt (powerset X) (Set__range (x => c)) (Singleton__singleton c)) :=
+  X => I => c => Set__range_eq_singleton X I (x => c) c (forallI I (x1 => Eqt X c c) (x1 => rfl)).
 
 (; //LEAN:Set.range_subtype_map ;)
 Set__range_subtype_map : (X : Set) -> (Y : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem Y -> Prop)) -> (f : (Elem X -> Y)) -> (h : Proof (forall X (x2 => if (p x2) (q (f x2))))) -> Proof (Eqt (powerset (Subtype (x => q x))) (Set__range (Subtype__map f h)) (Set__preimage q (Set__image f (Set__ofPred (x1 => p x1))))).
@@ -875,8 +875,8 @@ def Function__Involutive__preimage : (X : Set) -> (f : (Elem X -> X)) -> (hf : P
 Function__LeftInverse__image_eq : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> X)) -> (hfg : Proof (Function__LeftInverse g f)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset Y) (Set__image f s) (Inter__inter (Set__range f) (Set__preimage g s))).
 
 (; //LEAN:EquivLike.range_comp ;)
-def EquivLike__range_comp : (I : Set) -> (X : Set) -> (E : Set) -> (_ : Proof (EquivLike E I X)) -> (X1 : Set) -> (f : (Elem X -> X1)) -> (e : Elem E) -> Proof (Eqt (powerset X1) (Set__range (Function__comp f e)) (Set__range f)) :=
-  I => X => E => x => X1 => f => e => Function__Surjective__range_comp X1 I X e (EquivLike__surjective E I X e) f.
+def EquivLike__range_comp : (I : Set) -> (X : Set) -> (E : Set) -> (X1 : Set) -> (f : (Elem X -> X1)) -> (e : Elem E) -> Proof (Eqt (powerset X1) (Set__range (Function__comp f e)) (Set__range f)) :=
+  I => X => E => X1 => f => e => Function__Surjective__range_comp X1 I X e (EquivLike__surjective E I X e) f.
 
 (; //LEAN:Subtype.coe_image ;)
 Subtype__coe_image : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (powerset (Subtype (x1 => p x1)))) -> Proof (Eqt (powerset X) (Set__image p s) (Set__ofPred (x => exists (p x) (h => Membership__mem s x)))).

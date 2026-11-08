@@ -1,0 +1,178 @@
+(; Mathlib.Data.Nat.GCD.Basic: statements exported from Mathlib by MathlibInformath/Export.lean ;)
+
+(; //LEAN:Nat.gcd_greatest ;)
+def Nat__gcd_greatest : (a : Elem Nat) -> (b : Elem Nat) -> (d : Elem Nat) -> (hda : Proof (divide d a)) -> (hdb : Proof (divide d b)) -> (hd : Proof (forall Nat (e => if (divide e a) (if (divide e b) (divide e d))))) -> Proof (Eq d (gcd a b)) :=
+  a => b => d => hda => hdb => hd => Eq__symm Nat (gcd a b) d (dvd_antisymm Nat (gcd a b) d (ifE (divide (gcd a b) b) (divide (gcd a b) d) (ifE (divide (gcd a b) a) (if (divide (gcd a b) b) (divide (gcd a b) d)) (forallE Nat (e => if (divide e a) (if (divide e b) (divide e d))) hd (gcd a b)) (Nat__gcd_dvd_left a b)) (Nat__gcd_dvd_right a b)) (Nat__dvd_gcd d a b hda hdb)).
+
+(; //LEAN:Nat.gcd_right_comm ;)
+Nat__gcd_right_comm : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> Proof (Eq (gcd (gcd a b) c) (gcd (gcd a c) b)).
+
+(; //LEAN:Nat.gcd_gcd_gcd_right ;)
+Nat__gcd_gcd_gcd_right : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> Proof (Eq (gcd (gcd a c) (gcd b c)) (gcd (gcd a b) c)).
+
+(; //LEAN:Nat.gcd_gcd_gcd_left ;)
+Nat__gcd_gcd_gcd_left : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> Proof (Eq (gcd (gcd c a) (gcd c b)) (gcd c (gcd a b))).
+
+(; //LEAN:Nat.pow_sub_one_mod_pow_sub_one ;)
+Nat__pow_sub_one_mod_pow_sub_one : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> Proof (Eq (HMod__hMod (minus (pow a c) 1) (minus (pow a b) 1)) (minus (pow a (HMod__hMod c b)) 1)).
+
+(; //LEAN:Nat.pow_sub_one_gcd_pow_sub_one ;)
+Nat__pow_sub_one_gcd_pow_sub_one : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> Proof (Eq (gcd (minus (pow a b) 1) (minus (pow a c) 1)) (minus (pow a (gcd b c)) 1)).
+
+(; //LEAN:Nat.dvd_lcm_of_dvd_left ;)
+def Nat__dvd_lcm_of_dvd_left : (a : Elem Nat) -> (b : Elem Nat) -> (h : Proof (divide a b)) -> (c : Elem Nat) -> Proof (divide a (Nat__lcm b c)) :=
+  a => b => h => c => Dvd__dvd__trans Nat a b (Nat__lcm b c) h (Nat__dvd_lcm_left b c).
+
+(; //LEAN:Nat.Dvd.dvd.nat_lcm_right ;)
+def Nat__Dvd__dvd__nat_lcm_right : (a : Elem Nat) -> (b : Elem Nat) -> (h : Proof (divide a b)) -> (c : Elem Nat) -> Proof (divide a (Nat__lcm b c)) :=
+  Nat__dvd_lcm_of_dvd_left.
+
+(; //LEAN:Nat.dvd_of_lcm_right_dvd ;)
+def Nat__dvd_of_lcm_right_dvd : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> (h : Proof (divide (Nat__lcm a b) c)) -> Proof (divide a c) :=
+  a => b => c => h => Dvd__dvd__trans Nat a (Nat__lcm a b) c (Nat__dvd_lcm_left a b) h.
+
+(; //LEAN:Nat.dvd_lcm_of_dvd_right ;)
+def Nat__dvd_lcm_of_dvd_right : (a : Elem Nat) -> (b : Elem Nat) -> (h : Proof (divide a b)) -> (c : Elem Nat) -> Proof (divide a (Nat__lcm c b)) :=
+  a => b => h => c => Dvd__dvd__trans Nat a b (Nat__lcm c b) h (Nat__dvd_lcm_right c b).
+
+(; //LEAN:Nat.Dvd.dvd.nat_lcm_left ;)
+def Nat__Dvd__dvd__nat_lcm_left : (a : Elem Nat) -> (b : Elem Nat) -> (h : Proof (divide a b)) -> (c : Elem Nat) -> Proof (divide a (Nat__lcm c b)) :=
+  Nat__dvd_lcm_of_dvd_right.
+
+(; //LEAN:Nat.dvd_of_lcm_left_dvd ;)
+def Nat__dvd_of_lcm_left_dvd : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> (h : Proof (divide (Nat__lcm a b) c)) -> Proof (divide b c) :=
+  a => b => c => h => Dvd__dvd__trans Nat b (Nat__lcm a b) c (Nat__dvd_lcm_right a b) h.
+
+(; //LEAN:Nat.Coprime.lcm_eq_mul ;)
+Nat__Coprime__lcm_eq_mul : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Nat__Coprime m n)) -> Proof (Eq (Nat__lcm m n) (times m n)).
+
+(; //LEAN:Nat.Coprime.dvd_mul_right ;)
+def Nat__Coprime__dvd_mul_right : (m : Elem Nat) -> (n : Elem Nat) -> (k : Elem Nat) -> (H : Proof (Nat__Coprime k n)) -> Proof (iff (divide k (times m n)) (divide k m)) :=
+  m => n => k => H => iffI (divide k (times m n)) (divide k m) (Nat__Coprime__dvd_of_dvd_mul_right k n m H) (h => dvd_mul_of_dvd_left Nat k m h n).
+
+(; //LEAN:Nat.Coprime.dvd_mul_left ;)
+def Nat__Coprime__dvd_mul_left : (m : Elem Nat) -> (n : Elem Nat) -> (k : Elem Nat) -> (H : Proof (Nat__Coprime k m)) -> Proof (iff (divide k (times m n)) (divide k n)) :=
+  m => n => k => H => iffI (divide k (times m n)) (divide k n) (Nat__Coprime__dvd_of_dvd_mul_left k m n H) (h => dvd_mul_of_dvd_right Nat k n h m).
+
+(; //LEAN:Nat.coprime_add_self_right ;)
+Nat__coprime_add_self_right : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Nat__Coprime m (plus n m)) (Nat__Coprime m n)).
+
+(; //LEAN:Nat.coprime_self_add_right ;)
+Nat__coprime_self_add_right : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Nat__Coprime m (plus m n)) (Nat__Coprime m n)).
+
+(; //LEAN:Nat.coprime_add_self_left ;)
+Nat__coprime_add_self_left : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Nat__Coprime (plus m n) n) (Nat__Coprime m n)).
+
+(; //LEAN:Nat.coprime_self_add_left ;)
+Nat__coprime_self_add_left : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Nat__Coprime (plus m n) m) (Nat__Coprime n m)).
+
+(; //LEAN:Nat.coprime_add_mul_right_right ;)
+Nat__coprime_add_mul_right_right : (m : Elem Nat) -> (n : Elem Nat) -> (k : Elem Nat) -> Proof (iff (Nat__Coprime m (plus n (times k m))) (Nat__Coprime m n)).
+
+(; //LEAN:Nat.coprime_add_mul_left_right ;)
+Nat__coprime_add_mul_left_right : (m : Elem Nat) -> (n : Elem Nat) -> (k : Elem Nat) -> Proof (iff (Nat__Coprime m (plus n (times m k))) (Nat__Coprime m n)).
+
+(; //LEAN:Nat.coprime_mul_right_add_right ;)
+Nat__coprime_mul_right_add_right : (m : Elem Nat) -> (n : Elem Nat) -> (k : Elem Nat) -> Proof (iff (Nat__Coprime m (plus (times k m) n)) (Nat__Coprime m n)).
+
+(; //LEAN:Nat.coprime_mul_left_add_right ;)
+Nat__coprime_mul_left_add_right : (m : Elem Nat) -> (n : Elem Nat) -> (k : Elem Nat) -> Proof (iff (Nat__Coprime m (plus (times m k) n)) (Nat__Coprime m n)).
+
+(; //LEAN:Nat.coprime_add_mul_right_left ;)
+Nat__coprime_add_mul_right_left : (m : Elem Nat) -> (n : Elem Nat) -> (k : Elem Nat) -> Proof (iff (Nat__Coprime (plus m (times k n)) n) (Nat__Coprime m n)).
+
+(; //LEAN:Nat.coprime_add_mul_left_left ;)
+Nat__coprime_add_mul_left_left : (m : Elem Nat) -> (n : Elem Nat) -> (k : Elem Nat) -> Proof (iff (Nat__Coprime (plus m (times n k)) n) (Nat__Coprime m n)).
+
+(; //LEAN:Nat.coprime_mul_right_add_left ;)
+Nat__coprime_mul_right_add_left : (m : Elem Nat) -> (n : Elem Nat) -> (k : Elem Nat) -> Proof (iff (Nat__Coprime (plus (times k n) m) n) (Nat__Coprime m n)).
+
+(; //LEAN:Nat.coprime_mul_left_add_left ;)
+Nat__coprime_mul_left_add_left : (m : Elem Nat) -> (n : Elem Nat) -> (k : Elem Nat) -> Proof (iff (Nat__Coprime (plus (times n k) m) n) (Nat__Coprime m n)).
+
+(; //LEAN:Nat.add_coprime_iff_left ;)
+Nat__add_coprime_iff_left : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> (h : Proof (divide c b)) -> Proof (iff (Nat__Coprime (plus a b) c) (Nat__Coprime a c)).
+
+(; //LEAN:Nat.add_coprime_iff_right ;)
+Nat__add_coprime_iff_right : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> (h : Proof (divide c a)) -> Proof (iff (Nat__Coprime (plus a b) c) (Nat__Coprime b c)).
+
+(; //LEAN:Nat.coprime_add_iff_left ;)
+Nat__coprime_add_iff_left : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> (h : Proof (divide a c)) -> Proof (iff (Nat__Coprime a (plus b c)) (Nat__Coprime a b)).
+
+(; //LEAN:Nat.coprime_add_iff_right ;)
+Nat__coprime_add_iff_right : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> (h : Proof (divide a b)) -> Proof (iff (Nat__Coprime a (plus b c)) (Nat__Coprime a c)).
+
+(; //LEAN:Nat.Coprime.of_dvd_left ;)
+def Nat__Coprime__of_dvd_left : (x : Elem Nat) -> (x1 : Elem Nat) -> (b : Elem Nat) -> (ha : Proof (divide x x1)) -> (h : Proof (Nat__Coprime x1 b)) -> Proof (Nat__Coprime x b) :=
+  x => x1 => b => ha => h => Nat__Coprime__coprime_dvd_left x x1 b ha h.
+
+(; //LEAN:Nat.Coprime.of_dvd_right ;)
+def Nat__Coprime__of_dvd_right : (a : Elem Nat) -> (x : Elem Nat) -> (x1 : Elem Nat) -> (hb : Proof (divide x x1)) -> (h : Proof (Nat__Coprime a x1)) -> Proof (Nat__Coprime a x) :=
+  a => x => x1 => hb => h => Nat__Coprime__coprime_dvd_right x x1 a hb h.
+
+(; //LEAN:Nat.Coprime.of_dvd ;)
+def Nat__Coprime__of_dvd : (x : Elem Nat) -> (x1 : Elem Nat) -> (x2 : Elem Nat) -> (x3 : Elem Nat) -> (ha : Proof (divide x x1)) -> (hb : Proof (divide x2 x3)) -> (h : Proof (Nat__Coprime x1 x3)) -> Proof (Nat__Coprime x x2) :=
+  x => x1 => x2 => x3 => ha => hb => h => Nat__Coprime__of_dvd_right x x2 x3 hb (Nat__Coprime__of_dvd_left x x1 x3 ha h).
+
+(; //LEAN:Nat.coprime_sub_self_left ;)
+Nat__coprime_sub_self_left : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Leq m n)) -> Proof (iff (Nat__Coprime (minus n m) m) (Nat__Coprime n m)).
+
+(; //LEAN:Nat.coprime_sub_self_right ;)
+Nat__coprime_sub_self_right : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Leq m n)) -> Proof (iff (Nat__Coprime m (minus n m)) (Nat__Coprime m n)).
+
+(; //LEAN:Nat.coprime_self_sub_left ;)
+Nat__coprime_self_sub_left : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Leq m n)) -> Proof (iff (Nat__Coprime (minus n m) n) (Nat__Coprime m n)).
+
+(; //LEAN:Nat.coprime_self_sub_right ;)
+Nat__coprime_self_sub_right : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Leq m n)) -> Proof (iff (Nat__Coprime n (minus n m)) (Nat__Coprime n m)).
+
+(; //LEAN:Nat.coprime_pow_left_iff ;)
+Nat__coprime_pow_left_iff : (n : Elem Nat) -> (hn : Proof (Lt 0 n)) -> (a : Elem Nat) -> (b : Elem Nat) -> Proof (iff (Nat__Coprime (pow a n) b) (Nat__Coprime a b)).
+
+(; //LEAN:Nat.coprime_pow_right_iff ;)
+Nat__coprime_pow_right_iff : (n : Elem Nat) -> (hn : Proof (Lt 0 n)) -> (a : Elem Nat) -> (b : Elem Nat) -> Proof (iff (Nat__Coprime a (pow b n)) (Nat__Coprime a b)).
+
+(; //LEAN:Nat.not_coprime_zero_zero ;)
+Nat__not_coprime_zero_zero : Proof (not (Nat__Coprime 0 0)).
+
+(; //LEAN:Nat.coprime_one_left_iff ;)
+Nat__coprime_one_left_iff : (n : Elem Nat) -> Proof (iff (Nat__Coprime 1 n) True).
+
+(; //LEAN:Nat.coprime_one_right_iff ;)
+Nat__coprime_one_right_iff : (n : Elem Nat) -> Proof (iff (Nat__Coprime n 1) True).
+
+(; //LEAN:Nat.gcd_mul_of_coprime_of_dvd ;)
+Nat__gcd_mul_of_coprime_of_dvd : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> (hac : Proof (Nat__Coprime a c)) -> (b_dvd_c : Proof (divide b c)) -> Proof (Eq (gcd (times a b) c) b).
+
+(; //LEAN:Nat.Coprime.eq_of_mul_eq_zero ;)
+Nat__Coprime__eq_of_mul_eq_zero : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Nat__Coprime m n)) -> (hmn : Proof (Eq (times m n) 0)) -> Proof (or (and (Eq m 0) (Eq n 1)) (and (Eq m 1) (Eq n 0))).
+
+(; //LEAN:Nat.coprime_iff_isRelPrime ;)
+Nat__coprime_iff_isRelPrime : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Nat__Coprime m n) (IsRelPrime m n)).
+
+(; //LEAN:Nat.eq_one_of_dvd_coprimes ;)
+def Nat__eq_one_of_dvd_coprimes : (a : Elem Nat) -> (b : Elem Nat) -> (k : Elem Nat) -> (h_ab_coprime : Proof (Nat__Coprime a b)) -> (hka : Proof (divide k a)) -> (hkb : Proof (divide k b)) -> Proof (Eq k 1) :=
+  a => b => k => h_ab_coprime => hka => hkb => iffEl (divide k 1) (Eq k 1) (Nat__dvd_one k) (iffEl (IsUnit k) (divide k 1) (isUnit_iff_dvd_one Nat k) (iffEl (Nat__Coprime a b) (IsRelPrime a b) (Nat__coprime_iff_isRelPrime a b) h_ab_coprime k hka hkb)).
+
+(; //LEAN:Nat.Coprime.mul_add_mul_ne_mul ;)
+Nat__Coprime__mul_add_mul_ne_mul : (m : Elem Nat) -> (n : Elem Nat) -> (a : Elem Nat) -> (b : Elem Nat) -> (cop : Proof (Nat__Coprime m n)) -> (ha : Proof (Neq a 0)) -> (hb : Proof (Neq b 0)) -> Proof (Neq (plus (times a m) (times b n)) (times m n)).
+
+(; //LEAN:Nat.gcd_mul_gcd_eq_iff_dvd_mul_of_coprime ;)
+Nat__gcd_mul_gcd_eq_iff_dvd_mul_of_coprime : (x : Elem Nat) -> (n : Elem Nat) -> (m : Elem Nat) -> (hcop : Proof (Nat__Coprime n m)) -> Proof (iff (Eq (times (gcd x n) (gcd x m)) x) (divide x (times n m))).
+
+(; //LEAN:Nat.div_mul_div ;)
+Nat__div_mul_div : (n : Elem Nat) -> (m : Elem Nat) -> (k : Elem Nat) -> (hkm : Proof (divide m k)) -> (hkn : Proof (divide n m)) -> Proof (Eq (times (div k m) (div m n)) (div k n)).
+
+(; //LEAN:Nat.div_dvd_div_left ;)
+def Nat__div_dvd_div_left : (n : Elem Nat) -> (m : Elem Nat) -> (k : Elem Nat) -> (hkm : Proof (divide m k)) -> (hkn : Proof (divide n m)) -> Proof (divide (div k m) (div k n)) :=
+  n => m => k => hkm => hkn => existsI Nat (c => Eq (div k n) (times (div k m) c)) (div m n) (Eq__symm Nat (times (div k m) (div m n)) (div k n) (Nat__div_mul_div n m k hkm hkn)).
+
+(; //LEAN:Nat.div_dvd_div_iff_left ;)
+Nat__div_dvd_div_iff_left : (n : Elem Nat) -> (m : Elem Nat) -> (k : Elem Nat) -> (hk : Proof (Lt 0 k)) -> (hmk : Proof (divide m k)) -> (hnk : Proof (divide n k)) -> Proof (iff (divide (div k m) (div k n)) (divide n m)).
+
+(; //LEAN:Nat.div_dvd_div_iff_right ;)
+Nat__div_dvd_div_iff_right : (n : Elem Nat) -> (m : Elem Nat) -> (k : Elem Nat) -> (hkm : Proof (divide k m)) -> (hkn : Proof (divide k n)) -> Proof (iff (divide (div m k) (div n k)) (divide m n)).
+
+(; //LEAN:Nat.div_lcm_eq_div_gcd ;)
+Nat__div_lcm_eq_div_gcd : (n : Elem Nat) -> (m : Elem Nat) -> (k : Elem Nat) -> (hkm : Proof (divide m k)) -> (hkn : Proof (divide n k)) -> Proof (Eq (Nat__lcm (div k m) (div k n)) (div k (gcd m n))).
+

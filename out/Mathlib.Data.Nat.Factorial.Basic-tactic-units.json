@@ -1,0 +1,1953 @@
+[
+ {
+  "name": "Nat__factorial_dvd_factorial",
+  "lean": "Nat.factorial_dvd_factorial",
+  "steps": [
+   {
+    "unit": "induction",
+    "by": "induction h with",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (factorial m) (factorial m)",
+    "by": "exact Nat.dvd_refl _",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ih",
+      "Proof (divide (factorial m) (factorial m'))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (factorial m) (factorial (succ m'))",
+    "by": "exact Nat.dvd_trans ih (Nat.dvd_mul_left _ _)",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorial_mul_pow_le_factorial",
+  "lean": "Nat.factorial_mul_pow_le_factorial",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times (factorial m) (pow (plus m 1) 0)) (factorial (plus m 0))",
+    "by": "simp",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (times (times (factorial m) (pow (plus m 1) n)) (plus m 1)) (times (factorial (plus m n)) (plus (plus m n) 1))",
+    "by": "rw [← Nat.add_assoc, factorial_succ, Nat.mul_comm (_ + 1), Nat.pow_succ, ← Nat.mul_assoc]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times (times (factorial m) (pow (plus m 1) n)) (plus m 1)) (times (factorial (plus m n)) (plus (plus m n) 1))",
+    "by": "exact Nat.mul_le_mul factorial_mul_pow_le_factorial (succ_le_succ (le_add_right _ _))",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorial_lt",
+  "lean": "Nat.factorial_lt",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Lt n m)"
+     ]
+    ],
+    "by": "refine ⟨fun h => not_le.mp fun hmn => Nat.not_le_of_gt h (factorial_le hmn), fun h => ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (factorial n) (factorial m)",
+    "by": "refine ⟨fun h => not_le.mp fun hmn => Nat.not_le_of_gt h (factorial_le hmn), fun h => ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(forall Nat (n => if (Lt 0 n) (Lt (factorial n) (factorial (plus n 1)))))",
+    "by": "have : ∀ {n}, 0 < n → n ! < (n + 1)!",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ],
+     [
+      "hk",
+      "Proof (Lt 0 k)"
+     ]
+    ],
+    "by": "intro k hk",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt 0 (times k (factorial k))",
+    "by": "rw [factorial_succ, succ_mul, Nat.lt_add_left_iff_pos]",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt 0 (times k (factorial k))",
+    "by": "exact Nat.mul_pos hk k.factorial_pos",
+    "depth": 2
+   },
+   {
+    "unit": "induction",
+    "by": "induction h generalizing hn with",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (factorial n) (factorial (succ n))",
+    "by": "exact this hn",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hnk",
+      "Proof (Nat__le (succ n) m')"
+     ],
+     [
+      "ih",
+      "Proof (if (Lt 0 n) (Lt (factorial n) (factorial m')))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (factorial n) (factorial (succ m'))",
+    "by": "exact lt_trans (ih hn) <| this <| lt_trans hn <| lt_of_succ_le hnk",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorial_eq_one",
+  "lean": "Nat.factorial_eq_one",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "and (if (Eq (factorial n) 1) (Leq n 1)) (if (Leq n 1) (Eq (factorial n) 1))",
+    "by": "constructor",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Eq (factorial n) 1)"
+     ]
+    ],
+    "by": "intro h",
+    "goal": "Leq n 1",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "not (Lt 1 1)",
+    "by": "rw [← not_lt, ← one_lt_factorial, h]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "not (Lt 1 1)",
+    "by": "apply lt_irrefl",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (Leq n 1) (Eq (factorial n) 1)",
+    "by": "rintro (_ | _ | _) <;> rfl",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorial_inj",
+  "lean": "Nat.factorial_inj",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Eq (factorial n) (factorial m))"
+     ]
+    ],
+    "by": "refine ⟨fun h => ?_, congr_arg _⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq n m",
+    "by": "refine ⟨fun h => ?_, congr_arg _⟩",
+    "depth": 0
+   },
+   {
+    "unit": "cases",
+    "by": "obtain hnm | rfl | hnm := lt_trichotomy n m",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hnm",
+      "Proof (Lt n m)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt (factorial m) (factorial m))",
+    "by": "rw [← factorial_lt <| lt_of_succ_lt hn, h] at hnm",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq n m",
+    "by": "cases lt_irrefl _ hnm",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Eq (factorial n) (factorial n))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq n n",
+    "by": "rfl",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hnm",
+      "Proof (Lt m n)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt 1 m)",
+    "by": "rw [← one_lt_factorial, h, one_lt_factorial] at hn",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt (factorial m) (factorial m))",
+    "by": "rw [← factorial_lt <| lt_of_succ_lt hn, h] at hnm",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq n m",
+    "by": "cases lt_irrefl _ hnm",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorial_inj'",
+  "lean": "Nat.factorial_inj'",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "obtain hn | hm := h",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hn",
+      "Proof (Lt 1 n)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eq (factorial n) (factorial m)) (Eq n m)",
+    "by": "exact factorial_inj hn",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hm",
+      "Proof (Lt 1 m)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eq (factorial n) (factorial m)) (Eq n m)",
+    "by": "rw [eq_comm, factorial_inj hm, eq_comm]",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__lt_factorial_self",
+  "lean": "Nat.lt_factorial_self",
+  "steps": [
+   {
+    "unit": "verify",
+    "prop": "(Lt 0 n)",
+    "by": "have : 0 < n := by lia",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt 0 n",
+    "by": "lia",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt 1 (Nat__pred n))",
+    "by": "have hn : 1 < pred n := le_pred_of_lt (succ_le_iff.mp hi)",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (succ (Nat__pred n)) (times (plus (Nat__pred n) 1) (factorial (Nat__pred n)))",
+    "by": "rw [← succ_pred_eq_of_pos ‹0 < n›, factorial_succ]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (succ (Nat__pred n)) (times (plus (Nat__pred n) 1) (factorial (Nat__pred n)))",
+    "by": "exact (Nat.lt_mul_iff_one_lt_right (pred n).succ_pos).2",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_factorial_succ_lt_factorial_add_succ",
+  "lean": "Nat.add_factorial_succ_lt_factorial_add_succ",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Lt (plus i (factorial (plus n 1))) (plus (times (plus i n) (factorial (plus i n))) (factorial (plus i n)))",
+    "by": "rw [factorial_succ (i + _), Nat.add_mul, Nat.one_mul]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Leq (plus i n) (factorial (plus i n)))",
+    "by": "have := (i + n).self_le_factorial",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (plus i (factorial (plus n 1))) (plus (times (plus i n) (factorial (plus i n))) (factorial (plus i n)))",
+    "by": "refine Nat.add_lt_add_of_lt_of_le (Nat.lt_of_le_of_lt ?_ ((Nat.lt_mul_iff_one_lt_right ?_).2 ?_))",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_factorial_lt_factorial_add",
+  "lean": "Nat.add_factorial_lt_factorial_add",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "cases hn",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (plus i 1) (factorial (plus i 1))",
+    "by": "rw [factorial_one]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (plus i 1) (factorial (plus i 1))",
+    "by": "exact lt_factorial_self (succ_le_succ hi)",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (plus i (factorial (succ m'))) (factorial (plus i (succ m')))",
+    "by": "exact add_factorial_succ_lt_factorial_add_succ _ hi",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_factorial_succ_le_factorial_add_succ",
+  "lean": "Nat.add_factorial_succ_le_factorial_add_succ",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "cases (le_or_gt (2 : ℕ) i)",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (plus i (factorial (plus n 1))) (factorial (plus (plus i n) 1))",
+    "by": "rw [← Nat.add_assoc]",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (plus i (factorial (plus n 1))) (factorial (plus (plus i n) 1))",
+    "by": "apply Nat.le_of_lt",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq 2 i",
+    "by": "apply add_factorial_succ_lt_factorial_add_succ",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq 2 i",
+    "by": "assumption",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (plus i (factorial (plus n 1))) (factorial (plus i (plus n 1)))",
+    "by": "match i with",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (plus 0 (factorial (plus n 1))) (factorial (plus 0 (plus n 1)))",
+    "by": "simp",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq 1 (times (plus n 1) (factorial (plus n 1)))",
+    "by": "rw [← Nat.add_assoc, factorial_succ (1 + n), Nat.add_mul, Nat.one_mul, Nat.add_comm 1 n,",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq 1 (times (plus n 1) (factorial (plus n 1)))",
+    "by": "exact Nat.mul_pos n.succ_pos n.succ.factorial_pos",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (plus (succ (succ n)) (factorial (plus n 1))) (factorial (plus (succ (succ n)) (plus n 1)))",
+    "by": "contradiction",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_factorial_le_factorial_add",
+  "lean": "Nat.add_factorial_le_factorial_add",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "rcases n1 with - | @h",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (plus i (factorial 1)) (factorial (plus i 1))",
+    "by": "exact self_le_factorial _",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (plus i (factorial (succ h))) (factorial (plus i (succ h)))",
+    "by": "exact add_factorial_succ_le_factorial_add_succ i h",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorial_mul_pow_sub_le_factorial",
+  "lean": "Nat.factorial_mul_pow_sub_le_factorial",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times (factorial n) (pow n (minus m n))) (factorial m)",
+    "by": "calc",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times (factorial n) (pow (plus n 1) (minus m n))) (factorial m)",
+    "by": "simpa [hnm] using @Nat.factorial_mul_pow_le_factorial n (m - n)",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__zero_ascFactorial",
+  "lean": "Nat.zero_ascFactorial",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__ascFactorial 0 (succ 0)) 0",
+    "by": "rw [ascFactorial_succ, ascFactorial_zero, Nat.zero_add, Nat.zero_mul]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__ascFactorial 0 (succ (plus k 1))) 0",
+    "by": "rw [ascFactorial_succ, zero_ascFactorial k, Nat.mul_zero]",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__one_ascFactorial",
+  "lean": "Nat.one_ascFactorial",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__ascFactorial 1 (plus k 1)) (factorial (plus k 1))",
+    "by": "rw [ascFactorial_succ, one_ascFactorial k, Nat.add_comm, factorial_succ]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__succ_ascFactorial",
+  "lean": "Nat.succ_ascFactorial",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times n (Nat__ascFactorial (succ n) 0)) (times (plus n 0) (Nat__ascFactorial n 0))",
+    "by": "rw [Nat.add_zero, ascFactorial_zero, ascFactorial_zero]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times n (Nat__ascFactorial (succ n) (plus k 1))) (times (plus n (plus k 1)) (Nat__ascFactorial n (plus k 1)))",
+    "by": "rw [ascFactorial, Nat.mul_left_comm, succ_ascFactorial n k, ascFactorial, succ_add,",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorial_mul_ascFactorial",
+  "lean": "Nat.factorial_mul_ascFactorial",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (factorial n) (Nat__ascFactorial (plus n 1) 0)) (factorial (plus n 0))",
+    "by": "rw [ascFactorial_zero, Nat.add_zero, Nat.mul_one]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (factorial n) (Nat__ascFactorial (plus n 1) (plus k 1))) (factorial (plus n (plus k 1)))",
+    "by": "rw [ascFactorial_succ, ← Nat.add_assoc, factorial_succ, Nat.mul_comm (n + 1 + k),",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorial_mul_ascFactorial'",
+  "lean": "Nat.factorial_mul_ascFactorial'",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eq (times (factorial (Nat__pred n)) (Nat__ascFactorial n k)) (factorial (plus (Nat__pred n) k))",
+    "by": "rw [Nat.sub_add_comm h, Nat.sub_one]",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (times (factorial (Nat__pred n)) (Nat__ascFactorial (plus (minus n (succ 0)) (succ 0)) k)) (factorial (plus (Nat__pred n) k))",
+    "by": "nth_rw 2 [Nat.eq_add_of_sub_eq h rfl]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (factorial (Nat__pred n)) (Nat__ascFactorial (plus (minus n (succ 0)) (succ 0)) k)) (factorial (plus (Nat__pred n) k))",
+    "by": "rw [Nat.sub_one, factorial_mul_ascFactorial]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ascFactorial_mul_ascFactorial",
+  "lean": "Nat.ascFactorial_mul_ascFactorial",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (Nat__ascFactorial n l) (Nat__ascFactorial (plus n l) k)) (Nat__ascFactorial n (plus l k))",
+    "by": "cases n with",
+    "depth": 0
+   },
+   {
+    "unit": "cases",
+    "by": "cases l",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (Nat__ascFactorial 0 0) (Nat__ascFactorial (plus 0 0) k)) (Nat__ascFactorial 0 (plus 0 k))",
+    "by": "simp only [ascFactorial_zero, Nat.add_zero, Nat.one_mul, Nat.zero_add]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (Nat__ascFactorial 0 (plus n' 1)) (Nat__ascFactorial (plus 0 (plus n' 1)) k)) (Nat__ascFactorial 0 (plus (plus n' 1) k))",
+    "by": "simp only [Nat.add_right_comm, zero_ascFactorial, Nat.zero_add, Nat.zero_mul]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n'",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (times (factorial n') (times (Nat__ascFactorial (plus n' 1) l) (Nat__ascFactorial (plus (plus n' 1) l) k))) (times (factorial n') (Nat__ascFactorial (plus n' 1) (plus l k)))",
+    "by": "apply Nat.mul_left_cancel (factorial_pos n')",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (times (factorial (plus n' l)) (Nat__ascFactorial (plus n' (plus 1 l)) k)) (factorial (plus n' (plus l k)))",
+    "by": "simp only [Nat.add_assoc, ← Nat.mul_assoc, factorial_mul_ascFactorial]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (factorial (plus n' l)) (Nat__ascFactorial (plus n' (plus 1 l)) k)) (factorial (plus n' (plus l k)))",
+    "by": "rw [Nat.add_comm 1 l, ← Nat.add_assoc, factorial_mul_ascFactorial, Nat.add_assoc]",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__ascFactorial_of_sub",
+  "lean": "Nat.ascFactorial_of_sub",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (minus n k) (Nat__ascFactorial (plus (minus n k) 1) k)) (Nat__ascFactorial (minus n k) (plus k 1))",
+    "by": "rw [succ_ascFactorial, ascFactorial_succ]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ascFactorial_le",
+  "lean": "Nat.ascFactorial_le",
+  "steps": [
+   {
+    "unit": "induction",
+    "by": "induction k with",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__ascFactorial n 0) (Nat__ascFactorial m 0)",
+    "by": "rfl",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ih",
+      "Proof (Leq (Nat__ascFactorial n k) (Nat__ascFactorial m k))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__ascFactorial n (plus k 1)) (Nat__ascFactorial m (plus k 1))",
+    "by": "exact Nat.mul_le_mul (by lia) ih",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (plus n k) (plus m k)",
+    "by": "lia",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__pow_succ_le_ascFactorial",
+  "lean": "Nat.pow_succ_le_ascFactorial",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Leq (pow n 0) (Nat__ascFactorial n 0)",
+    "by": "rw [ascFactorial_zero, Nat.pow_zero]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (times n (pow n k)) (times n (Nat__ascFactorial (succ n) k))",
+    "by": "rw [Nat.pow_succ, Nat.mul_comm, ascFactorial_succ, ← succ_ascFactorial]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times n (pow n k)) (times n (Nat__ascFactorial (succ n) k))",
+    "by": "exact Nat.mul_le_mul (Nat.le_refl n)",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__pow_lt_ascFactorial'",
+  "lean": "Nat.pow_lt_ascFactorial'",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Lt (times (plus n 1) (pow (plus n 1) (plus k 1))) (times (plus (plus n 1) (plus k 1)) (Nat__ascFactorial (plus n 1) (plus k 1)))",
+    "by": "rw [Nat.pow_succ, ascFactorial, Nat.mul_comm]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (times (plus n 1) (pow (plus n 1) (plus k 1))) (times (plus (plus n 1) (plus k 1)) (Nat__ascFactorial (plus n 1) (plus k 1)))",
+    "by": "exact Nat.mul_lt_mul_of_lt_of_le' (Nat.lt_add_of_pos_right k.succ_pos)",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__pow_lt_ascFactorial",
+  "lean": "Nat.pow_lt_ascFactorial",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "if (Leq 2 0) (Lt (pow (plus n 1) 0) (Nat__ascFactorial (plus n 1) 0))",
+    "by": "rintro ⟨⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "_h",
+      "Proof (Leq 2 1)"
+     ]
+    ],
+    "goal": "Lt (pow (plus n 1) 1) (Nat__ascFactorial (plus n 1) 1)",
+    "by": "intro",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (pow (plus n 1) 1) (Nat__ascFactorial (plus n 1) 1)",
+    "by": "contradiction",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__ascFactorial_le_pow_add",
+  "lean": "Nat.ascFactorial_le_pow_add",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__ascFactorial (plus n 1) 0) (pow (plus n 0) 0)",
+    "by": "rw [ascFactorial_zero, Nat.pow_zero]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (times (Nat__ascFactorial (plus n 1) k) (plus (plus n k) 1)) (times (pow (plus (plus n k) 1) k) (plus (plus n k) 1))",
+    "by": "rw [ascFactorial_succ, Nat.pow_succ, Nat.mul_comm, ← Nat.add_assoc, Nat.add_right_comm n 1 k]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times (Nat__ascFactorial (plus n 1) k) (plus (plus n k) 1)) (times (pow (plus (plus n k) 1) k) (plus (plus n k) 1))",
+    "by": "exact Nat.mul_le_mul_right _",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__ascFactorial_lt_pow_add",
+  "lean": "Nat.ascFactorial_lt_pow_add",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "if (Leq 2 0) (Lt (Nat__ascFactorial (plus n 1) 0) (pow (plus n 0) 0))",
+    "by": "rintro ⟨⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "_h",
+      "Proof (Leq 2 1)"
+     ]
+    ],
+    "goal": "Lt (Nat__ascFactorial (plus n 1) 1) (pow (plus n 1) 1)",
+    "by": "intro",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (Nat__ascFactorial (plus n 1) 1) (pow (plus n 1) 1)",
+    "by": "contradiction",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (times (plus n (succ (plus k 1))) (Nat__ascFactorial (plus n 1) (plus k 1))) (times (plus n (plus k 2)) (pow (plus n (plus k 2)) (plus k 1)))",
+    "by": "rw [Nat.pow_succ, Nat.mul_comm, ascFactorial_succ, succ_add_eq_add_succ n (k + 1)]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (times (plus n (succ (plus k 1))) (Nat__ascFactorial (plus n 1) (plus k 1))) (times (plus n (plus k 2)) (pow (plus n (plus k 2)) (plus k 1)))",
+    "by": "exact Nat.mul_lt_mul_of_le_of_lt (le_refl _) (Nat.lt_of_le_of_lt (ascFactorial_le_pow_add n _)",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__zero_descFactorial_succ",
+  "lean": "Nat.zero_descFactorial_succ",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__descFactorial 0 (plus k 1)) 0",
+    "by": "rw [descFactorial_succ, Nat.zero_sub, Nat.zero_mul]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__descFactorial_one",
+  "lean": "Nat.descFactorial_one",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__descFactorial n 1) n",
+    "by": "simp",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__succ_descFactorial_succ",
+  "lean": "Nat.succ_descFactorial_succ",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__descFactorial (plus n 1) (plus 0 1)) (times (plus n 1) (Nat__descFactorial n 0))",
+    "by": "rw [descFactorial_zero, descFactorial_one, Nat.mul_one]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__descFactorial (plus n 1) (plus (succ k) 1)) (times (plus n 1) (Nat__descFactorial n (succ k)))",
+    "by": "rw [descFactorial_succ, succ_descFactorial_succ _ k, descFactorial_succ, succ_sub_succ,",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__succ_descFactorial",
+  "lean": "Nat.succ_descFactorial",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (minus (plus n 1) 0) (Nat__descFactorial (plus n 1) 0)) (times (plus n 1) (Nat__descFactorial n 0))",
+    "by": "rw [Nat.sub_zero, descFactorial_zero, descFactorial_zero]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (minus (plus n 1) (plus k 1)) (Nat__descFactorial (plus n 1) (plus k 1))) (times (plus n 1) (Nat__descFactorial n (plus k 1)))",
+    "by": "rw [descFactorial, succ_descFactorial _ k, descFactorial_succ, succ_sub_succ, Nat.mul_left_comm]",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__descFactorial_self",
+  "lean": "Nat.descFactorial_self",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__descFactorial 0 0) (factorial 0)",
+    "by": "rw [descFactorial_zero, factorial_zero]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__descFactorial (succ n) (succ n)) (factorial (succ n))",
+    "by": "rw [succ_descFactorial_succ, descFactorial_self n, factorial_succ]",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__descFactorial_eq_zero_iff_lt",
+  "lean": "Nat.descFactorial_eq_zero_iff_lt",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Eq (Nat__descFactorial n 0) 0) (Lt n 0)",
+    "by": "simp only [descFactorial_zero, Nat.one_ne_zero, Nat.not_lt_zero]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "if (Leq n k) (if (Neq n k) (Leq n k))",
+    "by": "rw [descFactorial_succ, mul_eq_zero, descFactorial_eq_zero_iff_lt, Nat.lt_succ_iff,",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (Leq n k) (if (Neq n k) (Leq n k))",
+    "by": "exact fun h _ => h",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__descFactorial_pos",
+  "lean": "Nat.descFactorial_pos",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Lt 0 (Nat__descFactorial n k)) (Leq k n)",
+    "by": "simp [Nat.pos_iff_ne_zero]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__descFactorial_mul_self",
+  "lean": "Nat.descFactorial_mul_self",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "rcases le_or_gt j n with h | h",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Leq j n)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (Nat__descFactorial n j) n) (plus (Nat__descFactorial n (plus j 1)) (times j (Nat__descFactorial n j)))",
+    "by": "rw [descFactorial_succ, ← Nat.add_mul, Nat.sub_add_cancel h, Nat.mul_comm]",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Lt n j)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (Nat__descFactorial n j) n) (plus (Nat__descFactorial n (plus j 1)) (times j (Nat__descFactorial n j)))",
+    "by": "simp [descFactorial_of_lt h]",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_descFactorial_eq_ascFactorial",
+  "lean": "Nat.add_descFactorial_eq_ascFactorial",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__descFactorial (plus n 0) 0) (Nat__ascFactorial (plus n 1) 0)",
+    "by": "rw [ascFactorial_zero, descFactorial_zero]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__descFactorial (plus n (succ k)) (succ k)) (Nat__ascFactorial (plus n 1) (succ k))",
+    "by": "rw [Nat.add_succ, succ_descFactorial_succ, ascFactorial_succ,",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_descFactorial_eq_ascFactorial'",
+  "lean": "Nat.add_descFactorial_eq_ascFactorial'",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__descFactorial (minus (plus n 0) 1) 0) (Nat__ascFactorial n 0)",
+    "by": "rw [ascFactorial_zero, descFactorial_zero]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__descFactorial (minus (plus n (succ k)) 1) (succ k)) (Nat__ascFactorial n (succ k))",
+    "by": "rw [descFactorial_succ, ascFactorial_succ, ← succ_add_eq_add_succ,",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorial_mul_descFactorial",
+  "lean": "Nat.factorial_mul_descFactorial",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (factorial (minus n 0)) (Nat__descFactorial n 0)) (factorial n)",
+    "by": "rw [descFactorial_zero, Nat.mul_one, Nat.sub_zero]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ],
+     [
+      "h",
+      "Proof (Leq (succ k) 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "false",
+    "by": "exfalso",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exact not_succ_le_zero k h",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Leq (succ k) (succ n))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (factorial (minus (succ n) (succ k))) (Nat__descFactorial (succ n) (succ k))) (factorial (succ n))",
+    "by": "rw [succ_descFactorial_succ, succ_sub_succ, ← Nat.mul_assoc, Nat.mul_comm (n - k)!,",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__descFactorial_mul_descFactorial",
+  "lean": "Nat.descFactorial_mul_descFactorial",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "by_cases hmn : m ≤ n",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hmn",
+      "Proof (Leq m n)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (times (factorial (minus n m)) (times (Nat__descFactorial (minus n k) (minus m k)) (Nat__descFactorial n k))) (times (factorial (minus n m)) (Nat__descFactorial n m))",
+    "by": "apply Nat.mul_left_cancel (n - m).factorial_pos",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (factorial (minus n m)) (times (Nat__descFactorial (minus n k) (minus m k)) (Nat__descFactorial n k))) (times (factorial (minus n m)) (Nat__descFactorial n m))",
+    "by": "rw [factorial_mul_descFactorial hmn, show n - m = (n - k) - (m - k) by lia, ← Nat.mul_assoc,",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (minus n m) (minus (minus n k) (minus m k))",
+    "by": "lia",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (minus m k) (minus n k)",
+    "by": "lia",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hmn",
+      "Proof (not (Leq m n))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (times (Nat__descFactorial (minus n k) (minus m k)) (Nat__descFactorial n k)) 0",
+    "by": "rw [descFactorial_eq_zero_iff_lt.mpr (show n < m by lia)]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt n m",
+    "by": "lia",
+    "depth": 1
+   },
+   {
+    "unit": "cases",
+    "by": "by_cases hkn : k ≤ n",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hkn",
+      "Proof (Leq k n)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (Nat__descFactorial (minus n k) (minus m k)) (Nat__descFactorial n k)) 0",
+    "by": "rw [descFactorial_eq_zero_iff_lt.mpr (show n - k < m - k by lia), Nat.zero_mul]",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (minus n k) (minus m k)",
+    "by": "lia",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hkn",
+      "Proof (not (Leq k n))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (Nat__descFactorial (minus n k) (minus m k)) (Nat__descFactorial n k)) 0",
+    "by": "rw [descFactorial_eq_zero_iff_lt.mpr (show n < k by lia), Nat.mul_zero]",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt n k",
+    "by": "lia",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Nat__descFactorial_eq_div",
+  "lean": "Nat.descFactorial_eq_div",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eq (times (factorial (minus n k)) (Nat__descFactorial n k)) (times (factorial (minus n k)) (div (factorial n) (factorial (minus n k))))",
+    "by": "apply Nat.mul_left_cancel (n - k).factorial_pos",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (factorial n) (times (factorial (minus n k)) (div (factorial n) (factorial (minus n k))))",
+    "by": "rw [factorial_mul_descFactorial h]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (factorial n) (times (factorial (minus n k)) (div (factorial n) (factorial (minus n k))))",
+    "by": "exact (Nat.mul_div_cancel' <| factorial_dvd_factorial <| Nat.sub_le n k).symm",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__descFactorial_le",
+  "lean": "Nat.descFactorial_le",
+  "steps": [
+   {
+    "unit": "induction",
+    "by": "induction n with",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__descFactorial k 0) (Nat__descFactorial m 0)",
+    "by": "rfl",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ih",
+      "Proof (Leq (Nat__descFactorial k n) (Nat__descFactorial m n))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (times (minus k n) (Nat__descFactorial k n)) (times (minus m n) (Nat__descFactorial m n))",
+    "by": "rw [descFactorial_succ, descFactorial_succ]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times (minus k n) (Nat__descFactorial k n)) (times (minus m n) (Nat__descFactorial m n))",
+    "by": "exact Nat.mul_le_mul (Nat.sub_le_sub_right h n) ih",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__pow_sub_le_descFactorial",
+  "lean": "Nat.pow_sub_le_descFactorial",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Leq (pow (minus (plus n 1) 0) 0) (Nat__descFactorial n 0)",
+    "by": "rw [descFactorial_zero, Nat.pow_zero]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (times (minus n k) (pow (minus n k) k)) (times (minus n k) (Nat__descFactorial n k))",
+    "by": "rw [descFactorial_succ, Nat.pow_succ, succ_sub_succ, Nat.mul_comm]",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (pow (minus n k) k) (Nat__descFactorial n k)",
+    "by": "apply Nat.mul_le_mul_left",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (pow (minus n k) k) (Nat__descFactorial n k)",
+    "by": "exact (le_trans (Nat.pow_le_pow_left (Nat.sub_le_sub_right n.le_succ _) k)",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__pow_sub_lt_descFactorial'",
+  "lean": "Nat.pow_sub_lt_descFactorial'",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Lt (times (minus n (plus 0 1)) (minus n (plus 0 1))) (times (minus n 1) n)",
+    "by": "rw [descFactorial_succ, Nat.pow_succ, Nat.pow_one, descFactorial_one]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (times (minus n (plus 0 1)) (minus n (plus 0 1))) (times (minus n 1) n)",
+    "by": "exact Nat.mul_lt_mul_of_pos_left (by lia) (Nat.sub_pos_of_lt h)",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (minus n (plus 0 1)) n",
+    "by": "lia",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ],
+     [
+      "h",
+      "Proof (Leq (plus (plus k 1) 2) n)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (times (minus n (plus (plus k 1) 1)) (pow (minus n (plus (plus k 1) 1)) (plus k 2))) (times (minus n (plus k 2)) (Nat__descFactorial n (plus k 2)))",
+    "by": "rw [descFactorial_succ, Nat.pow_succ, Nat.mul_comm]",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (pow (minus n (plus (plus k 1) 1)) (plus k 2)) (Nat__descFactorial n (plus k 2))",
+    "by": "refine Nat.mul_lt_mul_of_pos_left ?_ (Nat.sub_pos_of_lt h)",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (pow (minus (succ n) (plus (plus k 1) 1)) (plus k 2)) (Nat__descFactorial n (plus k 2))",
+    "by": "refine Nat.lt_of_le_of_lt (Nat.pow_le_pow_left (Nat.sub_le_sub_right n.le_succ _) _) ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (pow (minus n (plus k 1)) (plus k 2)) (Nat__descFactorial n (plus k 2))",
+    "by": "rw [succ_sub_succ]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (pow (minus n (plus k 1)) (plus k 2)) (Nat__descFactorial n (plus k 2))",
+    "by": "exact pow_sub_lt_descFactorial' (Nat.le_trans (le_succ _) h)",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__pow_sub_lt_descFactorial",
+  "lean": "Nat.pow_sub_lt_descFactorial",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "if (Leq 2 0) (if (Leq 0 n) (Lt (pow (minus (plus n 1) 0) 0) (Nat__descFactorial n 0)))",
+    "by": "rintro ⟨⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "_h",
+      "Proof (Leq 2 1)"
+     ]
+    ],
+    "goal": "if (Leq 1 n) (Lt (pow (minus (plus n 1) 1) 1) (Nat__descFactorial n 1))",
+    "by": "intro",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (Leq 1 n) (Lt (pow (minus (plus n 1) 1) 1) (Nat__descFactorial n 1))",
+    "by": "contradiction",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ],
+     [
+      "h",
+      "Proof (Leq (plus k 2) n)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (pow (minus n (plus k 1)) (plus k 2)) (Nat__descFactorial n (plus k 2))",
+    "by": "rw [succ_sub_succ]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (pow (minus n (plus k 1)) (plus k 2)) (Nat__descFactorial n (plus k 2))",
+    "by": "exact pow_sub_lt_descFactorial' h",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__descFactorial_le_pow",
+  "lean": "Nat.descFactorial_le_pow",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__descFactorial n 0) (pow n 0)",
+    "by": "rw [descFactorial_zero, Nat.pow_zero]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (times (minus n k) (Nat__descFactorial n k)) (times n (pow n k))",
+    "by": "rw [descFactorial_succ, Nat.pow_succ, Nat.mul_comm _ n]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times (minus n k) (Nat__descFactorial n k)) (times n (pow n k))",
+    "by": "exact Nat.mul_le_mul (Nat.sub_le _ _) (descFactorial_le_pow _ k)",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__descFactorial_lt_pow",
+  "lean": "Nat.descFactorial_lt_pow",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "if (Leq 2 0) (Lt (Nat__descFactorial n 0) (pow n 0))",
+    "by": "rintro ⟨⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "_h",
+      "Proof (Leq 2 1)"
+     ]
+    ],
+    "goal": "Lt (Nat__descFactorial n 1) (pow n 1)",
+    "by": "intro",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (Nat__descFactorial n 1) (pow n 1)",
+    "by": "contradiction",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (times (Nat__descFactorial n (plus k 1)) (minus n (plus k 1))) (times (pow n (plus k 1)) n)",
+    "by": "rw [descFactorial_succ, pow_succ', Nat.mul_comm, Nat.mul_comm n]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (times (Nat__descFactorial n (plus k 1)) (minus n (plus k 1))) (times (pow n (plus k 1)) n)",
+    "by": "exact Nat.mul_lt_mul_of_le_of_lt (descFactorial_le_pow _ _) (by lia) (Nat.pow_pos <| by lia)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (minus n (plus k 1)) n",
+    "by": "lia",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt 0 n",
+    "by": "lia",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorial_two_mul_le",
+  "lean": "Nat.factorial_two_mul_le",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Leq (times (Nat__ascFactorial (plus n 1) n) (factorial n)) (times (pow (plus n n) n) (factorial n))",
+    "by": "rw [Nat.two_mul, ← factorial_mul_ascFactorial, Nat.mul_comm]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times (Nat__ascFactorial (plus n 1) n) (factorial n)) (times (pow (plus n n) n) (factorial n))",
+    "by": "exact Nat.mul_le_mul_right _ (ascFactorial_le_pow_add _ _)",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__two_pow_mul_factorial_le_factorial_two_mul",
+  "lean": "Nat.two_pow_mul_factorial_le_factorial_two_mul",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "obtain _ | n := n",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times (pow 2 0) (factorial 0)) (factorial (times 2 0))",
+    "by": "simp",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (times (factorial (plus n 1)) (pow 2 (plus n 1))) (factorial (plus (plus n 1) (plus n 1)))",
+    "by": "rw [Nat.mul_comm, Nat.two_mul]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times (factorial (plus n 1)) (pow 2 (plus n 1))) (factorial (plus (plus n 1) (plus n 1)))",
+    "by": "calc",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ascFactorial_eq_ascFactorialBinary",
+  "lean": "Nat.ascFactorial_eq_ascFactorialBinary",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "ext n k",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (Nat__ascFactorial n k) (Nat__ascFactorialBinary n k)",
+    "by": "ext n k",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__ascFactorial n k) (Nat__ascFactorialBinary n k)",
+    "by": "fun_induction ascFactorialBinary with",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__ascFactorial n' 0) 1",
+    "by": "simp",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__ascFactorial n' 1) n'",
+    "by": "simp [ascFactorial]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ih1",
+      "Proof (Eq (Nat__ascFactorial n (div (plus k 2) 2)) (Nat__ascFactorialBinary n (div (plus k 2) 2)))"
+     ],
+     [
+      "ih2",
+      "Proof (Eq (Nat__ascFactorial (plus n (div (plus k 2) 2)) (div (plus (plus k 2) 1) 2)) (Nat__ascFactorialBinary (plus n (div (plus k 2) 2)) (div (plus (plus k 2) 1) 2)))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__ascFactorial n (succ (succ k))) (times (Nat__ascFactorialBinary n (div (plus k 2) 2)) (Nat__ascFactorialBinary (plus n (div (plus k 2) 2)) (div (plus (plus k 2) 1) 2)))",
+    "by": "grind [ascFactorial_mul_ascFactorial]",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Nat__factorial_eq_factorialBinarySplitting",
+  "lean": "Nat.factorial_eq_factorialBinarySplitting",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ]
+    ],
+    "by": "ext n",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (factorial n) (Nat__factorialBinarySplitting n)",
+    "by": "ext n",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (factorial n) (Nat__factorialBinarySplitting n)",
+    "by": "simp [factorialBinarySplitting, ← ascFactorial_eq_ascFactorialBinary]",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__descFactorial_eq_descFactorialBinary",
+  "lean": "Nat.descFactorial_eq_descFactorialBinary",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "n",
+      "Elem Nat"
+     ],
+     [
+      "k",
+      "Elem Nat"
+     ]
+    ],
+    "by": "ext n k",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (Nat__descFactorial n k) (Nat__descFactorialBinary n k)",
+    "by": "ext n k",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (Nat__descFactorial n k) (ite (Lt n k) 0 (Nat__ascFactorialBinary (plus (minus n k) 1) k))",
+    "by": "rw [descFactorialBinary]",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Lt n k)"
+     ]
+    ],
+    "by": "split_ifs with h",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Eq (Nat__descFactorial n k) 0) (Eq (Nat__descFactorial n k) (Nat__ascFactorialBinary (plus (minus n k) 1) k))",
+    "by": "split_ifs with h",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Lt n k)"
+     ]
+    ],
+    "by": "",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__descFactorial n k) 0",
+    "by": "rw [descFactorial_of_lt h]",
+    "depth": 3
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (not (Lt n k))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (Nat__descFactorial n k) (Nat__descFactorial (minus (plus (plus (minus n k) 1) k) 1) k)",
+    "by": "rw [← ascFactorial_eq_ascFactorialBinary, ← add_descFactorial_eq_ascFactorial']",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Nat__descFactorial n k) (Nat__descFactorial (minus (plus (plus (minus n k) 1) k) 1) k)",
+    "by": "grind",
+    "depth": 2
+   }
+  ]
+ }
+]

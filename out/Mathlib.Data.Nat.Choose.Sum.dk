@@ -1,0 +1,75 @@
+(; Mathlib.Data.Nat.Choose.Sum: statements exported from Mathlib by MathlibInformath/Export.lean ;)
+
+(; //LEAN:Commute.add_pow ;)
+Commute__add_pow : (R : Set) -> (_ : Proof (Semiring R)) -> (x1 : Elem R) -> (y : Elem R) -> (h : Proof (Commute x1 y)) -> (n : Elem Nat) -> Proof (Eqt R (pow (plus x1 y) n) (Finset__sum (Finset__range (plus n 1)) (m => times (times (pow x1 m) (pow y (minus n m))) (Nat__choose n m)))).
+
+(; //LEAN:Commute.add_pow' ;)
+Commute__add_pow' : (R : Set) -> (_ : Proof (Semiring R)) -> (x1 : Elem R) -> (y : Elem R) -> (h : Proof (Commute x1 y)) -> (n : Elem Nat) -> Proof (Eqt R (pow (plus x1 y) n) (Finset__sum (Finset__HasAntidiagonal__antidiagonal n) (m => HSMul__hSMul (Nat__choose n (Prod__fst m)) (times (pow x1 (Prod__fst m)) (pow y (Prod__snd m)))))).
+
+(; //LEAN:add_pow ;)
+def add_pow : (R : Set) -> (_ : Proof (CommSemiring R)) -> (x1 : Elem R) -> (y : Elem R) -> (n : Elem Nat) -> Proof (Eqt R (pow (plus x1 y) n) (Finset__sum (Finset__range (plus n 1)) (m => times (times (pow x1 m) (pow y (minus n m))) (Nat__choose n m)))) :=
+  R => x => x1 => y => n => Commute__add_pow R x1 y (Commute__all R x1 y) n.
+
+(; //LEAN:sub_pow ;)
+sub_pow : (R : Set) -> (_ : Proof (CommRing R)) -> (x1 : Elem R) -> (y : Elem R) -> (n : Elem Nat) -> Proof (Eqt R (pow (minus x1 y) n) (Finset__sum (Finset__range (plus n 1)) (m => times (times (times (pow (Neg__neg 1) (plus m n)) (pow x1 m)) (pow y (minus n m))) (Nat__choose n m)))).
+
+(; //LEAN:Nat.sum_range_choose ;)
+Nat__sum_range_choose : (n : Elem Nat) -> Proof (Eq (Finset__sum (Finset__range (plus n 1)) (m => Nat__choose n m)) (pow 2 n)).
+
+(; //LEAN:Nat.sum_range_choose_halfway ;)
+Nat__sum_range_choose_halfway : (m : Elem Nat) -> Proof (Eq (Finset__sum (Finset__range (plus m 1)) (i => Nat__choose (plus (times 2 m) 1) i)) (pow 4 m)).
+
+(; //LEAN:Nat.choose_middle_le_pow ;)
+Nat__choose_middle_le_pow : (n : Elem Nat) -> Proof (Leq (Nat__choose (plus (times 2 n) 1) n) (pow 4 n)).
+
+(; //LEAN:Nat.sum_Icc_choose ;)
+Nat__sum_Icc_choose : (n : Elem Nat) -> (k : Elem Nat) -> Proof (Eq (Finset__sum (Finset__Icc k n) (m => Nat__choose m k)) (Nat__choose (plus n 1) (plus k 1))).
+
+(; //LEAN:Nat.sum_range_add_choose ;)
+Nat__sum_range_add_choose : (n : Elem Nat) -> (k : Elem Nat) -> Proof (Eq (Finset__sum (Finset__range (plus n 1)) (i => Nat__choose (plus i k) k)) (Nat__choose (plus (plus n k) 1) (plus k 1))).
+
+(; //LEAN:Nat.sum_range_mul_choose ;)
+Nat__sum_range_mul_choose : (n : Elem Nat) -> Proof (Eq (Finset__sum (Finset__range (plus n 1)) (i => times i (Nat__choose n i))) (times n (pow 2 (minus n 1)))).
+
+(; //LEAN:Nat.sum_range_multichoose ;)
+Nat__sum_range_multichoose : (n : Elem Nat) -> (k : Elem Nat) -> Proof (Eq (Finset__sum (Finset__range (plus n 1)) (i => Nat__multichoose k i)) (Nat__choose (plus n k) k)).
+
+(; //LEAN:Int.alternating_sum_range_choose_eq_choose ;)
+Int__alternating_sum_range_choose_eq_choose : (n : Elem Nat) -> (m : Elem Nat) -> Proof (Eq (Finset__sum (Finset__range (plus m 1)) (k => times (pow (Neg__neg 1) k) (Nat__choose (plus n 1) k))) (times (pow (Neg__neg 1) m) (Nat__choose n m))).
+
+(; //LEAN:Int.alternating_sum_range_choose ;)
+Int__alternating_sum_range_choose : (n : Elem Nat) -> Proof (Eq (Finset__sum (Finset__range (plus n 1)) (m => times (pow (Neg__neg 1) m) (Nat__choose n m))) (ite (Eq n 0) 1 0)).
+
+(; //LEAN:Int.alternating_sum_range_choose_of_ne ;)
+Int__alternating_sum_range_choose_of_ne : (n : Elem Nat) -> (h0 : Proof (Neq n 0)) -> Proof (Eq (Finset__sum (Finset__range (plus n 1)) (m => times (pow (Neg__neg 1) m) (Nat__choose n m))) 0).
+
+(; //LEAN:Finset.sum_powerset_apply_card ;)
+Finset__sum_powerset_apply_card : (X : Set) -> (Y : Set) -> (_ : Proof (AddCommMonoid X)) -> (f : (Elem Nat -> X)) -> (x1 : Elem (Finset Y)) -> Proof (Eqt X (Finset__sum (Finset__powerset x1) (m => f (Finset__card m))) (Finset__sum (Finset__range (plus (Finset__card x1) 1)) (m1 => HSMul__hSMul (Nat__choose (Finset__card x1) m1) (f m1)))).
+
+(; //LEAN:Finset.sum_powerset_neg_one_pow_card ;)
+Finset__sum_powerset_neg_one_pow_card : (X : Set) -> (x1 : Elem (Finset X)) -> Proof (Eq (Finset__sum (Finset__powerset x1) (m => pow (Neg__neg 1) (Finset__card m))) (ite (Eqt (Finset X) x1 EmptyCollection__emptyCollection) 1 0)).
+
+(; //LEAN:Finset.sum_powerset_neg_one_pow_card_of_nonempty ;)
+Finset__sum_powerset_neg_one_pow_card_of_nonempty : (X : Set) -> (x : Elem (Finset X)) -> (h0 : Proof (Finset__Nonempty x)) -> Proof (Eq (Finset__sum (Finset__powerset x) (m => pow (Neg__neg 1) (Finset__card m))) 0).
+
+(; //LEAN:Finset.prod_pow_choose_succ ;)
+Finset__prod_pow_choose_succ : (M : Set) -> (_ : Proof (CommMonoid M)) -> (f : (Elem Nat -> Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__prod (Finset__range (plus n 2)) (i => pow (f i (minus (plus n 1) i)) (Nat__choose (plus n 1) i))) (times (Finset__prod (Finset__range (plus n 1)) (i1 => pow (f i1 (minus (plus n 1) i1)) (Nat__choose n i1))) (Finset__prod (Finset__range (plus n 1)) (i2 => pow (f (plus i2 1) (minus n i2)) (Nat__choose n i2))))).
+
+(; //LEAN:Finset.sum_choose_succ_nsmul ;)
+Finset__sum_choose_succ_nsmul : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem Nat -> Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__sum (Finset__range (plus n 2)) (i => HSMul__hSMul (Nat__choose (plus n 1) i) (f i (minus (plus n 1) i)))) (plus (Finset__sum (Finset__range (plus n 1)) (i1 => HSMul__hSMul (Nat__choose n i1) (f i1 (minus (plus n 1) i1)))) (Finset__sum (Finset__range (plus n 1)) (i2 => HSMul__hSMul (Nat__choose n i2) (f (plus i2 1) (minus n i2)))))).
+
+(; //LEAN:Finset.sum_antidiagonal_choose_succ_nsmul ;)
+Finset__sum_antidiagonal_choose_succ_nsmul : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem Nat -> Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__sum (Finset__HasAntidiagonal__antidiagonal (plus n 1)) (ij => HSMul__hSMul (Nat__choose (plus n 1) (Prod__fst ij)) (f (Prod__fst ij) (Prod__snd ij)))) (plus (Finset__sum (Finset__HasAntidiagonal__antidiagonal n) (ij1 => HSMul__hSMul (Nat__choose n (Prod__fst ij1)) (f (Prod__fst ij1) (plus (Prod__snd ij1) 1)))) (Finset__sum (Finset__HasAntidiagonal__antidiagonal n) (ij2 => HSMul__hSMul (Nat__choose n (Prod__snd ij2)) (f (plus (Prod__fst ij2) 1) (Prod__snd ij2)))))).
+
+(; //LEAN:Finset.prod_antidiagonal_pow_choose_succ ;)
+Finset__prod_antidiagonal_pow_choose_succ : (M : Set) -> (_ : Proof (CommMonoid M)) -> (f : (Elem Nat -> Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__prod (Finset__HasAntidiagonal__antidiagonal (plus n 1)) (ij => pow (f (Prod__fst ij) (Prod__snd ij)) (Nat__choose (plus n 1) (Prod__fst ij)))) (times (Finset__prod (Finset__HasAntidiagonal__antidiagonal n) (ij1 => pow (f (Prod__fst ij1) (plus (Prod__snd ij1) 1)) (Nat__choose n (Prod__fst ij1)))) (Finset__prod (Finset__HasAntidiagonal__antidiagonal n) (ij2 => pow (f (plus (Prod__fst ij2) 1) (Prod__snd ij2)) (Nat__choose n (Prod__snd ij2)))))).
+
+(; //LEAN:Finset.sum_choose_succ_mul ;)
+Finset__sum_choose_succ_mul : (R : Set) -> (_ : Proof (NonAssocSemiring R)) -> (f : (Elem Nat -> Elem Nat -> R)) -> (n : Elem Nat) -> Proof (Eqt R (Finset__sum (Finset__range (plus n 2)) (i => times (Nat__choose (plus n 1) i) (f i (minus (plus n 1) i)))) (plus (Finset__sum (Finset__range (plus n 1)) (i1 => times (Nat__choose n i1) (f i1 (minus (plus n 1) i1)))) (Finset__sum (Finset__range (plus n 1)) (i2 => times (Nat__choose n i2) (f (plus i2 1) (minus n i2)))))).
+
+(; //LEAN:Finset.sum_antidiagonal_choose_succ_mul ;)
+Finset__sum_antidiagonal_choose_succ_mul : (R : Set) -> (_ : Proof (NonAssocSemiring R)) -> (f : (Elem Nat -> Elem Nat -> R)) -> (n : Elem Nat) -> Proof (Eqt R (Finset__sum (Finset__HasAntidiagonal__antidiagonal (plus n 1)) (ij => times (Nat__choose (plus n 1) (Prod__fst ij)) (f (Prod__fst ij) (Prod__snd ij)))) (plus (Finset__sum (Finset__HasAntidiagonal__antidiagonal n) (ij1 => times (Nat__choose n (Prod__fst ij1)) (f (Prod__fst ij1) (plus (Prod__snd ij1) 1)))) (Finset__sum (Finset__HasAntidiagonal__antidiagonal n) (ij2 => times (Nat__choose n (Prod__snd ij2)) (f (plus (Prod__fst ij2) 1) (Prod__snd ij2)))))).
+
+(; //LEAN:Finset.sum_antidiagonal_choose_add ;)
+Finset__sum_antidiagonal_choose_add : (d : Elem Nat) -> (n : Elem Nat) -> Proof (Eq (Finset__sum (Finset__HasAntidiagonal__antidiagonal n) (ij => Nat__choose (plus d (Prod__snd ij)) d)) (Nat__choose (plus (plus d n) 1) (plus d 1))).
+

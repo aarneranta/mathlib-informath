@@ -5,11 +5,11 @@ and read in English, French, Czech, German and as formulas by
 [Informath](https://github.com/GrammaticalFramework/informath).
 
 [mathlib-informath.html](mathlib-informath.html) is a table of contents, with
-one page in `pages/` for each part of Mathlib in `modules.txt`: so far
-`Mathlib/Order/Defs/` (orders and lattices), the `Mathlib/Algebra/` modules
-that the prime numbers import (`Group/Nat/Units`, `Prime/Defs`),
-`Mathlib/Data/Nat/Prime/` (prime numbers) and `Mathlib/Data/Nat/Factorization/`
-(prime factorizations). Each page shows, for each statement:
+one page in `pages/` for each part of Mathlib in `modules.txt`: 82 modules,
+9126 declarations. Besides `Mathlib/Order/Defs/`, the prime numbers and prime
+factorizations, they are the undergraduate modules that much of Mathlib
+depends on, in six tiers (see "Theorems with proofs" below). Each page shows,
+for each statement:
 
 * its Lean source, with a link to its line in Mathlib on GitHub,
 * its translation to Dedukti,
@@ -176,6 +176,32 @@ vertical line for each open scope:
 A statement that gets no reading with the symbol table is read again with
 `-force-symbolic`, and marked so on the page: this happens where a proposition
 is the argument of a macro, as in `{k ∈ s | k ≠ 0}`.
+
+## Theorems with proofs
+
+The modules beyond the first pages were chosen as the parts of undergraduate
+mathematics that most of Mathlib imports, in six tiers (`modules.txt`):
+
+| tier | modules | declarations |
+|---|---|---|
+| A. logic, sets, orders | `Logic.Function.Basic`, `Order.Basic`, `Order.Lattice`, `Order.Monotone.Basic`, `Order.Bounds.Basic`, `Data.Set.Basic`, `.Image`, `.Function` | 1940 |
+| B. groups and rings | `Algebra.Group.Basic`, `.Hom.Defs`, `.Subgroup.Defs`, `.Subgroup.Basic`, `.Even`, `Algebra.Ring.Basic`, `.Parity`, `Algebra.Field.Basic`, `Algebra.Order.Field.Basic`, `GroupTheory.Coset.Basic`, `.QuotientGroup.Basic`, `.OrderOfElement` | 2276 |
+| C. elementary number theory | `Data.Nat.GCD.Basic`, `.Factorial.Basic`, `.Choose.Basic`, `.Choose.Sum`, `.ModEq`, `.Totient`, `Data.Int.GCD`, `.ModEq`, `Data.ZMod.Basic`, `Data.Rat.Defs`, `NumberTheory.Divisors` | 892 |
+| D. finite sets and sums | `Data.Finset.Basic`, `.Card`, `Data.Fintype.Card`, `Algebra.BigOperators.Group.Finset.Basic`, `.Intervals`, `Combinatorics.Pigeonhole` | 767 |
+| E. linear algebra, ideals, polynomials | `LinearAlgebra.Span.Basic`, `.Basis.Defs`, `.LinearIndependent.Defs`, `.Matrix.Determinant.Basic`, `RingTheory.Ideal.Defs`, `.Basic`, `.Quotient.Defs`, `.PrincipalIdealDomain`, `.UniqueFactorizationDomain.Basic`, `Algebra.Polynomial.Basic`, `.Div`, `.Roots` | 1091 |
+| F. topology and analysis | `Topology.Basic`, `Order.Filter.Basic`, `Topology.MetricSpace.Pseudo.Defs`, `.Compactness.Compact`, `.Connected.Basic`, `Analysis.Real.Sqrt`, `.SpecificLimits.Basic`, `.Calculus.Deriv.Basic`, `.Calculus.MeanValue`, `.SpecialFunctions.Exp` | 1405 |
+
+All of them are exported with their tactic proofs too. `coverage.md`
+(`python3 coverage.py`) tells, module by module, how much reads well; over
+all modules, 6650 of the 9126 readings are fully worded, and 6445 of the 8472
+theorems have a proof text (3245 from terms, 3200 from tactics). The
+readings are English only for now (`LANGUAGES` in `build-index.py`).
+
+The statements leave out, besides decidability, the instance hypotheses that
+a textbook never states (`droppedInstance` in `Export.lean`: the coercion
+classes `FunLike` and `SetLike`, the compatibility of an order or an action
+with the operations, the bare notation classes `Zero`, `Add`, ...), and so do
+the λs of their proofs.
 
 ## Algebraic structures
 

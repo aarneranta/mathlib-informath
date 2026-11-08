@@ -59,12 +59,8 @@ Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Pr
 (; //LEAN:Equiv.Perm ;)
 Equiv__Perm : (X : Set) -> Set.
 
-(; doc: The class `EquivLike E α β` expresses that terms of type `E` have an injective coercion to bijections between `α` and `β`.  Note that this does not directly extend `FunLike`, nor take `FunLike` as a parameter, so we can state `coe_injective'` in a nicer way.  This typeclass is used in the definition of the isomorphism (or equivalence) typeclasses, such as `ZeroEquivClass`, `MulEquivClass`, `MonoidEquivClass`, .... ;)
-(; //LEAN:EquivLike ;)
-EquivLike : (E : Set) -> (x : Elem (outParam Set)) -> (x1 : Elem (outParam Set)) -> Prop.
-
 (; //LEAN:EquivLike.surjective ;)
-EquivLike__surjective : (E : Set) -> (X : Set) -> (Y : Set) -> (_ : Proof (EquivLike E X Y)) -> (e : Elem E) -> Proof (Function__Surjective e).
+EquivLike__surjective : (E : Set) -> (X : Set) -> (Y : Set) -> (e : Elem E) -> Proof (Function__Surjective e).
 
 (; doc: Existential quantification. If `p : α → Prop` is a predicate, then `∃ x : α, p x` asserts that there is some `x` of type `α` such that `p x` holds. To create an existential proof, use the `exists` tactic, or the anonymous constructor notation `⟨x, h⟩`. To unpack an existential, use `cases h` where `h` is a proof of `∃ x : α, p x`, or `let ⟨x, hx⟩ := h`.  Because Lean has proof irrelevance, any two proofs of an existential are definitionally equal. One consequence of this is that it is impossible to recover the witness of an existential from the mere fact of its existence. For example, the following does not compile: ``` example (h : ∃ x : Nat, x = x) : Nat :=   let ⟨x, _⟩ := h  -- fail, because the goal is `Nat : Type`   x ``` The error message `recursor 'Exists.casesOn' can only eliminate into Prop` means that this only works when the current goal is another proposition: ``` example (h : ∃ x : Nat, x = x) : True :=   let ⟨x, _⟩ := h  -- ok, because the goal is `True : Prop`   trivial ``` ;)
 (; //LEAN:Exists ;)
@@ -271,7 +267,7 @@ Prod : (X : Set) -> (Y : Set) -> Set.
 Prod__fst : (self : Elem (Prod X Y)) -> Elem X.
 
 (; //LEAN:Prod.fst_surjective ;)
-Prod__fst_surjective : (X : Set) -> (Y : Set) -> (_ : Proof (Nonempty Y)) -> Proof (Function__Surjective Prod__fst).
+Prod__fst_surjective : (X : Set) -> (Y : Set) -> Proof (Function__Surjective Prod__fst).
 
 (; doc: Constructs a pair. This is usually written `(x, y)` instead of `Prod.mk x y`.  Conventions for notations in identifiers:   * The recommended spelling of `(a, b)` in identifiers is `mk`. ;)
 (; //LEAN:Prod.mk ;)
@@ -282,7 +278,7 @@ Prod__mk : (fst : Elem X) -> (snd : Elem Y) -> Elem (Prod X Y).
 Prod__snd : (self : Elem (Prod X Y)) -> Elem Y.
 
 (; //LEAN:Prod.snd_surjective ;)
-Prod__snd_surjective : (X : Set) -> (Y : Set) -> (_ : Proof (Nonempty X)) -> Proof (Function__Surjective Prod__snd).
+Prod__snd_surjective : (X : Set) -> (Y : Set) -> Proof (Function__Surjective Prod__snd).
 
 (; doc: Swaps the elements in a pair.  Examples: * `(1, 2).swap = (2, 1)` * `("orange", -87).swap = (-87, "orange")` ;)
 (; //LEAN:Prod.swap ;)

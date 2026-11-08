@@ -1,0 +1,185 @@
+(; constants used by Mathlib.Data.Int.ModEq, declared with their translated types ;)
+
+(; doc: `a ≡ b [PMOD p]` means that `b` is congruent to `a` modulo `p`.  If `a`, `b` are elements of an additive group, then `a ≡ b [PMOD p]` iff `m • p = b - a` for some `m : ℤ`, see `modEq_iff_zsmul` below. For additive commutative monoid, the definition is given by `modEq_iff_nsmul`.  Equivalently (as shown in `Algebra.Order.ToIntervalMod`), `b` does not lie in the open interval `(a, a + p)` modulo `p`, or `toIcoMod hp a` disagrees with `toIocMod hp a` at `b`, or `toIcoDiv hp a` disagrees with `toIocDiv hp a` at `b`. ;)
+(; //LEAN:AddCommGroup.ModEq ;)
+AddCommGroup__ModEq : (p : Elem M) -> (a : Elem M) -> (b : Elem M) -> Prop.
+
+(; //LEAN:AddCommGroup.map_modEq_iff ;)
+AddCommGroup__map_modEq_iff : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (a : Elem M) -> (b : Elem M) -> (p : Elem M) -> (N : Set) -> (F : Set) -> (_ : Proof (AddCommMonoid N)) -> (f : Elem F) -> (hf : Proof (Function__Injective f)) -> Proof (iff (AddCommGroup__ModEq (f p) (f a) (f b)) (AddCommGroup__ModEq p a b)).
+
+(; doc: An `AddCommGroupWithOne` is an `AddGroupWithOne` satisfying `a + b = b + a`. ;)
+(; //LEAN:AddCommGroupWithOne ;)
+AddCommGroupWithOne : (R : Set) -> Prop.
+
+(; doc: `M →+ N` is the type of functions `M → N` that preserve the `AddZero` structure.  `AddMonoidHom` is also used for group homomorphisms.  When possible, instead of parametrizing results over `(f : M →+ N)`, you should parametrize over `(F : Type*) [AddMonoidHomClass F M N] (f : F)`.  When you extend this structure, make sure to extend `AddMonoidHomClass`.  [Wikidata Q868169](https://www.wikidata.org/wiki/Q868169) ;)
+(; //LEAN:AddMonoidHom ;)
+AddMonoidHom : (M : Set) -> (N : Set) -> Set.
+
+(; doc: **Alias** of `dvd_trans`. ;)
+(; //LEAN:Dvd.dvd.trans ;)
+Dvd__dvd__trans : (X : Set) -> (_ : Proof (Semigroup X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (divide a b)) -> (h1 : Proof (divide b c)) -> Proof (divide a c).
+
+(; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
+(; //LEAN:Eq ;)
+Eq : (x : Elem X) -> (x1 : Elem X) -> Prop.
+
+(; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
+(; //LEAN:Eq.mp ;)
+Eq__mp : (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
+
+(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
+(; //LEAN:Eq.mpr ;)
+Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+
+(; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
+(; //LEAN:Eq.refl ;)
+Eq__refl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
+
+(; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.symm ;)
+Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Proof (Eqt X b a).
+
+(; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.trans ;)
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+
+(; doc: `a % b` computes the remainder upon dividing `a` by `b`. The meaning of this notation is type-dependent. * For `Nat` and `Int` it satisfies `a % b + b * (a / b) = a`,   and `a % 0` is defined to be `a`.  Conventions for notations in identifiers:   * The recommended spelling of `%` in identifiers is `mod`. ;)
+(; //LEAN:HMod.hMod ;)
+HMod__hMod : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+
+(; doc: `coe : ℤ → α` as an `AddMonoidHom`. ;)
+(; //LEAN:Int.castAddHom ;)
+Int__castAddHom : (X : Set) -> Elem (AddMonoidHom Int X).
+
+(; //LEAN:Int.cast_injective ;)
+Int__cast_injective : (X : Set) -> (_ : Proof (AddGroupWithOne X)) -> Proof (Function__Injective AddGroupWithOne__toIntCast).
+
+(; //LEAN:Int.emod_emod ;)
+Int__emod_emod : (a : Elem Int) -> (b : Elem Int) -> Proof (Eq (HMod__hMod (HMod__hMod a b) b) (HMod__hMod a b)).
+
+(; //LEAN:Int.emod_emod_of_dvd ;)
+Int__emod_emod_of_dvd : (n : Elem Int) -> (m : Elem Int) -> (k : Elem Int) -> (h : Proof (divide m k)) -> Proof (Eq (HMod__hMod (HMod__hMod n k) m) (HMod__hMod n m)).
+
+(; //LEAN:Int.emod_lt_abs ;)
+Int__emod_lt_abs : (a : Elem Int) -> (b : Elem Int) -> (H : Proof (Neq b 0)) -> Proof (Lt (HMod__hMod a b) (abs b)).
+
+(; //LEAN:Int.emod_nonneg ;)
+Int__emod_nonneg : (a : Elem Int) -> (b : Elem Int) -> (h : Proof (Neq b 0)) -> Proof (Leq 0 (HMod__hMod a b)).
+
+(; //LEAN:Int.ext_ediv_emod ;)
+Int__ext_ediv_emod : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (h0 : Proof (Eq (div a n) (div b n))) -> (h1 : Proof (Eq (HMod__hMod a n) (HMod__hMod b n))) -> Proof (Eq a b).
+
+(; //LEAN:Int.ext_ediv_emod_iff ;)
+Int__ext_ediv_emod_iff : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> Proof (iff (Eq a b) (and (Eq (div a n) (div b n)) (Eq (HMod__hMod a n) (HMod__hMod b n)))).
+
+(; doc: Computes the greatest common divisor of two integers as a natural number. The GCD of two integers is the largest natural number that evenly divides both. However, the GCD of a number and `0` is the number's absolute value.  This implementation uses `Nat.gcd`, which is overridden in both the kernel and the compiler to efficiently evaluate using arbitrary-precision arithmetic.  Examples: * `Int.gcd 10 15 = 5` * `Int.gcd 10 (-15) = 5` * `Int.gcd (-6) (-9) = 3` * `Int.gcd 0 5 = 5` * `Int.gcd (-7) 0 = 7` ;)
+(; //LEAN:Int.gcd ;)
+Int__gcd : (m : Elem Int) -> (n : Elem Int) -> Elem Nat.
+
+(; doc: Computes the least common multiple of two integers as a natural number. The LCM of two integers is the smallest natural number that's evenly divisible by the absolute values of both.  Examples:  * `Int.lcm 9 6 = 18`  * `Int.lcm 9 (-6) = 18`  * `Int.lcm 9 3 = 9`  * `Int.lcm 9 (-3) = 9`  * `Int.lcm 0 3 = 0`  * `Int.lcm (-3) 0 = 0` ;)
+(; //LEAN:Int.lcm ;)
+Int__lcm : (m : Elem Int) -> (n : Elem Int) -> Elem Nat.
+
+(; //LEAN:Int.left_modEq_add_iff._simp_1 ;)
+Int__left_modEq_add_iff___simp_1 : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> Proof (Eqt Prop (Int__ModEq n a (plus a b)) (divide n b)).
+
+(; doc: The absolute value of an integer is its distance from `0`.  This function is overridden by the compiler with an efficient implementation. This definition is the logical model.  Examples:  * `(7 : Int).natAbs = 7`  * `(0 : Int).natAbs = 0`  * `(-11 : Int).natAbs = 11` ;)
+(; //LEAN:Int.natAbs ;)
+Int__natAbs : (m : Elem Int) -> Elem Nat.
+
+(; doc: Although `TrailingParserDescr` is an abbreviation for `ParserDescr`, Lean will look at the declared type in order to determine whether to add the parser to the leading or trailing parser table. The determination is done automatically by the `syntax` command. ;)
+(; //LEAN:Lean.TrailingParserDescr ;)
+Lean__TrailingParserDescr : Set.
+
+(; doc: `m` and `n` are coprime, or relatively prime, if their `gcd` is 1. ;)
+(; //LEAN:Nat.Coprime ;)
+Nat__Coprime : (m : Elem Nat) -> (n : Elem Nat) -> Prop.
+
+(; //LEAN:Nat.Coprime.gcd_eq_one ;)
+Nat__Coprime__gcd_eq_one : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Nat__Coprime m n)) -> Proof (Eq (gcd m n) 1).
+
+(; doc: Modular equality. `n.ModEq a b`, or `a ≡ b [MOD n]`, means that `a % n = b % n`. ;)
+(; //LEAN:Nat.ModEq ;)
+Nat__ModEq : (n : Elem Nat) -> (a : Elem Nat) -> (b : Elem Nat) -> Prop.
+
+(; doc: The extended GCD `a` value in the equation `gcd x y = x * a + y * b`. ;)
+(; //LEAN:Nat.gcdA ;)
+Nat__gcdA : (x : Elem Nat) -> (y : Elem Nat) -> Elem Int.
+
+(; doc: The extended GCD `b` value in the equation `gcd x y = x * a + y * b`. ;)
+(; //LEAN:Nat.gcdB ;)
+Nat__gcdB : (x : Elem Nat) -> (y : Elem Nat) -> Elem Int.
+
+(; doc: **Bézout's lemma**: given `x y : ℕ`, `gcd x y = x * a + y * b`, where `a = gcd_a x y` and `b = gcd_b x y` are computed by the extended Euclidean algorithm. ;)
+(; //LEAN:Nat.gcd_eq_gcd_ab ;)
+Nat__gcd_eq_gcd_ab : (x : Elem Nat) -> (y : Elem Nat) -> Proof (Eq (gcd x y) (plus (times x (Nat__gcdA x y)) (times y (Nat__gcdB x y)))).
+
+(; doc: `-a` computes the negative or opposite of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `-` in identifiers is `neg` (when used as a unary operator). ;)
+(; //LEAN:Neg.neg ;)
+Neg__neg : (x : Elem X) -> Elem X.
+
+(; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
+(; //LEAN:Trans.trans ;)
+Trans__trans : (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
+
+(; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
+(; //LEAN:True ;)
+True : Prop.
+
+(; doc: `abs a`, denoted `|a|`, is the absolute value of `a` ;)
+(; //LEAN:abs ;)
+abs : (a : Elem X) -> Elem X.
+
+(; //LEAN:abs_of_pos ;)
+abs_of_pos : (X : Set) -> (_ : Proof (Lattice X)) -> (_ : Proof (AddGroup X)) -> (a : Elem X) -> (h1 : Proof (Lt 0 a)) -> Proof (Eqt X (abs a) a).
+
+(; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:congr ;)
+congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
+
+(; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:congrArg ;)
+congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+
+(; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
+(; //LEAN:congrFun' ;)
+congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Eqt (Elem X -> Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
+
+(; //LEAN:dvd_mul_left ;)
+dvd_mul_left : (X : Set) -> (_ : Proof (CommSemigroup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (divide a (times b a)).
+
+(; //LEAN:dvd_mul_right ;)
+dvd_mul_right : (X : Set) -> (_ : Proof (Semigroup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (divide a (times a b)).
+
+(; //LEAN:dvd_mul_right._simp_1 ;)
+dvd_mul_right___simp_1 : (X : Set) -> (_ : Proof (Semigroup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt Prop (divide a (times a b)) True).
+
+(; //LEAN:dvd_refl._simp_1 ;)
+dvd_refl___simp_1 : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) -> Proof (Eqt Prop (divide a a) True).
+
+(; //LEAN:dvd_rfl ;)
+dvd_rfl : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) -> Proof (divide a a).
+
+(; //LEAN:eq_self ;)
+eq_self : (X : Set) -> (a : Elem X) -> Proof (Eqt Prop (Eqt X a a) True).
+
+(; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
+(; //LEAN:id ;)
+id : (a : Elem X) -> Elem X.
+
+(; //LEAN:mul_comm ;)
+mul_comm : (G : Set) -> (_ : Proof (CommMagma G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (times a b) (times b a)).
+
+(; //LEAN:ne_of_gt ;)
+ne_of_gt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt b a)) -> Proof (Neq a b).
+
+(; //LEAN:of_eq_true ;)
+of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
+
+(; //LEAN:one_dvd ;)
+one_dvd : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) -> Proof (divide 1 a).
+
+(; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
+(; //LEAN:rfl ;)
+rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
+

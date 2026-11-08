@@ -1,0 +1,1313 @@
+(; Mathlib.GroupTheory.OrderOfElement: statements exported from Mathlib by MathlibInformath/Export.lean ;)
+
+(; //LEAN:isPeriodicPt_mul_iff_pow_eq_one ;)
+isPeriodicPt_mul_iff_pow_eq_one : (G : Set) -> (_ : Proof (Monoid G)) -> (n : Elem Nat) -> (x1 : Elem G) -> Proof (iff (Function__IsPeriodicPt (x2 => times x1 x2) n 1) (Eqt G (pow x1 n) 1)).
+
+(; //LEAN:isPeriodicPt_add_iff_nsmul_eq_zero ;)
+isPeriodicPt_add_iff_nsmul_eq_zero : (G : Set) -> (_ : Proof (AddMonoid G)) -> (n : Elem Nat) -> (x1 : Elem G) -> Proof (iff (Function__IsPeriodicPt (x2 => plus x1 x2) n 0) (Eqt G (HSMul__hSMul n x1) 0)).
+
+(; //LEAN:IsOfFinOrder ;)
+def IsOfFinOrder : (x1 : Elem G) -> Prop :=
+  x1 => Membership__mem (Function__periodicPts (x2 => times x1 x2)) 1.
+
+(; //LEAN:IsOfFinAddOrder ;)
+IsOfFinAddOrder : (x1 : Elem G) -> Prop.
+
+(; //LEAN:isOfFinAddOrder_ofMul_iff ;)
+def isOfFinAddOrder_ofMul_iff : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> Proof (iff (IsOfFinAddOrder (Additive__ofMul__app x1)) (IsOfFinOrder x1)) :=
+  G => x => x1 => Iff__rfl (IsOfFinAddOrder (Additive__ofMul__app x1)).
+
+(; //LEAN:isOfFinOrder_ofAdd_iff ;)
+def isOfFinOrder_ofAdd_iff : (X : Set) -> (_ : Proof (AddMonoid X)) -> (x1 : Elem X) -> Proof (iff (IsOfFinOrder (Multiplicative__ofAdd__app x1)) (IsOfFinAddOrder x1)) :=
+  X => x => x1 => Iff__rfl (IsOfFinOrder (Multiplicative__ofAdd__app x1)).
+
+(; //LEAN:isOfFinAddOrder_iff_nsmul_eq_zero ;)
+isOfFinAddOrder_iff_nsmul_eq_zero : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> Proof (iff (IsOfFinAddOrder x1) (exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n x1) 0)))).
+
+(; //LEAN:isOfFinOrder_iff_pow_eq_one ;)
+isOfFinOrder_iff_pow_eq_one : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> Proof (iff (IsOfFinOrder x1) (exists Nat (n => and (Lt 0 n) (Eqt G (pow x1 n) 1)))).
+
+(; //LEAN:IsOfFinAddOrder.exists_nsmul_eq_zero ;)
+def IsOfFinAddOrder__exists_nsmul_eq_zero : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (h : Proof (IsOfFinAddOrder x1)) -> Proof (exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n x1) 0))) :=
+  G => x => x1 => iffEl (IsOfFinAddOrder x1) (exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul n x1) 0))) (isOfFinAddOrder_iff_nsmul_eq_zero G x1).
+
+(; //LEAN:IsOfFinOrder.exists_pow_eq_one ;)
+def IsOfFinOrder__exists_pow_eq_one : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (h : Proof (IsOfFinOrder x1)) -> Proof (exists Nat (n => and (Lt 0 n) (Eqt G (pow x1 n) 1))) :=
+  G => x => x1 => iffEl (IsOfFinOrder x1) (exists Nat (n => and (Lt 0 n) (Eqt G (pow x1 n) 1))) (isOfFinOrder_iff_pow_eq_one G x1).
+
+(; //LEAN:isOfFinOrder_iff_zpow_eq_one ;)
+isOfFinOrder_iff_zpow_eq_one : (G : Set) -> (_ : Proof (DivisionMonoid G)) -> (x1 : Elem G) -> Proof (iff (IsOfFinOrder x1) (exists Int (n => and (Neq n 0) (Eqt G (pow x1 n) 1)))).
+
+(; //LEAN:isOfFinAddOrder_iff_zsmul_eq_zero ;)
+isOfFinAddOrder_iff_zsmul_eq_zero : (G : Set) -> (_ : Proof (SubtractionMonoid G)) -> (x1 : Elem G) -> Proof (iff (IsOfFinAddOrder x1) (exists Int (n => and (Neq n 0) (Eqt G (HSMul__hSMul n x1) 0)))).
+
+(; //LEAN:not_isOfFinOrder_of_injective_pow ;)
+not_isOfFinOrder_of_injective_pow : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (h : Proof (Function__Injective (n => pow x1 n))) -> Proof (not (IsOfFinOrder x1)).
+
+(; //LEAN:not_isOfFinAddOrder_of_injective_nsmul ;)
+not_isOfFinAddOrder_of_injective_nsmul : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (h : Proof (Function__Injective (n => HSMul__hSMul n x1))) -> Proof (not (IsOfFinAddOrder x1)).
+
+(; //LEAN:IsOfFinOrder.one ;)
+def IsOfFinOrder__one : (G : Set) -> (_ : Proof (Monoid G)) -> Proof (IsOfFinOrder 1) :=
+  G => x => iffEr (IsOfFinOrder 1) (exists Nat (n => and (Lt 0 n) (Eqt G (pow 1 n) 1))) (isOfFinOrder_iff_pow_eq_one G 1) (existsI Nat (n1 => and (Lt 0 n1) (Eqt G (pow 1 n1) 1)) 1 (andI (Lt 0 1) (Eqt G (pow 1 1) 1) Nat__one_pos (one_pow G 1))).
+
+(; //LEAN:IsOfFinAddOrder.zero ;)
+IsOfFinAddOrder__zero : (G : Set) -> (_ : Proof (AddMonoid G)) -> Proof (IsOfFinAddOrder 0).
+
+(; //LEAN:IsOfFinAddOrder.nsmul ;)
+IsOfFinAddOrder__nsmul : (G : Set) -> (_ : Proof (AddMonoid G)) -> (a : Elem G) -> (n : Elem Nat) -> (h : Proof (IsOfFinAddOrder a)) -> Proof (IsOfFinAddOrder (HSMul__hSMul n a)).
+
+(; //LEAN:IsOfFinOrder.pow ;)
+IsOfFinOrder__pow : (G : Set) -> (_ : Proof (Monoid G)) -> (a : Elem G) -> (n : Elem Nat) -> (h : Proof (IsOfFinOrder a)) -> Proof (IsOfFinOrder (pow a n)).
+
+(; //LEAN:IsOfFinOrder.of_pow ;)
+IsOfFinOrder__of_pow : (G : Set) -> (_ : Proof (Monoid G)) -> (a : Elem G) -> (n : Elem Nat) -> (h : Proof (IsOfFinOrder (pow a n))) -> (hn : Proof (Neq n 0)) -> Proof (IsOfFinOrder a).
+
+(; //LEAN:IsOfFinAddOrder.of_nsmul ;)
+IsOfFinAddOrder__of_nsmul : (G : Set) -> (_ : Proof (AddMonoid G)) -> (a : Elem G) -> (n : Elem Nat) -> (h : Proof (IsOfFinAddOrder (HSMul__hSMul n a))) -> (hn : Proof (Neq n 0)) -> Proof (IsOfFinAddOrder a).
+
+(; //LEAN:isOfFinOrder_pow ;)
+isOfFinOrder_pow : (G : Set) -> (_ : Proof (Monoid G)) -> (a : Elem G) -> (n : Elem Nat) -> Proof (iff (IsOfFinOrder (pow a n)) (or (IsOfFinOrder a) (Eq n 0))).
+
+(; //LEAN:isOfFinAddOrder_nsmul ;)
+isOfFinAddOrder_nsmul : (G : Set) -> (_ : Proof (AddMonoid G)) -> (a : Elem G) -> (n : Elem Nat) -> Proof (iff (IsOfFinAddOrder (HSMul__hSMul n a)) (or (IsOfFinAddOrder a) (Eq n 0))).
+
+(; //LEAN:not_isOfFinAddOrder_of_isAddTorsionFree ;)
+not_isOfFinAddOrder_of_isAddTorsionFree : (G : Set) -> (_ : Proof (AddMonoid G)) -> (a : Elem G) -> (_ : Proof (IsAddTorsionFree G)) -> (ha : Proof (Neq a 0)) -> Proof (not (IsOfFinAddOrder a)).
+
+(; //LEAN:not_isOfFinOrder_of_isMulTorsionFree ;)
+not_isOfFinOrder_of_isMulTorsionFree : (G : Set) -> (_ : Proof (Monoid G)) -> (a : Elem G) -> (_ : Proof (IsMulTorsionFree G)) -> (ha : Proof (Neq a 1)) -> Proof (not (IsOfFinOrder a)).
+
+(; //LEAN:IsOfFinAddOrder.eq_zero' ;)
+IsOfFinAddOrder__eq_zero' : (G : Set) -> (_ : Proof (AddMonoid G)) -> (_ : Proof (IsAddTorsionFree G)) -> (a : Elem G) -> (ha : Proof (IsOfFinAddOrder a)) -> Proof (Eqt G a 0).
+
+(; //LEAN:IsOfFinOrder.eq_one' ;)
+IsOfFinOrder__eq_one' : (G : Set) -> (_ : Proof (Monoid G)) -> (_ : Proof (IsMulTorsionFree G)) -> (a : Elem G) -> (ha : Proof (IsOfFinOrder a)) -> Proof (Eqt G a 1).
+
+(; //LEAN:isOfFinAddOrder_iff_eq_zero ;)
+isOfFinAddOrder_iff_eq_zero : (G : Set) -> (_ : Proof (AddMonoid G)) -> (_ : Proof (IsAddTorsionFree G)) -> (a : Elem G) -> Proof (iff (IsOfFinAddOrder a) (Eqt G a 0)).
+
+(; //LEAN:isOfFinOrder_iff_eq_one ;)
+isOfFinOrder_iff_eq_one : (G : Set) -> (_ : Proof (Monoid G)) -> (_ : Proof (IsMulTorsionFree G)) -> (a : Elem G) -> Proof (iff (IsOfFinOrder a) (Eqt G a 1)).
+
+(; //LEAN:Submonoid.isOfFinOrder_coe ;)
+Submonoid__isOfFinOrder_coe : (G : Set) -> (_ : Proof (Monoid G)) -> (H : Elem (Submonoid G)) -> (x1 : Elem (Subtype (x2 => Membership__mem H x2))) -> Proof (iff (IsOfFinOrder x1) (IsOfFinOrder x1)).
+
+(; //LEAN:AddSubmonoid.isOfFinAddOrder_coe ;)
+AddSubmonoid__isOfFinAddOrder_coe : (G : Set) -> (_ : Proof (AddMonoid G)) -> (H : Elem (AddSubmonoid G)) -> (x1 : Elem (Subtype (x2 => Membership__mem H x2))) -> Proof (iff (IsOfFinAddOrder x1) (IsOfFinAddOrder x1)).
+
+(; //LEAN:IsConj.isOfFinOrder ;)
+IsConj__isOfFinOrder : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (IsConj x1 y)) -> (h1 : Proof (IsOfFinOrder x1)) -> Proof (IsOfFinOrder y).
+
+(; //LEAN:MonoidHom.isOfFinOrder ;)
+MonoidHom__isOfFinOrder : (G : Set) -> (H : Set) -> (_ : Proof (Monoid G)) -> (_ : Proof (Monoid H)) -> (f : Elem (MonoidHom G H)) -> (x2 : Elem G) -> (h : Proof (IsOfFinOrder x2)) -> Proof (IsOfFinOrder (f x2)).
+
+(; //LEAN:AddMonoidHom.isOfFinAddOrder ;)
+AddMonoidHom__isOfFinAddOrder : (G : Set) -> (H : Set) -> (_ : Proof (AddMonoid G)) -> (_ : Proof (AddMonoid H)) -> (f : Elem (AddMonoidHom G H)) -> (x2 : Elem G) -> (h : Proof (IsOfFinAddOrder x2)) -> Proof (IsOfFinAddOrder (f x2)).
+
+(; //LEAN:IsOfFinOrder.apply ;)
+IsOfFinOrder__apply : (X : Set) -> (Gs : (Elem X -> Set)) -> (_ : Proof ((i2 : Elem X) -> Monoid (Gs i2))) -> (x1 : ((i1 : Elem X) -> Gs i1)) -> (h : Proof (IsOfFinOrder x1)) -> (i : Elem X) -> Proof (IsOfFinOrder (x1 i)).
+
+(; //LEAN:IsOfFinAddOrder.apply ;)
+IsOfFinAddOrder__apply : (X : Set) -> (Gs : (Elem X -> Set)) -> (_ : Proof ((i2 : Elem X) -> AddMonoid (Gs i2))) -> (x1 : ((i1 : Elem X) -> Gs i1)) -> (h : Proof (IsOfFinAddOrder x1)) -> (i : Elem X) -> Proof (IsOfFinAddOrder (x1 i)).
+
+(; //LEAN:IsOfFinOrder.groupPowers ;)
+IsOfFinOrder__groupPowers : (hx : Proof (IsOfFinOrder x1)) -> Proof (Group (Subtype (x2 => Membership__mem (Submonoid__powers x1) x2))).
+
+(; //LEAN:IsOfFinAddOrder.addGroupMultiples ;)
+IsOfFinAddOrder__addGroupMultiples : (hx : Proof (IsOfFinAddOrder x1)) -> Proof (AddGroup (Subtype (x2 => Membership__mem (AddSubmonoid__multiples x1) x2))).
+
+(; //LEAN:orderOf ;)
+def orderOf : (x1 : Elem G) -> Elem Nat :=
+  x1 => Function__minimalPeriod (x2 => times x1 x2) 1.
+
+(; //LEAN:addOrderOf ;)
+addOrderOf : (x1 : Elem G) -> Elem Nat.
+
+(; //LEAN:Subsingleton.orderOf_eq ;)
+Subsingleton__orderOf_eq : (G : Set) -> (_ : Proof (Monoid G)) -> (_ : Proof (Subsingleton G)) -> (x1 : Elem G) -> Proof (Eq (orderOf x1) 1).
+
+(; //LEAN:Subsingleton.addOrderOf_eq ;)
+Subsingleton__addOrderOf_eq : (G : Set) -> (_ : Proof (AddMonoid G)) -> (_ : Proof (Subsingleton G)) -> (x1 : Elem G) -> Proof (Eq (addOrderOf x1) 1).
+
+(; //LEAN:addOrderOf_ofMul_eq_orderOf ;)
+def addOrderOf_ofMul_eq_orderOf : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> Proof (Eq (addOrderOf (Additive__ofMul__app x1)) (orderOf x1)) :=
+  G => x => x1 => rfl.
+
+(; //LEAN:orderOf_ofAdd_eq_addOrderOf ;)
+def orderOf_ofAdd_eq_addOrderOf : (X : Set) -> (_ : Proof (AddMonoid X)) -> (a : Elem X) -> Proof (Eq (orderOf (Multiplicative__ofAdd__app a)) (addOrderOf a)) :=
+  X => x => a => rfl.
+
+(; //LEAN:IsOfFinAddOrder.addOrderOf_pos ;)
+IsOfFinAddOrder__addOrderOf_pos : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (h : Proof (IsOfFinAddOrder x1)) -> Proof (Lt 0 (addOrderOf x1)).
+
+(; //LEAN:IsOfFinOrder.orderOf_pos ;)
+def IsOfFinOrder__orderOf_pos : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (h : Proof (IsOfFinOrder x1)) -> Proof (Lt 0 (orderOf x1)) :=
+  G => x => x1 => h => Function__minimalPeriod_pos_of_mem_periodicPts G (x2 => times x1 x2) 1 h.
+
+(; //LEAN:addOrderOf_nsmul_eq_zero ;)
+addOrderOf_nsmul_eq_zero : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> Proof (Eqt G (HSMul__hSMul (addOrderOf x1) x1) 0).
+
+(; //LEAN:pow_orderOf_eq_one ;)
+pow_orderOf_eq_one : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> Proof (Eqt G (pow x1 (orderOf x1)) 1).
+
+(; //LEAN:orderOf_eq_zero ;)
+orderOf_eq_zero : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (h : Proof (not (IsOfFinOrder x1))) -> Proof (Eq (orderOf x1) 0).
+
+(; //LEAN:addOrderOf_eq_zero ;)
+addOrderOf_eq_zero : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (h : Proof (not (IsOfFinAddOrder x1))) -> Proof (Eq (addOrderOf x1) 0).
+
+(; //LEAN:addOrderOf_eq_zero_iff ;)
+addOrderOf_eq_zero_iff : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> Proof (iff (Eq (addOrderOf x1) 0) (not (IsOfFinAddOrder x1))).
+
+(; //LEAN:orderOf_eq_zero_iff ;)
+def orderOf_eq_zero_iff : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> Proof (iff (Eq (orderOf x1) 0) (not (IsOfFinOrder x1))) :=
+  G => x => x1 => iffI (Eq (orderOf x1) 0) (not (IsOfFinOrder x1)) (h => ifI (IsOfFinOrder x1) false (H => LT__lt__ne' Nat (orderOf x1) 0 (IsOfFinOrder__orderOf_pos G x1 H) h)) (orderOf_eq_zero G x1).
+
+(; //LEAN:orderOf_eq_zero_iff' ;)
+orderOf_eq_zero_iff' : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> Proof (iff (Eq (orderOf x1) 0) (forall Nat (n => if (Lt 0 n) (Neq (pow x1 n) 1)))).
+
+(; //LEAN:addOrderOf_eq_zero_iff' ;)
+addOrderOf_eq_zero_iff' : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> Proof (iff (Eq (addOrderOf x1) 0) (forall Nat (n => if (Lt 0 n) (Neq (HSMul__hSMul n x1) 0)))).
+
+(; //LEAN:orderOf_ne_zero_iff ;)
+def orderOf_ne_zero_iff : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> Proof (iff (Neq (orderOf x1) 0) (IsOfFinOrder x1)) :=
+  G => x => x1 => Iff__not_left (Eq (orderOf x1) 0) (IsOfFinOrder x1) (orderOf_eq_zero_iff G x1).
+
+(; //LEAN:addOrderOf_ne_zero_iff ;)
+addOrderOf_ne_zero_iff : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> Proof (iff (Neq (addOrderOf x1) 0) (IsOfFinAddOrder x1)).
+
+(; //LEAN:orderOf_zero ;)
+orderOf_zero : (X : Set) -> (_ : Proof (MonoidWithZero X)) -> Proof (Eq (orderOf 0) 0).
+
+(; //LEAN:addOrderOf_eq_iff ;)
+addOrderOf_eq_iff : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (h : Proof (Lt 0 n)) -> Proof (iff (Eq (addOrderOf x1) n) (and (Eqt G (HSMul__hSMul n x1) 0) (forall Nat (m => if (Lt m n) (if (Lt 0 m) (Neq (HSMul__hSMul m x1) 0)))))).
+
+(; //LEAN:orderOf_eq_iff ;)
+orderOf_eq_iff : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (h : Proof (Lt 0 n)) -> Proof (iff (Eq (orderOf x1) n) (and (Eqt G (pow x1 n) 1) (forall Nat (m => if (Lt m n) (if (Lt 0 m) (Neq (pow x1 m) 1)))))).
+
+(; //LEAN:orderOf_pos_iff ;)
+orderOf_pos_iff : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> Proof (iff (Lt 0 (orderOf x1)) (IsOfFinOrder x1)).
+
+(; //LEAN:addOrderOf_pos_iff ;)
+addOrderOf_pos_iff : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> Proof (iff (Lt 0 (addOrderOf x1)) (IsOfFinAddOrder x1)).
+
+(; //LEAN:IsOfFinOrder.mono ;)
+IsOfFinOrder__mono : (G : Set) -> (Y : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (_ : Proof (Monoid Y)) -> (y : Elem Y) -> (hx : Proof (IsOfFinOrder x1)) -> (h : Proof (divide (orderOf y) (orderOf x1))) -> Proof (IsOfFinOrder y).
+
+(; //LEAN:IsOfFinAddOrder.mono ;)
+IsOfFinAddOrder__mono : (G : Set) -> (Y : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (_ : Proof (AddMonoid Y)) -> (y : Elem Y) -> (hx : Proof (IsOfFinAddOrder x1)) -> (h : Proof (divide (addOrderOf y) (addOrderOf x1))) -> Proof (IsOfFinAddOrder y).
+
+(; //LEAN:nsmul_ne_zero_of_lt_addOrderOf ;)
+nsmul_ne_zero_of_lt_addOrderOf : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (n0 : Proof (Neq n 0)) -> (h : Proof (Lt n (addOrderOf x1))) -> Proof (Neq (HSMul__hSMul n x1) 0).
+
+(; //LEAN:pow_ne_one_of_lt_orderOf ;)
+def pow_ne_one_of_lt_orderOf : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (n0 : Proof (Neq n 0)) -> (h : Proof (Lt n (orderOf x1))) -> Proof (Neq (pow x1 n) 1) :=
+  G => x => x1 => n => n0 => h => ifI (Eqt G (pow x1 n) 1) false (j => Function__not_isPeriodicPt_of_pos_of_lt_minimalPeriod G (x2 => times x1 x2) 1 n n0 h (iffEr (Function__IsPeriodicPt (x3 => times x1 x3) n 1) (Eqt G (pow x1 n) 1) (isPeriodicPt_mul_iff_pow_eq_one G n x1) j)).
+
+(; //LEAN:addOrderOf_le_of_nsmul_eq_zero ;)
+addOrderOf_le_of_nsmul_eq_zero : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (hn : Proof (Lt 0 n)) -> (h : Proof (Eqt G (HSMul__hSMul n x1) 0)) -> Proof (Leq (addOrderOf x1) n).
+
+(; //LEAN:orderOf_le_of_pow_eq_one ;)
+def orderOf_le_of_pow_eq_one : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (hn : Proof (Lt 0 n)) -> (h : Proof (Eqt G (pow x1 n) 1)) -> Proof (Leq (orderOf x1) n) :=
+  G => x => x1 => n => hn => h => Function__IsPeriodicPt__minimalPeriod_le G (x2 => times x1 x2) 1 n hn (Eq__mpr (id (congrArg Prop Prop (Function__IsPeriodicPt (x3 => times x1 x3) n 1) (Eqt G (pow x1 n) 1) (_a => _a) (propext (isPeriodicPt_mul_iff_pow_eq_one G n x1)))) h).
+
+(; //LEAN:addOrderOf_zero ;)
+addOrderOf_zero : (G : Set) -> (_ : Proof (AddMonoid G)) -> Proof (Eq (addOrderOf 0) 1).
+
+(; //LEAN:orderOf_one ;)
+orderOf_one : (G : Set) -> (_ : Proof (Monoid G)) -> Proof (Eq (orderOf 1) 1).
+
+(; //LEAN:orderOf_eq_one_iff ;)
+orderOf_eq_one_iff : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> Proof (iff (Eq (orderOf x1) 1) (Eqt G x1 1)).
+
+(; //LEAN:AddMonoid.addOrderOf_eq_one_iff ;)
+AddMonoid__addOrderOf_eq_one_iff : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> Proof (iff (Eq (addOrderOf x1) 1) (Eqt G x1 0)).
+
+(; //LEAN:pow_mod_orderOf ;)
+def pow_mod_orderOf : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> Proof (Eqt G (pow x1 (HMod__hMod n (orderOf x1))) (pow x1 n)) :=
+  G => x => x1 => n => Trans__trans (of_eq_true (Eqt G (pow x1 (HMod__hMod n (orderOf x1))) (pow x1 (plus (HMod__hMod n (orderOf x1)) (times (orderOf x1) (div n (orderOf x1)))))) (Eq__trans Prop (Eqt G (pow x1 (HMod__hMod n (orderOf x1))) (pow x1 (plus (HMod__hMod n (orderOf x1)) (times (orderOf x1) (div n (orderOf x1)))))) (Eqt G (pow x1 (HMod__hMod n (orderOf x1))) (pow x1 (HMod__hMod n (orderOf x1)))) True (congrArg G Prop (pow x1 (plus (HMod__hMod n (orderOf x1)) (times (orderOf x1) (div n (orderOf x1))))) (pow x1 (HMod__hMod n (orderOf x1))) (Eq (pow x1 (HMod__hMod n (orderOf x1)))) (Eq__trans G (pow x1 (plus (HMod__hMod n (orderOf x1)) (times (orderOf x1) (div n (orderOf x1))))) (times (pow x1 (HMod__hMod n (orderOf x1))) (pow x1 (times (orderOf x1) (div n (orderOf x1))))) (pow x1 (HMod__hMod n (orderOf x1))) (pow_add G x1 (HMod__hMod n (orderOf x1)) (times (orderOf x1) (div n (orderOf x1)))) (Eq__trans G (times (pow x1 (HMod__hMod n (orderOf x1))) (pow x1 (times (orderOf x1) (div n (orderOf x1))))) (times (pow x1 (HMod__hMod n (orderOf x1))) 1) (pow x1 (HMod__hMod n (orderOf x1))) (congrArg G G (pow x1 (times (orderOf x1) (div n (orderOf x1)))) 1 (times (pow x1 (HMod__hMod n (orderOf x1)))) (Eq__trans G (pow x1 (times (orderOf x1) (div n (orderOf x1)))) (pow (pow x1 (orderOf x1)) (div n (orderOf x1))) 1 (pow_mul G x1 (orderOf x1) (div n (orderOf x1))) (Eq__trans G (pow (pow x1 (orderOf x1)) (div n (orderOf x1))) (pow 1 (div n (orderOf x1))) 1 (congrFun' Nat G (pow (pow x1 (orderOf x1))) (pow 1) (congrArg G (Elem Nat -> G) (pow x1 (orderOf x1)) 1 pow (pow_orderOf_eq_one G x1)) (div n (orderOf x1))) (one_pow G (div n (orderOf x1)))))) (mul_one G (pow x1 (HMod__hMod n (orderOf x1))))))) (eq_self G (pow x1 (HMod__hMod n (orderOf x1)))))) (Eq__mpr (id (congrArg Nat Prop (plus (HMod__hMod n (orderOf x1)) (times (orderOf x1) (div n (orderOf x1)))) n (_a => Eqt G (pow x1 _a) (pow x1 n)) (Nat__mod_add_div n (orderOf x1)))) (Eq__refl (pow x1 n))).
+
+(; //LEAN:mod_addOrderOf_nsmul ;)
+mod_addOrderOf_nsmul : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> Proof (Eqt G (HSMul__hSMul (HMod__hMod n (addOrderOf x1)) x1) (HSMul__hSMul n x1)).
+
+(; //LEAN:orderOf_dvd_of_pow_eq_one ;)
+def orderOf_dvd_of_pow_eq_one : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (h : Proof (Eqt G (pow x1 n) 1)) -> Proof (divide (orderOf x1) n) :=
+  G => x => x1 => n => h => Function__IsPeriodicPt__minimalPeriod_dvd G (x2 => times x1 x2) 1 n (iffEr (Function__IsPeriodicPt (x3 => times x1 x3) n 1) (Eqt G (pow x1 n) 1) (isPeriodicPt_mul_iff_pow_eq_one G n x1) h).
+
+(; //LEAN:addOrderOf_dvd_of_nsmul_eq_zero ;)
+addOrderOf_dvd_of_nsmul_eq_zero : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (h : Proof (Eqt G (HSMul__hSMul n x1) 0)) -> Proof (divide (addOrderOf x1) n).
+
+(; //LEAN:orderOf_dvd_iff_pow_eq_one ;)
+def orderOf_dvd_iff_pow_eq_one : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> Proof (iff (divide (orderOf x1) n) (Eqt G (pow x1 n) 1)) :=
+  G => x => x1 => n => iffI (divide (orderOf x1) n) (Eqt G (pow x1 n) 1) (h => Eq__mpr (id (congrArg G Prop (pow x1 n) (pow x1 (HMod__hMod n (orderOf x1))) (_a => Eqt G _a 1) (Eq__symm G (pow x1 (HMod__hMod n (orderOf x1))) (pow x1 n) (pow_mod_orderOf G x1 n)))) (Eq__mpr (id (congrArg Nat Prop (HMod__hMod n (orderOf x1)) 0 (_a1 => Eqt G (pow x1 _a1) 1) (Nat__mod_eq_zero_of_dvd (orderOf x1) n h))) (Eq__mpr (id (congrArg G Prop (pow x1 0) 1 (_a2 => Eqt G _a2 1) (pow_zero G x1))) (Eq__refl 1)))) (orderOf_dvd_of_pow_eq_one G x1 n).
+
+(; //LEAN:addOrderOf_dvd_iff_nsmul_eq_zero ;)
+addOrderOf_dvd_iff_nsmul_eq_zero : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> Proof (iff (divide (addOrderOf x1) n) (Eqt G (HSMul__hSMul n x1) 0)).
+
+(; //LEAN:exists_pow_eq_pow_two_mul ;)
+exists_pow_eq_pow_two_mul : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (p : Elem Nat) -> (hx : Proof (Eqt G (pow x1 p) 1)) -> (hp : Proof (odd p)) -> (n : Elem Nat) -> Proof (exists Nat (m => Eqt G (pow x1 n) (pow x1 (times 2 m)))).
+
+(; //LEAN:exists_nsmul_eq_nsmul_two_add ;)
+exists_nsmul_eq_nsmul_two_add : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (p : Elem Nat) -> (hx : Proof (Eqt G (HSMul__hSMul p x1) 0)) -> (hp : Proof (odd p)) -> (n : Elem Nat) -> Proof (exists Nat (m => Eqt G (HSMul__hSMul n x1) (HSMul__hSMul (times 2 m) x1))).
+
+(; //LEAN:orderOf_pow_dvd ;)
+orderOf_pow_dvd : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> Proof (divide (orderOf (pow x1 n)) (orderOf x1)).
+
+(; //LEAN:addOrderOf_smul_dvd ;)
+addOrderOf_smul_dvd : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> Proof (divide (addOrderOf (HSMul__hSMul n x1)) (addOrderOf x1)).
+
+(; //LEAN:nsmul_injOn_Iio_addOrderOf ;)
+nsmul_injOn_Iio_addOrderOf : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> Proof (Set__InjOn (x2 => HSMul__hSMul x2 x1) (Set__Iio (addOrderOf x1))).
+
+(; //LEAN:pow_injOn_Iio_orderOf ;)
+pow_injOn_Iio_orderOf : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> Proof (Set__InjOn (x2 => pow x1 x2) (Set__Iio (orderOf x1))).
+
+(; //LEAN:IsOfFinOrder.mem_powers_iff_mem_range_orderOf ;)
+def IsOfFinOrder__mem_powers_iff_mem_range_orderOf : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> Proof (iff (Membership__mem (Submonoid__powers x1) y) (Membership__mem (Finset__image (x3 => pow x1 x3) (Finset__range (orderOf x1))) y)) :=
+  G => x => x1 => y => hx => Finset__mem_range_iff_mem_finset_range_of_mod_eq' G (x3 => pow x1 x3) y (orderOf x1) (IsOfFinOrder__orderOf_pos G x1 hx) (pow_mod_orderOf G x1).
+
+(; //LEAN:IsOfFinAddOrder.mem_multiples_iff_mem_range_addOrderOf ;)
+IsOfFinAddOrder__mem_multiples_iff_mem_range_addOrderOf : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> Proof (iff (Membership__mem (AddSubmonoid__multiples x1) y) (Membership__mem (Finset__image (x3 => HSMul__hSMul x3 x1) (Finset__range (addOrderOf x1))) y)).
+
+(; //LEAN:IsOfFinAddOrder.multiples_eq_image_range_addOrderOf ;)
+IsOfFinAddOrder__multiples_eq_image_range_addOrderOf : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> Proof (Eqt (powerset G) (AddSubmonoid__multiples x1) (Finset__image (x3 => HSMul__hSMul x3 x1) (Finset__range (addOrderOf x1)))).
+
+(; //LEAN:IsOfFinOrder.powers_eq_image_range_orderOf ;)
+def IsOfFinOrder__powers_eq_image_range_orderOf : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> Proof (Eqt (powerset G) (Submonoid__powers x1) (Finset__image (x3 => pow x1 x3) (Finset__range (orderOf x1)))) :=
+  G => x => x1 => hx => Set__ext G (Submonoid__powers x1) (Finset__image (x3 => pow x1 x3) (Finset__range (orderOf x1))) (forallI G (x4 => iff (Membership__mem (Submonoid__powers x1) x4) (Membership__mem (Finset__image (x5 => pow x1 x5) (Finset__range (orderOf x1))) x4)) (x4 => IsOfFinOrder__mem_powers_iff_mem_range_orderOf G x1 x4 hx)).
+
+(; //LEAN:nsmul_eq_nsmul_of_modEq ;)
+nsmul_eq_nsmul_of_modEq : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (a : Elem Nat) -> (b : Elem Nat) -> (h : Proof (Nat__ModEq n a b)) -> (hx : Proof (Eqt G (HSMul__hSMul n x1) 0)) -> Proof (Eqt G (HSMul__hSMul a x1) (HSMul__hSMul b x1)).
+
+(; //LEAN:pow_eq_pow_of_modEq ;)
+pow_eq_pow_of_modEq : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (a : Elem Nat) -> (b : Elem Nat) -> (h : Proof (Nat__ModEq n a b)) -> (hx : Proof (Eqt G (pow x1 n) 1)) -> Proof (Eqt G (pow x1 a) (pow x1 b)).
+
+(; //LEAN:pow_eq_one_iff_modEq ;)
+pow_eq_one_iff_modEq : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> Proof (iff (Eqt G (pow x1 n) 1) (Nat__ModEq (orderOf x1) n 0)).
+
+(; //LEAN:nsmul_eq_zero_iff_modEq ;)
+nsmul_eq_zero_iff_modEq : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> Proof (iff (Eqt G (HSMul__hSMul n x1) 0) (Nat__ModEq (addOrderOf x1) n 0)).
+
+(; //LEAN:addOrderOf_map_dvd ;)
+addOrderOf_map_dvd : (G : Set) -> (_ : Proof (AddMonoid G)) -> (H : Set) -> (_ : Proof (AddMonoid H)) -> (x2 : Elem (AddMonoidHom G H)) -> (x3 : Elem G) -> Proof (divide (addOrderOf (x2 x3)) (addOrderOf x3)).
+
+(; //LEAN:orderOf_map_dvd ;)
+orderOf_map_dvd : (G : Set) -> (_ : Proof (Monoid G)) -> (H : Set) -> (_ : Proof (Monoid H)) -> (x2 : Elem (MonoidHom G H)) -> (x3 : Elem G) -> Proof (divide (orderOf (x2 x3)) (orderOf x3)).
+
+(; //LEAN:exists_pow_eq_self_of_coprime ;)
+exists_pow_eq_self_of_coprime : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (h : Proof (Nat__Coprime n (orderOf x1))) -> Proof (exists Nat (m => Eqt G (pow (pow x1 n) m) x1)).
+
+(; //LEAN:exists_nsmul_eq_self_of_coprime ;)
+exists_nsmul_eq_self_of_coprime : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (h : Proof (Nat__Coprime n (addOrderOf x1))) -> Proof (exists Nat (m => Eqt G (HSMul__hSMul m (HSMul__hSMul n x1)) x1)).
+
+(; //LEAN:orderOf_eq_of_pow_and_pow_div_prime ;)
+orderOf_eq_of_pow_and_pow_div_prime : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (hn : Proof (Lt 0 n)) -> (hx : Proof (Eqt G (pow x1 n) 1)) -> (hd : Proof (forall Nat (p => if (prime p) (if (divide p n) (Neq (pow x1 (div n p)) 1))))) -> Proof (Eq (orderOf x1) n).
+
+(; //LEAN:addOrderOf_eq_of_nsmul_and_div_prime_nsmul ;)
+addOrderOf_eq_of_nsmul_and_div_prime_nsmul : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (hn : Proof (Lt 0 n)) -> (hx : Proof (Eqt G (HSMul__hSMul n x1) 0)) -> (hd : Proof (forall Nat (p => if (prime p) (if (divide p n) (Neq (HSMul__hSMul (div n p) x1) 0))))) -> Proof (Eq (addOrderOf x1) n).
+
+(; //LEAN:orderOf_eq_orderOf_iff ;)
+orderOf_eq_orderOf_iff : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (H : Set) -> (_ : Proof (Monoid H)) -> (y : Elem H) -> Proof (iff (Eq (orderOf x1) (orderOf y)) (forall Nat (n => iff (Eqt G (pow x1 n) 1) (Eqt H (pow y n) 1)))).
+
+(; //LEAN:addOrderOf_eq_addOrderOf_iff ;)
+addOrderOf_eq_addOrderOf_iff : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (H : Set) -> (_ : Proof (AddMonoid H)) -> (y : Elem H) -> Proof (iff (Eq (addOrderOf x1) (addOrderOf y)) (forall Nat (n => iff (Eqt G (HSMul__hSMul n x1) 0) (Eqt H (HSMul__hSMul n y) 0)))).
+
+(; //LEAN:orderOf_injective ;)
+orderOf_injective : (G : Set) -> (_ : Proof (Monoid G)) -> (H : Set) -> (_ : Proof (Monoid H)) -> (f : Elem (MonoidHom G H)) -> (hf : Proof (Function__Injective f)) -> (x2 : Elem G) -> Proof (Eq (orderOf (f x2)) (orderOf x2)).
+
+(; //LEAN:addOrderOf_injective ;)
+addOrderOf_injective : (G : Set) -> (_ : Proof (AddMonoid G)) -> (H : Set) -> (_ : Proof (AddMonoid H)) -> (f : Elem (AddMonoidHom G H)) -> (hf : Proof (Function__Injective f)) -> (x2 : Elem G) -> Proof (Eq (addOrderOf (f x2)) (addOrderOf x2)).
+
+(; //LEAN:MulEquiv.orderOf_eq ;)
+def MulEquiv__orderOf_eq : (G : Set) -> (_ : Proof (Monoid G)) -> (H : Set) -> (_ : Proof (Monoid H)) -> (e : Elem (MulEquiv G H)) -> (x2 : Elem G) -> Proof (Eq (orderOf (e x2)) (orderOf x2)) :=
+  G => x => H => x1 => e => x2 => orderOf_injective G H (MulEquiv__toMonoidHom e) (MulEquiv__injective G H e) x2.
+
+(; //LEAN:AddEquiv.addOrderOf_eq ;)
+AddEquiv__addOrderOf_eq : (G : Set) -> (_ : Proof (AddMonoid G)) -> (H : Set) -> (_ : Proof (AddMonoid H)) -> (e : Elem (AddEquiv G H)) -> (x2 : Elem G) -> Proof (Eq (addOrderOf (e x2)) (addOrderOf x2)).
+
+(; //LEAN:Function.Injective.isOfFinAddOrder_iff ;)
+Function__Injective__isOfFinAddOrder_iff : (G : Set) -> (H : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (_ : Proof (AddMonoid H)) -> (f : Elem (AddMonoidHom G H)) -> (hf : Proof (Function__Injective f)) -> Proof (iff (IsOfFinAddOrder (f x1)) (IsOfFinAddOrder x1)).
+
+(; //LEAN:Function.Injective.isOfFinOrder_iff ;)
+Function__Injective__isOfFinOrder_iff : (G : Set) -> (H : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (_ : Proof (Monoid H)) -> (f : Elem (MonoidHom G H)) -> (hf : Proof (Function__Injective f)) -> Proof (iff (IsOfFinOrder (f x1)) (IsOfFinOrder x1)).
+
+(; //LEAN:orderOf_submonoid ;)
+def orderOf_submonoid : (G : Set) -> (_ : Proof (Monoid G)) -> (H : Elem (Submonoid G)) -> (y : Elem (Subtype (x1 => Membership__mem H x1))) -> Proof (Eq (orderOf y) (orderOf y)) :=
+  G => x => H => y => orderOf_injective (Subtype (x1 => Membership__mem H x1)) G (Submonoid__subtype H) (Subtype__coe_injective G (x2 => Membership__mem H x2)) y.
+
+(; //LEAN:addOrderOf_addSubmonoid ;)
+addOrderOf_addSubmonoid : (G : Set) -> (_ : Proof (AddMonoid G)) -> (H : Elem (AddSubmonoid G)) -> (y : Elem (Subtype (x1 => Membership__mem H x1))) -> Proof (Eq (addOrderOf y) (addOrderOf y)).
+
+(; //LEAN:addOrderOf_addUnits ;)
+addOrderOf_addUnits : (G : Set) -> (_ : Proof (AddMonoid G)) -> (y : Elem (AddUnits G)) -> Proof (Eq (addOrderOf (AddUnits__val y)) (addOrderOf y)).
+
+(; //LEAN:orderOf_units ;)
+def orderOf_units : (G : Set) -> (_ : Proof (Monoid G)) -> (y : Elem (Units G)) -> Proof (Eq (orderOf (Units__val y)) (orderOf y)) :=
+  G => x => y => orderOf_injective (Units G) G (Units__coeHom G) (Units__val_injective G) y.
+
+(; //LEAN:IsAddUnit.addOrderOf_eq_zero ;)
+IsAddUnit__addOrderOf_eq_zero : (G : Set) -> (_ : Proof (AddMonoid G)) -> (_ : Proof (Subsingleton (AddUnits G))) -> (x1 : Elem G) -> (h1 : Proof (IsAddUnit x1)) -> Proof (Eq (addOrderOf x1) 1).
+
+(; //LEAN:IsUnit.orderOf_eq_one ;)
+IsUnit__orderOf_eq_one : (G : Set) -> (_ : Proof (Monoid G)) -> (_ : Proof (Subsingleton (Units G))) -> (x1 : Elem G) -> (h1 : Proof (IsUnit x1)) -> Proof (Eq (orderOf x1) 1).
+
+(; //LEAN:AddUnits.isOfFinAddOrder_val ;)
+AddUnits__isOfFinAddOrder_val : (G : Set) -> (_ : Proof (AddMonoid G)) -> (u : Elem (AddUnits G)) -> Proof (iff (IsOfFinAddOrder (AddUnits__val u)) (IsOfFinAddOrder u)).
+
+(; //LEAN:Units.isOfFinOrder_val ;)
+def Units__isOfFinOrder_val : (G : Set) -> (_ : Proof (Monoid G)) -> (u : Elem (Units G)) -> Proof (iff (IsOfFinOrder (Units__val u)) (IsOfFinOrder u)) :=
+  G => x => u => Function__Injective__isOfFinOrder_iff (Units G) G u (Units__coeHom G) (Units__coeHom_injective G).
+
+(; //LEAN:IsOfFinOrder.unit ;)
+def IsOfFinOrder__unit : (hx : Proof (IsOfFinOrder x1)) -> Elem (Units M) :=
+  hx => Units__mk x1 (pow x1 (minus (orderOf x1) 1)) (IsOfFinOrder__unit___proof_1 hx) (IsOfFinOrder__unit___proof_2 hx).
+
+(; //LEAN:IsOfFinAddOrder.val_neg_addUnit ;)
+IsOfFinAddOrder__val_neg_addUnit : (M : Set) -> (_ : Proof (AddMonoid M)) -> (x1 : Elem M) -> (hx : Proof (IsOfFinAddOrder x1)) -> Proof (Eqt M (AddUnits__val (Neg__neg (IsOfFinAddOrder__addUnit hx))) (HSMul__hSMul (minus (addOrderOf x1) 1) x1)).
+
+(; //LEAN:IsOfFinAddOrder.val_addUnit ;)
+IsOfFinAddOrder__val_addUnit : (M : Set) -> (_ : Proof (AddMonoid M)) -> (x1 : Elem M) -> (hx : Proof (IsOfFinAddOrder x1)) -> Proof (Eqt M (AddUnits__val (IsOfFinAddOrder__addUnit hx)) x1).
+
+(; //LEAN:IsOfFinAddOrder.addUnit ;)
+IsOfFinAddOrder__addUnit : (hx : Proof (IsOfFinAddOrder x1)) -> Elem (AddUnits M).
+
+(; //LEAN:IsOfFinOrder.val_inv_unit ;)
+IsOfFinOrder__val_inv_unit : (M : Set) -> (_ : Proof (Monoid M)) -> (x1 : Elem M) -> (hx : Proof (IsOfFinOrder x1)) -> Proof (Eqt M (Units__val (Inv__inv (IsOfFinOrder__unit hx))) (pow x1 (minus (orderOf x1) 1))).
+
+(; //LEAN:IsOfFinOrder.val_unit ;)
+IsOfFinOrder__val_unit : (M : Set) -> (_ : Proof (Monoid M)) -> (x1 : Elem M) -> (hx : Proof (IsOfFinOrder x1)) -> Proof (Eqt M (Units__val (IsOfFinOrder__unit hx)) x1).
+
+(; //LEAN:IsOfFinOrder.isUnit ;)
+def IsOfFinOrder__isUnit : (M : Set) -> (_ : Proof (Monoid M)) -> (x1 : Elem M) -> (hx : Proof (IsOfFinOrder x1)) -> Proof (IsUnit x1) :=
+  M => x => x1 => hx => existsI (Units M) (u => Eqt M (Units__val u) x1) (IsOfFinOrder__unit hx) rfl.
+
+(; //LEAN:IsOfFinAddOrder.isAddUnit ;)
+IsOfFinAddOrder__isAddUnit : (M : Set) -> (_ : Proof (AddMonoid M)) -> (x1 : Elem M) -> (hx : Proof (IsOfFinAddOrder x1)) -> Proof (IsAddUnit x1).
+
+(; //LEAN:addOrderOf_nsmul' ;)
+addOrderOf_nsmul' : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Eq (addOrderOf (HSMul__hSMul n x1)) (div (addOrderOf x1) (gcd (addOrderOf x1) n))).
+
+(; //LEAN:orderOf_pow' ;)
+orderOf_pow' : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Eq (orderOf (pow x1 n)) (div (orderOf x1) (gcd (orderOf x1) n))).
+
+(; //LEAN:addOrderOf_nsmul_of_dvd ;)
+addOrderOf_nsmul_of_dvd : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> (dvd : Proof (divide n (addOrderOf x1))) -> Proof (Eq (addOrderOf (HSMul__hSMul n x1)) (div (addOrderOf x1) n)).
+
+(; //LEAN:orderOf_pow_of_dvd ;)
+orderOf_pow_of_dvd : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> (dvd : Proof (divide n (orderOf x1))) -> Proof (Eq (orderOf (pow x1 n)) (div (orderOf x1) n)).
+
+(; //LEAN:orderOf_pow_orderOf_div ;)
+orderOf_pow_orderOf_div : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (hx : Proof (Neq (orderOf x1) 0)) -> (hn : Proof (divide n (orderOf x1))) -> Proof (Eq (orderOf (pow x1 (div (orderOf x1) n))) n).
+
+(; //LEAN:addOrderOf_nsmul_addOrderOf_sub ;)
+addOrderOf_nsmul_addOrderOf_sub : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (hx : Proof (Neq (addOrderOf x1) 0)) -> (hn : Proof (divide n (addOrderOf x1))) -> Proof (Eq (addOrderOf (HSMul__hSMul (div (addOrderOf x1) n) x1)) n).
+
+(; //LEAN:IsOfFinAddOrder.addOrderOf_nsmul ;)
+IsOfFinAddOrder__addOrderOf_nsmul : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (h : Proof (IsOfFinAddOrder x1)) -> Proof (Eq (addOrderOf (HSMul__hSMul n x1)) (div (addOrderOf x1) (gcd (addOrderOf x1) n))).
+
+(; //LEAN:IsOfFinOrder.orderOf_pow ;)
+IsOfFinOrder__orderOf_pow : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (h : Proof (IsOfFinOrder x1)) -> Proof (Eq (orderOf (pow x1 n)) (div (orderOf x1) (gcd (orderOf x1) n))).
+
+(; //LEAN:Nat.Coprime.addOrderOf_nsmul ;)
+Nat__Coprime__addOrderOf_nsmul : (G : Set) -> (_ : Proof (AddMonoid G)) -> (y : Elem G) -> (m : Elem Nat) -> (h : Proof (Nat__Coprime (addOrderOf y) m)) -> Proof (Eq (addOrderOf (HSMul__hSMul m y)) (addOrderOf y)).
+
+(; //LEAN:Nat.Coprime.orderOf_pow ;)
+Nat__Coprime__orderOf_pow : (G : Set) -> (_ : Proof (Monoid G)) -> (y : Elem G) -> (m : Elem Nat) -> (h : Proof (Nat__Coprime (orderOf y) m)) -> Proof (Eq (orderOf (pow y m)) (orderOf y)).
+
+(; //LEAN:IsOfFinAddOrder.natCard_multiples_le_addOrderOf ;)
+IsOfFinAddOrder__natCard_multiples_le_addOrderOf : (G : Set) -> (_ : Proof (AddMonoid G)) -> (a : Elem G) -> (ha : Proof (IsOfFinAddOrder a)) -> Proof (Leq (Nat__card (Set__Elem (AddSubmonoid__multiples a))) (addOrderOf a)).
+
+(; //LEAN:IsOfFinOrder.natCard_powers_le_orderOf ;)
+IsOfFinOrder__natCard_powers_le_orderOf : (G : Set) -> (_ : Proof (Monoid G)) -> (a : Elem G) -> (ha : Proof (IsOfFinOrder a)) -> Proof (Leq (Nat__card (Set__Elem (Submonoid__powers a))) (orderOf a)).
+
+(; //LEAN:IsOfFinOrder.finite_powers ;)
+IsOfFinOrder__finite_powers : (G : Set) -> (_ : Proof (Monoid G)) -> (a : Elem G) -> (ha : Proof (IsOfFinOrder a)) -> Proof (Set__Finite (Submonoid__powers a)).
+
+(; //LEAN:IsOfFinAddOrder.finite_multiples ;)
+IsOfFinAddOrder__finite_multiples : (G : Set) -> (_ : Proof (AddMonoid G)) -> (a : Elem G) -> (ha : Proof (IsOfFinAddOrder a)) -> Proof (Set__Finite (AddSubmonoid__multiples a)).
+
+(; //LEAN:AddCommute.addOrderOf_add_dvd_lcm ;)
+AddCommute__addOrderOf_add_dvd_lcm : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (AddCommute x1 y)) -> Proof (divide (addOrderOf (plus x1 y)) (Nat__lcm (addOrderOf x1) (addOrderOf y))).
+
+(; //LEAN:Commute.orderOf_mul_dvd_lcm ;)
+Commute__orderOf_mul_dvd_lcm : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (Commute x1 y)) -> Proof (divide (orderOf (times x1 y)) (Nat__lcm (orderOf x1) (orderOf y))).
+
+(; //LEAN:AddCommute.addOrderOf_dvd_lcm_add ;)
+AddCommute__addOrderOf_dvd_lcm_add : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (AddCommute x1 y)) -> Proof (divide (addOrderOf y) (Nat__lcm (addOrderOf x1) (addOrderOf (plus x1 y)))).
+
+(; //LEAN:Commute.orderOf_dvd_lcm_mul ;)
+Commute__orderOf_dvd_lcm_mul : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (Commute x1 y)) -> Proof (divide (orderOf y) (Nat__lcm (orderOf x1) (orderOf (times x1 y)))).
+
+(; //LEAN:Commute.orderOf_mul_dvd_mul_orderOf ;)
+def Commute__orderOf_mul_dvd_mul_orderOf : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (Commute x1 y)) -> Proof (divide (orderOf (times x1 y)) (times (orderOf x1) (orderOf y))) :=
+  G => x => x1 => y => h => dvd_trans Nat (orderOf (times x1 y)) (Nat__lcm (orderOf x1) (orderOf y)) (times (orderOf x1) (orderOf y)) (Commute__orderOf_mul_dvd_lcm G x1 y h) (Nat__lcm_dvd_mul (orderOf x1) (orderOf y)).
+
+(; //LEAN:AddCommute.addOrderOf_add_dvd_mul_addOrderOf ;)
+AddCommute__addOrderOf_add_dvd_mul_addOrderOf : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (AddCommute x1 y)) -> Proof (divide (addOrderOf (plus x1 y)) (times (addOrderOf x1) (addOrderOf y))).
+
+(; //LEAN:AddCommute.addOrderOf_add_eq_mul_addOrderOf_of_coprime ;)
+AddCommute__addOrderOf_add_eq_mul_addOrderOf_of_coprime : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (AddCommute x1 y)) -> (hco : Proof (Nat__Coprime (addOrderOf x1) (addOrderOf y))) -> Proof (Eq (addOrderOf (plus x1 y)) (times (addOrderOf x1) (addOrderOf y))).
+
+(; //LEAN:Commute.orderOf_mul_eq_mul_orderOf_of_coprime ;)
+Commute__orderOf_mul_eq_mul_orderOf_of_coprime : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (Commute x1 y)) -> (hco : Proof (Nat__Coprime (orderOf x1) (orderOf y))) -> Proof (Eq (orderOf (times x1 y)) (times (orderOf x1) (orderOf y))).
+
+(; //LEAN:Commute.isOfFinOrder_mul ;)
+def Commute__isOfFinOrder_mul : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (Commute x1 y)) -> (hx : Proof (IsOfFinOrder x1)) -> (hy : Proof (IsOfFinOrder y)) -> Proof (IsOfFinOrder (times x1 y)) :=
+  G => x => x1 => y => h => hx => hy => iffEl (Lt 0 (orderOf (times x1 y))) (IsOfFinOrder (times x1 y)) (orderOf_pos_iff G (times x1 y)) (Nat__pos_of_dvd_of_pos (orderOf (times x1 y)) (times (orderOf x1) (orderOf y)) (Commute__orderOf_mul_dvd_mul_orderOf G x1 y h) (mul_pos Nat (orderOf x1) (orderOf y) (IsOfFinOrder__orderOf_pos G x1 hx) (IsOfFinOrder__orderOf_pos G y hy))).
+
+(; //LEAN:AddCommute.isOfFinAddOrder_add ;)
+AddCommute__isOfFinAddOrder_add : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (AddCommute x1 y)) -> (hx : Proof (IsOfFinAddOrder x1)) -> (hy : Proof (IsOfFinAddOrder y)) -> Proof (IsOfFinAddOrder (plus x1 y)).
+
+(; //LEAN:Commute.orderOf_mul_eq_right_of_forall_prime_mul_dvd ;)
+Commute__orderOf_mul_eq_right_of_forall_prime_mul_dvd : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (Commute x1 y)) -> (hy : Proof (IsOfFinOrder y)) -> (hdvd : Proof (forall Nat (p => if (prime p) (if (divide p (orderOf x1)) (divide (times p (orderOf x1)) (orderOf y)))))) -> Proof (Eq (orderOf (times x1 y)) (orderOf y)).
+
+(; //LEAN:AddCommute.addOrderOf_add_eq_right_of_forall_prime_mul_dvd ;)
+AddCommute__addOrderOf_add_eq_right_of_forall_prime_mul_dvd : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (AddCommute x1 y)) -> (hy : Proof (IsOfFinAddOrder y)) -> (hdvd : Proof (forall Nat (p => if (prime p) (if (divide p (addOrderOf x1)) (divide (times p (addOrderOf x1)) (addOrderOf y)))))) -> Proof (Eq (addOrderOf (plus x1 y)) (addOrderOf y)).
+
+(; //LEAN:Commute.orderOf_mul_eq_left_of_forall_prime_mul_dvd ;)
+Commute__orderOf_mul_eq_left_of_forall_prime_mul_dvd : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (Commute x1 y)) -> (hx : Proof (IsOfFinOrder x1)) -> (hdvd : Proof (forall Nat (p => if (prime p) (if (divide p (orderOf y)) (divide (times p (orderOf y)) (orderOf x1)))))) -> Proof (Eq (orderOf (times x1 y)) (orderOf x1)).
+
+(; //LEAN:AddCommute.addOrderOf_add_eq_left_of_forall_prime_mul_dvd ;)
+AddCommute__addOrderOf_add_eq_left_of_forall_prime_mul_dvd : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (AddCommute x1 y)) -> (hx : Proof (IsOfFinAddOrder x1)) -> (hdvd : Proof (forall Nat (p => if (prime p) (if (divide p (addOrderOf y)) (divide (times p (addOrderOf y)) (addOrderOf x1)))))) -> Proof (Eq (addOrderOf (plus x1 y)) (addOrderOf x1)).
+
+(; //LEAN:addOrderOf_eq_prime_iff ;)
+addOrderOf_eq_prime_iff : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (p : Elem Nat) -> (_ : Proof (Fact (prime p))) -> Proof (iff (Eq (addOrderOf x1) p) (and (Eqt G (HSMul__hSMul p x1) 0) (Neq x1 0))).
+
+(; //LEAN:orderOf_eq_prime_iff ;)
+orderOf_eq_prime_iff : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (p : Elem Nat) -> (_ : Proof (Fact (prime p))) -> Proof (iff (Eq (orderOf x1) p) (and (Eqt G (pow x1 p) 1) (Neq x1 1))).
+
+(; //LEAN:orderOf_eq_prime ;)
+def orderOf_eq_prime : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (p : Elem Nat) -> (_ : Proof (Fact (prime p))) -> (hg : Proof (Eqt G (pow x1 p) 1)) -> (hg1 : Proof (Neq x1 1)) -> Proof (Eq (orderOf x1) p) :=
+  G => x => x1 => p => hp => hg => hg1 => iffEr (Eq (orderOf x1) p) (and (Eqt G (pow x1 p) 1) (Neq x1 1)) (orderOf_eq_prime_iff G x1 p) (andI (Eqt G (pow x1 p) 1) (Neq x1 1) hg hg1).
+
+(; //LEAN:addOrderOf_eq_prime ;)
+addOrderOf_eq_prime : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (p : Elem Nat) -> (_ : Proof (Fact (prime p))) -> (hg : Proof (Eqt G (HSMul__hSMul p x1) 0)) -> (hg1 : Proof (Neq x1 0)) -> Proof (Eq (addOrderOf x1) p).
+
+(; //LEAN:orderOf_eq_prime_pow ;)
+orderOf_eq_prime_pow : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (p : Elem Nat) -> (_ : Proof (Fact (prime p))) -> (hnot : Proof (not (Eqt G (pow x1 (pow p n)) 1))) -> (hfin : Proof (Eqt G (pow x1 (pow p (plus n 1))) 1)) -> Proof (Eq (orderOf x1) (pow p (plus n 1))).
+
+(; //LEAN:addOrderOf_eq_prime_pow ;)
+addOrderOf_eq_prime_pow : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (p : Elem Nat) -> (_ : Proof (Fact (prime p))) -> (hnot : Proof (not (Eqt G (HSMul__hSMul (pow p n) x1) 0))) -> (hfin : Proof (Eqt G (HSMul__hSMul (pow p (plus n 1)) x1) 0)) -> Proof (Eq (addOrderOf x1) (pow p (plus n 1))).
+
+(; //LEAN:exists_addOrderOf_eq_prime_pow_iff ;)
+exists_addOrderOf_eq_prime_pow_iff : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (p : Elem Nat) -> (_ : Proof (Fact (prime p))) -> Proof (iff (exists Nat (k => Eq (addOrderOf x1) (pow p k))) (exists Nat (m => Eqt G (HSMul__hSMul (pow p m) x1) 0))).
+
+(; //LEAN:exists_orderOf_eq_prime_pow_iff ;)
+exists_orderOf_eq_prime_pow_iff : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (p : Elem Nat) -> (_ : Proof (Fact (prime p))) -> Proof (iff (exists Nat (k => Eq (orderOf x1) (pow p k))) (exists Nat (m => Eqt G (pow x1 (pow p m)) 1))).
+
+(; //LEAN:orderOf_neg_one ;)
+orderOf_neg_one : (R : Set) -> (_ : Proof (Ring R)) -> Proof (Eq (orderOf (Neg__neg 1)) (ite (Eq (ringChar R) 2) 1 2)).
+
+(; //LEAN:CharP.orderOf_eq_two_iff ;)
+CharP__orderOf_eq_two_iff : (R : Set) -> (_ : Proof (Ring R)) -> (_ : Proof (NoZeroDivisors R)) -> (p : Elem Nat) -> (hp : Proof (Neq p 2)) -> (_ : Proof (CharP R p)) -> (x1 : Elem R) -> Proof (iff (Eq (orderOf x1) 2) (Eqt R x1 (Neg__neg 1))).
+
+(; //LEAN:finEquivPowers ;)
+def finEquivPowers : (hx : Proof (IsOfFinOrder x1)) -> Elem (Equiv (Fin (orderOf x1)) (Subtype (x2 => Membership__mem (Submonoid__powers x1) x2))) :=
+  hx => Equiv__ofBijective (n => pow x1 (Fin__val n)) (finEquivPowers___proof_2 hx).
+
+(; //LEAN:finEquivMultiples ;)
+finEquivMultiples : (hx : Proof (IsOfFinAddOrder x1)) -> Elem (Equiv (Fin (addOrderOf x1)) (Subtype (x2 => Membership__mem (AddSubmonoid__multiples x1) x2))).
+
+(; //LEAN:finEquivPowers_apply ;)
+def finEquivPowers_apply : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (n : Elem (Fin (orderOf x1))) -> Proof (Eqt (Subtype (x2 => Membership__mem (Submonoid__powers x1) x2)) (finEquivPowers__app hx n) (pow x1 (Fin__val n))) :=
+  G => x => x1 => hx => n => rfl.
+
+(; //LEAN:finEquivMultiples_apply ;)
+finEquivMultiples_apply : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> (n : Elem (Fin (addOrderOf x1))) -> Proof (Eqt (Subtype (x2 => Membership__mem (AddSubmonoid__multiples x1) x2)) (finEquivMultiples__app hx n) (HSMul__hSMul (Fin__val n) x1)).
+
+(; //LEAN:finEquivPowers_symm_apply ;)
+finEquivPowers_symm_apply : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (n : Elem Nat) -> Proof (Eqt (Fin (orderOf x1)) (Equiv__symm__app (finEquivPowers hx) (pow x1 n)) (Fin__mk (HMod__hMod n (orderOf x1)) (Nat__mod_lt n (IsOfFinOrder__orderOf_pos hx)))).
+
+(; //LEAN:finEquivMultiples_symm_apply ;)
+finEquivMultiples_symm_apply : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> (n : Elem Nat) -> Proof (Eqt (Fin (addOrderOf x1)) (Equiv__symm__app (finEquivMultiples hx) (HSMul__hSMul n x1)) (Fin__mk (HMod__hMod n (addOrderOf x1)) (Nat__mod_lt n (IsOfFinAddOrder__addOrderOf_pos hx)))).
+
+(; //LEAN:IsOfFinAddOrder.nsmul_eq_nsmul_iff_modEq ;)
+IsOfFinAddOrder__nsmul_eq_nsmul_iff_modEq : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (m : Elem Nat) -> (hx : Proof (IsOfFinAddOrder x1)) -> Proof (iff (Eqt G (HSMul__hSMul n x1) (HSMul__hSMul m x1)) (Nat__ModEq (addOrderOf x1) n m)).
+
+(; //LEAN:IsOfFinOrder.pow_eq_pow_iff_modEq ;)
+IsOfFinOrder__pow_eq_pow_iff_modEq : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (m : Elem Nat) -> (hx : Proof (IsOfFinOrder x1)) -> Proof (iff (Eqt G (pow x1 n) (pow x1 m)) (Nat__ModEq (orderOf x1) n m)).
+
+(; //LEAN:IsOfFinAddOrder.nsmul_inj_mod ;)
+IsOfFinAddOrder__nsmul_inj_mod : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Eqt G (HSMul__hSMul n x1) (HSMul__hSMul m x1)) (Eq (HMod__hMod n (addOrderOf x1)) (HMod__hMod m (addOrderOf x1)))).
+
+(; //LEAN:IsOfFinOrder.pow_inj_mod ;)
+def IsOfFinOrder__pow_inj_mod : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Eqt G (pow x1 n) (pow x1 m)) (Eq (HMod__hMod n (orderOf x1)) (HMod__hMod m (orderOf x1)))) :=
+  G => x => x1 => hx => n => m => IsOfFinOrder__pow_eq_pow_iff_modEq G x1 n m hx.
+
+(; //LEAN:pow_eq_pow_iff_modEq ;)
+pow_eq_pow_iff_modEq : (G : Set) -> (_ : Proof (LeftCancelMonoid G)) -> (x1 : Elem G) -> (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Eqt G (pow x1 n) (pow x1 m)) (Nat__ModEq (orderOf x1) n m)).
+
+(; //LEAN:nsmul_eq_nsmul_iff_modEq ;)
+nsmul_eq_nsmul_iff_modEq : (G : Set) -> (_ : Proof (AddLeftCancelMonoid G)) -> (x1 : Elem G) -> (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Eqt G (HSMul__hSMul n x1) (HSMul__hSMul m x1)) (Nat__ModEq (addOrderOf x1) n m)).
+
+(; //LEAN:injective_pow_iff_not_isOfFinOrder ;)
+injective_pow_iff_not_isOfFinOrder : (G : Set) -> (_ : Proof (LeftCancelMonoid G)) -> (x1 : Elem G) -> Proof (iff (Function__Injective (n => pow x1 n)) (not (IsOfFinOrder x1))).
+
+(; //LEAN:injective_nsmul_iff_not_isOfFinAddOrder ;)
+injective_nsmul_iff_not_isOfFinAddOrder : (G : Set) -> (_ : Proof (AddLeftCancelMonoid G)) -> (x1 : Elem G) -> Proof (iff (Function__Injective (n => HSMul__hSMul n x1)) (not (IsOfFinAddOrder x1))).
+
+(; //LEAN:pow_inj_mod ;)
+def pow_inj_mod : (G : Set) -> (_ : Proof (LeftCancelMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Eqt G (pow x1 n) (pow x1 m)) (Eq (HMod__hMod n (orderOf x1)) (HMod__hMod m (orderOf x1)))) :=
+  G => x => x1 => n => m => pow_eq_pow_iff_modEq G x1 m n.
+
+(; //LEAN:nsmul_inj_mod ;)
+nsmul_inj_mod : (G : Set) -> (_ : Proof (AddLeftCancelMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Eqt G (HSMul__hSMul n x1) (HSMul__hSMul m x1)) (Eq (HMod__hMod n (addOrderOf x1)) (HMod__hMod m (addOrderOf x1)))).
+
+(; //LEAN:pow_inj_iff_of_orderOf_eq_zero ;)
+pow_inj_iff_of_orderOf_eq_zero : (G : Set) -> (_ : Proof (LeftCancelMonoid G)) -> (x1 : Elem G) -> (h : Proof (Eq (orderOf x1) 0)) -> (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Eqt G (pow x1 n) (pow x1 m)) (Eq n m)).
+
+(; //LEAN:nsmul_inj_iff_of_addOrderOf_eq_zero ;)
+nsmul_inj_iff_of_addOrderOf_eq_zero : (G : Set) -> (_ : Proof (AddLeftCancelMonoid G)) -> (x1 : Elem G) -> (h : Proof (Eq (addOrderOf x1) 0)) -> (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Eqt G (HSMul__hSMul n x1) (HSMul__hSMul m x1)) (Eq n m)).
+
+(; //LEAN:infinite_not_isOfFinOrder ;)
+infinite_not_isOfFinOrder : (G : Set) -> (_ : Proof (LeftCancelMonoid G)) -> (x1 : Elem G) -> (h : Proof (not (IsOfFinOrder x1))) -> Proof (Set__Infinite (Set__ofPred (y => not (IsOfFinOrder y)))).
+
+(; //LEAN:infinite_not_isOfFinAddOrder ;)
+infinite_not_isOfFinAddOrder : (G : Set) -> (_ : Proof (AddLeftCancelMonoid G)) -> (x1 : Elem G) -> (h : Proof (not (IsOfFinAddOrder x1))) -> Proof (Set__Infinite (Set__ofPred (y => not (IsOfFinAddOrder y)))).
+
+(; //LEAN:finite_multiples ;)
+finite_multiples : (G : Set) -> (_ : Proof (AddLeftCancelMonoid G)) -> (a : Elem G) -> Proof (iff (Set__Finite (AddSubmonoid__multiples a)) (IsOfFinAddOrder a)).
+
+(; //LEAN:finite_powers ;)
+finite_powers : (G : Set) -> (_ : Proof (LeftCancelMonoid G)) -> (a : Elem G) -> Proof (iff (Set__Finite (Submonoid__powers a)) (IsOfFinOrder a)).
+
+(; //LEAN:infinite_multiples ;)
+infinite_multiples : (G : Set) -> (_ : Proof (AddLeftCancelMonoid G)) -> (a : Elem G) -> Proof (iff (Set__Infinite (AddSubmonoid__multiples a)) (not (IsOfFinAddOrder a))).
+
+(; //LEAN:infinite_powers ;)
+def infinite_powers : (G : Set) -> (_ : Proof (LeftCancelMonoid G)) -> (a : Elem G) -> Proof (iff (Set__Infinite (Submonoid__powers a)) (not (IsOfFinOrder a))) :=
+  G => x => a => Iff__not (Set__Finite (Submonoid__powers a)) (IsOfFinOrder a) (finite_powers G a).
+
+(; //LEAN:Nat.card_submonoidPowers ;)
+Nat__card_submonoidPowers : (G : Set) -> (_ : Proof (LeftCancelMonoid G)) -> (a : Elem G) -> Proof (Eq (Nat__card (Subtype (x1 => Membership__mem (Submonoid__powers a) x1))) (orderOf a)).
+
+(; //LEAN:Nat.card_addSubmonoidMultiples ;)
+Nat__card_addSubmonoidMultiples : (G : Set) -> (_ : Proof (AddLeftCancelMonoid G)) -> (a : Elem G) -> Proof (Eq (Nat__card (Subtype (x1 => Membership__mem (AddSubmonoid__multiples a) x1))) (addOrderOf a)).
+
+(; //LEAN:RightCancelMonoid.pow_eq_pow_iff_modEq ;)
+RightCancelMonoid__pow_eq_pow_iff_modEq : (G : Set) -> (_ : Proof (RightCancelMonoid G)) -> (x1 : Elem G) -> (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Eqt G (pow x1 n) (pow x1 m)) (Nat__ModEq (orderOf x1) n m)).
+
+(; //LEAN:AddRightCancelMonoid.nsmul_eq_nsmul_iff_modEq ;)
+AddRightCancelMonoid__nsmul_eq_nsmul_iff_modEq : (G : Set) -> (_ : Proof (AddRightCancelMonoid G)) -> (x1 : Elem G) -> (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Eqt G (HSMul__hSMul n x1) (HSMul__hSMul m x1)) (Nat__ModEq (addOrderOf x1) n m)).
+
+(; //LEAN:RightCancelMonoid.injective_pow_iff_not_isOfFinOrder ;)
+RightCancelMonoid__injective_pow_iff_not_isOfFinOrder : (G : Set) -> (_ : Proof (RightCancelMonoid G)) -> (x1 : Elem G) -> Proof (iff (Function__Injective (n => pow x1 n)) (not (IsOfFinOrder x1))).
+
+(; //LEAN:AddRightCancelMonoid.injective_nsmul_iff_not_isOfFinAddOrder ;)
+AddRightCancelMonoid__injective_nsmul_iff_not_isOfFinAddOrder : (G : Set) -> (_ : Proof (AddRightCancelMonoid G)) -> (x1 : Elem G) -> Proof (iff (Function__Injective (n => HSMul__hSMul n x1)) (not (IsOfFinAddOrder x1))).
+
+(; //LEAN:AddRightCancelMonoid.nsmul_inj_mod ;)
+AddRightCancelMonoid__nsmul_inj_mod : (G : Set) -> (_ : Proof (AddRightCancelMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Eqt G (HSMul__hSMul n x1) (HSMul__hSMul m x1)) (Eq (HMod__hMod n (addOrderOf x1)) (HMod__hMod m (addOrderOf x1)))).
+
+(; //LEAN:RightCancelMonoid.pow_inj_mod ;)
+def RightCancelMonoid__pow_inj_mod : (G : Set) -> (_ : Proof (RightCancelMonoid G)) -> (x1 : Elem G) -> (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Eqt G (pow x1 n) (pow x1 m)) (Eq (HMod__hMod n (orderOf x1)) (HMod__hMod m (orderOf x1)))) :=
+  G => x => x1 => n => m => RightCancelMonoid__pow_eq_pow_iff_modEq G x1 m n.
+
+(; //LEAN:AddRightCancelMonoid.nsmul_inj_iff_of_addOrderOf_eq_zero ;)
+AddRightCancelMonoid__nsmul_inj_iff_of_addOrderOf_eq_zero : (G : Set) -> (_ : Proof (AddRightCancelMonoid G)) -> (x1 : Elem G) -> (h : Proof (Eq (addOrderOf x1) 0)) -> (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Eqt G (HSMul__hSMul n x1) (HSMul__hSMul m x1)) (Eq n m)).
+
+(; //LEAN:RightCancelMonoid.pow_inj_iff_of_orderOf_eq_zero ;)
+RightCancelMonoid__pow_inj_iff_of_orderOf_eq_zero : (G : Set) -> (_ : Proof (RightCancelMonoid G)) -> (x1 : Elem G) -> (h : Proof (Eq (orderOf x1) 0)) -> (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Eqt G (pow x1 n) (pow x1 m)) (Eq n m)).
+
+(; //LEAN:AddRightCancelMonoid.infinite_not_isOfFinAddOrder ;)
+AddRightCancelMonoid__infinite_not_isOfFinAddOrder : (G : Set) -> (_ : Proof (AddRightCancelMonoid G)) -> (x1 : Elem G) -> (h : Proof (not (IsOfFinAddOrder x1))) -> Proof (Set__Infinite (Set__ofPred (y => not (IsOfFinAddOrder y)))).
+
+(; //LEAN:RightCancelMonoid.infinite_not_isOfFinOrder ;)
+RightCancelMonoid__infinite_not_isOfFinOrder : (G : Set) -> (_ : Proof (RightCancelMonoid G)) -> (x1 : Elem G) -> (h : Proof (not (IsOfFinOrder x1))) -> Proof (Set__Infinite (Set__ofPred (y => not (IsOfFinOrder y)))).
+
+(; //LEAN:AddRightCancelMonoid.finite_multiples ;)
+AddRightCancelMonoid__finite_multiples : (G : Set) -> (_ : Proof (AddRightCancelMonoid G)) -> (a : Elem G) -> Proof (iff (Set__Finite (AddSubmonoid__multiples a)) (IsOfFinAddOrder a)).
+
+(; //LEAN:RightCancelMonoid.finite_powers ;)
+RightCancelMonoid__finite_powers : (G : Set) -> (_ : Proof (RightCancelMonoid G)) -> (a : Elem G) -> Proof (iff (Set__Finite (Submonoid__powers a)) (IsOfFinOrder a)).
+
+(; //LEAN:AddRightCancelMonoid.infinite_multiples ;)
+AddRightCancelMonoid__infinite_multiples : (G : Set) -> (_ : Proof (AddRightCancelMonoid G)) -> (a : Elem G) -> Proof (iff (Set__Infinite (AddSubmonoid__multiples a)) (not (IsOfFinAddOrder a))).
+
+(; //LEAN:RightCancelMonoid.infinite_powers ;)
+def RightCancelMonoid__infinite_powers : (G : Set) -> (_ : Proof (RightCancelMonoid G)) -> (a : Elem G) -> Proof (iff (Set__Infinite (Submonoid__powers a)) (not (IsOfFinOrder a))) :=
+  G => x => a => Iff__not (Set__Finite (Submonoid__powers a)) (IsOfFinOrder a) (RightCancelMonoid__finite_powers G a).
+
+(; //LEAN:RightCancelMonoid.Nat.card_submonoidPowers ;)
+RightCancelMonoid__Nat__card_submonoidPowers : (G : Set) -> (_ : Proof (RightCancelMonoid G)) -> (a : Elem G) -> Proof (Eq (Nat__card (Subtype (x1 => Membership__mem (Submonoid__powers a) x1))) (orderOf a)).
+
+(; //LEAN:AddRightCancelMonoid.Nat.card_addSubmonoidMultiples ;)
+AddRightCancelMonoid__Nat__card_addSubmonoidMultiples : (G : Set) -> (_ : Proof (AddRightCancelMonoid G)) -> (a : Elem G) -> Proof (Eq (Nat__card (Subtype (x1 => Membership__mem (AddSubmonoid__multiples a) x1))) (addOrderOf a)).
+
+(; //LEAN:isOfFinOrder_inv_iff ;)
+isOfFinOrder_inv_iff : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> Proof (iff (IsOfFinOrder (Inv__inv x1)) (IsOfFinOrder x1)).
+
+(; //LEAN:isOfFinAddOrder_neg_iff ;)
+isOfFinAddOrder_neg_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> Proof (iff (IsOfFinAddOrder (Neg__neg x1)) (IsOfFinAddOrder x1)).
+
+(; //LEAN:IsOfFinOrder.of_inv ;)
+def IsOfFinOrder__of_inv : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (h : Proof (IsOfFinOrder (Inv__inv x1))) -> Proof (IsOfFinOrder x1) :=
+  G => x => x1 => iffEl (IsOfFinOrder (Inv__inv x1)) (IsOfFinOrder x1) (isOfFinOrder_inv_iff G x1).
+
+(; //LEAN:IsOfFinAddOrder.of_neg ;)
+def IsOfFinAddOrder__of_neg : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (h : Proof (IsOfFinAddOrder (Neg__neg x1))) -> Proof (IsOfFinAddOrder x1) :=
+  G => x => x1 => iffEl (IsOfFinAddOrder (Neg__neg x1)) (IsOfFinAddOrder x1) (isOfFinAddOrder_neg_iff G x1).
+
+(; //LEAN:IsOfFinOrder.inv ;)
+def IsOfFinOrder__inv : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (h : Proof (IsOfFinOrder x1)) -> Proof (IsOfFinOrder (Inv__inv x1)) :=
+  G => x => x1 => iffEr (IsOfFinOrder (Inv__inv x1)) (IsOfFinOrder x1) (isOfFinOrder_inv_iff G x1).
+
+(; //LEAN:IsOfFinAddOrder.neg ;)
+def IsOfFinAddOrder__neg : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (h : Proof (IsOfFinAddOrder x1)) -> Proof (IsOfFinAddOrder (Neg__neg x1)) :=
+  G => x => x1 => iffEr (IsOfFinAddOrder (Neg__neg x1)) (IsOfFinAddOrder x1) (isOfFinAddOrder_neg_iff G x1).
+
+(; //LEAN:addOrderOf_dvd_iff_zsmul_eq_zero ;)
+addOrderOf_dvd_iff_zsmul_eq_zero : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (i : Elem Int) -> Proof (iff (divide (addOrderOf x1) i) (Eqt G (HSMul__hSMul i x1) 0)).
+
+(; //LEAN:orderOf_dvd_iff_zpow_eq_one ;)
+orderOf_dvd_iff_zpow_eq_one : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (i : Elem Int) -> Proof (iff (divide (orderOf x1) i) (Eqt G (pow x1 i) 1)).
+
+(; //LEAN:addOrderOf_neg ;)
+addOrderOf_neg : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> Proof (Eq (addOrderOf (Neg__neg x1)) (addOrderOf x1)).
+
+(; //LEAN:orderOf_inv ;)
+orderOf_inv : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> Proof (Eq (orderOf (Inv__inv x1)) (orderOf x1)).
+
+(; //LEAN:addOrderOf_dvd_sub_iff_zsmul_eq_zsmul ;)
+addOrderOf_dvd_sub_iff_zsmul_eq_zsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (a : Elem Int) -> (b : Elem Int) -> Proof (iff (divide (addOrderOf x1) (minus a b)) (Eqt G (HSMul__hSMul a x1) (HSMul__hSMul b x1))).
+
+(; //LEAN:orderOf_dvd_sub_iff_zpow_eq_zpow ;)
+orderOf_dvd_sub_iff_zpow_eq_zpow : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (a : Elem Int) -> (b : Elem Int) -> Proof (iff (divide (orderOf x1) (minus a b)) (Eqt G (pow x1 a) (pow x1 b))).
+
+(; //LEAN:isSelfInv_iff_isOfFinOrder_and_orderOf_le_two ;)
+isSelfInv_iff_isOfFinOrder_and_orderOf_le_two : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> Proof (iff (IsSelfInv a) (and (IsOfFinOrder a) (Leq (orderOf a) 2))).
+
+(; //LEAN:isSelfNeg_iff_isOfFinAddOrder_and_addOrderOf_le_two ;)
+isSelfNeg_iff_isOfFinAddOrder_and_addOrderOf_le_two : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (iff (IsSelfNeg a) (and (IsOfFinAddOrder a) (Leq (addOrderOf a) 2))).
+
+(; //LEAN:IsOfFinOrder.isSelfInv_iff ;)
+IsOfFinOrder__isSelfInv_iff : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (h : Proof (IsOfFinOrder a)) -> Proof (iff (IsSelfInv a) (Leq (orderOf a) 2)).
+
+(; //LEAN:IsOfFinAddOrder.isSelfNeg_iff ;)
+IsOfFinAddOrder__isSelfNeg_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (h : Proof (IsOfFinAddOrder a)) -> Proof (iff (IsSelfNeg a) (Leq (addOrderOf a) 2)).
+
+(; //LEAN:AddSubgroup.addOrderOf_coe ;)
+AddSubgroup__addOrderOf_coe : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (a : Elem (Subtype (x1 => Membership__mem H x1))) -> Proof (Eq (addOrderOf a) (addOrderOf a)).
+
+(; //LEAN:Subgroup.orderOf_coe ;)
+def Subgroup__orderOf_coe : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (a : Elem (Subtype (x1 => Membership__mem H x1))) -> Proof (Eq (orderOf a) (orderOf a)) :=
+  G => x => H => a => orderOf_injective (Subtype (x1 => Membership__mem H x1)) G (Subgroup__subtype H) (Subtype__coe_injective G (x2 => Membership__mem H x2)) a.
+
+(; //LEAN:AddSubgroup.addOrderOf_mk ;)
+AddSubgroup__addOrderOf_mk : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (a : Elem G) -> (ha : Proof (Membership__mem H a)) -> Proof (Eq (addOrderOf a) (addOrderOf a)).
+
+(; //LEAN:Subgroup.orderOf_mk ;)
+def Subgroup__orderOf_mk : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (a : Elem G) -> (ha : Proof (Membership__mem H a)) -> Proof (Eq (orderOf a) (orderOf a)) :=
+  G => x => H => a => ha => Eq__symm Nat (orderOf a) (orderOf a) (Subgroup__orderOf_coe G H a).
+
+(; //LEAN:mod_addOrderOf_zsmul ;)
+mod_addOrderOf_zsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (z : Elem Int) -> Proof (Eqt G (HSMul__hSMul (HMod__hMod z (addOrderOf x1)) x1) (HSMul__hSMul z x1)).
+
+(; //LEAN:zpow_mod_orderOf ;)
+def zpow_mod_orderOf : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (z : Elem Int) -> Proof (Eqt G (pow x1 (HMod__hMod z (orderOf x1))) (pow x1 z)) :=
+  G => x => x1 => z => Trans__trans (of_eq_true (Eqt G (pow x1 (HMod__hMod z (orderOf x1))) (pow x1 (plus (HMod__hMod z (orderOf x1)) (times (orderOf x1) (div z (orderOf x1)))))) (Eq__trans Prop (Eqt G (pow x1 (HMod__hMod z (orderOf x1))) (pow x1 (plus (HMod__hMod z (orderOf x1)) (times (orderOf x1) (div z (orderOf x1)))))) (Eqt G (pow x1 (HMod__hMod z (orderOf x1))) (pow x1 (HMod__hMod z (orderOf x1)))) True (congrArg G Prop (pow x1 (plus (HMod__hMod z (orderOf x1)) (times (orderOf x1) (div z (orderOf x1))))) (pow x1 (HMod__hMod z (orderOf x1))) (Eq (pow x1 (HMod__hMod z (orderOf x1)))) (Eq__trans G (pow x1 (plus (HMod__hMod z (orderOf x1)) (times (orderOf x1) (div z (orderOf x1))))) (times (pow x1 (HMod__hMod z (orderOf x1))) (pow x1 (times (orderOf x1) (div z (orderOf x1))))) (pow x1 (HMod__hMod z (orderOf x1))) (zpow_add G x1 (HMod__hMod z (orderOf x1)) (times (orderOf x1) (div z (orderOf x1)))) (Eq__trans G (times (pow x1 (HMod__hMod z (orderOf x1))) (pow x1 (times (orderOf x1) (div z (orderOf x1))))) (times (pow x1 (HMod__hMod z (orderOf x1))) 1) (pow x1 (HMod__hMod z (orderOf x1))) (congrArg G G (pow x1 (times (orderOf x1) (div z (orderOf x1)))) 1 (times (pow x1 (HMod__hMod z (orderOf x1)))) (Eq__trans G (pow x1 (times (orderOf x1) (div z (orderOf x1)))) (pow (pow x1 (orderOf x1)) (div z (orderOf x1))) 1 (zpow_mul G x1 (orderOf x1) (div z (orderOf x1))) (Eq__trans G (pow (pow x1 (orderOf x1)) (div z (orderOf x1))) (pow 1 (div z (orderOf x1))) 1 (congrFun' Int G (pow (pow x1 (orderOf x1))) (pow 1) (congrArg G (Elem Int -> G) (pow x1 (orderOf x1)) 1 pow (Eq__trans G (pow x1 (orderOf x1)) (pow x1 (orderOf x1)) 1 (zpow_natCast G x1 (orderOf x1)) (pow_orderOf_eq_one G x1))) (div z (orderOf x1))) (one_zpow G (div z (orderOf x1)))))) (mul_one G (pow x1 (HMod__hMod z (orderOf x1))))))) (eq_self G (pow x1 (HMod__hMod z (orderOf x1)))))) (Eq__mpr (id (congrArg Int Prop (plus (HMod__hMod z (orderOf x1)) (times (orderOf x1) (div z (orderOf x1)))) z (_a => Eqt G (pow x1 _a) (pow x1 z)) (Int__emod_add_mul_ediv z (orderOf x1)))) (Eq__refl (pow x1 z))).
+
+(; //LEAN:zsmul_smul_addOrderOf ;)
+zsmul_smul_addOrderOf : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (i : Elem Int) -> Proof (Eqt G (HSMul__hSMul (addOrderOf x1) (HSMul__hSMul i x1)) 0).
+
+(; //LEAN:zpow_pow_orderOf ;)
+zpow_pow_orderOf : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (i : Elem Int) -> Proof (Eqt G (pow (pow x1 i) (orderOf x1)) 1).
+
+(; //LEAN:IsOfFinAddOrder.zsmul ;)
+IsOfFinAddOrder__zsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (h : Proof (IsOfFinAddOrder x1)) -> (i : Elem Int) -> Proof (IsOfFinAddOrder (HSMul__hSMul i x1)).
+
+(; //LEAN:IsOfFinOrder.zpow ;)
+def IsOfFinOrder__zpow : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (h : Proof (IsOfFinOrder x1)) -> (i : Elem Int) -> Proof (IsOfFinOrder (pow x1 i)) :=
+  G => x => x1 => h => i => iffEr (IsOfFinOrder (pow x1 i)) (exists Nat (n => and (Lt 0 n) (Eqt G (pow (pow x1 i) n) 1))) (isOfFinOrder_iff_pow_eq_one G (pow x1 i)) (existsI Nat (n1 => and (Lt 0 n1) (Eqt G (pow (pow x1 i) n1) 1)) (orderOf x1) (andI (Lt 0 (orderOf x1)) (Eqt G (pow (pow x1 i) (orderOf x1)) 1) (IsOfFinOrder__orderOf_pos G x1 h) (zpow_pow_orderOf G x1 i))).
+
+(; //LEAN:IsOfFinOrder.of_mem_zpowers ;)
+IsOfFinOrder__of_mem_zpowers : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (IsOfFinOrder x1)) -> (h' : Proof (Membership__mem (Subgroup__zpowers x1) y)) -> Proof (IsOfFinOrder y).
+
+(; //LEAN:IsOfFinAddOrder.of_mem_zmultiples ;)
+IsOfFinAddOrder__of_mem_zmultiples : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (IsOfFinAddOrder x1)) -> (h' : Proof (Membership__mem (AddSubgroup__zmultiples x1) y)) -> Proof (IsOfFinAddOrder y).
+
+(; //LEAN:addOrderOf_dvd_of_mem_zmultiples ;)
+addOrderOf_dvd_of_mem_zmultiples : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (Membership__mem (AddSubgroup__zmultiples x1) y)) -> Proof (divide (addOrderOf y) (addOrderOf x1)).
+
+(; //LEAN:orderOf_dvd_of_mem_zpowers ;)
+orderOf_dvd_of_mem_zpowers : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (Membership__mem (Subgroup__zpowers x1) y)) -> Proof (divide (orderOf y) (orderOf x1)).
+
+(; //LEAN:smul_eq_self_of_mem_zpowers ;)
+smul_eq_self_of_mem_zpowers : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (y : Elem G) -> (X : Set) -> (_ : Proof (MulAction G X)) -> (hx : Proof (Membership__mem (Subgroup__zpowers y) x1)) -> (a : Elem X) -> (hs : Proof (Eqt X (HSMul__hSMul y a) a)) -> Proof (Eqt X (HSMul__hSMul x1 a) a).
+
+(; //LEAN:vadd_eq_self_of_mem_zmultiples ;)
+def vadd_eq_self_of_mem_zmultiples : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (y : Elem G) -> (X : Set) -> (_ : Proof (AddAction G X)) -> (hx : Proof (Membership__mem (AddSubgroup__zmultiples y) x1)) -> (a : Elem X) -> (hs : Proof (Eqt X (HVAdd__hVAdd y a) a)) -> Proof (Eqt X (HVAdd__hVAdd x1 a) a) :=
+  G => x => x1 => y => X => x2 => hx => a => hs => smul_eq_self_of_mem_zpowers (Multiplicative G) x1 y X hx a hs.
+
+(; //LEAN:IsOfFinAddOrder.mem_multiples_iff_mem_zmultiples ;)
+IsOfFinAddOrder__mem_multiples_iff_mem_zmultiples : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (y : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> Proof (iff (Membership__mem (AddSubmonoid__multiples x1) y) (Membership__mem (AddSubgroup__zmultiples x1) y)).
+
+(; //LEAN:IsOfFinOrder.mem_powers_iff_mem_zpowers ;)
+IsOfFinOrder__mem_powers_iff_mem_zpowers : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (y : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> Proof (iff (Membership__mem (Submonoid__powers x1) y) (Membership__mem (Subgroup__zpowers x1) y)).
+
+(; //LEAN:IsOfFinAddOrder.multiples_eq_zmultiples ;)
+IsOfFinAddOrder__multiples_eq_zmultiples : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> Proof (Eqt (powerset G) (AddSubmonoid__multiples x1) (AddSubgroup__zmultiples x1)).
+
+(; //LEAN:IsOfFinOrder.powers_eq_zpowers ;)
+def IsOfFinOrder__powers_eq_zpowers : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> Proof (Eqt (powerset G) (Submonoid__powers x1) (Subgroup__zpowers x1)) :=
+  G => x => x1 => hx => Set__ext G (Submonoid__powers x1) (Subgroup__zpowers x1) (forallI G (x2 => iff (Membership__mem (Submonoid__powers x1) x2) (Membership__mem (Subgroup__zpowers x1) x2)) (x2 => IsOfFinOrder__mem_powers_iff_mem_zpowers G x1 x2 hx)).
+
+(; //LEAN:IsOfFinAddOrder.mem_zmultiples_iff_mem_range_addOrderOf ;)
+IsOfFinAddOrder__mem_zmultiples_iff_mem_range_addOrderOf : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (y : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> Proof (iff (Membership__mem (AddSubgroup__zmultiples x1) y) (Membership__mem (Finset__image (x3 => HSMul__hSMul x3 x1) (Finset__range (addOrderOf x1))) y)).
+
+(; //LEAN:IsOfFinOrder.mem_zpowers_iff_mem_range_orderOf ;)
+def IsOfFinOrder__mem_zpowers_iff_mem_range_orderOf : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (y : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> Proof (iff (Membership__mem (Subgroup__zpowers x1) y) (Membership__mem (Finset__image (x3 => pow x1 x3) (Finset__range (orderOf x1))) y)) :=
+  G => x => x1 => y => hx => Iff__trans (Membership__mem (Subgroup__zpowers x1) y) (Membership__mem (Submonoid__powers x1) y) (Membership__mem (Finset__image (x3 => pow x1 x3) (Finset__range (orderOf x1))) y) (Iff__symm (Membership__mem (Submonoid__powers x1) y) (Membership__mem (Subgroup__zpowers x1) y) (IsOfFinOrder__mem_powers_iff_mem_zpowers G x1 y hx)) (IsOfFinOrder__mem_powers_iff_mem_range_orderOf G x1 y hx).
+
+(; //LEAN:Subgroup.closure_toSubmonoid_of_isOfFinOrder ;)
+Subgroup__closure_toSubmonoid_of_isOfFinOrder : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (powerset G)) -> (hs : Proof (forall G (x1 => if (Membership__mem s x1) (IsOfFinOrder x1)))) -> Proof (Eqt (Submonoid G) (Subgroup__toSubmonoid (Subgroup__closure s)) (Submonoid__closure s)).
+
+(; //LEAN:AddSubgroup.closure_toAddSubmonoid_of_isOfFinAddOrder ;)
+AddSubgroup__closure_toAddSubmonoid_of_isOfFinAddOrder : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (powerset G)) -> (hs : Proof (forall G (x1 => if (Membership__mem s x1) (IsOfFinAddOrder x1)))) -> Proof (Eqt (AddSubmonoid G) (AddSubgroup__toAddSubmonoid (AddSubgroup__closure s)) (AddSubmonoid__closure s)).
+
+(; //LEAN:finEquivZPowers ;)
+def finEquivZPowers : (hx : Proof (IsOfFinOrder x1)) -> Elem (Equiv (Fin (orderOf x1)) (Subtype (x2 => Membership__mem (Subgroup__zpowers x1) x2))) :=
+  hx => Equiv__trans (finEquivPowers hx) (Set__equivOfEq (IsOfFinOrder__powers_eq_zpowers hx)).
+
+(; //LEAN:finEquivZMultiples ;)
+finEquivZMultiples : (hx : Proof (IsOfFinAddOrder x1)) -> Elem (Equiv (Fin (addOrderOf x1)) (Subtype (x2 => Membership__mem (AddSubgroup__zmultiples x1) x2))).
+
+(; //LEAN:finEquivZPowers_apply ;)
+def finEquivZPowers_apply : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (n : Elem (Fin (orderOf x1))) -> Proof (Eqt (Subtype (x2 => Membership__mem (Subgroup__zpowers x1) x2)) (finEquivZPowers__app hx n) (pow x1 (Fin__val n))) :=
+  G => x => x1 => hx => n => rfl.
+
+(; //LEAN:finEquivZMultiples_apply ;)
+finEquivZMultiples_apply : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> (n : Elem (Fin (addOrderOf x1))) -> Proof (Eqt (Subtype (x2 => Membership__mem (AddSubgroup__zmultiples x1) x2)) (finEquivZMultiples__app hx n) (HSMul__hSMul (Fin__val n) x1)).
+
+(; //LEAN:finEquivZMultiples_symm_apply ;)
+finEquivZMultiples_symm_apply : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> (n : Elem Nat) -> Proof (Eqt (Fin (addOrderOf x1)) (Equiv__symm__app (finEquivZMultiples hx) (HSMul__hSMul n x1)) (Fin__mk (HMod__hMod n (addOrderOf x1)) (Nat__mod_lt n (IsOfFinAddOrder__addOrderOf_pos hx)))).
+
+(; //LEAN:finEquivZPowers_symm_apply ;)
+finEquivZPowers_symm_apply : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (n : Elem Nat) -> Proof (Eqt (Fin (orderOf x1)) (Equiv__symm__app (finEquivZPowers hx) (pow x1 n)) (Fin__mk (HMod__hMod n (orderOf x1)) (Nat__mod_lt n (IsOfFinOrder__orderOf_pos hx)))).
+
+(; //LEAN:pow_finEquivZPowers_symm_apply ;)
+pow_finEquivZPowers_symm_apply : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (a : Elem (Subtype (x4 => Membership__mem (Subgroup__zpowers x1) x4))) -> Proof (Eqt G (pow x1 (Fin__val (Equiv__symm__app (finEquivZPowers hx) a))) a).
+
+(; //LEAN:nsmul_finEquivZMultiples_symm_apply ;)
+nsmul_finEquivZMultiples_symm_apply : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> (a : Elem (Subtype (x4 => Membership__mem (AddSubgroup__zmultiples x1) x4))) -> Proof (Eqt G (HSMul__hSMul (Fin__val (Equiv__symm__app (finEquivZMultiples hx) a)) x1) a).
+
+(; //LEAN:IsOfFinOrder.mul ;)
+def IsOfFinOrder__mul : (G : Set) -> (_ : Proof (CommMonoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (hx : Proof (IsOfFinOrder x1)) -> (hy : Proof (IsOfFinOrder y)) -> Proof (IsOfFinOrder (times x1 y)) :=
+  G => x => x1 => y => hx => hy => Commute__isOfFinOrder_mul G x1 y (Commute__all G x1 y) hx hy.
+
+(; //LEAN:IsOfFinAddOrder.add ;)
+IsOfFinAddOrder__add : (G : Set) -> (_ : Proof (AddCommMonoid G)) -> (x1 : Elem G) -> (y : Elem G) -> (hx : Proof (IsOfFinAddOrder x1)) -> (hy : Proof (IsOfFinAddOrder y)) -> Proof (IsOfFinAddOrder (plus x1 y)).
+
+(; //LEAN:isMulTorsionFree_iff_not_isOfFinOrder ;)
+isMulTorsionFree_iff_not_isOfFinOrder : (G : Set) -> (_ : Proof (Group G)) -> Proof (iff (IsMulTorsionFree G) (forall G (a => if (Neq a 1) (not (IsOfFinOrder a))))).
+
+(; //LEAN:isAddTorsionFree_iff_not_isOfFinAddOrder ;)
+isAddTorsionFree_iff_not_isOfFinAddOrder : (G : Set) -> (_ : Proof (AddGroup G)) -> Proof (iff (IsAddTorsionFree G) (forall G (a => if (Neq a 0) (not (IsOfFinAddOrder a))))).
+
+(; //LEAN:IsMulTorsionFree.of_not_isOfFinOrder ;)
+def IsMulTorsionFree__of_not_isOfFinOrder : (G : Set) -> (_ : Proof (Group G)) -> (h : Proof (forall G (a => if (Neq a 1) (not (IsOfFinOrder a))))) -> Proof (IsMulTorsionFree G) :=
+  G => x => iffEr (IsMulTorsionFree G) (forall G (a => if (Neq a 1) (not (IsOfFinOrder a)))) (isMulTorsionFree_iff_not_isOfFinOrder G).
+
+(; //LEAN:IsAddTorsionFree.of_not_isOfFinAddOrder ;)
+IsAddTorsionFree__of_not_isOfFinAddOrder : (G : Set) -> (_ : Proof (AddGroup G)) -> (h : Proof (forall G (a => if (Neq a 0) (not (IsOfFinAddOrder a))))) -> Proof (IsAddTorsionFree G).
+
+(; //LEAN:not_isAddTorsionFree_iff_isOfFinAddOrder ;)
+not_isAddTorsionFree_iff_isOfFinAddOrder : (G : Set) -> (_ : Proof (AddGroup G)) -> Proof (iff (not (IsAddTorsionFree G)) (exists G (a => and (Neq a 0) (IsOfFinAddOrder a)))).
+
+(; //LEAN:not_isMulTorsionFree_iff_isOfFinOrder ;)
+not_isMulTorsionFree_iff_isOfFinOrder : (G : Set) -> (_ : Proof (Group G)) -> Proof (iff (not (IsMulTorsionFree G)) (exists G (a => and (Neq a 1) (IsOfFinOrder a)))).
+
+(; //LEAN:zmultiples_abs ;)
+zmultiples_abs : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (LinearOrder G)) -> (g : Elem G) -> Proof (Eqt (AddSubgroup G) (AddSubgroup__zmultiples (abs g)) (AddSubgroup__zmultiples g)).
+
+(; //LEAN:zpowers_mabs ;)
+def zpowers_mabs : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (LinearOrder G)) -> (g : Elem G) -> Proof (Eqt (Subgroup G) (Subgroup__zpowers (mabs g)) (Subgroup__zpowers g)) :=
+  G => x => x1 => g => mabs_by_cases G g (x2 => Eqt (Subgroup G) (Subgroup__zpowers x2) (Subgroup__zpowers g)) rfl (Subgroup__zpowers_inv G g).
+
+(; //LEAN:IsAddTorsionFree.addOrderOf_nonpos ;)
+IsAddTorsionFree__addOrderOf_nonpos : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (IsAddTorsionFree G)) -> (g : Elem G) -> Proof (Leq (addOrderOf g) 1).
+
+(; //LEAN:IsMulTorsionFree.orderOf_le_one ;)
+IsMulTorsionFree__orderOf_le_one : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (IsMulTorsionFree G)) -> (g : Elem G) -> Proof (Leq (orderOf g) 1).
+
+(; //LEAN:sum_card_orderOf_eq_card_pow_eq_one ;)
+sum_card_orderOf_eq_card_pow_eq_one : (G : Set) -> (_ : Proof (Monoid G)) -> (n : Elem Nat) -> (_ : Proof (Fintype G)) -> (hn : Proof (Neq n 0)) -> Proof (Eq (Finset__sum (Nat__divisors n) (m => Finset__card (Finset__filter (x3 => Eq (orderOf x3) m) Finset__univ))) (Finset__card (Finset__filter (x4 => Eqt G (pow x4 n) 1) Finset__univ))).
+
+(; //LEAN:sum_card_addOrderOf_eq_card_nsmul_eq_zero ;)
+sum_card_addOrderOf_eq_card_nsmul_eq_zero : (G : Set) -> (_ : Proof (AddMonoid G)) -> (n : Elem Nat) -> (_ : Proof (Fintype G)) -> (hn : Proof (Neq n 0)) -> Proof (Eq (Finset__sum (Nat__divisors n) (m => Finset__card (Finset__filter (x3 => Eq (addOrderOf x3) m) Finset__univ))) (Finset__card (Finset__filter (x4 => Eqt G (HSMul__hSMul n x4) 0) Finset__univ))).
+
+(; //LEAN:addOrderOf_le_card_univ ;)
+addOrderOf_le_card_univ : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (_ : Proof (Fintype G)) -> Proof (Leq (addOrderOf x1) (Fintype__card G)).
+
+(; //LEAN:orderOf_le_card_univ ;)
+def orderOf_le_card_univ : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (_ : Proof (Fintype G)) -> Proof (Leq (orderOf x1) (Fintype__card G)) :=
+  G => x => x1 => x2 => Finset__le_card_of_inj_on_range G Finset__univ (orderOf x1) (x3 => pow x1 x3) (forallI Nat (x4 => if (Lt x4 (orderOf x1)) (Membership__mem Finset__univ (pow x1 x4))) (x4 => ifI (Lt x4 (orderOf x1)) (Membership__mem Finset__univ (pow x1 x4)) (h => Finset__mem_univ G (pow x1 x4)))) (pow_injOn_Iio_orderOf G x1).
+
+(; //LEAN:orderOf_le_card ;)
+orderOf_le_card : (G : Set) -> (_ : Proof (Monoid G)) -> (x1 : Elem G) -> (_ : Proof (Finite G)) -> Proof (Leq (orderOf x1) (Nat__card G)).
+
+(; //LEAN:addOrderOf_le_card ;)
+addOrderOf_le_card : (G : Set) -> (_ : Proof (AddMonoid G)) -> (x1 : Elem G) -> (_ : Proof (Finite G)) -> Proof (Leq (addOrderOf x1) (Nat__card G)).
+
+(; //LEAN:isOfFinAddOrder_of_finite ;)
+isOfFinAddOrder_of_finite : (G : Set) -> (_ : Proof (AddLeftCancelMonoid G)) -> (_ : Proof (Finite G)) -> (x1 : Elem G) -> Proof (IsOfFinAddOrder x1).
+
+(; //LEAN:isOfFinOrder_of_finite ;)
+isOfFinOrder_of_finite : (G : Set) -> (_ : Proof (LeftCancelMonoid G)) -> (_ : Proof (Finite G)) -> (x1 : Elem G) -> Proof (IsOfFinOrder x1).
+
+(; //LEAN:LeftCancelMonoid.groupOfFinite ;)
+def LeftCancelMonoid__groupOfFinite : Proof (Group G) :=
+  Group__mk (x1 => LeftCancelMonoid__groupOfFinite___proof_5 x1).
+
+(; //LEAN:AddLeftCancelMonoid.addGroupOfFinite ;)
+AddLeftCancelMonoid__addGroupOfFinite : Proof (AddGroup G).
+
+(; //LEAN:RightCancelMonoid.groupOfFinite ;)
+RightCancelMonoid__groupOfFinite : Proof (Group H).
+
+(; //LEAN:AddRightCancelMonoid.addGroupOfFinite ;)
+AddRightCancelMonoid__addGroupOfFinite : Proof (AddGroup H).
+
+(; //LEAN:orderOf_pos ;)
+def orderOf_pos : (G : Set) -> (_ : Proof (LeftCancelMonoid G)) -> (_ : Proof (Finite G)) -> (x1 : Elem G) -> Proof (Lt 0 (orderOf x1)) :=
+  G => x => h => x1 => IsOfFinOrder__orderOf_pos G x1 (isOfFinOrder_of_finite G x1).
+
+(; //LEAN:addOrderOf_pos ;)
+addOrderOf_pos : (G : Set) -> (_ : Proof (AddLeftCancelMonoid G)) -> (_ : Proof (Finite G)) -> (x1 : Elem G) -> Proof (Lt 0 (addOrderOf x1)).
+
+(; //LEAN:orderOf_pow ;)
+def orderOf_pow : (G : Set) -> (_ : Proof (LeftCancelMonoid G)) -> (_ : Proof (Finite G)) -> (n : Elem Nat) -> (x1 : Elem G) -> Proof (Eq (orderOf (pow x1 n)) (div (orderOf x1) (gcd (orderOf x1) n))) :=
+  G => x => h => n => x1 => IsOfFinOrder__orderOf_pow G x1 n (isOfFinOrder_of_finite G x1).
+
+(; //LEAN:addOrderOf_nsmul ;)
+addOrderOf_nsmul : (G : Set) -> (_ : Proof (AddLeftCancelMonoid G)) -> (_ : Proof (Finite G)) -> (n : Elem Nat) -> (x1 : Elem G) -> Proof (Eq (addOrderOf (HSMul__hSMul n x1)) (div (addOrderOf x1) (gcd (addOrderOf x1) n))).
+
+(; //LEAN:mem_powers_iff_mem_range_orderOf ;)
+def mem_powers_iff_mem_range_orderOf : (G : Set) -> (_ : Proof (LeftCancelMonoid G)) -> (_ : Proof (Finite G)) -> (x1 : Elem G) -> (y : Elem G) -> Proof (iff (Membership__mem (Submonoid__powers x1) y) (Membership__mem (Finset__image (x3 => pow x1 x3) (Finset__range (orderOf x1))) y)) :=
+  G => x => h => x1 => y => Finset__mem_range_iff_mem_finset_range_of_mod_eq' G (x3 => pow x1 x3) y (orderOf x1) (orderOf_pos G x1) (pow_mod_orderOf G x1).
+
+(; //LEAN:mem_multiples_iff_mem_range_addOrderOf ;)
+mem_multiples_iff_mem_range_addOrderOf : (G : Set) -> (_ : Proof (AddLeftCancelMonoid G)) -> (_ : Proof (Finite G)) -> (x1 : Elem G) -> (y : Elem G) -> Proof (iff (Membership__mem (AddSubmonoid__multiples x1) y) (Membership__mem (Finset__image (x3 => HSMul__hSMul x3 x1) (Finset__range (addOrderOf x1))) y)).
+
+(; //LEAN:powersEquivPowers ;)
+def powersEquivPowers : (h1 : Proof (Eq (orderOf x1) (orderOf y))) -> Elem (Equiv (Subtype (x2 => Membership__mem (Submonoid__powers x1) x2)) (Subtype (x3 => Membership__mem (Submonoid__powers y) x3))) :=
+  h1 => Equiv__trans (Equiv__symm (finEquivPowers (isOfFinOrder_of_finite x1))) (Equiv__trans (finCongr h1) (finEquivPowers (isOfFinOrder_of_finite y))).
+
+(; //LEAN:multiplesEquivMultiples ;)
+multiplesEquivMultiples : (h1 : Proof (Eq (addOrderOf x1) (addOrderOf y))) -> Elem (Equiv (Subtype (x2 => Membership__mem (AddSubmonoid__multiples x1) x2)) (Subtype (x3 => Membership__mem (AddSubmonoid__multiples y) x3))).
+
+(; //LEAN:powersEquivPowers_apply ;)
+powersEquivPowers_apply : (G : Set) -> (_ : Proof (LeftCancelMonoid G)) -> (_ : Proof (Finite G)) -> (x1 : Elem G) -> (y : Elem G) -> (h1 : Proof (Eq (orderOf x1) (orderOf y))) -> (n : Elem Nat) -> Proof (Eqt (Subtype (x2 => Membership__mem (Submonoid__powers y) x2)) (powersEquivPowers__app h1 (pow x1 n)) (pow y n)).
+
+(; //LEAN:multiplesEquivMultiples_apply ;)
+multiplesEquivMultiples_apply : (G : Set) -> (_ : Proof (AddLeftCancelMonoid G)) -> (_ : Proof (Finite G)) -> (x1 : Elem G) -> (y : Elem G) -> (h1 : Proof (Eq (addOrderOf x1) (addOrderOf y))) -> (n : Elem Nat) -> Proof (Eqt (Subtype (x2 => Membership__mem (AddSubmonoid__multiples y) x2)) (multiplesEquivMultiples__app h1 (HSMul__hSMul n x1)) (HSMul__hSMul n y)).
+
+(; //LEAN:orderOf_eq_card_powers ;)
+def orderOf_eq_card_powers : (G : Set) -> (_ : Proof (LeftCancelMonoid G)) -> (_ : Proof (Fintype G)) -> (x2 : Elem G) -> Proof (Eq (orderOf x2) (Fintype__card (Subtype (x3 => Membership__mem (Submonoid__powers x2) x3)))) :=
+  G => x => x1 => x2 => Eq__trans Nat (orderOf x2) (Fintype__card (Fin (orderOf x2))) (Fintype__card (Subtype (x3 => Membership__mem (Submonoid__powers x2) x3))) (Eq__symm Nat (Fintype__card (Fin (orderOf x2))) (orderOf x2) (Fintype__card_fin (orderOf x2))) (iffEr (Eq (Fintype__card (Fin (orderOf x2))) (Fintype__card (Subtype (x4 => Membership__mem (Submonoid__powers x2) x4)))) (Nonempty (Equiv (Fin (orderOf x2)) (Subtype (x5 => Membership__mem (Submonoid__powers x2) x5)))) (Fintype__card_eq (Fin (orderOf x2)) (Subtype (x6 => Membership__mem (Submonoid__powers x2) x6))) (Nonempty__intro (finEquivPowers (isOfFinOrder_of_finite G x2)))).
+
+(; //LEAN:addOrderOf_eq_card_multiples ;)
+addOrderOf_eq_card_multiples : (G : Set) -> (_ : Proof (AddLeftCancelMonoid G)) -> (_ : Proof (Fintype G)) -> (x2 : Elem G) -> Proof (Eq (addOrderOf x2) (Fintype__card (Subtype (x3 => Membership__mem (AddSubmonoid__multiples x2) x3)))).
+
+(; //LEAN:isOfFinOrder_iff_isUnit ;)
+isOfFinOrder_iff_isUnit : (G : Set) -> (_ : Proof (Monoid G)) -> (_ : Proof (Finite (Units G))) -> (x1 : Elem G) -> Proof (iff (IsOfFinOrder x1) (IsUnit x1)).
+
+(; //LEAN:IsUnit.isOfFinOrder ;)
+def IsUnit__isOfFinOrder : (G : Set) -> (_ : Proof (Monoid G)) -> (_ : Proof (Finite (Units G))) -> (x1 : Elem G) -> (h1 : Proof (IsUnit x1)) -> Proof (IsOfFinOrder x1) :=
+  G => x => h => x1 => iffEr (IsOfFinOrder x1) (IsUnit x1) (isOfFinOrder_iff_isUnit G x1).
+
+(; //LEAN:orderOf_eq_zero_iff_eq_zero ;)
+orderOf_eq_zero_iff_eq_zero : (X : Set) -> (_ : Proof (GroupWithZero X)) -> (_ : Proof (Finite X)) -> (a : Elem X) -> Proof (iff (Eq (orderOf a) 0) (Eqt X a 0)).
+
+(; //LEAN:orderOf_pow_natAbs ;)
+orderOf_pow_natAbs : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (n : Elem Int) -> Proof (Eq (orderOf (pow x1 (Int__natAbs n))) (orderOf (pow x1 n))).
+
+(; //LEAN:addOrderOf_nsmul_natAbs ;)
+addOrderOf_nsmul_natAbs : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (n : Elem Int) -> Proof (Eq (addOrderOf (HSMul__hSMul (Int__natAbs n) x1)) (addOrderOf (HSMul__hSMul n x1))).
+
+(; //LEAN:orderOf_zpow' ;)
+orderOf_zpow' : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (n : Elem Int) -> (h : Proof (Neq n 0)) -> Proof (Eq (orderOf (pow x1 n)) (div (orderOf x1) (gcd (orderOf x1) (Int__natAbs n)))).
+
+(; //LEAN:addOrderOf_zsmul' ;)
+addOrderOf_zsmul' : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (n : Elem Int) -> (h : Proof (Neq n 0)) -> Proof (Eq (addOrderOf (HSMul__hSMul n x1)) (div (addOrderOf x1) (gcd (addOrderOf x1) (Int__natAbs n)))).
+
+(; //LEAN:zsmul_eq_zero_iff_modEq ;)
+zsmul_eq_zero_iff_modEq : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (n : Elem Int) -> Proof (iff (Eqt G (HSMul__hSMul n x1) 0) (Int__ModEq (addOrderOf x1) n 0)).
+
+(; //LEAN:zpow_eq_one_iff_modEq ;)
+zpow_eq_one_iff_modEq : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (n : Elem Int) -> Proof (iff (Eqt G (pow x1 n) 1) (Int__ModEq (orderOf x1) n 0)).
+
+(; //LEAN:zpow_eq_zpow_iff_modEq ;)
+zpow_eq_zpow_iff_modEq : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (m : Elem Int) -> (n : Elem Int) -> Proof (iff (Eqt G (pow x1 m) (pow x1 n)) (Int__ModEq (orderOf x1) m n)).
+
+(; //LEAN:zsmul_eq_zsmul_iff_modEq ;)
+zsmul_eq_zsmul_iff_modEq : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (m : Elem Int) -> (n : Elem Int) -> Proof (iff (Eqt G (HSMul__hSMul m x1) (HSMul__hSMul n x1)) (Int__ModEq (addOrderOf x1) m n)).
+
+(; //LEAN:injective_zsmul_iff_not_isOfFinAddOrder ;)
+injective_zsmul_iff_not_isOfFinAddOrder : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> Proof (iff (Function__Injective (n => HSMul__hSMul n x1)) (not (IsOfFinAddOrder x1))).
+
+(; //LEAN:injective_zpow_iff_not_isOfFinOrder ;)
+injective_zpow_iff_not_isOfFinOrder : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> Proof (iff (Function__Injective (n => pow x1 n)) (not (IsOfFinOrder x1))).
+
+(; //LEAN:AddSubgroup.zmultiples_eq_zmultiples_iff ;)
+AddSubgroup__zmultiples_eq_zmultiples_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (y : Elem G) -> (hx : Proof (not (IsOfFinAddOrder x1))) -> Proof (iff (Eqt (AddSubgroup G) (AddSubgroup__zmultiples x1) (AddSubgroup__zmultiples y)) (or (Eqt G x1 y) (Eqt G (Neg__neg x1) y))).
+
+(; //LEAN:Subgroup.zpowers_eq_zpowers_iff ;)
+Subgroup__zpowers_eq_zpowers_iff : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (y : Elem G) -> (hx : Proof (not (IsOfFinOrder x1))) -> Proof (iff (Eqt (Subgroup G) (Subgroup__zpowers x1) (Subgroup__zpowers y)) (or (Eqt G x1 y) (Eqt G (Inv__inv x1) y))).
+
+(; //LEAN:mem_zpowers_zpow_iff ;)
+mem_zpowers_zpow_iff : (G : Set) -> (_ : Proof (Group G)) -> (g : Elem G) -> (k : Elem Int) -> Proof (iff (Membership__mem (Subgroup__zpowers (pow g k)) g) (Eq (Int__gcd k (orderOf g)) 1)).
+
+(; //LEAN:mem_zmultiples_zsmul_iff ;)
+mem_zmultiples_zsmul_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (g : Elem G) -> (k : Elem Int) -> Proof (iff (Membership__mem (AddSubgroup__zmultiples (HSMul__hSMul k g)) g) (Eq (Int__gcd k (addOrderOf g)) 1)).
+
+(; //LEAN:mem_zpowers_pow_iff ;)
+mem_zpowers_pow_iff : (G : Set) -> (_ : Proof (Group G)) -> (g : Elem G) -> (k : Elem Nat) -> Proof (iff (Membership__mem (Subgroup__zpowers (pow g k)) g) (Eq (gcd k (orderOf g)) 1)).
+
+(; //LEAN:mem_zmultiples_nsmul_iff ;)
+mem_zmultiples_nsmul_iff : (G : Set) -> (_ : Proof (AddGroup G)) -> (g : Elem G) -> (k : Elem Nat) -> Proof (iff (Membership__mem (AddSubgroup__zmultiples (HSMul__hSMul k g)) g) (Eq (gcd k (addOrderOf g)) 1)).
+
+(; //LEAN:orderOf_zpow ;)
+orderOf_zpow : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Finite G)) -> (x1 : Elem G) -> (n : Elem Int) -> Proof (Eq (orderOf (pow x1 n)) (div (orderOf x1) (gcd (orderOf x1) (Int__natAbs n)))).
+
+(; //LEAN:addOrderOf_zsmul ;)
+addOrderOf_zsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (Finite G)) -> (x1 : Elem G) -> (n : Elem Int) -> Proof (Eq (addOrderOf (HSMul__hSMul n x1)) (div (addOrderOf x1) (gcd (addOrderOf x1) (Int__natAbs n)))).
+
+(; //LEAN:exists_zsmul_eq_zero ;)
+exists_zsmul_eq_zero : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (Finite G)) -> (x1 : Elem G) -> Proof (exists Int (i => exists (Neq i 0) (h1 => Eqt G (HSMul__hSMul i x1) 0))).
+
+(; //LEAN:exists_zpow_eq_one ;)
+exists_zpow_eq_one : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Finite G)) -> (x1 : Elem G) -> Proof (exists Int (i => exists (Neq i 0) (h1 => Eqt G (pow x1 i) 1))).
+
+(; //LEAN:mem_multiples_iff_mem_zmultiples ;)
+mem_multiples_iff_mem_zmultiples : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (y : Elem G) -> (_ : Proof (Finite G)) -> Proof (iff (Membership__mem (AddSubmonoid__multiples x1) y) (Membership__mem (AddSubgroup__zmultiples x1) y)).
+
+(; //LEAN:mem_powers_iff_mem_zpowers ;)
+def mem_powers_iff_mem_zpowers : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (y : Elem G) -> (_ : Proof (Finite G)) -> Proof (iff (Membership__mem (Submonoid__powers x1) y) (Membership__mem (Subgroup__zpowers x1) y)) :=
+  G => x => x1 => y => h => IsOfFinOrder__mem_powers_iff_mem_zpowers G x1 y (isOfFinOrder_of_finite G x1).
+
+(; //LEAN:multiples_eq_zmultiples ;)
+multiples_eq_zmultiples : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (Finite G)) -> (x1 : Elem G) -> Proof (Eqt (powerset G) (AddSubmonoid__multiples x1) (AddSubgroup__zmultiples x1)).
+
+(; //LEAN:powers_eq_zpowers ;)
+def powers_eq_zpowers : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Finite G)) -> (x1 : Elem G) -> Proof (Eqt (powerset G) (Submonoid__powers x1) (Subgroup__zpowers x1)) :=
+  G => x => h => x1 => IsOfFinOrder__powers_eq_zpowers G x1 (isOfFinOrder_of_finite G x1).
+
+(; //LEAN:mem_zmultiples_iff_mem_range_addOrderOf ;)
+mem_zmultiples_iff_mem_range_addOrderOf : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (y : Elem G) -> (_ : Proof (Finite G)) -> Proof (iff (Membership__mem (AddSubgroup__zmultiples x1) y) (Membership__mem (Finset__image (x3 => HSMul__hSMul x3 x1) (Finset__range (addOrderOf x1))) y)).
+
+(; //LEAN:mem_zpowers_iff_mem_range_orderOf ;)
+def mem_zpowers_iff_mem_range_orderOf : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (y : Elem G) -> (_ : Proof (Finite G)) -> Proof (iff (Membership__mem (Subgroup__zpowers x1) y) (Membership__mem (Finset__image (x3 => pow x1 x3) (Finset__range (orderOf x1))) y)) :=
+  G => x => x1 => y => h => IsOfFinOrder__mem_zpowers_iff_mem_range_orderOf G x1 y (isOfFinOrder_of_finite G x1).
+
+(; //LEAN:zpowersEquivZPowers ;)
+def zpowersEquivZPowers : (h1 : Proof (Eq (orderOf x1) (orderOf y))) -> Elem (Equiv (Subtype (x2 => Membership__mem (Subgroup__zpowers x1) x2)) (Subtype (x3 => Membership__mem (Subgroup__zpowers y) x3))) :=
+  h1 => Equiv__trans (Equiv__symm (finEquivZPowers zpowersEquivZPowers___proof_1)) (Equiv__trans (finCongr h1) (finEquivZPowers zpowersEquivZPowers___proof_1)).
+
+(; //LEAN:zmultiplesEquivZMultiples ;)
+zmultiplesEquivZMultiples : (h1 : Proof (Eq (addOrderOf x1) (addOrderOf y))) -> Elem (Equiv (Subtype (x2 => Membership__mem (AddSubgroup__zmultiples x1) x2)) (Subtype (x3 => Membership__mem (AddSubgroup__zmultiples y) x3))).
+
+(; //LEAN:zmultiples_equiv_zmultiples_apply ;)
+zmultiples_equiv_zmultiples_apply : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> (y : Elem G) -> (_ : Proof (Finite G)) -> (h1 : Proof (Eq (addOrderOf x1) (addOrderOf y))) -> (n : Elem Nat) -> Proof (Eqt (Subtype (x2 => Membership__mem (AddSubgroup__zmultiples y) x2)) (zmultiplesEquivZMultiples__app h1 (HSMul__hSMul n x1)) (HSMul__hSMul n y)).
+
+(; //LEAN:zpowersEquivZPowers_apply ;)
+zpowersEquivZPowers_apply : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> (y : Elem G) -> (_ : Proof (Finite G)) -> (h1 : Proof (Eq (orderOf x1) (orderOf y))) -> (n : Elem Nat) -> Proof (Eqt (Subtype (x2 => Membership__mem (Subgroup__zpowers y) x2)) (zpowersEquivZPowers__app h1 (pow x1 n)) (pow y n)).
+
+(; //LEAN:Subgroup.closure_toSubmonoid_of_finite ;)
+Subgroup__closure_toSubmonoid_of_finite : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Finite G)) -> (s : Elem (powerset G)) -> Proof (Eqt (Submonoid G) (Subgroup__toSubmonoid (Subgroup__closure s)) (Submonoid__closure s)).
+
+(; //LEAN:AddSubgroup.closure_toAddSubmonoid_of_finite ;)
+AddSubgroup__closure_toAddSubmonoid_of_finite : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (Finite G)) -> (s : Elem (powerset G)) -> Proof (Eqt (AddSubmonoid G) (AddSubgroup__toAddSubmonoid (AddSubgroup__closure s)) (AddSubmonoid__closure s)).
+
+(; //LEAN:Fintype.card_zpowers ;)
+def Fintype__card_zpowers : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Fintype G)) -> (x2 : Elem G) -> Proof (Eq (Fintype__card (Subtype (x3 => Membership__mem (Subgroup__zpowers x2) x3))) (orderOf x2)) :=
+  G => x => x1 => x2 => Eq__trans Nat (Fintype__card (Subtype (x3 => Membership__mem (Subgroup__zpowers x2) x3))) (Fintype__card (Fin (orderOf x2))) (orderOf x2) (Eq__symm Nat (Fintype__card (Fin (orderOf x2))) (Fintype__card (Subtype (x4 => Membership__mem (Subgroup__zpowers x2) x4))) (iffEr (Eq (Fintype__card (Fin (orderOf x2))) (Fintype__card (Subtype (x5 => Membership__mem (Subgroup__zpowers x2) x5)))) (Nonempty (Equiv (Fin (orderOf x2)) (Subtype (x6 => Membership__mem (Subgroup__zpowers x2) x6)))) (Fintype__card_eq (Fin (orderOf x2)) (Subtype (x7 => Membership__mem (Subgroup__zpowers x2) x7))) (Nonempty__intro (finEquivZPowers (isOfFinOrder_of_finite G x2))))) (Fintype__card_fin (orderOf x2)).
+
+(; //LEAN:Fintype.card_zmultiples ;)
+Fintype__card_zmultiples : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (Fintype G)) -> (x2 : Elem G) -> Proof (Eq (Fintype__card (Subtype (x3 => Membership__mem (AddSubgroup__zmultiples x2) x3))) (addOrderOf x2)).
+
+(; //LEAN:card_zmultiples_le ;)
+card_zmultiples_le : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (Fintype G)) -> (a : Elem G) -> (k : Elem Nat) -> (k_pos : Proof (Neq k 0)) -> (ha : Proof (Eqt G (HSMul__hSMul k a) 0)) -> Proof (Leq (Fintype__card (Subtype (x2 => Membership__mem (AddSubgroup__zmultiples a) x2))) k).
+
+(; //LEAN:card_zpowers_le ;)
+card_zpowers_le : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Fintype G)) -> (a : Elem G) -> (k : Elem Nat) -> (k_pos : Proof (Neq k 0)) -> (ha : Proof (Eqt G (pow a k) 1)) -> Proof (Leq (Fintype__card (Subtype (x2 => Membership__mem (Subgroup__zpowers a) x2))) k).
+
+(; //LEAN:addOrderOf_dvd_card ;)
+addOrderOf_dvd_card : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (Fintype G)) -> (x2 : Elem G) -> Proof (divide (addOrderOf x2) (Fintype__card G)).
+
+(; //LEAN:orderOf_dvd_card ;)
+orderOf_dvd_card : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Fintype G)) -> (x2 : Elem G) -> Proof (divide (orderOf x2) (Fintype__card G)).
+
+(; //LEAN:orderOf_dvd_natCard ;)
+orderOf_dvd_natCard : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> Proof (divide (orderOf x1) (Nat__card G)).
+
+(; //LEAN:addOrderOf_dvd_natCard ;)
+addOrderOf_dvd_natCard : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> Proof (divide (addOrderOf x1) (Nat__card G)).
+
+(; //LEAN:Subgroup.orderOf_dvd_natCard ;)
+Subgroup__orderOf_dvd_natCard : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (Subgroup G)) -> (x1 : Elem G) -> (hx : Proof (Membership__mem s x1)) -> Proof (divide (orderOf x1) (Nat__card (Subtype (x2 => Membership__mem s x2)))).
+
+(; //LEAN:AddSubgroup.addOrderOf_dvd_natCard ;)
+AddSubgroup__addOrderOf_dvd_natCard : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (AddSubgroup G)) -> (x1 : Elem G) -> (hx : Proof (Membership__mem s x1)) -> Proof (divide (addOrderOf x1) (Nat__card (Subtype (x2 => Membership__mem s x2)))).
+
+(; //LEAN:Subgroup.orderOf_le_card ;)
+def Subgroup__orderOf_le_card : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (Subgroup G)) -> (hs : Proof (Set__Finite s)) -> (x1 : Elem G) -> (hx : Proof (Membership__mem s x1)) -> Proof (Leq (orderOf x1) (Nat__card (Subtype (x2 => Membership__mem s x2)))) :=
+  G => x => s => hs => x1 => hx => Nat__le_of_dvd (orderOf x1) (Nat__card (Subtype (x2 => Membership__mem s x2))) (iffEr (Lt 0 (Nat__card (Subtype (x3 => Membership__mem s x3)))) (and (Nonempty (Subtype (x4 => Membership__mem s x4))) (Finite (Subtype (x5 => Membership__mem s x5)))) (Nat__card_pos_iff (Subtype (x6 => Membership__mem s x6))) (andI (Nonempty (Subtype (x7 => Membership__mem s x7))) (Finite (Subtype (x8 => Membership__mem s x8))) (Set__Nonempty__to_subtype G s (OneMemClass__coe_nonempty (Subgroup G) G s)) (Set__Finite__to_subtype G s hs))) (Subgroup__orderOf_dvd_natCard G s x1 hx).
+
+(; //LEAN:AddSubgroup.addOrderOf_le_card ;)
+AddSubgroup__addOrderOf_le_card : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (AddSubgroup G)) -> (hs : Proof (Set__Finite s)) -> (x1 : Elem G) -> (hx : Proof (Membership__mem s x1)) -> Proof (Leq (addOrderOf x1) (Nat__card (Subtype (x2 => Membership__mem s x2)))).
+
+(; //LEAN:Submonoid.orderOf_le_card ;)
+Submonoid__orderOf_le_card : (G : Set) -> (_ : Proof (Group G)) -> (s : Elem (Submonoid G)) -> (hs : Proof (Set__Finite s)) -> (x1 : Elem G) -> (hx : Proof (Membership__mem s x1)) -> Proof (Leq (orderOf x1) (Nat__card (Subtype (x2 => Membership__mem s x2)))).
+
+(; //LEAN:AddSubmonoid.addOrderOf_le_card ;)
+AddSubmonoid__addOrderOf_le_card : (G : Set) -> (_ : Proof (AddGroup G)) -> (s : Elem (AddSubmonoid G)) -> (hs : Proof (Set__Finite s)) -> (x1 : Elem G) -> (hx : Proof (Membership__mem s x1)) -> Proof (Leq (addOrderOf x1) (Nat__card (Subtype (x2 => Membership__mem s x2)))).
+
+(; //LEAN:card_nsmul_eq_zero' ;)
+card_nsmul_eq_zero' : (G : Set) -> (_ : Proof (AddGroup G)) -> (x1 : Elem G) -> Proof (Eqt G (HSMul__hSMul (Nat__card G) x1) 0).
+
+(; //LEAN:pow_card_eq_one' ;)
+def pow_card_eq_one' : (G : Set) -> (_ : Proof (Group G)) -> (x1 : Elem G) -> Proof (Eqt G (pow x1 (Nat__card G)) 1) :=
+  G => x => x1 => iffEl (divide (orderOf x1) (Nat__card G)) (Eqt G (pow x1 (Nat__card G)) 1) (orderOf_dvd_iff_pow_eq_one G x1 (Nat__card G)) (orderOf_dvd_natCard G x1).
+
+(; //LEAN:pow_card_eq_one ;)
+pow_card_eq_one : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Fintype G)) -> (x2 : Elem G) -> Proof (Eqt G (pow x2 (Fintype__card G)) 1).
+
+(; //LEAN:card_nsmul_eq_zero ;)
+card_nsmul_eq_zero : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (Fintype G)) -> (x2 : Elem G) -> Proof (Eqt G (HSMul__hSMul (Fintype__card G) x2) 0).
+
+(; //LEAN:Subgroup.pow_index_mem ;)
+Subgroup__pow_index_mem : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (_ : Proof (Subgroup__Normal H)) -> (g : Elem G) -> Proof (Membership__mem H (pow g (Subgroup__index H))).
+
+(; //LEAN:AddSubgroup.nsmul_index_mem ;)
+AddSubgroup__nsmul_index_mem : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal H)) -> (g : Elem G) -> Proof (Membership__mem H (HSMul__hSMul (AddSubgroup__index H) g)).
+
+(; //LEAN:Subgroup.pow_relIndex_mem ;)
+def Subgroup__pow_relIndex_mem : (G : Set) -> (_ : Proof (Group G)) -> (H : Elem (Subgroup G)) -> (_ : Proof (Subgroup__Normal H)) -> (K : Elem (Subgroup G)) -> (g : Elem G) -> (hg : Proof (Membership__mem K g)) -> Proof (Membership__mem H (pow g (Subgroup__relIndex H K))) :=
+  G => x => H => h => K => g => hg => Subgroup__pow_index_mem (Subtype (x1 => Membership__mem K x1)) (Subgroup__subgroupOf H K) g.
+
+(; //LEAN:AddSubgroup.nsmul_relIndex_mem ;)
+AddSubgroup__nsmul_relIndex_mem : (G : Set) -> (_ : Proof (AddGroup G)) -> (H : Elem (AddSubgroup G)) -> (_ : Proof (AddSubgroup__Normal H)) -> (K : Elem (AddSubgroup G)) -> (g : Elem G) -> (hg : Proof (Membership__mem K g)) -> Proof (Membership__mem H (HSMul__hSMul (AddSubgroup__relIndex H K) g)).
+
+(; //LEAN:pow_mod_card ;)
+pow_mod_card : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Fintype G)) -> (a : Elem G) -> (n : Elem Nat) -> Proof (Eqt G (pow a (HMod__hMod n (Fintype__card G))) (pow a n)).
+
+(; //LEAN:mod_card_nsmul ;)
+mod_card_nsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (Fintype G)) -> (a : Elem G) -> (n : Elem Nat) -> Proof (Eqt G (HSMul__hSMul (HMod__hMod n (Fintype__card G)) a) (HSMul__hSMul n a)).
+
+(; //LEAN:mod_card_zsmul ;)
+mod_card_zsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (Fintype G)) -> (a : Elem G) -> (n : Elem Int) -> Proof (Eqt G (HSMul__hSMul (HMod__hMod n (Fintype__card G)) a) (HSMul__hSMul n a)).
+
+(; //LEAN:zpow_mod_card ;)
+zpow_mod_card : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Fintype G)) -> (a : Elem G) -> (n : Elem Int) -> Proof (Eqt G (pow a (HMod__hMod n (Fintype__card G))) (pow a n)).
+
+(; //LEAN:mod_natCard_nsmul ;)
+mod_natCard_nsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (n : Elem Nat) -> Proof (Eqt G (HSMul__hSMul (HMod__hMod n (Nat__card G)) a) (HSMul__hSMul n a)).
+
+(; //LEAN:pow_mod_natCard ;)
+pow_mod_natCard : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (n : Elem Nat) -> Proof (Eqt G (pow a (HMod__hMod n (Nat__card G))) (pow a n)).
+
+(; //LEAN:zpow_mod_natCard ;)
+zpow_mod_natCard : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (n : Elem Int) -> Proof (Eqt G (pow a (HMod__hMod n (Nat__card G))) (pow a n)).
+
+(; //LEAN:mod_natCard_zsmul ;)
+mod_natCard_zsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (n : Elem Int) -> Proof (Eqt G (HSMul__hSMul (HMod__hMod n (Nat__card G)) a) (HSMul__hSMul n a)).
+
+(; //LEAN:powCoprime ;)
+def powCoprime : (h : Proof (Nat__Coprime (Nat__card G) n)) -> Elem (Equiv G G) :=
+  h => Equiv__mk (g => pow g n) (g1 => pow g1 (Nat__gcdB (Nat__card G) n)) (g2 => powCoprime___proof_1 h g2) (g3 => powCoprime___proof_2 h g3).
+
+(; //LEAN:powCoprime_symm_apply ;)
+powCoprime_symm_apply : (n : Elem Nat) -> (G : Set) -> (_ : Proof (Group G)) -> (h : Proof (Nat__Coprime (Nat__card G) n)) -> (g : Elem G) -> Proof (Eqt G (Equiv__symm__app (powCoprime h) g) (pow g (Nat__gcdB (Nat__card G) n))).
+
+(; //LEAN:nsmulCoprime_apply ;)
+nsmulCoprime_apply : (n : Elem Nat) -> (G : Set) -> (_ : Proof (AddGroup G)) -> (h : Proof (Nat__Coprime (Nat__card G) n)) -> (g : Elem G) -> Proof (Eqt G (nsmulCoprime__app h g) (HSMul__hSMul n g)).
+
+(; //LEAN:nsmulCoprime ;)
+nsmulCoprime : (h : Proof (Nat__Coprime (Nat__card G) n)) -> Elem (Equiv G G).
+
+(; //LEAN:nsmulCoprime_symm_apply ;)
+nsmulCoprime_symm_apply : (n : Elem Nat) -> (G : Set) -> (_ : Proof (AddGroup G)) -> (h : Proof (Nat__Coprime (Nat__card G) n)) -> (g : Elem G) -> Proof (Eqt G (Equiv__symm__app (nsmulCoprime h) g) (HSMul__hSMul (Nat__gcdB (Nat__card G) n) g)).
+
+(; //LEAN:powCoprime_apply ;)
+powCoprime_apply : (n : Elem Nat) -> (G : Set) -> (_ : Proof (Group G)) -> (h : Proof (Nat__Coprime (Nat__card G) n)) -> (g : Elem G) -> Proof (Eqt G (powCoprime__app h g) (pow g n)).
+
+(; //LEAN:nsmulCoprime_zero ;)
+nsmulCoprime_zero : (n : Elem Nat) -> (G : Set) -> (_ : Proof (AddGroup G)) -> (h : Proof (Nat__Coprime (Nat__card G) n)) -> Proof (Eqt G (nsmulCoprime__app h 0) 0).
+
+(; //LEAN:powCoprime_one ;)
+def powCoprime_one : (n : Elem Nat) -> (G : Set) -> (_ : Proof (Group G)) -> (h : Proof (Nat__Coprime (Nat__card G) n)) -> Proof (Eqt G (powCoprime__app h 1) 1) :=
+  n => G => x => h => one_pow G n.
+
+(; //LEAN:nsmulCoprime_neg ;)
+nsmulCoprime_neg : (n : Elem Nat) -> (G : Set) -> (_ : Proof (AddGroup G)) -> (h : Proof (Nat__Coprime (Nat__card G) n)) -> (g : Elem G) -> Proof (Eqt G (nsmulCoprime__app h (Neg__neg g)) (Neg__neg (nsmulCoprime__app h g))).
+
+(; //LEAN:powCoprime_inv ;)
+def powCoprime_inv : (n : Elem Nat) -> (G : Set) -> (_ : Proof (Group G)) -> (h : Proof (Nat__Coprime (Nat__card G) n)) -> (g : Elem G) -> Proof (Eqt G (powCoprime__app h (Inv__inv g)) (Inv__inv (powCoprime__app h g))) :=
+  n => G => x => h => g => inv_pow G g n.
+
+(; //LEAN:Nat.Coprime.nsmul_right_bijective ;)
+Nat__Coprime__nsmul_right_bijective : (n : Elem Nat) -> (G : Set) -> (_ : Proof (AddGroup G)) -> (hn : Proof (Nat__Coprime (Nat__card G) n)) -> Proof (Function__Bijective (x1 => HSMul__hSMul n x1)).
+
+(; //LEAN:Nat.Coprime.pow_left_bijective ;)
+def Nat__Coprime__pow_left_bijective : (n : Elem Nat) -> (G : Set) -> (_ : Proof (Group G)) -> (hn : Proof (Nat__Coprime (Nat__card G) n)) -> Proof (Function__Bijective (x1 => pow x1 n)) :=
+  n => G => x => hn => Equiv__bijective G G (powCoprime hn).
+
+(; //LEAN:image_range_orderOf ;)
+def image_range_orderOf : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Fintype G)) -> (x2 : Elem G) -> Proof (Eqt (Finset G) (Finset__image (i => pow x2 i) (Finset__range (orderOf x2))) (Set__toFinset (Subgroup__zpowers x2))) :=
+  G => x => x1 => x2 => Finset__ext G (Finset__image (i => pow x2 i) (Finset__range (orderOf x2))) (Set__toFinset (Subgroup__zpowers x2)) (forallI G (x4 => iff (Membership__mem (Finset__image (i5 => pow x2 i5) (Finset__range (orderOf x2))) x4) (Membership__mem (Set__toFinset (Subgroup__zpowers x2)) x4)) (x4 => Eq__mpr (id (congrArg Prop Prop (Membership__mem (Set__toFinset (Subgroup__zpowers x2)) x4) (Membership__mem (Subgroup__zpowers x2) x4) (_a => iff (Membership__mem (Finset__image (i1 => pow x2 i1) (Finset__range (orderOf x2))) x4) _a) (propext (Set__mem_toFinset G (Subgroup__zpowers x2) x4)))) (Eq__mpr (id (congrArg Prop Prop (Membership__mem (Subgroup__zpowers x2) x4) (Membership__mem (Subgroup__zpowers x2) x4) (_a1 => iff (Membership__mem (Finset__image (i2 => pow x2 i2) (Finset__range (orderOf x2))) x4) _a1) (propext (SetLike__mem_coe (Subgroup G) G (Subgroup__zpowers x2) x4)))) (Eq__mpr (id (congrArg Prop Prop (Membership__mem (Subgroup__zpowers x2) x4) (Membership__mem (Finset__image (x5 => pow x2 x5) (Finset__range (orderOf x2))) x4) (_a2 => iff (Membership__mem (Finset__image (i3 => pow x2 i3) (Finset__range (orderOf x2))) x4) _a2) (propext (mem_zpowers_iff_mem_range_orderOf G x2 x4)))) (Iff__rfl (Membership__mem (Finset__image (i4 => pow x2 i4) (Finset__range (orderOf x2))) x4)))))).
+
+(; //LEAN:image_range_addOrderOf ;)
+image_range_addOrderOf : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (Fintype G)) -> (x2 : Elem G) -> Proof (Eqt (Finset G) (Finset__image (i => HSMul__hSMul i x2) (Finset__range (addOrderOf x2))) (Set__toFinset (AddSubgroup__zmultiples x2))).
+
+(; //LEAN:smul_eq_of_le_smul ;)
+smul_eq_of_le_smul : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Finite G)) -> (X : Set) -> (_ : Proof (PartialOrder X)) -> (g : Elem G) -> (a : Elem X) -> (_ : Proof (MulAction G X)) -> (h2 : Proof (Leq a (HSMul__hSMul g a))) -> Proof (Eqt X (HSMul__hSMul g a) a).
+
+(; //LEAN:smul_eq_of_smul_le ;)
+smul_eq_of_smul_le : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Finite G)) -> (X : Set) -> (_ : Proof (PartialOrder X)) -> (g : Elem G) -> (a : Elem X) -> (_ : Proof (MulAction G X)) -> (h2 : Proof (Leq (HSMul__hSMul g a) a)) -> Proof (Eqt X (HSMul__hSMul g a) a).
+
+(; //LEAN:submonoidOfIdempotent ;)
+def submonoidOfIdempotent : (S : Elem (powerset M)) -> (hS1 : Proof (Set__Nonempty S)) -> (hS2 : Proof (Eqt (powerset M) (times S S) S)) -> Elem (Submonoid M) :=
+  S => hS1 => hS2 => Submonoid__mk (Subsemigroup__mk S (submonoidOfIdempotent___proof_3 S hS2)) (submonoidOfIdempotent___proof_2 S hS1 (a => ha => n => submonoidOfIdempotent___proof_1 S hS2 a ha n)).
+
+(; //LEAN:addSubmonoidOfIdempotent ;)
+addSubmonoidOfIdempotent : (S : Elem (powerset M)) -> (hS1 : Proof (Set__Nonempty S)) -> (hS2 : Proof (Eqt (powerset M) (plus S S) S)) -> Elem (AddSubmonoid M).
+
+(; //LEAN:subgroupOfIdempotent ;)
+def subgroupOfIdempotent : (S : Elem (powerset G)) -> (hS1 : Proof (Set__Nonempty S)) -> (hS2 : Proof (Eqt (powerset G) (times S S) S)) -> Elem (Subgroup G) :=
+  S => hS1 => hS2 => Subgroup__mk (Submonoid__mk (Subsemigroup__mk S (subgroupOfIdempotent___proof_2 S hS1 hS2)) (subgroupOfIdempotent___proof_3 S hS1 hS2)) (subgroupOfIdempotent___proof_1 S hS1 hS2).
+
+(; //LEAN:addSubgroupOfIdempotent ;)
+addSubgroupOfIdempotent : (S : Elem (powerset G)) -> (hS1 : Proof (Set__Nonempty S)) -> (hS2 : Proof (Eqt (powerset G) (plus S S) S)) -> Elem (AddSubgroup G).
+
+(; //LEAN:powCardSubgroup ;)
+def powCardSubgroup : (S : Elem (powerset G)) -> (hS : Proof (Set__Nonempty S)) -> Elem (Subgroup G) :=
+  S => hS => subgroupOfIdempotent (pow S (Fintype__card G)) (powCardSubgroup___proof_2 S (powCardSubgroup___proof_1 S hS)) (powCardSubgroup___proof_3 S (powCardSubgroup___proof_1 S hS)).
+
+(; //LEAN:coe_powCardSubgroup ;)
+coe_powCardSubgroup : (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (Fintype G)) -> (S : Elem (powerset G)) -> (hS : Proof (Set__Nonempty S)) -> Proof (Eqt (powerset G) (powCardSubgroup S hS) (pow S (Fintype__card G))).
+
+(; //LEAN:coe_smulCardAddSubgroup ;)
+coe_smulCardAddSubgroup : (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (Fintype G)) -> (S : Elem (powerset G)) -> (hS : Proof (Set__Nonempty S)) -> Proof (Eqt (powerset G) (smulCardAddSubgroup S hS) (HSMul__hSMul (Fintype__card G) S)).
+
+(; //LEAN:smulCardAddSubgroup ;)
+smulCardAddSubgroup : (S : Elem (powerset G)) -> (hS : Proof (Set__Nonempty S)) -> Elem (AddSubgroup G).
+
+(; //LEAN:IsOfFinOrder.eq_one ;)
+IsOfFinOrder__eq_one : (G : Set) -> (_ : Proof (Semiring G)) -> (_ : Proof (LinearOrder G)) -> (_ : Proof (IsStrictOrderedRing G)) -> (a : Elem G) -> (h1 : Proof (Leq 0 a)) -> (ha : Proof (IsOfFinOrder a)) -> Proof (Eqt G a 1).
+
+(; //LEAN:IsOfFinOrder.eq_neg_one ;)
+def IsOfFinOrder__eq_neg_one : (G : Set) -> (_ : Proof (Ring G)) -> (_ : Proof (LinearOrder G)) -> (_ : Proof (IsStrictOrderedRing G)) -> (a : Elem G) -> (h1 : Proof (Leq a 0)) -> (ha : Proof (IsOfFinOrder a)) -> Proof (Eqt G a (Neg__neg 1)) :=
+  G => x => x1 => h => a => h1 => ha => Or__resolve_left (Eqt G a 1) (Eqt G a (Neg__neg 1)) (iffEl (Eqt G (pow a 2) 1) (or (Eqt G a 1) (Eqt G a (Neg__neg 1))) (sq_eq_one_iff G a) (IsOfFinOrder__eq_one G (pow a 2) (sq_nonneg G a) (IsOfFinOrder__pow G a 2 ha))) (ifI (Eqt G a 1) false (h2 => Eq__ndrec (ifI (Leq 1 0) (if (IsOfFinOrder 1) false) (h3 => ifI (IsOfFinOrder 1) false (ha1 => LT__lt__not_ge G 0 1 (one_pos G) h3))) (Eq__symm G a 1 h2) h1 ha)).
+
+(; //LEAN:orderOf_abs_ne_one ;)
+orderOf_abs_ne_one : (G : Set) -> (_ : Proof (Ring G)) -> (_ : Proof (LinearOrder G)) -> (_ : Proof (IsStrictOrderedRing G)) -> (x2 : Elem G) -> (h1 : Proof (Neq (abs x2) 1)) -> Proof (Eq (orderOf x2) 0).
+
+(; //LEAN:LinearOrderedRing.orderOf_le_two ;)
+LinearOrderedRing__orderOf_le_two : (G : Set) -> (_ : Proof (Ring G)) -> (_ : Proof (LinearOrder G)) -> (_ : Proof (IsStrictOrderedRing G)) -> (x2 : Elem G) -> Proof (Leq (orderOf x2) 2).
+
+(; //LEAN:Prod.addOrderOf ;)
+Prod__addOrderOf : (X : Set) -> (Y : Set) -> (_ : Proof (AddMonoid X)) -> (_ : Proof (AddMonoid Y)) -> (x2 : Elem (Prod X Y)) -> Proof (Eq (addOrderOf x2) (Nat__lcm (addOrderOf (Prod__fst x2)) (addOrderOf (Prod__snd x2)))).
+
+(; //LEAN:Prod.orderOf ;)
+def Prod__orderOf : (X : Set) -> (Y : Set) -> (_ : Proof (Monoid X)) -> (_ : Proof (Monoid Y)) -> (x2 : Elem (Prod X Y)) -> Proof (Eq (orderOf x2) (Nat__lcm (orderOf (Prod__fst x2)) (orderOf (Prod__snd x2)))) :=
+  X => Y => x => x1 => x2 => Function__minimalPeriod_prodMap X Y (times (Prod__fst x2)) (times (Prod__snd x2)) 1.
+
+(; //LEAN:orderOf_fst_dvd_orderOf ;)
+def orderOf_fst_dvd_orderOf : (X : Set) -> (Y : Set) -> (_ : Proof (Monoid X)) -> (_ : Proof (Monoid Y)) -> (x2 : Elem (Prod X Y)) -> Proof (divide (orderOf (Prod__fst x2)) (orderOf x2)) :=
+  X => Y => x => x1 => x2 => Function__minimalPeriod_fst_dvd X Y (times (Prod__fst x2)) (times (Prod__snd x2)) 1.
+
+(; //LEAN:addOrderOf_fst_dvd_addOrderOf ;)
+addOrderOf_fst_dvd_addOrderOf : (X : Set) -> (Y : Set) -> (_ : Proof (AddMonoid X)) -> (_ : Proof (AddMonoid Y)) -> (x2 : Elem (Prod X Y)) -> Proof (divide (addOrderOf (Prod__fst x2)) (addOrderOf x2)).
+
+(; //LEAN:orderOf_snd_dvd_orderOf ;)
+def orderOf_snd_dvd_orderOf : (X : Set) -> (Y : Set) -> (_ : Proof (Monoid X)) -> (_ : Proof (Monoid Y)) -> (x2 : Elem (Prod X Y)) -> Proof (divide (orderOf (Prod__snd x2)) (orderOf x2)) :=
+  X => Y => x => x1 => x2 => Function__minimalPeriod_snd_dvd X Y (times (Prod__fst x2)) (times (Prod__snd x2)) 1.
+
+(; //LEAN:addOrderOf_snd_dvd_addOrderOf ;)
+addOrderOf_snd_dvd_addOrderOf : (X : Set) -> (Y : Set) -> (_ : Proof (AddMonoid X)) -> (_ : Proof (AddMonoid Y)) -> (x2 : Elem (Prod X Y)) -> Proof (divide (addOrderOf (Prod__snd x2)) (addOrderOf x2)).
+
+(; //LEAN:IsOfFinAddOrder.fst ;)
+IsOfFinAddOrder__fst : (X : Set) -> (Y : Set) -> (_ : Proof (AddMonoid X)) -> (_ : Proof (AddMonoid Y)) -> (x2 : Elem (Prod X Y)) -> (hx : Proof (IsOfFinAddOrder x2)) -> Proof (IsOfFinAddOrder (Prod__fst x2)).
+
+(; //LEAN:IsOfFinOrder.fst ;)
+def IsOfFinOrder__fst : (X : Set) -> (Y : Set) -> (_ : Proof (Monoid X)) -> (_ : Proof (Monoid Y)) -> (x2 : Elem (Prod X Y)) -> (hx : Proof (IsOfFinOrder x2)) -> Proof (IsOfFinOrder (Prod__fst x2)) :=
+  X => Y => x => x1 => x2 => hx => IsOfFinOrder__mono (Prod X Y) X x2 (Prod__fst x2) hx (orderOf_fst_dvd_orderOf X Y x2).
+
+(; //LEAN:IsOfFinOrder.snd ;)
+def IsOfFinOrder__snd : (X : Set) -> (Y : Set) -> (_ : Proof (Monoid X)) -> (_ : Proof (Monoid Y)) -> (x2 : Elem (Prod X Y)) -> (hx : Proof (IsOfFinOrder x2)) -> Proof (IsOfFinOrder (Prod__snd x2)) :=
+  X => Y => x => x1 => x2 => hx => IsOfFinOrder__mono (Prod X Y) Y x2 (Prod__snd x2) hx (orderOf_snd_dvd_orderOf X Y x2).
+
+(; //LEAN:IsOfFinAddOrder.snd ;)
+IsOfFinAddOrder__snd : (X : Set) -> (Y : Set) -> (_ : Proof (AddMonoid X)) -> (_ : Proof (AddMonoid Y)) -> (x2 : Elem (Prod X Y)) -> (hx : Proof (IsOfFinAddOrder x2)) -> Proof (IsOfFinAddOrder (Prod__snd x2)).
+
+(; //LEAN:IsOfFinOrder.prod_mk ;)
+IsOfFinOrder__prod_mk : (X : Set) -> (Y : Set) -> (_ : Proof (Monoid X)) -> (_ : Proof (Monoid Y)) -> (a : Elem X) -> (b : Elem Y) -> (h : Proof (IsOfFinOrder a)) -> (h1 : Proof (IsOfFinOrder b)) -> Proof (IsOfFinOrder (Prod__mk a b)).
+
+(; //LEAN:IsOfFinAddOrder.prod_mk ;)
+IsOfFinAddOrder__prod_mk : (X : Set) -> (Y : Set) -> (_ : Proof (AddMonoid X)) -> (_ : Proof (AddMonoid Y)) -> (a : Elem X) -> (b : Elem Y) -> (h : Proof (IsOfFinAddOrder a)) -> (h1 : Proof (IsOfFinAddOrder b)) -> Proof (IsOfFinAddOrder (Prod__mk a b)).
+
+(; //LEAN:IsOfFinOrder.prod_iff ;)
+def IsOfFinOrder__prod_iff : (X : Set) -> (Y : Set) -> (_ : Proof (Monoid X)) -> (_ : Proof (Monoid Y)) -> (x2 : Elem (Prod X Y)) -> Proof (iff (IsOfFinOrder x2) (and (IsOfFinOrder (Prod__fst x2)) (IsOfFinOrder (Prod__snd x2)))) :=
+  X => Y => x => x1 => x2 => iffI (IsOfFinOrder x2) (and (IsOfFinOrder (Prod__fst x2)) (IsOfFinOrder (Prod__snd x2))) (h => andI (IsOfFinOrder (Prod__fst x2)) (IsOfFinOrder (Prod__snd x2)) (IsOfFinOrder__fst X Y x2 h) (IsOfFinOrder__snd X Y x2 h)) (h1 => IsOfFinOrder__prod_mk X Y (Prod__fst x2) (Prod__snd x2) (andEl (IsOfFinOrder (Prod__fst x2)) (IsOfFinOrder (Prod__snd x2)) h1) (andEr (IsOfFinOrder (Prod__fst x2)) (IsOfFinOrder (Prod__snd x2)) h1)).
+
+(; //LEAN:IsOfFinAddOrder.prod_iff ;)
+IsOfFinAddOrder__prod_iff : (X : Set) -> (Y : Set) -> (_ : Proof (AddMonoid X)) -> (_ : Proof (AddMonoid Y)) -> (x2 : Elem (Prod X Y)) -> Proof (iff (IsOfFinAddOrder x2) (and (IsOfFinAddOrder (Prod__fst x2)) (IsOfFinAddOrder (Prod__snd x2)))).
+
+(; //LEAN:Prod.orderOf_mk ;)
+def Prod__orderOf_mk : (X : Set) -> (Y : Set) -> (_ : Proof (Monoid X)) -> (_ : Proof (Monoid Y)) -> (a : Elem X) -> (b : Elem Y) -> Proof (Eq (orderOf (Prod__mk a b)) (Nat__lcm (orderOf a) (orderOf b))) :=
+  X => Y => x => x1 => a => b => Prod__orderOf X Y (Prod__mk a b).
+
+(; //LEAN:Prod.addOrderOf_mk ;)
+Prod__addOrderOf_mk : (X : Set) -> (Y : Set) -> (_ : Proof (AddMonoid X)) -> (_ : Proof (AddMonoid Y)) -> (a : Elem X) -> (b : Elem Y) -> Proof (Eq (addOrderOf (Prod__mk a b)) (Nat__lcm (addOrderOf a) (addOrderOf b))).
+
+(; //LEAN:Pi.orderOf_eq_sInf ;)
+def Pi__orderOf_eq_sInf : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Monoid (x i2))) -> (x2 : ((i1 : Elem I) -> x i1)) -> Proof (Eq (orderOf x2) (InfSet__sInf (Set__ofPred (n => and (Gt n 0) (forall I (i => divide (orderOf (x2 i)) n)))))) :=
+  I => x => x1 => x2 => Function__minimalPeriod_piMap I x (i => (Mul__proj0 ((i1 => Semigroup__toMul) i)) (x2 i)) 1.
+
+(; //LEAN:Pi.addOrderOf_eq_sInf ;)
+Pi__addOrderOf_eq_sInf : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> AddMonoid (x i2))) -> (x2 : ((i1 : Elem I) -> x i1)) -> Proof (Eq (addOrderOf x2) (InfSet__sInf (Set__ofPred (n => and (Gt n 0) (forall I (i => divide (addOrderOf (x2 i)) n)))))).
+
+(; //LEAN:Pi.addOrderOf ;)
+Pi__addOrderOf : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> AddMonoid (x i2))) -> (_ : Proof (Fintype I)) -> (x3 : ((i1 : Elem I) -> x i1)) -> Proof (Eq (addOrderOf x3) (Finset__lcm Finset__univ (i => addOrderOf (x3 i)))).
+
+(; //LEAN:Pi.orderOf ;)
+def Pi__orderOf : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Monoid (x i2))) -> (_ : Proof (Fintype I)) -> (x3 : ((i1 : Elem I) -> x i1)) -> Proof (Eq (orderOf x3) (Finset__lcm Finset__univ (i => orderOf (x3 i)))) :=
+  I => x => x1 => x2 => x3 => Function__minimalPeriod_piMap_fintype I x (i => (Mul__proj0 ((i1 => Semigroup__toMul) i)) (x3 i)) 1.
+
+(; //LEAN:addOrderOf_apply_dvd_addOrderOf ;)
+addOrderOf_apply_dvd_addOrderOf : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> AddMonoid (x i2))) -> (x2 : ((i1 : Elem I) -> x i1)) -> (i : Elem I) -> Proof (divide (addOrderOf (x2 i)) (addOrderOf x2)).
+
+(; //LEAN:orderOf_apply_dvd_orderOf ;)
+def orderOf_apply_dvd_orderOf : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Monoid (x i2))) -> (x2 : ((i1 : Elem I) -> x i1)) -> (i : Elem I) -> Proof (divide (orderOf (x2 i)) (orderOf x2)) :=
+  I => x => x1 => x2 => Function__minimalPeriod_single_dvd_minimalPeriod_piMap I x (i => x3 => times (x2 i) x3) (i1 => 1).
+
+(; //LEAN:IsOfFinOrder.pi ;)
+IsOfFinOrder__pi : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Monoid (x i2))) -> (x2 : ((i1 : Elem I) -> x i1)) -> (_ : Proof (Finite I)) -> (h1 : Proof (forall I (i => IsOfFinOrder (x2 i)))) -> Proof (IsOfFinOrder x2).
+
+(; //LEAN:IsOfFinAddOrder.pi ;)
+IsOfFinAddOrder__pi : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> AddMonoid (x i2))) -> (x2 : ((i1 : Elem I) -> x i1)) -> (_ : Proof (Finite I)) -> (h1 : Proof (forall I (i => IsOfFinAddOrder (x2 i)))) -> Proof (IsOfFinAddOrder x2).
+
+(; //LEAN:Nat.cast_card_eq_zero ;)
+Nat__cast_card_eq_zero : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> (_ : Proof (Fintype R)) -> Proof (Eqt R (Fintype__card R) 0).
+
+(; //LEAN:CharP.addOrderOf_one ;)
+CharP__addOrderOf_one : (R : Set) -> (_ : Proof (NonAssocRing R)) -> Proof (CharP R (addOrderOf 1)).
+
+(; //LEAN:charP_of_ne_zero ;)
+charP_of_ne_zero : (R : Set) -> (_ : Proof (NonAssocRing R)) -> (p : Elem Nat) -> (_ : Proof (Fintype R)) -> (hn : Proof (Eq (Fintype__card R) p)) -> (hR : Proof (forall Nat (i => if (Lt i p) (if (Eqt R i 0) (Eq i 0))))) -> Proof (CharP R p).
+
+(; //LEAN:charP_of_prime_pow_injective ;)
+charP_of_prime_pow_injective : (R : Set) -> (_ : Proof (Ring R)) -> (_ : Proof (Fintype R)) -> (p : Elem Nat) -> (n : Elem Nat) -> (_ : Proof (Fact (prime p))) -> (hn : Proof (Eq (Fintype__card R) (pow p n))) -> (hR : Proof (forall Nat (i => if (Leq i n) (if (Eqt R (pow p i) 0) (Eq i n))))) -> Proof (CharP R (pow p n)).
+
+(; //LEAN:AddSemiconjBy.addOrderOf_eq ;)
+AddSemiconjBy__addOrderOf_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (AddSemiconjBy a x1 y)) -> Proof (Eq (addOrderOf x1) (addOrderOf y)).
+
+(; //LEAN:SemiconjBy.orderOf_eq ;)
+SemiconjBy__orderOf_eq : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (x1 : Elem G) -> (y : Elem G) -> (h : Proof (SemiconjBy a x1 y)) -> Proof (Eq (orderOf x1) (orderOf y)).
+
+(; //LEAN:orderOf_piMulSingle ;)
+def orderOf_piMulSingle : (I : Set) -> (M : (Elem I -> Set)) -> (_ : Proof ((i1 : Elem I) -> Monoid (M i1))) -> (i : Elem I) -> (g : Elem (M i)) -> Proof (Eq (orderOf (Pi__mulSingle i g)) (orderOf g)) :=
+  I => M => x1 => i => g => orderOf_injective (M i) ((i1 : Elem I) -> M i1) (MonoidHom__mulSingle M i) (Pi__mulSingle_injective I M i) g.
+

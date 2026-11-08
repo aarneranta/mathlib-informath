@@ -330,6 +330,29 @@ partial def app (c : Name) (args : Array Expr) (whole : Expr) : M String := do
 
 end
 
+/-- An instance hypothesis that a statement leaves out: decidability, which
+is computational, and the technical classes that a textbook never states
+(the coercion classes FunLike and SetLike, the compatibility of an order or
+an action with the operations, the bare notation classes Zero, Add, ...).
+Its λ in the definiens is left out too, so that the proof still fits. -/
+def droppedInstance (ty : Expr) (bi : BinderInfo) : Bool :=
+  bi == .instImplicit &&
+  match ty.getAppFn.constName? with
+  | some c =>
+    let s := c.toString
+    s.startsWith "Decidable" || technicalClasses.contains s ||
+    ["PosMul", "MulPos", "Covariant", "Contravariant"].any (s.startsWith ·) ||
+    ["LeftMono", "RightMono", "LeftStrictMono", "RightStrictMono", "LeftReflectLT",
+     "RightReflectLT", "LeftReflectLE", "RightReflectLE", "HomClass"].any (s.endsWith ·)
+  | none => false
+where
+  technicalClasses : List String :=
+    ["FunLike", "DFunLike", "EquivLike", "SetLike", "SMulCommClass", "IsScalarTower",
+     "ContinuousSMul", "ContinuousConstSMul", "RingHomSurjective", "IsRCLikeNormedField",
+     "Zero", "One", "Add", "Mul", "Neg", "Inv", "Sub", "Div", "SMul", "VAdd", "Pow",
+     "Nontrivial", "Inhabited", "Nonempty", "NatCast", "IntCast", "CharZero",
+     "SummationFilter.NeBot", "SummationFilter.IsCountablyGenerated"]
+
 /-- The statement of a declaration as a Dedukti type: its binders as
 hypotheses, its conclusion as Proof P (a theorem) or as the type of the
 object it defines. -/
@@ -341,8 +364,8 @@ partial def statementGo (explicitOnly : Bool) (t : Expr) : M String := do
       withLocalDecl (Name.mkSimple nm) bi ty fun y => do
         let rest ← statementGo explicitOnly (b.instantiate1 y)
         if explicitOnly && bi != .default then return rest
-        -- decidability instances are computational, not hypotheses of the statement
-        if bi == .instImplicit && (ty.getAppFn.constName?.map (·.toString.startsWith "Decidable")).getD false then
+        -- decidability and technical instances are not hypotheses of the statement
+        if droppedInstance ty bi then
           return rest
         let h ← if bi == .instImplicit then do pure s!"(_ : Proof {paren (← tr ty)})"
                  else do pure s!"({nm} : {← hypoType ty})"
@@ -368,6 +391,8 @@ partial def valueGo (explicitOnly : Bool) (t v : Expr) : M String := do
     withLocalDecl (Name.mkSimple nm) bi ty fun y => do
       let rest ← valueGo explicitOnly (b.instantiate1 y) (vb.instantiate1 y)
       if explicitOnly && bi != .default then return rest
+      -- the hypotheses that the statement leaves out have no λ either
+      if droppedInstance ty bi then return rest
       return s!"{nm} => {rest}"
   | _, _ => tr v
 
@@ -1273,9 +1298,10 @@ def goalJson (ci : ContextInfo) (mctx : MetavarContext) (g : MVarId)
         for d in decl.lctx do
           if d.isImplementationDetail then continue
           let nm := d.userName.eraseMacroScopes.toString (escape := false)
-          let ty ← hypoType (← instantiateMVars d.type)
+          let ty ← hypoType (← Core.betaReduce (← instantiateMVars d.type))
           hs := hs.push s!"[{jsonStr nm}, {jsonStr ty}, {if d.userName.hasMacroScopes then "true" else "false"}]"
-        let tgt ← tr (← instantiateMVars decl.type)
+        -- β-reduced: a goal often has (fun x => P x) a after a rewrite
+        let tgt ← tr (← Core.betaReduce (← instantiateMVars decl.type))
         return s!"\{\"hyps\": [{", ".intercalate hs.toList}], \"target\": {jsonStr tgt}}"
       m.run' {mapping, binders, keepAll, proofMode := true}
   try

@@ -1,0 +1,201 @@
+(; constants used by Mathlib.RingTheory.Ideal.Basic, declared with their translated types ;)
+
+(; //LEAN:AddSubmonoid.mk ;)
+AddSubmonoid__mk : (toAddSubsemigroup : Elem (AddSubsemigroup M)) -> (zero_mem' : Proof (Membership__mem (AddSubsemigroup__carrier toAddSubsemigroup) 0)) -> Elem (AddSubmonoid M).
+
+(; //LEAN:AddSubsemigroup.mk ;)
+AddSubsemigroup__mk : (carrier : Elem (powerset M)) -> (add_mem' : Proof (forall M (a => forall M (b => if (Membership__mem carrier a) (if (Membership__mem carrier b) (Membership__mem carrier (plus a b))))))) -> Elem (AddSubsemigroup M).
+
+(; doc: The bot (`⊥`, `\bot`) element  Conventions for notations in identifiers:   * The recommended spelling of `⊥` in identifiers is `bot`. ;)
+(; //LEAN:Bot.bot ;)
+Bot__bot : Elem X.
+
+(; doc: A commutative semiring is a semiring with commutative multiplication. ;)
+(; //LEAN:CommSemiring ;)
+CommSemiring : (R : Set) -> Prop.
+
+(; doc: Two elements commute if `a * b = b * a`. ;)
+(; //LEAN:Commute ;)
+Commute : (a : Elem M) -> (b : Elem M) -> Prop.
+
+(; //LEAN:Commute.all ;)
+Commute__all : (S : Set) -> (_ : Proof (CommMagma S)) -> (a : Elem S) -> (b : Elem S) -> Proof (Commute a b).
+
+(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
+(; //LEAN:Eq.mpr ;)
+Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+
+(; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.symm ;)
+Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Proof (Eqt X b a).
+
+(; doc: `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. ;)
+(; //LEAN:Equiv ;)
+Equiv : (X : Set) -> (Y : Set) -> Set.
+
+(; //LEAN:Equiv.mk ;)
+Equiv__mk : (toFun : (Elem X -> Y)) -> (invFun : (Elem Y -> X)) -> (left_inv : Proof (autoParam (Function__LeftInverse invFun toFun) Equiv__left_inv___autoParam)) -> (right_inv : Proof (autoParam (Function__RightInverse invFun toFun) Equiv__right_inv___autoParam)) -> Elem (Equiv X Y).
+
+(; doc: Natural numbers less than some upper bound.  In particular, a `Fin n` is a natural number `i` with the constraint that `i < n`. It is the canonical type with `n` elements. ;)
+(; //LEAN:Fin ;)
+Fin : (n : Elem Nat) -> Set.
+
+(; doc: A type is `Finite` if it is in bijective correspondence to some `Fin n`.  This is similar to `Fintype`, but `Finite` is a proposition rather than data. A particular benefit to this is that `Finite` instances are definitionally equal to one another (due to proof irrelevance) rather than being merely propositionally equal, and, furthermore, `Finite` instances generally avoid the need for `Decidable` instances. One other notable difference is that `Finite` allows there to be `Finite p` instances for all `p : Prop`, which is not allowed by `Fintype` due to universe constraints. An application of this is that `Finite (x ∈ s → β x)` follows from the general instance for pi types, assuming `[∀ x, Finite (β x)]`. Implementation note: this is a reason `Finite α` is not defined as `Nonempty (Fintype α)`.  Every `Fintype` instance provides a `Finite` instance via `Finite.of_fintype`. Conversely, one can noncomputably create a `Fintype` instance from a `Finite` instance via `Fintype.ofFinite`. In a proof one might write ```lean   have := Fintype.ofFinite α ``` to obtain such an instance.  Do not write noncomputable `Fintype` instances; instead write `Finite` instances and use this `Fintype.ofFinite` interface. The `Fintype` instances should be relied upon to be computable for evaluation purposes.  Theorems should use `Finite` instead of `Fintype`, unless definitions in the theorem statement require `Fintype`. Definitions should prefer `Finite` as well, unless it is important that the definitions are meant to be computable in the reduction or `#eval` sense. ;)
+(; //LEAN:Finite ;)
+Finite : (X : Set) -> Prop.
+
+(; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
+(; //LEAN:Finset ;)
+Finset : (X : Set) -> Set.
+
+(; doc: `s.card` is the number of elements of `s`, aka its cardinality.  The notation `#s` can be accessed in the `Finset` locale. ;)
+(; //LEAN:Finset.card ;)
+Finset__card : (s : Elem (Finset X)) -> Elem Nat.
+
+(; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
+(; //LEAN:Finset.prod ;)
+Finset__prod : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+
+(; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
+(; //LEAN:Finset.sum ;)
+Finset__sum : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+
+(; doc: A (left) ideal in a semiring `R` is an additive submonoid `s` such that `a * b ∈ s` whenever `b ∈ s`. If `R` is a ring, then `s` is an additive subgroup. ;)
+(; //LEAN:Ideal ;)
+Ideal : (R : Set) -> Set.
+
+(; doc: An ideal is maximal if it is maximal in the collection of proper ideals. ;)
+(; //LEAN:Ideal.IsMaximal ;)
+Ideal__IsMaximal : (I : Elem (Ideal X)) -> Prop.
+
+(; doc: An ideal `P` of a ring `R` is prime if `P ≠ R` and `xy ∈ P → x ∈ P ∨ y ∈ P` ;)
+(; //LEAN:Ideal.IsPrime ;)
+Ideal__IsPrime : (I : Elem (Ideal X)) -> Prop.
+
+(; //LEAN:Ideal.equivFinTwo._proof_1 ;)
+Ideal__equivFinTwo___proof_1 : (K : Set) -> (_ : Proof (DivisionSemiring K)) -> (I : Elem (Ideal K)) -> Proof (Eqt (Ideal K) (Matrix__vecCons Bot__bot (Matrix__vecCons Top__top Matrix__vecEmpty) ((I1 => ite (Eqt (Ideal K) I1 Bot__bot) 0 1) I)) I).
+
+(; //LEAN:Ideal.equivFinTwo._proof_2 ;)
+Ideal__equivFinTwo___proof_2 : (K : Set) -> (_ : Proof (DivisionSemiring K)) -> (i : Elem (Fin 2)) -> Proof (Eqt (Fin 2) ((I => ite (Eqt (Ideal K) I Bot__bot) 0 1) (Matrix__vecCons Bot__bot (Matrix__vecCons Top__top Matrix__vecEmpty) i)) i).
+
+(; //LEAN:Ideal.pi._proof_1 ;)
+Ideal__pi___proof_1 : (I : Set) -> (R : (Elem I -> Set)) -> (_ : Proof ((i6 : Elem I) -> Semiring (R i6))) -> (I1 : ((i5 : Elem I) -> Ideal (R i5))) -> (x1 : ((i4 : Elem I) -> R i4)) -> (x2 : ((i3 : Elem I) -> R i3)) -> (ha : Proof (Membership__mem (Set__ofPred (r1 => forall I (i2 => Membership__mem (I1 i2) (r1 i2)))) x1)) -> (hb : Proof (Membership__mem (Set__ofPred (r => forall I (i1 => Membership__mem (I1 i1) (r i1)))) x2)) -> (i : Elem I) -> Proof (Membership__mem (I1 i) (plus (x1 i) (x2 i))).
+
+(; //LEAN:Ideal.pi._proof_2 ;)
+Ideal__pi___proof_2 : (I : Set) -> (R : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Semiring (R i2))) -> (I1 : ((i1 : Elem I) -> Ideal (R i1))) -> (i : Elem I) -> Proof (Membership__mem (I1 i) 0).
+
+(; //LEAN:Ideal.pi._proof_3 ;)
+Ideal__pi___proof_3 : (I : Set) -> (R : (Elem I -> Set)) -> (_ : Proof ((i5 : Elem I) -> Semiring (R i5))) -> (I1 : ((i4 : Elem I) -> Ideal (R i4))) -> (a : ((i3 : Elem I) -> R i3)) -> (_b : ((i2 : Elem I) -> R i2)) -> (hb : Proof (Membership__mem (Set__ofPred (r => forall I (i1 => Membership__mem (I1 i1) (r i1)))) _b)) -> (i : Elem I) -> Proof (Membership__mem (I1 i) (times (a i) (_b i))).
+
+(; doc: The ideal generated by a subset of a ring ;)
+(; //LEAN:Ideal.span ;)
+Ideal__span : (s : Elem (powerset X)) -> Elem (Ideal X).
+
+(; //LEAN:Iff.rfl ;)
+Iff__rfl : (a : Prop) -> Proof (iff a a).
+
+(; doc: A predicate to express that a (semi)ring is a (semi)field.  This is mainly useful because such a predicate does not contain data, and can therefore be easily transported along ring isomorphisms. Additionally, this is useful when trying to prove that a particular ring structure extends to a (semi)field. ;)
+(; //LEAN:IsField ;)
+IsField : (R : Set) -> Prop.
+
+(; doc: An order is simple iff it has exactly two elements, `⊥` and `⊤`. ;)
+(; //LEAN:IsSimpleOrder ;)
+IsSimpleOrder : (X : Set) -> Prop.
+
+(; doc: An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse. The actual definition says that `a` is equal to some `u : Mˣ`, where `Mˣ` is a bundled version of `IsUnit`. ;)
+(; //LEAN:IsUnit ;)
+IsUnit : (a : Elem M) -> Prop.
+
+(; doc: `vecCons h t` prepends an entry `h` to a vector `t`.  The inverse functions are `vecHead` and `vecTail`. The notation `![a, b, ...]` expands to `vecCons a (vecCons b ...)`. ;)
+(; //LEAN:Matrix.vecCons ;)
+Matrix__vecCons : (h : Elem X) -> (t : (Elem (Fin n) -> X)) -> (x : Elem (Fin (succ n))) -> Elem X.
+
+(; doc: `![]` is the vector with no entries. ;)
+(; //LEAN:Matrix.vecEmpty ;)
+Matrix__vecEmpty : (x : Elem (Fin 0)) -> Elem X.
+
+(; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
+(; //LEAN:Membership.mem ;)
+Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+
+(; doc: `Multiset α` is the quotient of `List α` by list permutation. The result is a type of finite sets with duplicates allowed. ;)
+(; //LEAN:Multiset ;)
+Multiset : (X : Set) -> Set.
+
+(; doc: The cardinality of a multiset is the sum of the multiplicities of all its elements, or simply the length of the underlying list. ;)
+(; //LEAN:Multiset.card ;)
+Multiset__card : (x : Elem (Multiset X)) -> Elem Nat.
+
+(; doc: `map f s` is the lift of the list `map` operation. The multiplicity of `b` in `map f s` is the number of `a ∈ s` (counting multiplicity) such that `f a = b`. ;)
+(; //LEAN:Multiset.map ;)
+Multiset__map : (f : (Elem X -> Y)) -> (s : Elem (Multiset X)) -> Elem (Multiset Y).
+
+(; doc: Sum of a multiset given a commutative additive monoid structure on `M`. `sum {a, b, c} = a + b + c` ;)
+(; //LEAN:Multiset.sum ;)
+Multiset__sum : (x1 : Elem (Multiset M)) -> Elem M.
+
+(; doc: `toFinset s` removes duplicates from the multiset `s` to produce a finset. ;)
+(; //LEAN:Multiset.toFinset ;)
+Multiset__toFinset : (s : Elem (Multiset X)) -> Elem (Finset X).
+
+(; //LEAN:Nat.sub_le_iff_le_add ;)
+Nat__sub_le_iff_le_add : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> Proof (iff (Leq (minus a b) c) (Leq a (plus c b))).
+
+(; //LEAN:Ne.bot_lt ;)
+Ne__bot_lt : (X : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (OrderBot X)) -> (a : Elem X) -> (h : Proof (Neq a Bot__bot)) -> Proof (Lt Bot__bot a).
+
+(; doc: The function supported at `i`, with value `x` there, and `0` elsewhere. ;)
+(; //LEAN:Pi.single ;)
+Pi__single : (i : Elem I) -> (x2 : Elem (M i)) -> (j : Elem I) -> Elem (M j).
+
+(; doc: A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is commutative and associative, multiplication is associative and left and right distributive over addition, and `0` and `1` are additive and multiplicative identities. ;)
+(; //LEAN:Semiring ;)
+Semiring : (X : Set) -> Prop.
+
+(; doc: Given the set `s`, `Elem s` is the `Type` of element of `s`.  It is currently an abbreviation so that instance coming from `Subtype` are available. If you're interested in making it a `def`, as it probably should be, you'll then need to create additional instances (and possibly prove lemmas about them). See e.g. `Mathlib/Data/Set/Order.lean`. ;)
+(; //LEAN:Set.Elem ;)
+Set__Elem : (s : Elem (powerset X)) -> Set.
+
+(; doc: The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that `f a = b` for some `a ∈ s`. ;)
+(; //LEAN:Set.image ;)
+Set__image : (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
+
+(; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
+(; //LEAN:Set.ofPred ;)
+Set__ofPred : (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+
+(; doc: Range of a function.  This function is more flexible than `f '' univ`, as the image requires that the domain is in Type and not an arbitrary Sort. ;)
+(; //LEAN:Set.range ;)
+Set__range : (f : (Elem I -> X)) -> Elem (powerset X).
+
+(; doc: `singleton x` is a collection with the single element `x` (notation: `{x}`).  Conventions for notations in identifiers:   * The recommended spelling of `{x}` in identifiers is `singleton`. ;)
+(; //LEAN:Singleton.singleton ;)
+Singleton__singleton : (x1 : Elem x) -> Elem Y.
+
+(; //LEAN:Submodule.mk ;)
+Submodule__mk : (toAddSubmonoid : Elem (AddSubmonoid M)) -> (smul_mem' : Proof (forall R (c => forall M (x3 => if (Membership__mem (AddSubsemigroup__carrier (AddSubmonoid__toAddSubsemigroup toAddSubmonoid)) x3) (Membership__mem (AddSubsemigroup__carrier (AddSubmonoid__toAddSubsemigroup toAddSubmonoid)) (HSMul__hSMul c x3)))))) -> Elem (Submodule R M).
+
+(; doc: The top (`⊤`, `\top`) element  Conventions for notations in identifiers:   * The recommended spelling of `⊤` in identifiers is `top`. ;)
+(; //LEAN:Top.top ;)
+Top__top : Elem X.
+
+(; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:congrArg ;)
+congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+
+(; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
+(; //LEAN:id ;)
+id : (a : Elem X) -> Elem X.
+
+(; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
+(; //LEAN:ite ;)
+ite : (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
+
+(; doc: The relation `≤` on a preorder is reflexive. ;)
+(; //LEAN:le_refl ;)
+le_refl : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> Proof (Leq a a).
+
+(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
+(; //LEAN:propext ;)
+propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a b).
+

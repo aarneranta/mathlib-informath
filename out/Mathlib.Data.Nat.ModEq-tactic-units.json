@@ -1,0 +1,1530 @@
+[
+ {
+  "name": "AddCommGroup__modEq_iff_natModEq",
+  "lean": "AddCommGroup.modEq_iff_natModEq",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "and (if (AddCommGroup__ModEq n a b) (Nat__ModEq n a b)) (if (Nat__ModEq n a b) (AddCommGroup__ModEq n a b))",
+    "by": "constructor",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (exists Nat (m => exists Nat (n => Eq (plus (HSMul__hSMul m n) a) (plus (HSMul__hSMul n n) b)))) (Eq (HMod__hMod a n) (HMod__hMod b n))",
+    "by": "rw [modEq_iff_nsmul, Nat.ModEq]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem Nat"
+     ],
+     [
+      "l",
+      "Elem Nat"
+     ],
+     [
+      "h",
+      "Proof (Eq (plus (HSMul__hSMul k n) a) (plus (HSMul__hSMul l n) b))"
+     ]
+    ],
+    "by": "rintro ⟨k, l, h⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (HMod__hMod a n) (HMod__hMod b n)",
+    "by": "simpa using congr($h % n)",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "if (Eq (HMod__hMod a n) (HMod__hMod b n)) (AddCommGroup__ModEq n a b)",
+    "by": "rw [Nat.ModEq]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Eq (HMod__hMod a n) (HMod__hMod b n))"
+     ]
+    ],
+    "by": "intro h",
+    "goal": "AddCommGroup__ModEq n a b",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "AddCommGroup__ModEq n (plus (HSMul__hSMul (div a n) n) (HMod__hMod b n)) (plus (HSMul__hSMul (div b n) n) (HMod__hMod b n))",
+    "by": "rw [← Nat.div_add_mod' a n, ← Nat.div_add_mod' b n, ← Nat.nsmul_eq_mul, ← Nat.nsmul_eq_mul, h]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "AddCommGroup__ModEq n (plus (HSMul__hSMul (div a n) n) (HMod__hMod b n)) (plus (HSMul__hSMul (div b n) n) (HMod__hMod b n))",
+    "by": "exact nsmul_add_modEq _ |>.trans (nsmul_add_modEq _).symm",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "AddCommGroup__ModEq__natCast",
+  "lean": "AddCommGroup.ModEq.natCast",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(AddCommGroup__ModEq n a b)",
+    "by": "rw [← modEq_iff_natModEq] at h",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "AddCommGroup__ModEq n a b",
+    "by": "exact h.map (Nat.castAddMonoidHom M)",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "AddCommGroup__natCast_modEq_natCast",
+  "lean": "AddCommGroup.natCast_modEq_natCast",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (AddCommGroup__ModEq n a b) (Nat__ModEq n a b)",
+    "by": "simpa using map_modEq_iff (Nat.castAddMonoidHom M) Nat.cast_injective",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modEq_zero_iff_dvd",
+  "lean": "Nat.modEq_zero_iff_dvd",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n a 0) (divide n a)",
+    "by": "rw [ModEq, zero_mod, dvd_iff_mod_eq_zero]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modEq_iff_dvd",
+  "lean": "Nat.modEq_iff_dvd",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n a b) (divide n (minus b a))",
+    "by": "rw [ModEq, eq_comm, ← Int.natCast_inj, Int.natCast_mod, Int.natCast_mod,",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modEq_iff_dvd'",
+  "lean": "Nat.modEq_iff_dvd'",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n a b) (divide n (minus b a))",
+    "by": "rw [modEq_iff_dvd, ← Int.natCast_dvd_natCast, Int.ofNat_sub h]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__dvd'",
+  "lean": "Nat.ModEq.dvd'",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "obtain h0 | h0 : a ≤ b ∨ b ≤ a := le_total a b",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h0",
+      "Proof (Leq a b)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide n (minus b a)",
+    "by": "exact (modEq_iff_dvd' h0).mp h",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h0",
+      "Proof (Leq b a)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "divide n 0",
+    "by": "rw [Nat.sub_eq_zero_of_le h0]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide n 0",
+    "by": "exact Nat.dvd_zero n",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__modulus_mul_add",
+  "lean": "Nat.ModEq.modulus_mul_add",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq m (plus (times m a) b) b",
+    "by": "simp [Nat.ModEq]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__mul_left'",
+  "lean": "Nat.ModEq.mul_left'",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Eq (HMod__hMod a n) (HMod__hMod b n))",
+    "by": "unfold ModEq at *",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (HMod__hMod (times c a) (times c n)) (HMod__hMod (times c b) (times c n))",
+    "by": "unfold ModEq at *",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (HMod__hMod (times c a) (times c n)) (HMod__hMod (times c b) (times c n))",
+    "by": "rw [mul_mod_mul_left, mul_mod_mul_left, h]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__mul_right'",
+  "lean": "Nat.ModEq.mul_right'",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Nat__ModEq (times c n) (times c a) (times c b)",
+    "by": "rw [mul_comm a, mul_comm b, mul_comm n]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq (times c n) (times c a) (times c b)",
+    "by": "exact h.mul_left' c",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__mul_right",
+  "lean": "Nat.ModEq.mul_right",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Nat__ModEq n (times c a) (times c b)",
+    "by": "rw [mul_comm a, mul_comm b]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq n (times c a) (times c b)",
+    "by": "exact h.mul_left c",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__pow",
+  "lean": "Nat.ModEq.pow",
+  "steps": [
+   {
+    "unit": "induction",
+    "by": "induction m with",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq n (pow a 0) (pow b 0)",
+    "by": "rfl",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "d",
+      "Elem Nat"
+     ],
+     [
+      "hd",
+      "Proof (Nat__ModEq n (pow a d) (pow b d))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Nat__ModEq n (times (pow a d) a) (times (pow b d) b)",
+    "by": "rw [Nat.pow_succ, Nat.pow_succ]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq n (times (pow a d) a) (times (pow b d) b)",
+    "by": "exact hd.mul h",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__add",
+  "lean": "Nat.ModEq.add",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "divide n (plus (minus b a) (minus d c))",
+    "by": "rw [modEq_iff_dvd, Int.natCast_add, Int.natCast_add, add_sub_add_comm]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide n (plus (minus b a) (minus d c))",
+    "by": "exact Int.dvd_add h₁.dvd h₂.dvd",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__add_left_cancel",
+  "lean": "Nat.ModEq.add_left_cancel",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "and ((divide n (minus b a))) ((divide n (minus (plus b d) (plus a c))))",
+    "by": "simp only [modEq_iff_dvd, Int.natCast_add] at *",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "divide n (minus d c)",
+    "by": "simp only [modEq_iff_dvd, Int.natCast_add] at *",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(divide n (plus (minus b a) (minus d c)))",
+    "by": "rw [add_sub_add_comm] at h₂",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (minus d c) (minus (plus (minus b a) (minus d c)) (minus b a))",
+    "by": "convert Int.dvd_sub h₂ h₁ using 1",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (minus d c) (minus (plus (minus b a) (minus d c)) (minus b a))",
+    "by": "rw [add_sub_cancel_left]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__add_right_cancel",
+  "lean": "Nat.ModEq.add_right_cancel",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Nat__ModEq n (plus c a) (plus d b))",
+    "by": "rw [add_comm a, add_comm b] at h₂",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq n a b",
+    "by": "exact h₁.add_left_cancel h₂",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__sub'",
+  "lean": "Nat.ModEq.sub'",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "obtain hac | hca := lt_or_ge a c",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hac",
+      "Proof (Lt a c)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq n (minus a c) (minus b d)",
+    "by": "rw [Nat.sub_eq_zero_of_le hac.le, Nat.sub_eq_zero_of_le ((lt_iff_lt_of_le_iff_le h).1 hac).le]",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hca",
+      "Proof (Leq c a)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "divide n (minus (minus b a) (minus d c))",
+    "by": "rw [modEq_iff_dvd, Int.natCast_sub hca, Int.natCast_sub <| h.1 hca, sub_sub_sub_comm]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide n (minus (minus b a) (minus d c))",
+    "by": "exact Int.dvd_sub hab.dvd hcd.dvd",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__mul_left_cancel'",
+  "lean": "Nat.ModEq.mul_left_cancel'",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "if (divide (times c m) (times c (minus b a))) (divide m (minus b a))",
+    "by": "simp only [modEq_iff_dvd, Int.natCast_mul, ← Int.mul_sub]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (divide (times c m) (times c (minus b a))) (divide m (minus b a))",
+    "by": "exact fun h => (Int.dvd_of_mul_dvd_mul_left (Int.ofNat_ne_zero.mpr hc) h)",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__mul_right_cancel'",
+  "lean": "Nat.ModEq.mul_right_cancel'",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "if (divide (times m c) (times (minus b a) c)) (divide m (minus b a))",
+    "by": "simp only [modEq_iff_dvd, Int.natCast_mul, ← Int.sub_mul]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (divide (times m c) (times (minus b a) c)) (divide m (minus b a))",
+    "by": "exact fun h => (Int.dvd_of_mul_dvd_mul_right (Int.ofNat_ne_zero.mpr hc) h)",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__of_mul_left",
+  "lean": "Nat.ModEq.of_mul_left",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(divide (times m n) (minus b a))",
+    "by": "rw [modEq_iff_dvd] at *",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "divide n (minus b a)",
+    "by": "rw [modEq_iff_dvd] at *",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide n (minus b a)",
+    "by": "exact (dvd_mul_left (n : ℤ) (m : ℤ)).trans h",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__of_div",
+  "lean": "Nat.ModEq.of_div",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq m a b",
+    "by": "convert h.mul_left' c <;> rwa [Nat.mul_div_cancel']",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modulus_modEq_zero",
+  "lean": "Nat.modulus_modEq_zero",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq n n 0",
+    "by": "simp [ModEq]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_modEq_left_iff",
+  "lean": "Nat.add_modEq_left_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n (plus a b) a) (divide n b)",
+    "by": "simp [modEq_iff_dvd, Int.natCast_dvd_natCast]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_modEq_right_iff",
+  "lean": "Nat.add_modEq_right_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n (plus a b) b) (divide n a)",
+    "by": "rw [add_comm, add_modEq_left_iff]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__left_modEq_add_iff",
+  "lean": "Nat.left_modEq_add_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n a (plus a b)) (divide n b)",
+    "by": "rw [ModEq.comm, add_modEq_left_iff]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__right_modEq_add_iff",
+  "lean": "Nat.right_modEq_add_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n b (plus a b)) (divide n a)",
+    "by": "rw [ModEq.comm, add_modEq_right_iff]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_modulus_modEq_iff",
+  "lean": "Nat.add_modulus_modEq_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n (plus a n) b) (Nat__ModEq n a b)",
+    "by": "simp [ModEq]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modulus_add_modEq_iff",
+  "lean": "Nat.modulus_add_modEq_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n (plus n a) b) (Nat__ModEq n a b)",
+    "by": "rw [add_comm, add_modulus_modEq_iff]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modEq_add_modulus_iff",
+  "lean": "Nat.modEq_add_modulus_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n a (plus b n)) (Nat__ModEq n a b)",
+    "by": "simp [ModEq]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modEq_modulus_add_iff",
+  "lean": "Nat.modEq_modulus_add_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n a (plus n b)) (Nat__ModEq n a b)",
+    "by": "simp [ModEq]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_mul_modulus_modEq_iff",
+  "lean": "Nat.add_mul_modulus_modEq_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n (plus a (times b n)) c) (Nat__ModEq n a c)",
+    "by": "simp [ModEq]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__mul_modulus_add_modEq_iff",
+  "lean": "Nat.mul_modulus_add_modEq_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n (plus (times b n) a) c) (Nat__ModEq n a c)",
+    "by": "rw [add_comm, add_mul_modulus_modEq_iff]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modEq_add_mul_modulus_iff",
+  "lean": "Nat.modEq_add_mul_modulus_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n a (plus b (times c n))) (Nat__ModEq n a b)",
+    "by": "simp [ModEq]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modEq_mul_modulus_add_iff",
+  "lean": "Nat.modEq_mul_modulus_add_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n a (plus (times b n) c)) (Nat__ModEq n a c)",
+    "by": "rw [add_comm, modEq_add_mul_modulus_iff]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_modulus_mul_modEq_iff",
+  "lean": "Nat.add_modulus_mul_modEq_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n (plus a (times n b)) c) (Nat__ModEq n a c)",
+    "by": "simp [ModEq]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modulus_mul_add_modEq_iff",
+  "lean": "Nat.modulus_mul_add_modEq_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n (plus (times n b) a) c) (Nat__ModEq n a c)",
+    "by": "rw [add_comm, add_modulus_mul_modEq_iff]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modEq_add_modulus_mul_iff",
+  "lean": "Nat.modEq_add_modulus_mul_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n a (plus b (times n c))) (Nat__ModEq n a b)",
+    "by": "simp [ModEq]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modEq_modulus_mul_add_iff",
+  "lean": "Nat.modEq_modulus_mul_add_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n a (plus (times n b) c)) (Nat__ModEq n a c)",
+    "by": "rw [add_comm, modEq_add_modulus_mul_iff]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__sub_modulus_modEq_iff",
+  "lean": "Nat.sub_modulus_modEq_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n (minus a n) b) (Nat__ModEq n a b)",
+    "by": "rw [← add_modulus_modEq_iff, Nat.sub_add_cancel h]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modEq_sub_modulus_iff",
+  "lean": "Nat.modEq_sub_modulus_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n a (minus b n)) (Nat__ModEq n a b)",
+    "by": "rw [← modEq_add_modulus_iff, Nat.sub_add_cancel h]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modEq_zero_iff",
+  "lean": "Nat.modEq_zero_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq 0 a b) (Eq a b)",
+    "by": "rw [ModEq, mod_zero, mod_zero]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_modEq_left",
+  "lean": "Nat.add_modEq_left",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq n (plus n a) a",
+    "by": "simp",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_modEq_right",
+  "lean": "Nat.add_modEq_right",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq n (plus a n) a",
+    "by": "simp",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modEq_iff_exists_eq_add",
+  "lean": "Nat.modEq_iff_exists_eq_add",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (exists Nat (c => Eq (minus b a) (times n c))) (exists Nat (t => Eq b (plus a (times n t))))",
+    "by": "rw [modEq_iff_dvd' h, dvd_def]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (exists Nat (c => Eq (minus b a) (times n c))) (exists Nat (t => Eq b (plus a (times n t))))",
+    "by": "exact exists_congr (fun _ => Nat.sub_eq_iff_eq_add' h)",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__le_of_lt_add",
+  "lean": "Nat.ModEq.le_of_lt_add",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Lt (minus a b) m",
+    "by": "lia",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__add_le_of_lt",
+  "lean": "Nat.ModEq.add_le_of_lt",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Lt (plus a m) (plus b m)",
+    "by": "lia",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__dvd_iff",
+  "lean": "Nat.ModEq.dvd_iff",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (Nat__ModEq d a 0) (Nat__ModEq d b 0)",
+    "by": "simp only [← modEq_zero_iff_dvd]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Nat__ModEq d a b)",
+    "by": "replace h := h.of_dvd hdm",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq d a 0) (Nat__ModEq d b 0)",
+    "by": "exact ⟨h.symm.trans, h.trans⟩",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__gcd_eq",
+  "lean": "Nat.ModEq.gcd_eq",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(divide (gcd a m) m)",
+    "by": "have h1 := gcd_dvd_right a m",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(divide (gcd b m) m)",
+    "by": "have h2 := gcd_dvd_right b m",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (gcd a m) (gcd b m)",
+    "by": "exact",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__eq_of_abs_lt",
+  "lean": "Nat.ModEq.eq_of_abs_lt",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eq (Int__ofNat a) (Int__ofNat b)",
+    "by": "apply Int.ofNat.inj",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (minus (Int__ofNat b) (Int__ofNat a)) 0",
+    "by": "rw [eq_comm, ← sub_eq_zero]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (minus (Int__ofNat b) (Int__ofNat a)) 0",
+    "by": "exact Int.eq_zero_of_abs_lt_dvd h.dvd h2",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__cancel_left_div_gcd",
+  "lean": "Nat.ModEq.cancel_left_div_gcd",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "d",
+      "Elem Nat"
+     ]
+    ],
+    "by": "let d := gcd m c",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(divide (gcd m c) m)",
+    "by": "have hmd := gcd_dvd_left m c",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(divide (gcd m c) c)",
+    "by": "have hcd := gcd_dvd_right m c",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "divide (div m (gcd m c)) (minus b a)",
+    "by": "rw [modEq_iff_dvd]",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (divide (div m d) (times (div c d) (minus b a))) (Eq (Int__gcd (div m d) (div c d)) 1)",
+    "by": "refine @Int.dvd_of_dvd_mul_right_of_gcd_one (m / d) (c / d) (b - a) ?_ ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "divide (div m d) (div (times c (minus b a)) (gcd m c))",
+    "by": "rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (Int.natCast_dvd_natCast.mpr hcd), mul_comm]",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "divide m (times c (minus b a))",
+    "by": "apply Int.ediv_dvd_ediv (Int.natCast_dvd_natCast.mpr hmd)",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "divide m (minus (times c b) (times c a))",
+    "by": "rw [Int.mul_sub]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide m (minus (times c b) (times c a))",
+    "by": "exact modEq_iff_dvd.mp h",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Int__gcd (div m d) (div c d)) 1",
+    "by": "simp only [d, ← Int.natCast_div, Int.gcd_natCast_natCast (m / d) (c / d),",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__cancel_right_div_gcd",
+  "lean": "Nat.ModEq.cancel_right_div_gcd",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Nat__ModEq m (times c a) (times c b)",
+    "by": "apply cancel_left_div_gcd hm",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq m (times c a) (times c b)",
+    "by": "simpa [mul_comm] using h",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__ModEq__cancel_left_of_coprime",
+  "lean": "Nat.ModEq.cancel_left_of_coprime",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "rcases m.eq_zero_or_pos with (rfl | hm)",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hmc",
+      "Proof (Eq (gcd 0 c) 1)"
+     ],
+     [
+      "h",
+      "Proof (Nat__ModEq 0 (times c a) (times c b))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eq c 1)",
+    "by": "simp only [gcd_zero_left] at hmc",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eq a b)",
+    "by": "simp only [hmc, one_mul, modEq_zero_iff] at h",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Nat__ModEq 0 a a",
+    "by": "subst h",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq 0 a a",
+    "by": "rfl",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hm",
+      "Proof (Gt m 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq m a b",
+    "by": "simpa [hmc] using h.cancel_left_div_gcd hm",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__chineseRemainder'_lt_lcm",
+  "lean": "Nat.chineseRemainder'_lt_lcm",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Lt (dite (Eq n 0) (hn => a) (hn1 => dite (Eq m 0) (hm => b) (hm1 => Int__toNat (HMod__hMod (div (plus (times (times n (Prod__fst (Nat__xgcd n m))) b) (times (times m (Prod__snd (Nat__xgcd n m))) a)) (gcd n m)) (Nat__lcm n m))))) (Nat__lcm n m)",
+    "by": "dsimp only [chineseRemainder']",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (Int__toNat (HMod__hMod (div (plus (times (times n (Prod__fst (Prod__mk (Nat__gcdA n m) (Nat__gcdB n m)))) b) (times (times m (Prod__snd (Prod__mk (Nat__gcdA n m) (Nat__gcdB n m)))) a)) (gcd n m)) (Int__toNat (Nat__lcm n m)))) (Int__toNat (Nat__lcm n m))",
+    "by": "rw [dite_eq_right hn, dite_eq_right hm, Subtype.coe_mk, xgcd_val, ← Int.toNat_natCast (lcm n m)]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt 0 (Nat__lcm n m))",
+    "by": "have lcm_pos := Int.natCast_pos.mpr (Nat.pos_of_ne_zero (lcm_ne_zero hn hm))",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (Int__toNat (HMod__hMod (div (plus (times (times n (Prod__fst (Prod__mk (Nat__gcdA n m) (Nat__gcdB n m)))) b) (times (times m (Prod__snd (Prod__mk (Nat__gcdA n m) (Nat__gcdB n m)))) a)) (gcd n m)) (Int__toNat (Nat__lcm n m)))) (Int__toNat (Nat__lcm n m))",
+    "by": "exact (Int.toNat_lt_toNat lcm_pos).mpr (Int.emod_lt_of_pos _ lcm_pos)",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__chineseRemainder_modEq_unique",
+  "lean": "Nat.chineseRemainder_modEq_unique",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq (times n m) z (Nat__chineseRemainder co a b)",
+    "by": "simpa [Nat.Coprime.lcm_eq_mul co] using",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__modEq_and_modEq_iff_modEq_mul",
+  "lean": "Nat.modEq_and_modEq_iff_modEq_mul",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (and (Nat__ModEq m a b) (Nat__ModEq n a b)) (Nat__ModEq (times m n) a b)",
+    "by": "rw [modEq_and_modEq_iff_modEq_lcm, hmn.lcm_eq_mul]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__coprime_of_mul_modEq_one",
+  "lean": "Nat.coprime_of_mul_modEq_one",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "g",
+      "Elem Nat"
+     ],
+     [
+      "hh",
+      "Proof (Eq n (times (gcd a n) g))"
+     ]
+    ],
+    "by": "obtain ⟨g, hh⟩ := Nat.gcd_dvd_right a n",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Nat__ModEq (gcd a n) 1 0",
+    "by": "rw [Nat.coprime_iff_gcd_eq_one, ← Nat.dvd_one, ← Nat.modEq_zero_iff_dvd]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Nat__ModEq (gcd a n) 1 0",
+    "by": "calc",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times 0 b) 0",
+    "by": "rw [zero_mul]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_mod_add_ite",
+  "lean": "Nat.add_mod_add_ite",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (plus (HMod__hMod (plus a b) c) (ite (Leq c (plus (HMod__hMod a c) (HMod__hMod b c))) c 0)) (plus (HMod__hMod a c) (HMod__hMod b c))",
+    "by": "simp [hc0, Nat.mod_zero]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hc0",
+      "Proof (not (Eq c 0))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (plus (HMod__hMod (plus (HMod__hMod a c) (HMod__hMod b c)) c) (ite (Leq c (plus (HMod__hMod a c) (HMod__hMod b c))) c 0)) (plus (HMod__hMod a c) (HMod__hMod b c))",
+    "by": "rw [this]",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Leq c (plus (HMod__hMod a c) (HMod__hMod b c)))"
+     ]
+    ],
+    "by": "split_ifs with h",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Eq (plus (HMod__hMod (plus (HMod__hMod a c) (HMod__hMod b c)) c) c) (plus (HMod__hMod a c) (HMod__hMod b c))) (Eq (plus (HMod__hMod (plus (HMod__hMod a c) (HMod__hMod b c)) c) 0) (plus (HMod__hMod a c) (HMod__hMod b c)))",
+    "by": "split_ifs with h",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Leq c (plus (HMod__hMod a c) (HMod__hMod b c)))"
+     ]
+    ],
+    "by": "",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt (div (plus (HMod__hMod a c) (HMod__hMod b c)) c) 2)",
+    "by": "have h2 : (a % c + b % c) / c < 2 :=",
+    "depth": 3
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (plus (HMod__hMod a c) (HMod__hMod b c)) (plus c c)",
+    "by": "rw [mul_two]",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (plus (HMod__hMod a c) (HMod__hMod b c)) (plus c c)",
+    "by": "exact",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt 0 (div (plus (HMod__hMod a c) (HMod__hMod b c)) c))",
+    "by": "have h0 : 0 < (a % c + b % c) / c := Nat.div_pos h (Nat.pos_of_ne_zero hc0)",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (plus (HMod__hMod (plus (HMod__hMod a c) (HMod__hMod b c)) c) c) (plus (HMod__hMod a c) (HMod__hMod b c))",
+    "by": "rw [← @add_right_cancel_iff _ _ _ (c * ((a % c + b % c) / c)), add_comm _ c, add_assoc,",
+    "depth": 3
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (not (Leq c (plus (HMod__hMod a c) (HMod__hMod b c))))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (plus (HMod__hMod (plus (HMod__hMod a c) (HMod__hMod b c)) c) 0) (plus (HMod__hMod a c) (HMod__hMod b c))",
+    "by": "rw [Nat.mod_eq_of_lt (lt_of_not_ge h), add_zero]",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_mod_of_add_mod_lt",
+  "lean": "Nat.add_mod_of_add_mod_lt",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (HMod__hMod (plus a b) c) (plus (HMod__hMod a c) (HMod__hMod b c))",
+    "by": "rw [← add_mod_add_ite, ite_eq_right (not_le_of_gt hc), add_zero]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_mod_add_of_le_add_mod",
+  "lean": "Nat.add_mod_add_of_le_add_mod",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (plus (HMod__hMod (plus a b) c) c) (plus (HMod__hMod a c) (HMod__hMod b c))",
+    "by": "rw [← add_mod_add_ite, ite_eq_left hc]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_div_of_dvd_left",
+  "lean": "Nat.add_div_of_dvd_left",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (div (plus a b) c) (plus (div a c) (div b c))",
+    "by": "rwa [add_comm, Nat.add_div_of_dvd_right, add_comm]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_div_eq_of_le_mod_add_mod",
+  "lean": "Nat.add_div_eq_of_le_mod_add_mod",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (div (plus a b) c) (plus (plus (div a c) (div b c)) 1)",
+    "by": "rw [Nat.add_div hc0, ite_eq_left hc]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__add_div_le_div_add_div_add_one",
+  "lean": "Nat.add_div_le_div_add_div_add_one",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "by_cases h : c = 0",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Eq c 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (div (plus a b) c) (plus (plus (div a c) (div b c)) 1)",
+    "by": "simp [h]",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (not (Eq c 0))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (ite (Leq c (plus (HMod__hMod a c) (HMod__hMod b c))) 1 0) 1",
+    "by": "rw [Nat.add_div (Nat.pos_of_ne_zero h), Nat.add_le_add_iff_left]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (ite (Leq c (plus (HMod__hMod a c) (HMod__hMod b c))) 1 0) 1",
+    "by": "split <;> decide",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__le_mod_add_mod_of_dvd_add_of_not_dvd",
+  "lean": "Nat.le_mod_add_mod_of_dvd_add_of_not_dvd",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Eq (HMod__hMod (plus a b) c) (plus (HMod__hMod a c) (HMod__hMod b c)))",
+    "by": "have : (a + b) % c = a % c + b % c := add_mod_of_add_mod_lt (lt_of_not_ge hc)",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "simp_all [dvd_iff_mod_eq_zero]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__mod_sub_of_le",
+  "lean": "Nat.mod_sub_of_le",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "rcases n.eq_zero_or_pos with rfl | hn",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Leq b (HMod__hMod a 0))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (minus (HMod__hMod a 0) b) (HMod__hMod (minus a b) 0)",
+    "by": "simp only [mod_zero]",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hn",
+      "Proof (Gt n 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (minus (HMod__hMod a n) b) (HMod__hMod (minus (plus (times n (div a n)) (HMod__hMod a n)) b) n)",
+    "by": "nth_rw 2 [← div_add_mod a n]",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (minus (HMod__hMod a n) b) (HMod__hMod (minus (HMod__hMod a n) b) n)",
+    "by": "rw [Nat.add_sub_assoc h, mul_add_mod]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (minus (HMod__hMod a n) b) (HMod__hMod (minus (HMod__hMod a n) b) n)",
+    "by": "exact (mod_eq_of_lt <| (sub_le ..).trans_lt (mod_lt a hn)).symm",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__odd_mul_odd",
+  "lean": "Nat.odd_mul_odd",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "if (Eq (HMod__hMod n 2) 1) (if (Eq (HMod__hMod m 2) 1) (Eq (HMod__hMod (times n m) 2) 1))",
+    "by": "simpa [Nat.ModEq] using @ModEq.mul 2 n 1 m 1",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__odd_mul_odd_div_two",
+  "lean": "Nat.odd_mul_odd_div_two",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "simp_all",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hn0",
+      "Proof (Lt 0 n)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times 2 (div (times m n) 2)) (times 2 (plus (times m (div n 2)) (div m 2)))",
+    "by": "rw [mul_add, two_mul_odd_div_two hm1, mul_left_comm, two_mul_odd_div_two hn1,",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq 1 m",
+    "by": "lia",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__odd_of_mod_four_eq_one",
+  "lean": "Nat.odd_of_mod_four_eq_one",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "if (Eq (HMod__hMod n 4) 1) (Eq (HMod__hMod n 2) 1)",
+    "by": "simpa [ModEq] using @ModEq.of_mul_left 2 n 1 2",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__odd_of_mod_four_eq_three",
+  "lean": "Nat.odd_of_mod_four_eq_three",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "if (Eq (HMod__hMod n 4) 3) (Eq (HMod__hMod n 2) 1)",
+    "by": "simpa [ModEq] using @ModEq.of_mul_left 2 n 3 2",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Nat__odd_mod_four_iff",
+  "lean": "Nat.odd_mod_four_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "forall Nat (m => if (Lt m 4) (if (Eq (HMod__hMod m 2) 1) (or (Eq m 1) (Eq m 3))))",
+    "by": "decide",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "help",
+      "Proof (forall Nat (m => if (Lt m 4) (if (Eq (HMod__hMod m 2) 1) (or (Eq m 1) (Eq m 3)))))"
+     ],
+     [
+      "hn",
+      "Proof (Eq (HMod__hMod n 2) 1)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt 0 4",
+    "by": "lia",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide 2 4",
+    "by": "decide",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Nat__modEq_iff_eq_of_div_eq",
+  "lean": "Nat.modEq_iff_eq_of_div_eq",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Nat__ModEq n a b) (Eq a b)",
+    "by": "grind [ext_div_modEq_iff]",
+    "depth": 0
+   }
+  ]
+ }
+]

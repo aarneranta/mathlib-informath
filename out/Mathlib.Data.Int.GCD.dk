@@ -1,0 +1,141 @@
+(; Mathlib.Data.Int.GCD: statements exported from Mathlib by MathlibInformath/Export.lean ;)
+
+(; //LEAN:Nat.xgcdAux ;)
+Nat__xgcdAux : (x : Elem Nat) -> (x1 : Elem Int) -> (x2 : Elem Int) -> (x3 : Elem Nat) -> (x4 : Elem Int) -> (x5 : Elem Int) -> Elem (Prod Nat (Prod Int Int)).
+
+(; //LEAN:Nat.xgcd_zero_left ;)
+Nat__xgcd_zero_left : (s : Elem Int) -> (t : Elem Int) -> (r' : Elem Nat) -> (s' : Elem Int) -> (t' : Elem Int) -> Proof (Eqt (Prod Nat (Prod Int Int)) (Nat__xgcdAux 0 s t r' s' t') (Prod__mk r' (Prod__mk s' t'))).
+
+(; //LEAN:Nat.xgcdAux_rec ;)
+Nat__xgcdAux_rec : (r : Elem Nat) -> (s : Elem Int) -> (t : Elem Int) -> (r' : Elem Nat) -> (s' : Elem Int) -> (t' : Elem Int) -> (h : Proof (Lt 0 r)) -> Proof (Eqt (Prod Nat (Prod Int Int)) (Nat__xgcdAux r s t r' s' t') (Nat__xgcdAux (HMod__hMod r' r) (minus s' (times (div r' r) s)) (minus t' (times (div r' r) t)) r s t)).
+
+(; //LEAN:Nat.xgcd ;)
+def Nat__xgcd : (x : Elem Nat) -> (y : Elem Nat) -> Elem (Prod Int Int) :=
+  x => y => Prod__snd (Nat__xgcdAux x 1 0 y 0 1).
+
+(; //LEAN:Nat.gcdA ;)
+def Nat__gcdA : (x : Elem Nat) -> (y : Elem Nat) -> Elem Int :=
+  x => y => Prod__fst (Nat__xgcd x y).
+
+(; //LEAN:Nat.gcdB ;)
+def Nat__gcdB : (x : Elem Nat) -> (y : Elem Nat) -> Elem Int :=
+  x => y => Prod__snd (Nat__xgcd x y).
+
+(; //LEAN:Nat.gcdA_zero_left ;)
+Nat__gcdA_zero_left : (s : Elem Nat) -> Proof (Eq (Nat__gcdA 0 s) 0).
+
+(; //LEAN:Nat.gcdB_zero_left ;)
+Nat__gcdB_zero_left : (s : Elem Nat) -> Proof (Eq (Nat__gcdB 0 s) 1).
+
+(; //LEAN:Nat.gcdA_zero_right ;)
+Nat__gcdA_zero_right : (s : Elem Nat) -> (h : Proof (Neq s 0)) -> Proof (Eq (Nat__gcdA s 0) 1).
+
+(; //LEAN:Nat.gcdB_zero_right ;)
+Nat__gcdB_zero_right : (s : Elem Nat) -> (h : Proof (Neq s 0)) -> Proof (Eq (Nat__gcdB s 0) 0).
+
+(; //LEAN:Nat.xgcdAux_fst ;)
+Nat__xgcdAux_fst : (x : Elem Nat) -> (y : Elem Nat) -> (s : Elem Int) -> (t : Elem Int) -> (s' : Elem Int) -> (t' : Elem Int) -> Proof (Eq (Prod__fst (Nat__xgcdAux x s t y s' t')) (gcd x y)).
+
+(; //LEAN:Nat.xgcdAux_val ;)
+Nat__xgcdAux_val : (x : Elem Nat) -> (y : Elem Nat) -> Proof (Eqt (Prod Nat (Prod Int Int)) (Nat__xgcdAux x 1 0 y 0 1) (Prod__mk (gcd x y) (Nat__xgcd x y))).
+
+(; //LEAN:Nat.xgcd_val ;)
+Nat__xgcd_val : (x : Elem Nat) -> (y : Elem Nat) -> Proof (Eqt (Prod Int Int) (Nat__xgcd x y) (Prod__mk (Nat__gcdA x y) (Nat__gcdB x y))).
+
+(; //LEAN:Nat.gcd_eq_gcd_ab ;)
+Nat__gcd_eq_gcd_ab : (x : Elem Nat) -> (y : Elem Nat) -> Proof (Eq (gcd x y) (plus (times x (Nat__gcdA x y)) (times y (Nat__gcdB x y)))).
+
+(; //LEAN:Nat.exists_mul_mod_eq_gcd ;)
+Nat__exists_mul_mod_eq_gcd : (k : Elem Nat) -> (n : Elem Nat) -> (hk : Proof (Lt (gcd n k) k)) -> Proof (exists Nat (m => and (Lt m k) (Eq (HMod__hMod (times n m) k) (gcd n k)))).
+
+(; //LEAN:Nat.exists_mul_mod_eq_one_of_coprime ;)
+Nat__exists_mul_mod_eq_one_of_coprime : (k : Elem Nat) -> (n : Elem Nat) -> (hkn : Proof (Nat__Coprime n k)) -> (hk : Proof (Lt 1 k)) -> Proof (exists Nat (m => and (Lt m k) (Eq (HMod__hMod (times n m) k) 1))).
+
+(; //LEAN:Nat.exists_mul_mod_eq_of_coprime ;)
+Nat__exists_mul_mod_eq_of_coprime : (k : Elem Nat) -> (n : Elem Nat) -> (r : Elem Nat) -> (hkn : Proof (Nat__Coprime n k)) -> (hk : Proof (Neq k 0)) -> Proof (exists Nat (m => and (Lt m k) (Eq (HMod__hMod (times n m) k) (HMod__hMod r k)))).
+
+(; //LEAN:Int.gcd_def ;)
+def Int__gcd_def : (i : Elem Int) -> (j : Elem Int) -> Proof (Eq (Int__gcd i j) (gcd (Int__natAbs i) (Int__natAbs j))) :=
+  i => j => rfl.
+
+(; //LEAN:Int.gcdA ;)
+Int__gcdA : (x : Elem Int) -> (x1 : Elem Int) -> Elem Int.
+
+(; //LEAN:Int.gcdB ;)
+Int__gcdB : (x : Elem Int) -> (x1 : Elem Int) -> Elem Int.
+
+(; //LEAN:Int.gcd_eq_gcd_ab ;)
+Int__gcd_eq_gcd_ab : (x : Elem Int) -> (y : Elem Int) -> Proof (Eq (Int__gcd x y) (plus (times x (Int__gcdA x y)) (times y (Int__gcdB x y)))).
+
+(; //LEAN:Int.lcm_def ;)
+def Int__lcm_def : (i : Elem Int) -> (j : Elem Int) -> Proof (Eq (Int__lcm i j) (Nat__lcm (Int__natAbs i) (Int__natAbs j))) :=
+  i => j => rfl.
+
+(; //LEAN:Int.gcd_div ;)
+def Int__gcd_div : (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (ha : Proof (divide c a)) -> (hb : Proof (divide c b)) -> Proof (Eq (Int__gcd (div a c) (div b c)) (div (Int__gcd a b) (Int__natAbs c))) :=
+  Int__gcd_ediv.
+
+(; //LEAN:Int.gcd_div_gcd_div_gcd ;)
+def Int__gcd_div_gcd_div_gcd : (i : Elem Int) -> (j : Elem Int) -> (h : Proof (Lt 0 (Int__gcd i j))) -> Proof (Eq (Int__gcd (div i (Int__gcd i j)) (div j (Int__gcd i j))) 1) :=
+  Int__gcd_ediv_gcd_ediv_gcd.
+
+(; //LEAN:Int.gcd_eq_one_of_gcd_mul_right_eq_one_left ;)
+Int__gcd_eq_one_of_gcd_mul_right_eq_one_left : (a : Elem Int) -> (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Eq (Int__gcd a (times m n)) 1)) -> Proof (Eq (Int__gcd a m) 1).
+
+(; //LEAN:Int.gcd_eq_one_of_gcd_mul_right_eq_one_right ;)
+Int__gcd_eq_one_of_gcd_mul_right_eq_one_right : (a : Elem Int) -> (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Eq (Int__gcd a (times m n)) 1)) -> Proof (Eq (Int__gcd a n) 1).
+
+(; //LEAN:Int.ne_zero_of_gcd ;)
+Int__ne_zero_of_gcd : (x : Elem Int) -> (y : Elem Int) -> (hc : Proof (Neq (Int__gcd x y) 0)) -> Proof (or (Neq x 0) (Neq y 0)).
+
+(; //LEAN:Int.exists_gcd_one ;)
+def Int__exists_gcd_one : (m : Elem Int) -> (n : Elem Int) -> (H : Proof (Lt 0 (Int__gcd m n))) -> Proof (exists Int (m' => exists Int (n' => and (Eq (Int__gcd m' n') 1) (and (Eq m (times m' (Int__gcd m n))) (Eq n (times n' (Int__gcd m n))))))) :=
+  m => n => H => existsI Int (m' => exists Int (n' => and (Eq (Int__gcd m' n') 1) (and (Eq m (times m' (Int__gcd m n))) (Eq n (times n' (Int__gcd m n)))))) (div m (Int__gcd m n)) (existsI Int (n'1 => and (Eq (Int__gcd (div m (Int__gcd m n)) n'1) 1) (and (Eq m (times (div m (Int__gcd m n)) (Int__gcd m n))) (Eq n (times n'1 (Int__gcd m n))))) (div n (Int__gcd m n)) (andI (Eq (Int__gcd (div m (Int__gcd m n)) (div n (Int__gcd m n))) 1) (and (Eq m (times (div m (Int__gcd m n)) (Int__gcd m n))) (Eq n (times (div n (Int__gcd m n)) (Int__gcd m n)))) (Int__gcd_div_gcd_div_gcd m n H) (andI (Eq m (times (div m (Int__gcd m n)) (Int__gcd m n))) (Eq n (times (div n (Int__gcd m n)) (Int__gcd m n))) (Eq__symm Int (times (div m (Int__gcd m n)) (Int__gcd m n)) m (Int__ediv_mul_cancel m (Int__gcd m n) (Int__gcd_dvd_left m n))) (Eq__symm Int (times (div n (Int__gcd m n)) (Int__gcd m n)) n (Int__ediv_mul_cancel n (Int__gcd m n) (Int__gcd_dvd_right m n)))))).
+
+(; //LEAN:Int.exists_gcd_one' ;)
+Int__exists_gcd_one' : (m : Elem Int) -> (n : Elem Int) -> (H : Proof (Lt 0 (Int__gcd m n))) -> Proof (exists Nat (g => exists Int (m' => exists Int (n' => and (Lt 0 g) (and (Eq (Int__gcd m' n') 1) (and (Eq m (times m' g)) (Eq n (times n' g)))))))).
+
+(; //LEAN:Int.gcd_dvd_iff ;)
+Int__gcd_dvd_iff : (a : Elem Int) -> (b : Elem Int) -> (n : Elem Nat) -> Proof (iff (divide (Int__gcd a b) n) (exists Int (x => exists Int (y => Eq n (plus (times a x) (times b y)))))).
+
+(; //LEAN:Int.gcd_greatest ;)
+def Int__gcd_greatest : (a : Elem Int) -> (b : Elem Int) -> (d : Elem Int) -> (hd_pos : Proof (Leq 0 d)) -> (hda : Proof (divide d a)) -> (hdb : Proof (divide d b)) -> (hd : Proof (forall Int (e => if (divide e a) (if (divide e b) (divide e d))))) -> Proof (Eq d (Int__gcd a b)) :=
+  a => b => d => hd_pos => hda => hdb => hd => Int__dvd_antisymm d (Int__gcd a b) hd_pos (Int__natCast_nonneg (Int__gcd a b)) (Int__dvd_coe_gcd a b d hda hdb) (ifE (divide (Int__gcd a b) b) (divide (Int__gcd a b) d) (ifE (divide (Int__gcd a b) a) (if (divide (Int__gcd a b) b) (divide (Int__gcd a b) d)) (forallE Int (e => if (divide e a) (if (divide e b) (divide e d))) hd (Int__gcd a b)) (Int__gcd_dvd_left a b)) (Int__gcd_dvd_right a b)).
+
+(; //LEAN:Int.dvd_of_dvd_mul_left_of_gcd_one ;)
+Int__dvd_of_dvd_mul_left_of_gcd_one : (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (habc : Proof (divide a (times b c))) -> (hab : Proof (Eq (Int__gcd a c) 1)) -> Proof (divide a b).
+
+(; //LEAN:Int.dvd_of_dvd_mul_right_of_gcd_one ;)
+Int__dvd_of_dvd_mul_right_of_gcd_one : (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (habc : Proof (divide a (times b c))) -> (hab : Proof (Eq (Int__gcd a b) 1)) -> Proof (divide a c).
+
+(; //LEAN:Int.gcd_least_linear ;)
+Int__gcd_least_linear : (a : Elem Int) -> (b : Elem Int) -> (ha : Proof (Neq a 0)) -> Proof (IsLeast (Set__ofPred (n => and (Lt 0 n) (exists Int (x => exists Int (y => Eq n (plus (times a x) (times b y))))))) (Int__gcd a b)).
+
+(; //LEAN:gcd_nsmul_eq_zero ;)
+gcd_nsmul_eq_zero : (M : Set) -> (_ : Proof (AddMonoid M)) -> (a : Elem M) -> (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Eqt M (HSMul__hSMul (gcd m n) a) 0) (and (Eqt M (HSMul__hSMul m a) 0) (Eqt M (HSMul__hSMul n a) 0))).
+
+(; //LEAN:pow_gcd_eq_one ;)
+pow_gcd_eq_one : (M : Set) -> (_ : Proof (Monoid M)) -> (a : Elem M) -> (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Eqt M (pow a (gcd m n)) 1) (and (Eqt M (pow a m) 1) (Eqt M (pow a n) 1))).
+
+(; //LEAN:nsmul_eq_zero_iff_of_coprime ;)
+nsmul_eq_zero_iff_of_coprime : (M : Set) -> (_ : Proof (AddMonoid M)) -> (a : Elem M) -> (m : Elem Nat) -> (n : Elem Nat) -> (hmn : Proof (Nat__Coprime m n)) -> Proof (iff (and (Eqt M (HSMul__hSMul m a) 0) (Eqt M (HSMul__hSMul n a) 0)) (Eqt M a 0)).
+
+(; //LEAN:pow_eq_one_iff_of_coprime ;)
+pow_eq_one_iff_of_coprime : (M : Set) -> (_ : Proof (Monoid M)) -> (a : Elem M) -> (m : Elem Nat) -> (n : Elem Nat) -> (hmn : Proof (Nat__Coprime m n)) -> Proof (iff (and (Eqt M (pow a m) 1) (Eqt M (pow a n) 1)) (Eqt M a 1)).
+
+(; //LEAN:pow_intGCD_eq_one ;)
+pow_intGCD_eq_one : (M : Set) -> (_ : Proof (Group M)) -> (a : Elem M) -> (m : Elem Int) -> (n : Elem Int) -> Proof (iff (Eqt M (pow a (Int__gcd m n)) 1) (and (Eqt M (pow a m) 1) (Eqt M (pow a n) 1))).
+
+(; //LEAN:intGCD_nsmul_eq_zero ;)
+intGCD_nsmul_eq_zero : (M : Set) -> (_ : Proof (AddGroup M)) -> (a : Elem M) -> (m : Elem Int) -> (n : Elem Int) -> Proof (iff (Eqt M (HSMul__hSMul (Int__gcd m n) a) 0) (and (Eqt M (HSMul__hSMul m a) 0) (Eqt M (HSMul__hSMul n a) 0))).
+
+(; //LEAN:Commute.pow_eq_pow_iff_of_coprime ;)
+Commute__pow_eq_pow_iff_of_coprime : (X : Set) -> (_ : Proof (GroupWithZero X)) -> (a : Elem X) -> (b : Elem X) -> (m : Elem Nat) -> (n : Elem Nat) -> (hab : Proof (Commute a b)) -> (hmn : Proof (Nat__Coprime m n)) -> Proof (iff (Eqt X (pow a m) (pow b n)) (exists X (c => and (Eqt X a (pow c n)) (Eqt X b (pow c m))))).
+
+(; //LEAN:pow_eq_pow_iff_of_coprime ;)
+def pow_eq_pow_iff_of_coprime : (X : Set) -> (_ : Proof (CommGroupWithZero X)) -> (a : Elem X) -> (b : Elem X) -> (m : Elem Nat) -> (n : Elem Nat) -> (hmn : Proof (Nat__Coprime m n)) -> Proof (iff (Eqt X (pow a m) (pow b n)) (exists X (c => and (Eqt X a (pow c n)) (Eqt X b (pow c m))))) :=
+  X => x => a => b => m => n => hmn => Commute__pow_eq_pow_iff_of_coprime X a b m n (Commute__all X a b) hmn.
+
+(; //LEAN:pow_mem_range_pow_of_coprime ;)
+pow_mem_range_pow_of_coprime : (X : Set) -> (_ : Proof (CommGroupWithZero X)) -> (m : Elem Nat) -> (n : Elem Nat) -> (hmn : Proof (Nat__Coprime m n)) -> (a : Elem X) -> Proof (iff (Membership__mem (Set__range (x1 => pow x1 n)) (pow a m)) (Membership__mem (Set__range (x2 => pow x2 n)) a)).
+

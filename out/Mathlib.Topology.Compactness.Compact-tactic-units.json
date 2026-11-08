@@ -1,0 +1,4126 @@
+[
+ {
+  "name": "IsCompact__compl_mem_sets",
+  "lean": "IsCompact.compl_mem_sets",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "exists X (x => and (Membership__mem s x) (not (Membership__mem (Min__min (nhds x) f) (Compl__compl s))))",
+    "by": "contrapose! hf",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Filter__NeBot (Min__min f (Filter__principal s)))",
+    "by": "simp only [notMem_iff_inf_principal_compl, compl_compl, inf_assoc] at hf ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists X (x => and (Membership__mem s x) (Filter__NeBot (Min__min (nhds x) (Min__min f (Filter__principal s)))))",
+    "by": "simp only [notMem_iff_inf_principal_compl, compl_compl, inf_assoc] at hf ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists X (x => and (Membership__mem s x) (Filter__NeBot (Min__min (nhds x) (Min__min f (Filter__principal s)))))",
+    "by": "exact @hs _ hf inf_le_right",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__compl_mem_sets_of_nhdsWithin",
+  "lean": "IsCompact.compl_mem_sets_of_nhdsWithin",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "hx",
+      "Proof (Membership__mem s x)"
+     ]
+    ],
+    "by": "refine hs.compl_mem_sets fun x hx => ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Min__min (nhds x) f) (Compl__compl s)",
+    "by": "refine hs.compl_mem_sets fun x hx => ?_",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "t",
+      "Elem (powerset X)"
+     ],
+     [
+      "ht",
+      "Proof (Membership__mem (nhdsWithin x s) t)"
+     ],
+     [
+      "hst",
+      "Proof (Membership__mem f (Compl__compl t))"
+     ]
+    ],
+    "by": "rcases hf x hx with ⟨t, ht, hst⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Membership__mem (nhds x) (Set__ofPred (x1 => if (Membership__mem s x1) (Membership__mem t x1))))",
+    "by": "replace ht := mem_inf_principal.1 ht",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Subset (Inter__inter (Set__ofPred (x2 => if (Membership__mem s x2) (Membership__mem t x2))) (Compl__compl t)) (Compl__compl s)",
+    "by": "apply mem_inf_of_inter ht hst",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h1",
+      "Proof (Membership__mem (Set__ofPred (x2 => if (Membership__mem s x2) (Membership__mem t x2))) x)"
+     ],
+     [
+      "h2",
+      "Proof (Membership__mem (Compl__compl t) x)"
+     ]
+    ],
+    "by": "rintro x ⟨h₁, h₂⟩ hs",
+    "goal": "false",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exact h₂ (h₁ hs)",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__induction_on",
+  "lean": "IsCompact.induction_on",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "f",
+      "Elem (Filter X)"
+     ]
+    ],
+    "by": "let f : Filter X := comk p he (fun _t ht _s hsub ↦ hmono hsub ht) (fun _s hs _t ht ↦ hunion hs ht)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Membership__mem f (Compl__compl s))",
+    "by": "have : sᶜ ∈ f := hs.compl_mem_sets_of_nhdsWithin (by simpa [f] using hnhds)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "forall X (x2 => if (Membership__mem s x2) (exists (powerset X) (t3 => and (Membership__mem (nhdsWithin x2 s) t3) (Membership__mem f (Compl__compl t3)))))",
+    "by": "simpa [f] using hnhds",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "p s",
+    "by": "rwa [← compl_compl s]",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__inter_right",
+  "lean": "IsCompact.inter_right",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "f",
+      "Elem (Filter X)"
+     ],
+     [
+      "hnf",
+      "Proof (Filter__NeBot f)"
+     ],
+     [
+      "hstf",
+      "Proof (Leq f (Filter__principal (Inter__inter s t)))"
+     ]
+    ],
+    "by": "intro f hnf hstf",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "hsx",
+      "Proof (Membership__mem s x)"
+     ],
+     [
+      "hx",
+      "Proof (ClusterPt x f)"
+     ]
+    ],
+    "by": "obtain ⟨x, hsx, hx⟩ : ∃ x ∈ s, ClusterPt x f :=",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Membership__mem t x)",
+    "by": "have : x ∈ t := ht.mem_of_nhdsWithin_neBot <|",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists X (x => and (Membership__mem (Inter__inter s t) x) (ClusterPt x f))",
+    "by": "exact ⟨x, ⟨hsx, this⟩, hx⟩",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__image_of_continuousOn",
+  "lean": "IsCompact.image_of_continuousOn",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "l",
+      "Elem (Filter Y)"
+     ],
+     [
+      "lne",
+      "Proof (Filter__NeBot l)"
+     ],
+     [
+      "ls",
+      "Proof (Leq l (Filter__principal (Set__image f s)))"
+     ]
+    ],
+    "by": "intro l lne ls",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Filter__NeBot (Min__min (Filter__comap f l) (Filter__principal s)))",
+    "by": "have : NeBot (l.comap f ⊓ 𝓟 s) :=",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "hxs",
+      "Proof (Membership__mem s x)"
+     ],
+     [
+      "hx",
+      "Proof (ClusterPt x (Min__min (Filter__comap f l) (Filter__principal s)))"
+     ]
+    ],
+    "by": "obtain ⟨x, hxs, hx⟩ : ∃ x ∈ s, ClusterPt x (l.comap f ⊓ 𝓟 s) := @hs _ this inf_le_right",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Filter__NeBot (Min__min (nhds x) (Min__min (Filter__comap f l) (Filter__principal s))))",
+    "by": "have := hx.neBot",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "ClusterPt (f x) l",
+    "by": "use f x, mem_image_of_mem f hxs",
+    "depth": 1
+   },
+   {
+    "unit": "verify",
+    "prop": "(Filter__Tendsto f (Min__min (nhds x) (Min__min (Filter__comap f l) (Filter__principal s))) (Min__min (nhds (f x)) l))",
+    "by": "have : Tendsto f (𝓝 x ⊓ (comap f l ⊓ 𝓟 s)) (𝓝 (f x) ⊓ l)",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt (Filter X) (Min__min (nhds x) (Min__min (Filter__comap f l) (Filter__principal s))) (Min__min (nhdsWithin x s) (Filter__comap f l))",
+    "by": "convert (hf x hxs).inf (@tendsto_comap _ _ f l) using 1",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt (Filter X) (Min__min (nhds x) (Min__min (Filter__comap f l) (Filter__principal s))) (Min__min (Min__min (nhds x) (Filter__principal s)) (Filter__comap f l))",
+    "by": "rw [nhdsWithin]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter X) (Min__min (nhds x) (Min__min (Filter__comap f l) (Filter__principal s))) (Min__min (Min__min (nhds x) (Filter__principal s)) (Filter__comap f l))",
+    "by": "ac_rfl",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "ClusterPt (f x) l",
+    "by": "exact this.neBot",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "isCompact_iff_ultrafilter_le_nhds",
+  "lean": "isCompact_iff_ultrafilter_le_nhds",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "and (Monotone (f => exists X (x => and (Membership__mem s x) (ClusterPt x f)))) (iff (forall (Ultrafilter X) (f => if (Leq (Ultrafilter__toFilter f) (Filter__principal s)) (exists X (x => and (Membership__mem s x) (ClusterPt x (Ultrafilter__toFilter f)))))) (forall (Ultrafilter X) (f1 => if (Leq (Ultrafilter__toFilter f1) (Filter__principal s)) (exists X (x1 => and (Membership__mem s x1) (Leq (Ultrafilter__toFilter f1) (nhds x1)))))))",
+    "by": "refine (forall_neBot_le_iff ?_).trans ?_",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "f",
+      "Elem (Filter X)"
+     ],
+     [
+      "g",
+      "Elem (Filter X)"
+     ],
+     [
+      "hle",
+      "Proof (Leq f g)"
+     ],
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "hxs",
+      "Proof (Membership__mem s x)"
+     ],
+     [
+      "hxf",
+      "Proof (ClusterPt x f)"
+     ]
+    ],
+    "by": "rintro f g hle ⟨x, hxs, hxf⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists X (x => and (Membership__mem s x) (ClusterPt x g))",
+    "by": "exact ⟨x, hxs, hxf.mono hle⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (forall (Ultrafilter X) (f => if (Leq (Ultrafilter__toFilter f) (Filter__principal s)) (exists X (x => and (Membership__mem s x) (ClusterPt x (Ultrafilter__toFilter f)))))) (forall (Ultrafilter X) (f1 => if (Leq (Ultrafilter__toFilter f1) (Filter__principal s)) (exists X (x1 => and (Membership__mem s x1) (Leq (Ultrafilter__toFilter f1) (nhds x1))))))",
+    "by": "simp only [Ultrafilter.clusterPt_iff]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isCompact_iff_ultrafilter_le_nhds'",
+  "lean": "isCompact_iff_ultrafilter_le_nhds'",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (IsCompact s) (forall (Ultrafilter X) (f => if (Membership__mem f s) (exists X (x => and (Membership__mem s x) (Leq (Ultrafilter__toFilter f) (nhds x))))))",
+    "by": "simp only [isCompact_iff_ultrafilter_le_nhds, le_principal_iff, Ultrafilter.mem_coe]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__le_nhdsSet_of_clusterPt",
+  "lean": "IsCompact.le_nhdsSet_of_clusterPt",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "f",
+      "Elem (Ultrafilter X)"
+     ],
+     [
+      "hf",
+      "Proof (Leq (Ultrafilter__toFilter f) l)"
+     ]
+    ],
+    "by": "refine le_iff_ultrafilter.2 fun f hf ↦ ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (Ultrafilter__toFilter f) (nhdsSet s')",
+    "by": "refine le_iff_ultrafilter.2 fun f hf ↦ ?_",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "hxs",
+      "Proof (Membership__mem s x)"
+     ],
+     [
+      "hx",
+      "Proof (Leq (Ultrafilter__toFilter f) (nhds x))"
+     ]
+    ],
+    "by": "rcases hs.ultrafilter_le_nhds' f (hf hmem) with ⟨x, hxs, hx⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (nhds x) (nhdsSet s')",
+    "by": "grw [hx]",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem s' x",
+    "by": "refine nhds_le_nhdsSet ?_",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem s' x",
+    "by": "exact h x hxs (.mono (.of_le_nhds hx) hf)",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__le_nhds_of_unique_clusterPt",
+  "lean": "IsCompact.le_nhds_of_unique_clusterPt",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Leq l (nhdsSet (Singleton__singleton y))",
+    "by": "rw [← nhdsSet_singleton]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq l (nhdsSet (Singleton__singleton y))",
+    "by": "exact hs.le_nhdsSet_of_clusterPt hmem h",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__tendsto_nhds_of_unique_mapClusterPt",
+  "lean": "IsCompact.tendsto_nhds_of_unique_mapClusterPt",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Filter__Tendsto f l (nhdsSet (Singleton__singleton y))",
+    "by": "rw [← nhdsSet_singleton]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Filter__Tendsto f l (nhdsSet (Singleton__singleton y))",
+    "by": "exact hs.tendsto_nhdsSet_of_mapClusterPt hmem h",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__elim_directedOn_cover",
+  "lean": "IsCompact.elim_directedOn_cover",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Nonempty (Set__Elem U))",
+    "by": "have : Nonempty U := hU.coe_sort",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (exists (powerset X) (u1 => and (Membership__mem U u1) (Set__Subset s u1))) (exists (Subtype (x2 => Membership__mem U x2)) (i => Set__Subset s i))",
+    "by": "convert hs.elim_directed_cover _ (by simpa) (by rwa [← sUnion_eq_iUnion]) hdU.directed_val",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "forall (Subtype (x2 => Membership__mem U x2)) (i => IsOpen i)",
+    "by": "simpa",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset s (Set__iUnion (i => i))",
+    "by": "rwa [← sUnion_eq_iUnion]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (exists (powerset X) (u1 => and (Membership__mem U u1) (Set__Subset s u1))) (exists (Subtype (x2 => Membership__mem U x2)) (i => Set__Subset s i))",
+    "by": "simp",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__elim_nhds_subcover_nhdsSet'",
+  "lean": "IsCompact.elim_nhds_subcover_nhdsSet'",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "t",
+      "Elem (Finset (Set__Elem s))"
+     ],
+     [
+      "hst",
+      "Proof (Set__Subset s (Set__iUnion (i => Set__iUnion (h1 => interior (U i (Subtype__property i))))))"
+     ]
+    ],
+    "by": "rcases hs.elim_finite_subcover (fun x : s ↦ interior (U x x.2)) (fun _ ↦ isOpen_interior)",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (Finset (Set__Elem s)) (t => Membership__mem (nhdsSet s) (Set__iUnion (x2 => Set__iUnion (h2 => U x2 (Subtype__property x2)))))",
+    "by": "rcases hs.elim_finite_subcover (fun x : s ↦ interior (U x x.2)) (fun _ ↦ isOpen_interior)",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "hx",
+      "Proof (Membership__mem s x)"
+     ]
+    ],
+    "by": "refine ⟨t, mem_nhdsSet_iff_forall.2 fun x hx ↦ ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (nhds x) (Set__iUnion (x2 => Set__iUnion (h2 => U x2 (Subtype__property x2))))",
+    "by": "refine ⟨t, mem_nhdsSet_iff_forall.2 fun x hx ↦ ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "y",
+      "Elem (Set__Elem s)"
+     ],
+     [
+      "hyt",
+      "Proof (Membership__mem t y)"
+     ],
+     [
+      "hy",
+      "Proof (Membership__mem (interior (U y (Subtype__property y))) x)"
+     ]
+    ],
+    "by": "rcases mem_iUnion₂.1 (hst hx) with ⟨y, hyt, hy⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (nhds x) (U y (Subtype__property y))",
+    "by": "refine mem_of_superset ?_ (subset_biUnion_of_mem hyt)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (nhds x) (U y (Subtype__property y))",
+    "by": "exact mem_interior_iff_mem_nhds.1 hy",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__elim_nhds_subcover_nhdsSet",
+  "lean": "IsCompact.elim_nhds_subcover_nhdsSet",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "t",
+      "Elem (Finset (Set__Elem s))"
+     ],
+     [
+      "ht",
+      "Proof (Membership__mem (nhdsSet s) (Set__iUnion (x2 => Set__iUnion (h1 => U x2))))"
+     ]
+    ],
+    "by": "let ⟨t, ht⟩ := hs.elim_nhds_subcover_nhdsSet' (fun x _ => U x) hU",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (Finset X) (t => and (forall X (x3 => if (Membership__mem t x3) (Membership__mem s x3))) (Membership__mem (nhdsSet s) (Set__iUnion (x4 => Set__iUnion (h3 => U x4)))))",
+    "by": "let ⟨t, ht⟩ := hs.elim_nhds_subcover_nhdsSet' (fun x _ => U x) hU",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (Finset X) (t => and (forall X (x3 => if (Membership__mem t x3) (Membership__mem s x3))) (Membership__mem (nhdsSet s) (Set__iUnion (x4 => Set__iUnion (h3 => U x4)))))",
+    "by": "classical",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (Finset X) (t => and (forall X (x3 => if (Membership__mem t x3) (Membership__mem s x3))) (Membership__mem (nhdsSet s) (Set__iUnion (x4 => Set__iUnion (h3 => U x4)))))",
+    "by": "exact ⟨t.image (↑), fun x hx =>",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (nhdsSet s) (Set__iUnion (x3 => Set__iUnion (h2 => U x3)))",
+    "by": "rwa [Finset.set_biUnion_finset_image]",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__elim_nhdsWithin_subcover'",
+  "lean": "IsCompact.elim_nhdsWithin_subcover'",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "V",
+      "((x2 : Elem X) -> Proof (Membership__mem s x2) -> powerset X)"
+     ],
+     [
+      "V_nhds",
+      "Proof (forall X (x3 => forall (Proof (Membership__mem s x3)) (hx2 => Membership__mem (nhds x3) (V x3 hx2))))"
+     ],
+     [
+      "hV",
+      "Proof (forall X (x4 => forall (Proof (Membership__mem s x4)) (hx3 => Set__Subset (Inter__inter (V x4 hx3) s) (U x4 hx3))))"
+     ]
+    ],
+    "by": "choose V V_nhds hV using fun x hx => mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (hU x hx)",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (Finset (Set__Elem s)) (t => Set__Subset s (Set__iUnion (x5 => Set__iUnion (h1 => U x5 (Subtype__property x5)))))",
+    "by": "choose V V_nhds hV using fun x hx => mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (hU x hx)",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "t",
+      "Elem (Finset (Set__Elem s))"
+     ],
+     [
+      "ht",
+      "Proof (Set__Subset s (Set__iUnion (x5 => Set__iUnion (h1 => V x5 (Subtype__property x5)))))"
+     ]
+    ],
+    "by": "refine (hs.elim_nhds_subcover' V V_nhds).imp fun t ht =>",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Subset s (Set__iUnion (i => Set__iUnion (j => Inter__inter (V i (Subtype__property i)) s)))",
+    "by": "refine (hs.elim_nhds_subcover' V V_nhds).imp fun t ht =>",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset s (Set__iUnion (i => Set__iUnion (j => Inter__inter (V i (Subtype__property i)) s)))",
+    "by": "simpa [← iUnion_inter, ← iUnion_coe_set]",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__elim_nhdsWithin_subcover",
+  "lean": "IsCompact.elim_nhdsWithin_subcover",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "V",
+      "(Elem X -> powerset X)"
+     ],
+     [
+      "V_nhds",
+      "Proof (forall X (x3 => if (Membership__mem s x3) (Membership__mem (nhds x3) (V x3))))"
+     ],
+     [
+      "hV",
+      "Proof (forall X (x4 => if (Membership__mem s x4) (Set__Subset (Inter__inter (V x4) s) (U x4))))"
+     ]
+    ],
+    "by": "choose! V V_nhds hV using fun x hx => mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (hU x hx)",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (Finset X) (t => and (forall X (x5 => if (Membership__mem t x5) (Membership__mem s x5))) (Set__Subset s (Set__iUnion (x6 => Set__iUnion (h2 => U x6)))))",
+    "by": "choose! V V_nhds hV using fun x hx => mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (hU x hx)",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "t",
+      "Elem (Finset X)"
+     ],
+     [
+      "t_sub_s",
+      "Proof (forall X (x7 => if (Membership__mem t x7) (Membership__mem s x7)))"
+     ],
+     [
+      "ht",
+      "Proof (Set__Subset s (Set__iUnion (x8 => Set__iUnion (h4 => V x8))))"
+     ]
+    ],
+    "by": "refine (hs.elim_nhds_subcover V V_nhds).imp fun t ⟨t_sub_s, ht⟩ =>",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Subset s (Set__iUnion (i => Set__iUnion (j => Inter__inter (V i) s)))",
+    "by": "refine (hs.elim_nhds_subcover V V_nhds).imp fun t ⟨t_sub_s, ht⟩ =>",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset s (Set__iUnion (i => Set__iUnion (j => Inter__inter (V i) s)))",
+    "by": "simpa [← iUnion_inter]",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__disjoint_nhdsSet_left",
+  "lean": "IsCompact.disjoint_nhdsSet_left",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "H",
+      "Proof (forall X (x => if (Membership__mem s x) (Disjoint (nhds x) l)))"
+     ]
+    ],
+    "by": "refine ⟨fun h x hx => h.mono_left <| nhds_le_nhdsSet hx, fun H => ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Disjoint (nhdsSet s) l",
+    "by": "refine ⟨fun h x hx => h.mono_left <| nhds_le_nhdsSet hx, fun H => ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "U",
+      "(Elem X -> powerset X)"
+     ],
+     [
+      "hxU",
+      "Proof (forall X (x2 => if (Membership__mem s x2) (and (Membership__mem (U x2) x2) (IsOpen (U x2)))))"
+     ],
+     [
+      "hUl",
+      "Proof (forall X (x3 => if (Membership__mem s x3) (Membership__mem l (Compl__compl (U x3)))))"
+     ]
+    ],
+    "by": "choose! U hxU hUl using fun x hx => (nhds_basis_opens x).disjoint_iff_left.1 (H x hx)",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "and ((forall X (x2 => if (Membership__mem s x2) (Membership__mem l (Compl__compl (U x2)))))) (and ((forall X (x3 => if (Membership__mem s x3) (Membership__mem (U x3) x3)))) ((forall X (x4 => if (Membership__mem s x4) (IsOpen (U x4))))))",
+    "by": "choose hxU hUo using hxU",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "t",
+      "Elem (Finset X)"
+     ],
+     [
+      "hts",
+      "Proof (forall X (x5 => if (Membership__mem t x5) (Membership__mem s x5)))"
+     ],
+     [
+      "hst",
+      "Proof (Set__Subset s (Set__iUnion (x6 => Set__iUnion (h2 => U x6))))"
+     ]
+    ],
+    "by": "rcases hs.elim_nhds_subcover U fun x hx => (hUo x hx).mem_nhds (hxU x hx) with ⟨t, hts, hst⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem l (Compl__compl (Set__iUnion (x7 => Set__iUnion (h3 => U x7))))",
+    "by": "refine (hasBasis_nhdsSet _).disjoint_iff_left.2",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "forall X (i => if (Membership__mem t i) (Membership__mem l (Compl__compl (U i))))",
+    "by": "rw [compl_iUnion₂, biInter_finset_mem]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "forall X (i => if (Membership__mem t i) (Membership__mem l (Compl__compl (U i))))",
+    "by": "exact fun x hx => hUl x (hts x hx)",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__disjoint_nhdsSet_right",
+  "lean": "IsCompact.disjoint_nhdsSet_right",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Disjoint l (nhdsSet s)) (forall X (x => if (Membership__mem s x) (Disjoint l (nhds x))))",
+    "by": "simpa only [disjoint_comm] using hs.disjoint_nhdsSet_left",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__elim_directed_family_closed",
+  "lean": "IsCompact.elim_directed_family_closed",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Set__Subset s (Set__iUnion (i1 => Compl__compl (t i1))))",
+    "by": "simp only [← subset_compl_iff_disjoint_right, compl_iInter] at hst ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists I (i2 => Set__Subset s (Compl__compl (t i2)))",
+    "by": "simp only [← subset_compl_iff_disjoint_right, compl_iInter] at hst ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists I (i2 => Set__Subset s (Compl__compl (t i2)))",
+    "by": "exact hs.elim_directed_cover (compl ∘ t) (fun i ↦ (htc i).isOpen_compl) hst",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__inter_iInter_nonempty",
+  "lean": "IsCompact.inter_iInter_nonempty",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "exists (Finset I) (u => Eqt (powerset X) (Inter__inter s (Set__iInter (i2 => Set__iInter (h => t i2)))) EmptyCollection__emptyCollection)",
+    "by": "contrapose! hst",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Disjoint s (Set__iInter (i1 => t i1)))",
+    "by": "simp only [← disjoint_iff_inter_eq_empty] at hst ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (Finset I) (u => Disjoint s (Set__iInter (i2 => Set__iInter (h => t i2))))",
+    "by": "simp only [← disjoint_iff_inter_eq_empty] at hst ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (Finset I) (u => Disjoint s (Set__iInter (i2 => Set__iInter (h => t i2))))",
+    "by": "exact hs.elim_finite_subfamily_closed t htc hst",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__nonempty_inter_sInter",
+  "lean": "IsCompact.nonempty_inter_sInter",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Set__Nonempty (Inter__inter s (Set__iInter (i => i)))",
+    "by": "rw [Set.sInter_eq_iInter]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "a",
+      "Elem (Finset (Set__Elem t))"
+     ]
+    ],
+    "by": "refine hs.inter_iInter_nonempty _ (fun i ↦ ht _ i.2) fun a ↦ ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Nonempty (Inter__inter s (Set__iInter (i => Set__iInter (h3 => i))))",
+    "by": "refine hs.inter_iInter_nonempty _ (fun i ↦ ht _ i.2) fun a ↦ ?_",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Nonempty (Inter__inter s (Set__iInter (i => Set__iInter (h3 => i))))",
+    "by": "simpa using h (Subtype.val '' (a : Set t)) (by simp) (a.finite_toSet.image _)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset (Set__image (x => Membership__mem t x) a) t",
+    "by": "simp",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "CompactSpace__nonempty_sInter",
+  "lean": "CompactSpace.nonempty_sInter",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Set__Nonempty (Set__sInter s)",
+    "by": "simpa using isCompact_univ.nonempty_inter_sInter hsc (by simpa using hs)",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "forall (powerset (powerset X)) (a => if (Set__Subset a s) (if (Set__Finite a) (Set__Nonempty (Inter__inter Set__univ (Set__sInter a)))))",
+    "by": "simpa using hs",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__nonempty_iInter_of_directed_nonempty_isCompact_isClosed",
+  "lean": "IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "i0",
+      "Elem I"
+     ]
+    ],
+    "by": "let i₀ := hι.some",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Nonempty (Inter__inter (t i0) (Set__iInter (i3 => t i3)))",
+    "by": "suffices (t i₀ ∩ ⋂ i, t i).Nonempty by",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "this",
+      "Proof (Set__Nonempty (Inter__inter (t i0) (Set__iInter (i3 => t i3))))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Nonempty (Set__iInter (i4 => t i4))",
+    "by": "rwa [inter_eq_right.mpr (iInter_subset _ i₀)] at this",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hst",
+      "Proof (Disjoint (t i0) (Set__iInter (i3 => t i3)))"
+     ]
+    ],
+    "by": "refine not_disjoint_iff_nonempty_inter.1 fun hst ↦ ?_",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "false",
+    "by": "refine not_disjoint_iff_nonempty_inter.1 fun hst ↦ ?_",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "i",
+      "Elem I"
+     ],
+     [
+      "hi",
+      "Proof (Disjoint (t i0) (t i))"
+     ]
+    ],
+    "by": "obtain ⟨i, hi⟩ := (htc i₀).elim_directed_family_closed t htcl hst htd",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "j",
+      "Elem I"
+     ],
+     [
+      "hji0",
+      "Proof (Geq (t i0) (t j))"
+     ],
+     [
+      "hji",
+      "Proof (Geq (t i) (t j))"
+     ]
+    ],
+    "by": "rcases htd i₀ i with ⟨j, hji₀, hji⟩",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "hx",
+      "Proof (Membership__mem (t j) x)"
+     ]
+    ],
+    "by": "obtain ⟨x, hx⟩ := htn j",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exact disjoint_left.mp hi (hji₀ hx) (hji hx)",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__nonempty_sInter_of_directed_nonempty_isCompact_isClosed",
+  "lean": "IsCompact.nonempty_sInter_of_directed_nonempty_isCompact_isClosed",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Set__Nonempty (Set__iInter (i => i))",
+    "by": "rw [sInter_eq_iInter]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Nonempty (Set__iInter (i => i))",
+    "by": "exact IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__elim_finite_subcover_image",
+  "lean": "IsCompact.elim_finite_subcover_image",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "and ((forall (Subtype (a => Membership__mem b a)) (x1 => IsOpen (c x1)))) ((Set__Subset s (Set__iUnion (x2 => c x2))))",
+    "by": "simp only [Subtype.forall', biUnion_eq_iUnion] at hc₁ hc₂",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (powerset I) (b' => and (Set__Subset b' b) (and (Set__Finite b') (Set__Subset s (Set__iUnion (i => Set__iUnion (h => c i))))))",
+    "by": "simp only [Subtype.forall', biUnion_eq_iUnion] at hc₁ hc₂",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "d",
+      "Elem (Finset (Set__Elem b))"
+     ],
+     [
+      "hd",
+      "Proof (Set__Subset s (Set__iUnion (i => Set__iUnion (h => c i))))"
+     ]
+    ],
+    "by": "rcases hs.elim_finite_subcover (fun i => c i : b → Set X) hc₁ hc₂ with ⟨d, hd⟩",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (powerset I) (b' => and (Set__Subset b' b) (and (Set__Finite b') (Set__Subset s (Set__iUnion (i1 => Set__iUnion (h1 => c i1))))))",
+    "by": "rcases hs.elim_finite_subcover (fun i => c i : b → Set X) hc₁ hc₂ with ⟨d, hd⟩",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Set__Subset (Set__image (x3 => Membership__mem b x3) d) b) (Set__Subset s (Set__iUnion (i1 => Set__iUnion (h1 => c i1))))",
+    "by": "refine ⟨Subtype.val '' (d : Set b), ?_, d.finite_toSet.image _, ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset (Set__image (x3 => Membership__mem b x3) d) b",
+    "by": "simp",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset s (Set__iUnion (i1 => Set__iUnion (h1 => c i1)))",
+    "by": "rwa [biUnion_image]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isCompact_of_finite_subcover",
+  "lean": "isCompact_of_finite_subcover",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "exists Set (I => exists (Elem I -> powerset X) (U => and (forall I (i => IsOpen (U i))) (and (Set__Subset s (Set__iUnion (i1 => U i1))) (forall (Finset I) (t => not (Set__Subset s (Set__iUnion (i2 => Set__iUnion (h => U i2)))))))))",
+    "by": "contrapose! h",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(forall (Set__Elem s) (x => exists (powerset X) (i => and (and (Membership__mem i x) (IsOpen i)) (Membership__mem f (Compl__compl i)))))",
+    "by": "simp only [ClusterPt, not_neBot, ← disjoint_iff, SetCoe.forall',",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Set (I => exists (Elem I -> powerset X) (U => and (forall I (i1 => IsOpen (U i1))) (and (Set__Subset s (Set__iUnion (i2 => U i2))) (forall (Finset I) (t => not (Set__Subset s (Set__iUnion (i3 => Set__iUnion (h => U i3)))))))))",
+    "by": "simp only [ClusterPt, not_neBot, ← disjoint_iff, SetCoe.forall',",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "U",
+      "(Elem (Set__Elem s) -> powerset X)"
+     ],
+     [
+      "hU",
+      "Proof (forall (Set__Elem s) (x1 => and (Membership__mem (U x1) x1) (IsOpen (U x1))))"
+     ],
+     [
+      "hUf",
+      "Proof (forall (Set__Elem s) (x2 => Membership__mem f (Compl__compl (U x2))))"
+     ]
+    ],
+    "by": "choose U hU hUf using h",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Set (I => exists (Elem I -> powerset X) (U => and (forall I (i => IsOpen (U i))) (and (Set__Subset s (Set__iUnion (i1 => U i1))) (forall (Finset I) (t => not (Set__Subset s (Set__iUnion (i2 => Set__iUnion (h => U i2)))))))))",
+    "by": "choose U hU hUf using h",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "t",
+      "Elem (Finset (Set__Elem s))"
+     ],
+     [
+      "ht",
+      "Proof (Set__Subset s (Set__iUnion (i => Set__iUnion (h => U i))))"
+     ]
+    ],
+    "by": "refine ⟨s, U, fun x => (hU x).2, fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, (hU _).1⟩, fun t ht => ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "false",
+    "by": "refine ⟨s, U, fun x => (hU x).2, fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, (hU _).1⟩, fun t ht => ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem f (Compl__compl s)",
+    "by": "refine compl_notMem (le_principal_iff.1 hfs) ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Subset (Set__iInter (i1 => Set__iInter (h1 => Compl__compl (U i1)))) (Compl__compl s)",
+    "by": "refine mem_of_superset ((biInter_finset_mem t).2 fun x _ => hUf x) ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Subset s (Set__iUnion (i1 => Set__iUnion (j => Compl__compl (Compl__compl (U i1)))))",
+    "by": "rw [subset_compl_comm, compl_iInter₂]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset s (Set__iUnion (i1 => Set__iUnion (j => Compl__compl (Compl__compl (U i1)))))",
+    "by": "simpa only [compl_compl]",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "isCompact_of_finite_subfamily_closed",
+  "lean": "isCompact_of_finite_subfamily_closed",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Disjoint s (Set__iInter (i4 => Compl__compl (U i4))))",
+    "by": "rw [← disjoint_compl_right_iff_subset, compl_iUnion] at hsU",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "t",
+      "Elem (Finset I._@.3377874587._hygCtx._hyg.116)"
+     ],
+     [
+      "ht",
+      "Proof (Disjoint s (Set__iInter (i5 => Set__iInter (h3 => Compl__compl (U i5)))))"
+     ]
+    ],
+    "by": "rcases h (fun i => (U i)ᶜ) (fun i => (hUo _).isClosed_compl) hsU with ⟨t, ht⟩",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (Finset I._@.3377874587._hygCtx._hyg.116) (t1 => Set__Subset s (Set__iUnion (i6 => Set__iUnion (h4 => U i6))))",
+    "by": "rcases h (fun i => (U i)ᶜ) (fun i => (hUo _).isClosed_compl) hsU with ⟨t, ht⟩",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Subset s (Set__iUnion (i6 => Set__iUnion (h4 => U i6)))",
+    "by": "refine ⟨t, ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset s (Set__iUnion (i6 => Set__iUnion (h4 => U i6)))",
+    "by": "rwa [← disjoint_compl_right_iff_subset, compl_iUnion₂]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__mem_nhdsSet_prod_of_forall",
+  "lean": "IsCompact.mem_nhdsSet_prod_of_forall",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "t",
+      "Elem (powerset X)"
+     ],
+     [
+      "t'",
+      "Elem (powerset X)"
+     ],
+     [
+      "ht",
+      "Proof (Set__Subset t t')"
+     ]
+    ],
+    "by": "refine hK.induction_on (by simp) (fun t t' ht hs ↦ ?_) (fun t t' ht ht' ↦ ?_) fun x hx ↦ ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Membership__mem (SProd__sprod (nhdsSet t) l) s) (and (Membership__mem (SProd__sprod (nhdsSet (Union__union t t')) l) s) (exists (powerset X) (t => and (Membership__mem (nhdsWithin x K) t) (Membership__mem (SProd__sprod (nhdsSet t) l) s))))",
+    "by": "refine hK.induction_on (by simp) (fun t t' ht hs ↦ ?_) (fun t t' ht ht' ↦ ?_) fun x hx ↦ ?_",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (SProd__sprod (nhdsSet EmptyCollection__emptyCollection) l) s",
+    "by": "simp",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "t",
+      "Elem (powerset X)"
+     ],
+     [
+      "t'",
+      "Elem (powerset X)"
+     ],
+     [
+      "ht",
+      "Proof (Set__Subset t t')"
+     ],
+     [
+      "hs",
+      "Proof (Membership__mem (SProd__sprod (nhdsSet t') l) s)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (SProd__sprod (nhdsSet t) l) s",
+    "by": "exact prod_mono (nhdsSet_mono ht) le_rfl hs",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ht",
+      "Proof (Membership__mem (SProd__sprod (nhdsSet t) l) s)"
+     ],
+     [
+      "ht'",
+      "Proof (Membership__mem (SProd__sprod (nhdsSet t') l) s)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (SProd__sprod (nhdsSet (Union__union t t')) l) s",
+    "by": "simp [sup_prod, *]",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "hx",
+      "Proof (Membership__mem K x)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "u",
+      "Elem (powerset X)"
+     ],
+     [
+      "v",
+      "Elem (powerset Y)"
+     ],
+     [
+      "hs",
+      "Proof (Set__Subset (SProd__sprod (Prod__fst (Prod__mk u v)) (id (Prod__snd (Prod__mk u v)))) s)"
+     ],
+     [
+      "hv",
+      "Proof (Membership__mem l (Prod__snd (Prod__mk u v)))"
+     ],
+     [
+      "hx",
+      "Proof (Membership__mem (Prod__fst (Prod__mk u v)) x)"
+     ],
+     [
+      "huo",
+      "Proof (IsOpen (Prod__fst (Prod__mk u v)))"
+     ]
+    ],
+    "by": "rcases ((nhds_basis_opens _).prod l.basis_sets).mem_iff.1 (hs x hx)",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (SProd__sprod (nhdsSet u) l) (SProd__sprod (Prod__fst (Prod__mk u v)) (id (Prod__snd (Prod__mk u v))))",
+    "by": "refine ⟨u, nhdsWithin_le_nhds (huo.mem_nhds hx), mem_of_superset ?_ hs⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (SProd__sprod (nhdsSet u) l) (SProd__sprod (Prod__fst (Prod__mk u v)) (id (Prod__snd (Prod__mk u v))))",
+    "by": "exact prod_mem_prod (huo.mem_nhdsSet.2 Subset.rfl) hv",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__prod_nhdsSet_eq_biSup",
+  "lean": "IsCompact.prod_nhdsSet_eq_biSup",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter (Prod X Y)) (SProd__sprod l (nhdsSet K)) (iSup (y => iSup (h => SProd__sprod l (nhds y))))",
+    "by": "simp only [prod_comm (f := l), hK.nhdsSet_prod_eq_biSup, map_iSup]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__mem_prod_nhdsSet_of_forall",
+  "lean": "IsCompact.mem_prod_nhdsSet_of_forall",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (iSup (y1 => iSup (h1 => SProd__sprod l (nhds y1)))) s",
+    "by": "simpa using hs",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__nhdsSet_inf_eq_biSup",
+  "lean": "IsCompact.nhdsSet_inf_eq_biSup",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(forall (Filter X) (f => Eqt (Filter X) (Min__min f l) (Filter__comap Function__diag (SProd__sprod f l))))",
+    "by": "have : ∀ f : Filter X, f ⊓ l = comap Function.diag (f ×ˢ l) := fun f ↦ by",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "f",
+      "Elem (Filter X)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter X) (Min__min f l) (Filter__comap Function__diag (SProd__sprod f l))",
+    "by": "simpa only [comap_prod] using! congrArg₂ (· ⊓ ·) comap_id.symm comap_id.symm",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter X) (Min__min (nhdsSet K) l) (iSup (x => iSup (h => Min__min (nhds x) l)))",
+    "by": "simp_rw [this, ← comap_iSup, hK.nhdsSet_prod_eq_biSup]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__inf_nhdsSet_eq_biSup",
+  "lean": "IsCompact.inf_nhdsSet_eq_biSup",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter X) (Min__min l (nhdsSet K)) (iSup (x => iSup (h => Min__min l (nhds x))))",
+    "by": "simp only [inf_comm l, hK.nhdsSet_inf_eq_biSup]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__mem_nhdsSet_inf_of_forall",
+  "lean": "IsCompact.mem_nhdsSet_inf_of_forall",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (iSup (x1 => iSup (h1 => Min__min (nhds x1) l))) s",
+    "by": "simpa using hs",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__mem_inf_nhdsSet_of_forall",
+  "lean": "IsCompact.mem_inf_nhdsSet_of_forall",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (iSup (x => iSup (h1 => Min__min l (nhds x)))) s",
+    "by": "simpa using hs",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__eventually_forall_of_forall_eventually",
+  "lean": "IsCompact.eventually_forall_of_forall_eventually",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Filter__Eventually (z => P (Prod__fst z) (Prod__snd z)) (SProd__sprod (nhds x0) (nhdsSet K)))",
+    "by": "simp only [nhds_prod_eq, ← eventually_iSup, ← hK.prod_nhdsSet_eq_biSup] at hP",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Filter__Eventually (x2 => forall Y (y => if (Membership__mem K y) (P x2 y))) (nhds x0)",
+    "by": "simp only [nhds_prod_eq, ← eventually_iSup, ← hK.prod_nhdsSet_eq_biSup] at hP",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Filter__Eventually (x2 => forall Y (y => if (Membership__mem K y) (P x2 y))) (nhds x0)",
+    "by": "exact hP.curry.mono fun _ h ↦ h.self_of_nhdsSet",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Set__Finite__isCompact_biUnion",
+  "lean": "Set.Finite.isCompact_biUnion",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(exists I (i1 => and (Membership__mem s i1) (Membership__mem l (f i1))))",
+    "by": "rw [Ultrafilter.finite_biUnion_mem_iff hs] at hl",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists X (x1 => and (Membership__mem (Set__iUnion (i2 => Set__iUnion (h1 => f i2))) x1) (Leq (Ultrafilter__toFilter l) (nhds x1)))",
+    "by": "rw [Ultrafilter.finite_biUnion_mem_iff hs] at hl",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "i",
+      "Elem I"
+     ],
+     [
+      "his",
+      "Proof (Membership__mem s i)"
+     ],
+     [
+      "hi",
+      "Proof (Membership__mem l (f i))"
+     ]
+    ],
+    "by": "rcases hl with ⟨i, his, hi⟩",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists X (x1 => and (Membership__mem (Set__iUnion (i1 => Set__iUnion (h1 => f i1))) x1) (Leq (Ultrafilter__toFilter l) (nhds x1)))",
+    "by": "rcases hl with ⟨i, his, hi⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "hxi",
+      "Proof (Membership__mem (f i) x)"
+     ],
+     [
+      "hlx",
+      "Proof (Leq (Ultrafilter__toFilter l) (nhds x))"
+     ]
+    ],
+    "by": "rcases (hf i his).ultrafilter_le_nhds _ (le_principal_iff.2 hi) with ⟨x, hxi, hlx⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists X (x1 => and (Membership__mem (Set__iUnion (i1 => Set__iUnion (h1 => f i1))) x1) (Leq (Ultrafilter__toFilter l) (nhds x1)))",
+    "by": "exact ⟨x, mem_iUnion₂.2 ⟨i, his, hxi⟩, hlx⟩",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Set__Finite__isCompact_sUnion",
+  "lean": "Set.Finite.isCompact_sUnion",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "IsCompact (Set__iUnion (i => Set__iUnion (h1 => i)))",
+    "by": "rw [sUnion_eq_biUnion]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsCompact (Set__iUnion (i => Set__iUnion (h1 => i)))",
+    "by": "exact hf.isCompact_biUnion hc",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Set__sUnion_isCompact_eq_univ",
+  "lean": "Set.sUnion_isCompact_eq_univ",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "and (Membership__mem (Set__ofPred (x => Set__sUnion_isCompact_eq_univ__match_1 (x1 => Prop) x (s => IsCompact s))) (Singleton__singleton x)) (Membership__mem (Singleton__singleton x) x)",
+    "by": "simp",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__finite_of_discrete",
+  "lean": "IsCompact.finite_of_discrete",
+  "steps": [
+   {
+    "unit": "verify",
+    "prop": "(forall X (x => Membership__mem (nhds x) (Singleton__singleton x)))",
+    "by": "have : ∀ x : X, ({x} : Set X) ∈ 𝓝 x := by simp [nhds_discrete]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "forall X (x => Membership__mem (nhds x) (Singleton__singleton x))",
+    "by": "simp [nhds_discrete]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "t",
+      "Elem (Finset X)"
+     ],
+     [
+      "hst",
+      "Proof (Set__Subset s (Set__iUnion (x2 => Set__iUnion (h1 => Singleton__singleton x2))))"
+     ]
+    ],
+    "by": "rcases hs.elim_nhds_subcover (fun x => {x}) fun x _ => this x with ⟨t, _, hst⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Set__Subset s t)",
+    "by": "simp only [← t.set_biUnion_coe, biUnion_of_singleton] at hst",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Finite s",
+    "by": "exact t.finite_toSet.subset hst",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__union",
+  "lean": "IsCompact.union",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "IsCompact (Set__iUnion (b => cond b s t))",
+    "by": "rw [union_eq_iUnion]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsCompact (Set__iUnion (b => cond b s t))",
+    "by": "exact isCompact_iUnion fun b => by cases b <;> assumption",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "b",
+      "Elem Bool"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsCompact (cond b s t)",
+    "by": "cases b <;> assumption",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "exists_subset_nhds_of_isCompact'",
+  "lean": "exists_subset_nhds_of_isCompact'",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "W",
+      "Elem (powerset X)"
+     ],
+     [
+      "W_op",
+      "Proof (IsOpen W)"
+     ],
+     [
+      "hsubW",
+      "Proof (Set__Subset (Set__iInter (i3 => V i3)) W)"
+     ],
+     [
+      "hWU",
+      "Proof (Set__Subset W U)"
+     ]
+    ],
+    "by": "obtain ⟨W, W_op, hsubW, hWU⟩ := mem_nhdsSet_iff_exists.mp hU",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists I (i4 => Set__Subset (V i4) U)",
+    "by": "obtain ⟨W, W_op, hsubW, hWU⟩ := mem_nhdsSet_iff_exists.mp hU",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists I (i4 => Set__Subset (V i4) W)",
+    "by": "suffices ∃ i, V i ⊆ W from this.imp fun i hi => hi.trans hWU",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "H",
+      "Proof (forall I (i4 => not (Set__Subset (V i4) W)))"
+     ]
+    ],
+    "by": "by_contra! H",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "false",
+    "by": "by_contra! H",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(forall I (i4 => Set__Nonempty (Inter__inter (V i4) (Compl__compl W))))",
+    "by": "replace H : ∀ i, (V i ∩ Wᶜ).Nonempty := fun i => Set.inter_compl_nonempty_iff.mpr (H i)",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(Set__Nonempty (Set__iInter (i5 => Inter__inter (V i5) (Compl__compl W))))",
+    "by": "have : (⋂ i, V i ∩ Wᶜ).Nonempty",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "i",
+      "Elem I"
+     ],
+     [
+      "j",
+      "Elem I"
+     ]
+    ],
+    "by": "refine",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists I (z => and (Geq (Inter__inter (V i) (Compl__compl W)) (Inter__inter (V z) (Compl__compl W))) (Geq (Inter__inter (V j) (Compl__compl W)) (Inter__inter (V z) (Compl__compl W))))",
+    "by": "refine",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "k",
+      "Elem I"
+     ],
+     [
+      "hki",
+      "Proof (Geq (V i) (V k))"
+     ],
+     [
+      "hkj",
+      "Proof (Geq (V j) (V k))"
+     ]
+    ],
+    "by": "rcases hV i j with ⟨k, hki, hkj⟩",
+    "depth": 1
+   },
+   {
+    "unit": "verify",
+    "prop": "(not (Set__Subset (Set__iInter (i6 => V i6)) W))",
+    "by": "have : ¬⋂ i : ι, V i ⊆ W := by simpa [← iInter_inter, inter_compl_nonempty_iff]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "not (Set__Subset (Set__iInter (i6 => V i6)) W)",
+    "by": "simpa [← iInter_inter, inter_compl_nonempty_iff]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "contradiction",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isCompact_generateFrom",
+  "lean": "isCompact_generateFrom",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "forall (Ultrafilter X) (f => if (Membership__mem f s) (exists X (x => and (Membership__mem s x) (Leq (Ultrafilter__toFilter f) (nhds x)))))",
+    "by": "rw [isCompact_iff_ultrafilter_le_nhds', hTS]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "F",
+      "Elem (Ultrafilter X)"
+     ],
+     [
+      "hsF",
+      "Proof (Membership__mem F s)"
+     ]
+    ],
+    "by": "intro F hsF",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hF",
+      "Proof (not (exists X (x => and (Membership__mem s x) (Leq (Ultrafilter__toFilter F) (nhds x)))))"
+     ]
+    ],
+    "by": "by_contra hF",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "false",
+    "by": "by_contra hF",
+    "depth": 1
+   },
+   {
+    "unit": "verify",
+    "prop": "(forall X (x1 => if (Membership__mem s x1) (exists (powerset X) (t => and (Membership__mem t x1) (and (Membership__mem S t) (not (Membership__mem F t)))))))",
+    "by": "have hSF : ∀ x ∈ s, ∃ t, x ∈ t ∧ t ∈ S ∧ t ∉ F := by simpa [nhds_generateFrom] using hF",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "forall X (x1 => if (Membership__mem s x1) (exists (powerset X) (t => and (Membership__mem t x1) (and (Membership__mem S t) (not (Membership__mem F t))))))",
+    "by": "simpa [nhds_generateFrom] using hF",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "U",
+      "(Elem X -> powerset X)"
+     ],
+     [
+      "hxU",
+      "Proof (forall X (x2 => if (Membership__mem s x2) (Membership__mem (U x2) x2)))"
+     ],
+     [
+      "hSU",
+      "Proof (forall X (x3 => if (Membership__mem s x3) (Membership__mem S (U x3))))"
+     ],
+     [
+      "hUF",
+      "Proof (forall X (x4 => if (Membership__mem s x4) (not (Membership__mem F (U x4)))))"
+     ]
+    ],
+    "by": "choose! U hxU hSU hUF using hSF",
+    "depth": 3
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "Q",
+      "Elem (powerset (powerset X))"
+     ],
+     [
+      "hQU",
+      "Proof (Set__Subset Q (Set__image U s))"
+     ],
+     [
+      "hQ",
+      "Proof (Set__Finite Q)"
+     ],
+     [
+      "hsQ",
+      "Proof (Set__Subset s (Set__sUnion Q))"
+     ]
+    ],
+    "by": "obtain ⟨Q, hQU, hQ, hsQ⟩ := h (U '' s) (by simpa [Set.subset_def])",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset (Set__image U s) S",
+    "by": "simpa [Set.subset_def]",
+    "depth": 3
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "hx",
+      "Proof (Membership__mem s x)"
+     ]
+    ],
+    "by": "",
+    "depth": 4
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Set__image U s) (U x)",
+    "by": "grind",
+    "depth": 4
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(forall (powerset X) (s => if (Membership__mem Q s) (not (Membership__mem F s))))",
+    "by": "have : ∀ s ∈ Q, s ∉ F := fun s hsQ ↦ (hQU hsQ).choose_spec.2 ▸ hUF _ (hQU hsQ).choose_spec.1",
+    "depth": 3
+   },
+   {
+    "unit": "verify",
+    "prop": "(Membership__mem (Filter__sets (Ultrafilter__toFilter F)) (Set__sInter (Set__image Compl__compl Q)))",
+    "by": "have hQF : ⋂₀ (compl '' Q) ∈ F.sets := by simpa [Filter.biInter_mem hQ, F.compl_mem_iff_notMem]",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Filter__sets (Ultrafilter__toFilter F)) (Set__sInter (Set__image Compl__compl Q))",
+    "by": "simpa [Filter.biInter_mem hQ, F.compl_mem_iff_notMem]",
+    "depth": 3
+   },
+   {
+    "unit": "verify",
+    "prop": "(not (Membership__mem F (Set__sUnion Q)))",
+    "by": "have : ⋃₀ Q ∉ F",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "not (Membership__mem F (Set__sUnion Q))",
+    "by": "simpa [-Set.sInter_image, ← Set.compl_sUnion, hsQ, F.compl_mem_iff_notMem] using hQF",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exact this (F.mem_of_superset hsF hsQ)",
+    "depth": 3
+   }
+  ]
+ },
+ {
+  "name": "isCompact_generateFrom'",
+  "lean": "isCompact_generateFrom'",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset (Set__image (x1 => x1) J) P",
+    "by": "simp",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset s (Set__sUnion (Set__image (x1 => x1) J))",
+    "by": "aesop",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Filter__cocompact_eq_cofinite",
+  "lean": "Filter.cocompact_eq_cofinite",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter X) (Filter__cocompact X) Filter__cofinite",
+    "by": "simp only [cocompact, hasBasis_cofinite.eq_biInf, isCompact_iff_finite]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Filter__disjoint_cocompact_left",
+  "lean": "Filter.disjoint_cocompact_left",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (exists (powerset X) (i => and (IsCompact i) (Membership__mem f i))) (exists (powerset X) (K => and (Membership__mem f K) (IsCompact K)))",
+    "by": "simp_rw [hasBasis_cocompact.disjoint_iff_left, compl_compl]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (exists (powerset X) (i => and (IsCompact i) (Membership__mem f i))) (exists (powerset X) (K => and (Membership__mem f K) (IsCompact K)))",
+    "by": "tauto",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Filter__disjoint_cocompact_right",
+  "lean": "Filter.disjoint_cocompact_right",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (exists (powerset X) (i => and (IsCompact i) (Membership__mem f i))) (exists (powerset X) (K => and (Membership__mem f K) (IsCompact K)))",
+    "by": "simp_rw [hasBasis_cocompact.disjoint_iff_right, compl_compl]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (exists (powerset X) (i => and (IsCompact i) (Membership__mem f i))) (exists (powerset X) (K => and (Membership__mem f K) (IsCompact K)))",
+    "by": "tauto",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Filter__Tendsto__isCompact_insert_range_of_cocompact",
+  "lean": "Filter.Tendsto.isCompact_insert_range_of_cocompact",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "l",
+      "Elem (Filter Y)"
+     ],
+     [
+      "hne",
+      "Proof (Filter__NeBot l)"
+     ],
+     [
+      "hle",
+      "Proof (Leq l (Filter__principal (Insert__insert y (Set__range f))))"
+     ]
+    ],
+    "by": "intro l hne hle",
+    "depth": 1
+   },
+   {
+    "unit": "cases",
+    "by": "by_cases hy : ClusterPt y l",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hy",
+      "Proof (ClusterPt y l)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Y (x1 => and (Membership__mem (Insert__insert y (Set__range f)) x1) (ClusterPt x1 l))",
+    "by": "exact ⟨y, Or.inl rfl, hy⟩",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hy",
+      "Proof (not (ClusterPt y l))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(exists (powerset Y) (x1 => exists (Membership__mem (nhds y) x1) (h => exists (powerset Y) (x2 => exists (Membership__mem l x2) (h1 => Disjoint x1 x2)))))",
+    "by": "simp only [clusterPt_iff_nonempty, not_forall, ← not_disjoint_iff_nonempty_inter, not_not] at hy",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Y (x3 => and (Membership__mem (Insert__insert y (Set__range f)) x3) (ClusterPt x3 l))",
+    "by": "simp only [clusterPt_iff_nonempty, not_forall, ← not_disjoint_iff_nonempty_inter, not_not] at hy",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "s",
+      "Elem (powerset Y)"
+     ],
+     [
+      "hsy",
+      "Proof (Membership__mem (nhds y) s)"
+     ],
+     [
+      "t",
+      "Elem (powerset Y)"
+     ],
+     [
+      "htl",
+      "Proof (Membership__mem l t)"
+     ],
+     [
+      "hd",
+      "Proof (Disjoint s t)"
+     ]
+    ],
+    "by": "rcases hy with ⟨s, hsy, t, htl, hd⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Y (x1 => and (Membership__mem (Insert__insert y (Set__range f)) x1) (ClusterPt x1 l))",
+    "by": "rcases hy with ⟨s, hsy, t, htl, hd⟩",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "K",
+      "Elem (powerset X)"
+     ],
+     [
+      "hKc",
+      "Proof (IsCompact K)"
+     ],
+     [
+      "hKs",
+      "Proof (Set__Subset (Compl__compl K) (Set__preimage f s))"
+     ]
+    ],
+    "by": "rcases mem_cocompact.1 (hf hsy) with ⟨K, hKc, hKs⟩",
+    "depth": 1
+   },
+   {
+    "unit": "verify",
+    "prop": "(Membership__mem l (Set__image f K))",
+    "by": "have : f '' K ∈ l",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hyt",
+      "Proof (Membership__mem t y)"
+     ],
+     [
+      "hyf",
+      "Proof (Membership__mem (Insert__insert y (Set__range f)) y)"
+     ]
+    ],
+    "by": "filter_upwards [htl, le_principal_iff.1 hle] with y hyt hyf",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Set__image f K) y",
+    "by": "filter_upwards [htl, le_principal_iff.1 hle] with y hyt hyf",
+    "depth": 1
+   },
+   {
+    "unit": "cases",
+    "by": "rcases hyf with (rfl | ⟨x, rfl⟩)",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Set__image f K) y",
+    "by": "exacts [(hd.le_bot ⟨mem_of_mem_nhds hsy, hyt⟩).elim,",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "and ((Membership__mem (Set__image f K) y)) ((ClusterPt y l))",
+    "by": "rcases hKc.image hfc (le_principal_iff.2 this) with ⟨y, hy, hyl⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists Y (x1 => and (Membership__mem (Insert__insert y (Set__range f)) x1) (ClusterPt x1 l))",
+    "by": "exact ⟨y, Or.inr <| image_subset_range _ _ hy, hyl⟩",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Filter__Tendsto__isCompact_insert_range_of_cofinite",
+  "lean": "Filter.Tendsto.isCompact_insert_range_of_cofinite",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "this",
+      "Proof (TopologicalSpace I)"
+     ]
+    ],
+    "by": "let : TopologicalSpace ι := ⊥",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(DiscreteTopology I)",
+    "by": "have h : DiscreteTopology ι := ⟨rfl⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Filter__Tendsto f (Filter__cocompact I) (nhds x))",
+    "by": "rw [← cocompact_eq_cofinite ι] at hf",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsCompact (Insert__insert x (Set__range f))",
+    "by": "exact hf.isCompact_insert_range_of_cocompact continuous_of_discreteTopology",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Filter__hasBasis_coclosedCompact",
+  "lean": "Filter.hasBasis_coclosedCompact",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Filter__HasBasis (iInf (s => iInf (h => Filter__principal (Compl__compl s)))) (s1 => and (IsClosed s1) (IsCompact s1)) Compl__compl",
+    "by": "simp only [Filter.coclosedCompact, iInf_and']",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "forall (powerset X) (i => if (and (IsClosed i) (IsCompact i)) (forall (powerset X) (j => if (and (IsClosed j) (IsCompact j)) (exists (powerset X) (k => and (and (IsClosed k) (IsCompact k)) (and (Set__Subset (Compl__compl k) (Compl__compl i)) (Set__Subset (Compl__compl k) (Compl__compl j))))))))",
+    "by": "refine hasBasis_biInf_principal' ?_ ⟨∅, isClosed_empty, isCompact_empty⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "s",
+      "Elem (powerset X)"
+     ],
+     [
+      "hs1",
+      "Proof (IsClosed s)"
+     ],
+     [
+      "hs2",
+      "Proof (IsCompact s)"
+     ],
+     [
+      "t",
+      "Elem (powerset X)"
+     ],
+     [
+      "ht1",
+      "Proof (IsClosed t)"
+     ],
+     [
+      "ht2",
+      "Proof (IsCompact t)"
+     ]
+    ],
+    "by": "rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (powerset X) (k => and (and (IsClosed k) (IsCompact k)) (and (Set__Subset (Compl__compl k) (Compl__compl s)) (Set__Subset (Compl__compl k) (Compl__compl t))))",
+    "by": "exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 subset_union_left,",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Filter__mem_coclosedCompact_iff",
+  "lean": "Filter.mem_coclosedCompact_iff",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "and (if (exists (powerset X) (i => and (and (IsClosed i) (IsCompact i)) (Set__Subset (Compl__compl i) s))) (IsCompact (closure (Compl__compl s)))) (exists (powerset X) (i => and (and (IsClosed i) (IsCompact i)) (Set__Subset (Compl__compl i) s)))",
+    "by": "refine hasBasis_coclosedCompact.mem_iff.trans ⟨?_, fun h ↦ ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "t",
+      "Elem (powerset X)"
+     ],
+     [
+      "hst",
+      "Proof (Set__Subset (Compl__compl t) s)"
+     ],
+     [
+      "htcl",
+      "Proof (IsClosed t)"
+     ],
+     [
+      "htco",
+      "Proof (IsCompact t)"
+     ]
+    ],
+    "by": "rintro ⟨t, ⟨htcl, htco⟩, hst⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsCompact (closure (Compl__compl s))",
+    "by": "exact htco.of_isClosed_subset isClosed_closure <|",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (IsCompact (closure (Compl__compl s)))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (powerset X) (i => and (and (IsClosed i) (IsCompact i)) (Set__Subset (Compl__compl i) s))",
+    "by": "exact ⟨closure sᶜ, ⟨isClosed_closure, h⟩, compl_subset_comm.2 subset_closure⟩",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Filter__compl_mem_coclosedCompact",
+  "lean": "Filter.compl_mem_coclosedCompact",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Membership__mem (Filter__coclosedCompact X) (Compl__compl s)) (IsCompact (closure s))",
+    "by": "rw [mem_coclosedCompact_iff, compl_compl]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Bornology__inCompact__isBounded_iff",
+  "lean": "Bornology.inCompact.isBounded_iff",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (Membership__mem (Filter__cocompact X) (Compl__compl s)) (exists (powerset X) (t => and (IsCompact t) (Set__Subset s t)))",
+    "by": "change sᶜ ∈ Filter.cocompact X ↔ _",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (exists (powerset X) (t => and (IsCompact t) (Set__Subset (Compl__compl t) (Compl__compl s)))) (exists (powerset X) (t1 => and (IsCompact t1) (Set__Subset s t1)))",
+    "by": "rw [Filter.mem_cocompact]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (exists (powerset X) (t => and (IsCompact t) (Set__Subset (Compl__compl t) (Compl__compl s)))) (exists (powerset X) (t1 => and (IsCompact t1) (Set__Subset s t1)))",
+    "by": "simp",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Bornology__isBounded_image_of_isLocallyBounded_of_isCompact",
+  "lean": "Bornology.isBounded_image_of_isLocallyBounded_of_isCompact",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "U",
+      "(Elem X -> powerset X)"
+     ],
+     [
+      "hU",
+      "Proof (forall X (x2 => and (Membership__mem (nhds x2) (U x2)) (Bornology__IsBounded (Set__image f (U x2)))))"
+     ]
+    ],
+    "by": "choose U hU using hf",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "I",
+      "Elem (Finset X)"
+     ],
+     [
+      "hI",
+      "Proof (and (forall X (x3 => if (Membership__mem I x3) (Membership__mem s x3))) (Set__Subset s (Set__iUnion (x4 => Set__iUnion (h1 => U x4)))))"
+     ]
+    ],
+    "by": "obtain ⟨I, hI⟩ := hs.elim_nhds_subcover U (fun x _ => (hU x).1)",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(Eqt (powerset Y) (Set__image f (Set__iUnion (x5 => Set__iUnion (h2 => U x5)))) (Set__iUnion (x6 => Set__iUnion (h3 => Set__image f (U x6)))))",
+    "by": "have : f '' ⋃ x ∈ I, U x = ⋃ x ∈ I, f '' U x := by simp [Set.image_iUnion₂]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (powerset Y) (Set__image f (Set__iUnion (x5 => Set__iUnion (h2 => U x5)))) (Set__iUnion (x6 => Set__iUnion (h3 => Set__image f (U x6))))",
+    "by": "simp [Set.image_iUnion₂]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Bornology__IsBounded (Set__image f s)",
+    "by": "exact ((isBounded_biUnion_finset I).2 fun i _ => (hU i).2).subset (this ▸ Set.image_mono hI.2)",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__nhdsSet_prod_eq",
+  "lean": "IsCompact.nhdsSet_prod_eq",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter (Prod X Y)) (nhdsSet (SProd__sprod s t)) (SProd__sprod (nhdsSet s) (nhdsSet t))",
+    "by": "simp_rw [hs.nhdsSet_prod_eq_biSup, ht.prod_nhdsSet_eq_biSup, nhdsSet, sSup_image, biSup_prod,",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "nhdsSet_prod_le_of_disjoint_cocompact",
+  "lean": "nhdsSet_prod_le_of_disjoint_cocompact",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "K",
+      "Elem (powerset Y)"
+     ],
+     [
+      "hKf",
+      "Proof (Membership__mem f K)"
+     ],
+     [
+      "hK",
+      "Proof (IsCompact K)"
+     ]
+    ],
+    "by": "obtain ⟨K, hKf, hK⟩ := (disjoint_cocompact_right f).mp hf",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (SProd__sprod (nhdsSet s) f) (nhdsSet (SProd__sprod s Set__univ))",
+    "by": "calc",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "prod_nhdsSet_le_of_disjoint_cocompact",
+  "lean": "prod_nhdsSet_le_of_disjoint_cocompact",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "K",
+      "Elem (powerset X)"
+     ],
+     [
+      "hKf",
+      "Proof (Membership__mem f K)"
+     ],
+     [
+      "hK",
+      "Proof (IsCompact K)"
+     ]
+    ],
+    "by": "obtain ⟨K, hKf, hK⟩ := (disjoint_cocompact_right f).mp hf",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (SProd__sprod f (nhdsSet t)) (nhdsSet (SProd__sprod Set__univ t))",
+    "by": "calc",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "nhds_prod_le_of_disjoint_cocompact",
+  "lean": "nhds_prod_le_of_disjoint_cocompact",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Leq (SProd__sprod (nhds x) f) (nhdsSet (SProd__sprod (Singleton__singleton x) Set__univ))",
+    "by": "simpa using nhdsSet_prod_le_of_disjoint_cocompact isCompact_singleton hf",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "prod_nhds_le_of_disjoint_cocompact",
+  "lean": "prod_nhds_le_of_disjoint_cocompact",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Leq (SProd__sprod f (nhds y)) (nhdsSet (SProd__sprod Set__univ (Singleton__singleton y)))",
+    "by": "simpa using prod_nhdsSet_le_of_disjoint_cocompact isCompact_singleton hf",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "generalized_tube_lemma",
+  "lean": "generalized_tube_lemma",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(exists (Prod (powerset X) (powerset Y)) (i => and (and (and (IsOpen (Prod__fst i)) (Set__Subset s (Prod__fst i))) (and (IsOpen (Prod__snd i)) (Set__Subset t (Prod__snd i)))) (Set__Subset (SProd__sprod (Prod__fst i) (Prod__snd i)) n)))",
+    "by": "rw [← hn.mem_nhdsSet, hs.nhdsSet_prod_eq ht,",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "u",
+      "Elem (powerset X)"
+     ],
+     [
+      "v",
+      "Elem (powerset Y)"
+     ],
+     [
+      "hn",
+      "Proof (Set__Subset (SProd__sprod (Prod__fst (Prod__mk u v)) (Prod__snd (Prod__mk u v))) n)"
+     ],
+     [
+      "huo",
+      "Proof (IsOpen (Prod__fst (Prod__mk u v)))"
+     ],
+     [
+      "hsu",
+      "Proof (Set__Subset s (Prod__fst (Prod__mk u v)))"
+     ],
+     [
+      "hvo",
+      "Proof (IsOpen (Prod__snd (Prod__mk u v)))"
+     ],
+     [
+      "htv",
+      "Proof (Set__Subset t (Prod__snd (Prod__mk u v)))"
+     ]
+    ],
+    "by": "rcases hp with ⟨⟨u, v⟩, ⟨⟨huo, hsu⟩, hvo, htv⟩, hn⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (powerset X) (u => exists (powerset Y) (v => and (IsOpen u) (and (IsOpen v) (and (Set__Subset s u) (and (Set__Subset t v) (Set__Subset (SProd__sprod u v) n))))))",
+    "by": "exact ⟨u, v, huo, hvo, hsu, htv, hn⟩",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__nhdsSetWithin_prod_eq",
+  "lean": "IsCompact.nhdsSetWithin_prod_eq",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter (Prod X Y)) (nhdsSetWithin (SProd__sprod s t) (SProd__sprod s' t')) (SProd__sprod (nhdsSetWithin s s') (nhdsSetWithin t t'))",
+    "by": "simp [nhdsSetWithin, ← prod_inf_prod, hs.nhdsSet_prod_eq ht]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "generalized_tube_lemma'",
+  "lean": "generalized_tube_lemma'",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "exists (powerset X) (u => and (Membership__mem (nhdsSetWithin s s') u) (exists (powerset Y) (v => and (Membership__mem (nhdsSetWithin t t') v) (Set__Subset (SProd__sprod u v) n))))",
+    "by": "rwa [hs.nhdsSetWithin_prod_eq ht, Filter.mem_prod_iff] at hn",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "generalized_tube_lemma_left",
+  "lean": "generalized_tube_lemma_left",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Membership__mem (nhdsSetWithin s s') (Set__ofPred (a => forall Y (b => if (Membership__mem t b) (Membership__mem n (Prod__mk a b))))))",
+    "by": "rw [hs.nhdsSetWithin_prod_eq ht, nhdsSetWithin_self, Filter.mem_prod_principal] at hn",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (powerset X) (u => and (Membership__mem (nhdsSetWithin s s') u) (Set__Subset (SProd__sprod u t) n))",
+    "by": "exact ⟨_, hn, fun x hx ↦ hx.1 _ hx.2⟩",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "generalized_tube_lemma_right",
+  "lean": "generalized_tube_lemma_right",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(exists (powerset X) (x => and (Membership__mem (Filter__principal s) x) (exists (powerset Y) (x1 => and (Membership__mem (nhdsSetWithin t t') x1) (Set__Subset (SProd__sprod x x1) n)))))",
+    "by": "rw [hs.nhdsSetWithin_prod_eq ht, nhdsSetWithin_self, Filter.mem_prod_iff] at hn",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "s'",
+      "Elem (powerset X)"
+     ],
+     [
+      "hs'",
+      "Proof (Membership__mem (Filter__principal s) s')"
+     ],
+     [
+      "u",
+      "Elem (powerset Y)"
+     ],
+     [
+      "hu",
+      "Proof (Membership__mem (nhdsSetWithin t t') u)"
+     ],
+     [
+      "h",
+      "Proof (Set__Subset (SProd__sprod s' u) n)"
+     ]
+    ],
+    "by": "obtain ⟨s', hs', u, hu, h⟩ := hn",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (powerset Y) (u => and (Membership__mem (nhdsSetWithin t t') u) (Set__Subset (SProd__sprod s u) n))",
+    "by": "exact ⟨u, hu, (prod_mono_left hs').trans h⟩",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "exists_clusterPt_of_compactSpace",
+  "lean": "exists_clusterPt_of_compactSpace",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "exists X (x => ClusterPt x f)",
+    "by": "simpa using isCompact_univ (show f ≤ 𝓟 univ by simp)",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq f (Filter__principal Set__univ)",
+    "by": "simp",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Ultrafilter__le_nhds_lim",
+  "lean": "Ultrafilter.le_nhds_lim",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Ultrafilter__toFilter F) (Filter__principal Set__univ)",
+    "by": "simp",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "CompactSpace__iInter_nonempty",
+  "lean": "CompactSpace.iInter_nonempty",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Set__Nonempty (Set__iInter (i2 => t i2))",
+    "by": "simpa using isCompact_univ.inter_iInter_nonempty t htc (by simpa using hst)",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "forall (Finset I) (u => Set__Nonempty (Inter__inter Set__univ (Set__iInter (i2 => Set__iInter (h1 => t i2)))))",
+    "by": "simpa using hst",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "compactSpace_generateFrom",
+  "lean": "compactSpace_generateFrom",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "forall (powerset (powerset X)) (P1 => if (Set__Subset P1 S) (if (Set__Subset Set__univ (Set__sUnion P1)) (exists (powerset (powerset X)) (Q1 => and (Set__Subset Q1 P1) (and (Set__Finite Q1) (Set__Subset Set__univ (Set__sUnion Q1)))))))",
+    "by": "simpa",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "compactSpace_generateFrom'",
+  "lean": "compactSpace_generateFrom'",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "forall Set (I1 => forall (Elem I1 -> Set__Elem S) (U1 => if (Set__Subset Set__univ (Set__iUnion (i3 => U1 i3))) (exists (powerset I1) (J1 => and (Set__Finite J1) (Set__Subset Set__univ (Set__iUnion (i2 => Set__iUnion (h3 => U1 i2))))))))",
+    "by": "simpa",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "compactSpace_generateFrom_of_compl_mem",
+  "lean": "compactSpace_generateFrom_of_compl_mem",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "P",
+      "Elem (powerset (powerset X))"
+     ],
+     [
+      "hP𝔅",
+      "Proof (Set__Subset P 𝔅)"
+     ],
+     [
+      "hP",
+      "Proof (Eqt (powerset X) (Set__sUnion P) Set__univ)"
+     ]
+    ],
+    "by": "refine compactSpace_generateFrom hT fun P hP𝔅 hP ↦ ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (powerset (powerset X)) (Q1 => and (Set__Subset Q1 P) (and (Set__Finite Q1) (Eqt (powerset X) (Set__sUnion Q1) Set__univ)))",
+    "by": "refine compactSpace_generateFrom hT fun P hP𝔅 hP ↦ ?_",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Neq (Set__sUnion P) Set__univ",
+    "by": "contrapose! hP",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(forall (powerset (powerset X)) (Q1 => if (Set__Subset Q1 P) (if (Set__Finite Q1) (Set__Nonempty (Set__sInter (Set__image Compl__compl Q1))))))",
+    "by": "simp_rw [← Set.nonempty_compl, Set.compl_sUnion] at hP ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Nonempty (Set__sInter (Set__image Compl__compl P))",
+    "by": "simp_rw [← Set.nonempty_compl, Set.compl_sUnion] at hP ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Set__Subset (Set__image Compl__compl P) 𝔅) (Set__Nonempty (Set__sInter Q))",
+    "by": "refine h _ ?_ fun Q hQP hQ ↦ ?_",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "S",
+      "Elem (powerset X)"
+     ],
+     [
+      "hS",
+      "Proof (Membership__mem P S)"
+     ]
+    ],
+    "by": "rintro _ ⟨S, hS, rfl⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem 𝔅 (Compl__compl S)",
+    "by": "exact h𝔅 _ (hP𝔅 hS)",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "Q",
+      "Elem (powerset (powerset X))"
+     ],
+     [
+      "hQP",
+      "Proof (Set__Subset Q (Set__image Compl__compl P))"
+     ],
+     [
+      "hQ",
+      "Proof (Set__Finite Q)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(if (Set__Subset Q (Set__image Compl__compl P)) (if (Set__Finite (Set__image Compl__compl Q)) (Set__Nonempty (Set__sInter Q))))",
+    "by": "replace hP : Q ⊆ compl '' P → (compl '' Q).Finite → (⋂₀ Q).Nonempty",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "if (Set__Subset Q (Set__image Compl__compl P)) (if (Set__Finite (Set__image Compl__compl Q)) (Set__Nonempty (Set__sInter Q)))",
+    "by": "simpa [← compl_involutive.image_eq_preimage_symm] using hP (compl '' Q)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Nonempty (Set__sInter Q)",
+    "by": "exact hP hQP (hQ.image _)",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Set__Infinite__exists_accPt_cofinite_inf_principal_of_subset_isCompact",
+  "lean": "Set.Infinite.exists_accPt_cofinite_inf_principal_of_subset_isCompact",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "and (Membership__mem K x) (AccPt x (Min__min Filter__cofinite (Filter__principal s)))",
+    "by": "rwa [accPt_iff_clusterPt, inf_comm, inf_right_comm,",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Set__Infinite__exists_accPt_cofinite_inf_principal",
+  "lean": "Set.Infinite.exists_accPt_cofinite_inf_principal",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "exists X (x => AccPt x (Min__min Filter__cofinite (Filter__principal s)))",
+    "by": "simpa only [mem_univ, true_and]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "exists_nhds_ne_neBot",
+  "lean": "exists_nhds_ne_neBot",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "exists X (z => Filter__NeBot (nhdsWithin z (Compl__compl (Singleton__singleton z))))",
+    "by": "simpa [AccPt] using (@infinite_univ X _).exists_accPt_principal",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Filter__comap_cocompact_le",
+  "lean": "Filter.comap_cocompact_le",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "forall (powerset X) (i' => if (IsCompact i') (exists (powerset Y) (i => and (IsCompact i) (Set__Subset (Set__preimage f (Compl__compl i)) (Compl__compl i')))))",
+    "by": "rw [(Filter.hasBasis_cocompact.comap f).le_basis_iff Filter.hasBasis_cocompact]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "t",
+      "Elem (powerset X)"
+     ],
+     [
+      "ht",
+      "Proof (IsCompact t)"
+     ]
+    ],
+    "by": "intro t ht",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Subset (Set__preimage f (Compl__compl (Set__image f t))) (Compl__compl t)",
+    "by": "refine ⟨f '' t, ht.image hf, ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset (Set__preimage f (Compl__compl (Set__image f t))) (Compl__compl t)",
+    "by": "simpa using t.subset_preimage_image f",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "disjoint_map_cocompact",
+  "lean": "disjoint_map_cocompact",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Leq (Min__min f (Filter__comap g (Filter__cocompact Y))) Bot__bot",
+    "by": "rw [← Filter.disjoint_comap_iff_map, disjoint_iff_inf_le]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Min__min f (Filter__comap g (Filter__cocompact Y))) Bot__bot",
+    "by": "calc",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isCompact_range",
+  "lean": "isCompact_range",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "IsCompact (Set__image f Set__univ)",
+    "by": "rw [← image_univ]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsCompact (Set__image f Set__univ)",
+    "by": "exact isCompact_univ.image hf",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Function__Surjective__compactSpace",
+  "lean": "Function.Surjective.compactSpace",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "IsCompact (Set__range f)",
+    "by": "rw [← hf'.range_eq]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsCompact (Set__range f)",
+    "by": "exact isCompact_range hf",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Topology__IsInducing__isCompact_iff",
+  "lean": "Topology.IsInducing.isCompact_iff",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hs",
+      "Proof (IsCompact (Set__image f s))"
+     ],
+     [
+      "F",
+      "Elem (Filter X)"
+     ],
+     [
+      "F_ne_bot",
+      "Proof (Filter__NeBot F)"
+     ],
+     [
+      "F_le",
+      "Proof (Leq F (Filter__principal s))"
+     ]
+    ],
+    "by": "refine ⟨fun hs => hs.image hf.continuous, fun hs F F_ne_bot F_le => ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists X (x1 => and (Membership__mem s x1) (ClusterPt x1 F))",
+    "by": "refine ⟨fun hs => hs.image hf.continuous, fun hs F F_ne_bot F_le => ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "x_in",
+      "Proof (Membership__mem s x)"
+     ],
+     [
+      "hx",
+      "Proof (ClusterPt (f x) (Filter__map f F))"
+     ]
+    ],
+    "by": "obtain ⟨_, ⟨x, x_in : x ∈ s, rfl⟩, hx : ClusterPt (f x) (map f F)⟩ :=",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists X (x1 => and (Membership__mem s x1) (ClusterPt x1 F))",
+    "by": "exact ⟨x, x_in, hf.mapClusterPt_iff.1 hx⟩",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Topology__IsInducing__isCompact_preimage",
+  "lean": "Topology.IsInducing.isCompact_preimage",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(IsCompact (Inter__inter K (Set__range f)))",
+    "by": "replace hK := hK.inter_right hf'",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsCompact (Set__preimage f K)",
+    "by": "rwa [hf.isCompact_iff, image_preimage_eq_inter_range]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Topology__IsInducing__isCompact_preimage_iff",
+  "lean": "Topology.IsInducing.isCompact_preimage_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (IsCompact (Set__preimage f K)) (IsCompact K)",
+    "by": "rw [hf.isCompact_iff, image_preimage_eq_of_subset Kf]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isCompact_iff_isCompact_univ",
+  "lean": "isCompact_iff_isCompact_univ",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (IsCompact s) (IsCompact Set__univ)",
+    "by": "rw [Subtype.isCompact_iff, image_univ, Subtype.range_coe]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__elim_finite_subfamily_isClosed_subtype",
+  "lean": "IsCompact.elim_finite_subfamily_isClosed_subtype",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eqt (powerset (Set__Elem s)) (Set__iInter (i2 => Set__preimage (x2 => Membership__mem s x2) (t i2))) EmptyCollection__emptyCollection",
+    "by": "suffices ⋂ i, (fun i : I ↦ s ↓∩ t i) i = ∅ by",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "this",
+      "Proof (Eqt (powerset (Set__Elem s)) (Set__iInter (i2 => Set__preimage (x2 => Membership__mem s x2) (t i2))) EmptyCollection__emptyCollection)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (Finset (Set__Elem I)) (u => Disjoint s (Set__iInter (i3 => Set__iInter (h2 => t i3))))",
+    "by": "simpa [eq_empty_iff_forall_notMem, disjoint_left, Subtype.forall] using",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (powerset (Set__Elem s)) (Set__iInter (i2 => Set__preimage (x2 => Membership__mem s x2) (t i2))) EmptyCollection__emptyCollection",
+    "by": "simpa [Set.eq_empty_iff_forall_notMem, Subtype.forall, disjoint_left] using hst",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__prod",
+  "lean": "IsCompact.prod",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "and ((forall (Ultrafilter X) (f => if (Membership__mem f s) (exists X (x => and (Membership__mem s x) (Leq (Ultrafilter__toFilter f) (nhds x))))))) ((forall (Ultrafilter Y) (f1 => if (Membership__mem f1 t) (exists Y (x1 => and (Membership__mem t x1) (Leq (Ultrafilter__toFilter f1) (nhds x1)))))))",
+    "by": "rw [isCompact_iff_ultrafilter_le_nhds'] at hs ht ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "forall (Ultrafilter (Prod X Y)) (f2 => if (Membership__mem f2 (SProd__sprod s t)) (exists (Prod X Y) (x2 => and (Membership__mem (SProd__sprod s t) x2) (Leq (Ultrafilter__toFilter f2) (nhds x2)))))",
+    "by": "rw [isCompact_iff_ultrafilter_le_nhds'] at hs ht ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "f",
+      "Elem (Ultrafilter (Prod X Y))"
+     ],
+     [
+      "hfs",
+      "Proof (Membership__mem f (SProd__sprod s t))"
+     ]
+    ],
+    "by": "intro f hfs",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "sx",
+      "Proof (Membership__mem s x)"
+     ],
+     [
+      "hx",
+      "Proof (Leq (Filter__map Prod__fst (Ultrafilter__toFilter f)) (nhds x))"
+     ]
+    ],
+    "by": "obtain ⟨x : X, sx : x ∈ s, hx : map Prod.fst f.1 ≤ 𝓝 x⟩ :=",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "y",
+      "Elem Y"
+     ],
+     [
+      "ty",
+      "Proof (Membership__mem t y)"
+     ],
+     [
+      "hy",
+      "Proof (Leq (Filter__map Prod__snd (Ultrafilter__toFilter f)) (nhds y))"
+     ]
+    ],
+    "by": "obtain ⟨y : Y, ty : y ∈ t, hy : map Prod.snd f.1 ≤ 𝓝 y⟩ :=",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "and ((Leq (Ultrafilter__toFilter f) (Filter__comap Prod__fst (nhds x)))) ((Leq (Ultrafilter__toFilter f) (Filter__comap Prod__snd (nhds y))))",
+    "by": "rw [map_le_iff_le_comap] at hx hy",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (Ultrafilter__toFilter f) (nhds (Prod__mk x y))",
+    "by": "refine ⟨⟨x, y⟩, ⟨sx, ty⟩, ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (Ultrafilter__toFilter f) (SProd__sprod (nhds x) (nhds y))",
+    "by": "rw [nhds_prod_eq]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Ultrafilter__toFilter f) (SProd__sprod (nhds x) (nhds y))",
+    "by": "exact le_inf hx hy",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Set__isCompact_sigma",
+  "lean": "Set.isCompact_sigma",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "IsCompact (Set__iUnion (i3 => Set__iUnion (h1 => Set__image (Sigma__mk i3) (t i3))))",
+    "by": "rw [Set.sigma_eq_biUnion]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsCompact (Set__iUnion (i3 => Set__iUnion (h1 => Set__image (Sigma__mk i3) (t i3))))",
+    "by": "exact hs.isCompact_biUnion fun i hi ↦ (ht i hi).image continuous_sigmaMk",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsCompact__sigma_exists_finite_sigma_eq",
+  "lean": "IsCompact.sigma_exists_finite_sigma_eq",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "s",
+      "Elem (Finset I)"
+     ],
+     [
+      "hs",
+      "Proof (Set__Subset u (Set__iUnion (i2 => Set__iUnion (h => Set__image (Sigma__mk i2) (Set__preimage (Sigma__mk i2) Set__univ)))))"
+     ]
+    ],
+    "by": "obtain ⟨s, hs⟩ := hu.elim_finite_subcover (fun i : ι ↦ Sigma.mk i '' Sigma.mk i ⁻¹' Set.univ)",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (powerset I) (s => exists ((i5 : Elem I) -> powerset (X i5)) (t => and (Set__Finite s) (and (forall I (i3 => IsCompact (t i3))) (Eqt (powerset (Sigma (i4 => X i4))) (Set__sigma s t) u))))",
+    "by": "obtain ⟨s, hs⟩ := hu.elim_finite_subcover (fun i : ι ↦ Sigma.mk i '' Sigma.mk i ⁻¹' Set.univ)",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem (Sigma (i2 => X i2))"
+     ],
+     [
+      "hx",
+      "Proof (Membership__mem u x)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Set__iUnion (i3 => Set__image (Sigma__mk i3) (Set__preimage (Sigma__mk i3) Set__univ))) x",
+    "by": "simp",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "i",
+      "Elem I"
+     ]
+    ],
+    "by": "use s, fun i ↦ Sigma.mk i ⁻¹' u, s.finite_toSet, fun i ↦ ?_, ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (IsCompact (Set__preimage (Sigma__mk i) u)) (Eqt (powerset (Sigma (i3 => X i3))) (Set__sigma s (i4 => Set__preimage (Sigma__mk i4) u)) u)",
+    "by": "use s, fun i ↦ Sigma.mk i ⁻¹' u, s.finite_toSet, fun i ↦ ?_, ?_",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "i",
+      "Elem I"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsCompact (Set__preimage (Sigma__mk i) u)",
+    "by": "exact Topology.IsClosedEmbedding.sigmaMk.isCompact_preimage hu",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem (Sigma (i3 => X i3))"
+     ]
+    ],
+    "by": "ext x",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (Membership__mem (Set__sigma s (i4 => Set__preimage (Sigma__mk i4) u)) x) (Membership__mem u x)",
+    "by": "ext x",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "if (Membership__mem u (Sigma__mk (Sigma__fst x) (Sigma__snd x))) (Membership__mem s (Sigma__fst x))",
+    "by": "simp only [Set.mem_sigma_iff, Finset.mem_coe, Set.mem_preimage, and_iff_right_iff_imp]",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hx",
+      "Proof (Membership__mem u (Sigma__mk (Sigma__fst x) (Sigma__snd x)))"
+     ]
+    ],
+    "by": "intro hx",
+    "goal": "Membership__mem s (Sigma__fst x)",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "i",
+      "Elem I"
+     ],
+     [
+      "hi",
+      "Proof (Membership__mem (Set__iUnion (h1 => Set__image (Sigma__mk i) (Set__preimage (Sigma__mk i) Set__univ))) (Sigma__mk (Sigma__fst x) (Sigma__snd x)))"
+     ]
+    ],
+    "by": "obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hs hx)",
+    "depth": 4
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem s (Sigma__fst x)",
+    "by": "simp_all",
+    "depth": 4
+   }
+  ]
+ },
+ {
+  "name": "Filter__coprod_cocompact",
+  "lean": "Filter.coprod_cocompact",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "and (Leq (Filter__coprod (Filter__cocompact X) (Filter__cocompact Y)) (Filter__cocompact (Prod X Y))) (Leq (Filter__cocompact (Prod X Y)) (Filter__coprod (Filter__cocompact X) (Filter__cocompact Y)))",
+    "by": "apply le_antisymm",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Filter__coprod (Filter__cocompact X) (Filter__cocompact Y)) (Filter__cocompact (Prod X Y))",
+    "by": "exact sup_le (comap_cocompact_le continuous_fst) (comap_cocompact_le continuous_snd)",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "K",
+      "Elem (Prod (powerset X) (powerset Y))"
+     ],
+     [
+      "hK",
+      "Proof (and (IsCompact (Prod__fst K)) (IsCompact (Prod__snd K)))"
+     ]
+    ],
+    "by": "refine (hasBasis_cocompact.coprod hasBasis_cocompact).ge_iff.2 fun K hK ↦ ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Filter__cocompact (Prod X Y)) (Union__union (Set__preimage Prod__fst (Compl__compl (Prod__fst K))) (Set__preimage Prod__snd (Compl__compl (Prod__snd K))))",
+    "by": "refine (hasBasis_cocompact.coprod hasBasis_cocompact).ge_iff.2 fun K hK ↦ ?_",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Filter__cocompact (Prod X Y)) (Compl__compl (SProd__sprod (Prod__fst K) (Prod__snd K)))",
+    "by": "rw [← univ_prod, ← prod_univ, ← compl_prod_eq_union]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Filter__cocompact (Prod X Y)) (Compl__compl (SProd__sprod (Prod__fst K) (Prod__snd K)))",
+    "by": "exact (hK.1.prod hK.2).compl_mem_cocompact",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Prod__noncompactSpace_iff",
+  "lean": "Prod.noncompactSpace_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (NoncompactSpace (Prod X Y)) (or (and (NoncompactSpace X) (Nonempty Y)) (and (Nonempty X) (NoncompactSpace Y)))",
+    "by": "simp [← Filter.cocompact_neBot_iff, ← Filter.coprod_cocompact, Filter.coprod_neBot_iff]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isCompact_pi_infinite",
+  "lean": "isCompact_pi_infinite",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "if (forall I (i7 => forall (Ultrafilter (X i7)) (f1 => if (Membership__mem (Ultrafilter__toFilter f1) (s i7)) (exists (X i7) (x4 => and (Membership__mem (s i7) x4) (Leq (Ultrafilter__toFilter f1) (nhds x4))))))) (forall (Ultrafilter ((i6 : Elem I) -> X i6)) (f => if (Membership__mem (Ultrafilter__toFilter f) (Set__ofPred (x3 => forall I (i5 => Membership__mem (s i5) (x3 i5))))) (exists ((i4 : Elem I) -> X i4) (x1 => and (Membership__mem (Set__ofPred (x2 => forall I (i2 => Membership__mem (s i2) (x2 i2)))) x1) (forall I (i3 => Filter__Tendsto (Function__eval i3) (Ultrafilter__toFilter f) (nhds (x1 i3))))))))",
+    "by": "simp only [isCompact_iff_ultrafilter_le_nhds, nhds_pi, le_pi, le_principal_iff]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (forall I (i2 => forall (Ultrafilter (X i2)) (f => if (Membership__mem (Ultrafilter__toFilter f) (s i2)) (exists (X i2) (x1 => and (Membership__mem (s i2) x1) (Leq (Ultrafilter__toFilter f) (nhds x1)))))))"
+     ],
+     [
+      "f",
+      "Elem (Ultrafilter ((i3 : Elem I) -> X i3))"
+     ],
+     [
+      "hfs",
+      "Proof (Membership__mem (Ultrafilter__toFilter f) (Set__ofPred (x2 => forall I (i4 => Membership__mem (s i4) (x2 i4)))))"
+     ]
+    ],
+    "by": "intro h f hfs",
+    "depth": 1
+   },
+   {
+    "unit": "verify",
+    "prop": "(forall I (i5 => exists (X i5) (x3 => and (Membership__mem (s i5) x3) (Filter__Tendsto (Function__eval i5) (Ultrafilter__toFilter f) (nhds x3)))))",
+    "by": "have : ∀ i : ι, ∃ x, x ∈ s i ∧ Tendsto (Function.eval i) f (𝓝 x)",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists ((i8 : Elem I) -> X i8) (x4 => and (Membership__mem (Set__ofPred (x5 => forall I (i6 => Membership__mem (s i6) (x5 i6)))) x4) (forall I (i7 => Filter__Tendsto (Function__eval i7) (Ultrafilter__toFilter f) (nhds (x4 i7)))))",
+    "by": "have : ∀ i : ι, ∃ x, x ∈ s i ∧ Tendsto (Function.eval i) f (𝓝 x)",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "i",
+      "Elem I"
+     ]
+    ],
+    "by": "refine fun i => h i (f.map _) (mem_map.2 ?_)",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ultrafilter__toFilter f) (Set__preimage (Function__eval i) (s i))",
+    "by": "refine fun i => h i (f.map _) (mem_map.2 ?_)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Ultrafilter__toFilter f) (Set__preimage (Function__eval i) (s i))",
+    "by": "exact mem_of_superset hfs fun x hx => hx i",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "((i5 : Elem I) -> X i5)"
+     ],
+     [
+      "hx",
+      "Proof (forall I (i6 => and (Membership__mem (s i6) (x i6)) (Filter__Tendsto (Function__eval i6) (Ultrafilter__toFilter f) (nhds (x i6)))))"
+     ]
+    ],
+    "by": "choose x hx using this",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists ((i9 : Elem I) -> X i9) (x3 => and (Membership__mem (Set__ofPred (x4 => forall I (i7 => Membership__mem (s i7) (x4 i7)))) x3) (forall I (i8 => Filter__Tendsto (Function__eval i8) (Ultrafilter__toFilter f) (nhds (x3 i8)))))",
+    "by": "choose x hx using this",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists ((i9 : Elem I) -> X i9) (x3 => and (Membership__mem (Set__ofPred (x4 => forall I (i7 => Membership__mem (s i7) (x4 i7)))) x3) (forall I (i8 => Filter__Tendsto (Function__eval i8) (Ultrafilter__toFilter f) (nhds (x3 i8)))))",
+    "by": "exact ⟨x, fun i => (hx i).left, fun i => (hx i).right⟩",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "isCompact_univ_pi",
+  "lean": "isCompact_univ_pi",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "IsCompact (Set__pi Set__univ s)",
+    "by": "simpa [Set.pi] using isCompact_pi_infinite h",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Pi__isCompact_iff_of_isClosed",
+  "lean": "Pi.isCompact_iff_of_isClosed",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "H",
+      "Proof (IsCompact s)"
+     ]
+    ],
+    "by": "constructor <;> intro H",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (forall I (i2 => IsCompact (Set__image (Function__eval i2) s))) (IsCompact s)",
+    "by": "constructor <;> intro H",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "H",
+      "Proof (IsCompact s)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "forall I (i2 => IsCompact (Set__image (Function__eval i2) s))",
+    "by": "exact fun i ↦ H.image <| continuous_apply i",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "H",
+      "Proof (forall I (i2 => IsCompact (Set__image (Function__eval i2) s)))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsCompact s",
+    "by": "exact IsCompact.of_isClosed_subset (isCompact_univ_pi H) hs (subset_pi_eval_image univ s)",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Pi__exists_compact_superset_iff",
+  "lean": "Pi.exists_compact_superset_iff",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "and (if (exists (powerset ((i3 : Elem I) -> X i3)) (K => and (IsCompact K) (Set__Subset s K))) (forall I (i2 => exists (powerset (X i2)) (Ki => and (IsCompact Ki) (Set__Subset s (Set__preimage (Function__eval i2) Ki)))))) (if (forall I (i3 => exists (powerset (X i3)) (Ki => and (IsCompact Ki) (Set__Subset s (Set__preimage (Function__eval i3) Ki))))) (exists (powerset ((i2 : Elem I) -> X i2)) (K => and (IsCompact K) (Set__Subset s K))))",
+    "by": "constructor",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "K",
+      "Elem (powerset ((i2 : Elem I) -> X i2))"
+     ],
+     [
+      "hK",
+      "Proof (IsCompact K)"
+     ],
+     [
+      "hsK",
+      "Proof (Set__Subset s K)"
+     ],
+     [
+      "i",
+      "Elem I"
+     ]
+    ],
+    "by": "intro ⟨K, hK, hsK⟩ i",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (powerset (X i)) (Ki => and (IsCompact Ki) (Set__Subset s (Set__preimage (Function__eval i) Ki)))",
+    "by": "exact ⟨eval i '' K, hK.image <| continuous_apply i, hsK.trans <| K.subset_preimage_image _⟩",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "H",
+      "Proof (forall I (i2 => exists (powerset (X i2)) (Ki => and (IsCompact Ki) (Set__Subset s (Set__preimage (Function__eval i2) Ki)))))"
+     ]
+    ],
+    "by": "intro H",
+    "goal": "exists (powerset ((i3 : Elem I) -> X i3)) (K => and (IsCompact K) (Set__Subset s K))",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "K",
+      "((i2 : Elem I) -> powerset (X i2))"
+     ],
+     [
+      "hK",
+      "Proof (forall I (i3 => IsCompact (K i3)))"
+     ],
+     [
+      "hsK",
+      "Proof (forall I (i4 => Set__Subset s (Set__preimage (Function__eval i4) (K i4))))"
+     ]
+    ],
+    "by": "choose K hK hsK using H",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (powerset ((i5 : Elem I) -> X i5)) (K => and (IsCompact K) (Set__Subset s K))",
+    "by": "choose K hK hsK using H",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (powerset ((i5 : Elem I) -> X i5)) (K => and (IsCompact K) (Set__Subset s K))",
+    "by": "exact ⟨pi univ K, isCompact_univ_pi hK, fun _ hx i _ ↦ hsK i hx⟩",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Filter__coprod_u1d62__cocompact",
+  "lean": "Filter.coprodᵢ_cocompact",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Leq (Filter__cocompact ((d1 : Elem I) -> X d1)) (Filter__coprod_u1d62_ (d2 => Filter__cocompact (X d2)))",
+    "by": "refine le_antisymm (iSup_le fun i => Filter.comap_cocompact_le (continuous_apply i)) ?_",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "s",
+      "Elem (powerset ((i : Elem I) -> X i))"
+     ],
+     [
+      "H",
+      "Proof (Membership__mem (Filter__coprod_u1d62_ (d1 => Filter__cocompact (X d1))) (Compl__compl s))"
+     ]
+    ],
+    "by": "refine compl_surjective.forall.2 fun s H => ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Filter__cocompact ((d2 : Elem I) -> X d2)) (Compl__compl s)",
+    "by": "refine compl_surjective.forall.2 fun s H => ?_",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(forall I (i1 => exists (powerset (X i1)) (t => and (IsCompact t) (Set__Subset s (Set__preimage (Function__eval i1) t)))))",
+    "by": "simp only [compl_mem_coprodᵢ, Filter.mem_cocompact, compl_subset_compl, image_subset_iff] at H ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (powerset ((d1 : Elem I) -> X d1)) (t1 => and (IsCompact t1) (Set__Subset s t1))",
+    "by": "simp only [compl_mem_coprodᵢ, Filter.mem_cocompact, compl_subset_compl, image_subset_iff] at H ⊢",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "K",
+      "((i1 : Elem I) -> powerset (X i1))"
+     ],
+     [
+      "hKc",
+      "Proof (forall I (i2 => IsCompact (K i2)))"
+     ],
+     [
+      "htK",
+      "Proof (forall I (i3 => Set__Subset s (Set__preimage (Function__eval i3) (K i3))))"
+     ]
+    ],
+    "by": "choose K hKc htK using H",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (powerset ((d1 : Elem I) -> X d1)) (t => and (IsCompact t) (Set__Subset s t))",
+    "by": "choose K hKc htK using H",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (powerset ((d1 : Elem I) -> X d1)) (t => and (IsCompact t) (Set__Subset s t))",
+    "by": "exact ⟨Set.pi univ K, isCompact_univ_pi hKc, fun f hf i _ => htK i hf⟩",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsClosed__exists_minimal_nonempty_closed_subset",
+  "lean": "IsClosed.exists_minimal_nonempty_closed_subset",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "opens",
+      "Elem (powerset (powerset X))"
+     ]
+    ],
+    "by": "let opens := { U : Set X | Sᶜ ⊆ U ∧ IsOpen U ∧ Uᶜ.Nonempty }",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "U",
+      "Elem (powerset X)"
+     ],
+     [
+      "h",
+      "Proof (Maximal (x => Membership__mem opens x) U)"
+     ]
+    ],
+    "by": "obtain ⟨U, h⟩ :=",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "c",
+      "Elem (powerset (powerset X))"
+     ],
+     [
+      "hc",
+      "Proof (Set__Subset c opens)"
+     ],
+     [
+      "hz",
+      "Proof (IsChain (x => x1 => Set__Subset x x1) c)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "cases",
+    "by": "by_cases hcne : c.Nonempty",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hcne",
+      "Proof (Set__Nonempty c)"
+     ]
+    ],
+    "by": "",
+    "depth": 3
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "U0",
+      "Elem (powerset X)"
+     ],
+     [
+      "hU0",
+      "Proof (Membership__mem c U0)"
+     ]
+    ],
+    "by": "obtain ⟨U₀, hU₀⟩ := hcne",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Nonempty (Subtype (U => Membership__mem c U)))",
+    "by": "have : Nonempty { U // U ∈ c } := ⟨⟨U₀, hU₀⟩⟩",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Set__Subset (Compl__compl S) U0)",
+    "by": "obtain ⟨U₀compl, -, -⟩ := hc hU₀",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Membership__mem opens (Set__sUnion c)) (forall (powerset X) (s => if (Membership__mem c s) (Set__Subset s (Set__sUnion c))))",
+    "by": "use ⋃₀ c",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Set__Subset (Compl__compl S) (Set__sUnion c)) (and (IsOpen (Set__sUnion c)) (Set__Nonempty (Compl__compl (Set__sUnion c))))",
+    "by": "refine ⟨⟨?_, ?_, ?_⟩, fun U hU _ hx => ⟨U, hU, hx⟩⟩",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset (Compl__compl S) (Set__sUnion c)",
+    "by": "exact fun _ hx => ⟨U₀, hU₀, U₀compl hx⟩",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsOpen (Set__sUnion c)",
+    "by": "exact isOpen_sUnion fun _ h => (hc h).2.1",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Eqt (powerset X) (Compl__compl (Set__sUnion c)) (Set__iInter (U1 => Compl__compl U1))) (Set__Nonempty (Set__iInter (U1 => Compl__compl U1)))",
+    "by": "convert_to (⋂ U : { U // U ∈ c }, U.1ᶜ).Nonempty",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (Membership__mem (Compl__compl (Set__sUnion c)) x') (Membership__mem (Set__iInter (U1 => Compl__compl U1)) x')",
+    "by": "ext",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Membership__mem (Compl__compl (Set__sUnion c)) x') (Membership__mem (Set__iInter (U1 => Compl__compl U1)) x')",
+    "by": "simp only [not_exists, not_and, Set.mem_iInter, Subtype.forall,",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Directed (x2 => x3 => Geq x2 x3) (i => Compl__compl i)) (and (forall (Subtype (U1 => Membership__mem c U1)) (i => Set__Nonempty (Compl__compl i))) (and (forall (Subtype (U1 => Membership__mem c U1)) (i => IsCompact (Compl__compl i))) (forall (Subtype (U1 => Membership__mem c U1)) (i => IsClosed (Compl__compl i)))))",
+    "by": "apply IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "U",
+      "Elem (powerset X)"
+     ],
+     [
+      "hU",
+      "Proof (Membership__mem c U)"
+     ],
+     [
+      "U'",
+      "Elem (powerset X)"
+     ],
+     [
+      "hU'",
+      "Proof (Membership__mem c U')"
+     ]
+    ],
+    "by": "rintro ⟨U, hU⟩ ⟨U', hU'⟩",
+    "depth": 3
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "V",
+      "Elem (powerset X)"
+     ],
+     [
+      "hVc",
+      "Proof (Membership__mem c V)"
+     ],
+     [
+      "hVU",
+      "Proof (Set__Subset U V)"
+     ],
+     [
+      "hVU'",
+      "Proof (Set__Subset U' V)"
+     ]
+    ],
+    "by": "obtain ⟨V, hVc, hVU, hVU'⟩ := hz.directedOn U hU U' hU'",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (Subtype (U1 => Membership__mem c U1)) (z => and (Geq (Compl__compl U) (Compl__compl z)) (Geq (Compl__compl U') (Compl__compl z)))",
+    "by": "exact ⟨⟨V, hVc⟩, Set.compl_subset_compl.mpr hVU, Set.compl_subset_compl.mpr hVU'⟩",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "forall (Subtype (U1 => Membership__mem c U1)) (i => Set__Nonempty (Compl__compl i))",
+    "by": "exact fun U => (hc U.2).2.2",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "forall (Subtype (U1 => Membership__mem c U1)) (i => IsCompact (Compl__compl i))",
+    "by": "exact fun U => (hc U.2).2.1.isClosed_compl.isCompact",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "forall (Subtype (U1 => Membership__mem c U1)) (i => IsClosed (Compl__compl i))",
+    "by": "exact fun U => (hc U.2).2.1.isClosed_compl",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hcne",
+      "Proof (not (Set__Nonempty c))"
+     ]
+    ],
+    "by": "",
+    "depth": 3
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Membership__mem opens (Compl__compl S)) (forall (powerset X) (s => if (Membership__mem c s) (Set__Subset s (Compl__compl S))))",
+    "by": "use Sᶜ",
+    "depth": 3
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Nonempty (Compl__compl (Compl__compl S))",
+    "by": "refine ⟨⟨Set.Subset.refl _, isOpen_compl_iff.mpr hS, ?_⟩, fun U Uc => (hcne ⟨U, Uc⟩).elim⟩",
+    "depth": 3
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Nonempty S",
+    "by": "rw [compl_compl]",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Nonempty S",
+    "by": "exact hne",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "and ((Set__Subset (Compl__compl S) U)) (and ((IsOpen U)) ((Set__Nonempty (Compl__compl U))))",
+    "by": "obtain ⟨Uc, Uo, Ucne⟩ := h.prop",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "forall (powerset X) (V' => if (Set__Subset V' (Compl__compl U)) (if (Set__Nonempty V') (if (IsClosed V') (Eqt (powerset X) V' (Compl__compl U)))))",
+    "by": "refine ⟨Uᶜ, Set.compl_subset_comm.mp Uc, Ucne, Uo.isClosed_compl, ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "V'",
+      "Elem (powerset X)"
+     ],
+     [
+      "V'sub",
+      "Proof (Set__Subset V' (Compl__compl U))"
+     ],
+     [
+      "V'ne",
+      "Proof (Set__Nonempty V')"
+     ],
+     [
+      "V'cls",
+      "Proof (IsClosed V')"
+     ]
+    ],
+    "by": "intro V' V'sub V'ne V'cls",
+    "depth": 2
+   },
+   {
+    "unit": "verify",
+    "prop": "(Eqt (powerset X) (Compl__compl V') U)",
+    "by": "have : V'ᶜ = U",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Set__Subset (Compl__compl S) (Compl__compl V')) (Set__Nonempty (Compl__compl (Compl__compl V')))",
+    "by": "refine h.eq_of_ge ⟨?_, isOpen_compl_iff.mpr V'cls, ?_⟩ (subset_compl_comm.2 V'sub)",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Subset (Compl__compl S) (Compl__compl V')",
+    "by": "exact Set.Subset.trans Uc (Set.subset_compl_comm.mp V'sub)",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Set__Nonempty (Compl__compl (Compl__compl V'))",
+    "by": "simp only [compl_compl, V'ne]",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (powerset X) V' (Compl__compl U)",
+    "by": "rw [← this, compl_compl]",
+    "depth": 2
+   }
+  ]
+ }
+]

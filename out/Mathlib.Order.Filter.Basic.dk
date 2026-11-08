@@ -1,0 +1,1142 @@
+(; Mathlib.Order.Filter.Basic: statements exported from Mathlib by MathlibInformath/Export.lean ;)
+
+(; //LEAN:Filter.filter_eq_iff ;)
+def Filter__filter_eq_iff : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> Proof (iff (Eqt (Filter X) f g) (Eqt (powerset (powerset X)) (Filter__sets f) (Filter__sets g))) :=
+  X => f => g => iffI (Eqt (Filter X) f g) (Eqt (powerset (powerset X)) (Filter__sets f) (Filter__sets g)) (congr_arg (Filter X) (powerset (powerset X)) f g Filter__sets) (Filter__filter_eq X f g).
+
+(; //LEAN:Filter.sets_subset_sets ;)
+def Filter__sets_subset_sets : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> Proof (iff (Set__Subset (Filter__sets f) (Filter__sets g)) (Leq g f)) :=
+  X => f => g => Iff__rfl (Set__Subset (Filter__sets f) (Filter__sets g)).
+
+(; //LEAN:Filter.sets_ssubset_sets ;)
+def Filter__sets_ssubset_sets : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> Proof (iff (HasSSubset__SSubset (Filter__sets f) (Filter__sets g)) (Lt g f)) :=
+  X => f => g => Iff__rfl (HasSSubset__SSubset (Filter__sets f) (Filter__sets g)).
+
+(; //LEAN:Filter.coext ;)
+def Filter__coext : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (h : Proof (forall (powerset X) (s => iff (Membership__mem f (Compl__compl s)) (Membership__mem g (Compl__compl s))))) -> Proof (Eqt (Filter X) f g) :=
+  X => f => g => h => Filter__ext X f g (iffEr (forall (powerset X) (y => iff (Membership__mem f y) (Membership__mem g y))) (forall (powerset X) (x => iff (Membership__mem f (Compl__compl x)) (Membership__mem g (Compl__compl x)))) (Function__Surjective__forall (powerset X) (powerset X) Compl__compl (compl_surjective (powerset X)) (s => iff (Membership__mem f s) (Membership__mem g s))) h).
+
+(; //LEAN:Filter.inter_mem_iff ;)
+def Filter__inter_mem_iff : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Membership__mem f (Inter__inter s t)) (and (Membership__mem f s) (Membership__mem f t))) :=
+  X => f => s => t => iffI (Membership__mem f (Inter__inter s t)) (and (Membership__mem f s) (Membership__mem f t)) (h => andI (Membership__mem f s) (Membership__mem f t) (Filter__mem_of_superset X f (Inter__inter s t) s h (Set__inter_subset_left X s t)) (Filter__mem_of_superset X f (Inter__inter s t) t h (Set__inter_subset_right X s t))) (iffEr (if (and (Membership__mem f s) (Membership__mem f t)) (Membership__mem f (Inter__inter s t))) (if (Membership__mem f s) (if (Membership__mem f t) (Membership__mem f (Inter__inter s t)))) (and_imp (Membership__mem f s) (Membership__mem f t) (Membership__mem f (Inter__inter s t))) (Filter__inter_mem X f s t)).
+
+(; //LEAN:Filter.sdiff_mem ;)
+def Filter__sdiff_mem : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (hs : Proof (Membership__mem f s)) -> (ht : Proof (Membership__mem f (Compl__compl t))) -> Proof (Membership__mem f (SDiff__sdiff s t)) :=
+  X => f => s => t => hs => ht => Filter__inter_mem X f s (Compl__compl t) hs ht.
+
+(; //LEAN:Filter.congr_sets ;)
+def Filter__congr_sets : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Membership__mem f (Set__ofPred (x => iff (Membership__mem s x) (Membership__mem t x))))) -> Proof (iff (Membership__mem f s) (Membership__mem f t)) :=
+  X => f => s => t => h => iffI (Membership__mem f s) (Membership__mem f t) (hs => Filter__mp_mem X f s t hs (Filter__mem_of_superset X f (Set__ofPred (x => iff (Membership__mem s x) (Membership__mem t x))) (Set__ofPred (x1 => if (Membership__mem s x1) (Membership__mem t x1))) h (forallI X (x2 => if (iff (Membership__mem s x2) (Membership__mem t x2)) (if (Membership__mem s x2) (Membership__mem t x2))) (x2 => iffEl (Membership__mem s x2) (Membership__mem t x2))))) (hs1 => Filter__mp_mem X f t s hs1 (Filter__mem_of_superset X f (Set__ofPred (x3 => iff (Membership__mem s x3) (Membership__mem t x3))) (Set__ofPred (x4 => if (Membership__mem t x4) (Membership__mem s x4))) h (forallI X (x5 => if (iff (Membership__mem s x5) (Membership__mem t x5)) (if (Membership__mem t x5) (Membership__mem s x5))) (x5 => iffEr (Membership__mem s x5) (Membership__mem t x5))))).
+
+(; //LEAN:Filter.sets_injective ;)
+Filter__sets_injective : (X : Set) -> Proof (Function__Injective Filter__sets).
+
+(; //LEAN:Filter.copy_eq ;)
+def Filter__copy_eq : (X : Set) -> (f : Elem (Filter X)) -> (S : Elem (powerset (powerset X))) -> (hmem : Proof (forall (powerset X) (s => iff (Membership__mem S s) (Membership__mem f s)))) -> Proof (Eqt (Filter X) (Filter__copy f S hmem) f) :=
+  X => f => S => hmem => Filter__ext X (Filter__copy f S hmem) f hmem.
+
+(; //LEAN:Filter.biInter_mem' ;)
+Filter__biInter_mem' : (X : Set) -> (f : Elem (Filter X)) -> (Y : Set) -> (s : (Elem Y -> powerset X)) -> (is : Elem (powerset Y)) -> (hf : Proof (Set__Subsingleton is)) -> Proof (iff (Membership__mem f (Set__iInter (i => Set__iInter (h => s i)))) (forall Y (i1 => if (Membership__mem is i1) (Membership__mem f (s i1))))).
+
+(; //LEAN:Filter.iInter_mem' ;)
+Filter__iInter_mem' : (X : Set) -> (f : Elem (Filter X)) -> (Y : Set) -> (s : (Elem Y -> powerset X)) -> (_ : Proof (Subsingleton Y)) -> Proof (iff (Membership__mem f (Set__iInter (i => s i))) (forall Y (i1 => Membership__mem f (s i1)))).
+
+(; //LEAN:Filter.exists_mem_subset_iff ;)
+Filter__exists_mem_subset_iff : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> Proof (iff (exists (powerset X) (t => and (Membership__mem f t) (Set__Subset t s))) (Membership__mem f s)).
+
+(; //LEAN:Filter.monotone_mem ;)
+def Filter__monotone_mem : (X : Set) -> (f : Elem (Filter X)) -> Proof (Monotone (s => Membership__mem f s)) :=
+  X => f => forallI (powerset X) (x => forall (powerset X) (x2 => if (Set__Subset x x2) (if (Membership__mem f x) (Membership__mem f x2)))) (x => forallI (powerset X) (x1 => if (Set__Subset x x1) (if (Membership__mem f x) (Membership__mem f x1))) (x1 => ifI (Set__Subset x x1) (if (Membership__mem f x) (Membership__mem f x1)) (hst => ifI ((s => Membership__mem f s) x) (Membership__mem f x1) (h => Filter__mem_of_superset X f x x1 h hst)))).
+
+(; //LEAN:Filter.exists_mem_and_iff ;)
+Filter__exists_mem_and_iff : (X : Set) -> (f : Elem (Filter X)) -> (P : (Elem (powerset X) -> Prop)) -> (Q : (Elem (powerset X) -> Prop)) -> (hP : Proof (Antitone P)) -> (hQ : Proof (Antitone Q)) -> Proof (iff (and (exists (powerset X) (u => and (Membership__mem f u) (P u))) (exists (powerset X) (u1 => and (Membership__mem f u1) (Q u1)))) (exists (powerset X) (u2 => and (Membership__mem f u2) (and (P u2) (Q u2))))).
+
+(; //LEAN:Filter.mem_principal_self ;)
+def Filter__mem_principal_self : (X : Set) -> (s : Elem (powerset X)) -> Proof (Membership__mem (Filter__principal s) s) :=
+  X => s => Set__Subset__rfl X s.
+
+(; //LEAN:Filter.eventually_mem_principal ;)
+def Filter__eventually_mem_principal : (X : Set) -> (s : Elem (powerset X)) -> Proof (Filter__Eventually (x => Membership__mem s x) (Filter__principal s)) :=
+  X => s => Filter__mem_principal_self X s.
+
+(; //LEAN:Filter.not_le ;)
+Filter__not_le : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> Proof (iff (not (Leq f g)) (exists (powerset X) (s => and (Membership__mem g s) (not (Membership__mem f s))))).
+
+(; //LEAN:Filter.GenerateSets ;)
+Filter__GenerateSets : (g : Elem (powerset (powerset X))) -> (x : Elem (powerset X)) -> Prop.
+
+(; //LEAN:Filter.GenerateSets.basic ;)
+Filter__GenerateSets__basic : (X : Set) -> (g : Elem (powerset (powerset X))) -> (s : Elem (powerset X)) -> (h : Proof (Membership__mem g s)) -> Proof (Filter__GenerateSets g s).
+
+(; //LEAN:Filter.GenerateSets.univ ;)
+Filter__GenerateSets__univ : (X : Set) -> (g : Elem (powerset (powerset X))) -> Proof (Filter__GenerateSets g Set__univ).
+
+(; //LEAN:Filter.GenerateSets.superset ;)
+Filter__GenerateSets__superset : (X : Set) -> (g : Elem (powerset (powerset X))) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Filter__GenerateSets g s)) -> (h1 : Proof (Set__Subset s t)) -> Proof (Filter__GenerateSets g t).
+
+(; //LEAN:Filter.GenerateSets.inter ;)
+Filter__GenerateSets__inter : (X : Set) -> (g : Elem (powerset (powerset X))) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Filter__GenerateSets g s)) -> (h1 : Proof (Filter__GenerateSets g t)) -> Proof (Filter__GenerateSets g (Inter__inter s t)).
+
+(; //LEAN:Filter.generate ;)
+def Filter__generate : (g : Elem (powerset (powerset X))) -> Elem (Filter X) :=
+  g => Filter__mk (Set__ofPred (s => Filter__GenerateSets g s)) Filter__GenerateSets__univ (x => x1 => Filter__GenerateSets__superset) (x2 => x3 => Filter__GenerateSets__inter).
+
+(; //LEAN:Filter.mem_generate_of_mem ;)
+def Filter__mem_generate_of_mem : (X : Set) -> (s : Elem (powerset (powerset X))) -> (U : Elem (powerset X)) -> (h : Proof (Membership__mem s U)) -> Proof (Membership__mem (Filter__generate s) U) :=
+  X => s => U => h => Filter__GenerateSets__basic h.
+
+(; //LEAN:Filter.le_generate_iff ;)
+def Filter__le_generate_iff : (X : Set) -> (s : Elem (powerset (powerset X))) -> (f : Elem (Filter X)) -> Proof (iff (Leq f (Filter__generate s)) (Set__Subset s (Filter__sets f))) :=
+  X => s => f => iffI (Leq f (Filter__generate s)) (Set__Subset s (Filter__sets f)) (h => forallI (powerset X) (x => if (Membership__mem s x) (Membership__mem f x)) (x => ifI (Membership__mem s x) (Membership__mem f x) (hu => ifE (Membership__mem (Filter__generate s) x) (Membership__mem f x) (forallE (powerset X) (U => if (Membership__mem (Filter__generate s) U) (Membership__mem f U)) h x) (Filter__GenerateSets__basic hu)))) (h2 => forallI (powerset X) (x1 => if (Membership__mem (Filter__generate s) x1) (Membership__mem f x1)) (x1 => ifI (Membership__mem (Filter__generate s) x1) (Membership__mem f x1) (hu2 => Filter__GenerateSets__recOn hu2 (forallI (powerset X) (x2 => if (Membership__mem s x2) (Membership__mem (Filter__sets f) x2)) (x2 => ifI (Membership__mem s x2) (Membership__mem (Filter__sets f) x2) (h' => ifE (Membership__mem s x2) (Membership__mem (Filter__sets f) x2) (forallE (powerset X) (a => if (Membership__mem s a) (Membership__mem (Filter__sets f) a)) h2 x2) h'))) (Filter__univ_mem X f) (forallI (powerset X) (x3 => forall (powerset X) (x5 => if (Filter__GenerateSets s x3) (if (Set__Subset x3 x5) (if (Membership__mem f x3) (Membership__mem f x5))))) (x3 => forallI (powerset X) (x4 => if (Filter__GenerateSets s x3) (if (Set__Subset x3 x4) (if (Membership__mem f x3) (Membership__mem f x4)))) (x4 => ifI (Filter__GenerateSets s x3) (if (Set__Subset x3 x4) (if (Membership__mem f x3) (Membership__mem f x4))) (h4 => ifI (Set__Subset x3 x4) (if (Membership__mem f x3) (Membership__mem f x4)) (hxy => Filter__mem_of_superset___gcongr_1 X f x3 x4 hxy))))) (forallI (powerset X) (x6 => forall (powerset X) (x8 => if (Filter__GenerateSets s x6) (if (Filter__GenerateSets s x8) (if (Membership__mem f x6) (if (Membership__mem f x8) (Membership__mem f (Inter__inter x6 x8))))))) (x6 => forallI (powerset X) (x7 => if (Filter__GenerateSets s x6) (if (Filter__GenerateSets s x7) (if (Membership__mem f x6) (if (Membership__mem f x7) (Membership__mem f (Inter__inter x6 x7)))))) (x7 => ifI (Filter__GenerateSets s x6) (if (Filter__GenerateSets s x7) (if (Membership__mem f x6) (if (Membership__mem f x7) (Membership__mem f (Inter__inter x6 x7))))) (h7 => ifI (Filter__GenerateSets s x7) (if (Membership__mem f x6) (if (Membership__mem f x7) (Membership__mem f (Inter__inter x6 x7)))) (h8 => ifI (Membership__mem f x6) (if (Membership__mem f x7) (Membership__mem f (Inter__inter x6 x7))) (hx4 => ifI (Membership__mem f x7) (Membership__mem f (Inter__inter x6 x7)) (hy => Filter__inter_mem X f x6 x7 hx4 hy)))))))))).
+
+(; //LEAN:Filter.generate_singleton ;)
+def Filter__generate_singleton : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (Filter X) (Filter__generate (Singleton__singleton s)) (Filter__principal s)) :=
+  X => s => le_antisymm (Filter X) (Filter__generate (Singleton__singleton s)) (Filter__principal s) (forallI (powerset X) (_t => if (Set__Subset s _t) (Membership__mem (Filter__generate (Singleton__singleton s)) _t)) (_t => ifI (Set__Subset s _t) (Membership__mem (Filter__generate (Singleton__singleton s)) _t) (ht => Filter__mem_of_superset X (Filter__generate (Singleton__singleton s)) s _t (Filter__mem_generate_of_mem X (Singleton__singleton s) s (Set__mem_singleton (powerset X) s)) ht))) (iffEr (Leq (Filter__principal s) (Filter__generate (Singleton__singleton s))) (Set__Subset (Singleton__singleton s) (Filter__sets (Filter__principal s))) (Filter__le_generate_iff X (Singleton__singleton s) (Filter__principal s)) (iffEr (Set__Subset (Singleton__singleton s) (Filter__sets (Filter__principal s))) (Membership__mem (Filter__sets (Filter__principal s)) s) (Set__singleton_subset_iff (powerset X) s (Filter__sets (Filter__principal s))) (Set__Subset__rfl X s))).
+
+(; //LEAN:Filter.mkOfClosure ;)
+def Filter__mkOfClosure : (s : Elem (powerset (powerset X))) -> (hs : Proof (Eqt (powerset (powerset X)) (Filter__sets (Filter__generate s)) s)) -> Elem (Filter X) :=
+  s => hs => Filter__mk s (Filter__mkOfClosure___proof_1 s hs) (Filter__mkOfClosure___proof_2 s hs) (Filter__mkOfClosure___proof_3 s hs).
+
+(; //LEAN:Filter.mkOfClosure_sets ;)
+Filter__mkOfClosure_sets : (X : Set) -> (s : Elem (powerset (powerset X))) -> (hs : Proof (Eqt (powerset (powerset X)) (Filter__sets (Filter__generate s)) s)) -> Proof (Eqt (Filter X) (Filter__mkOfClosure s hs) (Filter__generate s)).
+
+(; //LEAN:Filter.giGenerate ;)
+def Filter__giGenerate : (X : Set) -> Elem (GaloisInsertion Filter__generate Filter__sets) :=
+  X => GaloisInsertion__mk (s => hs => Filter__mkOfClosure s (Filter__giGenerate___proof_1 X s hs)) (x => x1 => Filter__le_generate_iff) (Filter__giGenerate___proof_2 X) (Filter__giGenerate___proof_3 X).
+
+(; //LEAN:Filter.mem_inf_iff ;)
+def Filter__mem_inf_iff : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (s : Elem (powerset X)) -> Proof (iff (Membership__mem (Min__min f g) s) (exists (powerset X) (x => and (Membership__mem f x) (exists (powerset X) (x1 => and (Membership__mem g x1) (Eqt (powerset X) s (Inter__inter x x1))))))) :=
+  X => f => g => s => Iff__rfl (Membership__mem (Min__min f g) s).
+
+(; //LEAN:Filter.mem_inf_of_left ;)
+def Filter__mem_inf_of_left : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (s : Elem (powerset X)) -> (h : Proof (Membership__mem f s)) -> Proof (Membership__mem (Min__min f g) s) :=
+  X => f => g => s => h => existsI (powerset X) (a => and (Membership__mem f a) (exists (powerset X) (b => and (Membership__mem g b) (Eqt (powerset X) s (Inter__inter a b))))) s (andI (Membership__mem f s) (exists (powerset X) (b1 => and (Membership__mem g b1) (Eqt (powerset X) s (Inter__inter s b1)))) h (existsI (powerset X) (b2 => and (Membership__mem g b2) (Eqt (powerset X) s (Inter__inter s b2))) Set__univ (andI (Membership__mem g Set__univ) (Eqt (powerset X) s (Inter__inter s Set__univ)) (Filter__univ_mem X g) (Eq__symm (powerset X) (Inter__inter s Set__univ) s (Set__inter_univ X s))))).
+
+(; //LEAN:Filter.mem_inf_of_right ;)
+def Filter__mem_inf_of_right : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (s : Elem (powerset X)) -> (h : Proof (Membership__mem g s)) -> Proof (Membership__mem (Min__min f g) s) :=
+  X => f => g => s => h => existsI (powerset X) (a => and (Membership__mem f a) (exists (powerset X) (b => and (Membership__mem g b) (Eqt (powerset X) s (Inter__inter a b))))) Set__univ (andI (Membership__mem f Set__univ) (exists (powerset X) (b1 => and (Membership__mem g b1) (Eqt (powerset X) s (Inter__inter Set__univ b1)))) (Filter__univ_mem X f) (existsI (powerset X) (b2 => and (Membership__mem g b2) (Eqt (powerset X) s (Inter__inter Set__univ b2))) s (andI (Membership__mem g s) (Eqt (powerset X) s (Inter__inter Set__univ s)) h (Eq__symm (powerset X) (Inter__inter Set__univ s) s (Set__univ_inter X s))))).
+
+(; //LEAN:Filter.inter_mem_inf ;)
+def Filter__inter_mem_inf : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (hs : Proof (Membership__mem f s)) -> (ht : Proof (Membership__mem g t)) -> Proof (Membership__mem (Min__min f g) (Inter__inter s t)) :=
+  X => f => g => s => t => hs => ht => existsI (powerset X) (a => and (Membership__mem f a) (exists (powerset X) (b => and (Membership__mem g b) (Eqt (powerset X) (Inter__inter s t) (Inter__inter a b))))) s (andI (Membership__mem f s) (exists (powerset X) (b1 => and (Membership__mem g b1) (Eqt (powerset X) (Inter__inter s t) (Inter__inter s b1)))) hs (existsI (powerset X) (b2 => and (Membership__mem g b2) (Eqt (powerset X) (Inter__inter s t) (Inter__inter s b2))) t (andI (Membership__mem g t) (Eqt (powerset X) (Inter__inter s t) (Inter__inter s t)) ht rfl))).
+
+(; //LEAN:Filter.mem_inf_of_inter ;)
+def Filter__mem_inf_of_inter : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> (hs : Proof (Membership__mem f s)) -> (ht : Proof (Membership__mem g t)) -> (h : Proof (Set__Subset (Inter__inter s t) u)) -> Proof (Membership__mem (Min__min f g) u) :=
+  X => f => g => s => t => u => hs => ht => h => Filter__mem_of_superset X (Min__min f g) (Inter__inter s t) u (Filter__inter_mem_inf X f g s t hs ht) h.
+
+(; //LEAN:Filter.mem_inf_iff_superset ;)
+Filter__mem_inf_iff_superset : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (s : Elem (powerset X)) -> Proof (iff (Membership__mem (Min__min f g) s) (exists (powerset X) (x => and (Membership__mem f x) (exists (powerset X) (x1 => and (Membership__mem g x1) (Set__Subset (Inter__inter x x1) s)))))).
+
+(; //LEAN:Filter.mem_sdiff_iff_union ;)
+Filter__mem_sdiff_iff_union : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (s : Elem (powerset X)) -> Proof (iff (Membership__mem (SDiff__sdiff f g) s) (forall (powerset X) (t => if (Membership__mem g t) (Membership__mem f (Union__union s t))))).
+
+(; //LEAN:Filter.isLUB_sSup ;)
+def Filter__isLUB_sSup : (X : Set) -> (s : Elem (powerset (Filter X))) -> Proof (IsLUB s (SupSet__sSup s)) :=
+  X => s => andI (Membership__mem (upperBounds s) (SupSet__sSup s)) (Membership__mem (lowerBounds (upperBounds s)) (SupSet__sSup s)) (x => ifI (Membership__mem s x) (forall (powerset X) (x2 => if (Membership__mem (SupSet__sSup s) x2) (Membership__mem (Set__ofPred (t4 => Membership__mem t4 x2)) x))) (h => forallI (powerset X) (x1 => if (Membership__mem (SupSet__sSup s) x1) (Membership__mem (Set__ofPred (t3 => Membership__mem t3 x1)) x)) (x1 => ifI (Membership__mem (SupSet__sSup s) x1) (Membership__mem (Set__ofPred (t2 => Membership__mem t2 x1)) x) (h1 => ifE (Membership__mem s x) (Membership__mem (Set__ofPred (t1 => Membership__mem t1 x1)) x) (forallE (Filter X) (a => if (Membership__mem s a) (Membership__mem (Set__ofPred (t => Membership__mem t x1)) a)) h1 x) h)))) (x3 => ifI (Membership__mem (upperBounds s) x3) (forall (powerset X) (x8 => if (Membership__mem x3 x8) (forall (Filter X) (x9 => if (Membership__mem s x9) (Membership__mem x9 x8))))) (h5 => forallI (powerset X) (x4 => if (Membership__mem x3 x4) (forall (Filter X) (x7 => if (Membership__mem s x7) (Membership__mem x7 x4)))) (x4 => ifI (Membership__mem x3 x4) (forall (Filter X) (x6 => if (Membership__mem s x6) (Membership__mem x6 x4))) (h6 => forallI (Filter X) (x5 => if (Membership__mem s x5) (Membership__mem x5 x4)) (x5 => ifI (Membership__mem s x5) (Membership__mem x5 x4) (h7 => ifE (Membership__mem x3 x4) (Membership__mem x5 x4) (forallE (powerset X) (U => if (Membership__mem x3 U) (Membership__mem x5 U)) (ifE (Membership__mem s x5) (Leq x5 x3) (forallE (Filter X) (a1 => if (Membership__mem s a1) (Leq a1 x3)) h5 x5) h7) x4) h6)))))).
+
+(; //LEAN:Filter.isGLB_sInf ;)
+Filter__isGLB_sInf : (X : Set) -> (s : Elem (powerset (Filter X))) -> Proof (IsGLB s (InfSet__sInf s)).
+
+(; //LEAN:Filter.NeBot.ne ;)
+def Filter__NeBot__ne : (X : Set) -> (f : Elem (Filter X)) -> (hf : Proof (Filter__NeBot f)) -> Proof (Neq f Bot__bot) :=
+  X => f => hf => Filter__NeBot__ne' X f.
+
+(; //LEAN:Filter.not_neBot ;)
+def Filter__not_neBot : (X : Set) -> (f : Elem (Filter X)) -> Proof (iff (not (Filter__NeBot f)) (Eqt (Filter X) f Bot__bot)) :=
+  X => f => Iff__not_left (Filter__NeBot f) (Eqt (Filter X) f Bot__bot) (Filter__neBot_iff X f).
+
+(; //LEAN:Filter.NeBot.mono ;)
+def Filter__NeBot__mono : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (hf : Proof (Filter__NeBot f)) -> (hg : Proof (Leq f g)) -> Proof (Filter__NeBot g) :=
+  X => f => g => hf => hg => Filter__NeBot__mk (ne_bot_of_le_ne_bot (Filter X) g f (Filter__NeBot__ne' X f) hg).
+
+(; //LEAN:Filter.neBot_of_le ;)
+def Filter__neBot_of_le : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (hg : Proof (Leq f g)) -> Proof (Filter__NeBot g) :=
+  X => f => g => hf => hg => Filter__NeBot__mono X f g hf hg.
+
+(; //LEAN:Filter.sup_neBot ;)
+Filter__sup_neBot : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> Proof (iff (Filter__NeBot (Max__max f g)) (or (Filter__NeBot f) (Filter__NeBot g))).
+
+(; //LEAN:Filter.not_disjoint_self_iff ;)
+Filter__not_disjoint_self_iff : (X : Set) -> (f : Elem (Filter X)) -> Proof (iff (not (Disjoint f f)) (Filter__NeBot f)).
+
+(; //LEAN:Filter.bot_sets_eq ;)
+def Filter__bot_sets_eq : (X : Set) -> Proof (Eqt (powerset (powerset X)) (Filter__sets Bot__bot) Set__univ) :=
+  X => rfl.
+
+(; //LEAN:Filter.eq_or_neBot ;)
+def Filter__eq_or_neBot : (X : Set) -> (f : Elem (Filter X)) -> Proof (or (Eqt (Filter X) f Bot__bot) (Filter__NeBot f)) :=
+  X => f => Or__imp_right (Neq f Bot__bot) (Filter__NeBot f) (Eqt (Filter X) f Bot__bot) Filter__NeBot__mk (eq_or_ne (Filter X) f Bot__bot).
+
+(; //LEAN:Filter.sup_sets_eq ;)
+def Filter__sup_sets_eq : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> Proof (Eqt (powerset (powerset X)) (Filter__sets (Max__max f g)) (Inter__inter (Filter__sets f) (Filter__sets g))) :=
+  X => f => g => GaloisConnection__u_inf (OrderDual (Filter X)) (powerset (powerset X)) f g Filter__sets Filter__generate (GaloisInsertion__gc (powerset (powerset X)) (OrderDual (Filter X)) Filter__generate Filter__sets (Filter__giGenerate X)).
+
+(; //LEAN:Filter.sSup_sets_eq ;)
+def Filter__sSup_sets_eq : (X : Set) -> (s : Elem (powerset (Filter X))) -> Proof (Eqt (powerset (powerset X)) (Filter__sets (SupSet__sSup s)) (Set__iInter (f => Set__iInter (h => Filter__sets f)))) :=
+  X => s => GaloisConnection__u_sInf (OrderDual (Filter X)) (powerset (powerset X)) Filter__sets Filter__generate (GaloisInsertion__gc (powerset (powerset X)) (OrderDual (Filter X)) Filter__generate Filter__sets (Filter__giGenerate X)) s.
+
+(; //LEAN:Filter.iSup_sets_eq ;)
+def Filter__iSup_sets_eq : (X : Set) -> (I : Set) -> (f : (Elem I -> Filter X)) -> Proof (Eqt (powerset (powerset X)) (Filter__sets (iSup f)) (Set__iInter (i => Filter__sets (f i)))) :=
+  X => I => f => GaloisConnection__u_iInf (OrderDual (Filter X)) (powerset (powerset X)) I Filter__sets Filter__generate (GaloisInsertion__gc (powerset (powerset X)) (OrderDual (Filter X)) Filter__generate Filter__sets (Filter__giGenerate X)) f.
+
+(; //LEAN:Filter.generate_empty ;)
+def Filter__generate_empty : (X : Set) -> Proof (Eqt (Filter X) (Filter__generate EmptyCollection__emptyCollection) Top__top) :=
+  X => GaloisConnection__l_bot (OrderDual (Filter X)) (powerset (powerset X)) Filter__sets Filter__generate (GaloisInsertion__gc (powerset (powerset X)) (OrderDual (Filter X)) Filter__generate Filter__sets (Filter__giGenerate X)).
+
+(; //LEAN:Filter.generate_univ ;)
+def Filter__generate_univ : (X : Set) -> Proof (Eqt (Filter X) (Filter__generate Set__univ) Bot__bot) :=
+  X => bot_unique (Filter X) (Filter__generate Set__univ) (forallI (powerset X) (x => if (Membership__mem Bot__bot x) (Filter__GenerateSets Set__univ x)) (x => ifI (Membership__mem Bot__bot x) (Filter__GenerateSets Set__univ x) (h => Filter__GenerateSets__basic (Set__mem_univ (powerset X) x)))).
+
+(; //LEAN:Filter.generate_union ;)
+def Filter__generate_union : (X : Set) -> (s : Elem (powerset (powerset X))) -> (t : Elem (powerset (powerset X))) -> Proof (Eqt (Filter X) (Filter__generate (Union__union s t)) (Min__min (Filter__generate s) (Filter__generate t))) :=
+  X => s => t => GaloisConnection__l_sup (powerset (powerset X)) (OrderDual (Filter X)) s t Filter__generate Filter__sets (GaloisInsertion__gc (powerset (powerset X)) (OrderDual (Filter X)) Filter__generate Filter__sets (Filter__giGenerate X)).
+
+(; //LEAN:Filter.generate_iUnion ;)
+def Filter__generate_iUnion : (X : Set) -> (I : Set) -> (s : (Elem I -> powerset (powerset X))) -> Proof (Eqt (Filter X) (Filter__generate (Set__iUnion (i => s i))) (iInf (i1 => Filter__generate (s i1)))) :=
+  X => I => s => GaloisConnection__l_iSup (powerset (powerset X)) (OrderDual (Filter X)) I Filter__generate Filter__sets (GaloisInsertion__gc (powerset (powerset X)) (OrderDual (Filter X)) Filter__generate Filter__sets (Filter__giGenerate X)) (i => s i).
+
+(; //LEAN:Filter.mem_sup ;)
+def Filter__mem_sup : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (s : Elem (powerset X)) -> Proof (iff (Membership__mem (Max__max f g) s) (and (Membership__mem f s) (Membership__mem g s))) :=
+  X => f => g => s => Iff__rfl (Membership__mem (Max__max f g) s).
+
+(; //LEAN:Filter.union_mem_sup ;)
+def Filter__union_mem_sup : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (hs : Proof (Membership__mem f s)) -> (ht : Proof (Membership__mem g t)) -> Proof (Membership__mem (Max__max f g) (Union__union s t)) :=
+  X => f => g => s => t => hs => ht => andI (Membership__mem f (Union__union s t)) (Membership__mem g (Union__union s t)) (Filter__mem_of_superset X f s (Union__union s t) hs (Set__subset_union_left X s t)) (Filter__mem_of_superset X g t (Union__union s t) ht (Set__subset_union_right X s t)).
+
+(; //LEAN:Filter.mem_iSup ;)
+Filter__mem_iSup : (X : Set) -> (I : Set) -> (x : Elem (powerset X)) -> (f : (Elem I -> Filter X)) -> Proof (iff (Membership__mem (iSup f) x) (forall I (i => Membership__mem (f i) x))).
+
+(; //LEAN:Filter.iSup_neBot ;)
+Filter__iSup_neBot : (X : Set) -> (I : Set) -> (f : (Elem I -> Filter X)) -> Proof (iff (Filter__NeBot (iSup (i => f i))) (exists I (i1 => Filter__NeBot (f i1)))).
+
+(; //LEAN:Filter.iInf_eq_generate ;)
+Filter__iInf_eq_generate : (X : Set) -> (I : Set) -> (s : (Elem I -> Filter X)) -> Proof (Eqt (Filter X) (iInf s) (Filter__generate (Set__iUnion (i => Filter__sets (s i))))).
+
+(; //LEAN:Filter.mem_iInf_of_mem ;)
+def Filter__mem_iInf_of_mem : (X : Set) -> (I : Set) -> (f : (Elem I -> Filter X)) -> (i : Elem I) -> (s : Elem (powerset X)) -> (hs : Proof (Membership__mem (f i) s)) -> Proof (Membership__mem (iInf (i1 => f i1)) s) :=
+  X => I => f => i => s => hs => iInf_le (Filter X) I f i s hs.
+
+(; //LEAN:Filter.iInf_sets_induct ;)
+Filter__iInf_sets_induct : (X : Set) -> (I : Set) -> (f : (Elem I -> Filter X)) -> (s : Elem (powerset X)) -> (hs : Proof (Membership__mem (iInf f) s)) -> (p : (Elem (powerset X) -> Prop)) -> (uni : Proof (p Set__univ)) -> (ins : Proof (forall I (i => forall (powerset X) (x => forall (powerset X) (x1 => if (Membership__mem (f i) x) (if (p x1) (p (Inter__inter x x1)))))))) -> Proof (p s).
+
+(; //LEAN:Filter.le_principal_iff ;)
+def Filter__le_principal_iff : (X : Set) -> (s : Elem (powerset X)) -> (f : Elem (Filter X)) -> Proof (iff (Leq f (Filter__principal s)) (Membership__mem f s)) :=
+  X => s => f => iffI (Leq f (Filter__principal s)) (Membership__mem f s) (h => ifE (Membership__mem (Filter__principal s) s) (Membership__mem f s) (forallE (powerset X) (U => if (Membership__mem (Filter__principal s) U) (Membership__mem f U)) h s) (Set__Subset__rfl X s)) (hs => forallI (powerset X) (x => if (Membership__mem (Filter__principal s) x) (Membership__mem f x)) (x => ifI (Membership__mem (Filter__principal s) x) (Membership__mem f x) (ht => Filter__mem_of_superset X f s x hs ht))).
+
+(; //LEAN:Filter.Iic_principal ;)
+def Filter__Iic_principal : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset (Filter X)) (Set__Iic (Filter__principal s)) (Set__ofPred (l => Membership__mem l s))) :=
+  X => s => Set__ext (Filter X) (Set__Iic (Filter__principal s)) (Set__ofPred (l => Membership__mem l s)) (forallI (Filter X) (x => iff (Leq x (Filter__principal s)) (Membership__mem x s)) (x => Filter__le_principal_iff X s x)).
+
+(; //LEAN:Filter.principal_mono ;)
+Filter__principal_mono : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Leq (Filter__principal s) (Filter__principal t)) (Set__Subset s t)).
+
+(; //LEAN:Filter.monotone_principal ;)
+def Filter__monotone_principal : (X : Set) -> Proof (Monotone Filter__principal) :=
+  X => forallI (powerset X) (x => forall (powerset X) (x2 => if (Set__Subset x x2) (Leq (Filter__principal x) (Filter__principal x2)))) (x => forallI (powerset X) (x1 => if (Set__Subset x x1) (Leq (Filter__principal x) (Filter__principal x1))) (x1 => iffEr (Leq (Filter__principal x) (Filter__principal x1)) (Set__Subset x x1) (Filter__principal_mono X x x1))).
+
+(; //LEAN:Filter.principal_eq_iff_eq ;)
+Filter__principal_eq_iff_eq : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Eqt (Filter X) (Filter__principal s) (Filter__principal t)) (Eqt (powerset X) s t)).
+
+(; //LEAN:Filter.principal_injective ;)
+def Filter__principal_injective : (X : Set) -> Proof (Function__Injective Filter__principal) :=
+  X => forallI (powerset X) (x => forall (powerset X) (x2 => if (Eqt (Filter X) (Filter__principal x) (Filter__principal x2)) (Eqt (powerset X) x x2))) (x => forallI (powerset X) (x1 => if (Eqt (Filter X) (Filter__principal x) (Filter__principal x1)) (Eqt (powerset X) x x1)) (x1 => iffEl (Eqt (Filter X) (Filter__principal x) (Filter__principal x1)) (Eqt (powerset X) x x1) (Filter__principal_eq_iff_eq X x x1))).
+
+(; //LEAN:Filter.join_principal_eq_sSup ;)
+def Filter__join_principal_eq_sSup : (X : Set) -> (s : Elem (powerset (Filter X))) -> Proof (Eqt (Filter X) (Filter__join (Filter__principal s)) (SupSet__sSup s)) :=
+  X => s => rfl.
+
+(; //LEAN:Filter.principal_univ ;)
+Filter__principal_univ : (X : Set) -> Proof (Eqt (Filter X) (Filter__principal Set__univ) Top__top).
+
+(; //LEAN:Filter.principal_empty ;)
+def Filter__principal_empty : (X : Set) -> Proof (Eqt (Filter X) (Filter__principal EmptyCollection__emptyCollection) Bot__bot) :=
+  X => bot_unique (Filter X) (Filter__principal EmptyCollection__emptyCollection) (forallI (powerset X) (x => if (Membership__mem Bot__bot x) (Set__Subset EmptyCollection__emptyCollection x)) (x => ifI (Membership__mem Bot__bot x) (Set__Subset EmptyCollection__emptyCollection x) (h => Set__empty_subset X x))).
+
+(; //LEAN:Filter.generate_eq_biInf ;)
+Filter__generate_eq_biInf : (X : Set) -> (S : Elem (powerset (powerset X))) -> Proof (Eqt (Filter X) (Filter__generate S) (iInf (s => iInf (h => Filter__principal s)))).
+
+(; //LEAN:Filter.empty_mem_iff_bot ;)
+Filter__empty_mem_iff_bot : (X : Set) -> (f : Elem (Filter X)) -> Proof (iff (Membership__mem f EmptyCollection__emptyCollection) (Eqt (Filter X) f Bot__bot)).
+
+(; //LEAN:Filter.nonempty_of_mem ;)
+Filter__nonempty_of_mem : (X : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (s : Elem (powerset X)) -> (hs : Proof (Membership__mem f s)) -> Proof (Set__Nonempty s).
+
+(; //LEAN:Filter.NeBot.nonempty_of_mem ;)
+def Filter__NeBot__nonempty_of_mem : (X : Set) -> (f : Elem (Filter X)) -> (hf : Proof (Filter__NeBot f)) -> (s : Elem (powerset X)) -> (hs : Proof (Membership__mem f s)) -> Proof (Set__Nonempty s) :=
+  X => f => hf => s => hs => Filter__nonempty_of_mem X f s hs.
+
+(; //LEAN:Filter.empty_notMem ;)
+def Filter__empty_notMem : (X : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> Proof (not (Membership__mem f EmptyCollection__emptyCollection)) :=
+  X => f => h => ifI (Membership__mem f EmptyCollection__emptyCollection) false (h1 => Set__Nonempty__ne_empty X EmptyCollection__emptyCollection (Filter__nonempty_of_mem X f EmptyCollection__emptyCollection h1) rfl).
+
+(; //LEAN:Filter.nonempty_of_neBot ;)
+def Filter__nonempty_of_neBot : (X : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> Proof (Nonempty X) :=
+  X => f => h => Exists__nonempty X (Membership__mem Set__univ) (Filter__nonempty_of_mem X f Set__univ (Filter__univ_mem X f)).
+
+(; //LEAN:Filter.compl_notMem ;)
+def Filter__compl_notMem : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> (_ : Proof (Filter__NeBot f)) -> (h1 : Proof (Membership__mem f s)) -> Proof (not (Membership__mem f (Compl__compl s))) :=
+  X => f => s => h => h1 => ifI (Membership__mem f (Compl__compl s)) false (hsc => Set__Nonempty__ne_empty X (Inter__inter s (Compl__compl s)) (Filter__nonempty_of_mem X f (Inter__inter s (Compl__compl s)) (Filter__inter_mem X f s (Compl__compl s) h1 hsc)) (Set__inter_compl_self X s)).
+
+(; //LEAN:Filter.filter_eq_bot_of_isEmpty ;)
+def Filter__filter_eq_bot_of_isEmpty : (X : Set) -> (_ : Proof (IsEmpty X)) -> (f : Elem (Filter X)) -> Proof (Eqt (Filter X) f Bot__bot) :=
+  X => h => f => iffEl (Membership__mem f EmptyCollection__emptyCollection) (Eqt (Filter X) f Bot__bot) (Filter__empty_mem_iff_bot X f) (Filter__univ_mem' X f EmptyCollection__emptyCollection (forallI X (a => Membership__mem EmptyCollection__emptyCollection a) (a => isEmptyElim a))).
+
+(; //LEAN:Filter.disjoint_iff ;)
+Filter__disjoint_iff : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> Proof (iff (Disjoint f g) (exists (powerset X) (s => and (Membership__mem f s) (exists (powerset X) (t => and (Membership__mem g t) (Disjoint s t)))))).
+
+(; //LEAN:Filter.disjoint_of_disjoint_of_mem ;)
+def Filter__disjoint_of_disjoint_of_mem : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Disjoint s t)) -> (hs : Proof (Membership__mem f s)) -> (ht : Proof (Membership__mem g t)) -> Proof (Disjoint f g) :=
+  X => f => g => s => t => h => hs => ht => iffEr (Disjoint f g) (exists (powerset X) (s1 => and (Membership__mem f s1) (exists (powerset X) (t1 => and (Membership__mem g t1) (Disjoint s1 t1))))) (Filter__disjoint_iff X f g) (existsI (powerset X) (s2 => and (Membership__mem f s2) (exists (powerset X) (t2 => and (Membership__mem g t2) (Disjoint s2 t2)))) s (andI (Membership__mem f s) (exists (powerset X) (t3 => and (Membership__mem g t3) (Disjoint s t3))) hs (existsI (powerset X) (t4 => and (Membership__mem g t4) (Disjoint s t4)) t (andI (Membership__mem g t) (Disjoint s t) ht h)))).
+
+(; //LEAN:Filter.NeBot.not_disjoint ;)
+def Filter__NeBot__not_disjoint : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (hf : Proof (Filter__NeBot f)) -> (hs : Proof (Membership__mem f s)) -> (ht : Proof (Membership__mem f t)) -> Proof (not (Disjoint s t)) :=
+  X => f => s => t => hf => hs => ht => ifI (Disjoint s t) false (h => iffEr (not (Disjoint f f)) (Filter__NeBot f) (Filter__not_disjoint_self_iff X f) hf (iffEr (Disjoint f f) (exists (powerset X) (s1 => and (Membership__mem f s1) (exists (powerset X) (t1 => and (Membership__mem f t1) (Disjoint s1 t1))))) (Filter__disjoint_iff X f f) (existsI (powerset X) (s2 => and (Membership__mem f s2) (exists (powerset X) (t2 => and (Membership__mem f t2) (Disjoint s2 t2)))) s (andI (Membership__mem f s) (exists (powerset X) (t3 => and (Membership__mem f t3) (Disjoint s t3))) hs (existsI (powerset X) (t4 => and (Membership__mem f t4) (Disjoint s t4)) t (andI (Membership__mem f t) (Disjoint s t) ht h)))))).
+
+(; //LEAN:Filter.inf_eq_bot_iff ;)
+Filter__inf_eq_bot_iff : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> Proof (iff (Eqt (Filter X) (Min__min f g) Bot__bot) (exists (powerset X) (U => and (Membership__mem f U) (exists (powerset X) (V => and (Membership__mem g V) (Eqt (powerset X) (Inter__inter U V) EmptyCollection__emptyCollection)))))).
+
+(; //LEAN:Filter.NeBot.nonempty ;)
+def Filter__NeBot__nonempty : (X : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> Proof (Nonempty X) :=
+  X => f => hf => iffEl (not (IsEmpty X)) (Nonempty X) (not_isEmpty_iff X) (h => Filter__NeBot__ne X f hf (Subsingleton__elim (Filter X) f Bot__bot)).
+
+(; //LEAN:Filter.eq_top_of_neBot ;)
+Filter__eq_top_of_neBot : (X : Set) -> (_ : Proof (Subsingleton X)) -> (l : Elem (Filter X)) -> (_ : Proof (Filter__NeBot l)) -> Proof (Eqt (Filter X) l Top__top).
+
+(; //LEAN:Filter.forall_mem_nonempty_iff_neBot ;)
+Filter__forall_mem_nonempty_iff_neBot : (X : Set) -> (f : Elem (Filter X)) -> Proof (iff (forall (powerset X) (s => if (Membership__mem f s) (Set__Nonempty s))) (Filter__NeBot f)).
+
+(; //LEAN:Filter.nontrivial_iff_nonempty ;)
+def Filter__nontrivial_iff_nonempty : (X : Set) -> Proof (iff (Nontrivial (Filter X)) (Nonempty X)) :=
+  X => iffI (Nontrivial (Filter X)) (Nonempty X) (h => by_contra (Nonempty X) (ifI (not (Nonempty X)) false (h' => not_subsingleton (Filter X) inferInstance))) (Filter__instNontrivialFilter X).
+
+(; //LEAN:Filter.eq_sInf_of_mem_iff_exists_mem ;)
+Filter__eq_sInf_of_mem_iff_exists_mem : (X : Set) -> (S : Elem (powerset (Filter X))) -> (l : Elem (Filter X)) -> (h : Proof (forall (powerset X) (s => iff (Membership__mem l s) (exists (Filter X) (f => and (Membership__mem S f) (Membership__mem f s)))))) -> Proof (Eqt (Filter X) l (InfSet__sInf S)).
+
+(; //LEAN:Filter.eq_iInf_of_mem_iff_exists_mem ;)
+def Filter__eq_iInf_of_mem_iff_exists_mem : (X : Set) -> (I : Set) -> (f : (Elem I -> Filter X)) -> (l : Elem (Filter X)) -> (h : Proof (forall (powerset X) (s => iff (Membership__mem l s) (exists I (i => Membership__mem (f i) s))))) -> Proof (Eqt (Filter X) l (iInf f)) :=
+  X => I => f => l => h => Filter__eq_sInf_of_mem_iff_exists_mem X (Set__range f) l (forallI (powerset X) (x => iff (Membership__mem l x) (exists (Filter X) (f2 => and (Membership__mem (Set__range f) f2) (Membership__mem f2 x)))) (x => Iff__trans (Membership__mem l x) (exists I (i => Membership__mem (f i) x)) (exists (Filter X) (f1 => and (Membership__mem (Set__range f) f1) (Membership__mem f1 x))) (forallE (powerset X) (s => iff (Membership__mem l s) (exists I (i1 => Membership__mem (f i1) s))) h x) (Iff__symm (exists (Filter X) (a => and (Membership__mem (Set__range f) a) (Membership__mem a x))) (exists I (i2 => Membership__mem (f i2) x)) (Set__exists_range_iff (Filter X) I f (x1 => Membership__mem x1 x))))).
+
+(; //LEAN:Filter.eq_biInf_of_mem_iff_exists_mem ;)
+Filter__eq_biInf_of_mem_iff_exists_mem : (X : Set) -> (I : Set) -> (f : (Elem I -> Filter X)) -> (p : (Elem I -> Prop)) -> (l : Elem (Filter X)) -> (h : Proof (forall (powerset X) (s => iff (Membership__mem l s) (exists I (i1 => and (p i1) (Membership__mem (f i1) s)))))) -> Proof (Eqt (Filter X) l (iInf (i => iInf (h1 => f i)))).
+
+(; //LEAN:Filter.iInf_sets_eq ;)
+Filter__iInf_sets_eq : (X : Set) -> (I : Set) -> (f : (Elem I -> Filter X)) -> (h : Proof (Directed (x => x1 => Geq x x1) f)) -> Proof (Eqt (powerset (powerset X)) (Filter__sets (iInf f)) (Set__iUnion (i => Filter__sets (f i)))).
+
+(; //LEAN:Filter.mem_iInf_of_directed ;)
+Filter__mem_iInf_of_directed : (X : Set) -> (I : Set) -> (f : (Elem I -> Filter X)) -> (h : Proof (Directed (x => x1 => Geq x x1) f)) -> (s : Elem (powerset X)) -> Proof (iff (Membership__mem (iInf f) s) (exists I (i => Membership__mem (f i) s))).
+
+(; //LEAN:Filter.mem_biInf_of_directed ;)
+Filter__mem_biInf_of_directed : (X : Set) -> (Y : Set) -> (f : (Elem Y -> Filter X)) -> (s : Elem (powerset Y)) -> (h : Proof (DirectedOn (Order__Preimage f (x => x1 => Geq x x1)) s)) -> (ne : Proof (Set__Nonempty s)) -> (t : Elem (powerset X)) -> Proof (iff (Membership__mem (iInf (i => iInf (h1 => f i))) t) (exists Y (i1 => and (Membership__mem s i1) (Membership__mem (f i1) t)))).
+
+(; //LEAN:Filter.biInf_sets_eq ;)
+Filter__biInf_sets_eq : (X : Set) -> (Y : Set) -> (f : (Elem Y -> Filter X)) -> (s : Elem (powerset Y)) -> (h : Proof (DirectedOn (Order__Preimage f (x => x1 => Geq x x1)) s)) -> (ne : Proof (Set__Nonempty s)) -> Proof (Eqt (powerset (powerset X)) (Filter__sets (iInf (i => iInf (h1 => f i)))) (Set__iUnion (i1 => Set__iUnion (h2 => Filter__sets (f i1))))).
+
+(; //LEAN:Filter.sup_join ;)
+Filter__sup_join : (X : Set) -> (x : Elem (Filter (Filter X))) -> (x1 : Elem (Filter (Filter X))) -> Proof (Eqt (Filter X) (Max__max (Filter__join x) (Filter__join x1)) (Filter__join (Max__max x x1))).
+
+(; //LEAN:Filter.iSup_join ;)
+Filter__iSup_join : (X : Set) -> (I : Set) -> (f : (Elem I -> Filter (Filter X))) -> Proof (Eqt (Filter X) (iSup (x => Filter__join (f x))) (Filter__join (iSup (x1 => f x1)))).
+
+(; //LEAN:Filter.iInf_neBot_of_directed' ;)
+Filter__iInf_neBot_of_directed' : (X : Set) -> (I : Set) -> (f : (Elem I -> Filter X)) -> (hd : Proof (Directed (x => x1 => Geq x x1) f)) -> (h1 : Proof (forall I (i => Filter__NeBot (f i)))) -> Proof (Filter__NeBot (iInf f)).
+
+(; //LEAN:Filter.iInf_neBot_of_directed ;)
+Filter__iInf_neBot_of_directed : (X : Set) -> (I : Set) -> (f : (Elem I -> Filter X)) -> (hd : Proof (Directed (x => x1 => Geq x x1) f)) -> (hb : Proof (forall I (i => Filter__NeBot (f i)))) -> Proof (Filter__NeBot (iInf f)).
+
+(; //LEAN:Filter.sInf_neBot_of_directed' ;)
+Filter__sInf_neBot_of_directed' : (X : Set) -> (s : Elem (powerset (Filter X))) -> (hne : Proof (Set__Nonempty s)) -> (hd : Proof (DirectedOn (x => x1 => Geq x x1) s)) -> (hbot : Proof (not (Membership__mem s Bot__bot))) -> Proof (Filter__NeBot (InfSet__sInf s)).
+
+(; //LEAN:Filter.sInf_neBot_of_directed ;)
+Filter__sInf_neBot_of_directed : (X : Set) -> (s : Elem (powerset (Filter X))) -> (hd : Proof (DirectedOn (x => x1 => Geq x x1) s)) -> (hbot : Proof (not (Membership__mem s Bot__bot))) -> Proof (Filter__NeBot (InfSet__sInf s)).
+
+(; //LEAN:Filter.iInf_neBot_iff_of_directed' ;)
+def Filter__iInf_neBot_iff_of_directed' : (X : Set) -> (I : Set) -> (f : (Elem I -> Filter X)) -> (hd : Proof (Directed (x => x1 => Geq x x1) f)) -> Proof (iff (Filter__NeBot (iInf f)) (forall I (i => Filter__NeBot (f i)))) :=
+  X => I => f => hd => iffI (Filter__NeBot (iInf f)) (forall I (i => Filter__NeBot (f i))) (H => forallI I (i1 => Filter__NeBot (f i1)) (i1 => Filter__NeBot__mono X (iInf f) (f i1) H (iInf_le (Filter X) I f i1))) (Filter__iInf_neBot_of_directed' X I f hd).
+
+(; //LEAN:Filter.iInf_neBot_iff_of_directed ;)
+def Filter__iInf_neBot_iff_of_directed : (X : Set) -> (I : Set) -> (f : (Elem I -> Filter X)) -> (hd : Proof (Directed (x => x1 => Geq x x1) f)) -> Proof (iff (Filter__NeBot (iInf f)) (forall I (i => Filter__NeBot (f i)))) :=
+  X => I => f => hd => iffI (Filter__NeBot (iInf f)) (forall I (i => Filter__NeBot (f i))) (H => forallI I (i1 => Filter__NeBot (f i1)) (i1 => Filter__NeBot__mono X (iInf f) (f i1) H (iInf_le (Filter X) I f i1))) (Filter__iInf_neBot_of_directed X I f hd).
+
+(; //LEAN:Filter.inf_principal ;)
+Filter__inf_principal : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (Filter X) (Min__min (Filter__principal s) (Filter__principal t)) (Filter__principal (Inter__inter s t))).
+
+(; //LEAN:Filter.sup_principal ;)
+Filter__sup_principal : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (Filter X) (Max__max (Filter__principal s) (Filter__principal t)) (Filter__principal (Union__union s t))).
+
+(; //LEAN:Filter.iSup_principal ;)
+Filter__iSup_principal : (X : Set) -> (I : Set) -> (s : (Elem I -> powerset X)) -> Proof (Eqt (Filter X) (iSup (x => Filter__principal (s x))) (Filter__principal (Set__iUnion (i => s i)))).
+
+(; //LEAN:Filter.principal_sdiff_principal ;)
+Filter__principal_sdiff_principal : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (Filter X) (SDiff__sdiff (Filter__principal s) (Filter__principal t)) (Filter__principal (SDiff__sdiff s t))).
+
+(; //LEAN:Filter.hnot_principal ;)
+Filter__hnot_principal : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (Filter X) (HNot__hnot (Filter__principal s)) (Filter__principal (Compl__compl s))).
+
+(; //LEAN:Filter.principal_eq_bot_iff ;)
+def Filter__principal_eq_bot_iff : (X : Set) -> (s : Elem (powerset X)) -> Proof (iff (Eqt (Filter X) (Filter__principal s) Bot__bot) (Eqt (powerset X) s EmptyCollection__emptyCollection)) :=
+  X => s => Iff__trans (Eqt (Filter X) (Filter__principal s) Bot__bot) (Membership__mem (Filter__principal s) EmptyCollection__emptyCollection) (Eqt (powerset X) s EmptyCollection__emptyCollection) (Iff__symm (Membership__mem (Filter__principal s) EmptyCollection__emptyCollection) (Eqt (Filter X) (Filter__principal s) Bot__bot) (Filter__empty_mem_iff_bot X (Filter__principal s))) (Iff__trans (Membership__mem (Filter__principal s) EmptyCollection__emptyCollection) (Set__Subset s EmptyCollection__emptyCollection) (Eqt (powerset X) s EmptyCollection__emptyCollection) (Filter__mem_principal X EmptyCollection__emptyCollection s) (Set__subset_empty_iff X s)).
+
+(; //LEAN:Filter.principal_neBot_iff ;)
+def Filter__principal_neBot_iff : (X : Set) -> (s : Elem (powerset X)) -> Proof (iff (Filter__NeBot (Filter__principal s)) (Set__Nonempty s)) :=
+  X => s => Iff__trans (Filter__NeBot (Filter__principal s)) (Neq (Filter__principal s) Bot__bot) (Set__Nonempty s) (Filter__neBot_iff X (Filter__principal s)) (Iff__trans (not (Eqt (Filter X) (Filter__principal s) Bot__bot)) (not (Eqt (powerset X) s EmptyCollection__emptyCollection)) (Set__Nonempty s) (not_congr (Eqt (Filter X) (Filter__principal s) Bot__bot) (Eqt (powerset X) s EmptyCollection__emptyCollection) (Filter__principal_eq_bot_iff X s)) (Iff__symm (Set__Nonempty s) (Neq s EmptyCollection__emptyCollection) (Set__nonempty_iff_ne_empty X s))).
+
+(; //LEAN:Set.Nonempty.principal_neBot ;)
+def Set__Nonempty__principal_neBot : (X : Set) -> (s : Elem (powerset X)) -> (h : Proof (Set__Nonempty s)) -> Proof (Filter__NeBot (Filter__principal s)) :=
+  X => s => iffEr (Filter__NeBot (Filter__principal s)) (Set__Nonempty s) (Filter__principal_neBot_iff X s).
+
+(; //LEAN:Filter.isCompl_principal ;)
+def Filter__isCompl_principal : (X : Set) -> (s : Elem (powerset X)) -> Proof (IsCompl (Filter__principal s) (Filter__principal (Compl__compl s))) :=
+  X => s => IsCompl__of_eq (Filter X) (Filter__principal s) (Filter__principal (Compl__compl s)) (Eq__mpr (id (congrArg (Filter X) Prop (Min__min (Filter__principal s) (Filter__principal (Compl__compl s))) (Filter__principal (Inter__inter s (Compl__compl s))) (_a => Eqt (Filter X) _a Bot__bot) (Filter__inf_principal X s (Compl__compl s)))) (Eq__mpr (id (congrArg (powerset X) Prop (Inter__inter s (Compl__compl s)) EmptyCollection__emptyCollection (_a1 => Eqt (Filter X) (Filter__principal _a1) Bot__bot) (Set__inter_compl_self X s))) (Eq__mpr (id (congrArg (Filter X) Prop (Filter__principal EmptyCollection__emptyCollection) Bot__bot (_a2 => Eqt (Filter X) _a2 Bot__bot) (Filter__principal_empty X))) (Eq__refl Bot__bot)))) (Eq__mpr (id (congrArg (Filter X) Prop (Max__max (Filter__principal s) (Filter__principal (Compl__compl s))) (Filter__principal (Union__union s (Compl__compl s))) (_a3 => Eqt (Filter X) _a3 Top__top) (Filter__sup_principal X s (Compl__compl s)))) (Eq__mpr (id (congrArg (powerset X) Prop (Union__union s (Compl__compl s)) Set__univ (_a4 => Eqt (Filter X) (Filter__principal _a4) Top__top) (Set__union_compl_self X s))) (Eq__mpr (id (congrArg (Filter X) Prop (Filter__principal Set__univ) Top__top (_a5 => Eqt (Filter X) _a5 Top__top) (Filter__principal_univ X))) (Eq__refl Top__top)))).
+
+(; //LEAN:Filter.mem_inf_principal' ;)
+Filter__mem_inf_principal' : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Membership__mem (Min__min f (Filter__principal t)) s) (Membership__mem f (Union__union (Compl__compl t) s))).
+
+(; //LEAN:Filter.mem_inf_principal ;)
+Filter__mem_inf_principal : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Membership__mem (Min__min f (Filter__principal t)) s) (Membership__mem f (Set__ofPred (x => if (Membership__mem t x) (Membership__mem s x))))).
+
+(; //LEAN:Filter.iSup_inf_principal ;)
+Filter__iSup_inf_principal : (X : Set) -> (I : Set) -> (f : (Elem I -> Filter X)) -> (s : Elem (powerset X)) -> Proof (Eqt (Filter X) (iSup (i => Min__min (f i) (Filter__principal s))) (Min__min (iSup (i1 => f i1)) (Filter__principal s))).
+
+(; //LEAN:Filter.inf_principal_eq_bot ;)
+Filter__inf_principal_eq_bot : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> Proof (iff (Eqt (Filter X) (Min__min f (Filter__principal s)) Bot__bot) (Membership__mem f (Compl__compl s))).
+
+(; //LEAN:Filter.mem_of_eq_bot ;)
+Filter__mem_of_eq_bot : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> (h : Proof (Eqt (Filter X) (Min__min f (Filter__principal (Compl__compl s))) Bot__bot)) -> Proof (Membership__mem f s).
+
+(; //LEAN:Filter.sdiff_mem_inf_principal_compl ;)
+def Filter__sdiff_mem_inf_principal_compl : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> (hs : Proof (Membership__mem f s)) -> (t : Elem (powerset X)) -> Proof (Membership__mem (Min__min f (Filter__principal (Compl__compl t))) (SDiff__sdiff s t)) :=
+  X => f => s => hs => t => Filter__inter_mem_inf X f (Filter__principal (Compl__compl t)) s (Compl__compl t) hs (Filter__mem_principal_self X (Compl__compl t)).
+
+(; //LEAN:Filter.principal_le_iff ;)
+Filter__principal_le_iff : (X : Set) -> (s : Elem (powerset X)) -> (f : Elem (Filter X)) -> Proof (iff (Leq (Filter__principal s) f) (forall (powerset X) (V => if (Membership__mem f V) (Set__Subset s V)))).
+
+(; //LEAN:Filter.join_mono ;)
+def Filter__join_mono : (X : Set) -> (x : Elem (Filter (Filter X))) -> (x1 : Elem (Filter (Filter X))) -> (h : Proof (Leq x x1)) -> Proof (Leq (Filter__join x) (Filter__join x1)) :=
+  X => x => x1 => h => forallI (powerset X) (x2 => if (Membership__mem (Filter__join x1) x2) (Membership__mem x (Set__ofPred (t4 => Membership__mem t4 x2)))) (x2 => ifI (Membership__mem (Filter__join x1) x2) (Membership__mem x (Set__ofPred (t3 => Membership__mem t3 x2))) (hs => ifE (Membership__mem x1 (Set__ofPred (t1 => Membership__mem t1 x2))) (Membership__mem x (Set__ofPred (t2 => Membership__mem t2 x2))) (forallE (powerset (Filter X)) (U => if (Membership__mem x1 U) (Membership__mem x U)) h (Set__ofPred (t => Membership__mem t x2))) hs)).
+
+(; //LEAN:Filter.eventually_iff ;)
+def Filter__eventually_iff : (X : Set) -> (f : Elem (Filter X)) -> (P : (Elem X -> Prop)) -> Proof (iff (Filter__Eventually (x => P x) f) (Membership__mem f (Set__ofPred (x1 => P x1)))) :=
+  X => f => P => Iff__rfl (Filter__Eventually (x => P x) f).
+
+(; //LEAN:Filter.eventually_mem_set ;)
+def Filter__eventually_mem_set : (X : Set) -> (s : Elem (powerset X)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__Eventually (x => Membership__mem s x) l) (Membership__mem l s)) :=
+  X => s => l => Iff__rfl (Filter__Eventually (x => Membership__mem s x) l).
+
+(; //LEAN:Filter.ext' ;)
+def Filter__ext' : (X : Set) -> (x : Elem (Filter X)) -> (x1 : Elem (Filter X)) -> (h : Proof (forall (Elem X -> Prop) (p => iff (Filter__Eventually (x2 => p x2) x) (Filter__Eventually (x3 => p x3) x1)))) -> Proof (Eqt (Filter X) x x1) :=
+  X => x => x1 => h => Filter__ext X x x1 (iffEr (forall (powerset X) (y => iff (Membership__mem x y) (Membership__mem x1 y))) (forall (Elem X -> Prop) (x2 => iff (Membership__mem x (Set__ofPred (x3 => x2 x3))) (Membership__mem x1 (Set__ofPred (x4 => x2 x4))))) (Function__Surjective__forall (Elem X -> Prop) (powerset X) Set__ofPred (Function__Bijective__surjective (Elem X -> Prop) (powerset X) Set__ofPred (Set__ofPred_bijective X)) (s => iff (Membership__mem x s) (Membership__mem x1 s))) h).
+
+(; //LEAN:Filter.Eventually.filter_mono ;)
+def Filter__Eventually__filter_mono : (X : Set) -> (x : Elem (Filter X)) -> (x1 : Elem (Filter X)) -> (h : Proof (Leq x x1)) -> (p : (Elem X -> Prop)) -> (hp : Proof (Filter__Eventually (x3 => p x3) x1)) -> Proof (Filter__Eventually (x2 => p x2) x) :=
+  X => x => x1 => h => p => hp => ifE (Membership__mem x1 (Set__ofPred (x3 => p x3))) (Membership__mem x (Set__ofPred (x4 => p x4))) (forallE (powerset X) (U => if (Membership__mem x1 U) (Membership__mem x U)) h (Set__ofPred (x2 => p x2))) hp.
+
+(; //LEAN:Filter.eventually_of_mem ;)
+def Filter__eventually_of_mem : (X : Set) -> (f : Elem (Filter X)) -> (P : (Elem X -> Prop)) -> (U : Elem (powerset X)) -> (hU : Proof (Membership__mem f U)) -> (h : Proof (forall X (x1 => if (Membership__mem U x1) (P x1)))) -> Proof (Filter__Eventually (x => P x) f) :=
+  X => f => P => U => hU => h => Filter__mem_of_superset X f U (Set__ofPred (x => P x)) hU h.
+
+(; //LEAN:Filter.Eventually.and ;)
+def Filter__Eventually__and : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (h : Proof (Filter__Eventually (x2 => p x2) f)) -> (h1 : Proof (Filter__Eventually (x1 => q x1) f)) -> Proof (Filter__Eventually (x => and (p x) (q x)) f) :=
+  X => p => q => f => Filter__inter_mem X f (Set__ofPred (x => p x)) (Set__ofPred (x1 => q x1)).
+
+(; //LEAN:Filter.eventually_true ;)
+def Filter__eventually_true : (X : Set) -> (f : Elem (Filter X)) -> Proof (Filter__Eventually (x => True) f) :=
+  X => f => Filter__univ_mem X f.
+
+(; //LEAN:Filter.Eventually.of_forall ;)
+def Filter__Eventually__of_forall : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (hp : Proof (forall X (x1 => p x1))) -> Proof (Filter__Eventually (x => p x) f) :=
+  X => p => f => hp => Filter__univ_mem' X f (Set__ofPred (x => p x)) hp.
+
+(; //LEAN:Filter.eventually_false_iff_eq_bot ;)
+def Filter__eventually_false_iff_eq_bot : (X : Set) -> (f : Elem (Filter X)) -> Proof (iff (Filter__Eventually (x => false) f) (Eqt (Filter X) f Bot__bot)) :=
+  X => f => Filter__empty_mem_iff_bot X f.
+
+(; //LEAN:Filter.eventually_const ;)
+Filter__eventually_const : (X : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (p : Prop) -> Proof (iff (Filter__Eventually (x => p) f) p).
+
+(; //LEAN:Filter.const_eventuallyEq' ;)
+def Filter__const_eventuallyEq' : (X : Set) -> (Y : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (a : Elem Y) -> (b : Elem Y) -> Proof (iff (Filter__Eventually (x => Eqt Y a b) f) (Eqt Y a b)) :=
+  X => Y => f => h => a => b => Filter__eventually_const X f (Eqt Y a b).
+
+(; //LEAN:Filter.const_eventuallyEq ;)
+def Filter__const_eventuallyEq : (X : Set) -> (Y : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (a : Elem Y) -> (b : Elem Y) -> Proof (iff (Filter__EventuallyEq f (x => a) (x1 => b)) (Eqt Y a b)) :=
+  X => Y => f => h => a => b => Filter__const_eventuallyEq' X Y f a b.
+
+(; //LEAN:Filter.eventually_iff_exists_mem ;)
+def Filter__eventually_iff_exists_mem : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> Proof (iff (Filter__Eventually (x => p x) f) (exists (powerset X) (v => and (Membership__mem f v) (forall X (y => if (Membership__mem v y) (p y)))))) :=
+  X => p => f => Iff__symm (exists (powerset X) (t => and (Membership__mem f t) (Set__Subset t (Set__ofPred (x => p x))))) (Membership__mem f (Set__ofPred (x1 => p x1))) (Filter__exists_mem_subset_iff X f (Set__ofPred (x2 => p x2))).
+
+(; //LEAN:Filter.Eventually.exists_mem ;)
+def Filter__Eventually__exists_mem : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (hp : Proof (Filter__Eventually (x => p x) f)) -> Proof (exists (powerset X) (v => and (Membership__mem f v) (forall X (y => if (Membership__mem v y) (p y))))) :=
+  X => p => f => hp => iffEl (Filter__Eventually (x => p x) f) (exists (powerset X) (v => and (Membership__mem f v) (forall X (y => if (Membership__mem v y) (p y))))) (Filter__eventually_iff_exists_mem X p f) hp.
+
+(; //LEAN:Filter.Eventually.mp ;)
+def Filter__Eventually__mp : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (hp : Proof (Filter__Eventually (x2 => p x2) f)) -> (hq : Proof (Filter__Eventually (x1 => if (p x1) (q x1)) f)) -> Proof (Filter__Eventually (x => q x) f) :=
+  X => p => q => f => hp => hq => Filter__mp_mem X f (Set__ofPred (x => p x)) (Set__ofPred (x1 => q x1)) hp hq.
+
+(; //LEAN:Filter.Eventually.mono ;)
+def Filter__Eventually__mono : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (hp : Proof (Filter__Eventually (x2 => p x2) f)) -> (hq : Proof (forall X (x1 => if (p x1) (q x1)))) -> Proof (Filter__Eventually (x => q x) f) :=
+  X => p => q => f => hp => hq => Filter__Eventually__mp X p q f hp (Filter__Eventually__of_forall X (x => if (p x) (q x)) f hq).
+
+(; //LEAN:Filter.forall_eventually_of_eventually_forall ;)
+def Filter__forall_eventually_of_eventually_forall : (X : Set) -> (Y : Set) -> (f : Elem (Filter X)) -> (p : (Elem X -> Elem Y -> Prop)) -> (h : Proof (Filter__Eventually (x1 => forall Y (y1 => p x1 y1)) f)) -> (y : Elem Y) -> Proof (Filter__Eventually (x => p x y) f) :=
+  X => Y => f => p => h => y => Filter__Eventually__mono X (x => forall Y (y1 => p x y1)) (x1 => p x1 y) f h (forallI X (x2 => if (forall Y (y4 => p x2 y4)) (p x2 y)) (x2 => ifI (forall Y (y3 => p x2 y3)) (p x2 y) (h1 => forallE Y (y2 => p x2 y2) h1 y))).
+
+(; //LEAN:Filter.eventually_and ;)
+def Filter__eventually_and : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> Proof (iff (Filter__Eventually (x => and (p x) (q x)) f) (and (Filter__Eventually (x1 => p x1) f) (Filter__Eventually (x2 => q x2) f))) :=
+  X => p => q => f => Filter__inter_mem_iff X f (Set__ofPred (x => p x)) (Set__ofPred (x1 => q x1)).
+
+(; //LEAN:Filter.Eventually.congr ;)
+def Filter__Eventually__congr : (X : Set) -> (f : Elem (Filter X)) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h' : Proof (Filter__Eventually (x2 => p x2) f)) -> (h : Proof (Filter__Eventually (x1 => iff (p x1) (q x1)) f)) -> Proof (Filter__Eventually (x => q x) f) :=
+  X => f => p => q => h' => h => Filter__Eventually__mp X p q f h' (Filter__Eventually__mono X (x => iff (p x) (q x)) (x1 => if (p x1) (q x1)) f h (forallI X (x2 => if (iff (p x2) (q x2)) (if (p x2) (q x2))) (x2 => ifI (iff (p x2) (q x2)) (if (p x2) (q x2)) (hx => iffEl (p x2) (q x2) hx)))).
+
+(; //LEAN:Filter.eventually_congr ;)
+Filter__eventually_congr : (X : Set) -> (f : Elem (Filter X)) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h : Proof (Filter__Eventually (x2 => iff (p x2) (q x2)) f)) -> Proof (iff (Filter__Eventually (x => p x) f) (Filter__Eventually (x1 => q x1) f)).
+
+(; //LEAN:Filter.eventually_or_distrib_left ;)
+Filter__eventually_or_distrib_left : (X : Set) -> (f : Elem (Filter X)) -> (p : Prop) -> (q : (Elem X -> Prop)) -> Proof (iff (Filter__Eventually (x => or p (q x)) f) (or p (Filter__Eventually (x1 => q x1) f))).
+
+(; //LEAN:Filter.eventually_or_distrib_right ;)
+Filter__eventually_or_distrib_right : (X : Set) -> (f : Elem (Filter X)) -> (p : (Elem X -> Prop)) -> (q : Prop) -> Proof (iff (Filter__Eventually (x => or (p x) q) f) (or (Filter__Eventually (x1 => p x1) f) q)).
+
+(; //LEAN:Filter.eventually_imp_distrib_left ;)
+Filter__eventually_imp_distrib_left : (X : Set) -> (f : Elem (Filter X)) -> (p : Prop) -> (q : (Elem X -> Prop)) -> Proof (iff (Filter__Eventually (x => if p (q x)) f) (if p (Filter__Eventually (x1 => q x1) f))).
+
+(; //LEAN:Filter.eventually_bot ;)
+def Filter__eventually_bot : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Filter__Eventually (x => p x) Bot__bot) :=
+  X => p => True__intro.
+
+(; //LEAN:Filter.eventually_top ;)
+def Filter__eventually_top : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (iff (Filter__Eventually (x => p x) Top__top) (forall X (x1 => p x1))) :=
+  X => p => Iff__rfl (Filter__Eventually (x => p x) Top__top).
+
+(; //LEAN:Filter.eventually_sup ;)
+def Filter__eventually_sup : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> Proof (iff (Filter__Eventually (x => p x) (Max__max f g)) (and (Filter__Eventually (x1 => p x1) f) (Filter__Eventually (x2 => p x2) g))) :=
+  X => p => f => g => Iff__rfl (Filter__Eventually (x => p x) (Max__max f g)).
+
+(; //LEAN:Filter.eventually_sSup ;)
+def Filter__eventually_sSup : (X : Set) -> (p : (Elem X -> Prop)) -> (fs : Elem (powerset (Filter X))) -> Proof (iff (Filter__Eventually (x => p x) (SupSet__sSup fs)) (forall (Filter X) (f => if (Membership__mem fs f) (Filter__Eventually (x1 => p x1) f)))) :=
+  X => p => fs => Iff__rfl (Filter__Eventually (x => p x) (SupSet__sSup fs)).
+
+(; //LEAN:Filter.eventually_iSup ;)
+def Filter__eventually_iSup : (X : Set) -> (I : Set) -> (p : (Elem X -> Prop)) -> (fs : (Elem I -> Filter X)) -> Proof (iff (Filter__Eventually (x => p x) (iSup (b => fs b))) (forall I (b1 => Filter__Eventually (x1 => p x1) (fs b1)))) :=
+  X => I => p => fs => Filter__mem_iSup X I (Set__ofPred (x => p x)) (b => fs b).
+
+(; //LEAN:Filter.eventually_principal ;)
+def Filter__eventually_principal : (X : Set) -> (a : Elem (powerset X)) -> (p : (Elem X -> Prop)) -> Proof (iff (Filter__Eventually (x => p x) (Filter__principal a)) (forall X (x1 => if (Membership__mem a x1) (p x1)))) :=
+  X => a => p => Iff__rfl (Filter__Eventually (x => p x) (Filter__principal a)).
+
+(; //LEAN:Filter.Eventually.forall_mem ;)
+def Filter__Eventually__forall_mem : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> (P : (Elem X -> Prop)) -> (hP : Proof (Filter__Eventually (x1 => P x1) f)) -> (hf : Proof (Leq (Filter__principal s) f)) -> (x : Elem X) -> (h : Proof (Membership__mem s x)) -> Proof (P x) :=
+  X => f => s => P => hP => hf => iffEl (Filter__Eventually (x => P x) (Filter__principal s)) (forall X (x1 => if (Membership__mem s x1) (P x1))) (Filter__eventually_principal X s P) (Filter__Eventually__filter_mono X (Filter__principal s) f hf P hP).
+
+(; //LEAN:Filter.eventually_inf ;)
+def Filter__eventually_inf : (X : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (p : (Elem X -> Prop)) -> Proof (iff (Filter__Eventually (x => p x) (Min__min f g)) (exists (powerset X) (s => and (Membership__mem f s) (exists (powerset X) (t => and (Membership__mem g t) (forall X (x1 => if (Membership__mem (Inter__inter s t) x1) (p x1)))))))) :=
+  X => f => g => p => Filter__mem_inf_iff_superset X f g (Set__ofPred (x => p x)).
+
+(; //LEAN:Filter.eventually_inf_principal ;)
+def Filter__eventually_inf_principal : (X : Set) -> (f : Elem (Filter X)) -> (p : (Elem X -> Prop)) -> (s : Elem (powerset X)) -> Proof (iff (Filter__Eventually (x => p x) (Min__min f (Filter__principal s))) (Filter__Eventually (x1 => if (Membership__mem s x1) (p x1)) f)) :=
+  X => f => p => s => Filter__mem_inf_principal X f (Set__ofPred (x => p x)) s.
+
+(; //LEAN:Filter.eventually_iff_all_subsets ;)
+Filter__eventually_iff_all_subsets : (X : Set) -> (f : Elem (Filter X)) -> (p : (Elem X -> Prop)) -> Proof (iff (Filter__Eventually (x => p x) f) (forall (powerset X) (s => Filter__Eventually (x1 => if (Membership__mem s x1) (p x1)) f))).
+
+(; //LEAN:Filter.Eventually.frequently ;)
+def Filter__Eventually__frequently : (X : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (p : (Elem X -> Prop)) -> (h1 : Proof (Filter__Eventually (x1 => p x1) f)) -> Proof (Filter__Frequently (x => p x) f) :=
+  X => f => h => p => h1 => Filter__compl_notMem X f (Set__ofPred (x => p x)) h1.
+
+(; //LEAN:Filter.Frequently.of_forall ;)
+def Filter__Frequently__of_forall : (X : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (p : (Elem X -> Prop)) -> (h1 : Proof (forall X (x1 => p x1))) -> Proof (Filter__Frequently (x => p x) f) :=
+  X => f => h => p => h1 => Filter__Eventually__frequently X f p (Filter__Eventually__of_forall X p f h1).
+
+(; //LEAN:Filter.Frequently.mp ;)
+def Filter__Frequently__mp : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (h : Proof (Filter__Frequently (x2 => p x2) f)) -> (hpq : Proof (Filter__Eventually (x1 => if (p x1) (q x1)) f)) -> Proof (Filter__Frequently (x => q x) f) :=
+  X => p => q => f => h => hpq => mt (Filter__Eventually (x => not (q x)) f) (Filter__Eventually (x1 => not (p x1)) f) (ifI (Filter__Eventually (x9 => not (q x9)) f) (Filter__Eventually (x10 => not (p x10)) f) (hq => Filter__Eventually__mp X (x2 => not ((x3 => q x3) x2)) (x4 => not (p x4)) f hq (Filter__Eventually__mono X (x5 => if (p x5) (q x5)) (x6 => if (not ((x7 => q x7) x6)) (not (p x6))) f hpq (forallI X (x8 => if (if (p x8) (q x8)) (if (not (q x8)) (not (p x8)))) (x8 => mt (p x8) (q x8)))))) h.
+
+(; //LEAN:Filter.frequently_congr ;)
+def Filter__frequently_congr : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (h : Proof (Filter__Eventually (x2 => iff (p x2) (q x2)) f)) -> Proof (iff (Filter__Frequently (x => p x) f) (Filter__Frequently (x1 => q x1) f)) :=
+  X => p => q => f => h => iffI (Filter__Frequently (x => p x) f) (Filter__Frequently (x1 => q x1) f) (h' => Filter__Frequently__mp X p q f h' (Filter__Eventually__mono X (x2 => iff (p x2) (q x2)) (x3 => if (p x3) (q x3)) f h (forallI X (x4 => if (iff (p x4) (q x4)) (if (p x4) (q x4))) (x4 => iffEl (p x4) (q x4))))) (h'1 => Filter__Frequently__mp X q p f h'1 (Filter__Eventually__mono X (x5 => iff (p x5) (q x5)) (x6 => if (q x6) (p x6)) f h (forallI X (x7 => if (iff (p x7) (q x7)) (if (q x7) (p x7))) (x7 => iffEr (p x7) (q x7))))).
+
+(; //LEAN:Filter.Frequently.filter_mono ;)
+def Filter__Frequently__filter_mono : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> (h : Proof (Filter__Frequently (x1 => p x1) f)) -> (hle : Proof (Leq f g)) -> Proof (Filter__Frequently (x => p x) g) :=
+  X => p => f => g => h => hle => mt (Filter__Eventually (x => not (p x)) g) (Filter__Eventually (x1 => not (p x1)) f) (ifI (Filter__Eventually (x4 => not (p x4)) g) (Filter__Eventually (x5 => not (p x5)) f) (h' => Filter__Eventually__filter_mono X f g hle (x2 => not ((x3 => p x3) x2)) h')) h.
+
+(; //LEAN:Filter.Frequently.mono ;)
+def Filter__Frequently__mono : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (h : Proof (Filter__Frequently (x2 => p x2) f)) -> (hpq : Proof (forall X (x1 => if (p x1) (q x1)))) -> Proof (Filter__Frequently (x => q x) f) :=
+  X => p => q => f => h => hpq => Filter__Frequently__mp X p q f h (Filter__Eventually__of_forall X (x => if (p x) (q x)) f hpq).
+
+(; //LEAN:Filter.Frequently.and_eventually ;)
+Filter__Frequently__and_eventually : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (hp : Proof (Filter__Frequently (x2 => p x2) f)) -> (hq : Proof (Filter__Eventually (x1 => q x1) f)) -> Proof (Filter__Frequently (x => and (p x) (q x)) f).
+
+(; //LEAN:Filter.Eventually.and_frequently ;)
+Filter__Eventually__and_frequently : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (hp : Proof (Filter__Eventually (x2 => p x2) f)) -> (hq : Proof (Filter__Frequently (x1 => q x1) f)) -> Proof (Filter__Frequently (x => and (p x) (q x)) f).
+
+(; //LEAN:Filter.Frequently.exists ;)
+Filter__Frequently__exists : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (hp : Proof (Filter__Frequently (x1 => p x1) f)) -> Proof (exists X (x => p x)).
+
+(; //LEAN:Filter.Eventually.exists ;)
+def Filter__Eventually__exists : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (hp : Proof (Filter__Eventually (x1 => p x1) f)) -> Proof (exists X (x => p x)) :=
+  X => p => f => h => hp => Filter__Frequently__exists X p f (Filter__Eventually__frequently X f p hp).
+
+(; //LEAN:Filter.frequently_iff_neBot ;)
+Filter__frequently_iff_neBot : (X : Set) -> (l : Elem (Filter X)) -> (p : (Elem X -> Prop)) -> Proof (iff (Filter__Frequently (x => p x) l) (Filter__NeBot (Min__min l (Filter__principal (Set__ofPred (x1 => p x1)))))).
+
+(; //LEAN:Filter.frequently_mem_iff_neBot ;)
+def Filter__frequently_mem_iff_neBot : (X : Set) -> (l : Elem (Filter X)) -> (s : Elem (powerset X)) -> Proof (iff (Filter__Frequently (x => Membership__mem s x) l) (Filter__NeBot (Min__min l (Filter__principal s)))) :=
+  X => l => s => Filter__frequently_iff_neBot X l (Membership__mem s).
+
+(; //LEAN:Filter.frequently_iff_forall_eventually_exists_and ;)
+Filter__frequently_iff_forall_eventually_exists_and : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> Proof (iff (Filter__Frequently (x => p x) f) (forall (Elem X -> Prop) (q => if (Filter__Eventually (x2 => q x2) f) (exists X (x1 => and (p x1) (q x1)))))).
+
+(; //LEAN:Filter.frequently_iff ;)
+Filter__frequently_iff : (X : Set) -> (f : Elem (Filter X)) -> (P : (Elem X -> Prop)) -> Proof (iff (Filter__Frequently (x => P x) f) (forall (powerset X) (U => if (Membership__mem f U) (exists X (x1 => and (Membership__mem U x1) (P x1)))))).
+
+(; //LEAN:Filter.not_eventually ;)
+Filter__not_eventually : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> Proof (iff (not (Filter__Eventually (x => p x) f)) (Filter__Frequently (x1 => not (p x1)) f)).
+
+(; //LEAN:Filter.not_frequently ;)
+Filter__not_frequently : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> Proof (iff (not (Filter__Frequently (x => p x) f)) (Filter__Eventually (x1 => not (p x1)) f)).
+
+(; //LEAN:Filter.frequently_true_iff_neBot ;)
+Filter__frequently_true_iff_neBot : (X : Set) -> (f : Elem (Filter X)) -> Proof (iff (Filter__Frequently (x => True) f) (Filter__NeBot f)).
+
+(; //LEAN:Filter.frequently_false ;)
+Filter__frequently_false : (X : Set) -> (f : Elem (Filter X)) -> Proof (not (Filter__Frequently (x => false) f)).
+
+(; //LEAN:Filter.frequently_const ;)
+Filter__frequently_const : (X : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (p : Prop) -> Proof (iff (Filter__Frequently (x => p) f) p).
+
+(; //LEAN:Filter.frequently_or_distrib ;)
+Filter__frequently_or_distrib : (X : Set) -> (f : Elem (Filter X)) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> Proof (iff (Filter__Frequently (x => or (p x) (q x)) f) (or (Filter__Frequently (x1 => p x1) f) (Filter__Frequently (x2 => q x2) f))).
+
+(; //LEAN:Filter.frequently_or_distrib_left ;)
+Filter__frequently_or_distrib_left : (X : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (p : Prop) -> (q : (Elem X -> Prop)) -> Proof (iff (Filter__Frequently (x => or p (q x)) f) (or p (Filter__Frequently (x1 => q x1) f))).
+
+(; //LEAN:Filter.frequently_or_distrib_right ;)
+Filter__frequently_or_distrib_right : (X : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (p : (Elem X -> Prop)) -> (q : Prop) -> Proof (iff (Filter__Frequently (x => or (p x) q) f) (or (Filter__Frequently (x1 => p x1) f) q)).
+
+(; //LEAN:Filter.frequently_imp_distrib ;)
+Filter__frequently_imp_distrib : (X : Set) -> (f : Elem (Filter X)) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> Proof (iff (Filter__Frequently (x => if (p x) (q x)) f) (if (Filter__Eventually (x2 => p x2) f) (Filter__Frequently (x1 => q x1) f))).
+
+(; //LEAN:Filter.frequently_imp_distrib_left ;)
+Filter__frequently_imp_distrib_left : (X : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (p : Prop) -> (q : (Elem X -> Prop)) -> Proof (iff (Filter__Frequently (x => if p (q x)) f) (if p (Filter__Frequently (x1 => q x1) f))).
+
+(; //LEAN:Filter.frequently_imp_distrib_right ;)
+Filter__frequently_imp_distrib_right : (X : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (p : (Elem X -> Prop)) -> (q : Prop) -> Proof (iff (Filter__Frequently (x => if (p x) q) f) (if (Filter__Eventually (x1 => p x1) f) q)).
+
+(; //LEAN:Filter.eventually_imp_distrib_right ;)
+Filter__eventually_imp_distrib_right : (X : Set) -> (f : Elem (Filter X)) -> (p : (Elem X -> Prop)) -> (q : Prop) -> Proof (iff (Filter__Eventually (x => if (p x) q) f) (if (Filter__Frequently (x1 => p x1) f) q)).
+
+(; //LEAN:Filter.frequently_and_distrib_left ;)
+Filter__frequently_and_distrib_left : (X : Set) -> (f : Elem (Filter X)) -> (p : Prop) -> (q : (Elem X -> Prop)) -> Proof (iff (Filter__Frequently (x => and p (q x)) f) (and p (Filter__Frequently (x1 => q x1) f))).
+
+(; //LEAN:Filter.frequently_and_distrib_right ;)
+Filter__frequently_and_distrib_right : (X : Set) -> (f : Elem (Filter X)) -> (p : (Elem X -> Prop)) -> (q : Prop) -> Proof (iff (Filter__Frequently (x => and (p x) q) f) (and (Filter__Frequently (x1 => p x1) f) q)).
+
+(; //LEAN:Filter.frequently_bot ;)
+Filter__frequently_bot : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (not (Filter__Frequently (x => p x) Bot__bot)).
+
+(; //LEAN:Filter.frequently_top ;)
+Filter__frequently_top : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (iff (Filter__Frequently (x => p x) Top__top) (exists X (x1 => p x1))).
+
+(; //LEAN:Filter.frequently_principal ;)
+Filter__frequently_principal : (X : Set) -> (a : Elem (powerset X)) -> (p : (Elem X -> Prop)) -> Proof (iff (Filter__Frequently (x => p x) (Filter__principal a)) (exists X (x1 => and (Membership__mem a x1) (p x1)))).
+
+(; //LEAN:Filter.frequently_inf_principal ;)
+Filter__frequently_inf_principal : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> (p : (Elem X -> Prop)) -> Proof (iff (Filter__Frequently (x => p x) (Min__min f (Filter__principal s))) (Filter__Frequently (x1 => and (Membership__mem s x1) (p x1)) f)).
+
+(; //LEAN:Filter.Frequently.of_inf_principal ;)
+def Filter__Frequently__of_inf_principal : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> (p : (Elem X -> Prop)) -> (h : Proof (Filter__Frequently (x1 => p x1) (Min__min f (Filter__principal s)))) -> Proof (Filter__Frequently (x => and (Membership__mem s x) (p x)) f) :=
+  X => f => s => p => iffEl (Filter__Frequently (x => p x) (Min__min f (Filter__principal s))) (Filter__Frequently (x1 => and (Membership__mem s x1) (p x1)) f) (Filter__frequently_inf_principal X f s p).
+
+(; //LEAN:Filter.Frequently.inf_principal ;)
+def Filter__Frequently__inf_principal : (X : Set) -> (f : Elem (Filter X)) -> (s : Elem (powerset X)) -> (p : (Elem X -> Prop)) -> (h : Proof (Filter__Frequently (x1 => and (Membership__mem s x1) (p x1)) f)) -> Proof (Filter__Frequently (x => p x) (Min__min f (Filter__principal s))) :=
+  X => f => s => p => iffEr (Filter__Frequently (x => p x) (Min__min f (Filter__principal s))) (Filter__Frequently (x1 => and (Membership__mem s x1) (p x1)) f) (Filter__frequently_inf_principal X f s p).
+
+(; //LEAN:Filter.frequently_sup ;)
+Filter__frequently_sup : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> (g : Elem (Filter X)) -> Proof (iff (Filter__Frequently (x => p x) (Max__max f g)) (or (Filter__Frequently (x1 => p x1) f) (Filter__Frequently (x2 => p x2) g))).
+
+(; //LEAN:Filter.frequently_sSup ;)
+Filter__frequently_sSup : (X : Set) -> (p : (Elem X -> Prop)) -> (fs : Elem (powerset (Filter X))) -> Proof (iff (Filter__Frequently (x => p x) (SupSet__sSup fs)) (exists (Filter X) (f => and (Membership__mem fs f) (Filter__Frequently (x1 => p x1) f)))).
+
+(; //LEAN:Filter.frequently_iSup ;)
+Filter__frequently_iSup : (X : Set) -> (Y : Set) -> (p : (Elem X -> Prop)) -> (fs : (Elem Y -> Filter X)) -> Proof (iff (Filter__Frequently (x => p x) (iSup (b => fs b))) (exists Y (b1 => Filter__Frequently (x1 => p x1) (fs b1)))).
+
+(; //LEAN:Filter.Eventually.choice ;)
+Filter__Eventually__choice : (X : Set) -> (Y : Set) -> (r : (Elem X -> Elem Y -> Prop)) -> (l : Elem (Filter X)) -> (_ : Proof (Filter__NeBot l)) -> (h1 : Proof (Filter__Eventually (x2 => exists Y (y => r x2 y)) l)) -> Proof (exists (Elem X -> Y) (f => Filter__Eventually (x => r x (f x)) l)).
+
+(; //LEAN:Filter.skolem ;)
+Filter__skolem : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof (forall I (i4 => Nonempty (x i4)))) -> (P : ((i3 : Elem I) -> Elem (x i3) -> Prop)) -> (F : Elem (Filter I)) -> Proof (iff (Filter__Eventually (i => exists (x i) (b => P i b)) F) (exists ((i2 : Elem I) -> x i2) (b1 => Filter__Eventually (i1 => P i1 (b1 i1)) F))).
+
+(; //LEAN:Filter.EventuallyEq.eventually ;)
+def Filter__EventuallyEq__eventually : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Filter__EventuallyEq l f g)) -> Proof (Filter__Eventually (x => Eqt Y (f x) (g x)) l) :=
+  X => Y => l => f => g => h => h.
+
+(; //LEAN:Filter.eventuallyEq_top ;)
+Filter__eventuallyEq_top : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> Proof (iff (Filter__EventuallyEq Top__top f g) (Eqt (Elem X -> Y) f g)).
+
+(; //LEAN:Filter.EventuallyEq.rw ;)
+Filter__EventuallyEq__rw : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (p : (Elem X -> Elem Y -> Prop)) -> (hf : Proof (Filter__Eventually (x1 => p x1 (f x1)) l)) -> Proof (Filter__Eventually (x => p x (g x)) l).
+
+(; //LEAN:Filter.eventuallyEqSet_iff ;)
+def Filter__eventuallyEqSet_iff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__EventuallyEqSet l s t) (Filter__Eventually (x => iff (Membership__mem s x) (Membership__mem t x)) l)) :=
+  X => s => t => l => Filter__eventually_congr X l (x => Eqt Prop ((x1 => Membership__mem s x1) x) ((x2 => Membership__mem t x2) x)) (x3 => iff (Membership__mem s x3) (Membership__mem t x3)) (Filter__Eventually__of_forall X (x4 => iff (Eqt Prop ((x5 => Membership__mem s x5) x4) ((x6 => Membership__mem t x6) x4)) (iff (Membership__mem s x4) (Membership__mem t x4))) l (forallI X (x7 => iff (Eqt Prop ((x10 => Membership__mem s x10) x7) ((x11 => Membership__mem t x11) x7)) (iff ((x12 => Membership__mem s x12) x7) ((x13 => Membership__mem t x13) x7))) (x7 => eq_iff_iff ((x8 => Membership__mem s x8) x7) ((x9 => Membership__mem t x9) x7)))).
+
+(; //LEAN:Filter.EventuallyEqSet.mem_iff ;)
+def Filter__EventuallyEqSet__mem_iff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEqSet l s t)) -> Proof (Filter__Eventually (x => iff (Membership__mem s x) (Membership__mem t x)) l) :=
+  X => s => t => l => iffEl (Filter__EventuallyEqSet l s t) (Filter__Eventually (x => iff (Membership__mem s x) (Membership__mem t x)) l) (Filter__eventuallyEqSet_iff X s t l).
+
+(; //LEAN:Filter.Eventually.set_eq ;)
+def Filter__Eventually__set_eq : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__Eventually (x => iff (Membership__mem s x) (Membership__mem t x)) l)) -> Proof (Filter__EventuallyEqSet l s t) :=
+  X => s => t => l => iffEr (Filter__EventuallyEqSet l s t) (Filter__Eventually (x => iff (Membership__mem s x) (Membership__mem t x)) l) (Filter__eventuallyEqSet_iff X s t l).
+
+(; //LEAN:Filter.eventuallyEqSet_empty ;)
+Filter__eventuallyEqSet_empty : (X : Set) -> (s : Elem (powerset X)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__EventuallyEqSet l s EmptyCollection__emptyCollection) (Filter__Eventually (x => not (Membership__mem s x)) l)).
+
+(; //LEAN:Filter.eventuallyEqSet_univ ;)
+Filter__eventuallyEqSet_univ : (X : Set) -> (s : Elem (powerset X)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__EventuallyEqSet l s Set__univ) (Membership__mem l s)).
+
+(; //LEAN:Filter.EventuallyEq.exists_mem ;)
+def Filter__EventuallyEq__exists_mem : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Filter__EventuallyEq l f g)) -> Proof (exists (powerset X) (s => and (Membership__mem l s) (Set__EqOn f g s))) :=
+  X => Y => l => f => g => h => Filter__Eventually__exists_mem X (x => Eqt Y (f x) (g x)) l h.
+
+(; //LEAN:Filter.eventuallyEq_of_mem ;)
+def Filter__eventuallyEq_of_mem : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (hs : Proof (Membership__mem l s)) -> (h : Proof (Set__EqOn f g s)) -> Proof (Filter__EventuallyEq l f g) :=
+  X => Y => l => f => g => s => hs => h => Filter__eventually_of_mem X l (x => Eqt Y (f x) (g x)) s hs h.
+
+(; //LEAN:Filter.eventuallyEq_iff_exists_mem ;)
+def Filter__eventuallyEq_iff_exists_mem : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> Proof (iff (Filter__EventuallyEq l f g) (exists (powerset X) (s => and (Membership__mem l s) (Set__EqOn f g s)))) :=
+  X => Y => l => f => g => Filter__eventually_iff_exists_mem X (x => Eqt Y (f x) (g x)) l.
+
+(; //LEAN:Filter.EventuallyEq.filter_mono ;)
+def Filter__EventuallyEq__filter_mono : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (l' : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (h1 : Proof (Leq l' l)) -> Proof (Filter__EventuallyEq l' f g) :=
+  X => Y => l => l' => f => g => h => h1 => ifE (Membership__mem l (Set__ofPred (x1 => Eqt Y (f x1) (g x1)))) (Membership__mem l' (Set__ofPred (x2 => Eqt Y (f x2) (g x2)))) (forallE (powerset X) (U => if (Membership__mem l U) (Membership__mem l' U)) h1 (Set__ofPred (x => Eqt Y (f x) (g x)))) h.
+
+(; //LEAN:Filter.EventuallyEq.refl ;)
+def Filter__EventuallyEq__refl : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> Proof (Filter__EventuallyEq l f f) :=
+  X => Y => l => f => Filter__Eventually__of_forall X (x => Eqt Y (f x) (f x)) l (forallI X (x1 => Eqt Y (f x1) (f x1)) (x1 => rfl)).
+
+(; //LEAN:Filter.EventuallyEq.rfl ;)
+def Filter__EventuallyEq__rfl : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> Proof (Filter__EventuallyEq l f f) :=
+  X => Y => l => f => Filter__EventuallyEq__refl X Y l f.
+
+(; //LEAN:Filter.EventuallyEq.of_eq ;)
+Filter__EventuallyEq__of_eq : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Eqt (Elem X -> Y) f g)) -> Proof (Filter__EventuallyEq l f g).
+
+(; //LEAN:Eq.eventuallyEq ;)
+def Eq__eventuallyEq : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Eqt (Elem X -> Y) f g)) -> Proof (Filter__EventuallyEq l f g) :=
+  Filter__EventuallyEq__of_eq.
+
+(; //LEAN:Filter.EventuallyEq.symm ;)
+def Filter__EventuallyEq__symm : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (H : Proof (Filter__EventuallyEq l f g)) -> Proof (Filter__EventuallyEq l g f) :=
+  X => Y => f => g => l => H => Filter__Eventually__mono X (x => Eqt Y (f x) (g x)) (x1 => Eqt Y (g x1) (f x1)) l H (forallI X (x2 => if (Eqt Y (f x2) (g x2)) (Eqt Y (g x2) (f x2))) (x2 => Eq__symm Y (f x2) (g x2))).
+
+(; //LEAN:Filter.eventuallyEq_comm ;)
+def Filter__eventuallyEq_comm : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__EventuallyEq l f g) (Filter__EventuallyEq l g f)) :=
+  X => Y => f => g => l => iffI (Filter__EventuallyEq l f g) (Filter__EventuallyEq l g f) (Filter__EventuallyEq__symm X Y f g l) (Filter__EventuallyEq__symm X Y g f l).
+
+(; //LEAN:Filter.EventuallyEq.trans ;)
+def Filter__EventuallyEq__trans : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : (Elem X -> Y)) -> (h1 : Proof (Filter__EventuallyEq l f g)) -> (h2 : Proof (Filter__EventuallyEq l g h)) -> Proof (Filter__EventuallyEq l f h) :=
+  X => Y => l => f => g => h => h1 => h2 => Filter__EventuallyEq__rw X Y l g h h2 (x => y => Eqt Y (f x) y) h1.
+
+(; //LEAN:Filter.EventuallyEq.congr_left ;)
+def Filter__EventuallyEq__congr_left : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : (Elem X -> Y)) -> (H : Proof (Filter__EventuallyEq l f g)) -> Proof (iff (Filter__EventuallyEq l f h) (Filter__EventuallyEq l g h)) :=
+  X => Y => l => f => g => h => H => iffI (Filter__EventuallyEq l f h) (Filter__EventuallyEq l g h) (Filter__EventuallyEq__trans X Y l g f h (Filter__EventuallyEq__symm X Y f g l H)) (Filter__EventuallyEq__trans X Y l f g h H).
+
+(; //LEAN:Filter.EventuallyEq.congr_right ;)
+def Filter__EventuallyEq__congr_right : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : (Elem X -> Y)) -> (H : Proof (Filter__EventuallyEq l g h)) -> Proof (iff (Filter__EventuallyEq l f g) (Filter__EventuallyEq l f h)) :=
+  X => Y => l => f => g => h => H => iffI (Filter__EventuallyEq l f g) (Filter__EventuallyEq l f h) (h1 => Filter__EventuallyEq__trans X Y l f g h h1 H) (h2 => Filter__EventuallyEq__trans X Y l f h g h2 (Filter__EventuallyEq__symm X Y g h l H)).
+
+(; //LEAN:Filter.EventuallyEq.prodMk ;)
+def Filter__EventuallyEq__prodMk : (X : Set) -> (Y : Set) -> (Z : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (f' : (Elem X -> Y)) -> (hf : Proof (Filter__EventuallyEq l f f')) -> (g : (Elem X -> Z)) -> (g' : (Elem X -> Z)) -> (hg : Proof (Filter__EventuallyEq l g g')) -> Proof (Filter__EventuallyEq l (x => Prod__mk (f x) (g x)) (x1 => Prod__mk (f' x1) (g' x1))) :=
+  X => Y => Z => l => f => f' => hf => g => g' => hg => Filter__Eventually__mp X (x => Eqt Y (f x) (f' x)) (x1 => Eqt (Prod Y Z) ((x2 => Prod__mk (f x2) (g x2)) x1) ((x3 => Prod__mk (f' x3) (g' x3)) x1)) l hf (Filter__Eventually__mono X (x4 => Eqt Z (g x4) (g' x4)) (x5 => if (Eqt Y (f x5) (f' x5)) (Eqt (Prod Y Z) ((x6 => Prod__mk (f x6) (g x6)) x5) ((x7 => Prod__mk (f' x7) (g' x7)) x5))) l hg (forallI X (x8 => if (Eqt Z (g x8) (g' x8)) (if (Eqt Y (f x8) (f' x8)) (Eqt (Prod Y Z) ((x16 => Prod__mk (f x16) (g x16)) x8) (Prod__mk (f' x8) (g' x8))))) (x8 => ifI (Eqt Z (g x8) (g' x8)) (if (Eqt Y (f x8) (f' x8)) (Eqt (Prod Y Z) ((x15 => Prod__mk (f x15) (g x15)) x8) (Prod__mk (f' x8) (g' x8)))) (h1 => ifI (Eqt Y (f x8) (f' x8)) (Eqt (Prod Y Z) ((x14 => Prod__mk (f x14) (g x14)) x8) (Prod__mk (f' x8) (g' x8))) (h2 => of_eq_true (Eqt (Prod Y Z) ((x9 => Prod__mk (f x9) (g x9)) x8) (Prod__mk (f' x8) (g' x8))) (Eq__trans Prop (Eqt (Prod Y Z) ((x10 => Prod__mk (f x10) (g x10)) x8) (Prod__mk (f' x8) (g' x8))) (Eqt (Prod Y Z) (Prod__mk (f' x8) (g' x8)) (Prod__mk (f' x8) (g' x8))) True (congrFun' (Prod Y Z) Prop (Eq ((x11 => Prod__mk (f x11) (g x11)) x8)) (Eq (Prod__mk (f' x8) (g' x8))) (congrArg (Prod Y Z) (Elem (Prod Y Z) -> Prop) ((x13 => Prod__mk (f x13) (g x13)) x8) (Prod__mk (f' x8) (g' x8)) Eq (congr Z (Prod Y Z) (Prod__mk (f x8)) (Prod__mk (f' x8)) (g x8) (g' x8) (congrArg Y (Elem Z -> Prod Y Z) (f x8) (f' x8) Prod__mk h2) h1)) (Prod__mk (f' x8) (g' x8))) (eq_self (Prod Y Z) (Prod__mk (f' x8) (g' x8))))))))).
+
+(; //LEAN:Filter.EventuallyEq.fun_comp ;)
+def Filter__EventuallyEq__fun_comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (H : Proof (Filter__EventuallyEq l f g)) -> (h : (Elem Y -> Z)) -> Proof (Filter__EventuallyEq l (Function__comp h f) (Function__comp h g)) :=
+  X => Y => Z => f => g => l => H => h => Filter__Eventually__mono X (x => Eqt Y (f x) (g x)) (x1 => Eqt Z (Function__comp h f x1) (Function__comp h g x1)) l H (forallI X (x2 => if (Eqt Y (f x2) (g x2)) (Eqt Z (h (f x2)) (h (g x2)))) (x2 => ifI (Eqt Y (f x2) (g x2)) (Eqt Z (h (f x2)) (h (g x2))) (hx => congr_arg Y Z (f x2) (g x2) h hx))).
+
+(; //LEAN:Filter.EventuallyEq.comp₂ ;)
+def Filter__EventuallyEq__comp_u2082_ : (X : Set) -> (Y : Set) -> (Z : Set) -> (W : Set) -> (f : (Elem X -> Y)) -> (f' : (Elem X -> Y)) -> (g : (Elem X -> Z)) -> (g' : (Elem X -> Z)) -> (l : Elem (Filter X)) -> (Hf : Proof (Filter__EventuallyEq l f f')) -> (h : (Elem Y -> Elem Z -> W)) -> (Hg : Proof (Filter__EventuallyEq l g g')) -> Proof (Filter__EventuallyEq l (x => h (f x) (g x)) (x1 => h (f' x1) (g' x1))) :=
+  X => Y => Z => W => f => f' => g => g' => l => Hf => h => Hg => Filter__EventuallyEq__fun_comp X (Prod Y Z) W (x => Prod__mk (f x) (g x)) (x1 => Prod__mk (f' x1) (g' x1)) l (Filter__EventuallyEq__prodMk X Y Z l f f' Hf g g' Hg) (Function__uncurry h).
+
+(; //LEAN:Filter.EventuallyEq.mul ;)
+def Filter__EventuallyEq__mul : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (f' : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (g' : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (h' : Proof (Filter__EventuallyEq l f' g')) -> Proof (Filter__EventuallyEq l (times f f') (times g g')) :=
+  X => Y => f => f' => g => g' => l => h => h' => Filter__EventuallyEq__comp_u2082_ X Y Y Y f g f' g' l h (x1 => x2 => times x1 x2) h'.
+
+(; //LEAN:Filter.EventuallyEq.add ;)
+Filter__EventuallyEq__add : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (f' : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (g' : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (h' : Proof (Filter__EventuallyEq l f' g')) -> Proof (Filter__EventuallyEq l (plus f f') (plus g g')).
+
+(; //LEAN:Filter.EventuallyEq.fun_mul ;)
+Filter__EventuallyEq__fun_mul : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (f' : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (g' : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (h' : Proof (Filter__EventuallyEq l f' g')) -> Proof (Filter__EventuallyEq l (i => times (f i) (f' i)) (i1 => times (g i1) (g' i1))).
+
+(; //LEAN:Filter.EventuallyEq.fun_add ;)
+Filter__EventuallyEq__fun_add : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (f' : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (g' : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (h' : Proof (Filter__EventuallyEq l f' g')) -> Proof (Filter__EventuallyEq l (i => plus (f i) (f' i)) (i1 => plus (g i1) (g' i1))).
+
+(; //LEAN:Filter.EventuallyEq.add_left ;)
+Filter__EventuallyEq__add_left : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (x1 : (Elem X -> Y)) -> (x2 : (Elem X -> Y)) -> (x3 : (Elem X -> Y)) -> (h : Proof (Filter__EventuallyEq l x1 x2)) -> Proof (Filter__EventuallyEq l (plus x3 x1) (plus x3 x2)).
+
+(; //LEAN:Filter.EventuallyEq.mul_left ;)
+def Filter__EventuallyEq__mul_left : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (x1 : (Elem X -> Y)) -> (x2 : (Elem X -> Y)) -> (x3 : (Elem X -> Y)) -> (h : Proof (Filter__EventuallyEq l x1 x2)) -> Proof (Filter__EventuallyEq l (times x3 x1) (times x3 x2)) :=
+  X => Y => l => x1 => x2 => x3 => h => Filter__EventuallyEq__mul X Y x3 x1 x3 x2 l (Filter__EventuallyEq__refl X Y l x3) h.
+
+(; //LEAN:Filter.EventuallyEq.add_right ;)
+Filter__EventuallyEq__add_right : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (x1 : (Elem X -> Y)) -> (x2 : (Elem X -> Y)) -> (x3 : (Elem X -> Y)) -> (h : Proof (Filter__EventuallyEq l x1 x2)) -> Proof (Filter__EventuallyEq l (plus x1 x3) (plus x2 x3)).
+
+(; //LEAN:Filter.EventuallyEq.mul_right ;)
+def Filter__EventuallyEq__mul_right : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (x1 : (Elem X -> Y)) -> (x2 : (Elem X -> Y)) -> (x3 : (Elem X -> Y)) -> (h : Proof (Filter__EventuallyEq l x1 x2)) -> Proof (Filter__EventuallyEq l (times x1 x3) (times x2 x3)) :=
+  X => Y => l => x1 => x2 => x3 => h => Filter__EventuallyEq__mul X Y x1 x3 x2 x3 l h (Filter__EventuallyEq__refl X Y l x3).
+
+(; //LEAN:Filter.EventuallyEq.pow_const ;)
+def Filter__EventuallyEq__pow_const : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (c : Elem Z) -> Proof (Filter__EventuallyEq l (pow f c) (pow g c)) :=
+  X => Y => Z => f => g => l => h => c => Filter__EventuallyEq__fun_comp X Y Y f g l h (x1 => pow x1 c).
+
+(; //LEAN:Filter.EventuallyEq.fun_const_vadd ;)
+Filter__EventuallyEq__fun_const_vadd : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (c : Elem Z) -> Proof (Filter__EventuallyEq l (i => HVAdd__hVAdd c (f i)) (i1 => HVAdd__hVAdd c (g i1))).
+
+(; //LEAN:Filter.EventuallyEq.fun_const_smul ;)
+Filter__EventuallyEq__fun_const_smul : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (c : Elem Z) -> Proof (Filter__EventuallyEq l (i => HSMul__hSMul c (f i)) (i1 => HSMul__hSMul c (g i1))).
+
+(; //LEAN:Filter.EventuallyEq.const_smul ;)
+Filter__EventuallyEq__const_smul : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (c : Elem Z) -> Proof (Filter__EventuallyEq l (HSMul__hSMul c f) (HSMul__hSMul c g)).
+
+(; //LEAN:Filter.EventuallyEq.fun_pow_const ;)
+Filter__EventuallyEq__fun_pow_const : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (c : Elem Z) -> Proof (Filter__EventuallyEq l (i => pow (f i) c) (i1 => pow (g i1) c)).
+
+(; //LEAN:Filter.EventuallyEq.const_vadd ;)
+Filter__EventuallyEq__const_vadd : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (c : Elem Z) -> Proof (Filter__EventuallyEq l (HVAdd__hVAdd c f) (HVAdd__hVAdd c g)).
+
+(; //LEAN:Filter.EventuallyEq.fun_inv ;)
+Filter__EventuallyEq__fun_inv : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> Proof (Filter__EventuallyEq l (i => Inv__inv (f i)) (i1 => Inv__inv (g i1))).
+
+(; //LEAN:Filter.EventuallyEq.fun_neg ;)
+Filter__EventuallyEq__fun_neg : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> Proof (Filter__EventuallyEq l (i => Neg__neg (f i)) (i1 => Neg__neg (g i1))).
+
+(; //LEAN:Filter.EventuallyEq.neg ;)
+Filter__EventuallyEq__neg : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> Proof (Filter__EventuallyEq l (Neg__neg f) (Neg__neg g)).
+
+(; //LEAN:Filter.EventuallyEq.inv ;)
+def Filter__EventuallyEq__inv : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> Proof (Filter__EventuallyEq l (Inv__inv f) (Inv__inv g)) :=
+  X => Y => f => g => l => h => Filter__EventuallyEq__fun_comp X Y Y f g l h Inv__inv.
+
+(; //LEAN:Filter.EventuallyEq.sub ;)
+Filter__EventuallyEq__sub : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (f' : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (g' : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (h' : Proof (Filter__EventuallyEq l f' g')) -> Proof (Filter__EventuallyEq l (minus f f') (minus g g')).
+
+(; //LEAN:Filter.EventuallyEq.div ;)
+def Filter__EventuallyEq__div : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (f' : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (g' : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (h' : Proof (Filter__EventuallyEq l f' g')) -> Proof (Filter__EventuallyEq l (div f f') (div g g')) :=
+  X => Y => f => f' => g => g' => l => h => h' => Filter__EventuallyEq__comp_u2082_ X Y Y Y f g f' g' l h (x1 => x2 => div x1 x2) h'.
+
+(; //LEAN:Filter.EventuallyEq.fun_sub ;)
+Filter__EventuallyEq__fun_sub : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (f' : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (g' : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (h' : Proof (Filter__EventuallyEq l f' g')) -> Proof (Filter__EventuallyEq l (i => minus (f i) (f' i)) (i1 => minus (g i1) (g' i1))).
+
+(; //LEAN:Filter.EventuallyEq.fun_div ;)
+Filter__EventuallyEq__fun_div : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (f' : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (g' : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (h' : Proof (Filter__EventuallyEq l f' g')) -> Proof (Filter__EventuallyEq l (i => div (f i) (f' i)) (i1 => div (g i1) (g' i1))).
+
+(; //LEAN:Filter.EventuallyEq.smul ;)
+def Filter__EventuallyEq__smul : (X : Set) -> (Y : Set) -> (X1 : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> X1)) -> (f' : (Elem X -> X1)) -> (g : (Elem X -> Y)) -> (g' : (Elem X -> Y)) -> (hf : Proof (Filter__EventuallyEq l f f')) -> (hg : Proof (Filter__EventuallyEq l g g')) -> Proof (Filter__EventuallyEq l (x1 => HSMul__hSMul (f x1) (g x1)) (x2 => HSMul__hSMul (f' x2) (g' x2))) :=
+  X => Y => X1 => l => f => f' => g => g' => hf => hg => Filter__EventuallyEq__comp_u2082_ X X1 Y Y f f' g g' l hf (x1 => x2 => HSMul__hSMul x1 x2) hg.
+
+(; //LEAN:Filter.EventuallyEq.vadd ;)
+Filter__EventuallyEq__vadd : (X : Set) -> (Y : Set) -> (X1 : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> X1)) -> (f' : (Elem X -> X1)) -> (g : (Elem X -> Y)) -> (g' : (Elem X -> Y)) -> (hf : Proof (Filter__EventuallyEq l f f')) -> (hg : Proof (Filter__EventuallyEq l g g')) -> Proof (Filter__EventuallyEq l (x1 => HVAdd__hVAdd (f x1) (g x1)) (x2 => HVAdd__hVAdd (f' x2) (g' x2))).
+
+(; //LEAN:Filter.EventuallyEq.star ;)
+def Filter__EventuallyEq__star : (X : Set) -> (R : Set) -> (_ : Proof (Star R)) -> (f : (Elem X -> R)) -> (g : (Elem X -> R)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> Proof (Filter__EventuallyEq l (Star__star f) (Star__star g)) :=
+  X => R => x => f => g => l => h => Filter__EventuallyEq__fun_comp X R R f g l h Star__star.
+
+(; //LEAN:Filter.EventuallyEq.fun_star ;)
+Filter__EventuallyEq__fun_star : (X : Set) -> (R : Set) -> (_ : Proof (Star R)) -> (f : (Elem X -> R)) -> (g : (Elem X -> R)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> Proof (Filter__EventuallyEq l (i => Star__star (f i)) (i1 => Star__star (g i1))).
+
+(; //LEAN:Filter.EventuallyEq.sup ;)
+def Filter__EventuallyEq__sup : (X : Set) -> (Y : Set) -> (_ : Proof (Max Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (f' : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (g' : (Elem X -> Y)) -> (hf : Proof (Filter__EventuallyEq l f f')) -> (hg : Proof (Filter__EventuallyEq l g g')) -> Proof (Filter__EventuallyEq l (Max__max f g) (Max__max f' g')) :=
+  X => Y => x => l => f => f' => g => g' => hf => hg => Filter__EventuallyEq__comp_u2082_ X Y Y Y f f' g g' l hf (x1 => x2 => Max__max x1 x2) hg.
+
+(; //LEAN:Filter.EventuallyEq.inf ;)
+def Filter__EventuallyEq__inf : (X : Set) -> (Y : Set) -> (_ : Proof (Min Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (f' : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (g' : (Elem X -> Y)) -> (hf : Proof (Filter__EventuallyEq l f f')) -> (hg : Proof (Filter__EventuallyEq l g g')) -> Proof (Filter__EventuallyEq l (Min__min f g) (Min__min f' g')) :=
+  X => Y => x => l => f => f' => g => g' => hf => hg => Filter__EventuallyEq__comp_u2082_ X Y Y Y f f' g g' l hf (x1 => x2 => Min__min x1 x2) hg.
+
+(; //LEAN:Filter.EventuallyEq.preimage ;)
+def Filter__EventuallyEq__preimage : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Filter__EventuallyEq l f g)) -> (s : Elem (powerset Y)) -> Proof (Filter__EventuallyEqSet l (Set__preimage f s) (Set__preimage g s)) :=
+  X => Y => l => f => g => h => s => Filter__EventuallyEq__fun_comp X Y Prop f g l h (x => Membership__mem s x).
+
+(; //LEAN:Filter.EventuallyEqSet.filter_mono ;)
+def Filter__EventuallyEqSet__filter_mono : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (l' : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEqSet l s t)) -> (hl : Proof (Leq l' l)) -> Proof (Filter__EventuallyEqSet l' s t) :=
+  X => s => t => l => l' => h => hl => Filter__EventuallyEq__filter_mono X Prop l l' (x => Membership__mem s x) (x1 => Membership__mem t x1) h hl.
+
+(; //LEAN:Filter.EventuallyEqSet.refl ;)
+def Filter__EventuallyEqSet__refl : (X : Set) -> (l : Elem (Filter X)) -> (s : Elem (powerset X)) -> Proof (Filter__EventuallyEqSet l s s) :=
+  X => l => s => Filter__EventuallyEq__refl X Prop l (x => Membership__mem s x).
+
+(; //LEAN:Filter.EventuallyEqSet.rfl ;)
+def Filter__EventuallyEqSet__rfl : (X : Set) -> (s : Elem (powerset X)) -> (l : Elem (Filter X)) -> Proof (Filter__EventuallyEqSet l s s) :=
+  X => s => l => Filter__EventuallyEqSet__refl X l s.
+
+(; //LEAN:Filter.EventuallyEqSet.of_eq ;)
+Filter__EventuallyEqSet__of_eq : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Eqt (powerset X) s t)) -> Proof (Filter__EventuallyEqSet l s t).
+
+(; //LEAN:Eq.eventuallyEqSet ;)
+def Eq__eventuallyEqSet : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Eqt (powerset X) s t)) -> Proof (Filter__EventuallyEqSet l s t) :=
+  Filter__EventuallyEqSet__of_eq.
+
+(; //LEAN:Filter.EventuallyEqSet.symm ;)
+def Filter__EventuallyEqSet__symm : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEqSet l s t)) -> Proof (Filter__EventuallyEqSet l t s) :=
+  X => s => t => l => h => Filter__EventuallyEq__symm X Prop (x => Membership__mem s x) (x1 => Membership__mem t x1) l h.
+
+(; //LEAN:Filter.EventuallyEqSet.trans ;)
+def Filter__EventuallyEqSet__trans : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEqSet l s t)) -> (h' : Proof (Filter__EventuallyEqSet l t u)) -> Proof (Filter__EventuallyEqSet l s u) :=
+  X => s => t => u => l => h => h' => Filter__EventuallyEq__trans X Prop l (x => Membership__mem s x) (x1 => Membership__mem t x1) (x2 => Membership__mem u x2) h h'.
+
+(; //LEAN:Filter.EventuallyEqSet.congr_left ;)
+def Filter__EventuallyEqSet__congr_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEqSet l s t)) -> Proof (iff (Filter__EventuallyEqSet l s u) (Filter__EventuallyEqSet l t u)) :=
+  X => s => t => u => l => h => iffI (Filter__EventuallyEqSet l s u) (Filter__EventuallyEqSet l t u) (Filter__EventuallyEqSet__trans X t s u l (Filter__EventuallyEqSet__symm X s t l h)) (Filter__EventuallyEqSet__trans X s t u l h).
+
+(; //LEAN:Filter.EventuallyEqSet.congr_right ;)
+def Filter__EventuallyEqSet__congr_right : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEqSet l t u)) -> Proof (iff (Filter__EventuallyEqSet l s t) (Filter__EventuallyEqSet l s u)) :=
+  X => s => t => u => l => h => iffI (Filter__EventuallyEqSet l s t) (Filter__EventuallyEqSet l s u) (h1 => Filter__EventuallyEqSet__trans X s t u l h1 h) (h2 => Filter__EventuallyEqSet__trans X s u t l h2 (Filter__EventuallyEqSet__symm X t u l h)).
+
+(; //LEAN:Filter.EventuallyEqSet.subset ;)
+def Filter__EventuallyEqSet__subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEqSet l s t)) -> Proof (Filter__EventuallySubset l s t) :=
+  X => s => t => l => h => Filter__Eventually__mono X (x => Eqt Prop ((x1 => Membership__mem s x1) x) ((x2 => Membership__mem t x2) x)) (x3 => Leq ((x4 => Membership__mem s x4) x3) ((x5 => Membership__mem t x5) x3)) l h (forallI X (x6 => if (Eqt Prop ((x11 => Membership__mem s x11) x6) ((x12 => Membership__mem t x12) x6)) (Leq ((x9 => Membership__mem s x9) x6) ((x10 => Membership__mem t x10) x6))) (x6 => le_of_eq Prop ((x7 => Membership__mem s x7) x6) ((x8 => Membership__mem t x8) x6))).
+
+(; //LEAN:Filter.EventuallyEqSet.superset ;)
+def Filter__EventuallyEqSet__superset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEqSet l s t)) -> Proof (Filter__EventuallySubset l t s) :=
+  X => s => t => l => h => Filter__Eventually__mono X (x => Eqt Prop ((x1 => Membership__mem s x1) x) ((x2 => Membership__mem t x2) x)) (x3 => Leq ((x4 => Membership__mem t x4) x3) ((x5 => Membership__mem s x5) x3)) l h (forallI X (x6 => if (Eqt Prop ((x11 => Membership__mem s x11) x6) ((x12 => Membership__mem t x12) x6)) (Leq ((x9 => Membership__mem t x9) x6) ((x10 => Membership__mem s x10) x6))) (x6 => ge_of_eq Prop ((x7 => Membership__mem s x7) x6) ((x8 => Membership__mem t x8) x6))).
+
+(; //LEAN:Filter.EventuallyEqSet.inter ;)
+def Filter__EventuallyEqSet__inter : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEqSet l s t)) -> (s' : Elem (powerset X)) -> (t' : Elem (powerset X)) -> (h' : Proof (Filter__EventuallyEqSet l s' t')) -> Proof (Filter__EventuallyEqSet l (Inter__inter s s') (Inter__inter t t')) :=
+  X => s => t => l => h => s' => t' => h' => Filter__EventuallyEq__comp_u2082_ X Prop Prop Prop (x => Membership__mem s x) (x1 => Membership__mem t x1) (Membership__mem s') (Membership__mem t') l h (x2 => x3 => and x2 x3) h'.
+
+(; //LEAN:Filter.EventuallyEqSet.union ;)
+def Filter__EventuallyEqSet__union : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEqSet l s t)) -> (s' : Elem (powerset X)) -> (t' : Elem (powerset X)) -> (h' : Proof (Filter__EventuallyEqSet l s' t')) -> Proof (Filter__EventuallyEqSet l (Union__union s s') (Union__union t t')) :=
+  X => s => t => l => h => s' => t' => h' => Filter__EventuallyEq__comp_u2082_ X Prop Prop Prop (x => Membership__mem s x) (x1 => Membership__mem t x1) (Membership__mem s') (Membership__mem t') l h (x2 => x3 => or x2 x3) h'.
+
+(; //LEAN:Filter.EventuallyEqSet.compl ;)
+def Filter__EventuallyEqSet__compl : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEqSet l s t)) -> Proof (Filter__EventuallyEqSet l (Compl__compl s) (Compl__compl t)) :=
+  X => s => t => l => h => Filter__EventuallyEq__fun_comp X Prop Prop (x => Membership__mem s x) (x1 => Membership__mem t x1) l h not.
+
+(; //LEAN:Filter.EventuallyEqSet.diff ;)
+def Filter__EventuallyEqSet__diff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEqSet l s t)) -> (s' : Elem (powerset X)) -> (t' : Elem (powerset X)) -> (h' : Proof (Filter__EventuallyEqSet l s' t')) -> Proof (Filter__EventuallyEqSet l (SDiff__sdiff s s') (SDiff__sdiff t t')) :=
+  X => s => t => l => h => s' => t' => h' => Filter__EventuallyEqSet__inter X s t l h (Compl__compl s') (Compl__compl t') (Filter__EventuallyEqSet__compl X s' t' l h').
+
+(; //LEAN:Filter.EventuallyEqSet.symmDiff ;)
+def Filter__EventuallyEqSet__symmDiff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEqSet l s t)) -> (s' : Elem (powerset X)) -> (t' : Elem (powerset X)) -> (h' : Proof (Filter__EventuallyEqSet l s' t')) -> Proof (Filter__EventuallyEqSet l (symmDiff s s') (symmDiff t t')) :=
+  X => s => t => l => h => s' => t' => h' => Filter__EventuallyEqSet__union X (SDiff__sdiff s s') (SDiff__sdiff t t') l (Filter__EventuallyEqSet__diff X s t l h s' t' h') (SDiff__sdiff s' s) (SDiff__sdiff t' t) (Filter__EventuallyEqSet__diff X s' t' l h' s t h).
+
+(; //LEAN:Filter.eventuallyEqSet_comm ;)
+def Filter__eventuallyEqSet_comm : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__EventuallyEqSet l s t) (Filter__EventuallyEqSet l t s)) :=
+  X => s => t => l => iffI (Filter__EventuallyEqSet l s t) (Filter__EventuallyEqSet l t s) (Filter__EventuallyEqSet__symm X s t l) (Filter__EventuallyEqSet__symm X t s l).
+
+(; //LEAN:Filter.inter_eventuallyEqSet_left ;)
+Filter__inter_eventuallyEqSet_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__EventuallyEqSet l (Inter__inter s t) s) (Filter__Eventually (x => if (Membership__mem s x) (Membership__mem t x)) l)).
+
+(; //LEAN:Filter.inter_eventuallyEqSet_right ;)
+Filter__inter_eventuallyEqSet_right : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__EventuallyEqSet l (Inter__inter s t) t) (Filter__Eventually (x => if (Membership__mem t x) (Membership__mem s x)) l)).
+
+(; //LEAN:Filter.eventuallyEq_principal ;)
+def Filter__eventuallyEq_principal : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> Proof (iff (Filter__EventuallyEq (Filter__principal s) f g) (Set__EqOn f g s)) :=
+  X => Y => s => f => g => Iff__rfl (Filter__EventuallyEq (Filter__principal s) f g).
+
+(; //LEAN:Filter.eventuallyEq_inf_principal_iff ;)
+def Filter__eventuallyEq_inf_principal_iff : (X : Set) -> (Y : Set) -> (F : Elem (Filter X)) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> Proof (iff (Filter__EventuallyEq (Min__min F (Filter__principal s)) f g) (Filter__Eventually (x => if (Membership__mem s x) (Eqt Y (f x) (g x))) F)) :=
+  X => Y => F => s => f => g => Filter__eventually_inf_principal X F (x => Eqt Y (f x) (g x)) s.
+
+(; //LEAN:Filter.EventuallyEq.sub_eq ;)
+Filter__EventuallyEq__sub_eq : (X : Set) -> (Y : Set) -> (_ : Proof (AddGroup Y)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallyEq l f g)) -> Proof (Filter__EventuallyEq l (minus f g) 0).
+
+(; //LEAN:Filter.eventuallyEq_iff_sub ;)
+def Filter__eventuallyEq_iff_sub : (X : Set) -> (Y : Set) -> (_ : Proof (AddGroup Y)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__EventuallyEq l f g) (Filter__EventuallyEq l (minus f g) 0)) :=
+  X => Y => x => f => g => l => iffI (Filter__EventuallyEq l f g) (Filter__EventuallyEq l (minus f g) 0) (h => Filter__EventuallyEq__sub_eq X Y f g l h) (h1 => Eq__mp (congr (Elem X -> Y) Prop (Filter__EventuallyEq l (plus (minus f g) g)) (Filter__EventuallyEq l f) (plus 0 g) g (congrArg (Elem X -> Y) ((Elem X -> Y) -> Prop) (plus (minus f g) g) f (Filter__EventuallyEq l) (sub_add_cancel (Elem X -> Y) f g)) (zero_add (Elem X -> Y) g)) (Filter__EventuallyEq__add X Y (minus f g) g 0 g l h1 (Filter__EventuallyEq__refl X Y l g))).
+
+(; //LEAN:Filter.eventuallyEq_iff_all_subsets ;)
+def Filter__eventuallyEq_iff_all_subsets : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__EventuallyEq l f g) (forall (powerset X) (s => Filter__Eventually (x => if (Membership__mem s x) (Eqt Y (f x) (g x))) l))) :=
+  X => Y => f => g => l => Filter__eventually_iff_all_subsets X l (x => Eqt Y (f x) (g x)).
+
+(; //LEAN:Filter.EventuallyLE.congr ;)
+def Filter__EventuallyLE__congr : (X : Set) -> (Y : Set) -> (_ : Proof (LE Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (f' : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (g' : (Elem X -> Y)) -> (H : Proof (Filter__EventuallyLE l f g)) -> (hf : Proof (Filter__EventuallyEq l f f')) -> (hg : Proof (Filter__EventuallyEq l g g')) -> Proof (Filter__EventuallyLE l f' g') :=
+  X => Y => x => l => f => f' => g => g' => H => hf => hg => Filter__Eventually__mp X (x1 => Leq (f x1) (g x1)) (x2 => Leq (f' x2) (g' x2)) l H (Filter__Eventually__mp X (x3 => Eqt Y (g x3) (g' x3)) (x4 => if (Leq (f x4) (g x4)) (Leq (f' x4) (g' x4))) l hg (Filter__Eventually__mono X (x5 => Eqt Y (f x5) (f' x5)) (x6 => if (Eqt Y (g x6) (g' x6)) (if (Leq (f x6) (g x6)) (Leq (f' x6) (g' x6)))) l hf (forallI X (x7 => if (Eqt Y (f x7) (f' x7)) (if (Eqt Y (g x7) (g' x7)) (if (Leq (f x7) (g x7)) (Leq (f' x7) (g' x7))))) (x7 => ifI (Eqt Y (f x7) (f' x7)) (if (Eqt Y (g x7) (g' x7)) (if (Leq (f x7) (g x7)) (Leq (f' x7) (g' x7)))) (hf1 => ifI (Eqt Y (g x7) (g' x7)) (if (Leq (f x7) (g x7)) (Leq (f' x7) (g' x7))) (hg1 => ifI (Leq (f x7) (g x7)) (Leq (f' x7) (g' x7)) (H1 => Eq__mp (congrArg Y Prop (g x7) (g' x7) (_a => Leq (f' x7) _a) hg1) (Eq__mp (congrArg Y Prop (f x7) (f' x7) (_a1 => Leq _a1 (g x7)) hf1) H1)))))))).
+
+(; //LEAN:Filter.eventuallyLE_congr ;)
+def Filter__eventuallyLE_congr : (X : Set) -> (Y : Set) -> (_ : Proof (LE Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (f' : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (g' : (Elem X -> Y)) -> (hf : Proof (Filter__EventuallyEq l f f')) -> (hg : Proof (Filter__EventuallyEq l g g')) -> Proof (iff (Filter__EventuallyLE l f g) (Filter__EventuallyLE l f' g')) :=
+  X => Y => x => l => f => f' => g => g' => hf => hg => iffI (Filter__EventuallyLE l f g) (Filter__EventuallyLE l f' g') (H => Filter__EventuallyLE__congr X Y l f f' g g' H hf hg) (H1 => Filter__EventuallyLE__congr X Y l f' f g' g H1 (Filter__EventuallyEq__symm X Y f f' l hf) (Filter__EventuallyEq__symm X Y g g' l hg)).
+
+(; //LEAN:Filter.eventuallyLE_iff_all_subsets ;)
+def Filter__eventuallyLE_iff_all_subsets : (X : Set) -> (Y : Set) -> (_ : Proof (LE Y)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__EventuallyLE l f g) (forall (powerset X) (s => Filter__Eventually (x1 => if (Membership__mem s x1) (Leq (f x1) (g x1))) l))) :=
+  X => Y => x => f => g => l => Filter__eventually_iff_all_subsets X l (x1 => Leq (f x1) (g x1)).
+
+(; //LEAN:Filter.EventuallyEq.ge ;)
+Filter__EventuallyEq__ge : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Filter__EventuallyEq l f g)) -> Proof (Filter__EventuallyLE l g f).
+
+(; //LEAN:Filter.EventuallyEq.le ;)
+def Filter__EventuallyEq__le : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Filter__EventuallyEq l f g)) -> Proof (Filter__EventuallyLE l f g) :=
+  X => Y => x => l => f => g => h => Filter__Eventually__mono X (x1 => Eqt Y (f x1) (g x1)) (x2 => Leq (f x2) (g x2)) l h (forallI X (x3 => if (Eqt Y (f x3) (g x3)) (Leq (f x3) (g x3))) (x3 => le_of_eq Y (f x3) (g x3))).
+
+(; //LEAN:Filter.EventuallyLE.refl ;)
+def Filter__EventuallyLE__refl : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> Proof (Filter__EventuallyLE l f f) :=
+  X => Y => x => l => f => Filter__EventuallyEq__le X Y l f f (Filter__EventuallyEq__rfl X Y l f).
+
+(; //LEAN:Filter.EventuallyLE.rfl ;)
+def Filter__EventuallyLE__rfl : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> Proof (Filter__EventuallyLE l f f) :=
+  X => Y => x => l => f => Filter__EventuallyLE__refl X Y l f.
+
+(; //LEAN:Filter.EventuallyLE.trans ;)
+def Filter__EventuallyLE__trans : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : (Elem X -> Y)) -> (h1 : Proof (Filter__EventuallyLE l f g)) -> (h2 : Proof (Filter__EventuallyLE l g h)) -> Proof (Filter__EventuallyLE l f h) :=
+  X => Y => x => l => f => g => h => h1 => h2 => Filter__Eventually__mp X (x1 => Leq (g x1) (h x1)) (x2 => Leq (f x2) (h x2)) l h2 (Filter__Eventually__mono X (x3 => Leq (f x3) (g x3)) (x4 => if (Leq (g x4) (h x4)) (Leq (f x4) (h x4))) l h1 (forallI X (x5 => if (Leq (f x5) (g x5)) (if (Leq (g x5) (h x5)) (Leq (f x5) (h x5)))) (x5 => le_trans Y (f x5) (g x5) (h x5)))).
+
+(; //LEAN:Filter.EventuallyEq.trans_le ;)
+def Filter__EventuallyEq__trans_le : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : (Elem X -> Y)) -> (h1 : Proof (Filter__EventuallyEq l f g)) -> (h2 : Proof (Filter__EventuallyLE l g h)) -> Proof (Filter__EventuallyLE l f h) :=
+  X => Y => x => l => f => g => h => h1 => h2 => Filter__EventuallyLE__trans X Y l f g h (Filter__EventuallyEq__le X Y l f g h1) h2.
+
+(; //LEAN:Filter.EventuallyLE.trans_eq ;)
+def Filter__EventuallyLE__trans_eq : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : (Elem X -> Y)) -> (h1 : Proof (Filter__EventuallyLE l f g)) -> (h2 : Proof (Filter__EventuallyEq l g h)) -> Proof (Filter__EventuallyLE l f h) :=
+  X => Y => x => l => f => g => h => h1 => h2 => Filter__EventuallyLE__trans X Y l f g h h1 (Filter__EventuallyEq__le X Y l g h h2).
+
+(; //LEAN:Filter.EventuallyLE.antisymm ;)
+def Filter__EventuallyLE__antisymm : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Filter__EventuallyLE l f g)) -> (h1 : Proof (Filter__EventuallyLE l g f)) -> Proof (Filter__EventuallyEq l f g) :=
+  X => Y => x => l => f => g => h => h1 => Filter__Eventually__mp X (x1 => Leq (g x1) (f x1)) (x2 => Eqt Y (f x2) (g x2)) l h1 (Filter__Eventually__mono X (x3 => Leq (f x3) (g x3)) (x4 => if (Leq (g x4) (f x4)) (Eqt Y (f x4) (g x4))) l h (forallI X (x5 => if (Leq (f x5) (g x5)) (if (Leq (g x5) (f x5)) (Eqt Y (f x5) (g x5)))) (x5 => le_antisymm Y (f x5) (g x5)))).
+
+(; //LEAN:Filter.eventuallyLE_antisymm_iff ;)
+Filter__eventuallyLE_antisymm_iff : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> Proof (iff (Filter__EventuallyEq l f g) (and (Filter__EventuallyLE l f g) (Filter__EventuallyLE l g f))).
+
+(; //LEAN:Filter.EventuallyLE.ge_iff_eq' ;)
+Filter__EventuallyLE__ge_iff_eq' : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Filter__EventuallyLE l g f)) -> Proof (iff (Filter__EventuallyLE l f g) (Filter__EventuallyEq l f g)).
+
+(; //LEAN:Filter.EventuallyLE.ge_iff_eq ;)
+def Filter__EventuallyLE__ge_iff_eq : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Filter__EventuallyLE l f g)) -> Proof (iff (Filter__EventuallyLE l g f) (Filter__EventuallyEq l f g)) :=
+  X => Y => x => l => f => g => h => iffI (Filter__EventuallyLE l g f) (Filter__EventuallyEq l f g) (h' => Filter__EventuallyLE__antisymm X Y l f g h h') (Filter__EventuallyEq__ge X Y l f g).
+
+(; //LEAN:Filter.Eventually.ne_of_gt ;)
+Filter__Eventually__ne_of_gt : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Filter__Eventually (x2 => Lt (g x2) (f x2)) l)) -> Proof (Filter__Eventually (x1 => Neq (f x1) (g x1)) l).
+
+(; //LEAN:Filter.Eventually.ne_of_lt ;)
+def Filter__Eventually__ne_of_lt : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Filter__Eventually (x2 => Lt (f x2) (g x2)) l)) -> Proof (Filter__Eventually (x1 => Neq (f x1) (g x1)) l) :=
+  X => Y => x => l => f => g => h => Filter__Eventually__mono X (x1 => Lt (f x1) (g x1)) (x2 => Neq (f x2) (g x2)) l h (forallI X (x3 => if (Lt (f x3) (g x3)) (Neq (f x3) (g x3))) (x3 => ifI (Lt (f x3) (g x3)) (Neq (f x3) (g x3)) (hx => LT__lt__ne Y (f x3) (g x3) hx))).
+
+(; //LEAN:Filter.Eventually.ne_top_of_lt ;)
+def Filter__Eventually__ne_top_of_lt : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (_ : Proof (OrderTop Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Filter__Eventually (x3 => Lt (f x3) (g x3)) l)) -> Proof (Filter__Eventually (x2 => Neq (f x2) Top__top) l) :=
+  X => Y => x => x1 => l => f => g => h => Filter__Eventually__mono X (x2 => Lt (f x2) (g x2)) (x3 => Neq (f x3) Top__top) l h (forallI X (x4 => if (Lt (f x4) (g x4)) (Neq (f x4) Top__top)) (x4 => ifI (Lt (f x4) (g x4)) (Neq (f x4) Top__top) (hx => LT__lt__ne_top Y (f x4) (g x4) hx))).
+
+(; //LEAN:Filter.Eventually.ne_bot_of_gt ;)
+Filter__Eventually__ne_bot_of_gt : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (_ : Proof (OrderBot Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Filter__Eventually (x3 => Lt (g x3) (f x3)) l)) -> Proof (Filter__Eventually (x2 => Neq (f x2) Bot__bot) l).
+
+(; //LEAN:Filter.Eventually.bot_lt_of_ne ;)
+Filter__Eventually__bot_lt_of_ne : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder Y)) -> (_ : Proof (OrderBot Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (h : Proof (Filter__Eventually (x3 => Neq (f x3) Bot__bot) l)) -> Proof (Filter__Eventually (x2 => Lt Bot__bot (f x2)) l).
+
+(; //LEAN:Filter.Eventually.lt_top_of_ne ;)
+def Filter__Eventually__lt_top_of_ne : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder Y)) -> (_ : Proof (OrderTop Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (h : Proof (Filter__Eventually (x3 => Neq (f x3) Top__top) l)) -> Proof (Filter__Eventually (x2 => Lt (f x2) Top__top) l) :=
+  X => Y => x => x1 => l => f => h => Filter__Eventually__mono X (x2 => Neq (f x2) Top__top) (x3 => Lt (f x3) Top__top) l h (forallI X (x4 => if (Neq (f x4) Top__top) (Lt (f x4) Top__top)) (x4 => ifI (Neq (f x4) Top__top) (Lt (f x4) Top__top) (hx => Ne__lt_top Y (f x4) hx))).
+
+(; //LEAN:Filter.Eventually.lt_top_iff_ne_top ;)
+def Filter__Eventually__lt_top_iff_ne_top : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder Y)) -> (_ : Proof (OrderTop Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> Proof (iff (Filter__Eventually (x2 => Lt (f x2) Top__top) l) (Filter__Eventually (x3 => Neq (f x3) Top__top) l)) :=
+  X => Y => x => x1 => l => f => iffI (Filter__Eventually (x2 => Lt (f x2) Top__top) l) (Filter__Eventually (x3 => Neq (f x3) Top__top) l) (Filter__Eventually__ne_of_lt X Y l f (x4 => Top__top)) (Filter__Eventually__lt_top_of_ne X Y l f).
+
+(; //LEAN:Filter.Eventually.bot_lt_iff_ne_bot ;)
+Filter__Eventually__bot_lt_iff_ne_bot : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder Y)) -> (_ : Proof (OrderBot Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> Proof (iff (Filter__Eventually (x2 => Lt Bot__bot (f x2)) l) (Filter__Eventually (x3 => Neq (f x3) Bot__bot) l)).
+
+(; //LEAN:Filter.EventuallySubset.eventually ;)
+def Filter__EventuallySubset__eventually : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallySubset l s t)) -> Proof (Filter__Eventually (x => if (Membership__mem s x) (Membership__mem t x)) l) :=
+  X => s => t => l => h => h.
+
+(; //LEAN:Filter.EventuallySubset.filter_mono ;)
+def Filter__EventuallySubset__filter_mono : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (l' : Elem (Filter X)) -> (h : Proof (Filter__EventuallySubset l s t)) -> (hl : Proof (Leq l' l)) -> Proof (Filter__EventuallySubset l' s t) :=
+  X => s => t => l => l' => h => hl => Filter__Eventually__filter_mono X l' l hl (x => Leq ((x1 => Membership__mem s x1) x) ((x2 => Membership__mem t x2) x)) h.
+
+(; //LEAN:Filter.EventuallySubset.refl ;)
+def Filter__EventuallySubset__refl : (X : Set) -> (l : Elem (Filter X)) -> (s : Elem (powerset X)) -> Proof (Filter__EventuallySubset l s s) :=
+  X => l => s => Filter__EventuallyLE__refl X Prop l (x => Membership__mem s x).
+
+(; //LEAN:Filter.EventuallySubset.rfl ;)
+def Filter__EventuallySubset__rfl : (X : Set) -> (s : Elem (powerset X)) -> (l : Elem (Filter X)) -> Proof (Filter__EventuallySubset l s s) :=
+  X => s => l => Filter__EventuallySubset__refl X l s.
+
+(; //LEAN:Filter.EventuallySubset.trans ;)
+def Filter__EventuallySubset__trans : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallySubset l s t)) -> (h' : Proof (Filter__EventuallySubset l t u)) -> Proof (Filter__EventuallySubset l s u) :=
+  X => s => t => u => l => h => h' => Filter__EventuallyLE__trans X Prop l (x => Membership__mem s x) (x1 => Membership__mem t x1) (x2 => Membership__mem u x2) h h'.
+
+(; //LEAN:Filter.EventuallySubset.antisymm ;)
+def Filter__EventuallySubset__antisymm : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallySubset l s t)) -> (h' : Proof (Filter__EventuallySubset l t s)) -> Proof (Filter__EventuallyEqSet l s t) :=
+  X => s => t => l => h => h' => Filter__EventuallyLE__antisymm X Prop l (x => Membership__mem s x) (x1 => Membership__mem t x1) h h'.
+
+(; //LEAN:Filter.EventuallySubset.inter ;)
+def Filter__EventuallySubset__inter : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallySubset l s t)) -> (s' : Elem (powerset X)) -> (t' : Elem (powerset X)) -> (h' : Proof (Filter__EventuallySubset l s' t')) -> Proof (Filter__EventuallySubset l (Inter__inter s s') (Inter__inter t t')) :=
+  X => s => t => l => h => s' => t' => h' => Filter__Eventually__mp X (x => Leq ((x1 => Membership__mem s' x1) x) ((x2 => Membership__mem t' x2) x)) (x3 => Leq ((x4 => Membership__mem (Inter__inter s s') x4) x3) ((x5 => Membership__mem (Inter__inter t t') x5) x3)) l h' (Filter__Eventually__mono X (x6 => Leq ((x7 => Membership__mem s x7) x6) ((x8 => Membership__mem t x8) x6)) (x9 => if (Leq ((x12 => Membership__mem s' x12) x9) ((x13 => Membership__mem t' x13) x9)) (Leq ((x10 => Membership__mem (Inter__inter s s') x10) x9) ((x11 => Membership__mem (Inter__inter t t') x11) x9))) l h (forallI X (x14 => if (if ((x26 => Membership__mem s x26) x14) ((x25 => Membership__mem t x25) x14)) (if (if ((x24 => Membership__mem s' x24) x14) ((x23 => Membership__mem t' x23) x14)) (if (and ((x21 => Membership__mem s x21) x14) ((x22 => Membership__mem s' x22) x14)) (and ((x19 => Membership__mem t x19) x14) ((x20 => Membership__mem t' x20) x14))))) (x14 => And__imp ((x15 => Membership__mem s x15) x14) ((x16 => Membership__mem t x16) x14) ((x17 => Membership__mem s' x17) x14) ((x18 => Membership__mem t' x18) x14)))).
+
+(; //LEAN:Filter.EventuallySubset.union ;)
+def Filter__EventuallySubset__union : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallySubset l s t)) -> (s' : Elem (powerset X)) -> (t' : Elem (powerset X)) -> (h' : Proof (Filter__EventuallySubset l s' t')) -> Proof (Filter__EventuallySubset l (Union__union s s') (Union__union t t')) :=
+  X => s => t => l => h => s' => t' => h' => Filter__Eventually__mp X (x => Leq ((x1 => Membership__mem s' x1) x) ((x2 => Membership__mem t' x2) x)) (x3 => Leq ((x4 => Membership__mem (Union__union s s') x4) x3) ((x5 => Membership__mem (Union__union t t') x5) x3)) l h' (Filter__Eventually__mono X (x6 => Leq ((x7 => Membership__mem s x7) x6) ((x8 => Membership__mem t x8) x6)) (x9 => if (Leq ((x12 => Membership__mem s' x12) x9) ((x13 => Membership__mem t' x13) x9)) (Leq ((x10 => Membership__mem (Union__union s s') x10) x9) ((x11 => Membership__mem (Union__union t t') x11) x9))) l h (forallI X (x14 => if (if ((x26 => Membership__mem s x26) x14) ((x25 => Membership__mem t x25) x14)) (if (if ((x24 => Membership__mem s' x24) x14) ((x23 => Membership__mem t' x23) x14)) (if (or ((x21 => Membership__mem s x21) x14) ((x22 => Membership__mem s' x22) x14)) (or ((x19 => Membership__mem t x19) x14) ((x20 => Membership__mem t' x20) x14))))) (x14 => Or__imp ((x15 => Membership__mem s x15) x14) ((x16 => Membership__mem t x16) x14) ((x17 => Membership__mem s' x17) x14) ((x18 => Membership__mem t' x18) x14)))).
+
+(; //LEAN:Filter.EventuallySubset.compl ;)
+def Filter__EventuallySubset__compl : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallySubset l s t)) -> Proof (Filter__EventuallySubset l (Compl__compl t) (Compl__compl s)) :=
+  X => s => t => l => h => Filter__Eventually__mono X (x => Leq ((x1 => Membership__mem s x1) x) ((x2 => Membership__mem t x2) x)) (x3 => Leq ((x4 => Membership__mem (Compl__compl t) x4) x3) ((x5 => Membership__mem (Compl__compl s) x5) x3)) l h (forallI X (x6 => if (if ((x12 => Membership__mem s x12) x6) ((x11 => Membership__mem t x11) x6)) (if (not ((x10 => Membership__mem t x10) x6)) (not ((x9 => Membership__mem s x9) x6)))) (x6 => mt ((x7 => Membership__mem s x7) x6) ((x8 => Membership__mem t x8) x6))).
+
+(; //LEAN:Filter.EventuallySubset.diff ;)
+def Filter__EventuallySubset__diff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> (h : Proof (Filter__EventuallySubset l s t)) -> (s' : Elem (powerset X)) -> (t' : Elem (powerset X)) -> (h' : Proof (Filter__EventuallySubset l t' s')) -> Proof (Filter__EventuallySubset l (SDiff__sdiff s s') (SDiff__sdiff t t')) :=
+  X => s => t => l => h => s' => t' => h' => Filter__EventuallySubset__inter X s t l h (Compl__compl s') (Compl__compl t') (Filter__EventuallySubset__compl X t' s' l h').
+
+(; //LEAN:Filter.eventuallySubset_iff_mem_inf_principal ;)
+def Filter__eventuallySubset_iff_mem_inf_principal : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__EventuallySubset l s t) (Membership__mem (Min__min l (Filter__principal s)) t)) :=
+  X => s => t => l => Iff__symm (Filter__Eventually (x => Membership__mem t x) (Min__min l (Filter__principal s))) (Filter__Eventually (x1 => if (Membership__mem s x1) (Membership__mem t x1)) l) (Filter__eventually_inf_principal X l (x2 => Membership__mem t x2) s).
+
+(; //LEAN:Filter.eventuallySubset_iff_inf_principal_le ;)
+Filter__eventuallySubset_iff_inf_principal_le : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__EventuallySubset l s t) (Leq (Min__min l (Filter__principal s)) (Min__min l (Filter__principal t)))).
+
+(; //LEAN:Filter.eventuallySubset_antisymm_iff ;)
+def Filter__eventuallySubset_antisymm_iff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__EventuallyEqSet l s t) (and (Filter__EventuallySubset l s t) (Filter__EventuallySubset l t s))) :=
+  X => s => t => l => Filter__eventuallyLE_antisymm_iff X Prop l (x => Membership__mem s x) (x1 => Membership__mem t x1).
+
+(; //LEAN:Filter.eventuallyEqSet_iff_inf_principal ;)
+Filter__eventuallyEqSet_iff_inf_principal : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (l : Elem (Filter X)) -> Proof (iff (Filter__EventuallyEqSet l s t) (Eqt (Filter X) (Min__min l (Filter__principal s)) (Min__min l (Filter__principal t)))).
+
+(; //LEAN:Filter.EventuallyLE.sup ;)
+Filter__EventuallyLE__sup : (X : Set) -> (Y : Set) -> (_ : Proof (SemilatticeSup Y)) -> (l : Elem (Filter X)) -> (x1 : (Elem X -> Y)) -> (x2 : (Elem X -> Y)) -> (x3 : (Elem X -> Y)) -> (x4 : (Elem X -> Y)) -> (hf : Proof (Filter__EventuallyLE l x1 x2)) -> (hg : Proof (Filter__EventuallyLE l x3 x4)) -> Proof (Filter__EventuallyLE l (Max__max x1 x3) (Max__max x2 x4)).
+
+(; //LEAN:Filter.EventuallyLE.inf ;)
+Filter__EventuallyLE__inf : (X : Set) -> (Y : Set) -> (_ : Proof (SemilatticeInf Y)) -> (l : Elem (Filter X)) -> (x1 : (Elem X -> Y)) -> (x2 : (Elem X -> Y)) -> (x3 : (Elem X -> Y)) -> (x4 : (Elem X -> Y)) -> (hf : Proof (Filter__EventuallyLE l x2 x1)) -> (hg : Proof (Filter__EventuallyLE l x4 x3)) -> Proof (Filter__EventuallyLE l (Min__min x2 x4) (Min__min x1 x3)).
+
+(; //LEAN:Filter.EventuallyLE.le_inf ;)
+Filter__EventuallyLE__le_inf : (X : Set) -> (Y : Set) -> (_ : Proof (SemilatticeInf Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : (Elem X -> Y)) -> (hf : Proof (Filter__EventuallyLE l h f)) -> (hg : Proof (Filter__EventuallyLE l h g)) -> Proof (Filter__EventuallyLE l h (Min__min f g)).
+
+(; //LEAN:Filter.EventuallyLE.sup_le ;)
+Filter__EventuallyLE__sup_le : (X : Set) -> (Y : Set) -> (_ : Proof (SemilatticeSup Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : (Elem X -> Y)) -> (hf : Proof (Filter__EventuallyLE l f h)) -> (hg : Proof (Filter__EventuallyLE l g h)) -> Proof (Filter__EventuallyLE l (Max__max f g) h).
+
+(; //LEAN:Filter.EventuallyLE.inf_le_of_left_le ;)
+Filter__EventuallyLE__inf_le_of_left_le : (X : Set) -> (Y : Set) -> (_ : Proof (SemilatticeInf Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : (Elem X -> Y)) -> (hf : Proof (Filter__EventuallyLE l f h)) -> Proof (Filter__EventuallyLE l (Min__min f g) h).
+
+(; //LEAN:Filter.EventuallyLE.le_sup_of_le_left ;)
+def Filter__EventuallyLE__le_sup_of_le_left : (X : Set) -> (Y : Set) -> (_ : Proof (SemilatticeSup Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : (Elem X -> Y)) -> (hf : Proof (Filter__EventuallyLE l h f)) -> Proof (Filter__EventuallyLE l h (Max__max f g)) :=
+  X => Y => x => l => f => g => h => hf => Filter__Eventually__mono X (x1 => Leq (h x1) (f x1)) (x2 => Leq (h x2) (Max__max f g x2)) l hf (forallI X (x3 => if (Leq (h x3) (f x3)) (Leq (h x3) (Max__max (f x3) (g x3)))) (x3 => le_sup_of_le_left Y (f x3) (g x3) (h x3))).
+
+(; //LEAN:Filter.EventuallyLE.inf_le_of_right_le ;)
+Filter__EventuallyLE__inf_le_of_right_le : (X : Set) -> (Y : Set) -> (_ : Proof (SemilatticeInf Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : (Elem X -> Y)) -> (hg : Proof (Filter__EventuallyLE l g h)) -> Proof (Filter__EventuallyLE l (Min__min f g) h).
+
+(; //LEAN:Filter.EventuallyLE.le_sup_of_le_right ;)
+def Filter__EventuallyLE__le_sup_of_le_right : (X : Set) -> (Y : Set) -> (_ : Proof (SemilatticeSup Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : (Elem X -> Y)) -> (hg : Proof (Filter__EventuallyLE l h g)) -> Proof (Filter__EventuallyLE l h (Max__max f g)) :=
+  X => Y => x => l => f => g => h => hg => Filter__Eventually__mono X (x1 => Leq (h x1) (g x1)) (x2 => Leq (h x2) (Max__max f g x2)) l hg (forallI X (x3 => if (Leq (h x3) (g x3)) (Leq (h x3) (Max__max (f x3) (g x3)))) (x3 => le_sup_of_le_right Y (f x3) (g x3) (h x3))).
+
+(; //LEAN:Filter.join_le ;)
+def Filter__join_le : (X : Set) -> (f : Elem (Filter (Filter X))) -> (l : Elem (Filter X)) -> (h : Proof (Filter__Eventually (m => Leq m l) f)) -> Proof (Leq (Filter__join f) l) :=
+  X => f => l => h => forallI (powerset X) (x => if (Membership__mem l x) (Filter__Eventually (x3 => Membership__mem x3 x) f)) (x => ifI (Membership__mem l x) (Filter__Eventually (x2 => Membership__mem x2 x) f) (hs => Filter__Eventually__mono (Filter X) (m => Leq m l) (t => Membership__mem t x) f h (forallI (Filter X) (x1 => if (Leq x1 l) (Membership__mem x1 x)) (x1 => ifI (Leq x1 l) (Membership__mem x1 x) (hm => ifE (Membership__mem l x) (Membership__mem x1 x) (forallE (powerset X) (U => if (Membership__mem l U) (Membership__mem x1 U)) hm x) hs))))).
+
+(; //LEAN:Set.EqOn.eventuallyEq ;)
+def Set__EqOn__eventuallyEq : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Set__EqOn f g s)) -> Proof (Filter__EventuallyEq (Filter__principal s) f g) :=
+  X => Y => s => f => g => h => h.
+
+(; //LEAN:Set.EqOn.eventuallyEq_of_mem ;)
+def Set__EqOn__eventuallyEq_of_mem : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Set__EqOn f g s)) -> (hl : Proof (Membership__mem l s)) -> Proof (Filter__EventuallyEq l f g) :=
+  X => Y => s => l => f => g => h => hl => Filter__EventuallyEq__filter_mono X Y (Filter__principal s) l f g (Set__EqOn__eventuallyEq X Y s f g h) (iffEr (Leq l (Filter__principal s)) (Membership__mem l s) (Filter__le_principal_iff X s l) hl).
+
+(; //LEAN:LE.le.eventuallySubset ;)
+def LE__le__eventuallySubset : (X : Set) -> (l : Elem (Filter X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset s t)) -> Proof (Filter__EventuallySubset l s t) :=
+  X => l => s => t => h => Filter__Eventually__of_forall X (x => Leq ((x1 => Membership__mem s x1) x) ((x2 => Membership__mem t x2) x)) l h.
+
+(; //LEAN:LE.le.eventuallyLE ;)
+def LE__le__eventuallyLE : (X : Set) -> (Y : Set) -> (_ : Proof (LE Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Leq f g)) -> Proof (Filter__EventuallyLE l f g) :=
+  X => Y => x => l => f => g => h => Filter__Eventually__of_forall X (x1 => Leq (f x1) (g x1)) l h.
+
+(; //LEAN:Filter.EventuallySubset.of_subset ;)
+def Filter__EventuallySubset__of_subset : (X : Set) -> (l : Elem (Filter X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset s t)) -> Proof (Filter__EventuallySubset l s t) :=
+  LE__le__eventuallySubset.
+
+(; //LEAN:Filter.EventuallyLE.of_le ;)
+def Filter__EventuallyLE__of_le : (X : Set) -> (Y : Set) -> (_ : Proof (LE Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Leq f g)) -> Proof (Filter__EventuallyLE l f g) :=
+  LE__le__eventuallyLE.
+
+(; //LEAN:Filter.compl_mem_comk ;)
+Filter__compl_mem_comk : (X : Set) -> (p : (Elem (powerset X) -> Prop)) -> (he : Proof (p EmptyCollection__emptyCollection)) -> (hmono : Proof (forall (powerset X) (t1 => if (p t1) (forall (powerset X) (s2 => if (Set__Subset s2 t1) (p s2)))))) -> (hunion : Proof (forall (powerset X) (s1 => if (p s1) (forall (powerset X) (t => if (p t) (p (Union__union s1 t))))))) -> (s : Elem (powerset X)) -> Proof (iff (Membership__mem (Filter__comk p he hmono hunion) (Compl__compl s)) (p s)).
+

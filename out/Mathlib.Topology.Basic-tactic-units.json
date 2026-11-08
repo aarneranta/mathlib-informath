@@ -1,0 +1,374 @@
+[
+ {
+  "name": "TopologicalSpace__ext_iff",
+  "lean": "TopologicalSpace.ext_iff",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (IsOpen x') (IsOpen x')",
+    "by": "ext",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (IsOpen x') (IsOpen x')",
+    "by": "exact h _",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsOpen__union",
+  "lean": "IsOpen.union",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "IsOpen (Set__iUnion (b => cond b s1 s2))",
+    "by": "rw [union_eq_iUnion]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsOpen (Set__iUnion (b => cond b s1 s2))",
+    "by": "exact isOpen_iUnion (Bool.forall_bool.2 ⟨h₂, h₁⟩)",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isOpen_iff_of_cover",
+  "lean": "isOpen_iff_of_cover",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (forall X (i2 => IsOpen (Inter__inter (f i2) s)))"
+     ]
+    ],
+    "by": "refine ⟨fun h i ↦ (ho i).inter h, fun h ↦ ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "IsOpen s",
+    "by": "refine ⟨fun h i ↦ (ho i).inter h, fun h ↦ ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "IsOpen (Set__iUnion (i3 => Inter__inter (f i3) s))",
+    "by": "rw [← s.inter_univ, inter_comm, ← hU, iUnion_inter]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsOpen (Set__iUnion (i3 => Inter__inter (f i3) s))",
+    "by": "exact isOpen_iUnion fun i ↦ h i",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "isOpen_empty",
+  "lean": "isOpen_empty",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "IsOpen (Set__sUnion EmptyCollection__emptyCollection)",
+    "by": "rw [← sUnion_empty]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsOpen (Set__sUnion EmptyCollection__emptyCollection)",
+    "by": "exact isOpen_sUnion fun a => False.elim",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Set__Finite__isOpen_sInter",
+  "lean": "Set.Finite.isOpen_sInter",
+  "steps": [
+   {
+    "unit": "induction",
+    "by": "induction s, hs using Set.Finite.induction_on with",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (forall (powerset X) (t => if (Membership__mem EmptyCollection__emptyCollection t) (IsOpen t)))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "IsOpen Set__univ",
+    "by": "rw [sInter_empty]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsOpen Set__univ",
+    "by": "exact isOpen_univ",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ih",
+      "Proof (if (forall (powerset X) (t => if (Membership__mem s' t) (IsOpen t))) (IsOpen (Set__sInter s')))"
+     ],
+     [
+      "h",
+      "Proof (forall (powerset X) (t1 => if (Membership__mem (Insert__insert a' s') t1) (IsOpen t1)))"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(and (IsOpen a') (forall (powerset X) (x => if (Membership__mem s' x) (IsOpen x))))",
+    "by": "simp only [sInter_insert, forall_mem_insert] at h ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "IsOpen (Inter__inter a' (Set__sInter s'))",
+    "by": "simp only [sInter_insert, forall_mem_insert] at h ⊢",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsOpen (Inter__inter a' (Set__sInter s'))",
+    "by": "exact h.1.inter (ih h.2)",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsOpen__iInter_of_finite_ne_univ",
+  "lean": "IsOpen.iInter_of_finite_ne_univ",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "IsOpen (Set__iInter (i2 => s i2))",
+    "by": "simpa using hs_ne_univ.isOpen_biInter (f := s) fun _ _ ↦ hs _",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isOpen_const",
+  "lean": "isOpen_const",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "IsOpen (Set__ofPred (_x => p))",
+    "by": "by_cases p <;> simp [*]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "TopologicalSpace__ext_iff_isClosed",
+  "lean": "TopologicalSpace.ext_iff_isClosed",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (forall (powerset X) (x => iff (IsOpen (Compl__compl x)) (IsOpen (Compl__compl x)))) (forall (powerset X) (s => iff (IsClosed s) (IsClosed s)))",
+    "by": "rw [TopologicalSpace.ext_iff, compl_surjective.forall]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (forall (powerset X) (x => iff (IsOpen (Compl__compl x)) (IsOpen (Compl__compl x)))) (forall (powerset X) (s => iff (IsClosed s) (IsClosed s)))",
+    "by": "simp only [@isOpen_compl_iff _ _ t₁, @isOpen_compl_iff _ _ t₂]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsClosed__union",
+  "lean": "IsClosed.union",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "if (IsClosed s1) (if (IsClosed s2) (IsClosed (Union__union s1 s2)))",
+    "by": "simpa only [← isOpen_compl_iff, compl_union] using IsOpen.inter",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isClosed_sInter",
+  "lean": "isClosed_sInter",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "if (forall (powerset X) (t => if (Membership__mem s t) (IsClosed t))) (IsClosed (Set__sInter s))",
+    "by": "simpa only [← isOpen_compl_iff, compl_sInter, sUnion_image] using isOpen_biUnion",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isClosed_compl_iff",
+  "lean": "isClosed_compl_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (IsClosed (Compl__compl s)) (IsOpen s)",
+    "by": "rw [← isOpen_compl_iff, compl_compl]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsClosed__inter",
+  "lean": "IsClosed.inter",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "and ((IsOpen (Compl__compl s1))) ((IsOpen (Compl__compl s2)))",
+    "by": "rw [← isOpen_compl_iff] at *",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "IsOpen (Compl__compl (Inter__inter s1 s2))",
+    "by": "rw [← isOpen_compl_iff] at *",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "IsOpen (Union__union (Compl__compl s1) (Compl__compl s2))",
+    "by": "rw [compl_inter]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsOpen (Union__union (Compl__compl s1) (Compl__compl s2))",
+    "by": "exact IsOpen.union h₁ h₂",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Set__Finite__isClosed_biUnion",
+  "lean": "Set.Finite.isClosed_biUnion",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(forall X (i => if (Membership__mem s i) (IsOpen (Compl__compl (f i)))))",
+    "by": "simp only [← isOpen_compl_iff, compl_iUnion] at *",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "IsOpen (Set__iInter (i1 => Set__iInter (i2 => Compl__compl (f i1))))",
+    "by": "simp only [← isOpen_compl_iff, compl_iUnion] at *",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsOpen (Set__iInter (i1 => Set__iInter (i2 => Compl__compl (f i1))))",
+    "by": "exact hs.isOpen_biInter h",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Set__Finite__isClosed_sUnion",
+  "lean": "Set.Finite.isClosed_sUnion",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "IsClosed (Set__iUnion (i => Set__iUnion (h1 => i)))",
+    "by": "rw [sUnion_eq_biUnion]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsClosed (Set__iUnion (i => Set__iUnion (h1 => i)))",
+    "by": "exact hs.isClosed_biUnion h",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isClosed_iUnion_of_finite",
+  "lean": "isClosed_iUnion_of_finite",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(forall I (i => IsOpen (Compl__compl (s i))))",
+    "by": "simp only [← isOpen_compl_iff, compl_iUnion] at *",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "IsOpen (Set__iInter (i1 => Compl__compl (s i1)))",
+    "by": "simp only [← isOpen_compl_iff, compl_iUnion] at *",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsOpen (Set__iInter (i1 => Compl__compl (s i1)))",
+    "by": "exact isOpen_iInter_of_finite h",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "IsClosed__iUnion_of_finite_nonempty",
+  "lean": "IsClosed.iUnion_of_finite_nonempty",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "IsClosed (Set__iUnion (i2 => s i2))",
+    "by": "simpa using hs_nonempty.isClosed_biUnion (f := s) fun _ _ ↦ hs _",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "isClosed_imp",
+  "lean": "isClosed_imp",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "IsClosed (Set__ofPred (x4 => if (p x4) (q x4)))",
+    "by": "simpa only [imp_iff_not_or] using! hp.isClosed_compl.union hq",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "limUnder_of_not_tendsto",
+  "lean": "limUnder_of_not_tendsto",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(not (exists X (x1 => Leq (Filter__map g f) (nhds x1))))",
+    "by": "simp_rw [Tendsto] at h",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt X (Filter__limUnder f g) (Classical__choice hX)",
+    "by": "simp_rw [limUnder, lim, Classical.epsilon, Classical.strongIndefiniteDescription, dite_eq_right h]",
+    "depth": 0
+   }
+  ]
+ }
+]

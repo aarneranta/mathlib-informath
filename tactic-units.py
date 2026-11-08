@@ -50,9 +50,20 @@ def tactic_name(step):
 HYGIENE = re.compile(r"([A-Za-z_][A-Za-z0-9_']*)\._@\.[A-Za-z0-9_.']*?_hyg\.\d+")
 
 
+# Greek type variables as Export.lean names them in statements (α : Type is
+# X), other Greek letters spelled out, subscript digits as digits: Informath
+# reads ASCII identifiers only
+LATIN = {'α': 'X', 'β': 'Y', 'γ': 'Z', 'δ': 'W', 'ι': 'I', 'κ': 'J', 'σ': 'S', 'τ': 'T', 'ω': 'U'}
+GREEK = {'ε': 'eps', 'φ': 'phi', 'ψ': 'psi', 'π': 'pi', 'μ': 'mu', 'ν': 'nu', 'λ': 'lam', 'ρ': 'rho',
+         'χ': 'chi', 'θ': 'theta', 'η': 'eta', 'ζ': 'zeta', 'ξ': 'xi', 'ϕ': 'phi', 'Ω': 'Omega'}
+SUBSCRIPT = {chr(0x2080 + i): str(i) for i in range(10)}
+
+
 def clean(s):
-    """Names with Lean's macro scopes (m._@.M._hyg.42, shown as m✝) as m'."""
-    return HYGIENE.sub(lambda m: m.group(1) + "'", s)
+    """Names with Lean's macro scopes (m._@.M._hyg.42, shown as m✝) as m',
+    and non-ASCII letters in ASCII."""
+    s = HYGIENE.sub(lambda m: m.group(1) + "'", s)
+    return ''.join(LATIN.get(c) or GREEK.get(c) or SUBSCRIPT.get(c, c) for c in s)
 
 
 def hyps(goal):

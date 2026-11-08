@@ -1,0 +1,511 @@
+(; Mathlib.Algebra.Polynomial.Roots: statements exported from Mathlib by MathlibInformath/Export.lean ;)
+
+(; //LEAN:Polynomial.roots ;)
+def Polynomial__roots : (p : Elem (Polynomial R)) -> Elem (Multiset R) :=
+  p => dite (Eqt (Polynomial R) p 0) (h1 => EmptyCollection__emptyCollection) (h2 => Classical__choose (Polynomial__roots___proof_1 p h2)).
+
+(; //LEAN:Polynomial.roots_def ;)
+Polynomial__roots_def : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> Proof (Eqt (Multiset R) (Polynomial__roots p) (dite (Eqt (Polynomial R) p 0) (h1 => EmptyCollection__emptyCollection) (h2 => Classical__choose (Polynomial__exists_multiset_roots h2)))).
+
+(; //LEAN:Polynomial.roots_zero ;)
+def Polynomial__roots_zero : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> Proof (Eqt (Multiset R) (Polynomial__roots 0) 0) :=
+  R => x => h => dite_eq_left (Eqt (Polynomial R) 0 0) (Classical__dec (Eqt (Polynomial R) 0 0)) rfl (Multiset R) (h1 => EmptyCollection__emptyCollection) (h2 => Classical__choose (Polynomial__roots___proof_1 R 0 h2)).
+
+(; //LEAN:Polynomial.card_roots ;)
+Polynomial__card_roots : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (hp0 : Proof (Neq p 0)) -> Proof (Leq (Multiset__card (Polynomial__roots p)) (Polynomial__degree p)).
+
+(; //LEAN:Polynomial.card_roots' ;)
+Polynomial__card_roots' : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> Proof (Leq (Multiset__card (Polynomial__roots p)) (Polynomial__natDegree p)).
+
+(; //LEAN:Polynomial.card_roots_sub_C ;)
+Polynomial__card_roots_sub_C : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (a : Elem R) -> (hp0 : Proof (Lt 0 (Polynomial__degree p))) -> Proof (Leq (Multiset__card (Polynomial__roots (minus p (Polynomial__C__app a)))) (Polynomial__degree p)).
+
+(; //LEAN:Polynomial.card_roots_sub_C' ;)
+def Polynomial__card_roots_sub_C' : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (a : Elem R) -> (hp0 : Proof (Lt 0 (Polynomial__degree p))) -> Proof (Leq (Multiset__card (Polynomial__roots (minus p (Polynomial__C__app a)))) (Polynomial__natDegree p)) :=
+  R => x => h => p => a => hp0 => iffEl (Leq (WithBot__some (Multiset__card (Polynomial__roots (minus p (Polynomial__C__app a))))) (WithBot__some (Polynomial__natDegree p))) (Leq (Multiset__card (Polynomial__roots (minus p (Polynomial__C__app a)))) (Polynomial__natDegree p)) (WithBot__coe_le_coe Nat (Multiset__card (Polynomial__roots (minus p (Polynomial__C__app a)))) (Polynomial__natDegree p)) (le_trans (WithBot Nat) (WithBot__some (Multiset__card (Polynomial__roots (minus p (Polynomial__C__app a))))) (Polynomial__degree p) (WithBot__some (Polynomial__natDegree p)) (Polynomial__card_roots_sub_C R p a hp0) (le_of_eq (WithBot Nat) (Polynomial__degree p) (WithBot__some (Polynomial__natDegree p)) (Polynomial__degree_eq_natDegree R p (ifI (Eqt (Polynomial R) p 0) false (h1 => falseE false (Eq__mp (Eq__trans Prop (Lt 0 (Polynomial__degree p)) (Lt 0 Bot__bot) false (congrArg (WithBot Nat) Prop (Polynomial__degree p) Bot__bot (Lt 0) (congrArg (Polynomial R) (WithBot Nat) p 0 Polynomial__degree h1)) (not_lt_bot___simp_1 (WithBot Nat) 0)) hp0)))))).
+
+(; //LEAN:Polynomial.count_roots ;)
+Polynomial__count_roots : (R : Set) -> (a : Elem R) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> Proof (Eq (Multiset__count a (Polynomial__roots p)) (Polynomial__rootMultiplicity a p)).
+
+(; //LEAN:Polynomial.mem_roots' ;)
+Polynomial__mem_roots' : (R : Set) -> (a : Elem R) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> Proof (iff (Membership__mem (Polynomial__roots p) a) (and (Neq p 0) (Polynomial__IsRoot p a))).
+
+(; //LEAN:Polynomial.mem_roots ;)
+def Polynomial__mem_roots : (R : Set) -> (a : Elem R) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Neq p 0)) -> Proof (iff (Membership__mem (Polynomial__roots p) a) (Polynomial__IsRoot p a)) :=
+  R => a => x => h => p => hp => Iff__trans (Membership__mem (Polynomial__roots p) a) (and (Neq p 0) (Polynomial__IsRoot p a)) (Polynomial__IsRoot p a) (Polynomial__mem_roots' R a p) (and_iff_right (Neq p 0) (Polynomial__IsRoot p a) hp).
+
+(; //LEAN:Polynomial.ne_zero_of_mem_roots ;)
+def Polynomial__ne_zero_of_mem_roots : (R : Set) -> (a : Elem R) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (h1 : Proof (Membership__mem (Polynomial__roots p) a)) -> Proof (Neq p 0) :=
+  R => a => x => h => p => h1 => andEl (Neq p 0) (Polynomial__IsRoot p a) (iffEl (Membership__mem (Polynomial__roots p) a) (and (Neq p 0) (Polynomial__IsRoot p a)) (Polynomial__mem_roots' R a p) h1).
+
+(; //LEAN:Polynomial.isRoot_of_mem_roots ;)
+def Polynomial__isRoot_of_mem_roots : (R : Set) -> (a : Elem R) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (h1 : Proof (Membership__mem (Polynomial__roots p) a)) -> Proof (Polynomial__IsRoot p a) :=
+  R => a => x => h => p => h1 => andEr (Neq p 0) (Polynomial__IsRoot p a) (iffEl (Membership__mem (Polynomial__roots p) a) (and (Neq p 0) (Polynomial__IsRoot p a)) (Polynomial__mem_roots' R a p) h1).
+
+(; //LEAN:Polynomial.roots_eq_zero_iff_not_isRoot ;)
+Polynomial__roots_eq_zero_iff_not_isRoot : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (hp0 : Proof (Neq p 0)) -> Proof (iff (Eqt (Multiset R) (Polynomial__roots p) 0) (forall R (x1 => not (Polynomial__IsRoot p x1)))).
+
+(; //LEAN:Polynomial.roots_eq_zero_iff_eq_zero_or_not_isRoot ;)
+Polynomial__roots_eq_zero_iff_eq_zero_or_not_isRoot : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> Proof (iff (Eqt (Multiset R) (Polynomial__roots p) 0) (or (Eqt (Polynomial R) p 0) (forall R (x1 => not (Polynomial__IsRoot p x1))))).
+
+(; //LEAN:Polynomial.roots_ne_zero_iff_ne_zero_and_exists_isRoot ;)
+Polynomial__roots_ne_zero_iff_ne_zero_and_exists_isRoot : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> Proof (iff (Neq (Polynomial__roots p) 0) (and (Neq p 0) (exists R (x1 => Polynomial__IsRoot p x1)))).
+
+(; //LEAN:Polynomial.exists_isRoot_of_roots_ne_zero ;)
+def Polynomial__exists_isRoot_of_roots_ne_zero : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (h1 : Proof (Neq (Polynomial__roots p) 0)) -> Proof (exists R (x1 => Polynomial__IsRoot p x1)) :=
+  R => x => h => p => h1 => andEr (Neq p 0) (exists R (x1 => Polynomial__IsRoot p x1)) (iffEl (Neq (Polynomial__roots p) 0) (and (Neq p 0) (exists R (x2 => Polynomial__IsRoot p x2))) (Polynomial__roots_ne_zero_iff_ne_zero_and_exists_isRoot R p) h1).
+
+(; //LEAN:Polynomial.roots_ne_zero_iff_exists_isRoot ;)
+Polynomial__roots_ne_zero_iff_exists_isRoot : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (hp0 : Proof (Neq p 0)) -> Proof (iff (Neq (Polynomial__roots p) 0) (exists R (x1 => Polynomial__IsRoot p x1))).
+
+(; //LEAN:Polynomial.mem_roots_map_of_injective ;)
+Polynomial__mem_roots_map_of_injective : (R : Set) -> (S : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (Semiring S)) -> (p : Elem (Polynomial S)) -> (f : Elem (RingHom S R)) -> (hf : Proof (Function__Injective f)) -> (x2 : Elem R) -> (hp : Proof (Neq p 0)) -> Proof (iff (Membership__mem (Polynomial__roots (Polynomial__map f p)) x2) (Eqt R (Polynomial__eval_u2082_ f x2 p) 0)).
+
+(; //LEAN:Polynomial.mem_roots_iff_aeval_eq_zero ;)
+Polynomial__mem_roots_iff_aeval_eq_zero : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (x1 : Elem R) -> (w : Proof (Neq p 0)) -> Proof (iff (Membership__mem (Polynomial__roots p) x1) (Eqt R (Polynomial__aeval__app x1 p) 0)).
+
+(; //LEAN:Polynomial.card_le_degree_of_subset_roots ;)
+def Polynomial__card_le_degree_of_subset_roots : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (Z : Elem (Finset R)) -> (h1 : Proof (HasSubset__Subset (Finset__val Z) (Polynomial__roots p))) -> Proof (Leq (Finset__card Z) (Polynomial__natDegree p)) :=
+  R => x => h => p => Z => h1 => LE__le__trans Nat (Multiset__card (Finset__val Z)) (Multiset__card (Polynomial__roots p)) (Polynomial__natDegree p) (Multiset__card_le_card R (Finset__val Z) (Polynomial__roots p) (iffEr (Leq (Finset__val Z) (Polynomial__roots p)) (HasSubset__Subset (Finset__val Z) (Polynomial__roots p)) (Finset__val_le_iff_val_subset R Z (Polynomial__roots p)) h1)) (Polynomial__card_roots' R p).
+
+(; //LEAN:Polynomial.finite_setOfPred_isRoot ;)
+Polynomial__finite_setOfPred_isRoot : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Neq p 0)) -> Proof (Set__Finite (Set__ofPred (x1 => Polynomial__IsRoot p x1))).
+
+(; //LEAN:Polynomial.eventually_cofinite_not_isRoot ;)
+def Polynomial__eventually_cofinite_not_isRoot : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Neq p 0)) -> Proof (Filter__Eventually (x1 => not (Polynomial__IsRoot p x1)) Filter__cofinite) :=
+  R => x => h => p => hp => Set__Finite__compl_mem_cofinite R (Set__ofPred (x1 => Polynomial__IsRoot p x1)) (Polynomial__finite_setOfPred_isRoot R p hp).
+
+(; //LEAN:Polynomial.eventually_eval_ne_zero_cofinite ;)
+def Polynomial__eventually_eval_ne_zero_cofinite : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Neq p 0)) -> Proof (Filter__Eventually (x1 => Neq (Polynomial__eval x1 p) 0) Filter__cofinite) :=
+  R => x => h => p => hp => Polynomial__eventually_cofinite_not_isRoot R p hp.
+
+(; //LEAN:Polynomial.eq_zero_of_infinite_isRoot ;)
+def Polynomial__eq_zero_of_infinite_isRoot : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (h1 : Proof (Set__Infinite (Set__ofPred (x1 => Polynomial__IsRoot p x1)))) -> Proof (Eqt (Polynomial R) p 0) :=
+  R => x => h => p => h1 => iffEl (if (not (Eqt (Polynomial R) p 0)) (Set__Finite (Set__ofPred (x1 => Polynomial__IsRoot p x1)))) (if (not (Set__Finite (Set__ofPred (x2 => Polynomial__IsRoot p x2)))) (Eqt (Polynomial R) p 0)) (not_imp_comm (Eqt (Polynomial R) p 0) (Set__Finite (Set__ofPred (x3 => Polynomial__IsRoot p x3)))) (Polynomial__finite_setOfPred_isRoot R p) h1.
+
+(; //LEAN:Polynomial.exists_max_root ;)
+def Polynomial__exists_max_root : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (LinearOrder R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Neq p 0)) -> Proof (exists R (x2 => forall R (x3 => if (Polynomial__IsRoot p x3) (Leq x3 x2)))) :=
+  R => x => h => x1 => p => hp => Set__exists_upper_bound_image R R (Set__ofPred (x2 => Polynomial__IsRoot p x2)) (x3 => x3) (Polynomial__finite_setOfPred_isRoot R p hp).
+
+(; //LEAN:Polynomial.exists_min_root ;)
+def Polynomial__exists_min_root : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (LinearOrder R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Neq p 0)) -> Proof (exists R (x2 => forall R (x3 => if (Polynomial__IsRoot p x3) (Leq x2 x3)))) :=
+  R => x => h => x1 => p => hp => Set__exists_lower_bound_image R R (Set__ofPred (x2 => Polynomial__IsRoot p x2)) (x3 => x3) (Polynomial__finite_setOfPred_isRoot R p hp).
+
+(; //LEAN:Polynomial.eq_of_infinite_eval_eq ;)
+Polynomial__eq_of_infinite_eval_eq : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (q : Elem (Polynomial R)) -> (h1 : Proof (Set__Infinite (Set__ofPred (x1 => Eqt R (Polynomial__eval x1 p) (Polynomial__eval x1 q))))) -> Proof (Eqt (Polynomial R) p q).
+
+(; //LEAN:Polynomial.tendstoCofinite_of_natDegree_ne_zero ;)
+Polynomial__tendstoCofinite_of_natDegree_ne_zero : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Neq (Polynomial__natDegree p) 0)) -> Proof (Filter__TendstoCofinite (x1 => Polynomial__eval x1 p)).
+
+(; //LEAN:Polynomial.roots_mul ;)
+Polynomial__roots_mul : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (q : Elem (Polynomial R)) -> (hpq : Proof (Neq (times p q) 0)) -> Proof (Eqt (Multiset R) (Polynomial__roots (times p q)) (plus (Polynomial__roots p) (Polynomial__roots q))).
+
+(; //LEAN:Polynomial.roots.le_of_dvd ;)
+Polynomial__roots__le_of_dvd : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (q : Elem (Polynomial R)) -> (h1 : Proof (Neq q 0)) -> (h2 : Proof (divide p q)) -> Proof (Leq (Polynomial__roots p) (Polynomial__roots q)).
+
+(; //LEAN:Polynomial.mem_roots_sub_C' ;)
+Polynomial__mem_roots_sub_C' : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (a : Elem R) -> (x1 : Elem R) -> Proof (iff (Membership__mem (Polynomial__roots (minus p (Polynomial__C__app a))) x1) (and (Neq p (Polynomial__C__app a)) (Eqt R (Polynomial__eval x1 p) a))).
+
+(; //LEAN:Polynomial.mem_roots_sub_C ;)
+Polynomial__mem_roots_sub_C : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (a : Elem R) -> (x1 : Elem R) -> (hp0 : Proof (Lt 0 (Polynomial__degree p))) -> Proof (iff (Membership__mem (Polynomial__roots (minus p (Polynomial__C__app a))) x1) (Eqt R (Polynomial__eval x1 p) a)).
+
+(; //LEAN:Polynomial.roots_X_sub_C ;)
+Polynomial__roots_X_sub_C : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (r : Elem R) -> Proof (Eqt (Multiset R) (Polynomial__roots (minus Polynomial__X (Polynomial__C__app r))) (Singleton__singleton r)).
+
+(; //LEAN:Polynomial.roots_X_add_C ;)
+Polynomial__roots_X_add_C : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (r : Elem R) -> Proof (Eqt (Multiset R) (Polynomial__roots (plus Polynomial__X (Polynomial__C__app r))) (Singleton__singleton (Neg__neg r))).
+
+(; //LEAN:Polynomial.roots_X ;)
+Polynomial__roots_X : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> Proof (Eqt (Multiset R) (Polynomial__roots Polynomial__X) (Singleton__singleton 0)).
+
+(; //LEAN:Polynomial.roots_C ;)
+Polynomial__roots_C : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (x1 : Elem R) -> Proof (Eqt (Multiset R) (Polynomial__roots (Polynomial__C__app x1)) 0).
+
+(; //LEAN:Polynomial.roots_one ;)
+def Polynomial__roots_one : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> Proof (Eqt (Multiset R) (Polynomial__roots 1) EmptyCollection__emptyCollection) :=
+  R => x => h => Polynomial__roots_C R 1.
+
+(; //LEAN:Polynomial.roots_C_mul ;)
+Polynomial__roots_C_mul : (R : Set) -> (a : Elem R) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (ha : Proof (Neq a 0)) -> Proof (Eqt (Multiset R) (Polynomial__roots (times (Polynomial__C__app a) p)) (Polynomial__roots p)).
+
+(; //LEAN:Associated.roots_eq ;)
+Associated__roots_eq : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (q : Elem (Polynomial R)) -> (h1 : Proof (Associated p q)) -> Proof (Eqt (Multiset R) (Polynomial__roots p) (Polynomial__roots q)).
+
+(; //LEAN:Polynomial.roots_smul_nonzero ;)
+Polynomial__roots_smul_nonzero : (R : Set) -> (a : Elem R) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (ha : Proof (Neq a 0)) -> Proof (Eqt (Multiset R) (Polynomial__roots (HSMul__hSMul a p)) (Polynomial__roots p)).
+
+(; //LEAN:Polynomial.roots_neg ;)
+Polynomial__roots_neg : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> Proof (Eqt (Multiset R) (Polynomial__roots (Neg__neg p)) (Polynomial__roots p)).
+
+(; //LEAN:Polynomial.map_roots_comp_C_mul_X_add_C ;)
+Polynomial__map_roots_comp_C_mul_X_add_C : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (a : Elem R) -> (b : Elem R) -> (ha : Proof (IsUnit a)) -> Proof (Eqt (Multiset R) (Multiset__map (x1 => plus (times a x1) b) (Polynomial__roots (Polynomial__comp p (plus (times (Polynomial__C__app a) Polynomial__X) (Polynomial__C__app b))))) (Polynomial__roots p)).
+
+(; //LEAN:Polynomial.roots_comp_C_mul_X_add_C ;)
+Polynomial__roots_comp_C_mul_X_add_C : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (a : Elem R) -> (b : Elem R) -> (ha : Proof (IsUnit a)) -> Proof (Eqt (Multiset R) (Polynomial__roots (Polynomial__comp p (plus (times (Polynomial__C__app a) Polynomial__X) (Polynomial__C__app b)))) (Multiset__map (x1 => times (Ring__inverse a) (minus x1 b)) (Polynomial__roots p))).
+
+(; //LEAN:Polynomial.roots_comp_neg_X ;)
+Polynomial__roots_comp_neg_X : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> Proof (Eqt (Multiset R) (Polynomial__roots (Polynomial__comp p (Neg__neg Polynomial__X))) (Multiset__map (x1 => Neg__neg x1) (Polynomial__roots p))).
+
+(; //LEAN:Polynomial.roots_C_mul_X_sub_C_of_IsUnit ;)
+Polynomial__roots_C_mul_X_sub_C_of_IsUnit : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (b : Elem R) -> (a : Elem (Units R)) -> Proof (Eqt (Multiset R) (Polynomial__roots (minus (times (Polynomial__C__app (Units__val a)) Polynomial__X) (Polynomial__C__app b))) (Singleton__singleton (times (Units__val (Inv__inv a)) b))).
+
+(; //LEAN:Polynomial.roots_C_mul_X_add_C_of_IsUnit ;)
+Polynomial__roots_C_mul_X_add_C_of_IsUnit : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (b : Elem R) -> (a : Elem (Units R)) -> Proof (Eqt (Multiset R) (Polynomial__roots (plus (times (Polynomial__C__app (Units__val a)) Polynomial__X) (Polynomial__C__app b))) (Singleton__singleton (Neg__neg (times (Units__val (Inv__inv a)) b)))).
+
+(; //LEAN:Polynomial.roots_list_prod ;)
+Polynomial__roots_list_prod : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (L : Elem (List (Polynomial R))) -> (h1 : Proof (not (Membership__mem L 0))) -> Proof (Eqt (Multiset R) (Polynomial__roots (List__prod L)) (Multiset__bind (Multiset__ofList L) Polynomial__roots)).
+
+(; //LEAN:Polynomial.roots_multiset_prod ;)
+Polynomial__roots_multiset_prod : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (m : Elem (Multiset (Polynomial R))) -> (h1 : Proof (not (Membership__mem m 0))) -> Proof (Eqt (Multiset R) (Polynomial__roots (Multiset__prod m)) (Multiset__bind m Polynomial__roots)).
+
+(; //LEAN:Polynomial.roots_prod ;)
+Polynomial__roots_prod : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (I : Set) -> (f : (Elem I -> Polynomial R)) -> (s : Elem (Finset I)) -> (h1 : Proof (Neq (Finset__prod s (x2 => f x2)) 0)) -> Proof (Eqt (Multiset R) (Polynomial__roots (Finset__prod s (x1 => f x1))) (Multiset__bind (Finset__val s) (i => Polynomial__roots (f i)))).
+
+(; //LEAN:Polynomial.roots_pow ;)
+Polynomial__roots_pow : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (n : Elem Nat) -> Proof (Eqt (Multiset R) (Polynomial__roots (pow p n)) (HSMul__hSMul n (Polynomial__roots p))).
+
+(; //LEAN:Polynomial.roots_X_pow ;)
+Polynomial__roots_X_pow : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (n : Elem Nat) -> Proof (Eqt (Multiset R) (Polynomial__roots (pow Polynomial__X n)) (HSMul__hSMul n (Singleton__singleton 0))).
+
+(; //LEAN:Polynomial.roots_C_mul_X_pow ;)
+Polynomial__roots_C_mul_X_pow : (R : Set) -> (a : Elem R) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (ha : Proof (Neq a 0)) -> (n : Elem Nat) -> Proof (Eqt (Multiset R) (Polynomial__roots (times (Polynomial__C__app a) (pow Polynomial__X n))) (HSMul__hSMul n (Singleton__singleton 0))).
+
+(; //LEAN:Polynomial.roots_monomial ;)
+Polynomial__roots_monomial : (R : Set) -> (a : Elem R) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (ha : Proof (Neq a 0)) -> (n : Elem Nat) -> Proof (Eqt (Multiset R) (Polynomial__roots (Polynomial__monomial__app n a)) (HSMul__hSMul n (Singleton__singleton 0))).
+
+(; //LEAN:Polynomial.roots_prod_X_sub_C ;)
+Polynomial__roots_prod_X_sub_C : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (s : Elem (Finset R)) -> Proof (Eqt (Multiset R) (Polynomial__roots (Finset__prod s (a => minus Polynomial__X (Polynomial__C__app a)))) (Finset__val s)).
+
+(; //LEAN:Polynomial.roots_multiset_prod_X_sub_C ;)
+Polynomial__roots_multiset_prod_X_sub_C : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (s : Elem (Multiset R)) -> Proof (Eqt (Multiset R) (Polynomial__roots (Multiset__prod (Multiset__map (a => minus Polynomial__X (Polynomial__C__app a)) s))) s).
+
+(; //LEAN:Polynomial.roots_ofMultiset ;)
+Polynomial__roots_ofMultiset : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (s : Elem (Multiset R)) -> Proof (Eqt (Multiset R) (Polynomial__roots (Polynomial__ofMultiset__app s)) s).
+
+(; //LEAN:Polynomial.rightInverse_ofMultiset_roots ;)
+def Polynomial__rightInverse_ofMultiset_roots : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> Proof (Function__RightInverse Polynomial__ofMultiset Polynomial__roots) :=
+  R => x => h => Polynomial__roots_ofMultiset R.
+
+(; //LEAN:Polynomial.ofMultiset_injective ;)
+def Polynomial__ofMultiset_injective : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> Proof (Function__Injective Polynomial__ofMultiset) :=
+  R => x => h => Function__RightInverse__injective (Multiset R) (Polynomial R) Polynomial__ofMultiset Polynomial__roots (Polynomial__rightInverse_ofMultiset_roots R).
+
+(; //LEAN:Polynomial.card_roots_X_pow_sub_C ;)
+def Polynomial__card_roots_X_pow_sub_C : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (n : Elem Nat) -> (hn : Proof (Lt 0 n)) -> (a : Elem R) -> Proof (Leq (Multiset__card (Polynomial__roots (minus (pow Polynomial__X n) (Polynomial__C__app a)))) n) :=
+  R => x => h => n => hn => a => iffEl (Leq (WithBot__some (Multiset__card (Polynomial__roots (minus (pow Polynomial__X n) (Polynomial__C__app a))))) (WithBot__some n)) (Leq (Multiset__card (Polynomial__roots (minus (pow Polynomial__X n) (Polynomial__C__app a)))) n) (WithBot__coe_le_coe Nat (Multiset__card (Polynomial__roots (minus (pow Polynomial__X n) (Polynomial__C__app a)))) n) (Trans__trans (Polynomial__card_roots R (minus (pow Polynomial__X n) (Polynomial__C__app a)) (Polynomial__X_pow_sub_C_ne_zero R n hn a)) (Polynomial__degree_X_pow_sub_C R n hn a)).
+
+(; //LEAN:Polynomial.roots_eq_of_degree_le_card_of_ne_zero ;)
+Polynomial__roots_eq_of_degree_le_card_of_ne_zero : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (S : Elem (Finset R)) -> (hS : Proof (forall R (x1 => if (Membership__mem S x1) (Eqt R (Polynomial__eval x1 p) 0)))) -> (hcard : Proof (Leq (Polynomial__degree p) (Finset__card S))) -> (hp : Proof (Neq p 0)) -> Proof (Eqt (Multiset R) (Polynomial__roots p) (Finset__val S)).
+
+(; //LEAN:Polynomial.roots_eq_of_degree_eq_card ;)
+Polynomial__roots_eq_of_degree_eq_card : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (S : Elem (Finset R)) -> (hS : Proof (forall R (x1 => if (Membership__mem S x1) (Eqt R (Polynomial__eval x1 p) 0)))) -> (hcard : Proof (Eqt (WithBot Nat) (Finset__card S) (Polynomial__degree p))) -> Proof (Eqt (Multiset R) (Polynomial__roots p) (Finset__val S)).
+
+(; //LEAN:Polynomial.roots_eq_of_natDegree_le_card_of_ne_zero ;)
+def Polynomial__roots_eq_of_natDegree_le_card_of_ne_zero : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (S : Elem (Finset R)) -> (hS : Proof (forall R (x1 => if (Membership__mem S x1) (Eqt R (Polynomial__eval x1 p) 0)))) -> (hcard : Proof (Leq (Polynomial__natDegree p) (Finset__card S))) -> (hp : Proof (Neq p 0)) -> Proof (Eqt (Multiset R) (Polynomial__roots p) (Finset__val S)) :=
+  R => x => h => p => S => hS => hcard => hp => Polynomial__roots_eq_of_degree_le_card_of_ne_zero R p S hS (Polynomial__degree_le_of_natDegree_le R p (Finset__card S) hcard) hp.
+
+(; //LEAN:Polynomial.nthRoots ;)
+def Polynomial__nthRoots : (n : Elem Nat) -> (a : Elem R) -> Elem (Multiset R) :=
+  n => a => Polynomial__roots (minus (pow Polynomial__X n) (Polynomial__C__app a)).
+
+(; //LEAN:Polynomial.mem_nthRoots ;)
+Polynomial__mem_nthRoots : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (n : Elem Nat) -> (hn : Proof (Lt 0 n)) -> (a : Elem R) -> (x1 : Elem R) -> Proof (iff (Membership__mem (Polynomial__nthRoots n a) x1) (Eqt R (pow x1 n) a)).
+
+(; //LEAN:Polynomial.nthRoots_zero ;)
+Polynomial__nthRoots_zero : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (r : Elem R) -> Proof (Eqt (Multiset R) (Polynomial__nthRoots 0 r) 0).
+
+(; //LEAN:Polynomial.nthRoots_zero_right ;)
+Polynomial__nthRoots_zero_right : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (n : Elem Nat) -> Proof (Eqt (Multiset R) (Polynomial__nthRoots n 0) (Multiset__replicate n 0)).
+
+(; //LEAN:Polynomial.card_nthRoots ;)
+Polynomial__card_nthRoots : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (n : Elem Nat) -> (a : Elem R) -> Proof (Leq (Multiset__card (Polynomial__nthRoots n a)) n).
+
+(; //LEAN:Polynomial.nthRoots_two_eq_zero_iff ;)
+Polynomial__nthRoots_two_eq_zero_iff : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (r : Elem R) -> Proof (iff (Eqt (Multiset R) (Polynomial__nthRoots 2 r) 0) (not (IsSquare r))).
+
+(; //LEAN:Polynomial.nthRootsFinset ;)
+def Polynomial__nthRootsFinset : (n : Elem Nat) -> (a : Elem R) -> Elem (Finset R) :=
+  n => a => Multiset__toFinset (Polynomial__nthRoots n a).
+
+(; //LEAN:Polynomial.nthRootsFinset_def ;)
+Polynomial__nthRootsFinset_def : (n : Elem Nat) -> (R : Set) -> (a : Elem R) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> Proof (Eqt (Finset R) (Polynomial__nthRootsFinset n a) (Multiset__toFinset (Polynomial__nthRoots n a))).
+
+(; //LEAN:Polynomial.mem_nthRootsFinset ;)
+Polynomial__mem_nthRootsFinset : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (n : Elem Nat) -> (h1 : Proof (Lt 0 n)) -> (a : Elem R) -> (x1 : Elem R) -> Proof (iff (Membership__mem (Polynomial__nthRootsFinset n a) x1) (Eqt R (pow x1 n) a)).
+
+(; //LEAN:Polynomial.nthRootsFinset_zero ;)
+Polynomial__nthRootsFinset_zero : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (a : Elem R) -> Proof (Eqt (Finset R) (Polynomial__nthRootsFinset 0 a) EmptyCollection__emptyCollection).
+
+(; //LEAN:Polynomial.map_mem_nthRootsFinset ;)
+Polynomial__map_mem_nthRootsFinset : (R : Set) -> (n : Elem Nat) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (S : Set) -> (F : Set) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (a : Elem R) -> (x3 : Elem R) -> (hx : Proof (Membership__mem (Polynomial__nthRootsFinset n a) x3)) -> (f : Elem F) -> Proof (Membership__mem (Polynomial__nthRootsFinset n (f a)) (f x3)).
+
+(; //LEAN:Polynomial.map_mem_nthRootsFinset_one ;)
+Polynomial__map_mem_nthRootsFinset_one : (R : Set) -> (n : Elem Nat) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (S : Set) -> (F : Set) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (x3 : Elem R) -> (hx : Proof (Membership__mem (Polynomial__nthRootsFinset n 1) x3)) -> (f : Elem F) -> Proof (Membership__mem (Polynomial__nthRootsFinset n 1) (f x3)).
+
+(; //LEAN:Polynomial.mul_mem_nthRootsFinset ;)
+Polynomial__mul_mem_nthRootsFinset : (R : Set) -> (n : Elem Nat) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (x1 : Elem R) -> (x2 : Elem R) -> (x3 : Elem R) -> (x4 : Elem R) -> (h1 : Proof (Membership__mem (Polynomial__nthRootsFinset n x3) x1)) -> (h2 : Proof (Membership__mem (Polynomial__nthRootsFinset n x4) x2)) -> Proof (Membership__mem (Polynomial__nthRootsFinset n (times x3 x4)) (times x1 x2)).
+
+(; //LEAN:Polynomial.ne_zero_of_mem_nthRootsFinset ;)
+Polynomial__ne_zero_of_mem_nthRootsFinset : (R : Set) -> (n : Elem Nat) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (x1 : Elem R) -> (a : Elem R) -> (ha : Proof (Neq a 0)) -> (h1 : Proof (Membership__mem (Polynomial__nthRootsFinset n a) x1)) -> Proof (Neq x1 0).
+
+(; //LEAN:Polynomial.one_mem_nthRootsFinset ;)
+Polynomial__one_mem_nthRootsFinset : (R : Set) -> (n : Elem Nat) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (hn : Proof (Lt 0 n)) -> Proof (Membership__mem (Polynomial__nthRootsFinset n 1) 1).
+
+(; //LEAN:Polynomial.nthRoots_two_one ;)
+Polynomial__nthRoots_two_one : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> Proof (Eqt (Multiset R) (Polynomial__nthRoots 2 1) (Insert__insert (Neg__neg 1) (Singleton__singleton 1))).
+
+(; //LEAN:Polynomial.zero_of_eval_zero ;)
+Polynomial__zero_of_eval_zero : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (Infinite R)) -> (p : Elem (Polynomial R)) -> (h2 : Proof (forall R (x1 => Eqt R (Polynomial__eval x1 p) 0))) -> Proof (Eqt (Polynomial R) p 0).
+
+(; //LEAN:Polynomial.funext ;)
+Polynomial__funext : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (Infinite R)) -> (p : Elem (Polynomial R)) -> (q : Elem (Polynomial R)) -> (ext : Proof (forall R (r => Eqt R (Polynomial__eval r p) (Polynomial__eval r q)))) -> Proof (Eqt (Polynomial R) p q).
+
+(; //LEAN:Polynomial.aroots ;)
+def Polynomial__aroots : (p : Elem (Polynomial T)) -> (S : Set) -> Elem (Multiset S) :=
+  p => S => Polynomial__roots (Polynomial__map (Algebra__algebraMap T S) p).
+
+(; //LEAN:Polynomial.aroots_def ;)
+def Polynomial__aroots_def : (T : Set) -> (_ : Proof (CommRing T)) -> (p : Elem (Polynomial T)) -> (S : Set) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> Proof (Eqt (Multiset S) (Polynomial__aroots p S) (Polynomial__roots (Polynomial__map (Algebra__algebraMap T S) p))) :=
+  T => x => p => S => x1 => h => x2 => rfl.
+
+(; //LEAN:Polynomial.mem_aroots' ;)
+Polynomial__mem_aroots' : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (p : Elem (Polynomial T)) -> (a : Elem S) -> Proof (iff (Membership__mem (Polynomial__aroots p S) a) (and (Neq (Polynomial__map (Algebra__algebraMap T S) p) 0) (Eqt S (Polynomial__aeval__app a p) 0))).
+
+(; //LEAN:Polynomial.mem_aroots ;)
+Polynomial__mem_aroots : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (IsDomain T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (_ : Proof (Module__IsTorsionFree T S)) -> (p : Elem (Polynomial T)) -> (a : Elem S) -> Proof (iff (Membership__mem (Polynomial__aroots p S) a) (and (Neq p 0) (Eqt S (Polynomial__aeval__app a p) 0))).
+
+(; //LEAN:Polynomial.aroots_mul ;)
+Polynomial__aroots_mul : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (IsDomain T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (_ : Proof (Module__IsTorsionFree T S)) -> (p : Elem (Polynomial T)) -> (q : Elem (Polynomial T)) -> (hpq : Proof (Neq (times p q) 0)) -> Proof (Eqt (Multiset S) (Polynomial__aroots (times p q) S) (plus (Polynomial__aroots p S) (Polynomial__aroots q S))).
+
+(; //LEAN:Polynomial.aroots_X_sub_C ;)
+Polynomial__aroots_X_sub_C : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (r : Elem T) -> Proof (Eqt (Multiset S) (Polynomial__aroots (minus Polynomial__X (Polynomial__C__app r)) S) (Singleton__singleton (Algebra__algebraMap__app T S r))).
+
+(; //LEAN:Polynomial.aroots_X ;)
+Polynomial__aroots_X : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> Proof (Eqt (Multiset S) (Polynomial__aroots Polynomial__X S) (Singleton__singleton 0)).
+
+(; //LEAN:Polynomial.aroots_C ;)
+Polynomial__aroots_C : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (a : Elem T) -> Proof (Eqt (Multiset S) (Polynomial__aroots (Polynomial__C__app a) S) 0).
+
+(; //LEAN:Polynomial.aroots_zero ;)
+Polynomial__aroots_zero : (T : Set) -> (_ : Proof (CommRing T)) -> (S : Set) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> Proof (Eqt (Multiset S) (Polynomial__aroots 0 S) 0).
+
+(; //LEAN:Polynomial.aroots_one ;)
+def Polynomial__aroots_one : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> Proof (Eqt (Multiset S) (Polynomial__aroots 1 S) 0) :=
+  S => T => x => x1 => h => x2 => Polynomial__aroots_C S T 1.
+
+(; //LEAN:Polynomial.aroots_neg ;)
+Polynomial__aroots_neg : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (p : Elem (Polynomial T)) -> Proof (Eqt (Multiset S) (Polynomial__aroots (Neg__neg p) S) (Polynomial__aroots p S)).
+
+(; //LEAN:Polynomial.aroots_C_mul ;)
+Polynomial__aroots_C_mul : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (IsDomain T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (_ : Proof (Module__IsTorsionFree T S)) -> (a : Elem T) -> (p : Elem (Polynomial T)) -> (ha : Proof (Neq a 0)) -> Proof (Eqt (Multiset S) (Polynomial__aroots (times (Polynomial__C__app a) p) S) (Polynomial__aroots p S)).
+
+(; //LEAN:Polynomial.aroots_smul_nonzero ;)
+Polynomial__aroots_smul_nonzero : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (IsDomain T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (_ : Proof (Module__IsTorsionFree T S)) -> (a : Elem T) -> (p : Elem (Polynomial T)) -> (ha : Proof (Neq a 0)) -> Proof (Eqt (Multiset S) (Polynomial__aroots (HSMul__hSMul a p) S) (Polynomial__aroots p S)).
+
+(; //LEAN:Polynomial.aroots_pow ;)
+Polynomial__aroots_pow : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (p : Elem (Polynomial T)) -> (n : Elem Nat) -> Proof (Eqt (Multiset S) (Polynomial__aroots (pow p n) S) (HSMul__hSMul n (Polynomial__aroots p S))).
+
+(; //LEAN:Polynomial.aroots_X_pow ;)
+Polynomial__aroots_X_pow : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (n : Elem Nat) -> Proof (Eqt (Multiset S) (Polynomial__aroots (pow Polynomial__X n) S) (HSMul__hSMul n (Singleton__singleton 0))).
+
+(; //LEAN:Polynomial.aroots_C_mul_X_pow ;)
+Polynomial__aroots_C_mul_X_pow : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (IsDomain T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (_ : Proof (Module__IsTorsionFree T S)) -> (a : Elem T) -> (ha : Proof (Neq a 0)) -> (n : Elem Nat) -> Proof (Eqt (Multiset S) (Polynomial__aroots (times (Polynomial__C__app a) (pow Polynomial__X n)) S) (HSMul__hSMul n (Singleton__singleton 0))).
+
+(; //LEAN:Polynomial.aroots_monomial ;)
+Polynomial__aroots_monomial : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (IsDomain T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (_ : Proof (Module__IsTorsionFree T S)) -> (a : Elem T) -> (ha : Proof (Neq a 0)) -> (n : Elem Nat) -> Proof (Eqt (Multiset S) (Polynomial__aroots (Polynomial__monomial__app n a) S) (HSMul__hSMul n (Singleton__singleton 0))).
+
+(; //LEAN:Polynomial.aroots_map ;)
+Polynomial__aroots_map : (R : Set) -> (S : Set) -> (T : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (CommRing T)) -> (p : Elem (Polynomial T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (Algebra T S)) -> (_ : Proof (Algebra S R)) -> (_ : Proof (Algebra T R)) -> Proof (Eqt (Multiset R) (Polynomial__aroots (Polynomial__map (Algebra__algebraMap T S) p) R) (Polynomial__aroots p R)).
+
+(; //LEAN:Polynomial.rootSet ;)
+def Polynomial__rootSet : (p : Elem (Polynomial T)) -> (S : Set) -> Elem (powerset S) :=
+  p => S => Multiset__toFinset (Polynomial__aroots p S).
+
+(; //LEAN:Polynomial.rootSet_def ;)
+Polynomial__rootSet_def : (T : Set) -> (_ : Proof (CommRing T)) -> (p : Elem (Polynomial T)) -> (S : Set) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> Proof (Eqt (powerset S) (Polynomial__rootSet p S) (Multiset__toFinset (Polynomial__aroots p S))).
+
+(; //LEAN:Polynomial.rootSet_C ;)
+Polynomial__rootSet_C : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (a : Elem T) -> Proof (Eqt (powerset S) (Polynomial__rootSet (Polynomial__C__app a) S) EmptyCollection__emptyCollection).
+
+(; //LEAN:Polynomial.rootSet_zero ;)
+Polynomial__rootSet_zero : (T : Set) -> (_ : Proof (CommRing T)) -> (S : Set) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> Proof (Eqt (powerset S) (Polynomial__rootSet 0 S) EmptyCollection__emptyCollection).
+
+(; //LEAN:Polynomial.rootSet_one ;)
+Polynomial__rootSet_one : (T : Set) -> (_ : Proof (CommRing T)) -> (S : Set) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> Proof (Eqt (powerset S) (Polynomial__rootSet 1 S) EmptyCollection__emptyCollection).
+
+(; //LEAN:Polynomial.rootSet_neg ;)
+Polynomial__rootSet_neg : (T : Set) -> (_ : Proof (CommRing T)) -> (p : Elem (Polynomial T)) -> (S : Set) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> Proof (Eqt (powerset S) (Polynomial__rootSet (Neg__neg p) S) (Polynomial__rootSet p S)).
+
+(; //LEAN:Polynomial.rootSet_finite ;)
+def Polynomial__rootSet_finite : (T : Set) -> (_ : Proof (CommRing T)) -> (p : Elem (Polynomial T)) -> (S : Set) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> Proof (Set__Finite (Polynomial__rootSet p S)) :=
+  T => x => p => S => x1 => h => x2 => Set__toFinite S (Polynomial__rootSet p S).
+
+(; //LEAN:Polynomial.rootSet_map ;)
+Polynomial__rootSet_map : (R : Set) -> (S : Set) -> (T : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (CommRing T)) -> (_ : Proof (CommRing S)) -> (p : Elem (Polynomial S)) -> (_ : Proof (Algebra S T)) -> (_ : Proof (Algebra T R)) -> (_ : Proof (Algebra S R)) -> Proof (Eqt (powerset R) (Polynomial__rootSet (Polynomial__map (Algebra__algebraMap S T) p) R) (Polynomial__rootSet p R)).
+
+(; //LEAN:Polynomial.bUnion_roots_finite ;)
+Polynomial__bUnion_roots_finite : (R : Set) -> (S : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (m : Elem (RingHom R S)) -> (d : Elem Nat) -> (U : Elem (powerset R)) -> (h1 : Proof (Set__Finite U)) -> Proof (Set__Finite (Set__iUnion (f => Set__iUnion (h2 => Multiset__toFinset (Polynomial__roots (Polynomial__map m f)))))).
+
+(; //LEAN:Polynomial.mem_rootSet' ;)
+Polynomial__mem_rootSet' : (T : Set) -> (_ : Proof (CommRing T)) -> (p : Elem (Polynomial T)) -> (S : Set) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (a : Elem S) -> Proof (iff (Membership__mem (Polynomial__rootSet p S) a) (and (Neq (Polynomial__map (Algebra__algebraMap T S) p) 0) (Eqt S (Polynomial__aeval__app a p) 0))).
+
+(; //LEAN:Polynomial.mem_rootSet ;)
+Polynomial__mem_rootSet : (T : Set) -> (_ : Proof (CommRing T)) -> (p : Elem (Polynomial T)) -> (S : Set) -> (_ : Proof (IsDomain T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (_ : Proof (Module__IsTorsionFree T S)) -> (a : Elem S) -> Proof (iff (Membership__mem (Polynomial__rootSet p S) a) (and (Neq p 0) (Eqt S (Polynomial__aeval__app a p) 0))).
+
+(; //LEAN:Polynomial.mem_rootSet_of_ne ;)
+def Polynomial__mem_rootSet_of_ne : (T : Set) -> (_ : Proof (CommRing T)) -> (p : Elem (Polynomial T)) -> (S : Set) -> (_ : Proof (IsDomain T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (_ : Proof (Module__IsTorsionFree T S)) -> (hp : Proof (Neq p 0)) -> (a : Elem S) -> Proof (iff (Membership__mem (Polynomial__rootSet p S) a) (Eqt S (Polynomial__aeval__app a p) 0)) :=
+  T => x => p => S => h => x1 => h1 => x2 => h2 => hp => a => Iff__trans (Membership__mem (Polynomial__rootSet p S) a) (and (Neq p 0) (Eqt S (Polynomial__aeval__app a p) 0)) (Eqt S (Polynomial__aeval__app a p) 0) (Polynomial__mem_rootSet T p S a) (and_iff_right (Neq p 0) (Eqt S (Polynomial__aeval__app a p) 0) hp).
+
+(; //LEAN:Polynomial.preimage_eval_singleton ;)
+Polynomial__preimage_eval_singleton : (R : Set) -> (a : Elem R) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Neq p (Polynomial__C__app a))) -> Proof (Eqt (powerset R) (Set__preimage (x1 => Polynomial__eval x1 p) (Singleton__singleton a)) (Polynomial__rootSet (minus p (Polynomial__C__app a)) R)).
+
+(; //LEAN:Polynomial.Monic.mem_rootSet ;)
+Polynomial__Monic__mem_rootSet : (T : Set) -> (_ : Proof (CommRing T)) -> (p : Elem (Polynomial T)) -> (hp : Proof (Polynomial__Monic p)) -> (S : Set) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (a : Elem S) -> Proof (iff (Membership__mem (Polynomial__rootSet p S) a) (Eqt S (Polynomial__aeval__app a p) 0)).
+
+(; //LEAN:Polynomial.rootSet_maps_to' ;)
+def Polynomial__rootSet_maps_to' : (T : Set) -> (_ : Proof (CommRing T)) -> (p : Elem (Polynomial T)) -> (S : Set) -> (S' : Set) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (_ : Proof (CommRing S')) -> (_ : Proof (IsDomain S')) -> (_ : Proof (Algebra T S')) -> (hp : Proof (if (Eqt (Polynomial S') (Polynomial__map (Algebra__algebraMap T S') p) 0) (Eqt (Polynomial S) (Polynomial__map (Algebra__algebraMap T S) p) 0))) -> (f : Elem (AlgHom T S S')) -> Proof (Set__MapsTo f (Polynomial__rootSet p S) (Polynomial__rootSet p S')) :=
+  T => x => p => S => S' => x1 => h => x2 => x3 => h1 => x4 => hp => f => forallI S (x5 => if (Membership__mem (Polynomial__rootSet p S) x5) (Membership__mem (Polynomial__rootSet p S') (f x5))) (x5 => ifI (Membership__mem (Polynomial__rootSet p S) x5) (Membership__mem (Polynomial__rootSet p S') (f x5)) (hx => Eq__mpr (id (congrArg Prop Prop (Membership__mem (Polynomial__rootSet p S') (f x5)) (and (Neq (Polynomial__map (Algebra__algebraMap T S') p) 0) (Eqt S' (Polynomial__aeval__app (f x5) p) 0)) (_a => _a) (propext (Polynomial__mem_rootSet' T p S' (f x5))))) (Eq__mpr (id (congrArg (AlgHom T (Polynomial T) S') Prop (Polynomial__aeval (f x5)) (AlgHom__comp f (Polynomial__aeval x5)) (_a1 => and (Neq (Polynomial__map (Algebra__algebraMap T S') p) 0) (Eqt S' (_a1 p) 0)) (Polynomial__aeval_algHom T S S' f x5))) (Eq__mpr (id (congrArg S' Prop (AlgHom__comp__app f (Polynomial__aeval x5) p) (f (Polynomial__aeval__app x5 p)) (_a2 => and (Neq (Polynomial__map (Algebra__algebraMap T S') p) 0) (Eqt S' _a2 0)) (AlgHom__comp_apply T (Polynomial T) S S' f (Polynomial__aeval x5) p))) (Eq__mpr (id (congrArg S Prop (Polynomial__aeval__app x5 p) 0 (_a3 => and (Neq (Polynomial__map (Algebra__algebraMap T S') p) 0) (Eqt S' (f _a3) 0)) (andEr (Neq (Polynomial__map (Algebra__algebraMap T S) p) 0) (Eqt S (Polynomial__aeval__app x5 p) 0) (Eq__mp (congrArg Prop Prop (Membership__mem (Polynomial__rootSet p S) x5) (and (Neq (Polynomial__map (Algebra__algebraMap T S) p) 0) (Eqt S (Polynomial__aeval__app x5 p) 0)) (_a4 => _a4) (propext (Polynomial__mem_rootSet' T p S x5))) hx)))) (Eq__mpr (id (congrArg S' Prop (f 0) 0 (_a5 => and (Neq (Polynomial__map (Algebra__algebraMap T S') p) 0) (Eqt S' _a5 0)) (map_zero S S' (AlgHom T S S') f))) (andI (Neq (Polynomial__map (Algebra__algebraMap T S') p) 0) (Eqt S' 0 0) (mt (Eqt (Polynomial S') (Polynomial__map (Algebra__algebraMap T S') p) 0) (Eqt (Polynomial S) (Polynomial__map (Algebra__algebraMap T S) p) 0) hp (andEl (Neq (Polynomial__map (Algebra__algebraMap T S) p) 0) (Eqt S (Polynomial__aeval__app x5 p) 0) (Eq__mp (congrArg Prop Prop (Membership__mem (Polynomial__rootSet p S) x5) (and (Neq (Polynomial__map (Algebra__algebraMap T S) p) 0) (Eqt S (Polynomial__aeval__app x5 p) 0)) (_a6 => _a6) (propext (Polynomial__mem_rootSet' T p S x5))) hx))) rfl))))))).
+
+(; //LEAN:Polynomial.ne_zero_of_mem_rootSet ;)
+def Polynomial__ne_zero_of_mem_rootSet : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (p : Elem (Polynomial T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (a : Elem S) -> (h1 : Proof (Membership__mem (Polynomial__rootSet p S) a)) -> Proof (Neq p 0) :=
+  S => T => x => p => x1 => h => x2 => a => h1 => ifI (Eqt (Polynomial T) p 0) (Membership__mem EmptyCollection__emptyCollection a) (hf => Eq__mp (congrArg (powerset S) Prop (Polynomial__rootSet 0 S) EmptyCollection__emptyCollection (_a => Membership__mem _a a) (Polynomial__rootSet_zero T S)) (Eq__mp (congrArg (Polynomial T) Prop p 0 (_a1 => Membership__mem (Polynomial__rootSet _a1 S) a) hf) h1)).
+
+(; //LEAN:Polynomial.aeval_eq_zero_of_mem_rootSet ;)
+def Polynomial__aeval_eq_zero_of_mem_rootSet : (S : Set) -> (T : Set) -> (_ : Proof (CommRing T)) -> (p : Elem (Polynomial T)) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (a : Elem S) -> (hx : Proof (Membership__mem (Polynomial__rootSet p S) a)) -> Proof (Eqt S (Polynomial__aeval__app a p) 0) :=
+  S => T => x => p => x1 => h => x2 => a => hx => andEr (Neq (Polynomial__map (Algebra__algebraMap T S) p) 0) (Eqt S (Polynomial__aeval__app a p) 0) (iffEl (Membership__mem (Polynomial__rootSet p S) a) (and (Neq (Polynomial__map (Algebra__algebraMap T S) p) 0) (Eqt S (Polynomial__aeval__app a p) 0)) (Polynomial__mem_rootSet' T p S a) hx).
+
+(; //LEAN:Polynomial.rootSet_mapsTo ;)
+Polynomial__rootSet_mapsTo : (T : Set) -> (_ : Proof (CommRing T)) -> (p : Elem (Polynomial T)) -> (_ : Proof (IsDomain T)) -> (S : Set) -> (S' : Set) -> (_ : Proof (CommRing S)) -> (_ : Proof (IsDomain S)) -> (_ : Proof (Algebra T S)) -> (_ : Proof (CommRing S')) -> (_ : Proof (IsDomain S')) -> (_ : Proof (Algebra T S')) -> (_ : Proof (Module__IsTorsionFree T S')) -> (f : Elem (AlgHom T S S')) -> Proof (Set__MapsTo f (Polynomial__rootSet p S) (Polynomial__rootSet p S')).
+
+(; //LEAN:Polynomial.mem_rootSet_of_injective ;)
+Polynomial__mem_rootSet_of_injective : (R : Set) -> (S : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (CommRing S)) -> (p : Elem (Polynomial S)) -> (_ : Proof (Algebra S R)) -> (h1 : Proof (Function__Injective (Algebra__algebraMap S R))) -> (x3 : Elem R) -> (hp : Proof (Neq p 0)) -> Proof (iff (Membership__mem (Polynomial__rootSet p R) x3) (Eqt R (Polynomial__aeval__app x3 p) 0)).
+
+(; //LEAN:Polynomial.nthRootsFinset_toSet ;)
+Polynomial__nthRootsFinset_toSet : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (n : Elem Nat) -> (h1 : Proof (Lt 0 n)) -> (a : Elem R) -> Proof (Eqt (powerset R) (Polynomial__nthRootsFinset n a) (Set__ofPred (r => Eqt R (pow r n) a))).
+
+(; //LEAN:Polynomial.smul_mem_rootSet ;)
+Polynomial__smul_mem_rootSet : (R : Set) -> (S : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (CommRing S)) -> (_ : Proof (Algebra S R)) -> (G : Set) -> (_ : Proof (Monoid G)) -> (_ : Proof (MulSemiringAction G R)) -> (f : Elem (Polynomial S)) -> (g : Elem G) -> (x5 : Elem R) -> (hx : Proof (Membership__mem (Polynomial__rootSet f R) x5)) -> Proof (Membership__mem (Polynomial__rootSet f R) (HSMul__hSMul g x5)).
+
+(; //LEAN:Polynomial.smul_mem_rootSet_iff_of_isUnit ;)
+Polynomial__smul_mem_rootSet_iff_of_isUnit : (R : Set) -> (S : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (CommRing S)) -> (_ : Proof (Algebra S R)) -> (G : Set) -> (_ : Proof (Monoid G)) -> (_ : Proof (MulSemiringAction G R)) -> (f : Elem (Polynomial S)) -> (g : Elem G) -> (hg : Proof (IsUnit g)) -> (x5 : Elem R) -> Proof (iff (Membership__mem (Polynomial__rootSet f R) (HSMul__hSMul g x5)) (Membership__mem (Polynomial__rootSet f R) x5)).
+
+(; //LEAN:Polynomial.smul_mem_rootSet_iff ;)
+def Polynomial__smul_mem_rootSet_iff : (R : Set) -> (S : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (CommRing S)) -> (_ : Proof (Algebra S R)) -> (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (MulSemiringAction G R)) -> (f : Elem (Polynomial S)) -> (g : Elem G) -> (x5 : Elem R) -> Proof (iff (Membership__mem (Polynomial__rootSet f R) (HSMul__hSMul g x5)) (Membership__mem (Polynomial__rootSet f R) x5)) :=
+  R => S => x => h => x1 => x2 => G => x3 => x4 => f => g => x5 => Polynomial__smul_mem_rootSet_iff_of_isUnit R S G f g (Group__isUnit G g) x5.
+
+(; //LEAN:Polynomial.rootSet.coe_smul ;)
+def Polynomial__rootSet__coe_smul : (R : Set) -> (S : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (CommRing S)) -> (_ : Proof (Algebra S R)) -> (G : Set) -> (_ : Proof (Monoid G)) -> (_ : Proof (MulSemiringAction G R)) -> (f : Elem (Polynomial S)) -> (g : Elem G) -> (x5 : Elem (Set__Elem (Polynomial__rootSet f R))) -> Proof (Eqt R (HSMul__hSMul g x5) (HSMul__hSMul g x5)) :=
+  R => S => x => h => x1 => x2 => G => x3 => x4 => f => g => x5 => rfl.
+
+(; //LEAN:Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero ;)
+Polynomial__eq_zero_of_natDegree_lt_card_of_eval_eq_zero : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (I : Set) -> (_ : Proof (Fintype I)) -> (f : (Elem I -> R)) -> (hf : Proof (Function__Injective f)) -> (heval : Proof (forall I (i => Eqt R (Polynomial__eval (f i) p) 0))) -> (hcard : Proof (Lt (Polynomial__natDegree p) (Fintype__card I))) -> Proof (Eqt (Polynomial R) p 0).
+
+(; //LEAN:Polynomial.eq_of_natDegree_lt_card_of_eval_eq ;)
+Polynomial__eq_of_natDegree_lt_card_of_eval_eq : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (q : Elem (Polynomial R)) -> (I : Set) -> (_ : Proof (Fintype I)) -> (f : (Elem I -> R)) -> (hf : Proof (Function__Injective f)) -> (heval : Proof (forall I (i => Eqt R (Polynomial__eval (f i) p) (Polynomial__eval (f i) q)))) -> (hcard : Proof (Lt (Max__max (Polynomial__natDegree p) (Polynomial__natDegree q)) (Fintype__card I))) -> Proof (Eqt (Polynomial R) p q).
+
+(; //LEAN:Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero' ;)
+def Polynomial__eq_zero_of_natDegree_lt_card_of_eval_eq_zero' : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (s : Elem (Finset R)) -> (heval : Proof (forall R (i => if (Membership__mem s i) (Eqt R (Polynomial__eval i p) 0)))) -> (hcard : Proof (Lt (Polynomial__natDegree p) (Finset__card s))) -> Proof (Eqt (Polynomial R) p 0) :=
+  R => x => h => p => s => heval => hcard => Polynomial__eq_zero_of_natDegree_lt_card_of_eval_eq_zero R p (Subtype (x1 => Membership__mem s x1)) (x2 => Membership__mem s x2) (Subtype__val_injective R (x3 => Membership__mem s x3)) (forallI (Subtype (x5 => Membership__mem s x5)) (i => Eqt R (Polynomial__eval i p) 0) (i => ifE (Membership__mem s i) (Eqt R (Polynomial__eval i p) 0) (forallE R (i1 => if (Membership__mem s i1) (Eqt R (Polynomial__eval i1 p) 0)) heval i) (Subtype__prop R (x4 => Membership__mem s x4) i))) (LT__lt__trans_eq Nat (Polynomial__natDegree p) (Finset__card s) (Fintype__card (Subtype (x6 => Membership__mem s x6))) hcard (Eq__symm Nat (Fintype__card (Subtype (x7 => Membership__mem s x7))) (Finset__card s) (Fintype__card_coe R s))).
+
+(; //LEAN:Polynomial.eq_of_natDegree_lt_card_of_eval_eq' ;)
+def Polynomial__eq_of_natDegree_lt_card_of_eval_eq' : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (q : Elem (Polynomial R)) -> (s : Elem (Finset R)) -> (heval : Proof (forall R (i => if (Membership__mem s i) (Eqt R (Polynomial__eval i p) (Polynomial__eval i q))))) -> (hcard : Proof (Lt (Max__max (Polynomial__natDegree p) (Polynomial__natDegree q)) (Finset__card s))) -> Proof (Eqt (Polynomial R) p q) :=
+  R => x => h => p => q => s => heval => hcard => Polynomial__eq_of_natDegree_lt_card_of_eval_eq R p q (Subtype (x1 => Membership__mem s x1)) (x2 => Membership__mem s x2) (Subtype__val_injective R (x3 => Membership__mem s x3)) (forallI (Subtype (x5 => Membership__mem s x5)) (i => Eqt R (Polynomial__eval i p) (Polynomial__eval i q)) (i => ifE (Membership__mem s i) (Eqt R (Polynomial__eval i p) (Polynomial__eval i q)) (forallE R (i1 => if (Membership__mem s i1) (Eqt R (Polynomial__eval i1 p) (Polynomial__eval i1 q))) heval i) (Subtype__prop R (x4 => Membership__mem s x4) i))) (LT__lt__trans_eq Nat (Max__max (Polynomial__natDegree p) (Polynomial__natDegree q)) (Finset__card s) (Fintype__card (Subtype (x6 => Membership__mem s x6))) hcard (Eq__symm Nat (Fintype__card (Subtype (x7 => Membership__mem s x7))) (Finset__card s) (Fintype__card_coe R s))).
+
+(; //LEAN:Polynomial.eq_zero_of_forall_eval_zero_of_natDegree_lt_card ;)
+Polynomial__eq_zero_of_forall_eval_zero_of_natDegree_lt_card : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (f : Elem (Polynomial R)) -> (hf : Proof (forall R (r => Eqt R (Polynomial__eval r f) 0))) -> (hfR : Proof (Lt (Polynomial__natDegree f) (Cardinal__mk R))) -> Proof (Eqt (Polynomial R) f 0).
+
+(; //LEAN:Polynomial.exists_eval_ne_zero_of_natDegree_lt_card ;)
+Polynomial__exists_eval_ne_zero_of_natDegree_lt_card : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (f : Elem (Polynomial R)) -> (hf : Proof (Neq f 0)) -> (hfR : Proof (Lt (Polynomial__natDegree f) (Cardinal__mk R))) -> Proof (exists R (r => Neq (Polynomial__eval r f) 0)).
+
+(; //LEAN:Polynomial.monic_multisetProd_X_sub_C ;)
+def Polynomial__monic_multisetProd_X_sub_C : (R : Set) -> (_ : Proof (CommRing R)) -> (s : Elem (Multiset R)) -> Proof (Polynomial__Monic (Multiset__prod (Multiset__map (a => minus Polynomial__X (Polynomial__C__app a)) s))) :=
+  R => x => s => Polynomial__monic_multiset_prod_of_monic R R s (a => minus Polynomial__X (Polynomial__C__app a)) (forallI R (a1 => if (Membership__mem s a1) (Polynomial__Monic (minus Polynomial__X (Polynomial__C__app a1)))) (a1 => ifI (Membership__mem s a1) (Polynomial__Monic (minus Polynomial__X (Polynomial__C__app a1))) (h => Polynomial__monic_X_sub_C R a1))).
+
+(; //LEAN:Polynomial.monic_prod_X_sub_C ;)
+def Polynomial__monic_prod_X_sub_C : (R : Set) -> (_ : Proof (CommRing R)) -> (X : Set) -> (b : (Elem X -> R)) -> (s : Elem (Finset X)) -> Proof (Polynomial__Monic (Finset__prod s (a => minus Polynomial__X (Polynomial__C__app (b a))))) :=
+  R => x => X => b => s => Polynomial__monic_prod_of_monic R X s (a => minus Polynomial__X (Polynomial__C__app (b a))) (forallI X (a1 => if (Membership__mem s a1) (Polynomial__Monic (minus Polynomial__X (Polynomial__C__app (b a1))))) (a1 => ifI (Membership__mem s a1) (Polynomial__Monic (minus Polynomial__X (Polynomial__C__app (b a1)))) (h => Polynomial__monic_X_sub_C R (b a1)))).
+
+(; //LEAN:Polynomial.monic_finprod_X_sub_C ;)
+def Polynomial__monic_finprod_X_sub_C : (R : Set) -> (_ : Proof (CommRing R)) -> (X : Set) -> (b : (Elem X -> R)) -> Proof (Polynomial__Monic (finprod (k => minus Polynomial__X (Polynomial__C__app (b k))))) :=
+  R => x => X => b => Polynomial__monic_finprod_of_monic R X (k => minus Polynomial__X (Polynomial__C__app (b k))) (forallI X (a => if (Membership__mem (Function__mulSupport (k2 => minus Polynomial__X (Polynomial__C__app (b k2)))) a) (Polynomial__Monic (minus Polynomial__X (Polynomial__C__app (b a))))) (a => ifI (Membership__mem (Function__mulSupport (k1 => minus Polynomial__X (Polynomial__C__app (b k1)))) a) (Polynomial__Monic (minus Polynomial__X (Polynomial__C__app (b a)))) (h => Polynomial__monic_X_sub_C R (b a)))).
+
+(; //LEAN:Polynomial.prod_multiset_root_eq_finset_root ;)
+Polynomial__prod_multiset_root_eq_finset_root : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> Proof (Eqt (Polynomial R) (Multiset__prod (Multiset__map (a => minus Polynomial__X (Polynomial__C__app a)) (Polynomial__roots p))) (Finset__prod (Multiset__toFinset (Polynomial__roots p)) (a1 => pow (minus Polynomial__X (Polynomial__C__app a1)) (Polynomial__rootMultiplicity a1 p)))).
+
+(; //LEAN:Polynomial.prod_multiset_X_sub_C_dvd ;)
+Polynomial__prod_multiset_X_sub_C_dvd : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> Proof (divide (Multiset__prod (Multiset__map (a => minus Polynomial__X (Polynomial__C__app a)) (Polynomial__roots p))) p).
+
+(; //LEAN:Multiset.prod_X_sub_C_dvd_iff_le_roots ;)
+Multiset__prod_X_sub_C_dvd_iff_le_roots : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Neq p 0)) -> (s : Elem (Multiset R)) -> Proof (iff (divide (Multiset__prod (Multiset__map (a => minus Polynomial__X (Polynomial__C__app a)) s)) p) (Leq s (Polynomial__roots p))).
+
+(; //LEAN:Polynomial.exists_prod_multiset_X_sub_C_mul ;)
+Polynomial__exists_prod_multiset_X_sub_C_mul : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> Proof (exists (Polynomial R) (q => and (Eqt (Polynomial R) (times (Multiset__prod (Multiset__map (a => minus Polynomial__X (Polynomial__C__app a)) (Polynomial__roots p))) q) p) (and (Eq (plus (Multiset__card (Polynomial__roots p)) (Polynomial__natDegree q)) (Polynomial__natDegree p)) (Eqt (Multiset R) (Polynomial__roots q) 0)))).
+
+(; //LEAN:Polynomial.C_leadingCoeff_mul_prod_multiset_X_sub_C ;)
+def Polynomial__C_leadingCoeff_mul_prod_multiset_X_sub_C : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (hroots : Proof (Eq (Multiset__card (Polynomial__roots p)) (Polynomial__natDegree p))) -> Proof (Eqt (Polynomial R) (times (Polynomial__C__app (Polynomial__leadingCoeff p)) (Multiset__prod (Multiset__map (a => minus Polynomial__X (Polynomial__C__app a)) (Polynomial__roots p)))) p) :=
+  R => x => h => p => hroots => Eq__symm (Polynomial R) p (times (Polynomial__C__app (Polynomial__leadingCoeff p)) (Multiset__prod (Multiset__map (a => minus Polynomial__X (Polynomial__C__app a)) (Polynomial__roots p)))) (Polynomial__eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le R (Multiset__prod (Multiset__map (a1 => minus Polynomial__X (Polynomial__C__app a1)) (Polynomial__roots p))) p (Polynomial__monic_multisetProd_X_sub_C R (Polynomial__roots p)) (Polynomial__prod_multiset_X_sub_C_dvd R p) (Eq__ge Nat (Polynomial__natDegree (Multiset__prod (Multiset__map (x1 => minus Polynomial__X (Polynomial__C__app x1)) (Polynomial__roots p)))) (Polynomial__natDegree p) (Eq__trans Nat (Polynomial__natDegree (Multiset__prod (Multiset__map (x2 => minus Polynomial__X (Polynomial__C__app x2)) (Polynomial__roots p)))) (Multiset__card (Polynomial__roots p)) (Polynomial__natDegree p) (Polynomial__natDegree_multiset_prod_X_sub_C_eq_card R (Polynomial__roots p)) hroots))).
+
+(; //LEAN:Polynomial.prod_multiset_X_sub_C_of_monic_of_roots_card_eq ;)
+Polynomial__prod_multiset_X_sub_C_of_monic_of_roots_card_eq : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Polynomial__Monic p)) -> (hroots : Proof (Eq (Multiset__card (Polynomial__roots p)) (Polynomial__natDegree p))) -> Proof (Eqt (Polynomial R) (Multiset__prod (Multiset__map (a => minus Polynomial__X (Polynomial__C__app a)) (Polynomial__roots p))) p).
+
+(; //LEAN:Polynomial.Monic.isUnit_leadingCoeff_of_dvd ;)
+def Polynomial__Monic__isUnit_leadingCoeff_of_dvd : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (a : Elem (Polynomial R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Polynomial__Monic p)) -> (hap : Proof (divide a p)) -> Proof (IsUnit (Polynomial__leadingCoeff a)) :=
+  R => x => h => a => p => hp => hap => isUnit_of_dvd_one R (Polynomial__leadingCoeff a) (Eq__mp (congrArg R Prop (Polynomial__leadingCoeff p) 1 (divide (Polynomial__leadingCoeff a)) (Polynomial__Monic__leadingCoeff R p hp)) (Polynomial__leadingCoeff_dvd_leadingCoeff R a p hap)).
+
+(; //LEAN:Polynomial.card_roots_le_one_of_irreducible ;)
+Polynomial__card_roots_le_one_of_irreducible : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (hirr : Proof (Irreducible p)) -> Proof (Leq (Multiset__card (Polynomial__roots p)) 1).
+
+(; //LEAN:Polynomial.roots_eq_zero_of_irreducible_of_natDegree_ne_one ;)
+Polynomial__roots_eq_zero_of_irreducible_of_natDegree_ne_one : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (hirr : Proof (Irreducible p)) -> (h1 : Proof (Neq (Polynomial__natDegree p) 1)) -> Proof (Eqt (Multiset R) (Polynomial__roots p) 0).
+
+(; //LEAN:Polynomial.Monic.irreducible_iff_degree_lt ;)
+Polynomial__Monic__irreducible_iff_degree_lt : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (p_monic : Proof (Polynomial__Monic p)) -> (p_1 : Proof (Neq p 1)) -> Proof (iff (Irreducible p) (forall (Polynomial R) (q => if (Leq (Polynomial__degree q) (div (Polynomial__natDegree p) 2)) (if (divide q p) (IsUnit q))))).
+
+(; //LEAN:Polynomial.le_rootMultiplicity_map ;)
+Polynomial__le_rootMultiplicity_map : (A : Set) -> (B : Set) -> (_ : Proof (CommRing A)) -> (_ : Proof (CommRing B)) -> (p : Elem (Polynomial A)) -> (f : Elem (RingHom A B)) -> (hmap : Proof (Neq (Polynomial__map f p) 0)) -> (a : Elem A) -> Proof (Leq (Polynomial__rootMultiplicity a p) (Polynomial__rootMultiplicity (f a) (Polynomial__map f p))).
+
+(; //LEAN:Polynomial.eq_rootMultiplicity_map ;)
+Polynomial__eq_rootMultiplicity_map : (A : Set) -> (B : Set) -> (_ : Proof (CommRing A)) -> (_ : Proof (CommRing B)) -> (p : Elem (Polynomial A)) -> (f : Elem (RingHom A B)) -> (hf : Proof (Function__Injective f)) -> (a : Elem A) -> Proof (Eq (Polynomial__rootMultiplicity a p) (Polynomial__rootMultiplicity (f a) (Polynomial__map f p))).
+
+(; //LEAN:Polynomial.count_map_roots ;)
+Polynomial__count_map_roots : (A : Set) -> (B : Set) -> (_ : Proof (CommRing A)) -> (_ : Proof (CommRing B)) -> (_ : Proof (IsDomain A)) -> (p : Elem (Polynomial A)) -> (f : Elem (RingHom A B)) -> (hmap : Proof (Neq (Polynomial__map f p) 0)) -> (b : Elem B) -> Proof (Leq (Multiset__count b (Multiset__map f (Polynomial__roots p))) (Polynomial__rootMultiplicity b (Polynomial__map f p))).
+
+(; //LEAN:Polynomial.count_map_roots_of_injective ;)
+Polynomial__count_map_roots_of_injective : (A : Set) -> (B : Set) -> (_ : Proof (CommRing A)) -> (_ : Proof (CommRing B)) -> (_ : Proof (IsDomain A)) -> (p : Elem (Polynomial A)) -> (f : Elem (RingHom A B)) -> (hf : Proof (Function__Injective f)) -> (b : Elem B) -> Proof (Leq (Multiset__count b (Multiset__map f (Polynomial__roots p))) (Polynomial__rootMultiplicity b (Polynomial__map f p))).
+
+(; //LEAN:Polynomial.map_roots_le ;)
+Polynomial__map_roots_le : (A : Set) -> (B : Set) -> (_ : Proof (CommRing A)) -> (_ : Proof (CommRing B)) -> (_ : Proof (IsDomain A)) -> (_ : Proof (IsDomain B)) -> (p : Elem (Polynomial A)) -> (f : Elem (RingHom A B)) -> (h2 : Proof (Neq (Polynomial__map f p) 0)) -> Proof (Leq (Multiset__map f (Polynomial__roots p)) (Polynomial__roots (Polynomial__map f p))).
+
+(; //LEAN:Polynomial.map_roots_le_of_injective ;)
+Polynomial__map_roots_le_of_injective : (A : Set) -> (B : Set) -> (_ : Proof (CommRing A)) -> (_ : Proof (CommRing B)) -> (_ : Proof (IsDomain A)) -> (_ : Proof (IsDomain B)) -> (p : Elem (Polynomial A)) -> (f : Elem (RingHom A B)) -> (hf : Proof (Function__Injective f)) -> Proof (Leq (Multiset__map f (Polynomial__roots p)) (Polynomial__roots (Polynomial__map f p))).
+
+(; //LEAN:Polynomial.card_roots_map_le_degree ;)
+Polynomial__card_roots_map_le_degree : (A : Set) -> (B : Set) -> (_ : Proof (Semiring A)) -> (_ : Proof (CommRing B)) -> (_ : Proof (IsDomain B)) -> (f : Elem (RingHom A B)) -> (p : Elem (Polynomial A)) -> (hp0 : Proof (Neq p 0)) -> Proof (Leq (Multiset__card (Polynomial__roots (Polynomial__map f p))) (Polynomial__degree p)).
+
+(; //LEAN:Polynomial.card_roots_map_le_natDegree ;)
+def Polynomial__card_roots_map_le_natDegree : (A : Set) -> (B : Set) -> (_ : Proof (Semiring A)) -> (_ : Proof (CommRing B)) -> (_ : Proof (IsDomain B)) -> (f : Elem (RingHom A B)) -> (p : Elem (Polynomial A)) -> Proof (Leq (Multiset__card (Polynomial__roots (Polynomial__map f p))) (Polynomial__natDegree p)) :=
+  A => B => x => x1 => h => f => p => LE__le__trans Nat (Multiset__card (Polynomial__roots (Polynomial__map f p))) (Polynomial__natDegree (Polynomial__map f p)) (Polynomial__natDegree p) (Polynomial__card_roots' B (Polynomial__map f p)) (Polynomial__natDegree_map_le A B f p).
+
+(; //LEAN:Polynomial.ncard_rootSet_le ;)
+Polynomial__ncard_rootSet_le : (A : Set) -> (_ : Proof (CommRing A)) -> (p : Elem (Polynomial A)) -> (B : Set) -> (_ : Proof (CommRing B)) -> (_ : Proof (IsDomain B)) -> (_ : Proof (Algebra A B)) -> Proof (Leq (Set__ncard (Polynomial__rootSet p B)) (Polynomial__natDegree p)).
+
+(; //LEAN:Polynomial.filter_roots_map_range_eq_map_roots ;)
+Polynomial__filter_roots_map_range_eq_map_roots : (A : Set) -> (B : Set) -> (_ : Proof (CommRing A)) -> (_ : Proof (CommRing B)) -> (_ : Proof (IsDomain A)) -> (_ : Proof (IsDomain B)) -> (f : Elem (RingHom A B)) -> (hf : Proof (Function__Injective f)) -> (p : Elem (Polynomial A)) -> Proof (Eqt (Multiset B) (Multiset__filter (x3 => Membership__mem (RingHom__range f) x3) (Polynomial__roots (Polynomial__map f p))) (Multiset__map f (Polynomial__roots p))).
+
+(; //LEAN:Polynomial.card_roots_le_map ;)
+Polynomial__card_roots_le_map : (A : Set) -> (B : Set) -> (_ : Proof (CommRing A)) -> (_ : Proof (CommRing B)) -> (_ : Proof (IsDomain A)) -> (_ : Proof (IsDomain B)) -> (p : Elem (Polynomial A)) -> (f : Elem (RingHom A B)) -> (h2 : Proof (Neq (Polynomial__map f p) 0)) -> Proof (Leq (Multiset__card (Polynomial__roots p)) (Multiset__card (Polynomial__roots (Polynomial__map f p)))).
+
+(; //LEAN:Polynomial.card_roots_le_map_of_injective ;)
+Polynomial__card_roots_le_map_of_injective : (A : Set) -> (B : Set) -> (_ : Proof (CommRing A)) -> (_ : Proof (CommRing B)) -> (_ : Proof (IsDomain A)) -> (_ : Proof (IsDomain B)) -> (p : Elem (Polynomial A)) -> (f : Elem (RingHom A B)) -> (hf : Proof (Function__Injective f)) -> Proof (Leq (Multiset__card (Polynomial__roots p)) (Multiset__card (Polynomial__roots (Polynomial__map f p)))).
+
+(; //LEAN:Polynomial.roots_map_of_injective_of_card_eq_natDegree ;)
+Polynomial__roots_map_of_injective_of_card_eq_natDegree : (A : Set) -> (B : Set) -> (_ : Proof (CommRing A)) -> (_ : Proof (CommRing B)) -> (_ : Proof (IsDomain A)) -> (_ : Proof (IsDomain B)) -> (p : Elem (Polynomial A)) -> (f : Elem (RingHom A B)) -> (hf : Proof (Function__Injective f)) -> (hroots : Proof (Eq (Multiset__card (Polynomial__roots p)) (Polynomial__natDegree p))) -> Proof (Eqt (Multiset B) (Multiset__map f (Polynomial__roots p)) (Polynomial__roots (Polynomial__map f p))).
+
+(; //LEAN:Polynomial.roots_map_of_map_ne_zero_of_card_eq_natDegree ;)
+def Polynomial__roots_map_of_map_ne_zero_of_card_eq_natDegree : (A : Set) -> (B : Set) -> (_ : Proof (CommRing A)) -> (_ : Proof (CommRing B)) -> (_ : Proof (IsDomain A)) -> (_ : Proof (IsDomain B)) -> (p : Elem (Polynomial A)) -> (f : Elem (RingHom A B)) -> (h2 : Proof (Neq (Polynomial__map f p) 0)) -> (hroots : Proof (Eq (Multiset__card (Polynomial__roots p)) (Polynomial__natDegree p))) -> Proof (Eqt (Multiset B) (Multiset__map f (Polynomial__roots p)) (Polynomial__roots (Polynomial__map f p))) :=
+  A => B => x => x1 => h => h1 => p => f => h2 => hroots => Multiset__eq_of_le_of_card_le B (Multiset__map f (Polynomial__roots p)) (Polynomial__roots (Polynomial__map f p)) (Polynomial__map_roots_le A B p f h2) (Eq__mpr (id (congrArg Nat Prop (Multiset__card (Multiset__map f (Polynomial__roots p))) (Polynomial__natDegree p) (Leq (Multiset__card (Polynomial__roots (Polynomial__map f p)))) (Eq__trans Nat (Multiset__card (Multiset__map f (Polynomial__roots p))) (Multiset__card (Polynomial__roots p)) (Polynomial__natDegree p) (Multiset__card_map A B f (Polynomial__roots p)) hroots))) (Polynomial__card_roots_map_le_natDegree A B f p)).
+
+(; //LEAN:Polynomial.Monic.roots_map_of_card_eq_natDegree ;)
+def Polynomial__Monic__roots_map_of_card_eq_natDegree : (A : Set) -> (B : Set) -> (_ : Proof (CommRing A)) -> (_ : Proof (CommRing B)) -> (_ : Proof (IsDomain A)) -> (_ : Proof (IsDomain B)) -> (p : Elem (Polynomial A)) -> (hm : Proof (Polynomial__Monic p)) -> (f : Elem (RingHom A B)) -> (hroots : Proof (Eq (Multiset__card (Polynomial__roots p)) (Polynomial__natDegree p))) -> Proof (Eqt (Multiset B) (Multiset__map f (Polynomial__roots p)) (Polynomial__roots (Polynomial__map f p))) :=
+  A => B => x => x1 => h => h1 => p => hm => f => hroots => Polynomial__roots_map_of_map_ne_zero_of_card_eq_natDegree A B p f (Polynomial__map_monic_ne_zero A B f p hm) hroots.
+

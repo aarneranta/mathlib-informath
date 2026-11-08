@@ -1,0 +1,535 @@
+(; Mathlib.Topology.Compactness.Compact: statements exported from Mathlib by MathlibInformath/Export.lean ;)
+
+(; //LEAN:IsCompact.exists_clusterPt ;)
+def IsCompact__exists_clusterPt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (hf : Proof (Leq f (Filter__principal s))) -> Proof (exists X (x1 => and (Membership__mem s x1) (ClusterPt x1 f))) :=
+  X => x => s => hs => f => h => hf => ifE (Leq f (Filter__principal s)) (exists X (x3 => and (Membership__mem s x3) (ClusterPt x3 f))) (ifE (Filter__NeBot f) (if (Leq f (Filter__principal s)) (exists X (x2 => and (Membership__mem s x2) (ClusterPt x2 f)))) (forallE (Filter X) (f1 => if (Filter__NeBot f1) (if (Leq f1 (Filter__principal s)) (exists X (x1 => and (Membership__mem s x1) (ClusterPt x1 f1))))) hs f) h) hf.
+
+(; //LEAN:IsCompact.exists_mapClusterPt ;)
+def IsCompact__exists_mapClusterPt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (I : Set) -> (hs : Proof (IsCompact s)) -> (f : Elem (Filter I)) -> (_ : Proof (Filter__NeBot f)) -> (u : (Elem I -> X)) -> (hf : Proof (Leq (Filter__map u f) (Filter__principal s))) -> Proof (exists X (x1 => and (Membership__mem s x1) (MapClusterPt x1 f u))) :=
+  X => x => s => I => hs => f => h => u => hf => ifE (Leq (Filter__map u f) (Filter__principal s)) (exists X (x3 => and (Membership__mem s x3) (ClusterPt x3 (Filter__map u f)))) (ifE (Filter__NeBot (Filter__map u f)) (if (Leq (Filter__map u f) (Filter__principal s)) (exists X (x2 => and (Membership__mem s x2) (ClusterPt x2 (Filter__map u f))))) (forallE (Filter X) (f1 => if (Filter__NeBot f1) (if (Leq f1 (Filter__principal s)) (exists X (x1 => and (Membership__mem s x1) (ClusterPt x1 f1))))) hs (Filter__map u f)) (Filter__map_neBot I X f u)) hf.
+
+(; //LEAN:IsCompact.exists_clusterPt_of_frequently ;)
+IsCompact__exists_clusterPt_of_frequently : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (l : Elem (Filter X)) -> (hs : Proof (IsCompact s)) -> (hl : Proof (Filter__Frequently (x1 => Membership__mem s x1) l)) -> Proof (exists X (a => and (Membership__mem s a) (ClusterPt a l))).
+
+(; //LEAN:IsCompact.exists_mapClusterPt_of_frequently ;)
+def IsCompact__exists_mapClusterPt_of_frequently : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (l : Elem (Filter I)) -> (f : (Elem I -> X)) -> (hs : Proof (IsCompact s)) -> (hf : Proof (Filter__Frequently (x1 => Membership__mem s (f x1)) l)) -> Proof (exists X (a => and (Membership__mem s a) (MapClusterPt a l f))) :=
+  X => I => x => s => l => f => hs => hf => IsCompact__exists_clusterPt_of_frequently X s (Filter__map f l) hs hf.
+
+(; //LEAN:IsCompact.compl_mem_sets ;)
+IsCompact__compl_mem_sets : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (f : Elem (Filter X)) -> (hf : Proof (forall X (x1 => if (Membership__mem s x1) (Membership__mem (Min__min (nhds x1) f) (Compl__compl s))))) -> Proof (Membership__mem f (Compl__compl s)).
+
+(; //LEAN:IsCompact.compl_mem_sets_of_nhdsWithin ;)
+IsCompact__compl_mem_sets_of_nhdsWithin : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (f : Elem (Filter X)) -> (hf : Proof (forall X (x1 => if (Membership__mem s x1) (exists (powerset X) (t => and (Membership__mem (nhdsWithin x1 s) t) (Membership__mem f (Compl__compl t))))))) -> Proof (Membership__mem f (Compl__compl s)).
+
+(; //LEAN:IsCompact.induction_on ;)
+IsCompact__induction_on : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (p : (Elem (powerset X) -> Prop)) -> (he : Proof (p EmptyCollection__emptyCollection)) -> (hmono : Proof (forall (powerset X) (s2 => forall (powerset X) (t2 => if (Set__Subset s2 t2) (if (p t2) (p s2)))))) -> (hunion : Proof (forall (powerset X) (s1 => forall (powerset X) (t1 => if (p s1) (if (p t1) (p (Union__union s1 t1))))))) -> (hnhds : Proof (forall X (x1 => if (Membership__mem s x1) (exists (powerset X) (t => and (Membership__mem (nhdsWithin x1 s) t) (p t)))))) -> Proof (p s).
+
+(; //LEAN:IsCompact.inter_right ;)
+IsCompact__inter_right : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (ht : Proof (IsClosed t)) -> Proof (IsCompact (Inter__inter s t)).
+
+(; //LEAN:IsCompact.inter_left ;)
+IsCompact__inter_left : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (ht : Proof (IsCompact t)) -> (hs : Proof (IsClosed s)) -> Proof (IsCompact (Inter__inter s t)).
+
+(; //LEAN:IsCompact.diff ;)
+def IsCompact__diff : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (ht : Proof (IsOpen t)) -> Proof (IsCompact (SDiff__sdiff s t)) :=
+  X => x => s => t => hs => ht => IsCompact__inter_right X s (Compl__compl t) hs (iffEr (IsClosed (Compl__compl t)) (IsOpen t) (isClosed_compl_iff X t) ht).
+
+(; //LEAN:IsCompact.of_isClosed_subset ;)
+IsCompact__of_isClosed_subset : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (ht : Proof (IsClosed t)) -> (h : Proof (Set__Subset t s)) -> Proof (IsCompact t).
+
+(; //LEAN:IsCompact.image_of_continuousOn ;)
+IsCompact__image_of_continuousOn : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (hs : Proof (IsCompact s)) -> (hf : Proof (ContinuousOn f s)) -> Proof (IsCompact (Set__image f s)).
+
+(; //LEAN:IsCompact.image ;)
+def IsCompact__image : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (hs : Proof (IsCompact s)) -> (hf : Proof (Continuous f)) -> Proof (IsCompact (Set__image f s)) :=
+  X => Y => x => x1 => s => f => hs => hf => IsCompact__image_of_continuousOn X Y s f hs (Continuous__continuousOn X Y f s hf).
+
+(; //LEAN:IsCompact.adherence_nhdset ;)
+IsCompact__adherence_nhdset : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (f : Elem (Filter X)) -> (hs : Proof (IsCompact s)) -> (h : Proof (Leq f (Filter__principal s))) -> (h1 : Proof (IsOpen t)) -> (h2 : Proof (forall X (x1 => if (Membership__mem s x1) (if (ClusterPt x1 f) (Membership__mem t x1))))) -> Proof (Membership__mem f t).
+
+(; //LEAN:isCompact_iff_ultrafilter_le_nhds ;)
+isCompact_iff_ultrafilter_le_nhds : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (IsCompact s) (forall (Ultrafilter X) (f => if (Leq (Ultrafilter__toFilter f) (Filter__principal s)) (exists X (x1 => and (Membership__mem s x1) (Leq (Ultrafilter__toFilter f) (nhds x1))))))).
+
+(; //LEAN:IsCompact.ultrafilter_le_nhds ;)
+def IsCompact__ultrafilter_le_nhds : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (h : Proof (IsCompact s)) -> (f : Elem (Ultrafilter X)) -> (h1 : Proof (Leq (Ultrafilter__toFilter f) (Filter__principal s))) -> Proof (exists X (x1 => and (Membership__mem s x1) (Leq (Ultrafilter__toFilter f) (nhds x1)))) :=
+  X => x => s => iffEl (IsCompact s) (forall (Ultrafilter X) (f => if (Leq (Ultrafilter__toFilter f) (Filter__principal s)) (exists X (x1 => and (Membership__mem s x1) (Leq (Ultrafilter__toFilter f) (nhds x1)))))) (isCompact_iff_ultrafilter_le_nhds X s).
+
+(; //LEAN:isCompact_iff_ultrafilter_le_nhds' ;)
+isCompact_iff_ultrafilter_le_nhds' : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (IsCompact s) (forall (Ultrafilter X) (f => if (Membership__mem f s) (exists X (x1 => and (Membership__mem s x1) (Leq (Ultrafilter__toFilter f) (nhds x1))))))).
+
+(; //LEAN:IsCompact.ultrafilter_le_nhds' ;)
+def IsCompact__ultrafilter_le_nhds' : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (h : Proof (IsCompact s)) -> (f : Elem (Ultrafilter X)) -> (h1 : Proof (Membership__mem f s)) -> Proof (exists X (x1 => and (Membership__mem s x1) (Leq (Ultrafilter__toFilter f) (nhds x1)))) :=
+  X => x => s => iffEl (IsCompact s) (forall (Ultrafilter X) (f => if (Membership__mem f s) (exists X (x1 => and (Membership__mem s x1) (Leq (Ultrafilter__toFilter f) (nhds x1)))))) (isCompact_iff_ultrafilter_le_nhds' X s).
+
+(; //LEAN:IsCompact.le_nhdsSet_of_clusterPt ;)
+IsCompact__le_nhdsSet_of_clusterPt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (l : Elem (Filter X)) -> (s' : Elem (powerset X)) -> (hmem : Proof (Membership__mem l s)) -> (h : Proof (forall X (x1 => if (Membership__mem s x1) (if (ClusterPt x1 l) (Membership__mem s' x1))))) -> Proof (Leq l (nhdsSet s')).
+
+(; //LEAN:IsCompact.le_nhds_of_unique_clusterPt ;)
+IsCompact__le_nhds_of_unique_clusterPt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (l : Elem (Filter X)) -> (y : Elem X) -> (hmem : Proof (Membership__mem l s)) -> (h : Proof (forall X (x1 => if (Membership__mem s x1) (if (ClusterPt x1 l) (Eqt X x1 y))))) -> Proof (Leq l (nhds y)).
+
+(; //LEAN:IsCompact.tendsto_nhdsSet_of_mapClusterPt ;)
+def IsCompact__tendsto_nhdsSet_of_mapClusterPt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (Y : Set) -> (l : Elem (Filter Y)) -> (s' : Elem (powerset X)) -> (f : (Elem Y -> X)) -> (hs : Proof (IsCompact s)) -> (hmem : Proof (Filter__Eventually (x2 => Membership__mem s (f x2)) l)) -> (h : Proof (forall X (x1 => if (Membership__mem s x1) (if (MapClusterPt x1 l f) (Membership__mem s' x1))))) -> Proof (Filter__Tendsto f l (nhdsSet s')) :=
+  X => x => s => Y => l => s' => f => hs => hmem => h => IsCompact__le_nhdsSet_of_clusterPt X s hs (Filter__map f l) s' (iffEr (Membership__mem (Filter__map f l) s) (Membership__mem l (Set__preimage f s)) (Filter__mem_map Y X l f s) hmem) h.
+
+(; //LEAN:IsCompact.tendsto_nhds_of_unique_mapClusterPt ;)
+IsCompact__tendsto_nhds_of_unique_mapClusterPt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (Y : Set) -> (l : Elem (Filter Y)) -> (y : Elem X) -> (f : (Elem Y -> X)) -> (hs : Proof (IsCompact s)) -> (hmem : Proof (Filter__Eventually (x2 => Membership__mem s (f x2)) l)) -> (h : Proof (forall X (x1 => if (Membership__mem s x1) (if (MapClusterPt x1 l f) (Eqt X x1 y))))) -> Proof (Filter__Tendsto f l (nhds y)).
+
+(; //LEAN:IsCompact.elim_directed_cover ;)
+IsCompact__elim_directed_cover : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (I : Set) -> (hs : Proof (IsCompact s)) -> (U : (Elem I -> powerset X)) -> (hUo : Proof (forall I (i2 => IsOpen (U i2)))) -> (hsU : Proof (Set__Subset s (Set__iUnion (i1 => U i1)))) -> (hdU : Proof (Directed (x1 => x2 => Set__Subset x1 x2) U)) -> Proof (exists I (i => Set__Subset s (U i))).
+
+(; //LEAN:IsCompact.elim_directedOn_cover ;)
+IsCompact__elim_directedOn_cover : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (U : Elem (powerset (powerset X))) -> (hUo : Proof (forall (powerset X) (u1 => if (Membership__mem U u1) (IsOpen u1)))) -> (hsU : Proof (Set__Subset s (Set__sUnion U))) -> (hdU : Proof (DirectedOn (x1 => x2 => Set__Subset x1 x2) U)) -> (hU : Proof (Set__Nonempty U)) -> Proof (exists (powerset X) (u => and (Membership__mem U u) (Set__Subset s u))).
+
+(; //LEAN:IsCompact.elim_finite_subcover ;)
+IsCompact__elim_finite_subcover : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (I : Set) -> (hs : Proof (IsCompact s)) -> (U : (Elem I -> powerset X)) -> (hUo : Proof (forall I (i2 => IsOpen (U i2)))) -> (hsU : Proof (Set__Subset s (Set__iUnion (i1 => U i1)))) -> Proof (exists (Finset I) (t => Set__Subset s (Set__iUnion (i => Set__iUnion (h => U i))))).
+
+(; //LEAN:IsCompact.elim_nhds_subcover_nhdsSet' ;)
+IsCompact__elim_nhds_subcover_nhdsSet' : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (U : ((x3 : Elem X) -> Proof (Membership__mem s x3) -> powerset X)) -> (hU : Proof (forall X (x2 => forall (Proof (Membership__mem s x2)) (hx => Membership__mem (nhds x2) (U x2 hx))))) -> Proof (exists (Finset (Set__Elem s)) (t => Membership__mem (nhdsSet s) (Set__iUnion (x1 => Set__iUnion (h => U x1 (Subtype__property x1)))))).
+
+(; //LEAN:IsCompact.elim_nhds_subcover_nhdsSet ;)
+IsCompact__elim_nhds_subcover_nhdsSet : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (U : (Elem X -> powerset X)) -> (hU : Proof (forall X (x3 => if (Membership__mem s x3) (Membership__mem (nhds x3) (U x3))))) -> Proof (exists (Finset X) (t => and (forall X (x1 => if (Membership__mem t x1) (Membership__mem s x1))) (Membership__mem (nhdsSet s) (Set__iUnion (x2 => Set__iUnion (h1 => U x2)))))).
+
+(; //LEAN:IsCompact.elim_nhds_subcover' ;)
+def IsCompact__elim_nhds_subcover' : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (U : ((x3 : Elem X) -> Proof (Membership__mem s x3) -> powerset X)) -> (hU : Proof (forall X (x2 => forall (Proof (Membership__mem s x2)) (hx => Membership__mem (nhds x2) (U x2 hx))))) -> Proof (exists (Finset (Set__Elem s)) (t => Set__Subset s (Set__iUnion (x1 => Set__iUnion (h => U x1 (Subtype__property x1)))))) :=
+  X => x => s => hs => U => hU => Exists__imp (Finset (Set__Elem s)) (x1 => Membership__mem (nhdsSet s) (Set__iUnion (x2 => Set__iUnion (h => U x2 (Subtype__property X (x3 => Membership__mem s x3) x2))))) (t => Set__Subset s (Set__iUnion (x4 => Set__iUnion (h1 => U x4 (Subtype__property X (x5 => Membership__mem s x5) x4))))) (forallI (Finset (Set__Elem s)) (x6 => if (Membership__mem (nhdsSet s) (Set__iUnion (x11 => Set__iUnion (h5 => U x11 (Subtype__property X (x12 => Membership__mem s x12) x11))))) (Set__Subset s (Set__iUnion (x9 => Set__iUnion (h4 => U x9 (Subtype__property X (x10 => Membership__mem s x10) x9)))))) (x6 => subset_of_mem_nhdsSet X s (Set__iUnion (x7 => Set__iUnion (h2 => U x7 (Subtype__property X (x8 => Membership__mem s x8) x7)))))) (IsCompact__elim_nhds_subcover_nhdsSet' X s hs U hU).
+
+(; //LEAN:IsCompact.elim_nhds_subcover ;)
+def IsCompact__elim_nhds_subcover : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (U : (Elem X -> powerset X)) -> (hU : Proof (forall X (x3 => if (Membership__mem s x3) (Membership__mem (nhds x3) (U x3))))) -> Proof (exists (Finset X) (t => and (forall X (x1 => if (Membership__mem t x1) (Membership__mem s x1))) (Set__Subset s (Set__iUnion (x2 => Set__iUnion (h1 => U x2)))))) :=
+  X => x => s => hs => U => hU => Exists__imp (Finset X) (t => and (forall X (x1 => if (Membership__mem t x1) (Membership__mem s x1))) (Membership__mem (nhdsSet s) (Set__iUnion (x2 => Set__iUnion (h1 => U x2))))) (t1 => and (forall X (x3 => if (Membership__mem t1 x3) (Membership__mem s x3))) (Set__Subset s (Set__iUnion (x4 => Set__iUnion (h3 => U x4))))) (forallI (Finset X) (x5 => if (and (forall X (x16 => if (Membership__mem x5 x16) (Membership__mem s x16))) (Membership__mem (nhdsSet s) (Set__iUnion (x17 => Set__iUnion (h17 => U x17))))) (and (forall X (x14 => if (Membership__mem x5 x14) (Membership__mem s x14))) (Set__Subset s (Set__iUnion (x15 => Set__iUnion (h15 => U x15)))))) (x5 => ifI (and (forall X (x10 => if (Membership__mem x5 x10) (Membership__mem s x10))) (Membership__mem (nhdsSet s) (Set__iUnion (x11 => Set__iUnion (h10 => U x11))))) (and (forall X (x12 => if (Membership__mem x5 x12) (Membership__mem s x12))) (Set__Subset s (Set__iUnion (x13 => Set__iUnion (h12 => U x13))))) (h4 => And__imp_right (Membership__mem (nhdsSet s) (Set__iUnion (x6 => Set__iUnion (h5 => U x6)))) (Set__Subset s (Set__iUnion (x7 => Set__iUnion (h6 => U x7)))) (forall X (x8 => if (Membership__mem x5 x8) (Membership__mem s x8))) (subset_of_mem_nhdsSet X s (Set__iUnion (x9 => Set__iUnion (h8 => U x9)))) h4))) (IsCompact__elim_nhds_subcover_nhdsSet X s hs U hU).
+
+(; //LEAN:IsCompact.elim_nhdsWithin_subcover' ;)
+IsCompact__elim_nhdsWithin_subcover' : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (U : ((x3 : Elem X) -> Proof (Membership__mem s x3) -> powerset X)) -> (hU : Proof (forall X (x2 => forall (Proof (Membership__mem s x2)) (hx => Membership__mem (nhdsWithin x2 s) (U x2 hx))))) -> Proof (exists (Finset (Set__Elem s)) (t => Set__Subset s (Set__iUnion (x1 => Set__iUnion (h => U x1 (Subtype__property x1)))))).
+
+(; //LEAN:IsCompact.elim_nhdsWithin_subcover ;)
+IsCompact__elim_nhdsWithin_subcover : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (U : (Elem X -> powerset X)) -> (hU : Proof (forall X (x3 => if (Membership__mem s x3) (Membership__mem (nhdsWithin x3 s) (U x3))))) -> Proof (exists (Finset X) (t => and (forall X (x1 => if (Membership__mem t x1) (Membership__mem s x1))) (Set__Subset s (Set__iUnion (x2 => Set__iUnion (h1 => U x2)))))).
+
+(; //LEAN:IsCompact.disjoint_nhdsSet_left ;)
+IsCompact__disjoint_nhdsSet_left : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (l : Elem (Filter X)) -> (hs : Proof (IsCompact s)) -> Proof (iff (Disjoint (nhdsSet s) l) (forall X (x1 => if (Membership__mem s x1) (Disjoint (nhds x1) l)))).
+
+(; //LEAN:IsCompact.disjoint_nhdsSet_right ;)
+IsCompact__disjoint_nhdsSet_right : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (l : Elem (Filter X)) -> (hs : Proof (IsCompact s)) -> Proof (iff (Disjoint l (nhdsSet s)) (forall X (x1 => if (Membership__mem s x1) (Disjoint l (nhds x1))))).
+
+(; //LEAN:IsCompact.elim_directed_family_closed ;)
+IsCompact__elim_directed_family_closed : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (I : Set) -> (hs : Proof (IsCompact s)) -> (t : (Elem I -> powerset X)) -> (htc : Proof (forall I (i2 => IsClosed (t i2)))) -> (hst : Proof (Disjoint s (Set__iInter (i1 => t i1)))) -> (hdt : Proof (Directed (x1 => x2 => Geq x1 x2) t)) -> Proof (exists I (i => Disjoint s (t i))).
+
+(; //LEAN:IsCompact.elim_finite_subfamily_closed ;)
+def IsCompact__elim_finite_subfamily_closed : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (I : Set) -> (hs : Proof (IsCompact s)) -> (t : (Elem I -> powerset X)) -> (htc : Proof (forall I (i2 => IsClosed (t i2)))) -> (hst : Proof (Disjoint s (Set__iInter (i1 => t i1)))) -> Proof (exists (Finset I) (u => Disjoint s (Set__iInter (i => Set__iInter (h => t i))))) :=
+  X => x => s => I => hs => t => htc => hst => IsCompact__elim_directed_family_closed X s (Finset I) hs (u => Set__iInter (i => Set__iInter (h => t i))) (forallI (Finset I) (x1 => IsClosed (Set__iInter (i2 => Set__iInter (h3 => t i2)))) (x1 => isClosed_biInter X I x1 t (forallI I (x2 => if (Membership__mem x1 x2) (IsClosed (t x2))) (x2 => ifI (Membership__mem x1 x2) (IsClosed (t x2)) (h1 => forallE I (i1 => IsClosed (t i1)) htc x2))))) (Eq__mpr (id (congrArg (powerset X) Prop (Set__iInter (t1 => Set__iInter (i3 => Set__iInter (h4 => t i3)))) (Set__iInter (i4 => t i4)) (_a => Disjoint s _a) (Eq__symm (powerset X) (Set__iInter (i5 => t i5)) (Set__iInter (t2 => Set__iInter (i6 => Set__iInter (h5 => t i6)))) (Set__iInter_eq_iInter_finset X I t)))) hst) (directed_of_isDirected_le (Finset I) (powerset X) (u1 => Set__iInter (i7 => Set__iInter (h6 => t i7))) (x3 => x4 => Geq x3 x4) (forallI (Finset I) (x5 => forall (Finset I) (x11 => if (Set__Subset x5 x11) (Set__Subset (Set__iInter (x12 => Set__iInter (h14 => t x12))) (Set__iInter (x13 => Set__iInter (h15 => t x13)))))) (x5 => forallI (Finset I) (x6 => if (Set__Subset x5 x6) (Set__Subset (Set__iInter (x9 => Set__iInter (h11 => t x9))) (Set__iInter (x10 => Set__iInter (h12 => t x10))))) (x6 => ifI (Set__Subset x5 x6) (Set__Subset (Set__iInter (x7 => Set__iInter (h8 => t x7))) (Set__iInter (x8 => Set__iInter (h9 => t x8)))) (h7 => Set__biInter_subset_biInter_left I X x6 x5 t h7))))).
+
+(; //LEAN:IsCompact.inter_iInter_nonempty ;)
+IsCompact__inter_iInter_nonempty : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (I : Set) -> (hs : Proof (IsCompact s)) -> (t : (Elem I -> powerset X)) -> (htc : Proof (forall I (i2 => IsClosed (t i2)))) -> (hst : Proof (forall (Finset I) (u => Set__Nonempty (Inter__inter s (Set__iInter (i1 => Set__iInter (h => t i1))))))) -> Proof (Set__Nonempty (Inter__inter s (Set__iInter (i => t i)))).
+
+(; //LEAN:IsCompact.nonempty_inter_sInter ;)
+IsCompact__nonempty_inter_sInter : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (t : Elem (powerset (powerset X))) -> (ht : Proof (forall (powerset X) (a1 => if (Membership__mem t a1) (IsClosed a1)))) -> (h : Proof (forall (powerset (powerset X)) (a => if (Set__Subset a t) (if (Set__Finite a) (Set__Nonempty (Inter__inter s (Set__sInter a))))))) -> Proof (Set__Nonempty (Inter__inter s (Set__sInter t))).
+
+(; //LEAN:CompactSpace.nonempty_sInter ;)
+CompactSpace__nonempty_sInter : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> (s : Elem (powerset (powerset X))) -> (hsc : Proof (forall (powerset X) (t1 => if (Membership__mem s t1) (IsClosed t1)))) -> (hs : Proof (forall (powerset (powerset X)) (t => if (Set__Subset t s) (if (Set__Finite t) (Set__Nonempty (Set__sInter t)))))) -> Proof (Set__Nonempty (Set__sInter s)).
+
+(; //LEAN:IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed ;)
+IsCompact__nonempty_iInter_of_directed_nonempty_isCompact_isClosed : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (I : Set) -> (t : (Elem I -> powerset X)) -> (htd : Proof (Directed (x1 => x2 => Geq x1 x2) t)) -> (htn : Proof (forall I (i3 => Set__Nonempty (t i3)))) -> (htc : Proof (forall I (i2 => IsCompact (t i2)))) -> (htcl : Proof (forall I (i1 => IsClosed (t i1)))) -> Proof (Set__Nonempty (Set__iInter (i => t i))).
+
+(; //LEAN:IsCompact.nonempty_sInter_of_directed_nonempty_isCompact_isClosed ;)
+IsCompact__nonempty_sInter_of_directed_nonempty_isCompact_isClosed : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (S : Elem (powerset (powerset X))) -> (hSd : Proof (DirectedOn (x1 => x2 => Geq x1 x2) S)) -> (hSn : Proof (forall (powerset X) (U2 => if (Membership__mem S U2) (Set__Nonempty U2)))) -> (hSc : Proof (forall (powerset X) (U1 => if (Membership__mem S U1) (IsCompact U1)))) -> (hScl : Proof (forall (powerset X) (U => if (Membership__mem S U) (IsClosed U)))) -> Proof (Set__Nonempty (Set__sInter S)).
+
+(; //LEAN:IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed ;)
+def IsCompact__nonempty_iInter_of_sequence_nonempty_isCompact_isClosed : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (t : (Elem Nat -> powerset X)) -> (htd : Proof (forall Nat (i3 => Set__Subset (t (plus i3 1)) (t i3)))) -> (htn : Proof (forall Nat (i2 => Set__Nonempty (t i2)))) -> (ht0 : Proof (IsCompact (t 0))) -> (htcl : Proof (forall Nat (i1 => IsClosed (t i1)))) -> Proof (Set__Nonempty (Set__iInter (i => t i))) :=
+  X => x => t => htd => htn => ht0 => htcl => IsCompact__nonempty_iInter_of_directed_nonempty_isCompact_isClosed X Nat t (Antitone__directed_ge Nat (powerset X) t (antitone_nat_of_succ_le (powerset X) t htd)) htn (forallI Nat (i => IsCompact (t i)) (i => IsCompact__of_isClosed_subset X (t 0) (t i) ht0 (forallE Nat (i1 => IsClosed (t i1)) htcl i) ((forallI Nat (i2 => Set__Subset (t i2) (t 0)) (i2 => antitone_nat_of_succ_le (powerset X) t htd 0 i2 (Nat__zero_le i2))) i))) htcl.
+
+(; //LEAN:IsCompact.elim_finite_subcover_image ;)
+IsCompact__elim_finite_subcover_image : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (b : Elem (powerset I)) -> (c : (Elem I -> powerset X)) -> (hs : Proof (IsCompact s)) -> (h : Proof (forall I (i2 => if (Membership__mem b i2) (IsOpen (c i2))))) -> (h1 : Proof (Set__Subset s (Set__iUnion (i1 => Set__iUnion (h3 => c i1))))) -> Proof (exists (powerset I) (b' => and (Set__Subset b' b) (and (Set__Finite b') (Set__Subset s (Set__iUnion (i => Set__iUnion (h2 => c i))))))).
+
+(; //LEAN:isCompact_of_finite_subcover ;)
+isCompact_of_finite_subcover : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (h : Proof (forall Set (I => forall (Elem I -> powerset X) (U => if (forall I (i2 => IsOpen (U i2))) (if (Set__Subset s (Set__iUnion (i1 => U i1))) (exists (Finset I) (t => Set__Subset s (Set__iUnion (i => Set__iUnion (h3 => U i)))))))))) -> Proof (IsCompact s).
+
+(; //LEAN:isCompact_of_finite_subfamily_closed ;)
+isCompact_of_finite_subfamily_closed : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (h : Proof (forall Set (I => forall (Elem I -> powerset X) (t => if (forall I (i2 => IsClosed (t i2))) (if (Disjoint s (Set__iInter (i1 => t i1))) (exists (Finset I) (u => Disjoint s (Set__iInter (i => Set__iInter (h3 => t i)))))))))) -> Proof (IsCompact s).
+
+(; //LEAN:isCompact_iff_finite_subcover ;)
+def isCompact_iff_finite_subcover : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (IsCompact s) (forall Set (I => forall (Elem I -> powerset X) (U => if (forall I (i2 => IsOpen (U i2))) (if (Set__Subset s (Set__iUnion (i1 => U i1))) (exists (Finset I) (t => Set__Subset s (Set__iUnion (i => Set__iUnion (h2 => U i)))))))))) :=
+  X => x => s => iffI (IsCompact s) (forall Set (I => forall (Elem I -> powerset X) (U => if (forall I (i2 => IsOpen (U i2))) (if (Set__Subset s (Set__iUnion (i1 => U i1))) (exists (Finset I) (t => Set__Subset s (Set__iUnion (i => Set__iUnion (h2 => U i))))))))) (hs => forallI Set (x2 => forall (Elem x2 -> powerset X) (U1 => if (forall x2 (i5 => IsOpen (U1 i5))) (if (Set__Subset s (Set__iUnion (i4 => U1 i4))) (exists (Finset x2) (t1 => Set__Subset s (Set__iUnion (i3 => Set__iUnion (h3 => U1 i3)))))))) (x2 => IsCompact__elim_finite_subcover X s x2 hs)) (isCompact_of_finite_subcover X s).
+
+(; //LEAN:isCompact_iff_finite_subfamily_closed ;)
+def isCompact_iff_finite_subfamily_closed : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (IsCompact s) (forall Set (I => forall (Elem I -> powerset X) (t => if (forall I (i2 => IsClosed (t i2))) (if (Disjoint s (Set__iInter (i1 => t i1))) (exists (Finset I) (u => Disjoint s (Set__iInter (i => Set__iInter (h2 => t i)))))))))) :=
+  X => x => s => iffI (IsCompact s) (forall Set (I => forall (Elem I -> powerset X) (t => if (forall I (i2 => IsClosed (t i2))) (if (Disjoint s (Set__iInter (i1 => t i1))) (exists (Finset I) (u => Disjoint s (Set__iInter (i => Set__iInter (h2 => t i))))))))) (hs => forallI Set (x2 => forall (Elem x2 -> powerset X) (t1 => if (forall x2 (i5 => IsClosed (t1 i5))) (if (Disjoint s (Set__iInter (i4 => t1 i4))) (exists (Finset x2) (u1 => Disjoint s (Set__iInter (i3 => Set__iInter (h3 => t1 i3)))))))) (x2 => IsCompact__elim_finite_subfamily_closed X s x2 hs)) (isCompact_of_finite_subfamily_closed X s).
+
+(; //LEAN:IsCompact.mem_nhdsSet_prod_of_forall ;)
+IsCompact__mem_nhdsSet_prod_of_forall : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (K : Elem (powerset X)) -> (Y : Set) -> (l : Elem (Filter Y)) -> (s : Elem (powerset (Prod X Y))) -> (hK : Proof (IsCompact K)) -> (hs : Proof (forall X (x1 => if (Membership__mem K x1) (Membership__mem (SProd__sprod (nhds x1) l) s)))) -> Proof (Membership__mem (SProd__sprod (nhdsSet K) l) s).
+
+(; //LEAN:IsCompact.nhdsSet_prod_eq_biSup ;)
+def IsCompact__nhdsSet_prod_eq_biSup : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (K : Elem (powerset X)) -> (hK : Proof (IsCompact K)) -> (Y : Set) -> (l : Elem (Filter Y)) -> Proof (Eqt (Filter (Prod X Y)) (SProd__sprod (nhdsSet K) l) (iSup (x1 => iSup (h => SProd__sprod (nhds x1) l)))) :=
+  X => x => K => hK => Y => l => le_antisymm (Filter (Prod X Y)) (SProd__sprod (nhdsSet K) l) (iSup (x1 => iSup (h => SProd__sprod (nhds x1) l))) (forallI (powerset (Prod X Y)) (s => if (Membership__mem (iSup (x5 => iSup (h8 => SProd__sprod (nhds x5) l))) s) (Membership__mem (SProd__sprod (nhdsSet K) l) s)) (s => ifI (Membership__mem (iSup (x4 => iSup (h7 => SProd__sprod (nhds x4) l))) s) (Membership__mem (SProd__sprod (nhdsSet K) l) s) (hs => IsCompact__mem_nhdsSet_prod_of_forall X K Y l s hK (Eq__mp (Eq__trans Prop (Membership__mem (iSup (x2 => iSup (h1 => SProd__sprod (nhds x2) l))) s) (forall X (i => Membership__mem (iSup (h2 => SProd__sprod (nhds i) l)) s)) (forall X (a => if (Membership__mem K a) (Membership__mem (SProd__sprod (nhds a) l) s))) (Filter__mem_iSup___simp_1 (Prod X Y) X s (x3 => iSup (h3 => SProd__sprod (nhds x3) l))) (forall_congr X (a1 => Membership__mem (iSup (h4 => SProd__sprod (nhds a1) l)) s) (a2 => if (Membership__mem K a2) (Membership__mem (SProd__sprod (nhds a2) l) s)) (forallI X (i3 => Eqt Prop (Membership__mem (iSup (h6 => SProd__sprod (nhds i3) l)) s) (if (Membership__mem K i3) (Membership__mem (SProd__sprod (nhds i3) l) s))) (i3 => Filter__mem_iSup___simp_1 (Prod X Y) (Membership__mem K i3) s (h5 => SProd__sprod (nhds i3) l))))) hs)))) (iSup_u2082__le (Filter (Prod X Y)) X (Membership__mem K) (SProd__sprod (nhdsSet K) l) (x6 => h9 => SProd__sprod (nhds x6) l) (forallI X (x7 => if (Membership__mem K x7) (Leq (SProd__sprod (nhds x7) l) (SProd__sprod (nhdsSet K) l))) (x7 => ifI (Membership__mem K x7) (Leq (SProd__sprod (nhds x7) l) (SProd__sprod (nhdsSet K) l)) (hx => Filter__prod_mono X Y (nhds x7) (nhdsSet K) l l (nhds_le_nhdsSet X K x7 hx) (le_rfl (Filter Y) l))))).
+
+(; //LEAN:IsCompact.prod_nhdsSet_eq_biSup ;)
+IsCompact__prod_nhdsSet_eq_biSup : (Y : Set) -> (_ : Proof (TopologicalSpace Y)) -> (K : Elem (powerset Y)) -> (hK : Proof (IsCompact K)) -> (X : Set) -> (l : Elem (Filter X)) -> Proof (Eqt (Filter (Prod X Y)) (SProd__sprod l (nhdsSet K)) (iSup (y => iSup (h => SProd__sprod l (nhds y))))).
+
+(; //LEAN:IsCompact.mem_prod_nhdsSet_of_forall ;)
+IsCompact__mem_prod_nhdsSet_of_forall : (Y : Set) -> (_ : Proof (TopologicalSpace Y)) -> (K : Elem (powerset Y)) -> (X : Set) -> (l : Elem (Filter X)) -> (s : Elem (powerset (Prod X Y))) -> (hK : Proof (IsCompact K)) -> (hs : Proof (forall Y (y => if (Membership__mem K y) (Membership__mem (SProd__sprod l (nhds y)) s)))) -> Proof (Membership__mem (SProd__sprod l (nhdsSet K)) s).
+
+(; //LEAN:IsCompact.nhdsSet_inf_eq_biSup ;)
+IsCompact__nhdsSet_inf_eq_biSup : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (K : Elem (powerset X)) -> (hK : Proof (IsCompact K)) -> (l : Elem (Filter X)) -> Proof (Eqt (Filter X) (Min__min (nhdsSet K) l) (iSup (x1 => iSup (h => Min__min (nhds x1) l)))).
+
+(; //LEAN:IsCompact.inf_nhdsSet_eq_biSup ;)
+IsCompact__inf_nhdsSet_eq_biSup : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (K : Elem (powerset X)) -> (hK : Proof (IsCompact K)) -> (l : Elem (Filter X)) -> Proof (Eqt (Filter X) (Min__min l (nhdsSet K)) (iSup (x1 => iSup (h => Min__min l (nhds x1))))).
+
+(; //LEAN:IsCompact.mem_nhdsSet_inf_of_forall ;)
+IsCompact__mem_nhdsSet_inf_of_forall : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (K : Elem (powerset X)) -> (l : Elem (Filter X)) -> (s : Elem (powerset X)) -> (hK : Proof (IsCompact K)) -> (hs : Proof (forall X (x1 => if (Membership__mem K x1) (Membership__mem (Min__min (nhds x1) l) s)))) -> Proof (Membership__mem (Min__min (nhdsSet K) l) s).
+
+(; //LEAN:IsCompact.mem_inf_nhdsSet_of_forall ;)
+IsCompact__mem_inf_nhdsSet_of_forall : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (K : Elem (powerset X)) -> (l : Elem (Filter X)) -> (s : Elem (powerset X)) -> (hK : Proof (IsCompact K)) -> (hs : Proof (forall X (y => if (Membership__mem K y) (Membership__mem (Min__min l (nhds y)) s)))) -> Proof (Membership__mem (Min__min l (nhdsSet K)) s).
+
+(; //LEAN:IsCompact.eventually_forall_of_forall_eventually ;)
+IsCompact__eventually_forall_of_forall_eventually : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (x2 : Elem X) -> (K : Elem (powerset Y)) -> (hK : Proof (IsCompact K)) -> (P : (Elem X -> Elem Y -> Prop)) -> (hP : Proof (forall Y (y1 => if (Membership__mem K y1) (Filter__Eventually (z => P (Prod__fst z) (Prod__snd z)) (nhds (Prod__mk x2 y1)))))) -> Proof (Filter__Eventually (x3 => forall Y (y => if (Membership__mem K y) (P x3 y))) (nhds x2)).
+
+(; //LEAN:isCompact_empty ;)
+def isCompact_empty : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (IsCompact EmptyCollection__emptyCollection) :=
+  X => x => forallI (Filter X) (_f => if (Filter__NeBot _f) (if (Leq _f (Filter__principal EmptyCollection__emptyCollection)) (exists X (x3 => and (Membership__mem EmptyCollection__emptyCollection x3) (ClusterPt x3 _f))))) (_f => ifI (Filter__NeBot _f) (if (Leq _f (Filter__principal EmptyCollection__emptyCollection)) (exists X (x2 => and (Membership__mem EmptyCollection__emptyCollection x2) (ClusterPt x2 _f)))) (hnf => ifI (Leq _f (Filter__principal EmptyCollection__emptyCollection)) (exists X (x1 => and (Membership__mem EmptyCollection__emptyCollection x1) (ClusterPt x1 _f))) (hsf => Not__elim (Filter__NeBot__ne X _f hnf) (iffEl (Membership__mem _f EmptyCollection__emptyCollection) (Eqt (Filter X) _f Bot__bot) (Filter__empty_mem_iff_bot X _f) (iffEl (Leq _f (Filter__principal EmptyCollection__emptyCollection)) (Membership__mem _f EmptyCollection__emptyCollection) (Filter__le_principal_iff X EmptyCollection__emptyCollection _f) hsf))))).
+
+(; //LEAN:isCompact_singleton ;)
+def isCompact_singleton : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> Proof (IsCompact (Singleton__singleton x1)) :=
+  X => x => x1 => forallI (Filter X) (x2 => if (Filter__NeBot x2) (if (Leq x2 (Filter__principal (Singleton__singleton x1))) (exists X (x7 => and (Membership__mem (Singleton__singleton x1) x7) (ClusterPt x7 x2))))) (x2 => ifI (Filter__NeBot x2) (if (Leq x2 (Filter__principal (Singleton__singleton x1))) (exists X (x6 => and (Membership__mem (Singleton__singleton x1) x6) (ClusterPt x6 x2)))) (hf => ifI (Leq x2 (Filter__principal (Singleton__singleton x1))) (exists X (x5 => and (Membership__mem (Singleton__singleton x1) x5) (ClusterPt x5 x2))) (hfa => existsI X (x3 => and (Membership__mem (Singleton__singleton x1) x3) (ClusterPt x3 x2)) x1 (andI (Membership__mem (Singleton__singleton x1) x1) (ClusterPt x1 x2) rfl (ClusterPt__of_le_nhds' X x1 x2 (LE__le__trans (Filter X) x2 (Filter__principal (Singleton__singleton x1)) (nhds x1) hfa (Eq__mpr (id (congrFun' (Filter X) Prop (Leq (Filter__principal (Singleton__singleton x1))) (Leq (Pure__pure x1)) (congrArg (Filter X) (Elem (Filter X) -> Prop) (Filter__principal (Singleton__singleton x1)) (Pure__pure x1) Leq (Filter__principal_singleton X x1)) (nhds x1))) (pure_le_nhds X x1))) hf))))).
+
+(; //LEAN:Set.Subsingleton.isCompact ;)
+def Set__Subsingleton__isCompact : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (Set__Subsingleton s)) -> Proof (IsCompact s) :=
+  X => x => s => hs => Set__Subsingleton__induction_on X s IsCompact hs (isCompact_empty X) (forallI X (x1 => IsCompact (Singleton__singleton x1)) (x1 => isCompact_singleton X x1)).
+
+(; //LEAN:Set.Finite.isCompact_biUnion ;)
+Set__Finite__isCompact_biUnion : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset I)) -> (f : (Elem I -> powerset X)) -> (hs : Proof (Set__Finite s)) -> (hf : Proof (forall I (i1 => if (Membership__mem s i1) (IsCompact (f i1))))) -> Proof (IsCompact (Set__iUnion (i => Set__iUnion (h => f i)))).
+
+(; //LEAN:Finset.isCompact_biUnion ;)
+def Finset__isCompact_biUnion : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (Finset I)) -> (f : (Elem I -> powerset X)) -> (hf : Proof (forall I (i1 => if (Membership__mem s i1) (IsCompact (f i1))))) -> Proof (IsCompact (Set__iUnion (i => Set__iUnion (h => f i)))) :=
+  X => I => x => s => f => hf => Set__Finite__isCompact_biUnion X I s f (Finset__finite_toSet I s) hf.
+
+(; //LEAN:isCompact_accumulate ;)
+def isCompact_accumulate : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (K : (Elem Nat -> powerset X)) -> (hK : Proof (forall Nat (n1 => IsCompact (K n1)))) -> (n : Elem Nat) -> Proof (IsCompact (Set__accumulate K n)) :=
+  X => x => K => hK => n => Set__Finite__isCompact_biUnion X Nat (Set__ofPred (i => Leq i n)) K (Set__finite_le_nat n) (forallI Nat (k => if (Membership__mem (Set__ofPred (i2 => Leq i2 n)) k) (IsCompact (K k))) (k => ifI (Membership__mem (Set__ofPred (i1 => Leq i1 n)) k) (IsCompact (K k)) (h => forallE Nat (n1 => IsCompact (K n1)) hK k))).
+
+(; //LEAN:Set.Finite.isCompact_sUnion ;)
+Set__Finite__isCompact_sUnion : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (S : Elem (powerset (powerset X))) -> (hf : Proof (Set__Finite S)) -> (hc : Proof (forall (powerset X) (s => if (Membership__mem S s) (IsCompact s)))) -> Proof (IsCompact (Set__sUnion S)).
+
+(; //LEAN:isCompact_iUnion ;)
+def isCompact_iUnion : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (I : Set) -> (f : (Elem I -> powerset X)) -> (_ : Proof (Finite I)) -> (h1 : Proof (forall I (i1 => IsCompact (f i1)))) -> Proof (IsCompact (Set__iUnion (i => f i))) :=
+  X => x => I => f => h => h1 => Set__Finite__isCompact_sUnion X (Set__range f) (Set__finite_range (powerset X) I f) (iffEr (forall (powerset X) (a => if (Membership__mem (Set__range f) a) (IsCompact a))) (forall I (i => IsCompact (f i))) (Set__forall_mem_range (powerset X) I f IsCompact) h1).
+
+(; //LEAN:Set.Finite.isCompact ;)
+Set__Finite__isCompact : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (Set__Finite s)) -> Proof (IsCompact s).
+
+(; //LEAN:Set.sUnion_isCompact_eq_univ ;)
+Set__sUnion_isCompact_eq_univ : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (Eqt (powerset X) (Set__sUnion (Set__ofPred (x1 => Set__sUnion_isCompact_eq_univ__match_1 (x2 => Prop) x1 (s => IsCompact s)))) Set__univ).
+
+(; //LEAN:IsCompact.finite_of_discrete ;)
+IsCompact__finite_of_discrete : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (_ : Proof (DiscreteTopology X)) -> (hs : Proof (IsCompact s)) -> Proof (Set__Finite s).
+
+(; //LEAN:isCompact_iff_finite ;)
+def isCompact_iff_finite : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (_ : Proof (DiscreteTopology X)) -> Proof (iff (IsCompact s) (Set__Finite s)) :=
+  X => x => s => h => iffI (IsCompact s) (Set__Finite s) (h1 => IsCompact__finite_of_discrete X s h1) (h2 => Set__Finite__isCompact X s h2).
+
+(; //LEAN:IsCompact.union ;)
+IsCompact__union : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (ht : Proof (IsCompact t)) -> Proof (IsCompact (Union__union s t)).
+
+(; //LEAN:IsCompact.insert ;)
+def IsCompact__insert : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (a : Elem X) -> Proof (IsCompact (Insert__insert a s)) :=
+  X => x => s => hs => a => IsCompact__union X (Singleton__singleton a) s (isCompact_singleton X a) hs.
+
+(; //LEAN:exists_subset_nhds_of_isCompact' ;)
+exists_subset_nhds_of_isCompact' : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (V : (Elem I -> powerset X)) -> (hV : Proof (Directed (x1 => x2 => Geq x1 x2) V)) -> (hV_cpct : Proof (forall I (i3 => IsCompact (V i3)))) -> (hV_closed : Proof (forall I (i2 => IsClosed (V i2)))) -> (U : Elem (powerset X)) -> (hU : Proof (Membership__mem (nhdsSet (Set__iInter (i1 => V i1))) U)) -> Proof (exists I (i => Set__Subset (V i) U)).
+
+(; //LEAN:isCompact_generateFrom ;)
+isCompact_generateFrom : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (S : Elem (powerset (powerset X))) -> (hTS : Proof (Eqt (TopologicalSpace X) T (TopologicalSpace__generateFrom S))) -> (s : Elem (powerset X)) -> (h : Proof (forall (powerset (powerset X)) (P => if (Set__Subset P S) (if (Set__Subset s (Set__sUnion P)) (exists (powerset (powerset X)) (Q => and (Set__Subset Q P) (and (Set__Finite Q) (Set__Subset s (Set__sUnion Q))))))))) -> Proof (IsCompact s).
+
+(; //LEAN:isCompact_generateFrom' ;)
+isCompact_generateFrom' : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (S : Elem (powerset (powerset X))) -> (hTS : Proof (Eqt (TopologicalSpace X) T (TopologicalSpace__generateFrom S))) -> (s : Elem (powerset X)) -> (h : Proof (forall Set (I => forall (Elem I -> Set__Elem S) (U => if (Set__Subset s (Set__iUnion (i1 => U i1))) (exists (powerset I) (J => and (Set__Finite J) (Set__Subset s (Set__iUnion (i => Set__iUnion (h2 => U i)))))))))) -> Proof (IsCompact s).
+
+(; //LEAN:Filter.hasBasis_cocompact ;)
+def Filter__hasBasis_cocompact : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (Filter__HasBasis (Filter__cocompact X) IsCompact Compl__compl) :=
+  X => x => Filter__hasBasis_biInf_principal' X (powerset X) IsCompact Compl__compl (forallI (powerset X) (s => if (IsCompact s) (forall (powerset X) (t2 => if (IsCompact t2) (exists (powerset X) (k4 => and (IsCompact k4) (and (Set__Subset (Compl__compl k4) (Compl__compl s)) (Set__Subset (Compl__compl k4) (Compl__compl t2)))))))) (s => ifI (IsCompact s) (forall (powerset X) (t1 => if (IsCompact t1) (exists (powerset X) (k3 => and (IsCompact k3) (and (Set__Subset (Compl__compl k3) (Compl__compl s)) (Set__Subset (Compl__compl k3) (Compl__compl t1))))))) (hs => forallI (powerset X) (t => if (IsCompact t) (exists (powerset X) (k2 => and (IsCompact k2) (and (Set__Subset (Compl__compl k2) (Compl__compl s)) (Set__Subset (Compl__compl k2) (Compl__compl t)))))) (t => ifI (IsCompact t) (exists (powerset X) (k1 => and (IsCompact k1) (and (Set__Subset (Compl__compl k1) (Compl__compl s)) (Set__Subset (Compl__compl k1) (Compl__compl t))))) (ht => existsI (powerset X) (k => and (IsCompact k) (and (Set__Subset (Compl__compl k) (Compl__compl s)) (Set__Subset (Compl__compl k) (Compl__compl t)))) (Union__union s t) (andI (IsCompact (Union__union s t)) (and (Set__Subset (Compl__compl (Union__union s t)) (Compl__compl s)) (Set__Subset (Compl__compl (Union__union s t)) (Compl__compl t))) (IsCompact__union X s t hs ht) (andI (Set__Subset (Compl__compl (Union__union s t)) (Compl__compl s)) (Set__Subset (Compl__compl (Union__union s t)) (Compl__compl t)) (iffEr (Set__Subset (Compl__compl (Union__union s t)) (Compl__compl s)) (Set__Subset s (Union__union s t)) (Set__compl_subset_compl X (Union__union s t) s) (Set__subset_union_left X s t)) (iffEr (Set__Subset (Compl__compl (Union__union s t)) (Compl__compl t)) (Set__Subset t (Union__union s t)) (Set__compl_subset_compl X (Union__union s t) t) (Set__subset_union_right X s t))))))))) (existsI (powerset X) (i => IsCompact i) EmptyCollection__emptyCollection (isCompact_empty X)).
+
+(; //LEAN:Filter.mem_cocompact ;)
+def Filter__mem_cocompact : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (Membership__mem (Filter__cocompact X) s) (exists (powerset X) (t => and (IsCompact t) (Set__Subset (Compl__compl t) s)))) :=
+  X => x => s => Filter__HasBasis__mem_iff X (powerset X) (Filter__cocompact X) IsCompact Compl__compl s (Filter__hasBasis_cocompact X).
+
+(; //LEAN:Filter.mem_cocompact' ;)
+def Filter__mem_cocompact' : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (Membership__mem (Filter__cocompact X) s) (exists (powerset X) (t => and (IsCompact t) (Set__Subset (Compl__compl s) t)))) :=
+  X => x => s => Iff__trans (Membership__mem (Filter__cocompact X) s) (exists (powerset X) (t => and (IsCompact t) (Set__Subset (Compl__compl t) s))) (exists (powerset X) (t1 => and (IsCompact t1) (Set__Subset (Compl__compl s) t1))) (Filter__mem_cocompact X s) (exists_congr (powerset X) (t2 => and (IsCompact t2) (Set__Subset (Compl__compl t2) s)) (t3 => and (IsCompact t3) (Set__Subset (Compl__compl s) t3)) (forallI (powerset X) (x1 => iff (and (IsCompact x1) (Set__Subset (Compl__compl x1) s)) (and (IsCompact x1) (Set__Subset (Compl__compl s) x1))) (x1 => and_congr_right (IsCompact x1) (Set__Subset (Compl__compl x1) s) (Set__Subset (Compl__compl s) x1) (ifI (IsCompact x1) (iff (Set__Subset (Compl__compl x1) s) (Set__Subset (Compl__compl s) x1)) (h => Set__compl_subset_comm X x1 s))))).
+
+(; //LEAN:IsCompact.compl_mem_cocompact ;)
+def IsCompact__compl_mem_cocompact : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> Proof (Membership__mem (Filter__cocompact X) (Compl__compl s)) :=
+  X => x => s => hs => Filter__HasBasis__mem_of_mem X (powerset X) (Filter__cocompact X) IsCompact Compl__compl s (Filter__hasBasis_cocompact X) hs.
+
+(; //LEAN:Filter.cocompact_le_cofinite ;)
+Filter__cocompact_le_cofinite : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (Leq (Filter__cocompact X) Filter__cofinite).
+
+(; //LEAN:Filter.cocompact_eq_cofinite ;)
+Filter__cocompact_eq_cofinite : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (DiscreteTopology X)) -> Proof (Eqt (Filter X) (Filter__cocompact X) Filter__cofinite).
+
+(; //LEAN:Filter.disjoint_cocompact_left ;)
+Filter__disjoint_cocompact_left : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : Elem (Filter X)) -> Proof (iff (Disjoint (Filter__cocompact X) f) (exists (powerset X) (K => and (Membership__mem f K) (IsCompact K)))).
+
+(; //LEAN:Filter.disjoint_cocompact_right ;)
+Filter__disjoint_cocompact_right : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : Elem (Filter X)) -> Proof (iff (Disjoint f (Filter__cocompact X)) (exists (powerset X) (K => and (Membership__mem f K) (IsCompact K)))).
+
+(; //LEAN:Filter.Tendsto.isCompact_insert_range_of_cocompact ;)
+Filter__Tendsto__isCompact_insert_range_of_cocompact : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (y : Elem Y) -> (hf : Proof (Filter__Tendsto f (Filter__cocompact X) (nhds y))) -> (hfc : Proof (Continuous f)) -> Proof (IsCompact (Insert__insert y (Set__range f))).
+
+(; //LEAN:Filter.Tendsto.isCompact_insert_range_of_cofinite ;)
+Filter__Tendsto__isCompact_insert_range_of_cofinite : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem I -> X)) -> (x1 : Elem X) -> (hf : Proof (Filter__Tendsto f Filter__cofinite (nhds x1))) -> Proof (IsCompact (Insert__insert x1 (Set__range f))).
+
+(; //LEAN:Filter.Tendsto.isCompact_insert_range ;)
+Filter__Tendsto__isCompact_insert_range : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem Nat -> X)) -> (x1 : Elem X) -> (hf : Proof (Filter__Tendsto f Filter__atTop (nhds x1))) -> Proof (IsCompact (Insert__insert x1 (Set__range f))).
+
+(; //LEAN:Filter.hasBasis_coclosedCompact ;)
+Filter__hasBasis_coclosedCompact : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (Filter__HasBasis (Filter__coclosedCompact X) (s => and (IsClosed s) (IsCompact s)) Compl__compl).
+
+(; //LEAN:Filter.mem_coclosedCompact_iff ;)
+Filter__mem_coclosedCompact_iff : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (Membership__mem (Filter__coclosedCompact X) s) (IsCompact (closure (Compl__compl s)))).
+
+(; //LEAN:Filter.compl_mem_coclosedCompact ;)
+Filter__compl_mem_coclosedCompact : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (Membership__mem (Filter__coclosedCompact X) (Compl__compl s)) (IsCompact (closure s))).
+
+(; //LEAN:Filter.cocompact_le_coclosedCompact ;)
+def Filter__cocompact_le_coclosedCompact : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (Leq (Filter__cocompact X) (Filter__coclosedCompact X)) :=
+  X => x => iInf_mono (Filter X) (powerset X) (s => iInf (h => iInf (h1 => Filter__principal (Compl__compl s)))) (s1 => iInf (h2 => Filter__principal (Compl__compl s1))) (forallI (powerset X) (x1 => Leq (iInf (h10 => Filter__principal (Compl__compl x1))) (iInf (h11 => iInf (h12 => Filter__principal (Compl__compl x1))))) (x1 => le_iInf (Filter X) (IsClosed x1) (h3 => iInf (h4 => Filter__principal (Compl__compl x1))) (iInf (h5 => Filter__principal (Compl__compl x1))) (ifI (IsClosed x1) (Leq (iInf (h8 => Filter__principal (Compl__compl x1))) (iInf (h9 => Filter__principal (Compl__compl x1)))) (h6 => le_rfl (Filter X) (iInf (h7 => Filter__principal (Compl__compl x1))))))).
+
+(; //LEAN:IsCompact.compl_mem_coclosedCompact_of_isClosed ;)
+def IsCompact__compl_mem_coclosedCompact_of_isClosed : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (hs' : Proof (IsClosed s)) -> Proof (Membership__mem (Filter__coclosedCompact X) (Compl__compl s)) :=
+  X => x => s => hs => hs' => Filter__HasBasis__mem_of_mem X (powerset X) (Filter__coclosedCompact X) (s1 => and (IsClosed s1) (IsCompact s1)) Compl__compl s (Filter__hasBasis_coclosedCompact X) (andI (IsClosed s) (IsCompact s) hs' hs).
+
+(; //LEAN:Bornology.inCompact ;)
+def Bornology__inCompact : (X : Set) -> Proof (Bornology X) :=
+  X => Bornology__mk (Filter__cocompact X) Filter__cocompact_le_cofinite.
+
+(; //LEAN:Bornology.inCompact.isBounded_iff ;)
+Bornology__inCompact__isBounded_iff : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (Bornology__IsBounded s) (exists (powerset X) (t => and (IsCompact t) (Set__Subset s t)))).
+
+(; //LEAN:Bornology.isBounded_image_of_isLocallyBounded_of_isCompact ;)
+Bornology__isBounded_image_of_isLocallyBounded_of_isCompact : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (Y : Set) -> (_ : Proof (Bornology Y)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (f : (Elem X -> Y)) -> (hf : Proof (forall X (x2 => exists (powerset X) (t => and (Membership__mem (nhds x2) t) (Bornology__IsBounded (Set__image f t)))))) -> Proof (Bornology__IsBounded (Set__image f s)).
+
+(; //LEAN:IsCompact.nhdsSet_prod_eq ;)
+IsCompact__nhdsSet_prod_eq : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> (hs : Proof (IsCompact s)) -> (ht : Proof (IsCompact t)) -> Proof (Eqt (Filter (Prod X Y)) (nhdsSet (SProd__sprod s t)) (SProd__sprod (nhdsSet s) (nhdsSet t))).
+
+(; //LEAN:nhdsSet_prod_le_of_disjoint_cocompact ;)
+nhdsSet_prod_le_of_disjoint_cocompact : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (f : Elem (Filter Y)) -> (hs : Proof (IsCompact s)) -> (hf : Proof (Disjoint f (Filter__cocompact Y))) -> Proof (Leq (SProd__sprod (nhdsSet s) f) (nhdsSet (SProd__sprod s Set__univ))).
+
+(; //LEAN:prod_nhdsSet_le_of_disjoint_cocompact ;)
+prod_nhdsSet_le_of_disjoint_cocompact : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (t : Elem (powerset Y)) -> (f : Elem (Filter X)) -> (ht : Proof (IsCompact t)) -> (hf : Proof (Disjoint f (Filter__cocompact X))) -> Proof (Leq (SProd__sprod f (nhdsSet t)) (nhdsSet (SProd__sprod Set__univ t))).
+
+(; //LEAN:nhds_prod_le_of_disjoint_cocompact ;)
+nhds_prod_le_of_disjoint_cocompact : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : Elem (Filter Y)) -> (x2 : Elem X) -> (hf : Proof (Disjoint f (Filter__cocompact Y))) -> Proof (Leq (SProd__sprod (nhds x2) f) (nhdsSet (SProd__sprod (Singleton__singleton x2) Set__univ))).
+
+(; //LEAN:prod_nhds_le_of_disjoint_cocompact ;)
+prod_nhds_le_of_disjoint_cocompact : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : Elem (Filter X)) -> (y : Elem Y) -> (hf : Proof (Disjoint f (Filter__cocompact X))) -> Proof (Leq (SProd__sprod f (nhds y)) (nhdsSet (SProd__sprod Set__univ (Singleton__singleton y)))).
+
+(; //LEAN:generalized_tube_lemma ;)
+generalized_tube_lemma : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (t : Elem (powerset Y)) -> (ht : Proof (IsCompact t)) -> (n : Elem (powerset (Prod X Y))) -> (hn : Proof (IsOpen n)) -> (hp : Proof (Set__Subset (SProd__sprod s t) n)) -> Proof (exists (powerset X) (u => exists (powerset Y) (v => and (IsOpen u) (and (IsOpen v) (and (Set__Subset s u) (and (Set__Subset t v) (Set__Subset (SProd__sprod u v) n))))))).
+
+(; //LEAN:IsCompact.nhdsSetWithin_prod_eq ;)
+IsCompact__nhdsSetWithin_prod_eq : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (s' : Elem (powerset X)) -> (t : Elem (powerset Y)) -> (t' : Elem (powerset Y)) -> (hs : Proof (IsCompact s)) -> (ht : Proof (IsCompact t)) -> Proof (Eqt (Filter (Prod X Y)) (nhdsSetWithin (SProd__sprod s t) (SProd__sprod s' t')) (SProd__sprod (nhdsSetWithin s s') (nhdsSetWithin t t'))).
+
+(; //LEAN:generalized_tube_lemma' ;)
+generalized_tube_lemma' : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (s' : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (t : Elem (powerset Y)) -> (t' : Elem (powerset Y)) -> (ht : Proof (IsCompact t)) -> (n : Elem (powerset (Prod X Y))) -> (hn : Proof (Membership__mem (nhdsSetWithin (SProd__sprod s t) (SProd__sprod s' t')) n)) -> Proof (exists (powerset X) (u => and (Membership__mem (nhdsSetWithin s s') u) (exists (powerset Y) (v => and (Membership__mem (nhdsSetWithin t t') v) (Set__Subset (SProd__sprod u v) n))))).
+
+(; //LEAN:generalized_tube_lemma_left ;)
+generalized_tube_lemma_left : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (s' : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (t : Elem (powerset Y)) -> (ht : Proof (IsCompact t)) -> (n : Elem (powerset (Prod X Y))) -> (hn : Proof (Membership__mem (nhdsSetWithin (SProd__sprod s t) (SProd__sprod s' t)) n)) -> Proof (exists (powerset X) (u => and (Membership__mem (nhdsSetWithin s s') u) (Set__Subset (SProd__sprod u t) n))).
+
+(; //LEAN:generalized_tube_lemma_right ;)
+generalized_tube_lemma_right : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (t : Elem (powerset Y)) -> (t' : Elem (powerset Y)) -> (ht : Proof (IsCompact t)) -> (n : Elem (powerset (Prod X Y))) -> (hn : Proof (Membership__mem (nhdsSetWithin (SProd__sprod s t) (SProd__sprod s t')) n)) -> Proof (exists (powerset Y) (u => and (Membership__mem (nhdsSetWithin t t') u) (Set__Subset (SProd__sprod s u) n))).
+
+(; //LEAN:isCompact_univ_iff ;)
+def isCompact_univ_iff : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (iff (IsCompact Set__univ) (CompactSpace X)) :=
+  X => x => iffI (IsCompact Set__univ) (CompactSpace X) (h => CompactSpace__mk h) (h1 => CompactSpace__isCompact_univ X x).
+
+(; //LEAN:isCompact_univ ;)
+def isCompact_univ : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> Proof (IsCompact Set__univ) :=
+  X => x => h => CompactSpace__isCompact_univ X x.
+
+(; //LEAN:exists_clusterPt_of_compactSpace ;)
+exists_clusterPt_of_compactSpace : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> Proof (exists X (x1 => ClusterPt x1 f)).
+
+(; //LEAN:Ultrafilter.le_nhds_lim ;)
+Ultrafilter__le_nhds_lim : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> (F : Elem (Ultrafilter X)) -> Proof (Leq (Ultrafilter__toFilter F) (nhds (Ultrafilter__lim F))).
+
+(; //LEAN:CompactSpace.elim_nhds_subcover ;)
+CompactSpace__elim_nhds_subcover : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> (U : (Elem X -> powerset X)) -> (hU : Proof (forall X (x2 => Membership__mem (nhds x2) (U x2)))) -> Proof (exists (Finset X) (t => Eqt (powerset X) (Set__iUnion (x1 => Set__iUnion (h1 => U x1))) Set__univ)).
+
+(; //LEAN:compactSpace_of_finite_subfamily_closed ;)
+def compactSpace_of_finite_subfamily_closed : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (h : Proof (forall Set (I => forall (Elem I -> powerset X) (t => if (forall I (i2 => IsClosed (t i2))) (if (Eqt (powerset X) (Set__iInter (i1 => t i1)) EmptyCollection__emptyCollection) (exists (Finset I) (u => Eqt (powerset X) (Set__iInter (i => Set__iInter (h3 => t i))) EmptyCollection__emptyCollection))))))) -> Proof (CompactSpace X) :=
+  X => x => h => CompactSpace__mk (isCompact_of_finite_subfamily_closed X Set__univ (forallI Set (x1 => forall (Elem x1 -> powerset X) (t3 => if (forall x1 (i30 => IsClosed (t3 i30))) (if (Disjoint Set__univ (Set__iInter (i29 => t3 i29))) (exists (Finset x1) (u11 => Disjoint Set__univ (Set__iInter (i28 => Set__iInter (h25 => t3 i28)))))))) (x1 => forallI (Elem x1 -> powerset X) (t => if (forall x1 (i27 => IsClosed (t i27))) (if (Disjoint Set__univ (Set__iInter (i26 => t i26))) (exists (Finset x1) (u10 => Disjoint Set__univ (Set__iInter (i25 => Set__iInter (h22 => t i25))))))) (t => Eq__mpr (id (implies_congr (forall x1 (i => IsClosed (t i))) (forall x1 (i1 => IsClosed (t i1))) (if (Disjoint Set__univ (Set__iInter (i3 => t i3))) (exists (Finset x1) (u => Disjoint Set__univ (Set__iInter (i2 => Set__iInter (h2 => t i2)))))) (if (Eqt (powerset X) (Set__iInter (i5 => t i5)) EmptyCollection__emptyCollection) (exists (Finset x1) (u1 => Eqt (powerset X) (Set__iInter (i4 => Set__iInter (h4 => t i4))) EmptyCollection__emptyCollection))) (Eq__refl (forall x1 (i6 => IsClosed (t i6)))) (implies_congr (Disjoint Set__univ (Set__iInter (i7 => t i7))) (Eqt (powerset X) (Set__iInter (i8 => t i8)) EmptyCollection__emptyCollection) (exists (Finset x1) (u2 => Disjoint Set__univ (Set__iInter (i9 => Set__iInter (h5 => t i9))))) (exists (Finset x1) (u3 => Eqt (powerset X) (Set__iInter (i10 => Set__iInter (h6 => t i10))) EmptyCollection__emptyCollection)) (Set__univ_disjoint___simp_1 X (Set__iInter (i11 => t i11))) (congrArg (Elem (Finset x1) -> Prop) Prop (u5 => Disjoint Set__univ (Set__iInter (i12 => Set__iInter (h7 => t i12)))) (u6 => Eqt (powerset X) (Set__iInter (i13 => Set__iInter (h8 => t i13))) EmptyCollection__emptyCollection) Exists (funext (Finset x1) (x2 => Prop) (x3 => Disjoint Set__univ (Set__iInter (i14 => Set__iInter (h9 => t i14)))) (x4 => Eqt (powerset X) (Set__iInter (i15 => Set__iInter (h10 => t i15))) EmptyCollection__emptyCollection) (forallI (Finset x1) (u7 => Eqt Prop (Disjoint Set__univ (Set__iInter (i17 => Set__iInter (h12 => t i17)))) (Eqt (powerset X) (Set__iInter (i18 => Set__iInter (h13 => t i18))) EmptyCollection__emptyCollection)) (u7 => Set__univ_disjoint___simp_1 X (Set__iInter (i16 => Set__iInter (h11 => t i16)))))))))) (forallE (Elem x1 -> powerset X) (t2 => if (forall x1 (i24 => IsClosed (t2 i24))) (if (Eqt (powerset X) (Set__iInter (i23 => t2 i23)) EmptyCollection__emptyCollection) (exists (Finset x1) (u9 => Eqt (powerset X) (Set__iInter (i22 => Set__iInter (h19 => t2 i22))) EmptyCollection__emptyCollection)))) (forallE Set (x5 => forall (Elem x5 -> powerset X) (t1 => if (forall x5 (i21 => IsClosed (t1 i21))) (if (Eqt (powerset X) (Set__iInter (i20 => t1 i20)) EmptyCollection__emptyCollection) (exists (Finset x5) (u8 => Eqt (powerset X) (Set__iInter (i19 => Set__iInter (h16 => t1 i19))) EmptyCollection__emptyCollection))))) h x1) t))))).
+
+(; //LEAN:CompactSpace.iInter_nonempty ;)
+CompactSpace__iInter_nonempty : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (I : Set) -> (_ : Proof (CompactSpace X)) -> (t : (Elem I -> powerset X)) -> (htc : Proof (forall I (i2 => IsClosed (t i2)))) -> (hst : Proof (forall (Finset I) (s => Set__Nonempty (Set__iInter (i1 => Set__iInter (h1 => t i1)))))) -> Proof (Set__Nonempty (Set__iInter (i => t i))).
+
+(; //LEAN:compactSpace_generateFrom ;)
+compactSpace_generateFrom : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (S : Elem (powerset (powerset X))) -> (hTS : Proof (Eqt (TopologicalSpace X) T (TopologicalSpace__generateFrom S))) -> (h : Proof (forall (powerset (powerset X)) (P => if (Set__Subset P S) (if (Eqt (powerset X) (Set__sUnion P) Set__univ) (exists (powerset (powerset X)) (Q => and (Set__Subset Q P) (and (Set__Finite Q) (Eqt (powerset X) (Set__sUnion Q) Set__univ)))))))) -> Proof (CompactSpace X).
+
+(; //LEAN:compactSpace_generateFrom' ;)
+compactSpace_generateFrom' : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (S : Elem (powerset (powerset X))) -> (hTS : Proof (Eqt (TopologicalSpace X) T (TopologicalSpace__generateFrom S))) -> (h : Proof (forall Set (I => forall (Elem I -> Set__Elem S) (U => if (Eqt (powerset X) (Set__iUnion (i1 => U i1)) Set__univ) (exists (powerset I) (J => and (Set__Finite J) (Eqt (powerset X) (Set__iUnion (i => Set__iUnion (h2 => U i))) Set__univ))))))) -> Proof (CompactSpace X).
+
+(; //LEAN:compactSpace_generateFrom_of_compl_mem ;)
+compactSpace_generateFrom_of_compl_mem : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x : Elem (powerset (powerset X))) -> (hT : Proof (Eqt (TopologicalSpace X) T (TopologicalSpace__generateFrom x))) -> (h : Proof (forall (powerset X) (s => if (Membership__mem x s) (Membership__mem x (Compl__compl s))))) -> (h1 : Proof (forall (powerset (powerset X)) (P => if (Set__Subset P x) (if (forall (powerset (powerset X)) (Q => if (Set__Subset Q P) (if (Set__Finite Q) (Set__Nonempty (Set__sInter Q))))) (Set__Nonempty (Set__sInter P)))))) -> Proof (CompactSpace X).
+
+(; //LEAN:IsClosed.isCompact ;)
+def IsClosed__isCompact : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (_ : Proof (CompactSpace X)) -> (h1 : Proof (IsClosed s)) -> Proof (IsCompact s) :=
+  X => x => s => h => h1 => IsCompact__of_isClosed_subset X Set__univ s (isCompact_univ X) h1 (Set__subset_univ X s).
+
+(; //LEAN:le_nhds_of_unique_clusterPt ;)
+def le_nhds_of_unique_clusterPt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> (l : Elem (Filter X)) -> (y : Elem X) -> (h1 : Proof (forall X (x1 => if (ClusterPt x1 l) (Eqt X x1 y)))) -> Proof (Leq l (nhds y)) :=
+  X => x => h => l => y => h1 => IsCompact__le_nhds_of_unique_clusterPt X Set__univ (isCompact_univ X) l y (Filter__univ_mem X l) (forallI X (x1 => if (Membership__mem Set__univ x1) (if (ClusterPt x1 l) (Eqt X x1 y))) (x1 => ifI (Membership__mem Set__univ x1) (if (ClusterPt x1 l) (Eqt X x1 y)) (h2 => forallE X (x2 => if (ClusterPt x2 l) (Eqt X x2 y)) h1 x1))).
+
+(; //LEAN:tendsto_nhds_of_unique_mapClusterPt ;)
+def tendsto_nhds_of_unique_mapClusterPt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> (Y : Set) -> (l : Elem (Filter Y)) -> (y : Elem X) -> (f : (Elem Y -> X)) -> (h1 : Proof (forall X (x1 => if (MapClusterPt x1 l f) (Eqt X x1 y)))) -> Proof (Filter__Tendsto f l (nhds y)) :=
+  X => x => h => Y => l => y => f => h1 => le_nhds_of_unique_clusterPt X (Filter__map f l) y h1.
+
+(; //LEAN:noncompact_univ ;)
+def noncompact_univ : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (NoncompactSpace X)) -> Proof (not (IsCompact Set__univ)) :=
+  X => x => h => NoncompactSpace__noncompact_univ X x.
+
+(; //LEAN:IsCompact.ne_univ ;)
+IsCompact__ne_univ : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (_ : Proof (NoncompactSpace X)) -> (hs : Proof (IsCompact s)) -> Proof (Neq s Set__univ).
+
+(; //LEAN:Filter.cocompact_eq_bot ;)
+def Filter__cocompact_eq_bot : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> Proof (Eqt (Filter X) (Filter__cocompact X) Bot__bot) :=
+  X => x => h => iffEr (Eqt (Filter X) (Filter__cocompact X) Bot__bot) (exists (powerset X) (i => and (IsCompact i) (Eqt (powerset X) (Compl__compl i) EmptyCollection__emptyCollection))) (Filter__HasBasis__eq_bot_iff X (powerset X) (Filter__cocompact X) IsCompact Compl__compl (Filter__hasBasis_cocompact X)) (existsI (powerset X) (i1 => and (IsCompact i1) (Eqt (powerset X) (Compl__compl i1) EmptyCollection__emptyCollection)) Set__univ (andI (IsCompact Set__univ) (Eqt (powerset X) (Compl__compl Set__univ) EmptyCollection__emptyCollection) (isCompact_univ X) (Set__compl_univ X))).
+
+(; //LEAN:noncompactSpace_of_neBot ;)
+def noncompactSpace_of_neBot : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (h : Proof (Filter__NeBot (Filter__cocompact X))) -> Proof (NoncompactSpace X) :=
+  X => x => h => NoncompactSpace__mk (ifI (IsCompact Set__univ) false (h' => Set__Nonempty__ne_empty X (Compl__compl Set__univ) (Filter__nonempty_of_mem X (Filter__cocompact X) (Compl__compl Set__univ) (IsCompact__compl_mem_cocompact X Set__univ h')) (Set__compl_univ X))).
+
+(; //LEAN:Filter.cocompact_neBot_iff ;)
+def Filter__cocompact_neBot_iff : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (iff (Filter__NeBot (Filter__cocompact X)) (NoncompactSpace X)) :=
+  X => x => iffI (Filter__NeBot (Filter__cocompact X)) (NoncompactSpace X) (noncompactSpace_of_neBot X) (h => inferInstance).
+
+(; //LEAN:not_compactSpace_iff ;)
+not_compactSpace_iff : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (iff (not (CompactSpace X)) (NoncompactSpace X)).
+
+(; //LEAN:finite_of_compact_of_discrete ;)
+def finite_of_compact_of_discrete : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> (_ : Proof (DiscreteTopology X)) -> Proof (Finite X) :=
+  X => x => h => h1 => Finite__of_finite_univ X (IsCompact__finite_of_discrete X Set__univ (isCompact_univ X)).
+
+(; //LEAN:Set.Infinite.exists_accPt_cofinite_inf_principal_of_subset_isCompact ;)
+Set__Infinite__exists_accPt_cofinite_inf_principal_of_subset_isCompact : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (K : Elem (powerset X)) -> (hs : Proof (Set__Infinite s)) -> (hK : Proof (IsCompact K)) -> (hsub : Proof (Set__Subset s K)) -> Proof (exists X (x1 => and (Membership__mem K x1) (AccPt x1 (Min__min Filter__cofinite (Filter__principal s))))).
+
+(; //LEAN:Set.Infinite.exists_accPt_of_subset_isCompact ;)
+Set__Infinite__exists_accPt_of_subset_isCompact : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (K : Elem (powerset X)) -> (hs : Proof (Set__Infinite s)) -> (hK : Proof (IsCompact K)) -> (hsub : Proof (Set__Subset s K)) -> Proof (exists X (x1 => and (Membership__mem K x1) (AccPt x1 (Filter__principal s)))).
+
+(; //LEAN:Set.Infinite.exists_accPt_cofinite_inf_principal ;)
+Set__Infinite__exists_accPt_cofinite_inf_principal : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (_ : Proof (CompactSpace X)) -> (hs : Proof (Set__Infinite s)) -> Proof (exists X (x1 => AccPt x1 (Min__min Filter__cofinite (Filter__principal s)))).
+
+(; //LEAN:Set.Infinite.exists_accPt_principal ;)
+def Set__Infinite__exists_accPt_principal : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (_ : Proof (CompactSpace X)) -> (hs : Proof (Set__Infinite s)) -> Proof (exists X (x1 => AccPt x1 (Filter__principal s))) :=
+  X => x => s => h => hs => Exists__imp X (x1 => AccPt x1 (Min__min Filter__cofinite (Filter__principal s))) (x2 => AccPt x2 (Filter__principal s)) (forallI X (_x => if (AccPt _x (Min__min Filter__cofinite (Filter__principal s))) (AccPt _x (Filter__principal s))) (_x => ifI (AccPt _x (Min__min Filter__cofinite (Filter__principal s))) (AccPt _x (Filter__principal s)) (hx => AccPt__mono X _x (Min__min Filter__cofinite (Filter__principal s)) (Filter__principal s) hx (inf_le_right (Filter X) Filter__cofinite (Filter__principal s))))) (Set__Infinite__exists_accPt_cofinite_inf_principal X s hs).
+
+(; //LEAN:exists_nhds_ne_neBot ;)
+exists_nhds_ne_neBot : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> (_ : Proof (Infinite X)) -> Proof (exists X (z => Filter__NeBot (nhdsWithin z (Compl__compl (Singleton__singleton z))))).
+
+(; //LEAN:finite_cover_nhds_interior ;)
+finite_cover_nhds_interior : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> (U : (Elem X -> powerset X)) -> (hU : Proof (forall X (x2 => Membership__mem (nhds x2) (U x2)))) -> Proof (exists (Finset X) (t => Eqt (powerset X) (Set__iUnion (x1 => Set__iUnion (h1 => interior (U x1)))) Set__univ)).
+
+(; //LEAN:finite_cover_nhds ;)
+finite_cover_nhds : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> (U : (Elem X -> powerset X)) -> (hU : Proof (forall X (x2 => Membership__mem (nhds x2) (U x2)))) -> Proof (exists (Finset X) (t => Eqt (powerset X) (Set__iUnion (x1 => Set__iUnion (h1 => U x1))) Set__univ)).
+
+(; //LEAN:Filter.comap_cocompact_le ;)
+Filter__comap_cocompact_le : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Continuous f)) -> Proof (Leq (Filter__comap f (Filter__cocompact Y)) (Filter__cocompact X)).
+
+(; //LEAN:disjoint_map_cocompact ;)
+disjoint_map_cocompact : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (g : (Elem X -> Y)) -> (f : Elem (Filter X)) -> (hg : Proof (Continuous g)) -> (hf : Proof (Disjoint f (Filter__cocompact X))) -> Proof (Disjoint (Filter__map g f) (Filter__cocompact Y)).
+
+(; //LEAN:isCompact_range ;)
+isCompact_range : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (CompactSpace X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Continuous f)) -> Proof (IsCompact (Set__range f)).
+
+(; //LEAN:Function.Surjective.compactSpace ;)
+Function__Surjective__compactSpace : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Continuous f)) -> (_ : Proof (CompactSpace X)) -> (hf' : Proof (Function__Surjective f)) -> Proof (CompactSpace Y).
+
+(; //LEAN:isCompact_diagonal ;)
+isCompact_diagonal : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> Proof (IsCompact (Set__diagonal X)).
+
+(; //LEAN:exists_subset_nhds_of_compactSpace ;)
+def exists_subset_nhds_of_compactSpace : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> (V : (Elem I -> powerset X)) -> (hV : Proof (Directed (x1 => x2 => Geq x1 x2) V)) -> (hV_closed : Proof (forall I (i2 => IsClosed (V i2)))) -> (U : Elem (powerset X)) -> (hU : Proof (Membership__mem (nhdsSet (Set__iInter (i1 => V i1))) U)) -> Proof (exists I (i => Set__Subset (V i) U)) :=
+  X => I => x => h => V => hV => hV_closed => U => hU => exists_subset_nhds_of_isCompact' X I V hV (forallI I (i => IsCompact (V i)) (i => IsClosed__isCompact X (V i) (forallE I (i1 => IsClosed (V i1)) hV_closed i))) hV_closed U hU.
+
+(; //LEAN:Topology.IsInducing.isCompact_iff ;)
+Topology__IsInducing__isCompact_iff : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Topology__IsInducing f)) -> Proof (iff (IsCompact s) (IsCompact (Set__image f s))).
+
+(; //LEAN:Topology.IsEmbedding.isCompact_iff ;)
+def Topology__IsEmbedding__isCompact_iff : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Topology__IsEmbedding f)) -> Proof (iff (IsCompact s) (IsCompact (Set__image f s))) :=
+  X => Y => x => x1 => s => f => hf => Topology__IsInducing__isCompact_iff X Y s f (Topology__IsEmbedding__isInducing X Y f hf).
+
+(; //LEAN:Topology.IsInducing.isCompact_preimage ;)
+Topology__IsInducing__isCompact_preimage : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Topology__IsInducing f)) -> (hf' : Proof (IsClosed (Set__range f))) -> (K : Elem (powerset Y)) -> (hK : Proof (IsCompact K)) -> Proof (IsCompact (Set__preimage f K)).
+
+(; //LEAN:Topology.IsInducing.isCompact_preimage_iff ;)
+Topology__IsInducing__isCompact_preimage_iff : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Topology__IsInducing f)) -> (K : Elem (powerset Y)) -> (Kf : Proof (Set__Subset K (Set__range f))) -> Proof (iff (IsCompact (Set__preimage f K)) (IsCompact K)).
+
+(; //LEAN:Topology.IsInducing.isCompact_preimage' ;)
+def Topology__IsInducing__isCompact_preimage' : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Topology__IsInducing f)) -> (K : Elem (powerset Y)) -> (hK : Proof (IsCompact K)) -> (Kf : Proof (Set__Subset K (Set__range f))) -> Proof (IsCompact (Set__preimage f K)) :=
+  X => Y => x => x1 => f => hf => K => hK => Kf => iffEr (IsCompact (Set__preimage f K)) (IsCompact K) (Topology__IsInducing__isCompact_preimage_iff X Y f hf K Kf) hK.
+
+(; //LEAN:Topology.IsClosedEmbedding.isCompact_preimage ;)
+def Topology__IsClosedEmbedding__isCompact_preimage : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Topology__IsClosedEmbedding f)) -> (K : Elem (powerset Y)) -> (hK : Proof (IsCompact K)) -> Proof (IsCompact (Set__preimage f K)) :=
+  X => Y => x => x1 => f => hf => K => hK => Topology__IsInducing__isCompact_preimage X Y f (Topology__IsClosedEmbedding__isInducing X Y f hf) (Topology__IsClosedEmbedding__isClosed_range X Y f hf) K hK.
+
+(; //LEAN:Topology.IsClosedEmbedding.tendsto_cocompact ;)
+def Topology__IsClosedEmbedding__tendsto_cocompact : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Topology__IsClosedEmbedding f)) -> Proof (Filter__Tendsto f (Filter__cocompact X) (Filter__cocompact Y)) :=
+  X => Y => x => x1 => f => hf => iffEr (Filter__Tendsto f (Filter__cocompact X) (Filter__cocompact Y)) (forall (powerset Y) (i => if (IsCompact i) (Filter__Eventually (x2 => Membership__mem (Compl__compl i) (f x2)) (Filter__cocompact X)))) (Filter__HasBasis__tendsto_right_iff X Y (powerset Y) (Filter__cocompact X) (Filter__cocompact Y) IsCompact Compl__compl f (Filter__hasBasis_cocompact Y)) (_K => ifI (IsCompact _K) (Membership__mem (Filter__cocompact X) (Compl__compl (Set__preimage f _K))) (hK => IsCompact__compl_mem_cocompact X (Set__preimage f _K) (Topology__IsClosedEmbedding__isCompact_preimage X Y f hf _K hK))).
+
+(; //LEAN:Subtype.isCompact_iff ;)
+def Subtype__isCompact_iff : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (p : (Elem X -> Prop)) -> (s : Elem (powerset (Subtype (x2 => p x2)))) -> Proof (iff (IsCompact s) (IsCompact (Set__image (x1 => p x1) s))) :=
+  X => x => p => s => Topology__IsEmbedding__isCompact_iff (Subtype (x1 => p x1)) X s (x2 => p x2) (Topology__IsEmbedding__subtypeVal X (x3 => p x3)).
+
+(; //LEAN:isCompact_iff_isCompact_univ ;)
+isCompact_iff_isCompact_univ : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (IsCompact s) (IsCompact Set__univ)).
+
+(; //LEAN:IsCompact.elim_finite_subfamily_isClosed_subtype ;)
+IsCompact__elim_finite_subfamily_isClosed_subtype : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (ks : Proof (IsCompact s)) -> (I : Set) -> (t : (Elem I -> powerset X)) -> (I1 : Elem (powerset I)) -> (htc : Proof (forall I (i2 => if (Membership__mem I1 i2) (IsClosed (Set__preimage (x1 => Membership__mem s x1) (t i2)))))) -> (hst : Proof (Disjoint s (Set__iInter (i1 => Set__iInter (h1 => t i1))))) -> Proof (exists (Finset (Set__Elem I1)) (u => Disjoint s (Set__iInter (i => Set__iInter (h => t i))))).
+
+(; //LEAN:isCompact_iff_compactSpace ;)
+def isCompact_iff_compactSpace : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (IsCompact s) (CompactSpace (Set__Elem s))) :=
+  X => x => s => Iff__trans (IsCompact s) (IsCompact Set__univ) (CompactSpace (Set__Elem s)) (isCompact_iff_isCompact_univ X s) (isCompact_univ_iff (Set__Elem s)).
+
+(; //LEAN:IsCompact.finite ;)
+def IsCompact__finite : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (hs' : Proof (IsDiscrete s)) -> Proof (Set__Finite s) :=
+  X => x => s => hs => hs' => iffEl (Finite (Set__Elem s)) (Set__Finite s) (Set__finite_coe_iff X s) (finite_of_compact_of_discrete (Set__Elem s)).
+
+(; //LEAN:exists_nhds_ne_inf_principal_neBot ;)
+def exists_nhds_ne_inf_principal_neBot : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (IsCompact s)) -> (hs' : Proof (Set__Infinite s)) -> Proof (exists X (z => and (Membership__mem s z) (Filter__NeBot (Min__min (nhdsWithin z (Compl__compl (Singleton__singleton z))) (Filter__principal s))))) :=
+  X => x => s => hs => hs' => Set__Infinite__exists_accPt_of_subset_isCompact X s s hs' hs (Set__Subset__rfl X s).
+
+(; //LEAN:Topology.IsClosedEmbedding.noncompactSpace ;)
+def Topology__IsClosedEmbedding__noncompactSpace : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (NoncompactSpace X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Topology__IsClosedEmbedding f)) -> Proof (NoncompactSpace Y) :=
+  X => Y => x => x1 => h => f => hf => noncompactSpace_of_neBot Y (Filter__Tendsto__neBot X Y f (Filter__cocompact X) (Filter__cocompact Y) (Topology__IsClosedEmbedding__tendsto_cocompact X Y f hf)).
+
+(; //LEAN:Topology.IsClosedEmbedding.compactSpace ;)
+def Topology__IsClosedEmbedding__compactSpace : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (CompactSpace Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Topology__IsClosedEmbedding f)) -> Proof (CompactSpace X) :=
+  X => Y => x => x1 => h => f => hf => CompactSpace__mk (Eq__mpr (id (congrArg Prop Prop (IsCompact Set__univ) (IsCompact (Set__image f Set__univ)) (_a => _a) (propext (Topology__IsInducing__isCompact_iff X Y Set__univ f (Topology__IsClosedEmbedding__isInducing X Y f hf))))) (Eq__mpr (id (congrArg (powerset Y) Prop (Set__image f Set__univ) (Set__range f) (_a1 => IsCompact _a1) (Set__image_univ X Y f))) (IsClosed__isCompact Y (Set__range f) (Topology__IsClosedEmbedding__isClosed_range X Y f hf)))).
+
+(; //LEAN:IsCompact.prod ;)
+IsCompact__prod : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> (hs : Proof (IsCompact s)) -> (ht : Proof (IsCompact t)) -> Proof (IsCompact (SProd__sprod s t)).
+
+(; //LEAN:Set.isCompact_sigma ;)
+Set__isCompact_sigma : (I : Set) -> (X : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> TopologicalSpace (X i2))) -> (s : Elem (powerset I)) -> (t : ((i1 : Elem I) -> powerset (X i1))) -> (hs : Proof (Set__Finite s)) -> (ht : Proof (forall I (i => if (Membership__mem s i) (IsCompact (t i))))) -> Proof (IsCompact (Set__sigma s t)).
+
+(; //LEAN:IsCompact.sigma_exists_finite_sigma_eq ;)
+IsCompact__sigma_exists_finite_sigma_eq : (I : Set) -> (X : (Elem I -> Set)) -> (_ : Proof ((i4 : Elem I) -> TopologicalSpace (X i4))) -> (u : Elem (powerset (Sigma (i3 => X i3)))) -> (hu : Proof (IsCompact u)) -> Proof (exists (powerset I) (s => exists ((i2 : Elem I) -> powerset (X i2)) (t => and (Set__Finite s) (and (forall I (i => IsCompact (t i))) (Eqt (powerset (Sigma (i1 => X i1))) (Set__sigma s t) u))))).
+
+(; //LEAN:Filter.coprod_cocompact ;)
+Filter__coprod_cocompact : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> Proof (Eqt (Filter (Prod X Y)) (Filter__coprod (Filter__cocompact X) (Filter__cocompact Y)) (Filter__cocompact (Prod X Y))).
+
+(; //LEAN:Prod.noncompactSpace_iff ;)
+Prod__noncompactSpace_iff : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> Proof (iff (NoncompactSpace (Prod X Y)) (or (and (NoncompactSpace X) (Nonempty Y)) (and (Nonempty X) (NoncompactSpace Y)))).
+
+(; //LEAN:isCompact_pi_infinite ;)
+isCompact_pi_infinite : (I : Set) -> (X : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> TopologicalSpace (X i3))) -> (s : ((i2 : Elem I) -> powerset (X i2))) -> (h : Proof (forall I (i1 => IsCompact (s i1)))) -> Proof (IsCompact (Set__ofPred (x1 => forall I (i => Membership__mem (s i) (x1 i))))).
+
+(; //LEAN:isCompact_univ_pi ;)
+isCompact_univ_pi : (I : Set) -> (X : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> TopologicalSpace (X i2))) -> (s : ((i1 : Elem I) -> powerset (X i1))) -> (h : Proof (forall I (i => IsCompact (s i)))) -> Proof (IsCompact (Set__pi Set__univ s)).
+
+(; //LEAN:Pi.isCompact_iff_of_isClosed ;)
+Pi__isCompact_iff_of_isClosed : (I : Set) -> (X : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> TopologicalSpace (X i2))) -> (s : Elem (powerset ((i1 : Elem I) -> X i1))) -> (hs : Proof (IsClosed s)) -> Proof (iff (IsCompact s) (forall I (i => IsCompact (Set__image (Function__eval i) s)))).
+
+(; //LEAN:Pi.exists_compact_superset_iff ;)
+Pi__exists_compact_superset_iff : (I : Set) -> (X : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> TopologicalSpace (X i3))) -> (s : Elem (powerset ((i2 : Elem I) -> X i2))) -> Proof (iff (exists (powerset ((i : Elem I) -> X i)) (K => and (IsCompact K) (Set__Subset s K))) (forall I (i1 => exists (powerset (X i1)) (Ki => and (IsCompact Ki) (Set__Subset s (Set__preimage (Function__eval i1) Ki)))))).
+
+(; //LEAN:Filter.coprodᵢ_cocompact ;)
+Filter__coprod_u1d62__cocompact : (I : Set) -> (X : (Elem I -> Set)) -> (_ : Proof ((d2 : Elem I) -> TopologicalSpace (X d2))) -> Proof (Eqt (Filter ((i : Elem I) -> X i)) (Filter__coprod_u1d62_ (d => Filter__cocompact (X d))) (Filter__cocompact ((d1 : Elem I) -> X d1))).
+
+(; //LEAN:IsClosed.exists_minimal_nonempty_closed_subset ;)
+IsClosed__exists_minimal_nonempty_closed_subset : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> (S : Elem (powerset X)) -> (hS : Proof (IsClosed S)) -> (hne : Proof (Set__Nonempty S)) -> Proof (exists (powerset X) (V => and (Set__Subset V S) (and (Set__Nonempty V) (and (IsClosed V) (forall (powerset X) (V' => if (Set__Subset V' V) (if (Set__Nonempty V') (if (IsClosed V') (Eqt (powerset X) V' V))))))))).
+

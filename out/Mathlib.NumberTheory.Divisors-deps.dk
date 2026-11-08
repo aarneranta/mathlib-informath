@@ -1,0 +1,344 @@
+(; constants used by Mathlib.NumberTheory.Divisors, declared with their translated types ;)
+
+(; doc: An additive commutative monoid is an additive monoid with commutative `(+)`. ;)
+(; //LEAN:AddCommMonoid ;)
+AddCommMonoid : (M : Set) -> Prop.
+
+(; doc: The bot (`⊥`, `\bot`) element  Conventions for notations in identifiers:   * The recommended spelling of `⊥` in identifiers is `bot`. ;)
+(; //LEAN:Bot.bot ;)
+Bot__bot : Elem X.
+
+(; doc: A commutative monoid is a monoid with commutative `(*)`. ;)
+(; //LEAN:CommMonoid ;)
+CommMonoid : (M : Set) -> Prop.
+
+(; doc: Two elements of a lattice are disjoint if their inf is the bottom element.   (This generalizes disjoint sets, viewed as members of the subset lattice.)  Note that we define this without reference to `⊓`, as this allows us to talk about orders where the infimum is not unique, or where implementing `Inf` would require additional `Decidable` arguments. ;)
+(; //LEAN:Disjoint ;)
+Disjoint : (a : Elem X) -> (b : Elem X) -> Prop.
+
+(; doc: **Alias** of `dvd_trans`. ;)
+(; //LEAN:Dvd.dvd.trans ;)
+Dvd__dvd__trans : (X : Set) -> (_ : Proof (Semigroup X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (divide a b)) -> (h1 : Proof (divide b c)) -> Proof (divide a c).
+
+(; doc: `∅` or `{}` is the empty set or empty collection. It is supported by the `EmptyCollection` typeclass.  Conventions for notations in identifiers:   * The recommended spelling of `{}` in identifiers is `empty`.   * The recommended spelling of `∅` in identifiers is `empty`. ;)
+(; //LEAN:EmptyCollection.emptyCollection ;)
+EmptyCollection__emptyCollection : Elem X.
+
+(; doc: Negation on an `AddGroup` is a permutation of the underlying type. ;)
+(; //LEAN:Equiv.neg ;)
+Equiv__neg : (G : Set) -> Elem (Equiv__Perm G).
+
+(; doc: Type product is commutative up to an equivalence: `α × β ≃ β × α`. This is `Prod.swap` as an equivalence. ;)
+(; //LEAN:Equiv.prodComm ;)
+Equiv__prodComm : (X : Set) -> (Y : Set) -> Elem (Equiv (Prod X Y) (Prod Y X)).
+
+(; doc: Convert an `α ≃ β` to `α ↪ β`.  This is also available as a coercion `Equiv.coeEmbedding`. The explicit `Equiv.toEmbedding` version is preferred though, since the coercion can have issues inferring the type of the resulting embedding. For example:  ```lean -- Works: example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f.toEmbedding = s.map f := by simp -- Error, `f` has type `Fin 3 ≃ Fin 3` but is expected to have type `Fin 3 ↪ ?m_1 : Type ?` example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f = s.map f.toEmbedding := by simp ``` ;)
+(; //LEAN:Equiv.toEmbedding ;)
+Equiv__toEmbedding : (f : Elem (Equiv X Y)) -> Elem (Function__Embedding X Y).
+
+(; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
+(; //LEAN:Finset ;)
+Finset : (X : Set) -> Set.
+
+(; doc: The antidiagonal of an element `n` is the finset of pairs `(i, j)` such that `i + j = n`. ;)
+(; //LEAN:Finset.HasAntidiagonal.antidiagonal ;)
+Finset__HasAntidiagonal__antidiagonal : (x1 : Elem A) -> Elem (Finset (Prod A A)).
+
+(; doc: The finset $[a, b]$ of elements `x` such that `a ≤ x` and `x ≤ b`. Basically `Set.Icc a b` as a finset. ;)
+(; //LEAN:Finset.Icc ;)
+Finset__Icc : (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
+
+(; doc: The finset $[a, b)$ of elements `x` such that `a ≤ x` and `x < b`. Basically `Set.Ico a b` as a finset. ;)
+(; //LEAN:Finset.Ico ;)
+Finset__Ico : (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
+
+(; //LEAN:Finset.Ico_subset_Ico_right ;)
+Finset__Ico_subset_Ico_right : (X : Set) -> (a : Elem X) -> (x : Elem X) -> (x1 : Elem X) -> (_ : Proof (Preorder X)) -> (_ : Proof (LocallyFiniteOrder X)) -> (h : Proof (Leq x x1)) -> Proof (Set__Subset (Finset__Ico a x) (Finset__Ico a x1)).
+
+(; doc: The finset $(a, b]$ of elements `x` such that `a < x` and `x ≤ b`. Basically `Set.Ioc a b` as a finset. ;)
+(; //LEAN:Finset.Ioc ;)
+Finset__Ioc : (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
+
+(; doc: The property `s.Nonempty` expresses the fact that the finset `s` is not empty. It should be used in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks to the dot notation. ;)
+(; //LEAN:Finset.Nonempty ;)
+Finset__Nonempty : (s : Elem (Finset X)) -> Prop.
+
+(; doc: `s.card` is the number of elements of `s`, aka its cardinality.  The notation `#s` can be accessed in the `Finset` locale. ;)
+(; //LEAN:Finset.card ;)
+Finset__card : (s : Elem (Finset X)) -> Elem Nat.
+
+(; doc: `cons a s h` is the set `{a} ∪ s` containing `a` and the elements of `s`. It is the same as `insert a s` when it is defined, but unlike `insert a s` it does not require `DecidableEq α`, and the union is guaranteed to be disjoint. ;)
+(; //LEAN:Finset.cons ;)
+Finset__cons : (a : Elem X) -> (s : Elem (Finset X)) -> (h : Proof (not (Membership__mem s a))) -> Elem (Finset X).
+
+(; doc: `disjUnion s t h` is the set such that `a ∈ disjUnion s t h` iff `a ∈ s` or `a ∈ t`. It is the same as `s ∪ t`, but it does not require decidable equality on the type. The hypothesis ensures that the sets are disjoint. ;)
+(; //LEAN:Finset.disjUnion ;)
+Finset__disjUnion : (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Disjoint s t)) -> Elem (Finset X).
+
+(; doc: `Finset.filter p s` is the set of elements of `s` that satisfy `p`.  For example, one can use `s.filter (· ∈ t)` to get the intersection of `s` with `t : Set α` as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available). ;)
+(; //LEAN:Finset.filter ;)
+Finset__filter : (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Elem (Finset X).
+
+(; doc: `filterMap f s` is a combination filter/map operation on `s`. The function `f : α → Option β` is applied to each element of `s`; if `f a` is `some b` then `b` is included in the result, otherwise `a` is excluded from the resulting finset.  In notation, `filterMap f s` is the finset `{b : β | ∃ a ∈ s, f a = some b}`. ;)
+(; //LEAN:Finset.filterMap ;)
+Finset__filterMap : (f : (Elem X -> Option Y)) -> (s : Elem (Finset X)) -> (f_inj : Proof (forall X (a => forall X (a' => forall Y (b => if (Membership__mem (f a) b) (if (Membership__mem (f a') b) (Eqt X a a'))))))) -> Elem (Finset Y).
+
+(; //LEAN:Finset.filter_subset_filter ;)
+Finset__filter_subset_filter : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Set__Subset s t)) -> Proof (Set__Subset (Finset__filter (x1 => p x1) s) (Finset__filter (x2 => p x2) t)).
+
+(; doc: `fold op b f s` folds the commutative associative operation `op` over the `f`-image of `s`, i.e. `fold (+) b f {1,2,3} = f 1 + f 2 + f 3 + b`. ;)
+(; //LEAN:Finset.fold ;)
+Finset__fold : (op : (Elem Y -> Elem Y -> Y)) -> (b : Elem Y) -> (f : (Elem X -> Y)) -> (s : Elem (Finset X)) -> Elem Y.
+
+(; doc: `image f s` is the forward image of `s` under `f`. ;)
+(; //LEAN:Finset.image ;)
+Finset__image : (f : (Elem X -> Y)) -> (s : Elem (Finset X)) -> Elem (Finset Y).
+
+(; doc: When `f` is an embedding of `α` in `β` and `s` is a finset in `α`, then `s.map f` is the image finset in `β`. The embedding condition guarantees that there are no duplicates in the image. ;)
+(; //LEAN:Finset.map ;)
+Finset__map : (f : Elem (Function__Embedding X Y)) -> (s : Elem (Finset X)) -> Elem (Finset Y).
+
+(; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
+(; //LEAN:Finset.prod ;)
+Finset__prod : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+
+(; doc: `range n` is the set of natural numbers less than `n`. ;)
+(; //LEAN:Finset.range ;)
+Finset__range : (n : Elem Nat) -> Elem (Finset Nat).
+
+(; //LEAN:Finset.subset_iff ;)
+Finset__subset_iff : (X : Set) -> (x : Elem (Finset X)) -> (x1 : Elem (Finset X)) -> Proof (iff (Set__Subset x x1) (forall X (x2 => if (Membership__mem x x2) (Membership__mem x1 x2)))).
+
+(; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
+(; //LEAN:Finset.sum ;)
+Finset__sum : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+
+(; doc: Supremum of a finite set: `sup {a, b, c} f = f a ⊔ f b ⊔ f c` ;)
+(; //LEAN:Finset.sup ;)
+Finset__sup : (s : Elem (Finset Y)) -> (f : (Elem Y -> X)) -> Elem X.
+
+(; doc: The underlying multiset ;)
+(; //LEAN:Finset.val ;)
+Finset__val : (self : Elem (Finset X)) -> Elem (Multiset X).
+
+(; //LEAN:Function.Embedding.mk ;)
+Function__Embedding__mk : (toFun : (Elem X -> Y)) -> (inj' : Proof (Function__Injective toFun)) -> Elem (Function__Embedding X Y).
+
+(; doc: If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. ;)
+(; //LEAN:Function.Embedding.prodMap ;)
+Function__Embedding__prodMap : (x : Elem (Function__Embedding X Y)) -> (x1 : Elem (Function__Embedding Z W)) -> Elem (Function__Embedding (Prod X Z) (Prod Y W)).
+
+(; doc: The identity map as a `Function.Embedding`. ;)
+(; //LEAN:Function.Embedding.refl ;)
+Function__Embedding__refl : (X : Set) -> Elem (Function__Embedding X X).
+
+(; doc: Composition of `f : α ↪ β` and `g : β ↪ γ`. ;)
+(; //LEAN:Function.Embedding.trans ;)
+Function__Embedding__trans : (f : Elem (Function__Embedding X Y)) -> (g : Elem (Function__Embedding Y Z)) -> Elem (Function__Embedding X Z).
+
+(; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
+(; //LEAN:Function.Injective ;)
+Function__Injective : (f : (Elem X -> Y)) -> Prop.
+
+(; //LEAN:Function.Injective.eq_iff ;)
+Function__Injective__eq_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (I : Proof (Function__Injective f)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt Y (f a) (f b)) (Eqt X a b)).
+
+(; //LEAN:Function.LeftInverse.injective ;)
+Function__LeftInverse__injective : (X : Set) -> (Y : Set) -> (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> (h : Proof (Function__LeftInverse g f)) -> Proof (Function__Injective f).
+
+(; doc: `insert x xs` inserts the element `x` into the collection `xs`. ;)
+(; //LEAN:Insert.insert ;)
+Insert__insert : (x1 : Elem x) -> (x2 : Elem Z) -> Elem Z.
+
+(; //LEAN:Int.divisors._proof_4 ;)
+Int__divisors___proof_4 : (z : Elem Int) -> Proof (Disjoint (Finset__map Nat__castEmbedding (Nat__divisors (Int__natAbs z))) (Finset__map (Function__Embedding__trans Nat__castEmbedding (Equiv__toEmbedding (Equiv__neg Int))) (Nat__divisors (Int__natAbs z)))).
+
+(; //LEAN:Int.divisorsAntidiag._proof_3 ;)
+Int__divisorsAntidiag___proof_3 : (n : Elem Nat) -> Proof (Disjoint (Finset__map (Function__Embedding__prodMap Nat__castEmbedding Nat__castEmbedding) (Nat__divisorsAntidiagonal n)) (Finset__map (Function__Embedding__prodMap (Function__Embedding__trans Nat__castEmbedding (Equiv__toEmbedding (Equiv__neg Int))) (Function__Embedding__trans Nat__castEmbedding (Equiv__toEmbedding (Equiv__neg Int)))) (Nat__divisorsAntidiagonal n))).
+
+(; //LEAN:Int.divisorsAntidiag_neg_natCast._proof_1 ;)
+Int__divisorsAntidiag_neg_natCast___proof_1 : (n : Elem Nat) -> Proof (Disjoint (Finset__map (Function__Embedding__prodMap Nat__castEmbedding (Function__Embedding__trans Nat__castEmbedding (Equiv__toEmbedding (Equiv__neg Int)))) (Nat__divisorsAntidiagonal n)) (Finset__map (Function__Embedding__prodMap (Function__Embedding__trans Nat__castEmbedding (Equiv__toEmbedding (Equiv__neg Int))) Nat__castEmbedding) (Nat__divisorsAntidiagonal n))).
+
+(; doc: The absolute value of an integer is its distance from `0`.  This function is overridden by the compiler with an efficient implementation. This definition is the logical model.  Examples:  * `(7 : Int).natAbs = 7`  * `(0 : Int).natAbs = 0`  * `(-11 : Int).natAbs = 11` ;)
+(; //LEAN:Int.natAbs ;)
+Int__natAbs : (m : Elem Int) -> Elem Nat.
+
+(; doc: `n` is a prime power if there is a prime `p` and a positive natural `k` such that `n` can be written as `p^k`. ;)
+(; //LEAN:IsPrimePow ;)
+IsPrimePow : (n : Elem R) -> Prop.
+
+(; doc: Linked lists: ordered lists, in which each element has a reference to the next element.  Most operations on linked lists take time proportional to the length of the list, because each element must be traversed to find the next element.  `List α` is isomorphic to `Array α`, but they are useful for different things: * `List α` is easier for reasoning, and `Array α` is modeled as a wrapper around `List α`. * `List α` works well as a persistent data structure, when many copies of the tail are shared. When   the value is not shared, `Array α` will have better performance because it can do destructive   updates. ;)
+(; //LEAN:List ;)
+List : (X : Set) -> Set.
+
+(; doc: The list has no duplicates: it contains every element at most once.  It is defined as `Pairwise (· ≠ ·)`: each element is unequal to all other elements. ;)
+(; //LEAN:List.Nodup ;)
+List__Nodup : (x : Elem (List X)) -> Prop.
+
+(; doc: Each element of a list is related to all later elements of the list by `R`.  `Pairwise R l` means that all the elements of `l` with earlier indexes are `R`-related to all the elements with later indexes.  For example, `Pairwise (· ≠ ·) l` asserts that `l` has no duplicates, and `Pairwise (· < ·) l` asserts that `l` is (strictly) sorted.  Examples:  * `Pairwise (· < ·) [1, 2, 3] ↔ (1 < 2 ∧ 1 < 3) ∧ 2 < 3`  * `Pairwise (· = ·) [1, 2, 3] = False`  * `Pairwise (· ≠ ·) [1, 2, 3] = True` ;)
+(; //LEAN:List.Pairwise ;)
+List__Pairwise : (R : (Elem X -> Elem X -> Prop)) -> (x : Elem (List X)) -> Prop.
+
+(; //LEAN:List.Pairwise.nodup ;)
+List__Pairwise__nodup : (X : Set) -> (l : Elem (List X)) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl r)) -> (h1 : Proof (List__Pairwise r l)) -> Proof (List__Nodup l).
+
+(; doc: **Alias** of the reverse direction of `List.sortedGT_iff_pairwise`. ;)
+(; //LEAN:List.Pairwise.sortedGT ;)
+List__Pairwise__sortedGT : (X : Set) -> (l : Elem (List X)) -> (_ : Proof (Preorder X)) -> (h : Proof (List__Pairwise (x1 => x2 => Gt x1 x2) l)) -> Proof (List__SortedGT l).
+
+(; doc: **Alias** of the reverse direction of `List.sortedLT_iff_pairwise`. ;)
+(; //LEAN:List.Pairwise.sortedLT ;)
+List__Pairwise__sortedLT : (X : Set) -> (l : Elem (List X)) -> (_ : Proof (Preorder X)) -> (h : Proof (List__Pairwise (x1 => x2 => Lt x1 x2) l)) -> Proof (List__SortedLT l).
+
+(; doc: `l.SortedGT` means that the list is strictly antitonic. ;)
+(; //LEAN:List.SortedGT ;)
+List__SortedGT : (l : Elem (List X)) -> Prop.
+
+(; doc: `l.SortedLT` means that the list is strictly monotonic. ;)
+(; //LEAN:List.SortedLT ;)
+List__SortedLT : (l : Elem (List X)) -> Prop.
+
+(; doc: The list whose first element is `head`, where `tail` is the rest of the list. Usually written `head :: tail`.  Conventions for notations in identifiers:   * The recommended spelling of `::` in identifiers is `cons`.   * The recommended spelling of `[a]` in identifiers is `singleton`. ;)
+(; //LEAN:List.cons ;)
+List__cons : (head : Elem X) -> (tail : Elem (List X)) -> Elem (List X).
+
+(; doc: Applies a function that returns an `Option` to each element of a list, collecting the non-`none` values.  `O(|l|)`.  Example: ```lean example #eval [1, 2, 5, 2, 7, 7].filterMap fun x =>   if x > 2 then some (2 * x) else none ``` ```output [10, 14, 14] ``` ;)
+(; //LEAN:List.filterMap ;)
+List__filterMap : (f : (Elem X -> Option Y)) -> (x : Elem (List X)) -> Elem (List Y).
+
+(; doc: Applies a function to each element of the list, returning the resulting list of values.  `O(|l|)`.  Examples: * `[a, b, c].map f = [f a, f b, f c]` * `[].map Nat.succ = []` * `["one", "two", "three"].map (·.length) = [3, 3, 5]` * `["one", "two", "three"].map (·.reverse) = ["eno", "owt", "eerht"]` ;)
+(; //LEAN:List.map ;)
+List__map : (f : (Elem X -> Y)) -> (l : Elem (List X)) -> Elem (List Y).
+
+(; doc: The empty list, usually written `[]`.  Conventions for notations in identifiers:   * The recommended spelling of `[]` in identifiers is `nil`. ;)
+(; //LEAN:List.nil ;)
+List__nil : Elem (List X).
+
+(; //LEAN:List.pairwise_map ;)
+List__pairwise_map : (X : Set) -> (x : Set) -> (f : (Elem X -> x)) -> (R : (Elem x -> Elem x -> Prop)) -> (l : Elem (List X)) -> Proof (iff (List__Pairwise R (List__map f l)) (List__Pairwise (a => b => R (f a) (f b)) l)).
+
+(; doc: Returns a list of the numbers with the given length `len`, starting at `start` and increasing by `step` at each element.  In other words, `List.range' start len step` is `[start, start+step, ..., start+(len-1)*step]`.  Examples:  * `List.range' 0 3 (step := 1) = [0, 1, 2]`  * `List.range' 0 3 (step := 2) = [0, 2, 4]`  * `List.range' 0 4 (step := 2) = [0, 2, 4, 6]`  * `List.range' 3 4 (step := 2) = [3, 5, 7, 9]` ;)
+(; //LEAN:List.range' ;)
+List__range' : (start : Elem Nat) -> (len : Elem Nat) -> (step : Elem (optParam Nat 1)) -> Elem (List Nat).
+
+(; doc: Reverses a list.  `O(|as|)`.  Because of the “functional but in place” optimization implemented by Lean's compiler, this function does not allocate a new list when its reference to the input list is unshared: it simply walks the linked list and reverses all the node pointers.  Examples: * `[1, 2, 3, 4].reverse = [4, 3, 2, 1]` * `[].reverse = []` ;)
+(; //LEAN:List.reverse ;)
+List__reverse : (as : Elem (List X)) -> Elem (List X).
+
+(; doc: `toFinset l` removes duplicates from the list `l` to produce a finset. ;)
+(; //LEAN:List.toFinset ;)
+List__toFinset : (l : Elem (List X)) -> Elem (Finset X).
+
+(; doc: Returns the greater of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `max` in identifiers is `max`.   * The recommended spelling of `⊔` in identifiers is `sup` (`⊔` is the preferred notation for `max` when the type is not linearly ordered.). ;)
+(; //LEAN:Max.max ;)
+Max__max : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+
+(; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
+(; //LEAN:Membership.mem ;)
+Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+
+(; doc: `Multiset α` is the quotient of `List α` by list permutation. The result is a type of finite sets with duplicates allowed. ;)
+(; //LEAN:Multiset ;)
+Multiset : (X : Set) -> Set.
+
+(; doc: The quotient map from `List α` to `Multiset α`. ;)
+(; //LEAN:Multiset.ofList ;)
+Multiset__ofList : (x : Elem (List X)) -> Elem (Multiset X).
+
+(; doc: `m` and `n` are coprime, or relatively prime, if their `gcd` is 1. ;)
+(; //LEAN:Nat.Coprime ;)
+Nat__Coprime : (m : Elem Nat) -> (n : Elem Nat) -> Prop.
+
+(; //LEAN:Nat.Prime.two_le ;)
+Nat__Prime__two_le : (p : Elem Nat) -> (h : Proof (prime p)) -> Proof (Leq 2 p).
+
+(; doc: `Nat.cast` as an embedding into monoids of characteristic `0`. ;)
+(; //LEAN:Nat.castEmbedding ;)
+Nat__castEmbedding : Elem (Function__Embedding Nat R).
+
+(; //LEAN:Nat.divisorsAntidiagonal._proof_1 ;)
+Nat__divisorsAntidiagonal___proof_1 : (n : Elem Nat) -> (x : Elem Nat) -> (x1 : Elem Nat) -> (x2 : Elem (Prod Nat Nat)) -> (h : Proof (Membership__mem (ite (Eq (times x (div n x)) n) (Option__some (Prod__mk x (div n x))) Option__none) x2)) -> (h1 : Proof (Membership__mem (ite (Eq (times x1 (div n x1)) n) (Option__some (Prod__mk x1 (div n x1))) Option__none) x2)) -> Proof (Eq x x1).
+
+(; //LEAN:Nat.le_succ ;)
+Nat__le_succ : (n : Elem Nat) -> Proof (Leq n (succ n)).
+
+(; //LEAN:Nat.pow_right_injective ;)
+Nat__pow_right_injective : (a : Elem Nat) -> (ha : Proof (Leq 2 a)) -> Proof (Function__Injective (x => pow a x)).
+
+(; doc: The prime factors of a natural number as a finset. ;)
+(; //LEAN:Nat.primeFactors ;)
+Nat__primeFactors : (n : Elem Nat) -> Elem (Finset Nat).
+
+(; doc: `-a` computes the negative or opposite of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `-` in identifiers is `neg` (when used as a unary operator). ;)
+(; //LEAN:Neg.neg ;)
+Neg__neg : (x : Elem X) -> Elem X.
+
+(; doc: The `OfNat.ofNat` function is automatically inserted by the parser when the user writes a numeric literal like `1 : α`. Implementations of this typeclass can therefore customize the behavior of `n : α` based on `n` and `α`. ;)
+(; //LEAN:OfNat.ofNat ;)
+OfNat__ofNat : (x : Elem Nat) -> Elem X.
+
+(; doc: No value. ;)
+(; //LEAN:Option.none ;)
+Option__none : Elem (Option X).
+
+(; doc: Some value of type `α`. ;)
+(; //LEAN:Option.some ;)
+Option__some : (val : Elem X) -> Elem (Option X).
+
+(; doc: The product type, usually written `α × β`. Product types are also called pair or tuple types. Elements of this type are pairs in which the first element is an `α` and the second element is a `β`.  Products nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.  Conventions for notations in identifiers:   * The recommended spelling of `×` in identifiers is `Prod`. ;)
+(; //LEAN:Prod ;)
+Prod : (X : Set) -> (Y : Set) -> Set.
+
+(; doc: The first element of a pair. ;)
+(; //LEAN:Prod.fst ;)
+Prod__fst : (self : Elem (Prod X Y)) -> Elem X.
+
+(; doc: Constructs a pair. This is usually written `(x, y)` instead of `Prod.mk x y`.  Conventions for notations in identifiers:   * The recommended spelling of `(a, b)` in identifiers is `mk`. ;)
+(; //LEAN:Prod.mk ;)
+Prod__mk : (fst : Elem X) -> (snd : Elem Y) -> Elem (Prod X Y).
+
+(; doc: The second element of a pair. ;)
+(; //LEAN:Prod.snd ;)
+Prod__snd : (self : Elem (Prod X Y)) -> Elem Y.
+
+(; doc: Swaps the elements in a pair.  Examples: * `(1, 2).swap = (2, 1)` * `("orange", -87).swap = (-87, "orange")` ;)
+(; //LEAN:Prod.swap ;)
+Prod__swap : (x : Elem (Prod X Y)) -> Elem (Prod Y X).
+
+(; doc: The Cartesian product `s ×ˢ t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. ;)
+(; //LEAN:SProd.sprod ;)
+SProd__sprod : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+
+(; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
+(; //LEAN:Set.Subset ;)
+Set__Subset : (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+
+(; doc: `singleton x` is a collection with the single element `x` (notation: `{x}`).  Conventions for notations in identifiers:   * The recommended spelling of `{x}` in identifiers is `singleton`. ;)
+(; //LEAN:Singleton.singleton ;)
+Singleton__singleton : (x1 : Elem x) -> Elem Y.
+
+(; //LEAN:and_iff_left ;)
+and_iff_left : (b : Prop) -> (a : Prop) -> (hb : Proof b) -> Proof (iff (and a b) a).
+
+(; doc: **Alias** of `congrArg`. ;)
+(; //LEAN:congr_arg ;)
+congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+
+(; //LEAN:dvd_rfl ;)
+dvd_rfl : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) -> Proof (divide a a).
+
+(; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
+(; //LEAN:id ;)
+id : (a : Elem X) -> Elem X.
+
+(; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
+(; //LEAN:ite ;)
+ite : (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
+
+(; //LEAN:lt_of_le_of_lt ;)
+lt_of_le_of_lt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (hab : Proof (Leq a b)) -> (hbc : Proof (Lt b c)) -> Proof (Lt a c).
+
+(; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
+(; //LEAN:rfl ;)
+rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
+

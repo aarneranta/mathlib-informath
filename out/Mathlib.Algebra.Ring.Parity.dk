@@ -1,0 +1,361 @@
+(; Mathlib.Algebra.Ring.Parity: statements exported from Mathlib by MathlibInformath/Export.lean ;)
+
+(; //LEAN:Even.neg_pow ;)
+Even__neg_pow : (X : Set) -> (_ : Proof (Monoid X)) -> (_ : Proof (HasDistribNeg X)) -> (n : Elem Nat) -> (h : Proof (even n)) -> (a : Elem X) -> Proof (Eqt X (pow (Neg__neg a) n) (pow a n)).
+
+(; //LEAN:Even.neg_one_pow ;)
+Even__neg_one_pow : (X : Set) -> (_ : Proof (Monoid X)) -> (_ : Proof (HasDistribNeg X)) -> (n : Elem Nat) -> (h : Proof (even n)) -> Proof (Eqt X (pow (Neg__neg 1) n) 1).
+
+(; //LEAN:IsSquare.zero ;)
+def IsSquare__zero : (X : Set) -> (_ : Proof (MulZeroClass X)) -> Proof (IsSquare 0) :=
+  X => x => existsI X (r => Eqt X 0 (times r r)) 0 (Eq__symm X (times 0 0) 0 (MulZeroClass__mul_zero X 0)).
+
+(; //LEAN:even_two ;)
+def even_two : (X : Set) -> (_ : Proof (AddMonoidWithOne X)) -> Proof (even 2) :=
+  X => x => existsI X (r => Eqt X 2 (plus r r)) 1 (Eq__mpr (id (congrArg X Prop (plus 1 1) 2 (_a => Eqt X 2 _a) (one_add_one_eq_two X))) (Eq__refl 2)).
+
+(; //LEAN:Even.mul_left ;)
+Even__mul_left : (X : Set) -> (a : Elem X) -> (_ : Proof (LeftDistribClass X)) -> (ha : Proof (even a)) -> (b : Elem X) -> Proof (even (times b a)).
+
+(; //LEAN:Even.mul_right ;)
+Even__mul_right : (X : Set) -> (a : Elem X) -> (_ : Proof (RightDistribClass X)) -> (ha : Proof (even a)) -> (b : Elem X) -> Proof (even (times a b)).
+
+(; //LEAN:even_iff_exists_two_mul ;)
+even_iff_exists_two_mul : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> Proof (iff (even a) (exists X (b => Eqt X a (times 2 b)))).
+
+(; //LEAN:even_iff_two_dvd ;)
+even_iff_two_dvd : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> Proof (iff (even a) (divide 2 a)).
+
+(; //LEAN:Even.two_dvd ;)
+def Even__two_dvd : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (h : Proof (even a)) -> Proof (divide 2 a) :=
+  X => x => a => iffEl (even a) (divide 2 a) (even_iff_two_dvd X a).
+
+(; //LEAN:Even.trans_dvd ;)
+def Even__trans_dvd : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (b : Elem X) -> (ha : Proof (even a)) -> (hab : Proof (divide a b)) -> Proof (even b) :=
+  X => x => a => b => ha => hab => iffEr (even b) (divide 2 b) (even_iff_two_dvd X b) (Dvd__dvd__trans X 2 a b (Even__two_dvd X a ha) hab).
+
+(; //LEAN:Dvd.dvd.even ;)
+def Dvd__dvd__even : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (divide a b)) -> (ha : Proof (even a)) -> Proof (even b) :=
+  X => x => a => b => hab => ha => Even__trans_dvd X a b ha hab.
+
+(; //LEAN:range_two_mul ;)
+range_two_mul : (X : Set) -> (_ : Proof (NonAssocSemiring X)) -> Proof (Eqt (powerset X) (Set__range (x1 => times 2 x1)) (Set__ofPred (a => even a))).
+
+(; //LEAN:even_two_mul ;)
+def even_two_mul : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> Proof (even (times 2 a)) :=
+  X => x => a => existsI X (r => Eqt X (times 2 a) (plus r r)) a (two_mul X a).
+
+(; //LEAN:Even.pow_of_ne_zero ;)
+Even__pow_of_ne_zero : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (ha : Proof (even a)) -> (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (even (pow a n)).
+
+(; //LEAN:Odd ;)
+def Odd : (a : Elem X) -> Prop :=
+  a => exists X (k => Eqt X a (plus (times 2 k) 1)).
+
+(; //LEAN:odd_iff_exists_bit1 ;)
+def odd_iff_exists_bit1 : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> Proof (iff (odd a) (exists X (b => Eqt X a (plus (times 2 b) 1)))) :=
+  X => x => a => exists_congr X (k => Eqt X a (plus (times 2 k) 1)) (b => Eqt X a (plus (times 2 b) 1)) (forallI X (b1 => iff (Eqt X a (plus (times 2 b1) 1)) (Eqt X a (plus (times 2 b1) 1))) (b1 => Eq__mpr (id (congrArg X Prop (times 2 b1) (plus b1 b1) (_a => iff (Eqt X a (plus _a 1)) (Eqt X a (plus _a 1))) (two_mul X b1))) (Iff__rfl (Eqt X a (plus (plus b1 b1) 1))))).
+
+(; //LEAN:Odd.exists_bit1 ;)
+def Odd__exists_bit1 : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (h : Proof (odd a)) -> Proof (exists X (b => Eqt X a (plus (times 2 b) 1))) :=
+  X => x => a => iffEl (odd a) (exists X (b => Eqt X a (plus (times 2 b) 1))) (odd_iff_exists_bit1 X a).
+
+(; //LEAN:range_two_mul_add_one ;)
+range_two_mul_add_one : (X : Set) -> (_ : Proof (Semiring X)) -> Proof (Eqt (powerset X) (Set__range (x1 => plus (times 2 x1) 1)) (Set__ofPred (a => odd a))).
+
+(; //LEAN:Even.add_odd ;)
+Even__add_odd : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (even a)) -> (h1 : Proof (odd b)) -> Proof (odd (plus a b)).
+
+(; //LEAN:Even.odd_add ;)
+Even__odd_add : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (b : Elem X) -> (ha : Proof (even a)) -> (hb : Proof (odd b)) -> Proof (odd (plus b a)).
+
+(; //LEAN:Odd.add_even ;)
+Odd__add_even : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (b : Elem X) -> (ha : Proof (odd a)) -> (hb : Proof (even b)) -> Proof (odd (plus a b)).
+
+(; //LEAN:Odd.add_odd ;)
+Odd__add_odd : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (odd a)) -> (h1 : Proof (odd b)) -> Proof (even (plus a b)).
+
+(; //LEAN:odd_one ;)
+def odd_one : (X : Set) -> (_ : Proof (Semiring X)) -> Proof (odd 1) :=
+  X => x => existsI X (k => Eqt X 1 (plus (times 2 k) 1)) 0 (Eq__trans X 1 (plus 0 1) (plus (times 2 0) 1) (Eq__symm X (plus 0 1) 1 (zero_add X 1)) (id (congrArg X X 0 (times 2 0) (x1 => plus x1 1) (Eq__symm X (times 2 0) 0 (MulZeroClass__mul_zero X 2))))).
+
+(; //LEAN:Even.add_one ;)
+def Even__add_one : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (h : Proof (even a)) -> Proof (odd (plus a 1)) :=
+  X => x => a => h => Even__add_odd X a 1 h (odd_one X).
+
+(; //LEAN:Even.one_add ;)
+def Even__one_add : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (h : Proof (even a)) -> Proof (odd (plus 1 a)) :=
+  X => x => a => h => Even__odd_add X a 1 h (odd_one X).
+
+(; //LEAN:Odd.add_one ;)
+def Odd__add_one : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (h : Proof (odd a)) -> Proof (even (plus a 1)) :=
+  X => x => a => h => Odd__add_odd X a 1 h (odd_one X).
+
+(; //LEAN:Odd.one_add ;)
+def Odd__one_add : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (h : Proof (odd a)) -> Proof (even (plus 1 a)) :=
+  X => x => a => h => Odd__add_odd X 1 a (odd_one X) h.
+
+(; //LEAN:odd_two_mul_add_one ;)
+def odd_two_mul_add_one : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> Proof (odd (plus (times 2 a) 1)) :=
+  X => x => a => existsI X (k => Eqt X (plus (times 2 a) 1) (plus (times 2 k) 1)) a rfl.
+
+(; //LEAN:odd_add_self_one' ;)
+odd_add_self_one' : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> Proof (odd (plus a (plus a 1))).
+
+(; //LEAN:odd_add_one_self ;)
+odd_add_one_self : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> Proof (odd (plus (plus a 1) a)).
+
+(; //LEAN:odd_add_one_self' ;)
+odd_add_one_self' : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> Proof (odd (plus a (plus 1 a))).
+
+(; //LEAN:Odd.map ;)
+Odd__map : (F : Set) -> (X : Set) -> (Y : Set) -> (_ : Proof (Semiring X)) -> (_ : Proof (Semiring Y)) -> (a : Elem X) -> (f : Elem F) -> (h1 : Proof (odd a)) -> Proof (odd (f a)).
+
+(; //LEAN:Odd.natCast ;)
+def Odd__natCast : (R : Set) -> (_ : Proof (Semiring R)) -> (n : Elem Nat) -> (hn : Proof (odd n)) -> Proof (odd n) :=
+  R => x => n => hn => Odd__map (RingHom Nat R) Nat R n (Nat__castRingHom R) hn.
+
+(; //LEAN:Odd.mul ;)
+Odd__mul : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (odd a)) -> (h1 : Proof (odd b)) -> Proof (odd (times a b)).
+
+(; //LEAN:Odd.pow ;)
+Odd__pow : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (n : Elem Nat) -> (ha : Proof (odd a)) -> Proof (odd (pow a n)).
+
+(; //LEAN:Odd.pow_add_pow_eq_zero ;)
+Odd__pow_add_pow_eq_zero : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (b : Elem X) -> (n : Elem Nat) -> (_ : Proof (IsCancelAdd X)) -> (hn : Proof (odd n)) -> (hab : Proof (Eqt X (plus a b) 0)) -> Proof (Eqt X (plus (pow a n) (pow b n)) 0).
+
+(; //LEAN:Even.of_isUnit_two ;)
+Even__of_isUnit_two : (X : Set) -> (_ : Proof (Semiring X)) -> (h : Proof (IsUnit 2)) -> (a : Elem X) -> Proof (even a).
+
+(; //LEAN:isUnit_two_iff_forall_even ;)
+isUnit_two_iff_forall_even : (X : Set) -> (_ : Proof (Semiring X)) -> Proof (iff (IsUnit 2) (forall X (a => even a))).
+
+(; //LEAN:Odd.of_isUnit_two ;)
+Odd__of_isUnit_two : (X : Set) -> (_ : Proof (Ring X)) -> (h : Proof (IsUnit 2)) -> (a : Elem X) -> Proof (odd a).
+
+(; //LEAN:Units.isSquare_coe_iff ;)
+Units__isSquare_coe_iff : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem (Units X)) -> Proof (iff (IsSquare (Units__val a)) (IsSquare a)).
+
+(; //LEAN:AddUnits.even_coe_iff ;)
+AddUnits__even_coe_iff : (X : Set) -> (_ : Proof (AddMonoid X)) -> (a : Elem (AddUnits X)) -> Proof (iff (even (AddUnits__val a)) (even a)).
+
+(; //LEAN:Odd.neg_pow ;)
+Odd__neg_pow : (X : Set) -> (_ : Proof (Monoid X)) -> (_ : Proof (HasDistribNeg X)) -> (n : Elem Nat) -> (h : Proof (odd n)) -> (a : Elem X) -> Proof (Eqt X (pow (Neg__neg a) n) (Neg__neg (pow a n))).
+
+(; //LEAN:Odd.neg_one_pow ;)
+Odd__neg_one_pow : (X : Set) -> (_ : Proof (Monoid X)) -> (_ : Proof (HasDistribNeg X)) -> (n : Elem Nat) -> (h : Proof (odd n)) -> Proof (Eqt X (pow (Neg__neg 1) n) (Neg__neg 1)).
+
+(; //LEAN:even_neg_two ;)
+even_neg_two : (X : Set) -> (_ : Proof (Ring X)) -> Proof (even (Neg__neg 2)).
+
+(; //LEAN:Odd.neg ;)
+Odd__neg : (X : Set) -> (_ : Proof (Ring X)) -> (a : Elem X) -> (hp : Proof (odd a)) -> Proof (odd (Neg__neg a)).
+
+(; //LEAN:odd_neg ;)
+odd_neg : (X : Set) -> (_ : Proof (Ring X)) -> (a : Elem X) -> Proof (iff (odd (Neg__neg a)) (odd a)).
+
+(; //LEAN:odd_neg_one ;)
+odd_neg_one : (X : Set) -> (_ : Proof (Ring X)) -> Proof (odd (Neg__neg 1)).
+
+(; //LEAN:Odd.sub_even ;)
+Odd__sub_even : (X : Set) -> (_ : Proof (Ring X)) -> (a : Elem X) -> (b : Elem X) -> (ha : Proof (odd a)) -> (hb : Proof (even b)) -> Proof (odd (minus a b)).
+
+(; //LEAN:Even.sub_odd ;)
+Even__sub_odd : (X : Set) -> (_ : Proof (Ring X)) -> (a : Elem X) -> (b : Elem X) -> (ha : Proof (even a)) -> (hb : Proof (odd b)) -> Proof (odd (minus a b)).
+
+(; //LEAN:Odd.sub_odd ;)
+Odd__sub_odd : (X : Set) -> (_ : Proof (Ring X)) -> (a : Elem X) -> (b : Elem X) -> (ha : Proof (odd a)) -> (hb : Proof (odd b)) -> Proof (even (minus a b)).
+
+(; //LEAN:even_add_one ;)
+even_add_one : (X : Set) -> (_ : Proof (Ring X)) -> (a : Elem X) -> Proof (iff (even (plus a 1)) (odd a)).
+
+(; //LEAN:even_sub_one ;)
+even_sub_one : (X : Set) -> (_ : Proof (Ring X)) -> (a : Elem X) -> Proof (iff (even (minus a 1)) (odd a)).
+
+(; //LEAN:even_add_two ;)
+even_add_two : (X : Set) -> (_ : Proof (Ring X)) -> (a : Elem X) -> Proof (iff (even (plus a 2)) (even a)).
+
+(; //LEAN:even_sub_two ;)
+even_sub_two : (X : Set) -> (_ : Proof (Ring X)) -> (a : Elem X) -> Proof (iff (even (minus a 2)) (even a)).
+
+(; //LEAN:odd_add_one ;)
+odd_add_one : (X : Set) -> (_ : Proof (Ring X)) -> (a : Elem X) -> Proof (iff (odd (plus a 1)) (even a)).
+
+(; //LEAN:odd_sub_one ;)
+odd_sub_one : (X : Set) -> (_ : Proof (Ring X)) -> (a : Elem X) -> Proof (iff (odd (minus a 1)) (even a)).
+
+(; //LEAN:odd_add_two ;)
+odd_add_two : (X : Set) -> (_ : Proof (Ring X)) -> (a : Elem X) -> Proof (iff (odd (plus a 2)) (odd a)).
+
+(; //LEAN:odd_sub_two ;)
+odd_sub_two : (X : Set) -> (_ : Proof (Ring X)) -> (a : Elem X) -> Proof (iff (odd (minus a 2)) (odd a)).
+
+(; //LEAN:Nat.odd_iff ;)
+Nat__odd_iff : (n : Elem Nat) -> Proof (iff (odd n) (Eq (HMod__hMod n 2) 1)).
+
+(; //LEAN:Nat.not_odd_iff ;)
+Nat__not_odd_iff : (n : Elem Nat) -> Proof (iff (not (odd n)) (Eq (HMod__hMod n 2) 0)).
+
+(; //LEAN:Nat.not_odd_iff_even ;)
+Nat__not_odd_iff_even : (n : Elem Nat) -> Proof (iff (not (odd n)) (even n)).
+
+(; //LEAN:Nat.not_even_iff_odd ;)
+Nat__not_even_iff_odd : (n : Elem Nat) -> Proof (iff (not (even n)) (odd n)).
+
+(; //LEAN:Nat.not_odd_zero ;)
+Nat__not_odd_zero : Proof (not (odd 0)).
+
+(; //LEAN:Odd.not_two_dvd_nat ;)
+Odd__not_two_dvd_nat : (n : Elem Nat) -> (h : Proof (odd n)) -> Proof (not (divide 2 n)).
+
+(; //LEAN:Nat.even_xor_odd ;)
+Nat__even_xor_odd : (n : Elem Nat) -> Proof (Xor (even n) (odd n)).
+
+(; //LEAN:Nat.even_or_odd ;)
+def Nat__even_or_odd : (n : Elem Nat) -> Proof (or (even n) (odd n)) :=
+  n => Xor__or (even n) (odd n) (Nat__even_xor_odd n).
+
+(; //LEAN:Nat.even_or_odd' ;)
+Nat__even_or_odd' : (n : Elem Nat) -> Proof (exists Nat (k => or (Eq n (times 2 k)) (Eq n (plus (times 2 k) 1)))).
+
+(; //LEAN:Nat.even_xor_odd' ;)
+Nat__even_xor_odd' : (n : Elem Nat) -> Proof (exists Nat (k => Xor (Eq n (times 2 k)) (Eq n (plus (times 2 k) 1)))).
+
+(; //LEAN:Nat.odd_add_one ;)
+Nat__odd_add_one : (n : Elem Nat) -> Proof (iff (odd (plus n 1)) (not (odd n))).
+
+(; //LEAN:Nat.mod_two_add_add_odd_mod_two ;)
+Nat__mod_two_add_add_odd_mod_two : (m : Elem Nat) -> (n : Elem Nat) -> (hn : Proof (odd n)) -> Proof (Eq (plus (HMod__hMod m 2) (HMod__hMod (plus m n) 2)) 1).
+
+(; //LEAN:Nat.mod_two_add_succ_mod_two ;)
+Nat__mod_two_add_succ_mod_two : (m : Elem Nat) -> Proof (Eq (plus (HMod__hMod m 2) (HMod__hMod (plus m 1) 2)) 1).
+
+(; //LEAN:Nat.succ_mod_two_add_mod_two ;)
+Nat__succ_mod_two_add_mod_two : (m : Elem Nat) -> Proof (Eq (plus (HMod__hMod (plus m 1) 2) (HMod__hMod m 2)) 1).
+
+(; //LEAN:Nat.even_add' ;)
+Nat__even_add' : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (even (plus m n)) (iff (odd m) (odd n))).
+
+(; //LEAN:Nat.not_even_bit1 ;)
+Nat__not_even_bit1 : (n : Elem Nat) -> Proof (not (even (plus (times 2 n) 1))).
+
+(; //LEAN:Nat.not_even_two_mul_add_one ;)
+Nat__not_even_two_mul_add_one : (n : Elem Nat) -> Proof (not (even (plus (times 2 n) 1))).
+
+(; //LEAN:Nat.even_sub' ;)
+Nat__even_sub' : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Leq n m)) -> Proof (iff (even (minus m n)) (iff (odd m) (odd n))).
+
+(; //LEAN:Nat.Odd.sub_odd ;)
+Nat__Odd__sub_odd : (m : Elem Nat) -> (n : Elem Nat) -> (hm : Proof (odd m)) -> (hn : Proof (odd n)) -> Proof (even (minus m n)).
+
+(; //LEAN:Odd.tsub_odd ;)
+def Odd__tsub_odd : (m : Elem Nat) -> (n : Elem Nat) -> (hm : Proof (odd m)) -> (hn : Proof (odd n)) -> Proof (even (minus m n)) :=
+  Nat__Odd__sub_odd.
+
+(; //LEAN:Nat.odd_mul ;)
+Nat__odd_mul : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (odd (times m n)) (and (odd m) (odd n))).
+
+(; //LEAN:Nat.Odd.of_mul_left ;)
+def Nat__Odd__of_mul_left : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (odd (times m n))) -> Proof (odd m) :=
+  m => n => h => andEl (odd m) (odd n) (iffEl (odd (times m n)) (and (odd m) (odd n)) (Nat__odd_mul m n) h).
+
+(; //LEAN:Nat.Odd.of_mul_right ;)
+def Nat__Odd__of_mul_right : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (odd (times m n))) -> Proof (odd n) :=
+  m => n => h => andEr (odd m) (odd n) (iffEl (odd (times m n)) (and (odd m) (odd n)) (Nat__odd_mul m n) h).
+
+(; //LEAN:Nat.odd_pow_iff ;)
+Nat__odd_pow_iff : (n : Elem Nat) -> (e : Elem Nat) -> (he : Proof (Neq e 0)) -> Proof (iff (odd (pow n e)) (odd n)).
+
+(; //LEAN:Nat.even_div ;)
+Nat__even_div : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (even (div m n)) (Eq (div (HMod__hMod m (times 2 n)) n) 0)).
+
+(; //LEAN:Nat.odd_add ;)
+Nat__odd_add : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (odd (plus m n)) (iff (odd m) (even n))).
+
+(; //LEAN:Nat.odd_add' ;)
+Nat__odd_add' : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (odd (plus m n)) (iff (odd n) (even m))).
+
+(; //LEAN:Nat.ne_of_odd_add ;)
+Nat__ne_of_odd_add : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (odd (plus m n))) -> Proof (Neq m n).
+
+(; //LEAN:Nat.odd_sub ;)
+Nat__odd_sub : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Leq n m)) -> Proof (iff (odd (minus m n)) (iff (odd m) (even n))).
+
+(; //LEAN:Nat.Odd.sub_even ;)
+Nat__Odd__sub_even : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Leq n m)) -> (hm : Proof (odd m)) -> (hn : Proof (even n)) -> Proof (odd (minus m n)).
+
+(; //LEAN:Nat.odd_sub' ;)
+Nat__odd_sub' : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Leq n m)) -> Proof (iff (odd (minus m n)) (iff (odd n) (even m))).
+
+(; //LEAN:Nat.Even.sub_odd ;)
+Nat__Even__sub_odd : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Leq n m)) -> (hm : Proof (even m)) -> (hn : Proof (odd n)) -> Proof (odd (minus m n)).
+
+(; //LEAN:Nat.two_mul_div_two_add_one_of_odd ;)
+Nat__two_mul_div_two_add_one_of_odd : (n : Elem Nat) -> (h : Proof (odd n)) -> Proof (Eq (plus (times 2 (div n 2)) 1) n).
+
+(; //LEAN:Nat.div_two_mul_two_add_one_of_odd ;)
+Nat__div_two_mul_two_add_one_of_odd : (n : Elem Nat) -> (h : Proof (odd n)) -> Proof (Eq (plus (times (div n 2) 2) 1) n).
+
+(; //LEAN:Nat.one_add_div_two_mul_two_of_odd ;)
+Nat__one_add_div_two_mul_two_of_odd : (n : Elem Nat) -> (h : Proof (odd n)) -> Proof (Eq (plus 1 (times (div n 2) 2)) n).
+
+(; //LEAN:Nat.two_dvd_mul_add_one ;)
+def Nat__two_dvd_mul_add_one : (k : Elem Nat) -> Proof (divide 2 (times k (plus k 1))) :=
+  k => iffEl (even (times k (plus k 1))) (divide 2 (times k (plus k 1))) (even_iff_two_dvd Nat (times k (plus k 1))) (Nat__even_mul_succ_self k).
+
+(; //LEAN:Nat.two_dvd_mul_sub_one ;)
+Nat__two_dvd_mul_sub_one : (k : Elem Nat) -> Proof (divide 2 (times k (minus k 1))).
+
+(; //LEAN:Nat.eight_dvd_sq_sub_one_of_odd ;)
+Nat__eight_dvd_sq_sub_one_of_odd : (k : Elem Nat) -> (hk : Proof (odd k)) -> Proof (divide 8 (minus (pow k 2) 1)).
+
+(; //LEAN:Function.Involutive.iterate_two_mul ;)
+Function__Involutive__iterate_two_mul : (X : Set) -> (f : (Elem X -> X)) -> (hf : Proof (Function__Involutive f)) -> (n : Elem Nat) -> Proof (Eqt (Elem X -> X) (Nat__iterate f (times 2 n)) id).
+
+(; //LEAN:Function.Involutive.iterate_two_mul_add_one ;)
+Function__Involutive__iterate_two_mul_add_one : (X : Set) -> (f : (Elem X -> X)) -> (hf : Proof (Function__Involutive f)) -> (n : Elem Nat) -> Proof (Eqt (Elem X -> X) (Nat__iterate f (plus (times 2 n) 1)) f).
+
+(; //LEAN:Function.Involutive.iterate_even ;)
+Function__Involutive__iterate_even : (X : Set) -> (f : (Elem X -> X)) -> (n : Elem Nat) -> (hf : Proof (Function__Involutive f)) -> (hn : Proof (even n)) -> Proof (Eqt (Elem X -> X) (Nat__iterate f n) id).
+
+(; //LEAN:Function.Involutive.iterate_odd ;)
+Function__Involutive__iterate_odd : (X : Set) -> (f : (Elem X -> X)) -> (n : Elem Nat) -> (hf : Proof (Function__Involutive f)) -> (hn : Proof (odd n)) -> Proof (Eqt (Elem X -> X) (Nat__iterate f n) f).
+
+(; //LEAN:Function.Involutive.iterate_eq_self ;)
+def Function__Involutive__iterate_eq_self : (X : Set) -> (f : (Elem X -> X)) -> (n : Elem Nat) -> (hf : Proof (Function__Involutive f)) -> (hne : Proof (Neq f id)) -> Proof (iff (Eqt (Elem X -> X) (Nat__iterate f n) f) (odd n)) :=
+  X => f => n => hf => hne => iffI (Eqt (Elem X -> X) (Nat__iterate f n) f) (odd n) (H => iffEl (not (even n)) (odd n) (Nat__not_even_iff_odd n) (hn => ifE (Eqt (Elem X -> X) f id) false hne (Eq__mp (congrArg Prop Prop (Eqt (Elem X -> X) id f) (Eqt (Elem X -> X) f id) (_a => _a) (propext (eq_comm (Elem X -> X) id f))) (Eq__mp (congrArg (Elem X -> X) Prop (Nat__iterate f n) id (_a1 => Eqt (Elem X -> X) _a1 f) (Function__Involutive__iterate_even X f n hf hn)) H)))) (Function__Involutive__iterate_odd X f n hf).
+
+(; //LEAN:Function.Involutive.iterate_eq_id ;)
+def Function__Involutive__iterate_eq_id : (X : Set) -> (f : (Elem X -> X)) -> (n : Elem Nat) -> (hf : Proof (Function__Involutive f)) -> (hne : Proof (Neq f id)) -> Proof (iff (Eqt (Elem X -> X) (Nat__iterate f n) id) (even n)) :=
+  X => f => n => hf => hne => iffI (Eqt (Elem X -> X) (Nat__iterate f n) id) (even n) (H => iffEl (not (odd n)) (even n) (Nat__not_odd_iff_even n) (hn => ifE (Eqt (Elem X -> X) f id) false hne (Eq__mp (congrArg (Elem X -> X) Prop (Nat__iterate f n) f (_a => Eqt (Elem X -> X) _a id) (Function__Involutive__iterate_odd X f n hf hn)) H))) (Function__Involutive__iterate_even X f n hf).
+
+(; //LEAN:neg_one_pow_eq_ite ;)
+neg_one_pow_eq_ite : (R : Set) -> (_ : Proof (Monoid R)) -> (_ : Proof (HasDistribNeg R)) -> (n : Elem Nat) -> Proof (Eqt R (pow (Neg__neg 1) n) (ite (even n) 1 (Neg__neg 1))).
+
+(; //LEAN:neg_one_pow_congr ;)
+neg_one_pow_congr : (R : Set) -> (_ : Proof (Monoid R)) -> (_ : Proof (HasDistribNeg R)) -> (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (iff (even m) (even n))) -> Proof (Eqt R (pow (Neg__neg 1) m) (pow (Neg__neg 1) n)).
+
+(; //LEAN:neg_one_pow_eq_one_iff_even ;)
+neg_one_pow_eq_one_iff_even : (R : Set) -> (_ : Proof (Monoid R)) -> (_ : Proof (HasDistribNeg R)) -> (n : Elem Nat) -> (h : Proof (Neq (Neg__neg 1) 1)) -> Proof (iff (Eqt R (pow (Neg__neg 1) n) 1) (even n)).
+
+(; //LEAN:neg_one_pow_eq_neg_one_iff_odd ;)
+neg_one_pow_eq_neg_one_iff_odd : (R : Set) -> (_ : Proof (Monoid R)) -> (_ : Proof (HasDistribNeg R)) -> (n : Elem Nat) -> (h : Proof (Neq (Neg__neg 1) 1)) -> Proof (iff (Eqt R (pow (Neg__neg 1) n) (Neg__neg 1)) (odd n)).
+
+(; //LEAN:Even.neg_zpow ;)
+Even__neg_zpow : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> (_ : Proof (HasDistribNeg X)) -> (n : Elem Int) -> (h : Proof (even n)) -> (a : Elem X) -> Proof (Eqt X (pow (Neg__neg a) n) (pow a n)).
+
+(; //LEAN:Even.neg_one_zpow ;)
+Even__neg_one_zpow : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> (_ : Proof (HasDistribNeg X)) -> (n : Elem Int) -> (h : Proof (even n)) -> Proof (Eqt X (pow (Neg__neg 1) n) 1).
+
+(; //LEAN:neg_one_zpow_eq_ite ;)
+neg_one_zpow_eq_ite : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> (_ : Proof (HasDistribNeg X)) -> (n : Elem Int) -> Proof (Eqt X (pow (Neg__neg 1) n) (ite (even n) 1 (Neg__neg 1))).
+
+(; //LEAN:natCast_eq_zero_of_even_of_two_eq_zero ;)
+natCast_eq_zero_of_even_of_two_eq_zero : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> (n : Elem Nat) -> (hn : Proof (even n)) -> (h : Proof (Eqt R 2 0)) -> Proof (Eqt R n 0).
+
+(; //LEAN:natCast_eq_one_of_odd_of_two_eq_zero ;)
+natCast_eq_one_of_odd_of_two_eq_zero : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> (n : Elem Nat) -> (hn : Proof (odd n)) -> (h : Proof (Eqt R 2 0)) -> Proof (Eqt R n 1).
+
+(; //LEAN:natCast_eq_zero_or_one_of_two_eq_zero ;)
+natCast_eq_zero_or_one_of_two_eq_zero : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> (n : Elem Nat) -> (h : Proof (Eqt R 2 0)) -> Proof (or (Eqt R n 0) (Eqt R n 1)).
+

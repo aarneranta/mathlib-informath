@@ -1,0 +1,184 @@
+(; constants used by Mathlib.Topology.Basic, declared with their translated types ;)
+
+(; doc: **The axiom of choice**. `Nonempty α` is a proof that `α` has an element, but the element itself is erased. The axiom `choice` supplies a particular element of `α` given only this proof.  The textbook axiom of choice normally makes a family of choices all at once, but that is implied from this formulation, because if `α : ι → Type` is a family of types and `h : ∀ i, Nonempty (α i)` is a proof that they are all nonempty, then `fun i => Classical.choice (h i) : ∀ i, α i` is a family of chosen elements. This is actually a bit stronger than the ZFC choice axiom; this is sometimes called "[global choice](https://en.wikipedia.org/wiki/Axiom_of_global_choice)".  In Lean, we use the axiom of choice to derive the law of excluded middle (see `Classical.em`), so it will often show up in axiom listings where you may not expect. You can use `#print axioms my_thm` to find out if a given theorem depends on this or other axioms.  This axiom can be used to construct "data", but obviously there is no algorithm to compute it, so Lean will require you to mark any definition that would involve executing `Classical.choice` or other axioms as `noncomputable`, and will not produce any executable code for such definitions. ;)
+(; //LEAN:Classical.choice ;)
+Classical__choice : (h : Proof (Nonempty X)) -> Elem X.
+
+(; //LEAN:Classical.epsilon_spec ;)
+Classical__epsilon_spec : (X : Set) -> (p : (Elem X -> Prop)) -> (hex : Proof (exists X (y => p y))) -> Proof (p (Classical__epsilon p)).
+
+(; doc: Set / lattice complement  Conventions for notations in identifiers:   * The recommended spelling of `ᶜ` in identifiers is `compl`. ;)
+(; //LEAN:Compl.compl ;)
+Compl__compl : (x : Elem X) -> Elem X.
+
+(; doc: `∅` or `{}` is the empty set or empty collection. It is supported by the `EmptyCollection` typeclass.  Conventions for notations in identifiers:   * The recommended spelling of `{}` in identifiers is `empty`.   * The recommended spelling of `∅` in identifiers is `empty`. ;)
+(; //LEAN:EmptyCollection.emptyCollection ;)
+EmptyCollection__emptyCollection : Elem X.
+
+(; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.symm ;)
+Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Proof (Eqt X b a).
+
+(; doc: A filter `F` on a type `α` is a collection of sets of `α` which contains the whole `α`, is upwards-closed, and is stable under intersection. We do not forbid this collection to be all sets of `α`. ;)
+(; //LEAN:Filter ;)
+Filter : (X : Set) -> Set.
+
+(; doc: `Filter.Tendsto` is the generic "limit of a function" predicate. `Tendsto f l₁ l₂` asserts that for every `l₂` neighborhood `a`, the `f`-preimage of `a` is an `l₁` neighborhood. ;)
+(; //LEAN:Filter.Tendsto ;)
+Filter__Tendsto : (f : (Elem X -> Y)) -> (x : Elem (Filter X)) -> (x1 : Elem (Filter Y)) -> Prop.
+
+(; doc: If `f` is a filter, then `Filter.lim f` is a limit of the filter, if it exists. ;)
+(; //LEAN:Filter.lim ;)
+Filter__lim : (f : Elem (Filter X)) -> Elem X.
+
+(; doc: If `f` is a filter in `α` and `g : α → X` is a function, then `Filter.limUnder f g` is a limit of `g` at `f`, if it exists. ;)
+(; //LEAN:Filter.limUnder ;)
+Filter__limUnder : (f : Elem (Filter X1)) -> (g : (Elem X1 -> X)) -> Elem X.
+
+(; doc: The forward map of a filter ;)
+(; //LEAN:Filter.map ;)
+Filter__map : (m : (Elem X -> Y)) -> (f : Elem (Filter X)) -> Elem (Filter Y).
+
+(; doc: A type is `Finite` if it is in bijective correspondence to some `Fin n`.  This is similar to `Fintype`, but `Finite` is a proposition rather than data. A particular benefit to this is that `Finite` instances are definitionally equal to one another (due to proof irrelevance) rather than being merely propositionally equal, and, furthermore, `Finite` instances generally avoid the need for `Decidable` instances. One other notable difference is that `Finite` allows there to be `Finite p` instances for all `p : Prop`, which is not allowed by `Fintype` due to universe constraints. An application of this is that `Finite (x ∈ s → β x)` follows from the general instance for pi types, assuming `[∀ x, Finite (β x)]`. Implementation note: this is a reason `Finite α` is not defined as `Nonempty (Fintype α)`.  Every `Fintype` instance provides a `Finite` instance via `Finite.of_fintype`. Conversely, one can noncomputably create a `Fintype` instance from a `Finite` instance via `Fintype.ofFinite`. In a proof one might write ```lean   have := Fintype.ofFinite α ``` to obtain such an instance.  Do not write noncomputable `Fintype` instances; instead write `Finite` instances and use this `Fintype.ofFinite` interface. The `Fintype` instances should be relied upon to be computable for evaluation purposes.  Theorems should use `Finite` instead of `Fintype`, unless definitions in the theorem statement require `Fintype`. Definitions should prefer `Finite` as well, unless it is important that the definitions are meant to be computable in the reduction or `#eval` sense. ;)
+(; //LEAN:Finite ;)
+Finite : (X : Set) -> Prop.
+
+(; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
+(; //LEAN:Finset ;)
+Finset : (X : Set) -> Set.
+
+(; doc: Gives a `Set.Finite` for the `Finset` coerced to a `Set`. This is a wrapper around `Set.toFinite`. ;)
+(; //LEAN:Finset.finite_toSet ;)
+Finset__finite_toSet : (X : Set) -> (s : Elem (Finset X)) -> Proof (Set__Finite s).
+
+(; //LEAN:Iff.rfl ;)
+Iff__rfl : (a : Prop) -> Proof (iff a a).
+
+(; doc: `a ∩ b` is the intersection of `a` and `b`.  Conventions for notations in identifiers:   * The recommended spelling of `∩` in identifiers is `inter`. ;)
+(; //LEAN:Inter.inter ;)
+Inter__inter : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+
+(; doc: A set is closed if its complement is open ;)
+(; //LEAN:IsClosed ;)
+IsClosed : (s : Elem (powerset X)) -> Prop.
+
+(; doc: The complement of a closed set is an open set. ;)
+(; //LEAN:IsClosed.isOpen_compl ;)
+IsClosed__isOpen_compl : (X : Set) -> (x : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (_ : Proof (IsClosed s)) -> Proof (IsOpen (Compl__compl s)).
+
+(; //LEAN:IsClosed.mk ;)
+IsClosed__mk : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (isOpen_compl : Proof (IsOpen (Compl__compl s))) -> Proof (IsClosed s).
+
+(; doc: A set is locally closed if it is the intersection of some open set and some closed set. Also see `isLocallyClosed_tfae` and other lemmas in `Mathlib/Topology/LocallyClosed.lean`. ;)
+(; //LEAN:IsLocallyClosed ;)
+IsLocallyClosed : (s : Elem (powerset X)) -> Prop.
+
+(; doc: `IsOpen s` means that `s` is open in the ambient topological space on `X` ;)
+(; //LEAN:IsOpen ;)
+IsOpen : (x1 : Elem (powerset X)) -> Prop.
+
+(; //LEAN:IsOpen.inter ;)
+IsOpen__inter : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (hs : Proof (IsOpen s)) -> (ht : Proof (IsOpen t)) -> Proof (IsOpen (Inter__inter s t)).
+
+(; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
+(; //LEAN:Membership.mem ;)
+Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+
+(; doc: `a \ b` is the set difference of `a` and `b`, consisting of all elements in `a` that are not in `b`.  Conventions for notations in identifiers:   * The recommended spelling of `\` in identifiers is `sdiff`. ;)
+(; //LEAN:SDiff.sdiff ;)
+SDiff__sdiff : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+
+(; doc: A set is finite if the corresponding `Subtype` is finite, i.e., if there exists a natural `n : ℕ` and an equivalence `s ≃ Fin n`. ;)
+(; //LEAN:Set.Finite ;)
+Set__Finite : (s : Elem (powerset X)) -> Prop.
+
+(; doc: The property `s.Nonempty` expresses the fact that the set `s` is not empty. It should be used in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks to the dot notation. ;)
+(; //LEAN:Set.Nonempty ;)
+Set__Nonempty : (s : Elem (powerset X)) -> Prop.
+
+(; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
+(; //LEAN:Set.Subset ;)
+Set__Subset : (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+
+(; //LEAN:Set.finite_range ;)
+Set__finite_range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (_ : Proof (Finite I)) -> Proof (Set__Finite (Set__range f)).
+
+(; //LEAN:Set.forall_mem_range ;)
+Set__forall_mem_range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (p : (Elem X -> Prop)) -> Proof (iff (forall X (a => if (Membership__mem (Set__range f) a) (p a))) (forall I (i => p (f i)))).
+
+(; doc: Indexed intersection of a family of sets ;)
+(; //LEAN:Set.iInter ;)
+Set__iInter : (s : (Elem I -> powerset X)) -> Elem (powerset X).
+
+(; doc: Indexed union of a family of sets ;)
+(; //LEAN:Set.iUnion ;)
+Set__iUnion : (s : (Elem I -> powerset X)) -> Elem (powerset X).
+
+(; //LEAN:Set.inter_univ ;)
+Set__inter_univ : (X : Set) -> (a : Elem (powerset X)) -> Proof (Eqt (powerset X) (Inter__inter a Set__univ) a).
+
+(; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
+(; //LEAN:Set.ofPred ;)
+Set__ofPred : (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+
+(; doc: Range of a function.  This function is more flexible than `f '' univ`, as the image requires that the domain is in Type and not an arbitrary Sort. ;)
+(; //LEAN:Set.range ;)
+Set__range : (f : (Elem I -> X)) -> Elem (powerset X).
+
+(; doc: Intersection of a set of sets. ;)
+(; //LEAN:Set.sInter ;)
+Set__sInter : (S : Elem (powerset (powerset X))) -> Elem (powerset X).
+
+(; doc: Union of a set of sets. ;)
+(; //LEAN:Set.sUnion ;)
+Set__sUnion : (S : Elem (powerset (powerset X))) -> Elem (powerset X).
+
+(; doc: The universal set on a type `α` is the set containing all elements of `α`.  This is conceptually the "same as" `α` (in set theory, it is actually the same), but type theory makes the distinction that `α` is a type while `Set.univ` is a term of type `Set α`. `Set.univ` can itself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`. ;)
+(; //LEAN:Set.univ ;)
+Set__univ : Elem (powerset X).
+
+(; //LEAN:Set.univ_inter ;)
+Set__univ_inter : (X : Set) -> (a : Elem (powerset X)) -> Proof (Eqt (powerset X) (Inter__inter Set__univ a) a).
+
+(; doc: A topology on `X`. ;)
+(; //LEAN:TopologicalSpace ;)
+TopologicalSpace : (X : Set) -> Prop.
+
+(; doc: A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. ;)
+(; //LEAN:TopologicalSpace.IsOpen ;)
+TopologicalSpace__IsOpen : (x : Elem (powerset X)) -> Prop.
+
+(; //LEAN:TopologicalSpace.mk ;)
+TopologicalSpace__mk : (IsOpen : (Elem (powerset X) -> Prop)) -> (isOpen_univ : Proof (IsOpen Set__univ)) -> (isOpen_inter : Proof (forall (powerset X) (s1 => forall (powerset X) (t1 => if (IsOpen s1) (if (IsOpen t1) (IsOpen (Inter__inter s1 t1))))))) -> (isOpen_sUnion : Proof (forall (powerset (powerset X)) (s => if (forall (powerset X) (t => if (Membership__mem s t) (IsOpen t))) (IsOpen (Set__sUnion s))))) -> Proof (TopologicalSpace X).
+
+(; //LEAN:TopologicalSpace.ofClosed._proof_1 ;)
+TopologicalSpace__ofClosed___proof_1 : (X : Set) -> (T : Elem (powerset (powerset X))) -> (empty_mem : Proof (Membership__mem T EmptyCollection__emptyCollection)) -> Proof (Membership__mem T (Compl__compl Set__univ)).
+
+(; //LEAN:TopologicalSpace.ofClosed._proof_2 ;)
+TopologicalSpace__ofClosed___proof_2 : (X : Set) -> (T : Elem (powerset (powerset X))) -> (union_mem : Proof (forall (powerset X) (A => if (Membership__mem T A) (forall (powerset X) (B => if (Membership__mem T B) (Membership__mem T (Union__union A B))))))) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (hs : Proof (Membership__mem T (Compl__compl s))) -> (ht : Proof (Membership__mem T (Compl__compl t))) -> Proof (Membership__mem T (Compl__compl (Inter__inter s t))).
+
+(; //LEAN:TopologicalSpace.ofClosed._proof_5 ;)
+TopologicalSpace__ofClosed___proof_5 : (X : Set) -> (T : Elem (powerset (powerset X))) -> (sInter_mem : Proof (forall (powerset (powerset X)) (A => if (Set__Subset A T) (Membership__mem T (Set__sInter A))))) -> (s : Elem (powerset (powerset X))) -> (hs : Proof (forall (powerset X) (t => if (Membership__mem s t) (Membership__mem T (Compl__compl t))))) -> Proof (Membership__mem T (Compl__compl (Set__sUnion s))).
+
+(; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
+(; //LEAN:True ;)
+True : Prop.
+
+(; doc: `a ∪ b` is the union of `a` and `b`.  Conventions for notations in identifiers:   * The recommended spelling of `∪` in identifiers is `union`. ;)
+(; //LEAN:Union.union ;)
+Union__union : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+
+(; //LEAN:isOpen_sUnion ;)
+isOpen_sUnion : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset (powerset X))) -> (h : Proof (forall (powerset X) (t => if (Membership__mem s t) (IsOpen t)))) -> Proof (IsOpen (Set__sUnion s)).
+
+(; //LEAN:isOpen_univ ;)
+isOpen_univ : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (IsOpen Set__univ).
+
+(; doc: A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the infimum over the principal filters of all open sets containing `x`.  [Wikidata Q3275652](https://www.wikidata.org/wiki/Q3275652) ;)
+(; //LEAN:nhds ;)
+nhds : (x1 : Elem X) -> Elem (Filter X).
+
+(; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
+(; //LEAN:rfl ;)
+rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
+

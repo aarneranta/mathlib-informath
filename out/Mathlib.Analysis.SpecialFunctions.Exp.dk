@@ -1,0 +1,279 @@
+(; Mathlib.Analysis.SpecialFunctions.Exp: statements exported from Mathlib by MathlibInformath/Export.lean ;)
+
+(; //LEAN:Complex.exp_bound_sq ;)
+Complex__exp_bound_sq : (x : Elem Complex) -> (z : Elem Complex) -> (hz : Proof (Leq (Norm__norm z) 1)) -> Proof (Leq (Norm__norm (minus (minus (Complex__exp (plus x z)) (Complex__exp x)) (HSMul__hSMul z (Complex__exp x)))) (times (Norm__norm (Complex__exp x)) (pow (Norm__norm z) 2))).
+
+(; //LEAN:Complex.locally_lipschitz_exp ;)
+Complex__locally_lipschitz_exp : (r : Elem Real) -> (hr_nonneg : Proof (Leq 0 r)) -> (hr_le : Proof (Leq r 1)) -> (x : Elem Complex) -> (y : Elem Complex) -> (hyx : Proof (Lt (Norm__norm (minus y x)) r)) -> Proof (Leq (Norm__norm (minus (Complex__exp y) (Complex__exp x))) (times (times (plus 1 r) (Norm__norm (Complex__exp x))) (Norm__norm (minus y x)))).
+
+(; //LEAN:Complex.continuous_exp ;)
+def Complex__continuous_exp : Proof (Continuous Complex__exp) :=
+  iffEr (Continuous Complex__exp) (forall Complex (x => ContinuousAt Complex__exp x)) (continuous_iff_continuousAt Complex Complex Complex__exp) (x1 => continuousAt_of_locally_lipschitz Complex Complex Complex__exp x1 1 (zero_lt_one Real) (times 2 (Norm__norm (Complex__exp x1))) (forallI Complex (y => if (Lt (Dist__dist y x1) 1) (Leq (Dist__dist (Complex__exp y) (Complex__exp x1)) (times (times 2 (Norm__norm (Complex__exp x1))) (Dist__dist y x1)))) (y => Eq__mpr (id (implies_congr (Lt (Dist__dist y x1) 1) (Lt (Norm__norm (minus y x1)) 1) (Leq (Dist__dist (Complex__exp y) (Complex__exp x1)) (times (times 2 (Norm__norm (Complex__exp x1))) (Dist__dist y x1))) (Leq (Norm__norm (minus (Complex__exp y) (Complex__exp x1))) (times (times 2 (Norm__norm (Complex__exp x1))) (Norm__norm (minus y x1)))) (congrFun' Real Prop (Lt (Dist__dist y x1)) (Lt (Norm__norm (minus y x1))) (congrArg Real (Elem Real -> Prop) (Dist__dist y x1) (Norm__norm (minus y x1)) Lt (dist_eq_norm Complex y x1)) 1) (congr Real Prop (Leq (Dist__dist (Complex__exp y) (Complex__exp x1))) (Leq (Norm__norm (minus (Complex__exp y) (Complex__exp x1)))) (times (times 2 (Norm__norm (Complex__exp x1))) (Dist__dist y x1)) (times (times 2 (Norm__norm (Complex__exp x1))) (Norm__norm (minus y x1))) (congrArg Real (Elem Real -> Prop) (Dist__dist (Complex__exp y) (Complex__exp x1)) (Norm__norm (minus (Complex__exp y) (Complex__exp x1))) Leq (dist_eq_norm Complex (Complex__exp y) (Complex__exp x1))) (congrArg Real Real (Dist__dist y x1) (Norm__norm (minus y x1)) (times (times 2 (Norm__norm (Complex__exp x1)))) (dist_eq_norm Complex y x1))))) (Eq__mp (implies_congr (Lt (Norm__norm (minus y x1)) 1) (Lt (Norm__norm (minus y x1)) 1) (Leq (Norm__norm (minus (Complex__exp y) (Complex__exp x1))) (times (times (plus 1 1) (Norm__norm (Complex__exp x1))) (Norm__norm (minus y x1)))) (Leq (Norm__norm (minus (Complex__exp y) (Complex__exp x1))) (times (times 2 (Norm__norm (Complex__exp x1))) (Norm__norm (minus y x1)))) (Eq__refl (Lt (Norm__norm (minus y x1)) 1)) (congrArg Real Prop (times (times (plus 1 1) (Norm__norm (Complex__exp x1))) (Norm__norm (minus y x1))) (times (times 2 (Norm__norm (Complex__exp x1))) (Norm__norm (minus y x1))) (Leq (Norm__norm (minus (Complex__exp y) (Complex__exp x1)))) (congrFun' Real Real (times (times (plus 1 1) (Norm__norm (Complex__exp x1)))) (times (times 2 (Norm__norm (Complex__exp x1)))) (congrArg Real (Elem Real -> Real) (times (plus 1 1) (Norm__norm (Complex__exp x1))) (times 2 (Norm__norm (Complex__exp x1))) times (congrFun' Real Real (times (plus 1 1)) (times 2) (congrArg Real (Elem Real -> Real) (plus 1 1) 2 times (one_add_one_eq_two Real)) (Norm__norm (Complex__exp x1)))) (Norm__norm (minus y x1))))) (Complex__locally_lipschitz_exp 1 (zero_le_one Real) (le_rfl Real 1) x1 y))))).
+
+(; //LEAN:Complex.continuousOn_exp ;)
+def Complex__continuousOn_exp : (s : Elem (powerset Complex)) -> Proof (ContinuousOn Complex__exp s) :=
+  s => Continuous__continuousOn Complex Complex Complex__exp s Complex__continuous_exp.
+
+(; //LEAN:Complex.exp_sub_sum_range_isBigO_pow ;)
+Complex__exp_sub_sum_range_isBigO_pow : (n : Elem Nat) -> Proof (Asymptotics__IsBigO (nhds 0) (x => minus (Complex__exp x) (Finset__sum (Finset__range n) (i => div (pow x i) (factorial i)))) (x1 => pow x1 n)).
+
+(; //LEAN:Complex.exp_sub_sum_range_succ_isLittleO_pow ;)
+def Complex__exp_sub_sum_range_succ_isLittleO_pow : (n : Elem Nat) -> Proof (Asymptotics__IsLittleO (nhds 0) (x => minus (Complex__exp x) (Finset__sum (Finset__range (plus n 1)) (i => div (pow x i) (factorial i)))) (x1 => pow x1 n)) :=
+  n => Asymptotics__IsBigO__trans_isLittleO Complex Complex Complex Complex (nhds 0) (x => minus (Complex__exp x) (Finset__sum (Finset__range (plus n 1)) (i => div (pow x i) (factorial i)))) (x1 => pow x1 (plus n 1)) (x2 => pow x2 n) (Complex__exp_sub_sum_range_isBigO_pow (plus n 1)) (Asymptotics__isLittleO_pow_pow Complex n (plus n 1) (Nat__lt_succ_self n)).
+
+(; //LEAN:Filter.Tendsto.cexp ;)
+def Filter__Tendsto__cexp : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Complex)) -> (z : Elem Complex) -> (hf : Proof (Filter__Tendsto f l (nhds z))) -> Proof (Filter__Tendsto (x => Complex__exp (f x)) l (nhds (Complex__exp z))) :=
+  X => l => f => z => hf => Filter__Tendsto__comp X Complex Complex f Complex__exp l (nhds z) (nhds (Complex__exp z)) (Continuous__tendsto Complex Complex Complex__exp Complex__continuous_exp z) hf.
+
+(; //LEAN:ContinuousWithinAt.cexp ;)
+def ContinuousWithinAt__cexp : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Complex)) -> (s : Elem (powerset X)) -> (x1 : Elem X) -> (h : Proof (ContinuousWithinAt f s x1)) -> Proof (ContinuousWithinAt (y => Complex__exp (f y)) s x1) :=
+  X => x => f => s => x1 => h => Filter__Tendsto__cexp X (nhdsWithin x1 s) f (f x1) h.
+
+(; //LEAN:ContinuousAt.cexp ;)
+def ContinuousAt__cexp : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Complex)) -> (x1 : Elem X) -> (h : Proof (ContinuousAt f x1)) -> Proof (ContinuousAt (y => Complex__exp (f y)) x1) :=
+  X => x => f => x1 => h => Filter__Tendsto__cexp X (nhds x1) f (f x1) h.
+
+(; //LEAN:ContinuousOn.cexp ;)
+def ContinuousOn__cexp : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Complex)) -> (s : Elem (powerset X)) -> (h : Proof (ContinuousOn f s)) -> Proof (ContinuousOn (y => Complex__exp (f y)) s) :=
+  X => x => f => s => h => forallI X (x1 => if (Membership__mem s x1) (ContinuousWithinAt (y1 => Complex__exp (f y1)) s x1)) (x1 => ifI (Membership__mem s x1) (ContinuousWithinAt (y => Complex__exp (f y)) s x1) (hx => ContinuousWithinAt__cexp X f s x1 (ifE (Membership__mem s x1) (ContinuousWithinAt f s x1) (forallE X (x2 => if (Membership__mem s x2) (ContinuousWithinAt f s x2)) h x1) hx))).
+
+(; //LEAN:Continuous.cexp ;)
+def Continuous__cexp : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Complex)) -> (h : Proof (Continuous f)) -> Proof (Continuous (y => Complex__exp (f y))) :=
+  X => x => f => h => iffEr (Continuous (y => Complex__exp (f y))) (forall X (x1 => ContinuousAt (y1 => Complex__exp (f y1)) x1)) (continuous_iff_continuousAt X Complex (y2 => Complex__exp (f y2))) (x2 => ContinuousAt__cexp X f x2 (Continuous__continuousAt X Complex f x2 h)).
+
+(; //LEAN:UniformContinuousOn.cexp ;)
+UniformContinuousOn__cexp : (a : Elem Real) -> Proof (UniformContinuousOn Complex__exp (Set__ofPred (x => Leq (Complex__re x) a))).
+
+(; //LEAN:Real.continuous_exp ;)
+Real__continuous_exp : Proof (Continuous Real__exp).
+
+(; //LEAN:Real.continuousOn_exp ;)
+Real__continuousOn_exp : (s : Elem (powerset Real)) -> Proof (ContinuousOn Real__exp s).
+
+(; //LEAN:Real.exp_sub_sum_range_isBigO_pow ;)
+Real__exp_sub_sum_range_isBigO_pow : (n : Elem Nat) -> Proof (Asymptotics__IsBigO (nhds 0) (x => minus (Real__exp x) (Finset__sum (Finset__range n) (i => div (pow x i) (factorial i)))) (x1 => pow x1 n)).
+
+(; //LEAN:Real.exp_sub_sum_range_succ_isLittleO_pow ;)
+def Real__exp_sub_sum_range_succ_isLittleO_pow : (n : Elem Nat) -> Proof (Asymptotics__IsLittleO (nhds 0) (x => minus (Real__exp x) (Finset__sum (Finset__range (plus n 1)) (i => div (pow x i) (factorial i)))) (x1 => pow x1 n)) :=
+  n => Asymptotics__IsBigO__trans_isLittleO Real Real Real Real (nhds 0) (x => minus (Real__exp x) (Finset__sum (Finset__range (plus n 1)) (i => div (pow x i) (factorial i)))) (x1 => pow x1 (plus n 1)) (x2 => pow x2 n) (Real__exp_sub_sum_range_isBigO_pow (plus n 1)) (Asymptotics__isLittleO_pow_pow Real n (plus n 1) (Nat__lt_succ_self n)).
+
+(; //LEAN:Filter.Tendsto.rexp ;)
+def Filter__Tendsto__rexp : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Real)) -> (z : Elem Real) -> (hf : Proof (Filter__Tendsto f l (nhds z))) -> Proof (Filter__Tendsto (x => Real__exp (f x)) l (nhds (Real__exp z))) :=
+  X => l => f => z => hf => Filter__Tendsto__comp X Real Real f Real__exp l (nhds z) (nhds (Real__exp z)) (Continuous__tendsto Real Real Real__exp Real__continuous_exp z) hf.
+
+(; //LEAN:ContinuousWithinAt.rexp ;)
+def ContinuousWithinAt__rexp : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Real)) -> (s : Elem (powerset X)) -> (x1 : Elem X) -> (h : Proof (ContinuousWithinAt f s x1)) -> Proof (ContinuousWithinAt (y => Real__exp (f y)) s x1) :=
+  X => x => f => s => x1 => h => Filter__Tendsto__rexp X (nhdsWithin x1 s) f (f x1) h.
+
+(; //LEAN:ContinuousAt.rexp ;)
+def ContinuousAt__rexp : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Real)) -> (x1 : Elem X) -> (h : Proof (ContinuousAt f x1)) -> Proof (ContinuousAt (y => Real__exp (f y)) x1) :=
+  X => x => f => x1 => h => Filter__Tendsto__rexp X (nhds x1) f (f x1) h.
+
+(; //LEAN:ContinuousOn.rexp ;)
+def ContinuousOn__rexp : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Real)) -> (s : Elem (powerset X)) -> (h : Proof (ContinuousOn f s)) -> Proof (ContinuousOn (y => Real__exp (f y)) s) :=
+  X => x => f => s => h => forallI X (x1 => if (Membership__mem s x1) (ContinuousWithinAt (y1 => Real__exp (f y1)) s x1)) (x1 => ifI (Membership__mem s x1) (ContinuousWithinAt (y => Real__exp (f y)) s x1) (hx => ContinuousWithinAt__rexp X f s x1 (ifE (Membership__mem s x1) (ContinuousWithinAt f s x1) (forallE X (x2 => if (Membership__mem s x2) (ContinuousWithinAt f s x2)) h x1) hx))).
+
+(; //LEAN:Continuous.rexp ;)
+def Continuous__rexp : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Real)) -> (h : Proof (Continuous f)) -> Proof (Continuous (y => Real__exp (f y))) :=
+  X => x => f => h => iffEr (Continuous (y => Real__exp (f y))) (forall X (x1 => ContinuousAt (y1 => Real__exp (f y1)) x1)) (continuous_iff_continuousAt X Real (y2 => Real__exp (f y2))) (x2 => ContinuousAt__rexp X f x2 (Continuous__continuousAt X Real f x2 h)).
+
+(; //LEAN:Real.exp_half ;)
+Real__exp_half : (x : Elem Real) -> Proof (Eq (Real__exp (div x 2)) (Real__sqrt (Real__exp x))).
+
+(; //LEAN:Real.tendsto_exp_atTop ;)
+Real__tendsto_exp_atTop : Proof (Filter__Tendsto Real__exp Filter__atTop Filter__atTop).
+
+(; //LEAN:Real.mul_exp_neg_le_exp_neg_one ;)
+Real__mul_exp_neg_le_exp_neg_one : (y : Elem Real) -> Proof (Leq (times y (Real__exp (Neg__neg y))) (Real__exp (Neg__neg 1))).
+
+(; //LEAN:Real.tendsto_exp_neg_atTop_nhds_zero ;)
+def Real__tendsto_exp_neg_atTop_nhds_zero : Proof (Filter__Tendsto (x => Real__exp (Neg__neg x)) Filter__atTop (nhds 0)) :=
+  Filter__Tendsto__congr Real Real (x => Inv__inv (Real__exp x)) (x1 => Real__exp (Neg__neg x1)) Filter__atTop (nhds 0) (forallI Real (x2 => Eq (Inv__inv (Real__exp x2)) (Real__exp (Neg__neg x2))) (x2 => Eq__symm Real (Real__exp (Neg__neg x2)) (Inv__inv (Real__exp x2)) (Real__exp_neg x2))) (Filter__Tendsto__comp Real Real Real Real__exp (r => Inv__inv r) Filter__atTop Filter__atTop (nhds 0) (tendsto_inv_atTop_zero Real) Real__tendsto_exp_atTop).
+
+(; //LEAN:Real.tendsto_exp_nhds_zero_nhds_one ;)
+Real__tendsto_exp_nhds_zero_nhds_one : Proof (Filter__Tendsto Real__exp (nhds 0) (nhds 1)).
+
+(; //LEAN:Real.tendsto_exp_atBot ;)
+def Real__tendsto_exp_atBot : Proof (Filter__Tendsto Real__exp Filter__atBot (nhds 0)) :=
+  Filter__Tendsto__congr Real Real (x => Real__exp (Mathlib__Tactic__TermCongr__cHole (Neg__neg (Neg__neg x)) (neg_neg Real x))) Real__exp Filter__atBot (nhds 0) (forallI Real (x1 => Eq (Real__exp (Mathlib__Tactic__TermCongr__cHole (Neg__neg (Neg__neg x1)) (neg_neg Real x1))) (Real__exp x1)) (x1 => id (congrArg Real Real (Neg__neg (Neg__neg x1)) x1 Real__exp (neg_neg Real x1)))) (Filter__Tendsto__comp Real Real Real Neg__neg (x2 => Real__exp (Neg__neg x2)) Filter__atBot Filter__atTop (nhds 0) Real__tendsto_exp_neg_atTop_nhds_zero (Filter__tendsto_neg_atBot_atTop Real)).
+
+(; //LEAN:Real.tendsto_exp_atBot_nhdsGT ;)
+def Real__tendsto_exp_atBot_nhdsGT : Proof (Filter__Tendsto Real__exp Filter__atBot (nhdsWithin 0 (Set__Ioi 0))) :=
+  iffEr (Filter__Tendsto Real__exp Filter__atBot (Min__min (nhds 0) (Filter__principal (Set__Ioi 0)))) (and (Filter__Tendsto Real__exp Filter__atBot (nhds 0)) (Filter__Tendsto Real__exp Filter__atBot (Filter__principal (Set__Ioi 0)))) (Filter__tendsto_inf Real Real Real__exp Filter__atBot (nhds 0) (Filter__principal (Set__Ioi 0))) (andI (Filter__Tendsto Real__exp Filter__atBot (nhds 0)) (Filter__Tendsto Real__exp Filter__atBot (Filter__principal (Set__Ioi 0))) Real__tendsto_exp_atBot (iffEr (Filter__Tendsto Real__exp Filter__atBot (Filter__principal (Set__Ioi 0))) (Filter__Eventually (a => Membership__mem (Set__Ioi 0) (Real__exp a)) Filter__atBot) (Filter__tendsto_principal Real Real Real__exp Filter__atBot (Set__Ioi 0)) (Filter__Eventually__of_forall Real (a1 => Membership__mem (Set__Ioi 0) (Real__exp a1)) Filter__atBot Real__exp_pos))).
+
+(; //LEAN:Real.isBoundedUnder_ge_exp_comp ;)
+def Real__isBoundedUnder_ge_exp_comp : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Real)) -> Proof (Filter__IsBoundedUnder (x => x1 => Geq x x1) l (x2 => Real__exp (f x2))) :=
+  X => l => f => Filter__isBoundedUnder_of Real X (x => x1 => Geq x x1) l (x2 => Real__exp (f x2)) (existsI Real (b => forall X (x3 => Geq (Real__exp (f x3)) b)) 0 (x4 => LT__lt__le Real 0 (Real__exp (f x4)) (Real__exp_pos (f x4)))).
+
+(; //LEAN:Real.isBoundedUnder_le_exp_comp ;)
+def Real__isBoundedUnder_le_exp_comp : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Real)) -> Proof (iff (Filter__IsBoundedUnder (x => x1 => Leq x x1) l (x2 => Real__exp (f x2))) (Filter__IsBoundedUnder (x3 => x4 => Leq x3 x4) l f)) :=
+  X => l => f => Monotone__isBoundedUnder_le_comp_iff X Real Real Real__exp f l Real__exp_monotone Real__tendsto_exp_atTop.
+
+(; //LEAN:Real.tendsto_exp_div_pow_atTop ;)
+Real__tendsto_exp_div_pow_atTop : (n : Elem Nat) -> Proof (Filter__Tendsto (x => div (Real__exp x) (pow x n)) Filter__atTop Filter__atTop).
+
+(; //LEAN:Real.tendsto_pow_mul_exp_neg_atTop_nhds_zero ;)
+def Real__tendsto_pow_mul_exp_neg_atTop_nhds_zero : (n : Elem Nat) -> Proof (Filter__Tendsto (x => times (pow x n) (Real__exp (Neg__neg x))) Filter__atTop (nhds 0)) :=
+  n => Filter__Tendsto__congr Real Real (Function__comp (r => Inv__inv r) (x => div (Real__exp x) (pow x n))) (x1 => times (pow x1 n) (Real__exp (Neg__neg x1))) Filter__atTop (nhds 0) (forallI Real (x2 => Eq (Function__comp (r3 => Inv__inv r3) (x5 => div (Real__exp x5) (pow x5 n)) x2) (times (pow x2 n) (Real__exp (Neg__neg x2)))) (x2 => Eq__mpr (id (congrArg Real Prop (Function__comp (r1 => Inv__inv r1) (x3 => div (Real__exp x3) (pow x3 n)) x2) (Inv__inv (div (Real__exp x2) (pow x2 n))) (_a => Eq _a (times (pow x2 n) (Real__exp (Neg__neg x2)))) (Function__comp_apply Real Real Real (r2 => Inv__inv r2) (x4 => div (Real__exp x4) (pow x4 n)) x2))) (Eq__mpr (id (congrArg Real Prop (Inv__inv (div (Real__exp x2) (pow x2 n))) (div 1 (div (Real__exp x2) (pow x2 n))) (_a1 => Eq _a1 (times (pow x2 n) (Real__exp (Neg__neg x2)))) (inv_eq_one_div Real (div (Real__exp x2) (pow x2 n))))) (Eq__mpr (id (congrArg Real Prop (div 1 (div (Real__exp x2) (pow x2 n))) (div (times 1 (pow x2 n)) (Real__exp x2)) (_a2 => Eq _a2 (times (pow x2 n) (Real__exp (Neg__neg x2)))) (div_div_eq_mul_div Real 1 (Real__exp x2) (pow x2 n)))) (Eq__mpr (id (congrArg Real Prop (times 1 (pow x2 n)) (pow x2 n) (_a3 => Eq (div _a3 (Real__exp x2)) (times (pow x2 n) (Real__exp (Neg__neg x2)))) (one_mul Real (pow x2 n)))) (Eq__mpr (id (congrArg Real Prop (div (pow x2 n) (Real__exp x2)) (times (pow x2 n) (Inv__inv (Real__exp x2))) (_a4 => Eq _a4 (times (pow x2 n) (Real__exp (Neg__neg x2)))) (div_eq_mul_inv Real (pow x2 n) (Real__exp x2)))) (Eq__mpr (id (congrArg Real Prop (Real__exp (Neg__neg x2)) (Inv__inv (Real__exp x2)) (_a5 => Eq (times (pow x2 n) (Inv__inv (Real__exp x2))) (times (pow x2 n) _a5)) (Real__exp_neg x2))) (Eq__refl (times (pow x2 n) (Inv__inv (Real__exp x2))))))))))) (Filter__Tendsto__comp Real Real Real (x6 => div (Real__exp x6) (pow x6 n)) (r4 => Inv__inv r4) Filter__atTop Filter__atTop (nhds 0) (tendsto_inv_atTop_zero Real) (Real__tendsto_exp_div_pow_atTop n)).
+
+(; //LEAN:Real.tendsto_mul_exp_add_div_pow_atTop ;)
+Real__tendsto_mul_exp_add_div_pow_atTop : (b : Elem Real) -> (c : Elem Real) -> (n : Elem Nat) -> (hb : Proof (Lt 0 b)) -> Proof (Filter__Tendsto (x => div (plus (times b (Real__exp x)) c) (pow x n)) Filter__atTop Filter__atTop).
+
+(; //LEAN:Real.tendsto_div_pow_mul_exp_add_atTop ;)
+Real__tendsto_div_pow_mul_exp_add_atTop : (b : Elem Real) -> (c : Elem Real) -> (n : Elem Nat) -> (hb : Proof (Neq 0 b)) -> Proof (Filter__Tendsto (x => div (pow x n) (plus (times b (Real__exp x)) c)) Filter__atTop (nhds 0)).
+
+(; //LEAN:Real.expOrderIso ;)
+def Real__expOrderIso : Elem (OrderIso Real (Set__Elem (Set__Ioi 0))) :=
+  StrictMono__orderIsoOfSurjective (Set__codRestrict Real__exp (Set__Ioi 0) Real__expOrderIso___proof_1) Real__expOrderIso___proof_3 Real__expOrderIso___proof_5.
+
+(; //LEAN:Real.coe_expOrderIso_apply ;)
+def Real__coe_expOrderIso_apply : (x : Elem Real) -> Proof (Eq (Real__expOrderIso__app x) (Real__exp x)) :=
+  x => rfl.
+
+(; //LEAN:Real.coe_comp_expOrderIso ;)
+def Real__coe_comp_expOrderIso : Proof (Eqt (Elem Real -> Real) (Function__comp (x1 => Membership__mem (Set__Ioi 0) x1) Real__expOrderIso) Real__exp) :=
+  rfl.
+
+(; //LEAN:Real.range_exp ;)
+Real__range_exp : Proof (Eqt (powerset Real) (Set__range Real__exp) (Set__Ioi 0)).
+
+(; //LEAN:Real.image_exp_Ioi ;)
+def Real__image_exp_Ioi : (a : Elem Real) -> Proof (Eqt (powerset Real) (Set__image Real__exp (Set__Ioi a)) (Set__Ioi (Real__exp a))) :=
+  a => ContinuousOn__image_Ioi_of_strictMonoOn Real Real a Real__exp (Continuous__continuousOn Real Real Real__exp (Set__Ici a) Real__continuous_exp) (StrictMono__strictMonoOn Real Real Real__exp Real__exp_strictMono (Set__Ici a)) Real__tendsto_exp_atTop.
+
+(; //LEAN:Real.image_exp_Ici ;)
+def Real__image_exp_Ici : (a : Elem Real) -> Proof (Eqt (powerset Real) (Set__image Real__exp (Set__Ici a)) (Set__Ici (Real__exp a))) :=
+  a => ContinuousOn__image_Ici_of_monotoneOn Real Real a Real__exp (Continuous__continuousOn Real Real Real__exp (Set__Ici a) Real__continuous_exp) (Monotone__monotoneOn Real Real Real__exp (StrictMono__monotone Real Real Real__exp Real__exp_strictMono) (Set__Ici a)) Real__tendsto_exp_atTop.
+
+(; //LEAN:Real.image_exp_Icc ;)
+def Real__image_exp_Icc : (a : Elem Real) -> (b : Elem Real) -> Proof (Eqt (powerset Real) (Set__image Real__exp (Set__Icc a b)) (Set__Icc (Real__exp a) (Real__exp b))) :=
+  a => b => Continuous__image_Icc_of_strictMono Real Real a b Real__exp Real__continuous_exp Real__exp_strictMono.
+
+(; //LEAN:Real.image_exp_Ico ;)
+def Real__image_exp_Ico : (a : Elem Real) -> (b : Elem Real) -> Proof (Eqt (powerset Real) (Set__image Real__exp (Set__Ico a b)) (Set__Ico (Real__exp a) (Real__exp b))) :=
+  a => b => Continuous__image_Ico_of_strictMono Real Real a b Real__exp Real__continuous_exp Real__exp_strictMono.
+
+(; //LEAN:Real.image_exp_Ioc ;)
+def Real__image_exp_Ioc : (a : Elem Real) -> (b : Elem Real) -> Proof (Eqt (powerset Real) (Set__image Real__exp (Set__Ioc a b)) (Set__Ioc (Real__exp a) (Real__exp b))) :=
+  a => b => Continuous__image_Ioc_of_strictMono Real Real a b Real__exp Real__continuous_exp Real__exp_strictMono.
+
+(; //LEAN:Real.image_exp_Ioo ;)
+def Real__image_exp_Ioo : (a : Elem Real) -> (b : Elem Real) -> Proof (Eqt (powerset Real) (Set__image Real__exp (Set__Ioo a b)) (Set__Ioo (Real__exp a) (Real__exp b))) :=
+  a => b => Continuous__image_Ioo_of_strictMono Real Real a b Real__exp Real__continuous_exp Real__exp_strictMono.
+
+(; //LEAN:Real.image_exp_uIcc ;)
+def Real__image_exp_uIcc : (a : Elem Real) -> (b : Elem Real) -> Proof (Eqt (powerset Real) (Set__image Real__exp (Set__uIcc a b)) (Set__uIcc (Real__exp a) (Real__exp b))) :=
+  a => b => ContinuousOn__image_uIcc_of_monotoneOn Real Real a b Real__exp (Continuous__continuousOn Real Real Real__exp (Set__uIcc a b) Real__continuous_exp) (Monotone__monotoneOn Real Real Real__exp (StrictMono__monotone Real Real Real__exp Real__exp_strictMono) (Set__uIcc a b)).
+
+(; //LEAN:Real.image_exp_Iio ;)
+Real__image_exp_Iio : (a : Elem Real) -> Proof (Eqt (powerset Real) (Set__image Real__exp (Set__Iio a)) (Set__Ioo 0 (Real__exp a))).
+
+(; //LEAN:Real.image_exp_Iic ;)
+Real__image_exp_Iic : (a : Elem Real) -> Proof (Eqt (powerset Real) (Set__image Real__exp (Set__Iic a)) (Set__Ioc 0 (Real__exp a))).
+
+(; //LEAN:Real.map_exp_atTop ;)
+Real__map_exp_atTop : Proof (Eqt (Filter Real) (Filter__map Real__exp Filter__atTop) Filter__atTop).
+
+(; //LEAN:Real.comap_exp_atTop ;)
+Real__comap_exp_atTop : Proof (Eqt (Filter Real) (Filter__comap Real__exp Filter__atTop) Filter__atTop).
+
+(; //LEAN:Real.tendsto_exp_comp_atTop ;)
+Real__tendsto_exp_comp_atTop : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Real)) -> Proof (iff (Filter__Tendsto (x => Real__exp (f x)) l Filter__atTop) (Filter__Tendsto f l Filter__atTop)).
+
+(; //LEAN:Real.tendsto_comp_exp_atTop ;)
+Real__tendsto_comp_exp_atTop : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem Real -> X)) -> Proof (iff (Filter__Tendsto (x => f (Real__exp x)) Filter__atTop l) (Filter__Tendsto f Filter__atTop l)).
+
+(; //LEAN:Real.map_exp_atBot ;)
+Real__map_exp_atBot : Proof (Eqt (Filter Real) (Filter__map Real__exp Filter__atBot) (nhdsWithin 0 (Set__Ioi 0))).
+
+(; //LEAN:Real.comap_exp_nhdsGT_zero ;)
+Real__comap_exp_nhdsGT_zero : Proof (Eqt (Filter Real) (Filter__comap Real__exp (nhdsWithin 0 (Set__Ioi 0))) Filter__atBot).
+
+(; //LEAN:Real.tendsto_comp_exp_atBot ;)
+Real__tendsto_comp_exp_atBot : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem Real -> X)) -> Proof (iff (Filter__Tendsto (x => f (Real__exp x)) Filter__atBot l) (Filter__Tendsto f (nhdsWithin 0 (Set__Ioi 0)) l)).
+
+(; //LEAN:Real.comap_exp_nhds_zero ;)
+def Real__comap_exp_nhds_zero : Proof (Eqt (Filter Real) (Filter__comap Real__exp (nhds 0)) Filter__atBot) :=
+  Eq__trans (Filter Real) (Filter__comap Real__exp (nhds 0)) (Filter__comap Real__exp (nhdsWithin 0 (Set__range Real__exp))) Filter__atBot (Eq__symm (Filter Real) (Filter__comap Real__exp (nhdsWithin 0 (Set__range Real__exp))) (Filter__comap Real__exp (nhds 0)) (comap_nhdsWithin_range Real Real Real__exp 0)) (of_eq_true (Eqt (Filter Real) (Filter__comap Real__exp (nhdsWithin 0 (Set__range Real__exp))) Filter__atBot) (Eq__trans Prop (Eqt (Filter Real) (Filter__comap Real__exp (nhdsWithin 0 (Set__range Real__exp))) Filter__atBot) (Eqt (Filter Real) Filter__atBot Filter__atBot) True (congrFun' (Filter Real) Prop (Eq (Filter__comap Real__exp (nhdsWithin 0 (Set__range Real__exp)))) (Eq Filter__atBot) (congrArg (Filter Real) (Elem (Filter Real) -> Prop) (Filter__comap Real__exp (nhdsWithin 0 (Set__range Real__exp))) Filter__atBot Eq (Eq__trans (Filter Real) (Filter__comap Real__exp (nhdsWithin 0 (Set__range Real__exp))) (Filter__comap Real__exp (nhdsWithin 0 (Set__Ioi 0))) Filter__atBot (congrArg (Filter Real) (Filter Real) (nhdsWithin 0 (Set__range Real__exp)) (nhdsWithin 0 (Set__Ioi 0)) (Filter__comap Real__exp) (congrArg (powerset Real) (Filter Real) (Set__range Real__exp) (Set__Ioi 0) (nhdsWithin 0) Real__range_exp)) Real__comap_exp_nhdsGT_zero)) Filter__atBot) (eq_self (Filter Real) Filter__atBot))).
+
+(; //LEAN:Real.tendsto_exp_comp_nhds_zero ;)
+Real__tendsto_exp_comp_nhds_zero : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Real)) -> Proof (iff (Filter__Tendsto (x => Real__exp (f x)) l (nhds 0)) (Filter__Tendsto f l Filter__atBot)).
+
+(; //LEAN:Real.isOpenEmbedding_exp ;)
+def Real__isOpenEmbedding_exp : Proof (Topology__IsOpenEmbedding Real__exp) :=
+  Topology__IsOpenEmbedding__comp Real (Subtype (x => Membership__mem (Set__Ioi 0) x)) Real (OrderIso__toHomeomorph Real__expOrderIso) (x1 => Membership__mem (Set__Ioi 0) x1) (IsOpen__isOpenEmbedding_subtypeVal Real (Set__Ioi 0) (isOpen_Ioi Real 0)) (Homeomorph__isOpenEmbedding Real (Set__Elem (Set__Ioi 0)) (OrderIso__toHomeomorph Real__expOrderIso)).
+
+(; //LEAN:Real.map_exp_nhds ;)
+def Real__map_exp_nhds : (x : Elem Real) -> Proof (Eqt (Filter Real) (Filter__map Real__exp (nhds x)) (nhds (Real__exp x))) :=
+  x => Topology__IsOpenEmbedding__map_nhds_eq Real Real Real__exp Real__isOpenEmbedding_exp x.
+
+(; //LEAN:Real.comap_exp_nhds_exp ;)
+def Real__comap_exp_nhds_exp : (x : Elem Real) -> Proof (Eqt (Filter Real) (Filter__comap Real__exp (nhds (Real__exp x))) (nhds x)) :=
+  x => Eq__symm (Filter Real) (nhds x) (Filter__comap Real__exp (nhds (Real__exp x))) (Topology__IsInducing__nhds_eq_comap Real Real Real__exp (Topology__IsEmbedding__toIsInducing Real Real Real__exp (Topology__IsOpenEmbedding__toIsEmbedding Real Real Real__exp Real__isOpenEmbedding_exp)) x).
+
+(; //LEAN:Real.isLittleO_pow_exp_atTop ;)
+Real__isLittleO_pow_exp_atTop : (n : Elem Nat) -> Proof (Asymptotics__IsLittleO Filter__atTop (x => pow x n) Real__exp).
+
+(; //LEAN:Real.isBigO_exp_comp_exp_comp ;)
+Real__isBigO_exp_comp_exp_comp : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Real)) -> (g : (Elem X -> Real)) -> Proof (iff (Asymptotics__IsBigO l (x => Real__exp (f x)) (x1 => Real__exp (g x1))) (Filter__IsBoundedUnder (x2 => x3 => Leq x2 x3) l (minus f g))).
+
+(; //LEAN:Real.isTheta_exp_comp_exp_comp ;)
+Real__isTheta_exp_comp_exp_comp : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Real)) -> (g : (Elem X -> Real)) -> Proof (iff (Asymptotics__IsTheta l (x => Real__exp (f x)) (x1 => Real__exp (g x1))) (Filter__IsBoundedUnder (x2 => x3 => Leq x2 x3) l (x4 => abs (minus (f x4) (g x4))))).
+
+(; //LEAN:Real.isLittleO_exp_comp_exp_comp ;)
+Real__isLittleO_exp_comp_exp_comp : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Real)) -> (g : (Elem X -> Real)) -> Proof (iff (Asymptotics__IsLittleO l (x => Real__exp (f x)) (x1 => Real__exp (g x1))) (Filter__Tendsto (x2 => minus (g x2) (f x2)) l Filter__atTop)).
+
+(; //LEAN:Real.isLittleO_one_exp_comp ;)
+Real__isLittleO_one_exp_comp : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Real)) -> Proof (iff (Asymptotics__IsLittleO l (x => 1) (x1 => Real__exp (f x1))) (Filter__Tendsto f l Filter__atTop)).
+
+(; //LEAN:Real.isBigO_one_exp_comp ;)
+Real__isBigO_one_exp_comp : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Real)) -> Proof (iff (Asymptotics__IsBigO l (x => 1) (x1 => Real__exp (f x1))) (Filter__IsBoundedUnder (x2 => x3 => Geq x2 x3) l f)).
+
+(; //LEAN:Real.isBigO_exp_comp_one ;)
+Real__isBigO_exp_comp_one : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Real)) -> Proof (iff (Asymptotics__IsBigO l (x => Real__exp (f x)) (x1 => 1)) (Filter__IsBoundedUnder (x2 => x3 => Leq x2 x3) l f)).
+
+(; //LEAN:Real.isTheta_exp_comp_one ;)
+Real__isTheta_exp_comp_one : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Real)) -> Proof (iff (Asymptotics__IsTheta l (x => Real__exp (f x)) (x1 => 1)) (Filter__IsBoundedUnder (x2 => x3 => Leq x2 x3) l (x4 => abs (f x4)))).
+
+(; //LEAN:Real.summable_exp_nat_mul_iff ;)
+Real__summable_exp_nat_mul_iff : (a : Elem Real) -> Proof (iff (Summable (n => Real__exp (times n a)) (SummationFilter__unconditional Nat)) (Lt a 0)).
+
+(; //LEAN:Real.summable_exp_neg_nat ;)
+Real__summable_exp_neg_nat : Proof (Summable (n => Real__exp (Neg__neg n)) (SummationFilter__unconditional Nat)).
+
+(; //LEAN:Real.summable_exp_nat_mul_of_ge ;)
+Real__summable_exp_nat_mul_of_ge : (c : Elem Real) -> (hc : Proof (Lt c 0)) -> (f : (Elem Nat -> Real)) -> (hf : Proof (forall Nat (i1 => Leq i1 (f i1)))) -> Proof (Summable (i => Real__exp (times c (f i))) (SummationFilter__unconditional Nat)).
+
+(; //LEAN:Real.summable_pow_mul_exp_neg_nat_mul ;)
+Real__summable_pow_mul_exp_neg_nat_mul : (k : Elem Nat) -> (r : Elem Real) -> (hr : Proof (Lt 0 r)) -> Proof (Summable (n => times (pow n k) (Real__exp (times (Neg__neg r) n))) (SummationFilter__unconditional Nat)).
+
+(; //LEAN:HasSum.rexp ;)
+def HasSum__rexp : (I : Set) -> (f : (Elem I -> Real)) -> (a : Elem Real) -> (h : Proof (HasSum f a (SummationFilter__unconditional I))) -> Proof (HasProd (Function__comp Real__exp f) (Real__exp a) (SummationFilter__unconditional I)) :=
+  I => f => a => h => Filter__Tendsto__congr (Finset I) Real (s => Real__exp (Finset__sum s (x => f x))) (s1 => Finset__prod s1 (b => Function__comp Real__exp f b)) (SummationFilter__filter (SummationFilter__unconditional I)) (nhds (Real__exp a)) (forallI (Finset I) (s2 => Eq (Real__exp (Finset__sum s2 (x1 => f x1))) (Finset__prod s2 (x2 => Real__exp (f x2)))) (s2 => Real__exp_sum I s2 f)) (Filter__Tendsto__rexp (Finset I) (SummationFilter__filter (SummationFilter__unconditional I)) (s3 => Finset__sum s3 (x3 => f x3)) a h).
+
+(; //LEAN:Complex.comap_exp_cobounded ;)
+Complex__comap_exp_cobounded : Proof (Eqt (Filter Complex) (Filter__comap Complex__exp (Bornology__cobounded Complex)) (Filter__comap Complex__re Filter__atTop)).
+
+(; //LEAN:Complex.comap_exp_nhds_zero ;)
+def Complex__comap_exp_nhds_zero : Proof (Eqt (Filter Complex) (Filter__comap Complex__exp (nhds 0)) (Filter__comap Complex__re Filter__atBot)) :=
+  Trans__trans (Eq__mpr (id (congrArg (Filter Complex) Prop (nhds 0) (Filter__comap Norm__norm (nhds 0)) (_a => Eqt (Filter Complex) (Filter__comap Complex__exp _a) (Filter__comap Complex__re (Filter__comap Real__exp (nhds 0)))) (Eq__symm (Filter Complex) (Filter__comap Norm__norm (nhds 0)) (nhds 0) (comap_norm_nhds_zero Complex)))) (Eq__mpr (id (congrArg (Filter Complex) Prop (Filter__comap Complex__exp (Filter__comap Norm__norm (nhds 0))) (Filter__comap (Function__comp Norm__norm Complex__exp) (nhds 0)) (_a1 => Eqt (Filter Complex) _a1 (Filter__comap Complex__re (Filter__comap Real__exp (nhds 0)))) (Filter__comap_comap Real Complex Complex (nhds 0) Complex__exp Norm__norm))) (Eq__mpr (id (congrArg (Elem Complex -> Real) Prop (Function__comp Norm__norm Complex__exp) (x1 => Norm__norm (Complex__exp x1)) (_a2 => Eqt (Filter Complex) (Filter__comap _a2 (nhds 0)) (Filter__comap Complex__re (Filter__comap Real__exp (nhds 0)))) (Function__comp_def Complex Complex Real Norm__norm Complex__exp))) (Eq__mpr (id (congrFun' (Filter Complex) Prop (Eq (Filter__comap (x2 => Norm__norm (Complex__exp x2)) (nhds 0))) (Eq (Filter__comap (x3 => Real__exp (Complex__re x3)) (nhds 0))) (congrArg (Filter Complex) (Elem (Filter Complex) -> Prop) (Filter__comap (x5 => Norm__norm (Complex__exp x5)) (nhds 0)) (Filter__comap (x6 => Real__exp (Complex__re x6)) (nhds 0)) Eq (congrFun' (Filter Real) (Filter Complex) (Filter__comap (x7 => Norm__norm (Complex__exp x7))) (Filter__comap (x8 => Real__exp (Complex__re x8))) (congrArg (Elem Complex -> Real) (Elem (Filter Real) -> Filter Complex) (x10 => Norm__norm (Complex__exp x10)) (x11 => Real__exp (Complex__re x11)) Filter__comap (funext Complex (x12 => Real) (x13 => Norm__norm (Complex__exp x13)) (x14 => Real__exp (Complex__re x14)) (forallI Complex (x15 => Eq (Norm__norm (Complex__exp x15)) (Real__exp (Complex__re x15))) (x15 => Complex__norm_exp x15)))) (nhds 0))) (Filter__comap Complex__re (Filter__comap Real__exp (nhds 0))))) (Eq__mpr (id (congrArg (Filter Complex) Prop (Filter__comap Complex__re (Filter__comap Real__exp (nhds 0))) (Filter__comap (Function__comp Real__exp Complex__re) (nhds 0)) (Eq (Filter__comap (x16 => Real__exp (Complex__re x16)) (nhds 0))) (Filter__comap_comap Real Real Complex (nhds 0) Complex__re Real__exp))) (of_eq_true (Eqt (Filter Complex) (Filter__comap (x17 => Real__exp (Complex__re x17)) (nhds 0)) (Filter__comap (x18 => Real__exp (Complex__re x18)) (nhds 0))) (eq_self (Filter Complex) (Filter__comap (x19 => Real__exp (Complex__re x19)) (nhds 0))))))))) (Eq__mpr (id (congrArg (Filter Real) Prop (Filter__comap Real__exp (nhds 0)) Filter__atBot (_a3 => Eqt (Filter Complex) (Filter__comap Complex__re _a3) (Filter__comap Complex__re Filter__atBot)) Real__comap_exp_nhds_zero)) (Eq__refl (Filter__comap Complex__re Filter__atBot))).
+
+(; //LEAN:Complex.comap_exp_nhdsNE ;)
+Complex__comap_exp_nhdsNE : Proof (Eqt (Filter Complex) (Filter__comap Complex__exp (nhdsWithin 0 (Compl__compl (Singleton__singleton 0)))) (Filter__comap Complex__re Filter__atBot)).
+
+(; //LEAN:Complex.tendsto_exp_nhds_zero_iff ;)
+Complex__tendsto_exp_nhds_zero_iff : (X : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Complex)) -> Proof (iff (Filter__Tendsto (x => Complex__exp (f x)) l (nhds 0)) (Filter__Tendsto (x1 => Complex__re (f x1)) l Filter__atBot)).
+
+(; //LEAN:Complex.tendsto_exp_comap_re_atTop ;)
+Complex__tendsto_exp_comap_re_atTop : Proof (Filter__Tendsto Complex__exp (Filter__comap Complex__re Filter__atTop) (Bornology__cobounded Complex)).
+
+(; //LEAN:Complex.tendsto_exp_comap_re_atBot ;)
+Complex__tendsto_exp_comap_re_atBot : Proof (Filter__Tendsto Complex__exp (Filter__comap Complex__re Filter__atBot) (nhds 0)).
+
+(; //LEAN:Complex.tendsto_exp_comap_re_atBot_nhdsNE ;)
+Complex__tendsto_exp_comap_re_atBot_nhdsNE : Proof (Filter__Tendsto Complex__exp (Filter__comap Complex__re Filter__atBot) (nhdsWithin 0 (Compl__compl (Singleton__singleton 0)))).
+
+(; //LEAN:HasSum.cexp ;)
+def HasSum__cexp : (I : Set) -> (f : (Elem I -> Complex)) -> (a : Elem Complex) -> (h : Proof (HasSum f a (SummationFilter__unconditional I))) -> Proof (HasProd (Function__comp Complex__exp f) (Complex__exp a) (SummationFilter__unconditional I)) :=
+  I => f => a => h => Filter__Tendsto__congr (Finset I) Complex (s => Complex__exp (Finset__sum s (x => f x))) (s1 => Finset__prod s1 (b => Function__comp Complex__exp f b)) (SummationFilter__filter (SummationFilter__unconditional I)) (nhds (Complex__exp a)) (forallI (Finset I) (s2 => Eqt Complex (Complex__exp (Finset__sum s2 (x1 => f x1))) (Finset__prod s2 (x2 => Complex__exp (f x2)))) (s2 => Complex__exp_sum I s2 f)) (Filter__Tendsto__cexp (Finset I) (SummationFilter__filter (SummationFilter__unconditional I)) (s3 => Finset__sum s3 (x3 => f x3)) a h).
+

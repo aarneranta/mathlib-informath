@@ -1,0 +1,1074 @@
+[
+ {
+  "name": "Ideal__pi_span",
+  "lean": "Ideal.pi_span",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (Membership__mem (Ideal__pi (x1 => Ideal__span (Singleton__singleton (r x1)))) x') (Membership__mem (Ideal__span (Singleton__singleton r)) x')",
+    "by": "ext",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Membership__mem (Ideal__pi (x1 => Ideal__span (Singleton__singleton (r x1)))) x') (Membership__mem (Ideal__span (Singleton__singleton r)) x')",
+    "by": "simp_rw [mem_pi, mem_span_singleton', funext_iff, Classical.skolem, Pi.mul_def]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Ideal__single_mem_pi",
+  "lean": "Ideal.single_mem_pi",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "j",
+      "Elem I"
+     ]
+    ],
+    "by": "intro j",
+    "depth": 1
+   },
+   {
+    "unit": "cases",
+    "by": "obtain rfl | ne := eq_or_ne i j",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (I i) (Pi__single i r i)",
+    "by": "simpa",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "ne",
+      "Proof (Neq i j)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (I j) (Pi__single i r j)",
+    "by": "simp [ne]",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Ideal__pi_le_pi_iff",
+  "lean": "Ideal.pi_le_pi_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (J i) r",
+    "by": "classical simpa using le (single_mem_pi hr) i",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (J i) r",
+    "by": "simpa using le (single_mem_pi hr) i",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Ideal__add_pow_mem_of_pow_mem_of_le_of_commute",
+  "lean": "Ideal.add_pow_mem_of_pow_mem_of_le_of_commute",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Membership__mem I (Finset__sum (Finset__range (plus k 1)) (x => times (Nat__choose k x) (times (pow a x) (pow b (minus k x)))))",
+    "by": "simp_rw [hab.add_pow, ← Nat.cast_comm]",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "forall Nat (c => if (Membership__mem (Finset__range (plus k 1)) c) (Membership__mem I (times (Nat__choose k c) (times (pow a c) (pow b (minus k c))))))",
+    "by": "apply I.sum_mem",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "c",
+      "Elem Nat"
+     ]
+    ],
+    "by": "intro c _",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem I (times (pow a c) (pow b (minus k c)))",
+    "by": "apply mul_mem_left",
+    "depth": 1
+   },
+   {
+    "unit": "cases",
+    "by": "by_cases h : m ≤ c",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Leq m c)"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem I (times (pow b (minus k c)) (pow a c))",
+    "by": "rw [hab.pow_pow]",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem I (times (pow b (minus k c)) (pow a c))",
+    "by": "exact I.mul_mem_left _ (I.pow_mem_of_pow_mem ha h)",
+    "depth": 2
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (not (Leq m c))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq n (minus k c)",
+    "by": "refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq n (minus k c)",
+    "by": "lia",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Ideal__pow_multiset_sum_mem_span_pow",
+  "lean": "Ideal.pow_multiset_sum_mem_span_pow",
+  "steps": [
+   {
+    "unit": "induction",
+    "by": "induction s using Multiset.induction_on with",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Ideal__span (Multiset__toFinset (Multiset__map (x => pow x (plus n 1)) 0))) (pow (Multiset__sum 0) (plus (times (Multiset__card 0) n) 1))",
+    "by": "simp",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Insert__insert (pow a (plus n 1)) (Multiset__toFinset (Multiset__map (x1 => pow x1 (plus n 1)) s)))) (Finset__sum (Finset__range (plus (plus (times (plus (Multiset__card s) 1) n) 1) 1)) (m => times (times (pow a m) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) m))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) m)))",
+    "by": "simp only [Finset.coe_insert, Multiset.map_cons, Multiset.toFinset_cons, Multiset.sum_cons,",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "forall Nat (c => if (Membership__mem (Finset__range (plus (plus (times (plus (Multiset__card s) 1) n) 1) 1)) c) (Membership__mem (Ideal__span (Insert__insert (pow a (plus n 1)) (Multiset__toFinset (Multiset__map (x1 => pow x1 (plus n 1)) s)))) (times (times (pow a c) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c))))",
+    "by": "refine Submodule.sum_mem _ ?_",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "c",
+      "Elem Nat"
+     ],
+     [
+      "_hc",
+      "Proof (Membership__mem (Finset__range (plus (plus (times (plus (Multiset__card s) 1) n) 1) 1)) c)"
+     ]
+    ],
+    "by": "intro c _hc",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists X (a => exists X (z => and (Membership__mem (Ideal__span (Multiset__toFinset (Multiset__map (x1 => pow x1 (plus n 1)) s))) z) (Eqt X (times (times (pow a c) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c)) (plus (times a (pow a (plus n 1))) z))))",
+    "by": "rw [mem_span_insert]",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Leq (plus n 1) c)"
+     ]
+    ],
+    "by": "by_cases! h : n + 1 ≤ c",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "and (exists X (a => exists X (z => and (Membership__mem (Ideal__span (Multiset__toFinset (Multiset__map (x1 => pow x1 (plus n 1)) s))) z) (Eqt X (times (times (pow a c) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c)) (plus (times a (pow a (plus n 1))) z))))) (exists X (a => exists X (z => and (Membership__mem (Ideal__span (Multiset__toFinset (Multiset__map (x1 => pow x1 (plus n 1)) s))) z) (Eqt X (times (times (pow a c) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c)) (plus (times a (pow a (plus n 1))) z)))))",
+    "by": "by_cases! h : n + 1 ≤ c",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Leq (plus n 1) c)"
+     ]
+    ],
+    "by": "",
+    "depth": 3
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt X (times (times (pow a c) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c)) (plus (times (times (times (pow a (minus c (plus n 1))) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c)) (pow a (plus n 1))) 0)",
+    "by": "refine ⟨a ^ (c - (n + 1)) * s.sum ^ ((Multiset.card s + 1) * n + 1 - c) *",
+    "depth": 3
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt X (times (times (pow a c) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c)) (plus (times (pow a (plus n 1)) (times (times (pow a (minus c (plus n 1))) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c))) 0)",
+    "by": "rw [mul_comm _ (a ^ (n + 1))]",
+    "depth": 3
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt X (times (times (pow a c) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c)) (plus (times (times (times (pow a (plus n 1)) (pow a (minus c (plus n 1)))) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c)) 0)",
+    "by": "simp_rw [← mul_assoc]",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt X (times (times (pow a c) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c)) (plus (times (times (times (pow a (plus n 1)) (pow a (minus c (plus n 1)))) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c)) 0)",
+    "by": "rw [← pow_add, add_zero, add_tsub_cancel_of_le h]",
+    "depth": 3
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Lt c (plus n 1))"
+     ]
+    ],
+    "by": "",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "exists X (z => and (Membership__mem (Ideal__span (Multiset__toFinset (Multiset__map (x1 => pow x1 (plus n 1)) s))) z) (Eqt X (times (times (pow a c) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c)) (plus (times 0 (pow a (plus n 1))) z)))",
+    "by": "use 0",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "exists X (z => and (Membership__mem (Ideal__span (Multiset__toFinset (Multiset__map (x1 => pow x1 (plus n 1)) s))) z) (Eqt X (times (times (pow a c) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c)) z))",
+    "by": "simp_rw [zero_mul, zero_add]",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Multiset__toFinset (Multiset__map (x1 => pow x1 (plus n 1)) s))) (times (times (pow a c) (pow (Multiset__sum s) (minus (plus (times (plus (Multiset__card s) 1) n) 1) c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c))",
+    "by": "refine ⟨_, ?_, rfl⟩",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Leq c n)",
+    "by": "replace h : c ≤ n := Nat.lt_succ_iff.mp h",
+    "depth": 1
+   },
+   {
+    "unit": "verify",
+    "prop": "(Eq (minus (plus (times (plus (Multiset__card s) 1) n) 1) c) (plus (plus (times (Multiset__card s) n) 1) (minus n c)))",
+    "by": "have : (Multiset.card s + 1) * n + 1 - c = Multiset.card s * n + 1 + (n - c)",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (minus (plus (times (plus (Multiset__card s) 1) n) 1) c) (plus (plus (times (Multiset__card s) n) 1) (minus n c))",
+    "by": "rw [add_mul, one_mul, add_assoc, add_comm n 1, ← add_assoc, add_tsub_assoc_of_le h]",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Multiset__toFinset (Multiset__map (x1 => pow x1 (plus n 1)) s))) (times (times (pow a c) (times (pow (Multiset__sum s) (plus (times (Multiset__card s) n) 1)) (pow (Multiset__sum s) (minus n c)))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c))",
+    "by": "rw [this, pow_add]",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Multiset__toFinset (Multiset__map (x1 => pow x1 (plus n 1)) s))) (times (times (times (pow a c) (pow (Multiset__sum s) (minus n c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c)) (pow (Multiset__sum s) (plus (times (Multiset__card s) n) 1)))",
+    "by": "simp_rw [mul_assoc, mul_comm (s.sum ^ (Multiset.card s * n + 1)), ← mul_assoc]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Ideal__span (Multiset__toFinset (Multiset__map (x1 => pow x1 (plus n 1)) s))) (times (times (times (pow a c) (pow (Multiset__sum s) (minus n c))) (Nat__choose (plus (times (plus (Multiset__card s) 1) n) 1) c)) (pow (Multiset__sum s) (plus (times (Multiset__card s) n) 1)))",
+    "by": "exact mul_mem_left _ _ hs",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Ideal__sum_pow_mem_span_pow",
+  "lean": "Ideal.sum_pow_mem_span_pow",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Ideal__span (Set__image (i => pow (f i) (plus n 1)) s)) (pow (Finset__sum s (i1 => f i1)) (plus (times (Finset__card s) n) 1))",
+    "by": "classical",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Ideal__span (Set__image (i => pow (f i) (plus n 1)) s)) (pow (Finset__sum s (i1 => f i1)) (plus (times (Finset__card s) n) 1))",
+    "by": "simpa only [Multiset.card_map, Multiset.map_map, comp_apply, Multiset.toFinset_map,",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Ideal__span_pow_eq_top",
+  "lean": "Ideal.span_pow_eq_top",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Set__image (x => pow x n) s)) 1",
+    "by": "rw [eq_top_iff_one]",
+    "depth": 0
+   },
+   {
+    "unit": "cases",
+    "by": "rcases n with - | n",
+    "depth": 0
+   },
+   {
+    "unit": "cases",
+    "by": "obtain rfl | ⟨x, hx⟩ := eq_empty_or_nonempty s",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hs",
+      "Proof (Eqt (Ideal X) (Ideal__span EmptyCollection__emptyCollection) Top__top)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem Top__top 1",
+    "by": "rw [Set.image_empty, hs]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem Top__top 1",
+    "by": "trivial",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "hx",
+      "Proof (Membership__mem s x)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Ideal__span (Set__image (x => pow x 0) s)) 1",
+    "by": "exact subset_span ⟨_, hx, pow_zero _⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(exists (Finsupp (Set__Elem s) X) (l => Eqt X (Finsupp__linearCombination__app X (x1 => Membership__mem s x1) l) 1))",
+    "by": "rw [eq_top_iff_one, span, Finsupp.mem_span_iff_linearCombination] at hs",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Set__image (x2 => pow x2 (plus n 1)) s)) 1",
+    "by": "rw [eq_top_iff_one, span, Finsupp.mem_span_iff_linearCombination] at hs",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "f",
+      "Elem (Finsupp (Set__Elem s) X)"
+     ],
+     [
+      "hf",
+      "Proof (Eqt X (Finsupp__linearCombination__app X (x1 => Membership__mem s x1) f) 1)"
+     ]
+    ],
+    "by": "rcases hs with ⟨f, hf⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Eqt X (Finset__sum (Finsupp__support f) (a => times (f a) a)) 1)",
+    "by": "simp only [Finsupp.linearCombination, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_smulRight,",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Set__image (x => pow x (plus n 1)) s)) 1",
+    "by": "simp only [Finsupp.linearCombination, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_smulRight,",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Membership__mem (Ideal__span (Set__image (i => pow (times (f i) i) (plus n 1)) (Finsupp__support f))) (pow (Finset__sum (Finsupp__support f) (i1 => times (f i1) i1)) (plus (times (Finset__card (Finsupp__support f)) n) 1)))",
+    "by": "have := sum_pow_mem_span_pow f.support (fun a => f a * a) n",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Membership__mem (Ideal__span (Set__image (i => pow (times (f i) i) (plus n 1)) (Finsupp__support f))) 1)",
+    "by": "rw [hf, one_pow] at this",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Subset (Set__image (i1 => pow (times (f i1) i1) (plus n 1)) (Finsupp__support f)) (Ideal__span (Set__image (x => pow x (plus n 1)) s))",
+    "by": "refine span_le.mpr ?_ this",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hx",
+      "Proof (Membership__mem (Set__image (i1 => pow (times (f i1) i1) (plus n 1)) (Finsupp__support f)) a')"
+     ]
+    ],
+    "by": "rintro _ hx",
+    "goal": "Membership__mem (Ideal__span (Set__image (x => pow x (plus n 1)) s)) a'",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(exists (Set__Elem s) (x => and (Membership__mem (Finsupp__support f) x) (Eqt X (pow (times (f x) x) (plus n 1)) a')))",
+    "by": "simp_rw [Set.mem_image] at hx",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Set__image (x1 => pow x1 (plus n 1)) s)) a'",
+    "by": "simp_rw [Set.mem_image] at hx",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem (Set__Elem s)"
+     ]
+    ],
+    "by": "rcases hx with ⟨x, _, rfl⟩",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Set__image (x => pow x (plus n 1)) s)) (pow (times (f x) x) (plus n 1))",
+    "by": "rcases hx with ⟨x, _, rfl⟩",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(Leq (Ideal__span (Singleton__singleton (pow x (plus n 1)))) (Ideal__span (Set__image (x => pow x (plus n 1)) s)))",
+    "by": "have : span ({(x : α) ^ (n + 1)} : Set α) ≤ span ((fun x : α => x ^ (n + 1)) '' s)",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Set__image (x1 => pow x1 (plus n 1)) s)) (pow (times (f x) x) (plus n 1))",
+    "by": "have : span ({(x : α) ^ (n + 1)} : Set α) ≤ span ((fun x : α => x ^ (n + 1)) '' s)",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Set__image (x => pow x (plus n 1)) s)) (pow x (plus n 1))",
+    "by": "rw [span_le, Set.singleton_subset_iff]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Ideal__span (Set__image (x => pow x (plus n 1)) s)) (pow x (plus n 1))",
+    "by": "exact subset_span ⟨x, x.prop, rfl⟩",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Singleton__singleton (pow x (plus n 1)))) (pow (times (f x) x) (plus n 1))",
+    "by": "refine this ?_",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "divide (pow x (plus n 1)) (times (pow (f x) (plus n 1)) (pow x (plus n 1)))",
+    "by": "rw [mul_pow, mem_span_singleton]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide (pow x (plus n 1)) (times (pow (f x) (plus n 1)) (pow x (plus n 1)))",
+    "by": "exact ⟨f x ^ (n + 1), mul_comm _ _⟩",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Ideal__span_range_pow_eq_top",
+  "lean": "Ideal.span_range_pow_eq_top",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "t",
+      "Elem (Finset X)"
+     ],
+     [
+      "hts",
+      "Proof (Set__Subset t s)"
+     ],
+     [
+      "mem",
+      "Proof (Membership__mem (Submodule__span X t) 1)"
+     ]
+    ],
+    "by": "have ⟨t, hts, mem⟩ := Submodule.mem_span_finite_of_mem_span ((eq_top_iff_one _).mp hs)",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Set__Subset (Set__image (x1 => pow x1 (Finset__sup (Finset__attach t) (x2 => n x2))) t) (Ideal__span (Set__range (x3 => pow x3 (n x3))))",
+    "by": "refine top_unique ((span_pow_eq_top _ ((eq_top_iff_one _).mpr mem) <|",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem X"
+     ],
+     [
+      "hxt",
+      "Proof (Membership__mem t x)"
+     ]
+    ],
+    "by": "rintro _ ⟨x, hxt, rfl⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Set__range (x1 => pow x1 (n x1)))) (pow x (plus (minus (Finset__sup (Finset__attach t) (x2 => n x2)) (n x)) (n x)))",
+    "by": "rw [← Nat.sub_add_cancel (Finset.le_sup <| t.mem_attach ⟨x, hxt⟩)]",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Set__range (x1 => pow x1 (n x1)))) (times (pow x (minus (Finset__sup (Finset__attach t) (x2 => n x2)) (n x))) (pow x (n x)))",
+    "by": "simp_rw [pow_add]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Ideal__span (Set__range (x1 => pow x1 (n x1)))) (times (pow x (minus (Finset__sup (Finset__attach t) (x2 => n x2)) (n x))) (pow x (n x)))",
+    "by": "exact mul_mem_left _ _ (subset_span ⟨_, rfl⟩)",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Ideal__prod_mem",
+  "lean": "Ideal.prod_mem",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem I (Finset__prod s (i => f i))",
+    "by": "classical",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem I (times (Finset__prod (SDiff__sdiff s (Singleton__singleton i)) (x1 => f x1)) (f i))",
+    "by": "rw [Finset.prod_eq_prod_sdiff_singleton_mul hi]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem I (times (Finset__prod (SDiff__sdiff s (Singleton__singleton i)) (x1 => f x1)) (f i))",
+    "by": "exact Ideal.mul_mem_left _ _ hfi",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Ideal__span_single_eq_top",
+  "lean": "Ideal.span_single_eq_top",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Leq Top__top (Ideal__span (Set__range (i1 => Pi__single i1 1)))",
+    "by": "rw [_root_.eq_top_iff]",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "((j : Elem I) -> R j)"
+     ]
+    ],
+    "by": "rintro x -",
+    "depth": 1
+   },
+   {
+    "unit": "induction",
+    "by": "induction x using Pi.single_induction with",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Ideal__span (Set__range (i1 => Pi__single i1 1))) 0",
+    "by": "simp",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "f",
+      "((i1 : Elem I) -> R i1)"
+     ],
+     [
+      "g",
+      "((i2 : Elem I) -> R i2)"
+     ],
+     [
+      "hf",
+      "Proof (Membership__mem (Ideal__span (Set__range (i3 => Pi__single i3 1))) f)"
+     ],
+     [
+      "hg",
+      "Proof (Membership__mem (Ideal__span (Set__range (i4 => Pi__single i4 1))) g)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Ideal__span (Set__range (i5 => Pi__single i5 1))) (plus f g)",
+    "by": "exact Ideal.add_mem _ hf hg",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "i",
+      "Elem I"
+     ],
+     [
+      "r",
+      "Elem (R i)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Ideal__span (Set__range (i1 => Pi__single i1 1))) (times (Pi__single i r) (Pi__single i 1))",
+    "by": "rw [show Pi.single i r = Pi.single i r * Pi.single i 1 by simp [← Pi.single_mul_left]]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt ((j : Elem I) -> R j) (Pi__single i r) (times (Pi__single i r) (Pi__single i 1))",
+    "by": "simp [← Pi.single_mul_left]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Membership__mem (Ideal__span (Set__range (i1 => Pi__single i1 1))) (times (Pi__single i r) (Pi__single i 1))",
+    "by": "exact Ideal.mul_mem_left _ _ (Ideal.subset_span ⟨i, rfl⟩)",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Ring__exists_not_isUnit_of_not_isField",
+  "lean": "Ring.exists_not_isUnit_of_not_isField",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(not (forall R (a => if (Neq a 0) (exists R (b => Eqt R (times a b) 1)))))",
+    "by": "have : ¬_ := fun h => hf ⟨exists_pair_ne R, mul_comm, h⟩",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists R (x => exists (Neq x 0) (h1 => not (exists R (b1 => Eqt R (times x b1) 1))))",
+    "by": "simp_rw [isUnit_iff_exists_inv]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(exists R (a => and (Neq a 0) (forall R (b => Neq (times a b) 1))))",
+    "by": "push Not at this ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists R (x => exists (Neq x 0) (h => forall R (b1 => Neq (times x b1) 1)))",
+    "by": "push Not at this ⊢",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem R"
+     ],
+     [
+      "hx",
+      "Proof (Neq x 0)"
+     ],
+     [
+      "not_unit",
+      "Proof (forall R (b => Neq (times x b) 1))"
+     ]
+    ],
+    "by": "obtain ⟨x, hx, not_unit⟩ := this",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists R (x => exists (Neq x 0) (h => forall R (b1 => Neq (times x b1) 1)))",
+    "by": "exact ⟨x, hx, not_unit⟩",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Ring__isField_iff_maximal_bot",
+  "lean": "Ring.isField_iff_maximal_bot",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hmax",
+      "Proof (Ideal__IsMaximal Bot__bot)"
+     ]
+    ],
+    "by": "refine ⟨fun h ↦ let := h.toSemifield; bot_isMaximal, fun hmax ↦ ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "IsField R",
+    "by": "refine ⟨fun h ↦ let := h.toSemifield; bot_isMaximal, fun hmax ↦ ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hf",
+      "Proof (not (IsField R))"
+     ]
+    ],
+    "by": "by_contra hf",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "false",
+    "by": "by_contra hf",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem R"
+     ],
+     [
+      "hx0",
+      "Proof (Neq x 0)"
+     ],
+     [
+      "hxu",
+      "Proof (not (IsUnit x))"
+     ]
+    ],
+    "by": "obtain ⟨x, hx0, hxu⟩ := exists_not_isUnit_of_not_isField hf",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exact hx0 <| span_singleton_eq_bot.mp (hmax.eq_of_le (span_singleton_ne_top hxu) bot_le).symm",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Ring__exists_maximal_of_not_isField",
+  "lean": "Ring.exists_maximal_of_not_isField",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "IsField R",
+    "by": "contrapose! h",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(forall (Ideal R) (p => if (Lt Bot__bot p) (not (Ideal__IsMaximal p))))",
+    "by": "simp only [← bot_lt_iff_ne_bot] at h",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "IsField R",
+    "by": "refine isField_iff_maximal_bot.mpr ⟨⟨bot_ne_top, Ideal.maximal_of_no_maximal h⟩⟩",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Ring__not_isField_of_ne_of_ne",
+  "lean": "Ring.not_isField_of_ne_of_ne",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eqt (Ideal R) I Bot__bot",
+    "by": "contrapose h_bot",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Ideal R) I Bot__bot",
+    "by": "exact ((isField_iff_maximal_bot.mp h_bot).eq_of_le h_top bot_le).symm",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Ring__not_isField_iff_exists_ideal_bot_lt_and_lt_top",
+  "lean": "Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (not (IsField R))"
+     ]
+    ],
+    "by": "refine ⟨fun h ↦ ?_, fun ⟨I, h_bot, h_top⟩ ↦ not_isField_of_ne_of_ne h_bot.ne' h_top.ne⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (Ideal R) (I => and (Lt Bot__bot I) (Lt I Top__top))",
+    "by": "refine ⟨fun h ↦ ?_, fun ⟨I, h_bot, h_top⟩ ↦ not_isField_of_ne_of_ne h_bot.ne' h_top.ne⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "I",
+      "Elem (Ideal R)"
+     ],
+     [
+      "hI",
+      "Proof (Neq I Bot__bot)"
+     ],
+     [
+      "hIm",
+      "Proof (Ideal__IsMaximal I)"
+     ]
+    ],
+    "by": "obtain ⟨I, hI, hIm⟩ := exists_maximal_of_not_isField h",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (Ideal R) (I => and (Lt Bot__bot I) (Lt I Top__top))",
+    "by": "exact ⟨I, bot_lt_iff_ne_bot.mpr hI, lt_top_iff_ne_top.mpr hIm.ne_top⟩",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Ring__not_isField_iff_exists_prime",
+  "lean": "Ring.not_isField_iff_exists_prime",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (not (IsField R))"
+     ]
+    ],
+    "by": "refine ⟨fun h ↦ ?_, fun ⟨I, h_bot, h_top⟩ ↦ not_isField_of_ne_of_ne h_bot h_top.ne_top⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists (Ideal R) (p => and (Neq p Bot__bot) (Ideal__IsPrime p))",
+    "by": "refine ⟨fun h ↦ ?_, fun ⟨I, h_bot, h_top⟩ ↦ not_isField_of_ne_of_ne h_bot h_top.ne_top⟩",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "I",
+      "Elem (Ideal R)"
+     ],
+     [
+      "hI",
+      "Proof (Neq I Bot__bot)"
+     ],
+     [
+      "hIm",
+      "Proof (Ideal__IsMaximal I)"
+     ]
+    ],
+    "by": "obtain ⟨I, hI, hIm⟩ := exists_maximal_of_not_isField h",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "exists (Ideal R) (p => and (Neq p Bot__bot) (Ideal__IsPrime p))",
+    "by": "exact ⟨I, hI, hIm.isPrime⟩",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Ring__isField_iff_isSimpleOrder_ideal",
+  "lean": "Ring.isField_iff_isSimpleOrder_ideal",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "cases subsingleton_or_nontrivial R",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (IsField R) (IsSimpleOrder (Ideal R))",
+    "by": "exact",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (exists (Ideal R) (I => and (Lt Bot__bot I) (Lt I Top__top))) (not (IsSimpleOrder (Ideal R)))",
+    "by": "rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (forall (Ideal R) (I => or (not (Lt Bot__bot I)) (not (Lt I Top__top)))) (IsSimpleOrder (Ideal R))",
+    "by": "contrapose! +distrib",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "iff (forall (Ideal R) (I => or (Eqt (Ideal R) I Bot__bot) (Eqt (Ideal R) I Top__top))) (IsSimpleOrder (Ideal R))",
+    "by": "simp_rw [not_lt_top_iff, not_bot_lt_iff]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (forall (Ideal R) (I => or (Eqt (Ideal R) I Bot__bot) (Eqt (Ideal R) I Top__top))) (IsSimpleOrder (Ideal R))",
+    "by": "exact ⟨fun h => ⟨h⟩, fun h => h.2⟩",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Ring__ne_bot_of_isMaximal_of_not_isField",
+  "lean": "Ring.ne_bot_of_isMaximal_of_not_isField",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "I",
+      "Elem (Ideal R)"
+     ],
+     [
+      "hIbot",
+      "Proof (Lt Bot__bot I)"
+     ],
+     [
+      "hItop",
+      "Proof (Lt I Top__top)"
+     ]
+    ],
+    "by": "obtain ⟨I, hIbot, hItop⟩ := not_isField_iff_exists_ideal_bot_lt_and_lt_top.mp not_field",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "false",
+    "by": "exact hIbot.ne (max.eq_of_le hItop.ne bot_le)",
+    "depth": 0
+   }
+  ]
+ }
+]

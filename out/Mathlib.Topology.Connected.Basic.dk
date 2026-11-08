@@ -1,0 +1,366 @@
+(; Mathlib.Topology.Connected.Basic: statements exported from Mathlib by MathlibInformath/Export.lean ;)
+
+(; //LEAN:IsPreconnected ;)
+def IsPreconnected : (s : Elem (powerset X)) -> Prop :=
+  s => forall (powerset X) (u => forall (powerset X) (v => if (IsOpen u) (if (IsOpen v) (if (Set__Subset s (Union__union u v)) (if (Set__Nonempty (Inter__inter s u)) (if (Set__Nonempty (Inter__inter s v)) (Set__Nonempty (Inter__inter s (Inter__inter u v))))))))).
+
+(; //LEAN:IsConnected ;)
+def IsConnected : (s : Elem (powerset X)) -> Prop :=
+  s => and (Set__Nonempty s) (IsPreconnected s).
+
+(; //LEAN:IsConnected.nonempty ;)
+def IsConnected__nonempty : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (h : Proof (IsConnected s)) -> Proof (Set__Nonempty s) :=
+  X => x => s => h => andEl (Set__Nonempty s) (IsPreconnected s) h.
+
+(; //LEAN:IsConnected.isPreconnected ;)
+def IsConnected__isPreconnected : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (h : Proof (IsConnected s)) -> Proof (IsPreconnected s) :=
+  X => x => s => h => andEr (Set__Nonempty s) (IsPreconnected s) h.
+
+(; //LEAN:IsPreirreducible.isPreconnected ;)
+def IsPreirreducible__isPreconnected : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (H : Proof (IsPreirreducible s)) -> Proof (IsPreconnected s) :=
+  X => x => s => H => forallI (powerset X) (x1 => forall (powerset X) (x3 => if (IsOpen x1) (if (IsOpen x3) (if (Set__Subset s (Union__union x1 x3)) (if (Set__Nonempty (Inter__inter s x1)) (if (Set__Nonempty (Inter__inter s x3)) (Set__Nonempty (Inter__inter s (Inter__inter x1 x3))))))))) (x1 => forallI (powerset X) (x2 => if (IsOpen x1) (if (IsOpen x2) (if (Set__Subset s (Union__union x1 x2)) (if (Set__Nonempty (Inter__inter s x1)) (if (Set__Nonempty (Inter__inter s x2)) (Set__Nonempty (Inter__inter s (Inter__inter x1 x2)))))))) (x2 => ifI (IsOpen x1) (if (IsOpen x2) (if (Set__Subset s (Union__union x1 x2)) (if (Set__Nonempty (Inter__inter s x1)) (if (Set__Nonempty (Inter__inter s x2)) (Set__Nonempty (Inter__inter s (Inter__inter x1 x2))))))) (hu => ifI (IsOpen x2) (if (Set__Subset s (Union__union x1 x2)) (if (Set__Nonempty (Inter__inter s x1)) (if (Set__Nonempty (Inter__inter s x2)) (Set__Nonempty (Inter__inter s (Inter__inter x1 x2)))))) (hv => ifI (Set__Subset s (Union__union x1 x2)) (if (Set__Nonempty (Inter__inter s x1)) (if (Set__Nonempty (Inter__inter s x2)) (Set__Nonempty (Inter__inter s (Inter__inter x1 x2))))) (h => ifE (IsOpen x2) (if (Set__Nonempty (Inter__inter s x1)) (if (Set__Nonempty (Inter__inter s x2)) (Set__Nonempty (Inter__inter s (Inter__inter x1 x2))))) (ifE (IsOpen x1) (if (IsOpen x2) (if (Set__Nonempty (Inter__inter s x1)) (if (Set__Nonempty (Inter__inter s x2)) (Set__Nonempty (Inter__inter s (Inter__inter x1 x2)))))) (forallE (powerset X) (v1 => if (IsOpen x1) (if (IsOpen v1) (if (Set__Nonempty (Inter__inter s x1)) (if (Set__Nonempty (Inter__inter s v1)) (Set__Nonempty (Inter__inter s (Inter__inter x1 v1))))))) (forallE (powerset X) (u => forall (powerset X) (v => if (IsOpen u) (if (IsOpen v) (if (Set__Nonempty (Inter__inter s u)) (if (Set__Nonempty (Inter__inter s v)) (Set__Nonempty (Inter__inter s (Inter__inter u v)))))))) H x1) x2) hu) hv))))).
+
+(; //LEAN:IsIrreducible.isConnected ;)
+def IsIrreducible__isConnected : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (H : Proof (IsIrreducible s)) -> Proof (IsConnected s) :=
+  X => x => s => H => andI (Set__Nonempty s) (IsPreconnected s) (IsIrreducible__nonempty X s H) (IsPreirreducible__isPreconnected X s (IsIrreducible__isPreirreducible X s H)).
+
+(; //LEAN:isPreconnected_empty ;)
+def isPreconnected_empty : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (IsPreconnected EmptyCollection__emptyCollection) :=
+  X => x => IsPreirreducible__isPreconnected X EmptyCollection__emptyCollection (isPreirreducible_empty X).
+
+(; //LEAN:isConnected_singleton ;)
+def isConnected_singleton : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> Proof (IsConnected (Singleton__singleton x1)) :=
+  X => x => x1 => IsIrreducible__isConnected X (Singleton__singleton x1) (isIrreducible_singleton X x1).
+
+(; //LEAN:isPreconnected_singleton ;)
+def isPreconnected_singleton : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> Proof (IsPreconnected (Singleton__singleton x1)) :=
+  X => x => x1 => IsConnected__isPreconnected X (Singleton__singleton x1) (isConnected_singleton X x1).
+
+(; //LEAN:Set.Subsingleton.isPreconnected ;)
+def Set__Subsingleton__isPreconnected : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (hs : Proof (Set__Subsingleton s)) -> Proof (IsPreconnected s) :=
+  X => x => s => hs => Set__Subsingleton__induction_on X s IsPreconnected hs (isPreconnected_empty X) (forallI X (x1 => IsPreconnected (Singleton__singleton x1)) (x1 => isPreconnected_singleton X x1)).
+
+(; //LEAN:isPreconnected_of_forall ;)
+isPreconnected_of_forall : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (x1 : Elem X) -> (H : Proof (forall X (y => if (Membership__mem s y) (exists (powerset X) (t => and (Set__Subset t s) (and (Membership__mem t x1) (and (Membership__mem t y) (IsPreconnected t)))))))) -> Proof (IsPreconnected s).
+
+(; //LEAN:isPreconnected_of_forall_pair ;)
+isPreconnected_of_forall_pair : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (H : Proof (forall X (x1 => if (Membership__mem s x1) (forall X (y => if (Membership__mem s y) (exists (powerset X) (t => and (Set__Subset t s) (and (Membership__mem t x1) (and (Membership__mem t y) (IsPreconnected t)))))))))) -> Proof (IsPreconnected s).
+
+(; //LEAN:isPreconnected_sUnion ;)
+isPreconnected_sUnion : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (c : Elem (powerset (powerset X))) -> (H1 : Proof (forall (powerset X) (s1 => if (Membership__mem c s1) (Membership__mem s1 x1)))) -> (H2 : Proof (forall (powerset X) (s => if (Membership__mem c s) (IsPreconnected s)))) -> Proof (IsPreconnected (Set__sUnion c)).
+
+(; //LEAN:isPreconnected_iUnion ;)
+def isPreconnected_iUnion : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (I : Set) -> (s : (Elem I -> powerset X)) -> (h : Proof (Set__Nonempty (Set__iInter (i2 => s i2)))) -> (h1 : Proof (forall I (i1 => IsPreconnected (s i1)))) -> Proof (IsPreconnected (Set__iUnion (i => s i))) :=
+  X => x => I => s => h => h1 => existsE X (Membership__mem (Set__iInter (i => s i))) (IsPreconnected (Set__iUnion (i1 => s i1))) h (f => hf => isPreconnected_sUnion X f (Set__range (i2 => s i2)) hf (iffEr (forall (powerset X) (a => if (Membership__mem (Set__range (i3 => s i3)) a) (IsPreconnected a))) (forall I (i4 => IsPreconnected (s i4))) (Set__forall_mem_range (powerset X) I (i5 => s i5) IsPreconnected) h1)).
+
+(; //LEAN:IsPreconnected.union ;)
+IsPreconnected__union : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (H1 : Proof (Membership__mem s x1)) -> (H2 : Proof (Membership__mem t x1)) -> (H3 : Proof (IsPreconnected s)) -> (H4 : Proof (IsPreconnected t)) -> Proof (IsPreconnected (Union__union s t)).
+
+(; //LEAN:IsPreconnected.union' ;)
+IsPreconnected__union' : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (H : Proof (Set__Nonempty (Inter__inter s t))) -> (hs : Proof (IsPreconnected s)) -> (ht : Proof (IsPreconnected t)) -> Proof (IsPreconnected (Union__union s t)).
+
+(; //LEAN:IsConnected.union ;)
+IsConnected__union : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (H : Proof (Set__Nonempty (Inter__inter s t))) -> (Hs : Proof (IsConnected s)) -> (Ht : Proof (IsConnected t)) -> Proof (IsConnected (Union__union s t)).
+
+(; //LEAN:IsPreconnected.sUnion_directed ;)
+IsPreconnected__sUnion_directed : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (S : Elem (powerset (powerset X))) -> (K : Proof (DirectedOn (x1 => x2 => Set__Subset x1 x2) S)) -> (H : Proof (forall (powerset X) (s => if (Membership__mem S s) (IsPreconnected s)))) -> Proof (IsPreconnected (Set__sUnion S)).
+
+(; //LEAN:IsPreconnected.biUnion_of_reflTransGen ;)
+IsPreconnected__biUnion_of_reflTransGen : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (I : Set) -> (t : Elem (powerset I)) -> (s : (Elem I -> powerset X)) -> (H : Proof (forall I (i2 => if (Membership__mem t i2) (IsPreconnected (s i2))))) -> (K : Proof (forall I (i => if (Membership__mem t i) (forall I (j => if (Membership__mem t j) (Relation__ReflTransGen (i1 => j1 => and (Set__Nonempty (Inter__inter (s i1) (s j1))) (Membership__mem t i1)) i j)))))) -> Proof (IsPreconnected (Set__iUnion (n => Set__iUnion (h => s n)))).
+
+(; //LEAN:IsConnected.biUnion_of_reflTransGen ;)
+def IsConnected__biUnion_of_reflTransGen : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (I : Set) -> (t : Elem (powerset I)) -> (s : (Elem I -> powerset X)) -> (ht : Proof (Set__Nonempty t)) -> (H : Proof (forall I (i2 => if (Membership__mem t i2) (IsConnected (s i2))))) -> (K : Proof (forall I (i => if (Membership__mem t i) (forall I (j => if (Membership__mem t j) (Relation__ReflTransGen (i1 => j1 => and (Set__Nonempty (Inter__inter (s i1) (s j1))) (Membership__mem t i1)) i j)))))) -> Proof (IsConnected (Set__iUnion (n => Set__iUnion (h => s n)))) :=
+  X => x => I => t => s => ht => H => K => andI (Set__Nonempty (Set__iUnion (n => Set__iUnion (h => s n)))) (IsPreconnected (Set__iUnion (n1 => Set__iUnion (h1 => s n1)))) (iffEr (Set__Nonempty (Set__iUnion (i => Set__iUnion (h2 => s i)))) (exists I (i1 => and (Membership__mem t i1) (Set__Nonempty (s i1)))) (Set__nonempty_biUnion I X t s) (existsI I (i2 => and (Membership__mem t i2) (Set__Nonempty (s i2))) (Set__Nonempty__some ht) (andI (Membership__mem t (Set__Nonempty__some ht)) (Set__Nonempty (s (Set__Nonempty__some ht))) (Set__Nonempty__some_mem I t ht) (IsConnected__nonempty X (s (Set__Nonempty__some ht)) (ifE (Membership__mem t (Set__Nonempty__some ht)) (IsConnected (s (Set__Nonempty__some ht))) (forallE I (i3 => if (Membership__mem t i3) (IsConnected (s i3))) H (Set__Nonempty__some ht)) (Set__Nonempty__some_mem I t ht)))))) (IsPreconnected__biUnion_of_reflTransGen X I t s (forallI I (i4 => if (Membership__mem t i4) (IsPreconnected (s i4))) (i4 => ifI (Membership__mem t i4) (IsPreconnected (s i4)) (hi => IsConnected__isPreconnected X (s i4) (ifE (Membership__mem t i4) (IsConnected (s i4)) (forallE I (i5 => if (Membership__mem t i5) (IsConnected (s i5))) H i4) hi)))) K).
+
+(; //LEAN:IsPreconnected.iUnion_of_reflTransGen ;)
+IsPreconnected__iUnion_of_reflTransGen : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (I : Set) -> (s : (Elem I -> powerset X)) -> (H : Proof (forall I (i2 => IsPreconnected (s i2)))) -> (K : Proof (forall I (i => forall I (j => Relation__ReflTransGen (i1 => j1 => Set__Nonempty (Inter__inter (s i1) (s j1))) i j)))) -> Proof (IsPreconnected (Set__iUnion (n => s n))).
+
+(; //LEAN:IsConnected.iUnion_of_reflTransGen ;)
+def IsConnected__iUnion_of_reflTransGen : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (I : Set) -> (s : (Elem I -> powerset X)) -> (H : Proof (forall I (i2 => IsConnected (s i2)))) -> (K : Proof (forall I (i => forall I (j => Relation__ReflTransGen (i1 => j1 => Set__Nonempty (Inter__inter (s i1) (s j1))) i j)))) -> Proof (IsConnected (Set__iUnion (n => s n))) :=
+  X => x => I => s => H => K => andI (Set__Nonempty (Set__iUnion (n => s n))) (IsPreconnected (Set__iUnion (n1 => s n1))) (iffEr (Set__Nonempty (Set__iUnion (i => s i))) (exists I (i1 => Set__Nonempty (s i1))) (Set__nonempty_iUnion X I s) (Nonempty__elim I (exists I (i2 => Set__Nonempty (s i2))) h (forallI I (i3 => exists I (i6 => Set__Nonempty (s i6))) (i3 => existsI I (i4 => Set__Nonempty (s i4)) i3 (IsConnected__nonempty X (s i3) (forallE I (i5 => IsConnected (s i5)) H i3)))))) (IsPreconnected__iUnion_of_reflTransGen X I s (forallI I (i7 => IsPreconnected (s i7)) (i7 => IsConnected__isPreconnected X (s i7) (forallE I (i8 => IsConnected (s i8)) H i7))) K).
+
+(; //LEAN:IsPreconnected.transGen_of_iUnion ;)
+IsPreconnected__transGen_of_iUnion : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (I : Set) -> (s : (Elem I -> powerset X)) -> (hs : Proof (IsPreconnected (Set__iUnion (n => s n)))) -> (hs' : Proof (forall I (i1 => IsOpen (s i1)))) -> (i : Elem I) -> (j : Elem I) -> (hi : Proof (Set__Nonempty (s i))) -> (hj : Proof (Set__Nonempty (s j))) -> Proof (Relation__TransGen (a => b => Set__Nonempty (Inter__inter (s a) (s b))) i j).
+
+(; //LEAN:IsPreconnected.iUnion_of_chain ;)
+IsPreconnected__iUnion_of_chain : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (SuccOrder Y)) -> (_ : Proof (IsSuccArchimedean Y)) -> (s : (Elem Y -> powerset X)) -> (H : Proof (forall Y (n2 => IsPreconnected (s n2)))) -> (K : Proof (forall Y (n1 => Set__Nonempty (Inter__inter (s n1) (s (Order__succ n1)))))) -> Proof (IsPreconnected (Set__iUnion (n => s n))).
+
+(; //LEAN:IsConnected.iUnion_of_chain ;)
+IsConnected__iUnion_of_chain : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (SuccOrder Y)) -> (_ : Proof (IsSuccArchimedean Y)) -> (s : (Elem Y -> powerset X)) -> (H : Proof (forall Y (n2 => IsConnected (s n2)))) -> (K : Proof (forall Y (n1 => Set__Nonempty (Inter__inter (s n1) (s (Order__succ n1)))))) -> Proof (IsConnected (Set__iUnion (n => s n))).
+
+(; //LEAN:IsPreconnected.biUnion_of_chain ;)
+IsPreconnected__biUnion_of_chain : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (SuccOrder Y)) -> (_ : Proof (IsSuccArchimedean Y)) -> (s : (Elem Y -> powerset X)) -> (t : Elem (powerset Y)) -> (ht : Proof (Set__OrdConnected t)) -> (H : Proof (forall Y (n2 => if (Membership__mem t n2) (IsPreconnected (s n2))))) -> (K : Proof (forall Y (n1 => if (Membership__mem t n1) (if (Membership__mem t (Order__succ n1)) (Set__Nonempty (Inter__inter (s n1) (s (Order__succ n1)))))))) -> Proof (IsPreconnected (Set__iUnion (n => Set__iUnion (h1 => s n)))).
+
+(; //LEAN:IsConnected.biUnion_of_chain ;)
+def IsConnected__biUnion_of_chain : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (SuccOrder Y)) -> (_ : Proof (IsSuccArchimedean Y)) -> (s : (Elem Y -> powerset X)) -> (t : Elem (powerset Y)) -> (hnt : Proof (Set__Nonempty t)) -> (ht : Proof (Set__OrdConnected t)) -> (H : Proof (forall Y (n2 => if (Membership__mem t n2) (IsConnected (s n2))))) -> (K : Proof (forall Y (n1 => if (Membership__mem t n1) (if (Membership__mem t (Order__succ n1)) (Set__Nonempty (Inter__inter (s n1) (s (Order__succ n1)))))))) -> Proof (IsConnected (Set__iUnion (n => Set__iUnion (h1 => s n)))) :=
+  X => Y => x => x1 => x2 => h => s => t => hnt => ht => H => K => andI (Set__Nonempty (Set__iUnion (n => Set__iUnion (h1 => s n)))) (IsPreconnected (Set__iUnion (n1 => Set__iUnion (h2 => s n1)))) (iffEr (Set__Nonempty (Set__iUnion (i => Set__iUnion (h3 => s i)))) (exists Y (i1 => and (Membership__mem t i1) (Set__Nonempty (s i1)))) (Set__nonempty_biUnion Y X t s) (existsI Y (i2 => and (Membership__mem t i2) (Set__Nonempty (s i2))) (Set__Nonempty__some hnt) (andI (Membership__mem t (Set__Nonempty__some hnt)) (Set__Nonempty (s (Set__Nonempty__some hnt))) (Set__Nonempty__some_mem Y t hnt) (IsConnected__nonempty X (s (Set__Nonempty__some hnt)) (ifE (Membership__mem t (Set__Nonempty__some hnt)) (IsConnected (s (Set__Nonempty__some hnt))) (forallE Y (n2 => if (Membership__mem t n2) (IsConnected (s n2))) H (Set__Nonempty__some hnt)) (Set__Nonempty__some_mem Y t hnt)))))) (IsPreconnected__biUnion_of_chain X Y s t ht (forallI Y (i3 => if (Membership__mem t i3) (IsPreconnected (s i3))) (i3 => ifI (Membership__mem t i3) (IsPreconnected (s i3)) (hi => IsConnected__isPreconnected X (s i3) (ifE (Membership__mem t i3) (IsConnected (s i3)) (forallE Y (n3 => if (Membership__mem t n3) (IsConnected (s n3))) H i3) hi)))) K).
+
+(; //LEAN:IsPreconnected.subset_closure ;)
+IsPreconnected__subset_closure : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (H : Proof (IsPreconnected s)) -> (Kst : Proof (Set__Subset s t)) -> (Ktcs : Proof (Set__Subset t (closure s))) -> Proof (IsPreconnected t).
+
+(; //LEAN:IsConnected.subset_closure ;)
+def IsConnected__subset_closure : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (H : Proof (IsConnected s)) -> (Kst : Proof (Set__Subset s t)) -> (Ktcs : Proof (Set__Subset t (closure s))) -> Proof (IsConnected t) :=
+  X => x => s => t => H => Kst => Ktcs => andI (Set__Nonempty t) (IsPreconnected t) (Set__Nonempty__mono X s t Kst (andEl (Set__Nonempty s) (IsPreconnected s) H)) (IsPreconnected__subset_closure X s t (andEr (Set__Nonempty s) (IsPreconnected s) H) Kst Ktcs).
+
+(; //LEAN:IsPreconnected.closure ;)
+def IsPreconnected__closure : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (H : Proof (IsPreconnected s)) -> Proof (IsPreconnected (closure s)) :=
+  X => x => s => H => IsPreconnected__subset_closure X s (closure s) H (subset_closure X s) (Set__Subset__rfl X (closure s)).
+
+(; //LEAN:IsConnected.closure ;)
+def IsConnected__closure : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (H : Proof (IsConnected s)) -> Proof (IsConnected (closure s)) :=
+  X => x => s => H => IsConnected__subset_closure X s (closure s) H (subset_closure X s) (Set__Subset__rfl X (closure s)).
+
+(; //LEAN:IsPreconnected.image ;)
+IsPreconnected__image : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (H : Proof (IsPreconnected s)) -> (f : (Elem X -> Y)) -> (hf : Proof (ContinuousOn f s)) -> Proof (IsPreconnected (Set__image f s)).
+
+(; //LEAN:IsConnected.image ;)
+def IsConnected__image : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (H : Proof (IsConnected s)) -> (f : (Elem X -> Y)) -> (hf : Proof (ContinuousOn f s)) -> Proof (IsConnected (Set__image f s)) :=
+  X => Y => x => x1 => s => H => f => hf => andI (Set__Nonempty (Set__image f s)) (IsPreconnected (Set__image f s)) (iffEr (Set__Nonempty (Set__image f s)) (Set__Nonempty s) (Set__image_nonempty X Y f s) (IsConnected__nonempty X s H)) (IsPreconnected__image X Y s (IsConnected__isPreconnected X s H) f hf).
+
+(; //LEAN:isPreconnected_closed_iff ;)
+isPreconnected_closed_iff : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (IsPreconnected s) (forall (powerset X) (t => forall (powerset X) (t' => if (IsClosed t) (if (IsClosed t') (if (Set__Subset s (Union__union t t')) (if (Set__Nonempty (Inter__inter s t)) (if (Set__Nonempty (Inter__inter s t')) (Set__Nonempty (Inter__inter s (Inter__inter t t'))))))))))).
+
+(; //LEAN:Topology.IsInducing.isPreconnected_image ;)
+Topology__IsInducing__isPreconnected_image : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Topology__IsInducing f)) -> Proof (iff (IsPreconnected (Set__image f s)) (IsPreconnected s)).
+
+(; //LEAN:IsPreconnected.preimage_of_isOpenMap ;)
+IsPreconnected__preimage_of_isOpenMap : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (s : Elem (powerset Y)) -> (hs : Proof (IsPreconnected s)) -> (hinj : Proof (Function__Injective f)) -> (hf : Proof (IsOpenMap f)) -> (hsf : Proof (Set__Subset s (Set__range f))) -> Proof (IsPreconnected (Set__preimage f s)).
+
+(; //LEAN:IsPreconnected.preimage_of_isClosedMap ;)
+IsPreconnected__preimage_of_isClosedMap : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset Y)) -> (hs : Proof (IsPreconnected s)) -> (f : (Elem X -> Y)) -> (hinj : Proof (Function__Injective f)) -> (hf : Proof (IsClosedMap f)) -> (hsf : Proof (Set__Subset s (Set__range f))) -> Proof (IsPreconnected (Set__preimage f s)).
+
+(; //LEAN:IsConnected.preimage_of_isOpenMap ;)
+def IsConnected__preimage_of_isOpenMap : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset Y)) -> (hs : Proof (IsConnected s)) -> (f : (Elem X -> Y)) -> (hinj : Proof (Function__Injective f)) -> (hf : Proof (IsOpenMap f)) -> (hsf : Proof (Set__Subset s (Set__range f))) -> Proof (IsConnected (Set__preimage f s)) :=
+  X => Y => x => x1 => s => hs => f => hinj => hf => hsf => andI (Set__Nonempty (Set__preimage f s)) (IsPreconnected (Set__preimage f s)) (Set__Nonempty__preimage' X Y s (IsConnected__nonempty Y s hs) f hsf) (IsPreconnected__preimage_of_isOpenMap X Y f s (IsConnected__isPreconnected Y s hs) hinj hf hsf).
+
+(; //LEAN:IsConnected.preimage_of_isClosedMap ;)
+def IsConnected__preimage_of_isClosedMap : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset Y)) -> (hs : Proof (IsConnected s)) -> (f : (Elem X -> Y)) -> (hinj : Proof (Function__Injective f)) -> (hf : Proof (IsClosedMap f)) -> (hsf : Proof (Set__Subset s (Set__range f))) -> Proof (IsConnected (Set__preimage f s)) :=
+  X => Y => x => x1 => s => hs => f => hinj => hf => hsf => andI (Set__Nonempty (Set__preimage f s)) (IsPreconnected (Set__preimage f s)) (Set__Nonempty__preimage' X Y s (IsConnected__nonempty Y s hs) f hsf) (IsPreconnected__preimage_of_isClosedMap X Y s (IsConnected__isPreconnected Y s hs) f hinj hf hsf).
+
+(; //LEAN:IsPreconnected.subset_or_subset ;)
+IsPreconnected__subset_or_subset : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (u : Elem (powerset X)) -> (v : Elem (powerset X)) -> (hu : Proof (IsOpen u)) -> (hv : Proof (IsOpen v)) -> (huv : Proof (Disjoint u v)) -> (hsuv : Proof (Set__Subset s (Union__union u v))) -> (hs : Proof (IsPreconnected s)) -> Proof (or (Set__Subset s u) (Set__Subset s v)).
+
+(; //LEAN:IsPreconnected.mapsTo_Ioi_or_Iio ;)
+IsPreconnected__mapsTo_Ioi_or_Iio : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (OrderClosedTopology Y)) -> (f : (Elem X -> Y)) -> (b : Elem Y) -> (hs : Proof (IsPreconnected s)) -> (hf : Proof (ContinuousOn f s)) -> (hfb : Proof (forall X (x3 => if (Membership__mem s x3) (Neq (f x3) b)))) -> Proof (or (Set__MapsTo f s (Set__Ioi b)) (Set__MapsTo f s (Set__Iio b))).
+
+(; //LEAN:IsPreconnected.lt_of_ne ;)
+IsPreconnected__lt_of_ne : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (OrderClosedTopology Y)) -> (f : (Elem X -> Y)) -> (b : Elem Y) -> (hs : Proof (IsPreconnected s)) -> (hf : Proof (ContinuousOn f s)) -> (hfb : Proof (forall X (x5 => if (Membership__mem s x5) (Neq (f x5) b)))) -> (hfx : Proof (exists X (x4 => and (Membership__mem s x4) (Lt b (f x4))))) -> (x3 : Elem X) -> (hx : Proof (Membership__mem s x3)) -> Proof (Lt b (f x3)).
+
+(; //LEAN:IsPreconnected.gt_of_ne ;)
+IsPreconnected__gt_of_ne : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (OrderClosedTopology Y)) -> (f : (Elem X -> Y)) -> (b : Elem Y) -> (hs : Proof (IsPreconnected s)) -> (hf : Proof (ContinuousOn f s)) -> (hfb : Proof (forall X (x5 => if (Membership__mem s x5) (Neq (f x5) b)))) -> (hfx : Proof (exists X (x4 => and (Membership__mem s x4) (Lt (f x4) b)))) -> (x3 : Elem X) -> (hx : Proof (Membership__mem s x3)) -> Proof (Lt (f x3) b).
+
+(; //LEAN:IsPreconnected.subset_left_of_subset_union ;)
+IsPreconnected__subset_left_of_subset_union : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (u : Elem (powerset X)) -> (v : Elem (powerset X)) -> (hu : Proof (IsOpen u)) -> (hv : Proof (IsOpen v)) -> (huv : Proof (Disjoint u v)) -> (hsuv : Proof (Set__Subset s (Union__union u v))) -> (hsu : Proof (Set__Nonempty (Inter__inter s u))) -> (hs : Proof (IsPreconnected s)) -> Proof (Set__Subset s u).
+
+(; //LEAN:IsPreconnected.subset_right_of_subset_union ;)
+IsPreconnected__subset_right_of_subset_union : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (u : Elem (powerset X)) -> (v : Elem (powerset X)) -> (hu : Proof (IsOpen u)) -> (hv : Proof (IsOpen v)) -> (huv : Proof (Disjoint u v)) -> (hsuv : Proof (Set__Subset s (Union__union u v))) -> (hsv : Proof (Set__Nonempty (Inter__inter s v))) -> (hs : Proof (IsPreconnected s)) -> Proof (Set__Subset s v).
+
+(; //LEAN:IsPreconnected.subset_of_closure_inter_subset ;)
+IsPreconnected__subset_of_closure_inter_subset : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (u : Elem (powerset X)) -> (hs : Proof (IsPreconnected s)) -> (hu : Proof (IsOpen u)) -> (h'u : Proof (Set__Nonempty (Inter__inter s u))) -> (h : Proof (Set__Subset (Inter__inter (closure u) s) u)) -> Proof (Set__Subset s u).
+
+(; //LEAN:IsPreconnected.prod ;)
+IsPreconnected__prod : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> (hs : Proof (IsPreconnected s)) -> (ht : Proof (IsPreconnected t)) -> Proof (IsPreconnected (SProd__sprod s t)).
+
+(; //LEAN:IsConnected.prod ;)
+def IsConnected__prod : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> (hs : Proof (IsConnected s)) -> (ht : Proof (IsConnected t)) -> Proof (IsConnected (SProd__sprod s t)) :=
+  X => Y => x => x1 => s => t => hs => ht => andI (Set__Nonempty (SProd__sprod s t)) (IsPreconnected (SProd__sprod s t)) (Set__Nonempty__prod X Y s t (andEl (Set__Nonempty s) (IsPreconnected s) hs) (andEl (Set__Nonempty t) (IsPreconnected t) ht)) (IsPreconnected__prod X Y s t (andEr (Set__Nonempty s) (IsPreconnected s) hs) (andEr (Set__Nonempty t) (IsPreconnected t) ht)).
+
+(; //LEAN:isPreconnected_univ_pi ;)
+isPreconnected_univ_pi : (I : Set) -> (X : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> TopologicalSpace (X i2))) -> (s : ((i1 : Elem I) -> powerset (X i1))) -> (hs : Proof (forall I (i => IsPreconnected (s i)))) -> Proof (IsPreconnected (Set__pi Set__univ s)).
+
+(; //LEAN:isConnected_univ_pi ;)
+isConnected_univ_pi : (I : Set) -> (X : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> TopologicalSpace (X i2))) -> (s : ((i1 : Elem I) -> powerset (X i1))) -> Proof (iff (IsConnected (Set__pi Set__univ s)) (forall I (i => IsConnected (s i)))).
+
+(; //LEAN:connectedComponent ;)
+def connectedComponent : (x1 : Elem X) -> Elem (powerset X) :=
+  x1 => Set__sUnion (Set__ofPred (s => and (IsPreconnected s) (Membership__mem s x1))).
+
+(; //LEAN:connectedComponentIn ;)
+def connectedComponentIn : (F : Elem (powerset X)) -> (x1 : Elem X) -> Elem (powerset X) :=
+  F => x1 => dite (Membership__mem F x1) (h => Set__image (x2 => Membership__mem F x2) (connectedComponent x1)) (h1 => EmptyCollection__emptyCollection).
+
+(; //LEAN:connectedComponentIn_eq_image ;)
+def connectedComponentIn_eq_image : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (F : Elem (powerset X)) -> (x1 : Elem X) -> (h : Proof (Membership__mem F x1)) -> Proof (Eqt (powerset X) (connectedComponentIn F x1) (Set__image (x2 => Membership__mem F x2) (connectedComponent x1))) :=
+  X => x => F => x1 => h => dite_eq_left (Membership__mem F x1) (Classical__propDecidable (Membership__mem F x1)) h (powerset X) (h1 => Set__image (x2 => Membership__mem F x2) (connectedComponent x1)) (h2 => EmptyCollection__emptyCollection).
+
+(; //LEAN:connectedComponentIn_eq_empty ;)
+def connectedComponentIn_eq_empty : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (F : Elem (powerset X)) -> (x1 : Elem X) -> (h : Proof (not (Membership__mem F x1))) -> Proof (Eqt (powerset X) (connectedComponentIn F x1) EmptyCollection__emptyCollection) :=
+  X => x => F => x1 => h => dite_eq_right (Membership__mem F x1) (Classical__propDecidable (Membership__mem F x1)) h (powerset X) (h1 => Set__image (x2 => Membership__mem F x2) (connectedComponent x1)) (h2 => EmptyCollection__emptyCollection).
+
+(; //LEAN:mem_connectedComponent ;)
+def mem_connectedComponent : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> Proof (Membership__mem (connectedComponent x1) x1) :=
+  X => x => x1 => Set__mem_sUnion_of_mem X x1 (Singleton__singleton x1) (Set__ofPred (s => and (IsPreconnected s) (Membership__mem s x1))) (Set__mem_singleton X x1) (andI (IsPreconnected (Singleton__singleton x1)) (Membership__mem (Singleton__singleton x1) x1) (isPreconnected_singleton X x1) (Set__mem_singleton X x1)).
+
+(; //LEAN:mem_connectedComponentIn ;)
+mem_connectedComponentIn : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (F : Elem (powerset X)) -> (hx : Proof (Membership__mem F x1)) -> Proof (Membership__mem (connectedComponentIn F x1) x1).
+
+(; //LEAN:connectedComponent_nonempty ;)
+def connectedComponent_nonempty : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> Proof (Set__Nonempty (connectedComponent x1)) :=
+  X => x => x1 => existsI X (x2 => Membership__mem (connectedComponent x1) x2) x1 (mem_connectedComponent X x1).
+
+(; //LEAN:connectedComponentIn_nonempty_iff ;)
+connectedComponentIn_nonempty_iff : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (F : Elem (powerset X)) -> Proof (iff (Set__Nonempty (connectedComponentIn F x1)) (Membership__mem F x1)).
+
+(; //LEAN:connectedComponentIn_subset ;)
+connectedComponentIn_subset : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (F : Elem (powerset X)) -> (x1 : Elem X) -> Proof (Set__Subset (connectedComponentIn F x1) F).
+
+(; //LEAN:isPreconnected_connectedComponent ;)
+def isPreconnected_connectedComponent : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> Proof (IsPreconnected (connectedComponent x1)) :=
+  X => x => x1 => isPreconnected_sUnion X x1 (Set__ofPred (s => and (IsPreconnected s) (Membership__mem s x1))) (forallI (powerset X) (x2 => if (and (IsPreconnected x2) (Membership__mem x2 x1)) (Membership__mem x2 x1)) (x2 => andEr (IsPreconnected x2) (Membership__mem x2 x1))) (forallI (powerset X) (x3 => if (and (IsPreconnected x3) (Membership__mem x3 x1)) (IsPreconnected x3)) (x3 => andEl (IsPreconnected x3) (Membership__mem x3 x1))).
+
+(; //LEAN:isPreconnected_connectedComponentIn ;)
+isPreconnected_connectedComponentIn : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (F : Elem (powerset X)) -> Proof (IsPreconnected (connectedComponentIn F x1)).
+
+(; //LEAN:isConnected_connectedComponent ;)
+def isConnected_connectedComponent : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> Proof (IsConnected (connectedComponent x1)) :=
+  X => x => x1 => andI (Set__Nonempty (connectedComponent x1)) (IsPreconnected (connectedComponent x1)) (existsI X (x2 => Membership__mem (connectedComponent x1) x2) x1 (mem_connectedComponent X x1)) (isPreconnected_connectedComponent X x1).
+
+(; //LEAN:isConnected_connectedComponentIn_iff ;)
+isConnected_connectedComponentIn_iff : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (F : Elem (powerset X)) -> Proof (iff (IsConnected (connectedComponentIn F x1)) (Membership__mem F x1)).
+
+(; //LEAN:IsPreconnected.subset_connectedComponent ;)
+def IsPreconnected__subset_connectedComponent : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (s : Elem (powerset X)) -> (H1 : Proof (IsPreconnected s)) -> (H2 : Proof (Membership__mem s x1)) -> Proof (Set__Subset s (connectedComponent x1)) :=
+  X => x => x1 => s => H1 => H2 => forallI X (_z => if (Membership__mem s _z) (Membership__mem (Set__sUnion (Set__ofPred (s3 => and (IsPreconnected s3) (Membership__mem s3 x1)))) _z)) (_z => ifI (Membership__mem s _z) (Membership__mem (Set__sUnion (Set__ofPred (s2 => and (IsPreconnected s2) (Membership__mem s2 x1)))) _z) (hz => Set__mem_sUnion_of_mem X _z s (Set__ofPred (s1 => and (IsPreconnected s1) (Membership__mem s1 x1))) hz (andI (IsPreconnected s) (Membership__mem s x1) H1 H2))).
+
+(; //LEAN:IsPreconnected.subset_connectedComponentIn ;)
+IsPreconnected__subset_connectedComponentIn : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (x1 : Elem X) -> (F : Elem (powerset X)) -> (hs : Proof (IsPreconnected s)) -> (hxs : Proof (Membership__mem s x1)) -> (hsF : Proof (Set__Subset s F)) -> Proof (Set__Subset s (connectedComponentIn F x1)).
+
+(; //LEAN:IsConnected.subset_connectedComponent ;)
+def IsConnected__subset_connectedComponent : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (s : Elem (powerset X)) -> (H1 : Proof (IsConnected s)) -> (H2 : Proof (Membership__mem s x1)) -> Proof (Set__Subset s (connectedComponent x1)) :=
+  X => x => x1 => s => H1 => H2 => IsPreconnected__subset_connectedComponent X x1 s (andEr (Set__Nonempty s) (IsPreconnected s) H1) H2.
+
+(; //LEAN:IsPreconnected.connectedComponentIn ;)
+def IsPreconnected__connectedComponentIn : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (F : Elem (powerset X)) -> (h : Proof (IsPreconnected F)) -> (hx : Proof (Membership__mem F x1)) -> Proof (Eqt (powerset X) (connectedComponentIn F x1) F) :=
+  X => x => x1 => F => h => hx => LE__le__antisymm (powerset X) (connectedComponentIn F x1) F (connectedComponentIn_subset X F x1) (IsPreconnected__subset_connectedComponentIn X F x1 F h hx (subset_rfl (powerset X) F)).
+
+(; //LEAN:connectedComponent_eq ;)
+def connectedComponent_eq : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (y : Elem X) -> (h : Proof (Membership__mem (connectedComponent x1) y)) -> Proof (Eqt (powerset X) (connectedComponent x1) (connectedComponent y)) :=
+  X => x => x1 => y => h => Set__eq_of_subset_of_subset X (connectedComponent x1) (connectedComponent y) (IsConnected__subset_connectedComponent X y (connectedComponent x1) (isConnected_connectedComponent X x1) h) (IsConnected__subset_connectedComponent X x1 (connectedComponent y) (isConnected_connectedComponent X y) (Set__mem_of_mem_of_subset X x1 (connectedComponent x1) (connectedComponent y) (mem_connectedComponent X x1) (IsConnected__subset_connectedComponent X y (connectedComponent x1) (isConnected_connectedComponent X x1) h))).
+
+(; //LEAN:connectedComponent_eq_iff_mem ;)
+connectedComponent_eq_iff_mem : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (y : Elem X) -> Proof (iff (Eqt (powerset X) (connectedComponent x1) (connectedComponent y)) (Membership__mem (connectedComponent y) x1)).
+
+(; //LEAN:connectedComponentIn_eq ;)
+connectedComponentIn_eq : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (y : Elem X) -> (F : Elem (powerset X)) -> (h : Proof (Membership__mem (connectedComponentIn F x1) y)) -> Proof (Eqt (powerset X) (connectedComponentIn F x1) (connectedComponentIn F y)).
+
+(; //LEAN:connectedComponentIn_univ ;)
+def connectedComponentIn_univ : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> Proof (Eqt (powerset X) (connectedComponentIn Set__univ x1) (connectedComponent x1)) :=
+  X => x => x1 => subset_antisymm (powerset X) (connectedComponentIn Set__univ x1) (connectedComponent x1) (IsPreconnected__subset_connectedComponent X x1 (connectedComponentIn Set__univ x1) (isPreconnected_connectedComponentIn X x1 Set__univ) (mem_connectedComponentIn X x1 Set__univ trivial)) (IsPreconnected__subset_connectedComponentIn X (connectedComponent x1) x1 Set__univ (isPreconnected_connectedComponent X x1) (mem_connectedComponent X x1) (Set__subset_univ X (connectedComponent x1))).
+
+(; //LEAN:connectedComponent_disjoint ;)
+def connectedComponent_disjoint : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (y : Elem X) -> (h : Proof (Neq (connectedComponent x1) (connectedComponent y))) -> Proof (Disjoint (connectedComponent x1) (connectedComponent y)) :=
+  X => x => x1 => y => h => iffEr (Disjoint (connectedComponent x1) (connectedComponent y)) (forall X (a => if (Membership__mem (connectedComponent x1) a) (not (Membership__mem (connectedComponent y) a)))) (Set__disjoint_left X (connectedComponent x1) (connectedComponent y)) (x2 => ifI (Membership__mem (connectedComponent x1) x2) (if (Membership__mem (connectedComponent y) x2) false) (h11 => ifI (Membership__mem (connectedComponent y) x2) false (h2 => ifE (Eqt (powerset X) (connectedComponent x1) (connectedComponent y)) false h (Eq__trans (powerset X) (connectedComponent x1) (connectedComponent x2) (connectedComponent y) (connectedComponent_eq X x1 x2 h11) (Eq__symm (powerset X) (connectedComponent y) (connectedComponent x2) (connectedComponent_eq X y x2 h2)))))).
+
+(; //LEAN:isClosed_connectedComponent ;)
+def isClosed_connectedComponent : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> Proof (IsClosed (connectedComponent x1)) :=
+  X => x => x1 => iffEl (Set__Subset (closure (connectedComponent x1)) (connectedComponent x1)) (IsClosed (connectedComponent x1)) (closure_subset_iff_isClosed X (connectedComponent x1)) (IsConnected__subset_connectedComponent X x1 (closure (connectedComponent x1)) (IsConnected__closure X (connectedComponent x1) (isConnected_connectedComponent X x1)) (subset_closure X (connectedComponent x1) x1 (mem_connectedComponent X x1))).
+
+(; //LEAN:Continuous.image_connectedComponent_subset ;)
+def Continuous__image_connectedComponent_subset : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (h : Proof (Continuous f)) -> (a : Elem X) -> Proof (Set__Subset (Set__image f (connectedComponent a)) (connectedComponent (f a))) :=
+  X => Y => x => x1 => f => h => a => IsConnected__subset_connectedComponent Y (f a) (Set__image f (connectedComponent a)) (IsConnected__image X Y (connectedComponent a) (isConnected_connectedComponent X a) f (Continuous__continuousOn X Y f (connectedComponent a) h)) (iffEr (Membership__mem (Set__image f (connectedComponent a)) (f a)) (exists X (x2 => and (Membership__mem (connectedComponent a) x2) (Eqt Y (f x2) (f a)))) (Set__mem_image X Y f (connectedComponent a) (f a)) (existsI X (x3 => and (Membership__mem (connectedComponent a) x3) (Eqt Y (f x3) (f a))) a (andI (Membership__mem (connectedComponent a) a) (Eqt Y (f a) (f a)) (mem_connectedComponent X a) rfl))).
+
+(; //LEAN:ContinuousOn.image_connectedComponentIn_subset ;)
+def ContinuousOn__image_connectedComponentIn_subset : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (a : Elem X) -> (hf : Proof (ContinuousOn f s)) -> (hx : Proof (Membership__mem s a)) -> Proof (Set__Subset (Set__image f (connectedComponentIn s a)) (connectedComponentIn (Set__image f s) (f a))) :=
+  X => Y => x => x1 => f => s => a => hf => hx => IsPreconnected__subset_connectedComponentIn Y (Set__image f (connectedComponentIn s a)) (f a) (Set__image f s) (IsPreconnected__image X Y (connectedComponentIn s a) (isPreconnected_connectedComponentIn X a s) f (ContinuousOn__mono X Y f s (connectedComponentIn s a) hf (connectedComponentIn_subset X s a))) (Set__mem_image_of_mem X Y f a (connectedComponentIn s a) (mem_connectedComponentIn X a s hx)) (Set__image_mono X Y f (connectedComponentIn s a) s (connectedComponentIn_subset X s a)).
+
+(; //LEAN:Continuous.mapsTo_connectedComponent ;)
+def Continuous__mapsTo_connectedComponent : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (h : Proof (Continuous f)) -> (a : Elem X) -> Proof (Set__MapsTo f (connectedComponent a) (connectedComponent (f a))) :=
+  X => Y => x => x1 => f => h => a => iffEr (Set__MapsTo f (connectedComponent a) (connectedComponent (f a))) (Set__Subset (Set__image f (connectedComponent a)) (connectedComponent (f a))) (Set__mapsTo_iff_image_subset X Y (connectedComponent a) (connectedComponent (f a)) f) (Continuous__image_connectedComponent_subset X Y f h a).
+
+(; //LEAN:ContinuousOn.mapsTo_connectedComponentIn ;)
+def ContinuousOn__mapsTo_connectedComponentIn : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (h : Proof (ContinuousOn f s)) -> (a : Elem X) -> (hx : Proof (Membership__mem s a)) -> Proof (Set__MapsTo f (connectedComponentIn s a) (connectedComponentIn (Set__image f s) (f a))) :=
+  X => Y => x => x1 => f => s => h => a => hx => iffEr (Set__MapsTo f (connectedComponentIn s a) (connectedComponentIn (Set__image f s) (f a))) (Set__Subset (Set__image f (connectedComponentIn s a)) (connectedComponentIn (Set__image f s) (f a))) (Set__mapsTo_iff_image_subset X Y (connectedComponentIn s a) (connectedComponentIn (Set__image f s) (f a)) f) (ContinuousOn__image_connectedComponentIn_subset X Y f s a h hx).
+
+(; //LEAN:connectedComponent_prod ;)
+def connectedComponent_prod : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (x2 : Elem X) -> (y : Elem Y) -> Proof (Eqt (powerset (Prod X Y)) (connectedComponent (Prod__mk x2 y)) (SProd__sprod (connectedComponent x2) (connectedComponent y))) :=
+  X => Y => x => x1 => x2 => y => subset_antisymm (powerset (Prod X Y)) (connectedComponent (Prod__mk x2 y)) (SProd__sprod (connectedComponent x2) (connectedComponent y)) (forallI (Prod X Y) (x3 => if (Membership__mem (connectedComponent (Prod__mk x2 y)) x3) (and (Membership__mem (connectedComponent x2) (Prod__fst x3)) (Membership__mem (connectedComponent y) (Prod__snd x3)))) (x3 => ifI (Membership__mem (connectedComponent (Prod__mk x2 y)) x3) (and (Membership__mem (connectedComponent x2) (Prod__fst x3)) (Membership__mem (connectedComponent y) (Prod__snd x3))) (hp => andI (Membership__mem (connectedComponent x2) (Prod__fst x3)) (Membership__mem (connectedComponent y) (Prod__snd x3)) (Continuous__mapsTo_connectedComponent (Prod X Y) X Prod__fst (continuous_fst X Y) (Prod__mk x2 y) x3 hp) (Continuous__mapsTo_connectedComponent (Prod X Y) Y Prod__snd (continuous_snd X Y) (Prod__mk x2 y) x3 hp)))) (IsPreconnected__subset_connectedComponent (Prod X Y) (Prod__mk x2 y) (SProd__sprod (connectedComponent x2) (connectedComponent y)) (IsPreconnected__prod X Y (connectedComponent x2) (connectedComponent y) (isPreconnected_connectedComponent X x2) (isPreconnected_connectedComponent Y y)) (andI (Membership__mem (connectedComponent x2) (Prod__fst (Prod__mk x2 y))) (Membership__mem (connectedComponent y) (Prod__snd (Prod__mk x2 y))) (mem_connectedComponent X x2) (mem_connectedComponent Y y))).
+
+(; //LEAN:connectedComponent_pi ;)
+def connectedComponent_pi : (I : Set) -> (X : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> TopologicalSpace (X i3))) -> (x1 : ((i2 : Elem I) -> X i2)) -> Proof (Eqt (powerset ((i : Elem I) -> X i)) (connectedComponent x1) (Set__pi Set__univ (i1 => connectedComponent (x1 i1)))) :=
+  I => X => x => x1 => subset_antisymm (powerset ((i : Elem I) -> X i)) (connectedComponent x1) (Set__pi Set__univ (i1 => connectedComponent (x1 i1))) (forallI ((i5 : Elem I) -> X i5) (x2 => if (Membership__mem (connectedComponent x1) x2) (forall I (i6 => if (Membership__mem Set__univ i6) (Membership__mem (connectedComponent (x1 i6)) ((p4 => p4 i6) x2))))) (x2 => ifI (Membership__mem (connectedComponent x1) x2) (forall I (i4 => if (Membership__mem Set__univ i4) (Membership__mem (connectedComponent (x1 i4)) ((p3 => p3 i4) x2)))) (hy => forallI I (i2 => if (Membership__mem Set__univ i2) (Membership__mem (connectedComponent (x1 i2)) ((p2 => p2 i2) x2))) (i2 => ifI (Membership__mem Set__univ i2) (Membership__mem (connectedComponent (x1 i2)) ((p1 => p1 i2) x2)) (h => Continuous__mapsTo_connectedComponent ((i3 : Elem I) -> X i3) (X i2) (p => p i2) (continuous_apply I X i2) x1 x2 hy))))) (IsPreconnected__subset_connectedComponent ((i7 : Elem I) -> X i7) x1 (Set__pi Set__univ (x3 => connectedComponent (x1 x3))) (isPreconnected_univ_pi I X (x4 => connectedComponent (x1 x4)) (forallI I (x5 => IsPreconnected (connectedComponent (x1 x5))) (x5 => isPreconnected_connectedComponent (X x5) (x1 x5)))) (forallI I (x6 => if (Membership__mem Set__univ x6) (Membership__mem (connectedComponent (x1 x6)) (x1 x6))) (x6 => ifI (Membership__mem Set__univ x6) (Membership__mem (connectedComponent (x1 x6)) (x1 x6)) (h4 => mem_connectedComponent (X x6) (x1 x6))))).
+
+(; //LEAN:irreducibleComponent_subset_connectedComponent ;)
+def irreducibleComponent_subset_connectedComponent : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> Proof (Set__Subset (irreducibleComponent x1) (connectedComponent x1)) :=
+  X => x => x1 => IsConnected__subset_connectedComponent X x1 (irreducibleComponent x1) (IsIrreducible__isConnected X (irreducibleComponent x1) (isIrreducible_irreducibleComponent X x1)) (mem_irreducibleComponent X x1).
+
+(; //LEAN:connectedComponentIn_mono ;)
+connectedComponentIn_mono : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (F : Elem (powerset X)) -> (G : Elem (powerset X)) -> (h : Proof (Set__Subset F G)) -> Proof (Set__Subset (connectedComponentIn F x1) (connectedComponentIn G x1)).
+
+(; //LEAN:ContinuousOn.preimage_connectedComponentIn ;)
+ContinuousOn__preimage_connectedComponentIn : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (F : Elem (powerset Y)) -> (hf : Proof (ContinuousOn f (Set__preimage f F))) -> (y : Elem Y) -> Proof (Eqt (powerset X) (Set__preimage f (connectedComponentIn F y)) (Set__iUnion (x2 => Set__iUnion (h => connectedComponentIn (Set__preimage f F) x2)))).
+
+(; //LEAN:Continuous.preimage_connectedComponent ;)
+Continuous__preimage_connectedComponent : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Continuous f)) -> (y : Elem Y) -> Proof (Eqt (powerset X) (Set__preimage f (connectedComponent y)) (Set__iUnion (x2 => Set__iUnion (h => connectedComponent x2)))).
+
+(; //LEAN:PreconnectedSpace ;)
+PreconnectedSpace : (X : Set) -> Prop.
+
+(; //LEAN:PreconnectedSpace.mk ;)
+PreconnectedSpace__mk : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (isPreconnected_univ : Proof (IsPreconnected Set__univ)) -> Proof (PreconnectedSpace X).
+
+(; //LEAN:PreconnectedSpace.isPreconnected_univ ;)
+PreconnectedSpace__isPreconnected_univ : (X : Set) -> (x : Proof (TopologicalSpace X)) -> (_ : Proof (PreconnectedSpace X)) -> Proof (IsPreconnected Set__univ).
+
+(; //LEAN:ConnectedSpace ;)
+ConnectedSpace : (X : Set) -> Prop.
+
+(; //LEAN:connectedSpace_iff ;)
+connectedSpace_iff : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (iff (ConnectedSpace X) (and (PreconnectedSpace X) (Nonempty X))).
+
+(; //LEAN:ConnectedSpace.mk ;)
+ConnectedSpace__mk : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (PreconnectedSpace X)) -> (toNonempty : Proof (Nonempty X)) -> Proof (ConnectedSpace X).
+
+(; //LEAN:isConnected_univ ;)
+def isConnected_univ : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConnectedSpace X)) -> Proof (IsConnected Set__univ) :=
+  X => x => h => andI (Set__Nonempty Set__univ) (IsPreconnected Set__univ) (Set__univ_nonempty X) (PreconnectedSpace__isPreconnected_univ X x).
+
+(; //LEAN:preconnectedSpace_iff_univ ;)
+def preconnectedSpace_iff_univ : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (iff (PreconnectedSpace X) (IsPreconnected Set__univ)) :=
+  X => x => iffI (PreconnectedSpace X) (IsPreconnected Set__univ) (h => PreconnectedSpace__isPreconnected_univ X x) (h1 => PreconnectedSpace__mk h1).
+
+(; //LEAN:connectedSpace_iff_univ ;)
+def connectedSpace_iff_univ : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (iff (ConnectedSpace X) (IsConnected Set__univ)) :=
+  X => x => iffI (ConnectedSpace X) (IsConnected Set__univ) (h => andI (Set__Nonempty Set__univ) (IsPreconnected Set__univ) (Set__univ_nonempty X) (PreconnectedSpace__isPreconnected_univ X x)) (h1 => ConnectedSpace__mk (Nonempty__intro (Set__Nonempty__some (andEl (Set__Nonempty Set__univ) (IsPreconnected Set__univ) h1)))).
+
+(; //LEAN:isPreconnected_range ;)
+isPreconnected_range : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (PreconnectedSpace X)) -> (f : (Elem X -> Y)) -> (h1 : Proof (Continuous f)) -> Proof (IsPreconnected (Set__range f)).
+
+(; //LEAN:isConnected_range ;)
+def isConnected_range : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (ConnectedSpace X)) -> (f : (Elem X -> Y)) -> (h1 : Proof (Continuous f)) -> Proof (IsConnected (Set__range f)) :=
+  X => Y => x => x1 => h => f => h1 => andI (Set__Nonempty (Set__range f)) (IsPreconnected (Set__range f)) (Set__range_nonempty Y X f) (isPreconnected_range X Y f h1).
+
+(; //LEAN:Function.Surjective.connectedSpace ;)
+Function__Surjective__connectedSpace : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConnectedSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Surjective f)) -> (hf' : Proof (Continuous f)) -> Proof (ConnectedSpace Y).
+
+(; //LEAN:Homeomorph.connectedSpace_iff ;)
+def Homeomorph__connectedSpace_iff : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (e : Elem (Homeomorph X Y)) -> Proof (iff (ConnectedSpace X) (ConnectedSpace Y)) :=
+  X => Y => x => x1 => e => iffI (ConnectedSpace X) (ConnectedSpace Y) (h => Function__Surjective__connectedSpace X Y e (Homeomorph__surjective X Y e) (Homeomorph__continuous X Y e)) (h1 => Function__Surjective__connectedSpace Y X (Homeomorph__symm e) (Homeomorph__surjective Y X (Homeomorph__symm e)) (Homeomorph__continuous Y X (Homeomorph__symm e))).
+
+(; //LEAN:DenseRange.preconnectedSpace ;)
+DenseRange__preconnectedSpace : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (PreconnectedSpace X)) -> (f : (Elem X -> Y)) -> (hf : Proof (DenseRange f)) -> (hc : Proof (Continuous f)) -> Proof (PreconnectedSpace Y).
+
+(; //LEAN:connectedSpace_iff_connectedComponent ;)
+connectedSpace_iff_connectedComponent : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (iff (ConnectedSpace X) (exists X (x1 => Eqt (powerset X) (connectedComponent x1) Set__univ))).
+
+(; //LEAN:preconnectedSpace_iff_connectedComponent ;)
+preconnectedSpace_iff_connectedComponent : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (iff (PreconnectedSpace X) (forall X (x1 => Eqt (powerset X) (connectedComponent x1) Set__univ))).
+
+(; //LEAN:PreconnectedSpace.connectedComponent_eq_univ ;)
+def PreconnectedSpace__connectedComponent_eq_univ : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (PreconnectedSpace X)) -> (x1 : Elem X) -> Proof (Eqt (powerset X) (connectedComponent x1) Set__univ) :=
+  X => x => h => x1 => iffEl (PreconnectedSpace X) (forall X (x2 => Eqt (powerset X) (connectedComponent x2) Set__univ)) (preconnectedSpace_iff_connectedComponent X) h x1.
+
+(; //LEAN:Subtype.preconnectedSpace ;)
+Subtype__preconnectedSpace : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (h : Proof (IsPreconnected s)) -> Proof (PreconnectedSpace (Set__Elem s)).
+
+(; //LEAN:Subtype.connectedSpace ;)
+def Subtype__connectedSpace : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (h : Proof (IsConnected s)) -> Proof (ConnectedSpace (Set__Elem s)) :=
+  X => x => s => h => ConnectedSpace__mk (Set__Nonempty__to_subtype X s (IsConnected__nonempty X s h)).
+
+(; //LEAN:isPreconnected_iff_preconnectedSpace ;)
+def isPreconnected_iff_preconnectedSpace : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (IsPreconnected s) (PreconnectedSpace (Set__Elem s))) :=
+  X => x => s => iffI (IsPreconnected s) (PreconnectedSpace (Set__Elem s)) (Subtype__preconnectedSpace X s) (h => Eq__mp (congrArg (powerset X) Prop (Set__image (x1 => Membership__mem s x1) Set__univ) s IsPreconnected (Eq__trans (powerset X) (Set__image (x2 => Membership__mem s x2) Set__univ) (Set__range (x3 => Membership__mem s x3)) (Set__ofPred (x4 => Membership__mem s x4)) (Set__image_univ (Subtype (x5 => Membership__mem s x5)) X (x6 => Membership__mem s x6)) (Subtype__range_coe_subtype X (x7 => Membership__mem s x7)))) (IsPreconnected__image (Subtype (x8 => Membership__mem s x8)) X Set__univ (PreconnectedSpace__isPreconnected_univ (Subtype (x9 => Membership__mem s x9)) instTopologicalSpaceSubtype) (x10 => Membership__mem s x10) (Continuous__continuousOn (Subtype (x11 => Membership__mem s x11)) X (x12 => Membership__mem s x12) Set__univ (continuous_subtype_val X (x13 => Membership__mem s x13))))).
+
+(; //LEAN:isConnected_iff_connectedSpace ;)
+def isConnected_iff_connectedSpace : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (IsConnected s) (ConnectedSpace (Set__Elem s))) :=
+  X => x => s => iffI (IsConnected s) (ConnectedSpace (Set__Elem s)) (Subtype__connectedSpace X s) (h => andI (Set__Nonempty s) (IsPreconnected s) (iffEl (Nonempty (Subtype (x1 => Membership__mem s x1))) (exists X (a => Membership__mem s a)) (nonempty_subtype X (Membership__mem s)) (ConnectedSpace__toNonempty (Set__Elem s) instTopologicalSpaceSubtype)) (iffEr (IsPreconnected s) (PreconnectedSpace (Set__Elem s)) (isPreconnected_iff_preconnectedSpace X s) (ConnectedSpace__toPreconnectedSpace (Set__Elem s) instTopologicalSpaceSubtype))).
+

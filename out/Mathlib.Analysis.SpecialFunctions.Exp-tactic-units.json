@@ -1,0 +1,1273 @@
+[
+ {
+  "name": "Complex__exp_bound_sq",
+  "lean": "Complex.exp_bound_sq",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eqt Complex (minus (minus (Complex__exp (plus x z)) (Complex__exp x)) (times z (Complex__exp x))) (times (Complex__exp x) (minus (minus (Complex__exp z) 1) z))",
+    "by": "congr",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt Complex (minus (minus (times (Complex__exp x) (Complex__exp z)) (Complex__exp x)) (times z (Complex__exp x))) (times (Complex__exp x) (minus (minus (Complex__exp z) 1) z))",
+    "by": "rw [exp_add]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt Complex (minus (minus (times (Complex__exp x) (Complex__exp z)) (Complex__exp x)) (times z (Complex__exp x))) (times (Complex__exp x) (minus (minus (Complex__exp z) 1) z))",
+    "by": "ring",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Complex__locally_lipschitz_exp",
+  "lean": "Complex.locally_lipschitz_exp",
+  "steps": [
+   {
+    "unit": "verify",
+    "prop": "(Eqt Complex y (plus x (minus y x)))",
+    "by": "have hy_eq : y = x + (y - x) := by abel",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt Complex y (plus x (minus y x))",
+    "by": "abel",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(Leq (pow (Norm__norm (minus y x)) 2) (times r (Norm__norm (minus y x))))",
+    "by": "have hyx_sq_le : ‖y - x‖ ^ 2 ≤ r * ‖y - x‖",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (times (Norm__norm (minus y x)) (Norm__norm (minus y x))) (times r (Norm__norm (minus y x)))",
+    "by": "rw [pow_two]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times (Norm__norm (minus y x)) (Norm__norm (minus y x))) (times r (Norm__norm (minus y x)))",
+    "by": "exact mul_le_mul hyx.le le_rfl (norm_nonneg _) hr_nonneg",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(forall Complex (z => if (Leq (Norm__norm z) 1) (Leq (Norm__norm (minus (Complex__exp (plus x z)) (Complex__exp x))) (plus (times (Norm__norm z) (Norm__norm (Complex__exp x))) (times (Norm__norm (Complex__exp x)) (pow (Norm__norm z) 2))))))",
+    "by": "have h_sq : ∀ z, ‖z‖ ≤ 1 → ‖exp (x + z) - exp x‖ ≤ ‖z‖ * ‖exp x‖ + ‖exp x‖ * ‖z‖ ^ 2",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "z",
+      "Elem Complex"
+     ],
+     [
+      "hz",
+      "Proof (Leq (Norm__norm z) 1)"
+     ]
+    ],
+    "by": "intro z hz",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Leq (Norm__norm (minus (minus (Complex__exp (plus x z)) (Complex__exp x)) (HSMul__hSMul z (Complex__exp x)))) (times (Norm__norm (Complex__exp x)) (pow (Norm__norm z) 2)))",
+    "by": "have : ‖exp (x + z) - exp x - z • exp x‖ ≤ ‖exp x‖ * ‖z‖ ^ 2 := exp_bound_sq x z hz",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (minus (Norm__norm (minus (Complex__exp (plus x z)) (Complex__exp x))) (Norm__norm (HSMul__hSMul z (Complex__exp x)))) (times (Norm__norm (Complex__exp x)) (pow (Norm__norm z) 2))",
+    "by": "rw [← sub_le_iff_le_add', ← norm_smul z]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (minus (Norm__norm (minus (Complex__exp (plus x z)) (Complex__exp x))) (Norm__norm (HSMul__hSMul z (Complex__exp x)))) (times (Norm__norm (Complex__exp x)) (pow (Norm__norm z) 2))",
+    "by": "exact (norm_sub_norm_le _ _).trans this",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Norm__norm (minus (Complex__exp y) (Complex__exp x))) (times (times (plus 1 r) (Norm__norm (Complex__exp x))) (Norm__norm (minus y x)))",
+    "by": "calc",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Norm__norm (minus (Complex__exp y) (Complex__exp x))) (Norm__norm (minus (Complex__exp (plus x (minus y x))) (Complex__exp x)))",
+    "by": "nth_rw 1 [hy_eq]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (plus (times (Norm__norm (minus y x)) (Norm__norm (Complex__exp x))) (times (Norm__norm (Complex__exp x)) (pow (Norm__norm (minus y x)) 2))) (plus (times (Norm__norm (minus y x)) (Norm__norm (Complex__exp x))) (times (Norm__norm (Complex__exp x)) (times r (Norm__norm (minus y x)))))",
+    "by": "grw [hyx_sq_le]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (plus (times (Norm__norm (minus y x)) (Norm__norm (Complex__exp x))) (times (Norm__norm (Complex__exp x)) (times r (Norm__norm (minus y x))))) (times (times (plus 1 r) (Norm__norm (Complex__exp x))) (Norm__norm (minus y x)))",
+    "by": "ring",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Complex__exp_sub_sum_range_isBigO_pow",
+  "lean": "Complex.exp_sub_sum_range_isBigO_pow",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "rcases eq_zero_or_pos n with rfl | hn",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Asymptotics__IsBigO (nhds 0) (x => minus (Complex__exp x) (Finset__sum (Finset__range 0) (i => div (pow x i) (factorial i)))) (x1 => pow x1 0)",
+    "by": "simpa using continuous_exp.continuousAt.norm.isBoundedUnder_le",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hn",
+      "Proof (Lt 0 n)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Filter__Eventually (x => Leq (Norm__norm (minus (Complex__exp x) (Finset__sum (Finset__range n) (i => div (pow x i) (factorial i))))) (times (div (succ n) (times (factorial n) n)) (Norm__norm (pow x n)))) (nhds 0)",
+    "by": "refine .of_bound (n.succ / (n ! * n)) ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Real (i => and (Lt 0 i) (forall Complex (x => if (Membership__mem (Set__ofPred (y => Lt (Norm__norm y) i)) x) (Leq (Norm__norm (minus (Complex__exp x) (Finset__sum (Finset__range n) (i1 => div (pow x i1) (factorial i1))))) (times (div (succ n) (times (factorial n) n)) (Norm__norm (pow x n)))))))",
+    "by": "rw [NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff]",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem Complex"
+     ],
+     [
+      "hx",
+      "Proof (Membership__mem (Set__ofPred (y => Lt (Norm__norm y) 1)) x)"
+     ]
+    ],
+    "by": "refine ⟨1, one_pos, fun x hx ↦ ?_⟩",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (Norm__norm (minus (Complex__exp x) (Finset__sum (Finset__range n) (i => div (pow x i) (factorial i))))) (times (div (succ n) (times (factorial n) n)) (Norm__norm (pow x n)))",
+    "by": "refine ⟨1, one_pos, fun x hx ↦ ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (times (div (succ n) (times (factorial n) n)) (Norm__norm (pow x n))) (times (pow (Norm__norm x) n) (times (succ n) (Inv__inv (times (factorial n) n))))",
+    "by": "convert exp_bound hx.out.le hn using 1",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (times (div (succ n) (times (factorial n) n)) (Norm__norm (pow x n))) (times (pow (Norm__norm x) n) (times (succ n) (Inv__inv (times (factorial n) n))))",
+    "by": "simp [field]",
+    "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "UniformContinuousOn__cexp",
+  "lean": "UniformContinuousOn.cexp",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Continuous (minus Complex__exp 1))",
+    "by": "have : Continuous (cexp - 1) := Continuous.sub (by fun_prop) continuous_one",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Continuous Complex__exp",
+    "by": "fun_prop",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(forall Complex (a => forall Real (x => if (Gt x 0) (Filter__Eventually (x1 => Lt (Dist__dist (minus Complex__exp 1 x1) (minus Complex__exp 1 a)) x) (nhds a)))))",
+    "by": "rw [Metric.uniformContinuousOn_iff, Metric.continuous_iff'] at *",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "forall Real (x2 => if (Gt x2 0) (exists Real (x3 => and (Gt x3 0) (forall Complex (x4 => if (Membership__mem (Set__ofPred (x6 => Leq (Complex__re x6) a)) x4) (forall Complex (y => if (Membership__mem (Set__ofPred (x5 => Leq (Complex__re x5) a)) y) (if (Lt (Dist__dist x4 y) x3) (Lt (Dist__dist (Complex__exp x4) (Complex__exp y)) x2)))))))))",
+    "by": "rw [Metric.uniformContinuousOn_iff, Metric.continuous_iff'] at *",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "eps",
+      "Elem Real"
+     ],
+     [
+      "heps",
+      "Proof (Gt eps 0)"
+     ]
+    ],
+    "by": "intro ε hε",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(forall Complex (a => forall Real (x => if (Lt 0 x) (Filter__Eventually (x1 => Lt (Dist__dist (Complex__exp x1) (Complex__exp a)) x) (nhds a)))))",
+    "by": "simp only [gt_iff_lt, Pi.sub_apply, Pi.one_apply, dist_sub_eq_dist_add_right,",
+    "depth": 1
+   },
+   {
+    "unit": "verify",
+    "prop": "(Lt 0 (div eps (times 2 (Real__exp a))))",
+    "by": "have ha : 0 < ε / (2 * Real.exp a) := by positivity",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt 0 (div eps (times 2 (Real__exp a)))",
+    "by": "positivity",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Filter__Eventually (x2 => Lt (Dist__dist (Complex__exp x2) (Complex__exp 0)) (div eps (times 2 (Real__exp a)))) (nhds 0))",
+    "by": "have H := this 0 (ε / (2 * Real.exp a)) ha",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Real (x3 => and (Gt x3 0) (forall Complex (x4 => if (Membership__mem (Set__ofPred (x6 => Leq (Complex__re x6) a)) x4) (forall Complex (y => if (Membership__mem (Set__ofPred (x5 => Leq (Complex__re x5) a)) y) (if (Lt (Dist__dist x4 y) x3) (Lt (Dist__dist (Complex__exp x4) (Complex__exp y)) eps)))))))",
+    "by": "have H := this 0 (ε / (2 * Real.exp a)) ha",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(exists Real (x2 => and (Gt x2 0) (forall Complex (y => if (Lt (Dist__dist y 0) x2) (Lt (Dist__dist (Complex__exp y) (Complex__exp 0)) (div eps (times 2 (Real__exp a))))))))",
+    "by": "rw [Metric.eventually_nhds_iff] at H",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Real (x3 => and (Gt x3 0) (forall Complex (x4 => if (Membership__mem (Set__ofPred (x6 => Leq (Complex__re x6) a)) x4) (forall Complex (y1 => if (Membership__mem (Set__ofPred (x5 => Leq (Complex__re x5) a)) y1) (if (Lt (Dist__dist x4 y1) x3) (Lt (Dist__dist (Complex__exp x4) (Complex__exp y1)) eps)))))))",
+    "by": "rw [Metric.eventually_nhds_iff] at H",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "W",
+      "Elem Real"
+     ],
+     [
+      "hW",
+      "Proof (and (Gt W 0) (forall Complex (y => if (Lt (Dist__dist y 0) W) (Lt (Dist__dist (Complex__exp y) (Complex__exp 0)) (div eps (times 2 (Real__exp a)))))))"
+     ]
+    ],
+    "by": "obtain ⟨δ, hδ⟩ := H",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Real (x2 => and (Gt x2 0) (forall Complex (x3 => if (Membership__mem (Set__ofPred (x5 => Leq (Complex__re x5) a)) x3) (forall Complex (y1 => if (Membership__mem (Set__ofPred (x4 => Leq (Complex__re x4) a)) y1) (if (Lt (Dist__dist x3 y1) x2) (Lt (Dist__dist (Complex__exp x3) (Complex__exp y1)) eps)))))))",
+    "by": "obtain ⟨δ, hδ⟩ := H",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "forall Complex (x2 => if (Membership__mem (Set__ofPred (x4 => Leq (Complex__re x4) a)) x2) (forall Complex (y1 => if (Membership__mem (Set__ofPred (x3 => Leq (Complex__re x3) a)) y1) (if (Lt (Dist__dist x2 y1) W) (Lt (Dist__dist (Complex__exp x2) (Complex__exp y1)) eps)))))",
+    "by": "refine ⟨δ, hδ.1, ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem Complex"
+     ],
+     [
+      "y",
+      "Elem Complex"
+     ],
+     [
+      "hy",
+      "Proof (Membership__mem (Set__ofPred (x3 => Leq (Complex__re x3) a)) y)"
+     ],
+     [
+      "hxy",
+      "Proof (Lt (Dist__dist x y) W)"
+     ]
+    ],
+    "by": "intro x _ y hy hxy",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt (Dist__dist (Complex__exp (minus x y)) (Complex__exp 0)) (div eps (times 2 (Real__exp a))))",
+    "by": "have h3 := hδ.2 (y := x - y) (by simpa only [dist_eq_norm, sub_zero] using hxy)",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (Dist__dist (minus x y) 0) W",
+    "by": "simpa only [dist_eq_norm, sub_zero] using hxy",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "and ((and (Gt W 0) (forall Complex (y => if (Lt (Dist__dist y 0) W) (Lt (Dist__dist (Complex__exp y) 1) (div eps (times 2 (Real__exp a)))))))) (and ((Lt (Norm__norm (minus x y)) W)) ((Lt (Norm__norm (minus (Complex__exp (minus x y)) 1)) (div eps (times 2 (Real__exp a))))))",
+    "by": "rw [dist_eq_norm, exp_zero] at *",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (Norm__norm (minus (Complex__exp x) (Complex__exp y))) eps",
+    "by": "rw [dist_eq_norm, exp_zero] at *",
+    "depth": 2
+   },
+   {
+    "unit": "verify",
+    "prop": "(Eqt Complex (minus (Complex__exp x) (Complex__exp y)) (times (Complex__exp y) (minus (Complex__exp (minus x y)) 1)))",
+    "by": "have : cexp x - cexp y = cexp y * (cexp (x - y) - 1)",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt Complex (minus (Complex__exp x) (Complex__exp y)) (minus (Complex__exp (plus y (minus x y))) (Complex__exp y))",
+    "by": "rw [mul_sub_one, ← exp_add]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt Complex (minus (Complex__exp x) (Complex__exp y)) (minus (Complex__exp (plus y (minus x y))) (Complex__exp y))",
+    "by": "ring_nf",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (Norm__norm (times (minus (Complex__exp (minus x y)) 1) (Complex__exp y))) eps",
+    "by": "rw [this, mul_comm]",
+    "depth": 1
+   },
+   {
+    "unit": "verify",
+    "prop": "(Leq (Norm__norm (Complex__exp y)) (Real__exp a))",
+    "by": "have hya : ‖cexp y‖ ≤ Real.exp a := by simpa only [norm_exp, Real.exp_le_exp]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Norm__norm (Complex__exp y)) (Real__exp a)",
+    "by": "simpa only [norm_exp, Real.exp_le_exp]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "and ((Leq (Complex__re y) a)) (and ((Lt 0 eps)) (and ((and (Lt 0 W) (forall Complex (y => if (Lt (Norm__norm y) W) (Lt (Dist__dist (Complex__exp y) 1) (div eps (times 2 (Real__exp a)))))))) ((Leq (Real__exp (Complex__re y)) (Real__exp a)))))",
+    "by": "simp only [gt_iff_lt, dist_zero_right, Set.mem_ofPred_eq, norm_mul, Complex.norm_exp] at *",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (times (Norm__norm (minus (Complex__exp (minus x y)) 1)) (Real__exp (Complex__re y))) eps",
+    "by": "simp only [gt_iff_lt, dist_zero_right, Set.mem_ofPred_eq, norm_mul, Complex.norm_exp] at *",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (times (div eps (times 2 (Real__exp a))) (Real__exp a)) eps",
+    "by": "apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) ha.le)",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (times (div eps (times 2 (Real__exp a))) (Real__exp a)) eps",
+    "by": "simp [field]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__continuous_exp",
+  "lean": "Real.continuous_exp",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Continuous (x => Complex__re (Complex__exp (Complex__ofReal x)))",
+    "by": "unfold Real.exp",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Continuous (x => Complex__re (Complex__exp (Complex__ofReal x)))",
+    "by": "fun_prop",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__continuousOn_exp",
+  "lean": "Real.continuousOn_exp",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "ContinuousOn Real__exp s",
+    "by": "fun_prop",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__exp_sub_sum_range_isBigO_pow",
+  "lean": "Real.exp_sub_sum_range_isBigO_pow",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Asymptotics__IsBigO (nhds 0) (Function__comp (x => minus (Complex__exp x) (Finset__sum (Finset__range n) (i => div (pow x i) (factorial i)))) Complex__ofReal) (Function__comp (x1 => pow x1 n) Complex__ofReal))",
+    "by": "have := (Complex.exp_sub_sum_range_isBigO_pow n).comp_tendsto",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Asymptotics__IsBigO (nhds 0) (x2 => minus (Real__exp x2) (Finset__sum (Finset__range n) (i1 => div (pow x2 i1) (factorial i1)))) (x3 => pow x3 n)",
+    "by": "have := (Complex.exp_sub_sum_range_isBigO_pow n).comp_tendsto",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Asymptotics__IsBigO (nhds 0) (x => minus (Complex__exp (Complex__ofReal x)) (Finset__sum (Finset__range n) (i => div (pow (Complex__ofReal x) i) (factorial i)))) (x1 => pow (Complex__ofReal x1) n))",
+    "by": "simp only [Function.comp_def] at this",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Asymptotics__IsBigO (nhds 0) (x2 => minus (Real__exp x2) (Finset__sum (Finset__range n) (i1 => div (pow x2 i1) (factorial i1)))) (x3 => pow x3 n)",
+    "by": "norm_cast at this",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__exp_half",
+  "lean": "Real.exp_half",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (Real__exp (div x 2)) (Real__sqrt (Real__exp x))",
+    "by": "rw [eq_comm, sqrt_eq_iff_eq_sq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__tendsto_exp_atTop",
+  "lean": "Real.tendsto_exp_atTop",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Filter__Tendsto (x => plus x 1) Filter__atTop Filter__atTop)",
+    "by": "have A : Tendsto (fun x : ℝ => x + 1) atTop atTop :=",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Filter__Eventually (x1 => Leq (plus x1 1) (Real__exp x1)) Filter__atTop)",
+    "by": "have B : ∀ᶠ x in atTop, x + 1 ≤ exp x := eventually_atTop.2 ⟨0, fun x _ => add_one_le_exp x⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Filter__Tendsto Real__exp Filter__atTop Filter__atTop",
+    "by": "exact tendsto_atTop_mono' atTop B A",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__mul_exp_neg_le_exp_neg_one",
+  "lean": "Real.mul_exp_neg_le_exp_neg_one",
+  "steps": [
+   {
+    "unit": "verify",
+    "prop": "(Leq y (Real__exp (minus y 1)))",
+    "by": "have h_le : y ≤ exp (y - 1) := by simpa using add_one_le_exp (y - 1)",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq y (Real__exp (minus y 1))",
+    "by": "simpa using add_one_le_exp (y - 1)",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(Leq (times y (Real__exp (Neg__neg y))) (times (Real__exp (minus y 1)) (Real__exp (Neg__neg y))))",
+    "by": "have h_mul_le : y * rexp (-y) ≤ rexp (y - 1) * rexp (-y) := by gcongr",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times y (Real__exp (Neg__neg y))) (times (Real__exp (minus y 1)) (Real__exp (Neg__neg y)))",
+    "by": "gcongr",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times y (Real__exp (Neg__neg y))) (Real__exp (Neg__neg 1))",
+    "by": "simpa [← exp_add, sub_add_eq_add_sub] using h_mul_le",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__tendsto_exp_nhds_zero_nhds_one",
+  "lean": "Real.tendsto_exp_nhds_zero_nhds_one",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Eq 1 (Real__exp 0)",
+    "by": "convert continuous_exp.tendsto 0",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq 1 (Real__exp 0)",
+    "by": "simp",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__tendsto_exp_div_pow_atTop",
+  "lean": "Real.tendsto_exp_div_pow_atTop",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "C",
+      "Elem Real"
+     ],
+     [
+      "hC1",
+      "Proof (Leq 1 C)"
+     ]
+    ],
+    "by": "refine (atTop_basis_Ioi.tendsto_iff (atTop_basis' 1)).2 fun C hC₁ => ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Real (ia => and True (forall Real (x => if (Membership__mem (Set__Ioi ia) x) (Membership__mem (Set__Ici C) (div (Real__exp x) (pow x n))))))",
+    "by": "refine (atTop_basis_Ioi.tendsto_iff (atTop_basis' 1)).2 fun C hC₁ => ?_",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt 0 C)",
+    "by": "have hC₀ : 0 < C := zero_lt_one.trans_le hC₁",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt 0 (Inv__inv (times (Real__exp 1) C)))",
+    "by": "have : 0 < (exp 1 * C)⁻¹ := inv_pos.2 (mul_pos (exp_pos _) hC₀)",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "N",
+      "Elem Nat"
+     ],
+     [
+      "hN",
+      "Proof (forall Nat (k => if (Geq k N) (Lt (div (pow k n) (pow (Real__exp 1) k)) (Inv__inv (times (Real__exp 1) C)))))"
+     ]
+    ],
+    "by": "obtain ⟨N, hN⟩ : ∃ N : ℕ, ∀ k ≥ N, (↑k : ℝ) ^ n / exp 1 ^ k < (exp 1 * C)⁻¹ :=",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(forall Nat (k => if (Geq k N) (Lt (pow k n) (div (Real__exp k) (times (Real__exp 1) C)))))",
+    "by": "simp only [← exp_nat_mul, mul_one, div_lt_iff₀, exp_pos, ← div_eq_inv_mul] at hN",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem Real"
+     ],
+     [
+      "hx",
+      "Proof (Membership__mem (Set__Ioi N) x)"
+     ]
+    ],
+    "by": "refine ⟨N, trivial, fun x hx => ?_⟩",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Membership__mem (Set__Ici C) (div (Real__exp x) (pow x n))",
+    "by": "refine ⟨N, trivial, fun x hx => ?_⟩",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt N x)",
+    "by": "rw [Set.mem_Ioi] at hx",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "(Lt 0 x)",
+    "by": "have hx₀ : 0 < x := (Nat.cast_nonneg N).trans_lt hx",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (pow x n) (div (Real__exp x) C)",
+    "by": "rw [Set.mem_Ici, le_div_iff₀ (pow_pos hx₀ _), ← le_div_iff₀' hC₀]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (pow x n) (div (Real__exp x) C)",
+    "by": "calc",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq x (Nat__ceil x)",
+    "by": "gcongr",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq x (Nat__ceil x)",
+    "by": "exact Nat.le_ceil _",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (Nat__ceil x) (plus x 1)",
+    "by": "gcongr",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (Nat__ceil x) (plus x 1)",
+    "by": "exact (Nat.ceil_lt_add_one hx₀.le).le",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (div (Real__exp (plus x 1)) (times (Real__exp 1) C)) (div (Real__exp x) C)",
+    "by": "rw [add_comm, exp_add, mul_div_mul_left _ _ (exp_pos _).ne']",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Real__tendsto_mul_exp_add_div_pow_atTop",
+  "lean": "Real.tendsto_mul_exp_add_div_pow_atTop",
+  "steps": [
+   {
+    "unit": "cases",
+    "by": "rcases eq_or_ne n 0 with (rfl | hn)",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Filter__Tendsto (x => plus (times b (Real__exp x)) c) Filter__atTop Filter__atTop",
+    "by": "simp only [pow_zero, div_one]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Filter__Tendsto (x => plus (times b (Real__exp x)) c) Filter__atTop Filter__atTop",
+    "by": "exact (tendsto_exp_atTop.const_mul_atTop hb).atTop_add tendsto_const_nhds",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "hn",
+      "Proof (Neq n 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Filter__Tendsto (x => plus (times b (div (Real__exp x) (pow x n))) (div c (pow x n))) Filter__atTop Filter__atTop",
+    "by": "simp only [add_div, mul_div_assoc]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Filter__Tendsto (x => plus (times b (div (Real__exp x) (pow x n))) (div c (pow x n))) Filter__atTop Filter__atTop",
+    "by": "exact",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Real__tendsto_div_pow_mul_exp_add_atTop",
+  "lean": "Real.tendsto_div_pow_mul_exp_add_atTop",
+  "steps": [
+   {
+    "unit": "verify",
+    "prop": "(forall Real (d => forall Real (e => if (Lt 0 d) (Filter__Tendsto (x => div (pow x n) (plus (times d (Real__exp x)) e)) Filter__atTop (nhds 0)))))",
+    "by": "have H : ∀ d e, 0 < d → Tendsto (fun x : ℝ => x ^ n / (d * exp x + e)) atTop (𝓝 0)",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Filter__Tendsto (x1 => div (pow x1 n) (plus (times b (Real__exp x1)) c)) Filter__atTop (nhds 0)",
+    "by": "have H : ∀ d e, 0 < d → Tendsto (fun x : ℝ => x ^ n / (d * exp x + e)) atTop (𝓝 0)",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "b'",
+      "Elem Real"
+     ],
+     [
+      "c'",
+      "Elem Real"
+     ],
+     [
+      "h",
+      "Proof (Lt 0 b')"
+     ]
+    ],
+    "by": "intro b' c' h",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eqt (Elem Real -> Real) (x1 => div (pow x1 n) (plus (times b' (Real__exp x1)) c')) (Inv__inv (x2 => div (plus (times b' (Real__exp x2)) c') (pow x2 n)))",
+    "by": "convert (tendsto_mul_exp_add_div_pow_atTop b' c' n h).inv_tendsto_atTop using 1",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem Real"
+     ]
+    ],
+    "by": "ext x",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (div (pow x n) (plus (times b' (Real__exp x)) c')) (Inv__inv (x => div (plus (times b' (Real__exp x)) c') (pow x n)) x)",
+    "by": "ext x",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (div (pow x n) (plus (times b' (Real__exp x)) c')) (Inv__inv (x => div (plus (times b' (Real__exp x)) c') (pow x n)) x)",
+    "by": "simp",
+    "depth": 2
+   },
+   {
+    "unit": "cases",
+    "by": "rcases lt_or_gt_of_ne hb with h | h",
+    "depth": 0
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Lt 0 b)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Filter__Tendsto (x1 => div (pow x1 n) (plus (times b (Real__exp x1)) c)) Filter__atTop (nhds 0)",
+    "by": "exact H b c h",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "h",
+      "Proof (Lt b 0)"
+     ]
+    ],
+    "by": "",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "and (Eqt (Elem Real -> Real) (x2 => div (pow x2 n) (plus (times b (Real__exp x2)) c)) (x3 => Neg__neg (div (pow x3 n) (plus (times (Neg__neg b) (Real__exp x3)) (Neg__neg c))))) (Eqt (Filter Real) (nhds 0) (nhds (Neg__neg 0)))",
+    "by": "convert (H (-b) (-c) (neg_pos.mpr h)).neg using 1",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "x",
+      "Elem Real"
+     ]
+    ],
+    "by": "ext x",
+    "depth": 3
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (div (pow x n) (plus (times b (Real__exp x)) c)) (Neg__neg (div (pow x n) (plus (times (Neg__neg b) (Real__exp x)) (Neg__neg c))))",
+    "by": "ext x",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (div (pow x n) (plus (times b (Real__exp x)) c)) (Neg__neg (div (pow x n) (plus (Neg__neg (times b (Real__exp x))) (Neg__neg c))))",
+    "by": "field_simp",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eq (div (pow x n) (plus (times b (Real__exp x)) c)) (Neg__neg (div (pow x n) (plus (Neg__neg (times b (Real__exp x))) (Neg__neg c))))",
+    "by": "rw [← neg_add (b * exp x) c, div_neg, neg_neg]",
+    "depth": 3
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter Real) (nhds 0) (nhds (Neg__neg 0))",
+    "by": "rw [neg_zero]",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Real__range_exp",
+  "lean": "Real.range_exp",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (powerset Real) (Set__range Real__exp) (Set__Ioi 0)",
+    "by": "rw [← coe_comp_expOrderIso, range_comp, expOrderIso.range_eq, image_univ, Subtype.range_coe]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__image_exp_Iio",
+  "lean": "Real.image_exp_Iio",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (powerset Real) (Set__image Real__exp (Set__Iio a)) (Set__Ioo 0 (Real__exp a))",
+    "by": "rw [← coe_comp_expOrderIso, image_comp, expOrderIso.image_Iio, image_subtype_val_Ioi_Iio,",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__image_exp_Iic",
+  "lean": "Real.image_exp_Iic",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (powerset Real) (Set__image Real__exp (Set__Iic a)) (Set__Ioc 0 (Real__exp a))",
+    "by": "rw [← coe_comp_expOrderIso, image_comp, expOrderIso.image_Iic, image_subtype_val_Ioi_Iic,",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__map_exp_atTop",
+  "lean": "Real.map_exp_atTop",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter Real) (Filter__map Real__exp Filter__atTop) Filter__atTop",
+    "by": "rw [← coe_comp_expOrderIso, ← Filter.map_map, OrderIso.map_atTop, map_val_Ioi_atTop]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__comap_exp_atTop",
+  "lean": "Real.comap_exp_atTop",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter Real) (Filter__comap Real__exp Filter__atTop) Filter__atTop",
+    "by": "rw [← map_exp_atTop, comap_map exp_injective, map_exp_atTop]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__tendsto_exp_comp_atTop",
+  "lean": "Real.tendsto_exp_comp_atTop",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Filter__Tendsto (x1 => Real__exp (f x1)) l Filter__atTop) (Filter__Tendsto f l Filter__atTop)",
+    "by": "simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_atTop]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__tendsto_comp_exp_atTop",
+  "lean": "Real.tendsto_comp_exp_atTop",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Filter__Tendsto (x1 => f (Real__exp x1)) Filter__atTop l) (Filter__Tendsto f Filter__atTop l)",
+    "by": "simp_rw [← comp_apply (g := exp), ← tendsto_map'_iff, map_exp_atTop]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__map_exp_atBot",
+  "lean": "Real.map_exp_atBot",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter Real) (Filter__map Real__exp Filter__atBot) (nhdsWithin 0 (Set__Ioi 0))",
+    "by": "rw [← coe_comp_expOrderIso, ← Filter.map_map, expOrderIso.map_atBot, ← map_coe_Ioi_atBot]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__comap_exp_nhdsGT_zero",
+  "lean": "Real.comap_exp_nhdsGT_zero",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter Real) (Filter__comap Real__exp (nhdsWithin 0 (Set__Ioi 0))) Filter__atBot",
+    "by": "rw [← map_exp_atBot, comap_map exp_injective]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__tendsto_comp_exp_atBot",
+  "lean": "Real.tendsto_comp_exp_atBot",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (Filter__Tendsto (x1 => f (Real__exp x1)) Filter__atBot l) (Filter__Tendsto (Function__comp f Real__exp) Filter__atBot l)",
+    "by": "rw [← map_exp_atBot, tendsto_map'_iff]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Filter__Tendsto (x1 => f (Real__exp x1)) Filter__atBot l) (Filter__Tendsto (Function__comp f Real__exp) Filter__atBot l)",
+    "by": "rfl",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__tendsto_exp_comp_nhds_zero",
+  "lean": "Real.tendsto_exp_comp_nhds_zero",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Filter__Tendsto (x1 => Real__exp (f x1)) l (nhds 0)) (Filter__Tendsto f l Filter__atBot)",
+    "by": "simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__isLittleO_pow_exp_atTop",
+  "lean": "Real.isLittleO_pow_exp_atTop",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Asymptotics__IsLittleO Filter__atTop (x => pow x n) Real__exp",
+    "by": "simpa [isLittleO_iff_tendsto fun x hx => ((exp_pos x).ne' hx).elim] using",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__isBigO_exp_comp_exp_comp",
+  "lean": "Real.isBigO_exp_comp_exp_comp",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Filter__IsBoundedUnder (x2 => x3 => Leq x2 x3) l (x4 => div (Norm__norm (Real__exp (f x4))) (Norm__norm (Real__exp (g x4))))) (Filter__IsBoundedUnder (x5 => x6 => Leq x5 x6) l (minus f g))",
+    "by": "simp only [norm_eq_abs, abs_exp, ← exp_sub, isBoundedUnder_le_exp_comp, Pi.sub_def]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__isTheta_exp_comp_exp_comp",
+  "lean": "Real.isTheta_exp_comp_exp_comp",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Asymptotics__IsTheta l (x2 => Real__exp (f x2)) (x3 => Real__exp (g x3))) (Filter__IsBoundedUnder (x4 => x5 => Leq x4 x5) l (x6 => abs (minus (f x6) (g x6))))",
+    "by": "simp only [isBoundedUnder_le_abs, ← isBoundedUnder_le_neg, neg_sub, IsTheta,",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__isLittleO_exp_comp_exp_comp",
+  "lean": "Real.isLittleO_exp_comp_exp_comp",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Asymptotics__IsLittleO l (x2 => Real__exp (f x2)) (x3 => Real__exp (g x3))) (Filter__Tendsto (x4 => minus (g x4) (f x4)) l Filter__atTop)",
+    "by": "simp only [isLittleO_iff_tendsto, exp_ne_zero, ← exp_sub, ← tendsto_neg_atTop_iff, false_imp_iff,",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__isLittleO_one_exp_comp",
+  "lean": "Real.isLittleO_one_exp_comp",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Asymptotics__IsLittleO l (x1 => 1) (x2 => Real__exp (f x2))) (Filter__Tendsto f l Filter__atTop)",
+    "by": "simp only [← exp_zero, isLittleO_exp_comp_exp_comp, sub_zero]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__isBigO_one_exp_comp",
+  "lean": "Real.isBigO_one_exp_comp",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Asymptotics__IsBigO l (x1 => 1) (x2 => Real__exp (f x2))) (Filter__IsBoundedUnder (x3 => x4 => Geq x3 x4) l f)",
+    "by": "simp only [← exp_zero, isBigO_exp_comp_exp_comp, Pi.sub_def, zero_sub, isBoundedUnder_le_neg]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__isBigO_exp_comp_one",
+  "lean": "Real.isBigO_exp_comp_one",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Asymptotics__IsBigO l (x1 => Real__exp (f x1)) (x2 => 1)) (Filter__IsBoundedUnder (x3 => x4 => Leq x3 x4) l f)",
+    "by": "simp only [isBigO_one_iff, norm_eq_abs, abs_exp, isBoundedUnder_le_exp_comp]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__isTheta_exp_comp_one",
+  "lean": "Real.isTheta_exp_comp_one",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Asymptotics__IsTheta l (x1 => Real__exp (f x1)) (x2 => 1)) (Filter__IsBoundedUnder (x3 => x4 => Leq x3 x4) l (x5 => abs (f x5)))",
+    "by": "simp only [← exp_zero, isTheta_exp_comp_exp_comp, sub_zero]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__summable_exp_nat_mul_iff",
+  "lean": "Real.summable_exp_nat_mul_iff",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "iff (Summable (n => Real__exp (times n a)) (SummationFilter__unconditional Nat)) (Lt a 0)",
+    "by": "simp only [exp_nat_mul, summable_geometric_iff_norm_lt_one, norm_of_nonneg (exp_nonneg _),",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__summable_exp_neg_nat",
+  "lean": "Real.summable_exp_neg_nat",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Summable (n => Real__exp (Neg__neg n)) (SummationFilter__unconditional Nat)",
+    "by": "simpa only [mul_neg_one] using summable_exp_nat_mul_iff.mpr neg_one_lt_zero",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Real__summable_exp_nat_mul_of_ge",
+  "lean": "Real.summable_exp_nat_mul_of_ge",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "i",
+      "Elem Nat"
+     ]
+    ],
+    "by": "refine (Real.summable_exp_nat_mul_iff.mpr hc).of_nonneg_of_le (fun _ ↦ by positivity) fun i ↦ ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (Real__exp (times c (f i))) (Real__exp (times i c))",
+    "by": "refine (Real.summable_exp_nat_mul_iff.mpr hc).of_nonneg_of_le (fun _ ↦ by positivity) fun i ↦ ?_",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq 0 (Real__exp (times c (f x')))",
+    "by": "positivity",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (times c (f i)) (times i c)",
+    "by": "refine Real.exp_monotone ?_",
+    "depth": 1
+   },
+   {
+    "unit": "enough",
+    "prop": "Leq (times c (f i)) (times c i)",
+    "by": "conv_rhs => rw [mul_comm]",
+    "depth": 1
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Leq (times c (f i)) (times c i)",
+    "by": "exact mul_le_mul_of_nonpos_left (hf i) hc.le",
+    "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Real__summable_pow_mul_exp_neg_nat_mul",
+  "lean": "Real.summable_pow_mul_exp_neg_nat_mul",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "Summable (n => times (pow n k) (pow (Real__exp (Neg__neg r)) n)) (SummationFilter__unconditional Nat)",
+    "by": "simp_rw [mul_comm (-r), exp_nat_mul]",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Lt (Norm__norm (Real__exp (Neg__neg r))) 1",
+    "by": "apply summable_pow_mul_geometric_of_norm_lt_one",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Lt (Norm__norm (Real__exp (Neg__neg r))) 1",
+    "by": "rwa [norm_of_nonneg (exp_nonneg _), exp_lt_one_iff, neg_lt_zero]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Complex__comap_exp_cobounded",
+  "lean": "Complex.comap_exp_cobounded",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter Complex) (Filter__comap Complex__exp (Bornology__cobounded Complex)) (Filter__comap Complex__re (Filter__comap Real__exp Filter__atTop))",
+    "by": "simp only [← comap_norm_atTop, comap_comap, comp_def, norm_exp]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter Complex) (Filter__comap Complex__re (Filter__comap Real__exp Filter__atTop)) (Filter__comap Complex__re Filter__atTop)",
+    "by": "rw [Real.comap_exp_atTop]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Complex__comap_exp_nhdsNE",
+  "lean": "Complex.comap_exp_nhdsNE",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "(Eqt (powerset Complex) (Compl__compl (Set__preimage Complex__exp (Singleton__singleton 0))) Set__univ)",
+    "by": "have : (exp ⁻¹' {0})ᶜ = Set.univ := eq_univ_of_forall exp_ne_zero",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Filter Complex) (Filter__comap Complex__exp (nhdsWithin 0 (Compl__compl (Singleton__singleton 0)))) (Filter__comap Complex__re Filter__atBot)",
+    "by": "simp [nhdsWithin, comap_exp_nhds_zero, this]",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Complex__tendsto_exp_nhds_zero_iff",
+  "lean": "Complex.tendsto_exp_nhds_zero_iff",
+  "steps": [
+   {
+    "unit": "enough",
+    "prop": "iff (Filter__Tendsto (Function__comp Complex__re f) l Filter__atBot) (Filter__Tendsto (x1 => Complex__re (f x1)) l Filter__atBot)",
+    "by": "simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero, tendsto_comap_iff]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "iff (Filter__Tendsto (Function__comp Complex__re f) l Filter__atBot) (Filter__Tendsto (x1 => Complex__re (f x1)) l Filter__atBot)",
+    "by": "rfl",
+    "depth": 0
+   }
+  ]
+ }
+]

@@ -270,8 +270,9 @@ def formulas(dk, decls, force=False):
 
 def proof_texts(base, proofs, langs):
     """Dedukti blocks of proved theorems -> language -> the rows (number,
-    sentence, justification) of each proof text; a proof that Informath
-    cannot render stops its call, and the output buffered before the error
+    sentence, justification) of each proof text, None for a proof that
+    Informath cannot render: it marks it and goes on (% PROOF FAILED), but
+    an error it does not catch stops its call, and the output buffered before the error
     is lost, so the proofs before it may be cut off too. The next call
     starts at the first proof without its tables; a call that gives nothing
     is tried with its first proof alone, and only if that fails too does
@@ -284,7 +285,6 @@ def proof_texts(base, proofs, langs):
         i += len(texts)
         if alone:
             if not texts:          # it fails alone too
-                failed.append(i)
                 out.append(None)
                 i += 1
             alone = False
@@ -292,6 +292,7 @@ def proof_texts(base, proofs, langs):
             alone = not texts      # nothing came: try the first proof alone
         else:
             break
+    failed = [k for k, t in enumerate(out) if t is None]
     return out, failed
 
 
@@ -312,6 +313,10 @@ def proof_tables(stdout, langs):
     """The proof texts of an output, as long as each has a table in every language."""
     out = []
     for sec in re.split(r'\\subsection\*', stdout)[1:]:
+        # RunInformath marks a proof whose text it could not make, and goes on
+        if '% PROOF FAILED' in sec:
+            out.append(None)
+            continue
         tables = re.findall(r'\\begin\{tabular\}\{[^\n]*\}\n(.*?)\\end\{tabular\}', sec, re.S)
         if len(tables) < len(langs):
             break

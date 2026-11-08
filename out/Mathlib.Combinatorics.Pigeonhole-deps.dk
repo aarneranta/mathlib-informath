@@ -1,0 +1,138 @@
+(; constants used by Mathlib.Combinatorics.Pigeonhole, declared with their translated types ;)
+
+(; doc: An additive commutative monoid is an additive monoid with commutative `(+)`. ;)
+(; //LEAN:AddCommMonoid ;)
+AddCommMonoid : (M : Set) -> Prop.
+
+(; doc: A commutative semiring is a semiring with commutative multiplication. ;)
+(; //LEAN:CommSemiring ;)
+CommSemiring : (R : Set) -> Prop.
+
+(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
+(; //LEAN:Eq.mpr ;)
+Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+
+(; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
+(; //LEAN:Finset ;)
+Finset : (X : Set) -> Set.
+
+(; doc: The property `s.Nonempty` expresses the fact that the finset `s` is not empty. It should be used in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks to the dot notation. ;)
+(; //LEAN:Finset.Nonempty ;)
+Finset__Nonempty : (s : Elem (Finset X)) -> Prop.
+
+(; doc: `Finset.biUnion s t` is the union of `t a` over `a ∈ s`.  (This was formerly `bind` due to the monad structure on types with `DecidableEq`.) ;)
+(; //LEAN:Finset.biUnion ;)
+Finset__biUnion : (s : Elem (Finset X)) -> (t : (Elem X -> Finset Y)) -> Elem (Finset Y).
+
+(; doc: `s.card` is the number of elements of `s`, aka its cardinality.  The notation `#s` can be accessed in the `Finset` locale. ;)
+(; //LEAN:Finset.card ;)
+Finset__card : (s : Elem (Finset X)) -> Elem Nat.
+
+(; //LEAN:Finset.exists_le_of_sum_le ;)
+Finset__exists_le_of_sum_le : (I : Set) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (LinearOrder M)) -> (f : (Elem I -> M)) -> (g : (Elem I -> M)) -> (s : Elem (Finset I)) -> (_ : Proof (IsOrderedCancelAddMonoid M)) -> (hs : Proof (Finset__Nonempty s)) -> (Hle : Proof (Leq (Finset__sum s (i1 => f i1)) (Finset__sum s (i2 => g i2)))) -> Proof (exists I (i => and (Membership__mem s i) (Leq (f i) (g i)))).
+
+(; //LEAN:Finset.exists_lt_of_sum_lt ;)
+Finset__exists_lt_of_sum_lt : (I : Set) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (LinearOrder M)) -> (f : (Elem I -> M)) -> (g : (Elem I -> M)) -> (s : Elem (Finset I)) -> (_ : Proof (IsOrderedAddMonoid M)) -> (Hlt : Proof (Lt (Finset__sum s (i1 => f i1)) (Finset__sum s (i2 => g i2)))) -> Proof (exists I (i => and (Membership__mem s i) (Lt (f i) (g i)))).
+
+(; doc: `Finset.filter p s` is the set of elements of `s` that satisfy `p`.  For example, one can use `s.filter (· ∈ t)` to get the intersection of `s` with `t : Set α` as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available). ;)
+(; //LEAN:Finset.filter ;)
+Finset__filter : (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Elem (Finset X).
+
+(; doc: Given nonempty finset `s` then `s.inf' H f` is the infimum of its image under `f` in (possibly unbounded) meet-semilattice `α`, where `H` is a proof of nonemptiness. If `α` has a top element you may instead use `Finset.inf` which does not require `s` nonempty. ;)
+(; //LEAN:Finset.inf' ;)
+Finset__inf' : (s : Elem (Finset Y)) -> (H : Proof (Finset__Nonempty s)) -> (f : (Elem Y -> X)) -> Elem X.
+
+(; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
+(; //LEAN:Finset.sum ;)
+Finset__sum : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+
+(; //LEAN:Finset.sum_const ;)
+Finset__sum_const : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (_ : Proof (AddCommMonoid M)) -> (b : Elem M) -> Proof (Eqt M (Finset__sum s (_x => b)) (HSMul__hSMul (Finset__card s) b)).
+
+(; //LEAN:Finset.sum_fiberwise_of_maps_to ;)
+Finset__sum_fiberwise_of_maps_to : (I : Set) -> (J : Set) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (s : Elem (Finset I)) -> (t : Elem (Finset J)) -> (g : (Elem I -> J)) -> (h : Proof (forall I (i3 => if (Membership__mem s i3) (Membership__mem t (g i3))))) -> (f : (Elem I -> M)) -> Proof (Eqt M (Finset__sum t (j => Finset__sum (Finset__filter (i => Eqt J (g i) j) s) (i1 => f i1))) (Finset__sum s (i2 => f i2))).
+
+(; //LEAN:Finset.sum_le_sum_fiberwise_of_sum_fiber_nonpos ;)
+Finset__sum_le_sum_fiberwise_of_sum_fiber_nonpos : (I : Set) -> (N : Set) -> (_ : Proof (AddCommMonoid N)) -> (_ : Proof (Preorder N)) -> (s : Elem (Finset I)) -> (X : Set) -> (t : Elem (Finset X)) -> (g : (Elem I -> X)) -> (f : (Elem I -> N)) -> (h1 : Proof (forall X (y1 => if (not (Membership__mem t y1)) (Leq (Finset__sum (Finset__filter (x6 => Eqt X (g x6) y1) s) (x7 => f x7)) 0)))) -> Proof (Leq (Finset__sum s (x3 => f x3)) (Finset__sum t (y => Finset__sum (Finset__filter (x4 => Eqt X (g x4) y) s) (x5 => f x5)))).
+
+(; doc: `univ` is the universal finite set of type `Finset α` implied from the assumption `Fintype α`. ;)
+(; //LEAN:Finset.univ ;)
+Finset__univ : Elem (Finset X).
+
+(; doc: `Fintype α` means that `α` is finite, i.e. there are only finitely many distinct elements of type `α`. The evidence of this is a finset `elems` (a list up to permutation without duplicates), together with a proof that everything of type `α` is in the list. ;)
+(; //LEAN:Fintype ;)
+Fintype : (X : Set) -> Prop.
+
+(; doc: `card α` is the number of elements in `α`, defined when `α` is a fintype. ;)
+(; //LEAN:Fintype.card ;)
+Fintype__card : (X : Set) -> Elem Nat.
+
+(; doc: `a % b` computes the remainder upon dividing `a` by `b`. The meaning of this notation is type-dependent. * For `Nat` and `Int` it satisfies `a % b + b * (a / b) = a`,   and `a % 0` is defined to be `a`.  Conventions for notations in identifiers:   * The recommended spelling of `%` in identifiers is `mod`. ;)
+(; //LEAN:HMod.hMod ;)
+HMod__hMod : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+
+(; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
+(; //LEAN:HSMul.hSMul ;)
+HSMul__hSMul : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+
+(; doc: An ordered cancellative additive monoid is an ordered additive monoid in which addition is cancellative and monotone. ;)
+(; //LEAN:IsOrderedCancelAddMonoid ;)
+IsOrderedCancelAddMonoid : (X : Set) -> Prop.
+
+(; doc: A strict ordered semiring is a nontrivial semiring with a partial order such that addition is strictly monotone and multiplication by a positive number is strictly monotone. ;)
+(; //LEAN:IsStrictOrderedRing ;)
+IsStrictOrderedRing : (R : Set) -> Prop.
+
+(; doc: A linear order is reflexive, transitive, antisymmetric and total relation `≤`. We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. ;)
+(; //LEAN:LinearOrder ;)
+LinearOrder : (X : Set) -> Prop.
+
+(; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
+(; //LEAN:Membership.mem ;)
+Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+
+(; doc: Modular equality. `n.ModEq a b`, or `a ≡ b [MOD n]`, means that `a % n = b % n`. ;)
+(; //LEAN:Nat.ModEq ;)
+Nat__ModEq : (n : Elem Nat) -> (a : Elem Nat) -> (b : Elem Nat) -> Prop.
+
+(; //LEAN:Nat.mod_lt ;)
+Nat__mod_lt : (x : Elem Nat) -> (y : Elem Nat) -> (hy : Proof (Lt 0 y)) -> Proof (Lt (HMod__hMod x y) y).
+
+(; doc: Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is notation for `OrderDual α`. ;)
+(; //LEAN:OrderDual ;)
+OrderDual : (X : Set) -> Set.
+
+(; doc: `Iio b` is the left-infinite right-open interval $(-∞, b)$. ;)
+(; //LEAN:Set.Iio ;)
+Set__Iio : (b : Elem X) -> Elem (powerset X).
+
+(; doc: A set is infinite if it is not finite.  This is protected so that it does not conflict with global `Infinite`. ;)
+(; //LEAN:Set.Infinite ;)
+Set__Infinite : (s : Elem (powerset X)) -> Prop.
+
+(; //LEAN:Set.Infinite.exists_lt_map_eq_of_mapsTo ;)
+Set__Infinite__exists_lt_map_eq_of_mapsTo : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> (f : (Elem X -> Y)) -> (hs : Proof (Set__Infinite s)) -> (hf : Proof (Set__MapsTo f s t)) -> (ht : Proof (Set__Finite t)) -> Proof (exists X (x1 => and (Membership__mem s x1) (exists X (y => and (Membership__mem s y) (and (Lt x1 y) (Eqt Y (f x1) (f y))))))).
+
+(; //LEAN:Set.finite_lt_nat ;)
+Set__finite_lt_nat : (n : Elem Nat) -> Proof (Set__Finite (Set__ofPred (i => Lt i n))).
+
+(; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
+(; //LEAN:Trans.trans ;)
+Trans__trans : (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
+
+(; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:congr ;)
+congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
+
+(; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:congrArg ;)
+congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+
+(; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
+(; //LEAN:congrFun' ;)
+congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Eqt (Elem X -> Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
+
+(; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
+(; //LEAN:id ;)
+id : (a : Elem X) -> Elem X.
+

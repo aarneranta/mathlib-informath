@@ -1,0 +1,125 @@
+(; constants used by Mathlib.Data.Int.GCD, declared with their translated types ;)
+
+(; doc: An `AddGroup` is an `AddMonoid` with a unary `-` satisfying `-a + a = 0`.  There is also a binary operation `-` such that `a - b = a + -b`, with a default so that `a - b = a + -b` holds by definition.  Use `AddGroup.ofLeftAxioms` or `AddGroup.ofRightAxioms` to define an additive group structure on a type with the minimum proof obligations.  [Wikidata Q83478](https://www.wikidata.org/wiki/Q83478) ;)
+(; //LEAN:AddGroup ;)
+AddGroup : (A : Set) -> Prop.
+
+(; doc: An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. ;)
+(; //LEAN:AddMonoid ;)
+AddMonoid : (M : Set) -> Prop.
+
+(; doc: A type `G₀` is a commutative “group with zero” if it is a commutative monoid with zero element (distinct from `1`) such that every nonzero element is invertible. The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. ;)
+(; //LEAN:CommGroupWithZero ;)
+CommGroupWithZero : (X : Set) -> Prop.
+
+(; doc: Two elements commute if `a * b = b * a`. ;)
+(; //LEAN:Commute ;)
+Commute : (a : Elem M) -> (b : Elem M) -> Prop.
+
+(; //LEAN:Commute.all ;)
+Commute__all : (S : Set) -> (_ : Proof (CommMagma S)) -> (a : Elem S) -> (b : Elem S) -> Proof (Commute a b).
+
+(; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:Eq.symm ;)
+Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Proof (Eqt X b a).
+
+(; doc: A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.  There is also a division operation `/` such that `a / b = a * b⁻¹`, with a default so that `a / b = a * b⁻¹` holds by definition.  Use `Group.ofLeftAxioms` or `Group.ofRightAxioms` to define a group structure on a type with the minimum proof obligations.  [Wikidata Q83478](https://www.wikidata.org/wiki/Q83478) ;)
+(; //LEAN:Group ;)
+Group : (G : Set) -> Prop.
+
+(; doc: A type `G₀` is a “group with zero” if it is a monoid with zero element (distinct from `1`) such that every nonzero element is invertible. The type is required to come with an “inverse” function, and the inverse of `0` must be `0`.  Examples include division rings and the ordered monoids that are the target of valuations in general valuation theory. ;)
+(; //LEAN:GroupWithZero ;)
+GroupWithZero : (X : Set) -> Prop.
+
+(; doc: `a % b` computes the remainder upon dividing `a` by `b`. The meaning of this notation is type-dependent. * For `Nat` and `Int` it satisfies `a % b + b * (a / b) = a`,   and `a % 0` is defined to be `a`.  Conventions for notations in identifiers:   * The recommended spelling of `%` in identifiers is `mod`. ;)
+(; //LEAN:HMod.hMod ;)
+HMod__hMod : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+
+(; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
+(; //LEAN:HSMul.hSMul ;)
+HSMul__hSMul : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+
+(; //LEAN:Int.dvd_antisymm ;)
+Int__dvd_antisymm : (a : Elem Int) -> (b : Elem Int) -> (H1 : Proof (Leq 0 a)) -> (H2 : Proof (Leq 0 b)) -> (h : Proof (divide a b)) -> (h1 : Proof (divide b a)) -> Proof (Eq a b).
+
+(; //LEAN:Int.dvd_coe_gcd ;)
+Int__dvd_coe_gcd : (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (ha : Proof (divide c a)) -> (hb : Proof (divide c b)) -> Proof (divide c (Int__gcd a b)).
+
+(; //LEAN:Int.ediv_mul_cancel ;)
+Int__ediv_mul_cancel : (a : Elem Int) -> (b : Elem Int) -> (H : Proof (divide b a)) -> Proof (Eq (times (div a b) b) a).
+
+(; doc: Computes the greatest common divisor of two integers as a natural number. The GCD of two integers is the largest natural number that evenly divides both. However, the GCD of a number and `0` is the number's absolute value.  This implementation uses `Nat.gcd`, which is overridden in both the kernel and the compiler to efficiently evaluate using arbitrary-precision arithmetic.  Examples: * `Int.gcd 10 15 = 5` * `Int.gcd 10 (-15) = 5` * `Int.gcd (-6) (-9) = 3` * `Int.gcd 0 5 = 5` * `Int.gcd (-7) 0 = 7` ;)
+(; //LEAN:Int.gcd ;)
+Int__gcd : (m : Elem Int) -> (n : Elem Int) -> Elem Nat.
+
+(; //LEAN:Int.gcd_dvd_left ;)
+Int__gcd_dvd_left : (a : Elem Int) -> (b : Elem Int) -> Proof (divide (Int__gcd a b) a).
+
+(; //LEAN:Int.gcd_dvd_right ;)
+Int__gcd_dvd_right : (a : Elem Int) -> (b : Elem Int) -> Proof (divide (Int__gcd a b) b).
+
+(; //LEAN:Int.gcd_ediv ;)
+Int__gcd_ediv : (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (ha : Proof (divide c a)) -> (hb : Proof (divide c b)) -> Proof (Eq (Int__gcd (div a c) (div b c)) (div (Int__gcd a b) (Int__natAbs c))).
+
+(; //LEAN:Int.gcd_ediv_gcd_ediv_gcd ;)
+Int__gcd_ediv_gcd_ediv_gcd : (i : Elem Int) -> (j : Elem Int) -> (h : Proof (Lt 0 (Int__gcd i j))) -> Proof (Eq (Int__gcd (div i (Int__gcd i j)) (div j (Int__gcd i j))) 1).
+
+(; doc: Computes the least common multiple of two integers as a natural number. The LCM of two integers is the smallest natural number that's evenly divisible by the absolute values of both.  Examples:  * `Int.lcm 9 6 = 18`  * `Int.lcm 9 (-6) = 18`  * `Int.lcm 9 3 = 9`  * `Int.lcm 9 (-3) = 9`  * `Int.lcm 0 3 = 0`  * `Int.lcm (-3) 0 = 0` ;)
+(; //LEAN:Int.lcm ;)
+Int__lcm : (m : Elem Int) -> (n : Elem Int) -> Elem Nat.
+
+(; doc: The absolute value of an integer is its distance from `0`.  This function is overridden by the compiler with an efficient implementation. This definition is the logical model.  Examples:  * `(7 : Int).natAbs = 7`  * `(0 : Int).natAbs = 0`  * `(-11 : Int).natAbs = 11` ;)
+(; //LEAN:Int.natAbs ;)
+Int__natAbs : (m : Elem Int) -> Elem Nat.
+
+(; //LEAN:Int.natCast_nonneg ;)
+Int__natCast_nonneg : (n : Elem Nat) -> Proof (Leq 0 n).
+
+(; doc: `a` is a least element of a set `s`; for a partial order, it is unique if exists. ;)
+(; //LEAN:IsLeast ;)
+IsLeast : (s : Elem (powerset X)) -> (a : Elem X) -> Prop.
+
+(; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
+(; //LEAN:Membership.mem ;)
+Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+
+(; doc: A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. ;)
+(; //LEAN:Monoid ;)
+Monoid : (M : Set) -> Prop.
+
+(; doc: `m` and `n` are coprime, or relatively prime, if their `gcd` is 1. ;)
+(; //LEAN:Nat.Coprime ;)
+Nat__Coprime : (m : Elem Nat) -> (n : Elem Nat) -> Prop.
+
+(; doc: The least common multiple of `m` and `n` is the smallest natural number that's evenly divisible by both `m` and `n`. Returns `0` if either `m` or `n` is `0`.  Examples:  * `Nat.lcm 9 6 = 18`  * `Nat.lcm 9 3 = 9`  * `Nat.lcm 0 3 = 0`  * `Nat.lcm 3 0 = 0` ;)
+(; //LEAN:Nat.lcm ;)
+Nat__lcm : (m : Elem Nat) -> (n : Elem Nat) -> Elem Nat.
+
+(; doc: The product type, usually written `α × β`. Product types are also called pair or tuple types. Elements of this type are pairs in which the first element is an `α` and the second element is a `β`.  Products nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.  Conventions for notations in identifiers:   * The recommended spelling of `×` in identifiers is `Prod`. ;)
+(; //LEAN:Prod ;)
+Prod : (X : Set) -> (Y : Set) -> Set.
+
+(; doc: The first element of a pair. ;)
+(; //LEAN:Prod.fst ;)
+Prod__fst : (self : Elem (Prod X Y)) -> Elem X.
+
+(; doc: Constructs a pair. This is usually written `(x, y)` instead of `Prod.mk x y`.  Conventions for notations in identifiers:   * The recommended spelling of `(a, b)` in identifiers is `mk`. ;)
+(; //LEAN:Prod.mk ;)
+Prod__mk : (fst : Elem X) -> (snd : Elem Y) -> Elem (Prod X Y).
+
+(; doc: The second element of a pair. ;)
+(; //LEAN:Prod.snd ;)
+Prod__snd : (self : Elem (Prod X Y)) -> Elem Y.
+
+(; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
+(; //LEAN:Set.ofPred ;)
+Set__ofPred : (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+
+(; doc: Range of a function.  This function is more flexible than `f '' univ`, as the image requires that the domain is in Type and not an arbitrary Sort. ;)
+(; //LEAN:Set.range ;)
+Set__range : (f : (Elem I -> X)) -> Elem (powerset X).
+
+(; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
+(; //LEAN:rfl ;)
+rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
+

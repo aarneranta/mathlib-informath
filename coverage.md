@@ -94,22 +94,23 @@ The constants without a wording, by the number of readings they occur in.
 
 | constant | readings | modules |
 |---|---|---|
-| `Leq` | 53 | 16 |
-| `Lt` | 52 | 14 |
+| `Leq` | 68 | 18 |
+| `Lt` | 58 | 15 |
 | `Proof` | 48 | 11 |
 | `SummationFilter__unconditional` | 36 | 2 |
 | `Equiv__mk` | 30 | 11 |
-| `Eq` | 28 | 12 |
-| `Neq` | 25 | 11 |
+| `Eq` | 30 | 14 |
+| `Neq` | 27 | 12 |
 | `Filter__HasBasis` | 25 | 3 |
 | `OneHom__mk` | 22 | 7 |
 | `Nat__factorization` | 22 | 6 |
 | `Set__range` | 21 | 6 |
 | `ZeroHom__mk` | 21 | 5 |
-| `Nat__divisors` | 21 | 5 |
 | `True` | 20 | 8 |
+| `Nat__divisors` | 20 | 4 |
 | `MonoidHom__mk` | 18 | 7 |
 | `Module__IsTorsionFree` | 18 | 3 |
+| `Geq` | 16 | 4 |
 | `AddHom__mk` | 16 | 5 |
 | `AddMonoidHom__mk` | 16 | 4 |
 | `Quotient__out` | 15 | 2 |
@@ -121,7 +122,6 @@ The constants without a wording, by the number of readings they occur in.
 | `Subgroup__mk` | 13 | 3 |
 | `Function__Embedding__mk` | 13 | 3 |
 | `Nat__primeFactors` | 13 | 3 |
-| `Nat__properDivisors` | 13 | 2 |
 | `Finsupp__linearCombination__app` | 13 | 2 |
 | `Filter__generate` | 13 | 1 |
 | `NNReal__toReal` | 13 | 3 |
@@ -130,12 +130,13 @@ The constants without a wording, by the number of readings they occur in.
 | `Subgroup__subgroupOf` | 12 | 2 |
 | `AddSubgroup__addSubgroupOf` | 12 | 2 |
 | `Nat__card` | 12 | 2 |
+| `Nat__properDivisors` | 12 | 1 |
 | `Polynomial__erase` | 12 | 1 |
 | `Filter__atBot` | 12 | 1 |
 | `Elem` | 11 | 5 |
 | `Sum` | 11 | 4 |
-| `Min` | 11 | 2 |
 | `Max` | 11 | 2 |
+| `Min` | 11 | 2 |
 | `Setoid` | 11 | 3 |
 | `NonUnitalNonAssocSemiring` | 11 | 1 |
 | `QuotientGroup__mk'` | 11 | 1 |
@@ -189,7 +190,6 @@ The constants without a wording, by the number of readings they occur in.
 | `AddMonoidHom__range` | 8 | 1 |
 | `RightCancelMonoid` | 8 | 1 |
 | `AddRightCancelMonoid` | 8 | 1 |
-| `Finset__map` | 8 | 2 |
 | `ZMod__val` | 8 | 1 |
 | `Matrix__updateRow` | 8 | 1 |
 | `Ideal__Quotient__mk` | 8 | 1 |
@@ -241,6 +241,6 @@ The constants without a wording, by the number of readings they occur in.
 | `Finset__HasAntidiagonal__antidiagonal` | 6 | 2 |
 | `Nat__xgcdAux` | 6 | 1 |
 | `List__length` | 6 | 3 |
+| `Finset__map` | 6 | 1 |
 | `Set__Pairwise` | 6 | 1 |
 | `LinearMap__mk` | 6 | 3 |
-| `RingHomInvPair` | 6 | 3 |

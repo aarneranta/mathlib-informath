@@ -35,8 +35,8 @@ GENERATED_TABLES = ['definitions.dkgf']
 PLACEHOLDER = re.compile(r"\[[A-Za-z0-9_']+_[A-Z][A-Za-z0-9]*\]")   # a function without a linearization
 INDEX = 'index.json'
 ALL_LANGUAGES = ['Eng', 'Fre', 'Cze', 'Ger', 'Swe']  # build-html.py shows them in this order
-# the verbal readings made: English only, unless LANGUAGES=Eng,Fre,... is set
-LANGUAGES = [l for l in ALL_LANGUAGES if l in os.environ.get('LANGUAGES', 'Eng').split(',')]
+# the verbal readings made: English, French and Czech, unless LANGUAGES=Eng,... is set
+LANGUAGES = [l for l in ALL_LANGUAGES if l in os.environ.get('LANGUAGES', 'Eng,Fre,Cze').split(',')]
 # German linearization can take minutes on nested noun phrases (GF, RGL), so
 # German is read apart, in chunks with a time limit of PER_ITEM seconds per
 # statement or proof, on top of the time RunInformath takes to load; a slow

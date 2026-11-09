@@ -150,8 +150,8 @@ The constants without a wording, by the number of readings they occur in.
 | `Quotient__mk''` | 10 | 2 |
 | `InvolutiveNeg` | 10 | 2 |
 | `InvolutiveInv` | 10 | 2 |
-| `AddSubmonoid__mk` | 10 | 6 |
 | `AddSubsemigroup__mk` | 10 | 6 |
+| `AddSubmonoid__mk` | 10 | 6 |
 | `List__toFinset` | 10 | 3 |
 | `Multiset__count` | 10 | 2 |
 | `Polynomial__coeff__app` | 10 | 2 |

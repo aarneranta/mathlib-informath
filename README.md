@@ -220,7 +220,10 @@ all modules, 7024 of the 9126 readings are fully worded, and 7596 of the 8472
 theorems have a proof text (3647 from terms, 3949 from tactics); 41 proofs
 fail, mostly where a λ proves a proposition that is a ∀ only after a definition
 is unfolded. The
-readings are English only for now (`LANGUAGES` in `build-index.py`).
+readings and proof texts are in English, French and Czech (`LANGUAGES` in
+`build-index.py`): 6606 of the readings are fully worded in French and 6519
+in Czech. The French and Czech words of the Mathlib lexicon
+(`translations.tsv`) are to be reviewed.
 
 The statements leave out, besides decidability, the instance hypotheses that
 a textbook never states (`droppedInstance` in `Export.lean`: the coercion

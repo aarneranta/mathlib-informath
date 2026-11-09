@@ -6,11 +6,11 @@ def Rat__pos : (a : Elem Rat) -> Proof (Lt 0 (Rat__den a)) :=
 
 (; //LEAN:Rat.mk'_num_den ;)
 def Rat__mk'_num_den : (q : Elem Rat) -> Proof (Eq (Rat__mk' (Rat__num q) (Rat__den q) (Rat__den_nz q) (Rat__reduced q)) q) :=
-  q => rfl.
+  q => rfl Rat (Rat__mk' (Rat__num q) (Rat__den q) (Rat__den_nz q) (Rat__reduced q)).
 
 (; //LEAN:Rat.ofInt_eq_cast ;)
 def Rat__ofInt_eq_cast : (n : Elem Int) -> Proof (Eq (Rat__ofInt n) n) :=
-  n => rfl.
+  n => rfl Rat (Rat__ofInt n).
 
 (; //LEAN:Rat.intCast_injective ;)
 def Rat__intCast_injective : Proof (Function__Injective Rat__instIntCast) :=
@@ -30,7 +30,7 @@ def Rat__natCast_eq_one_iff : (n : Elem Nat) -> Proof (iff (Eq n 1) (Eq n 1)) :=
 
 (; //LEAN:Rat.mkRat_eq_divInt ;)
 def Rat__mkRat_eq_divInt : (n : Elem Int) -> (d : Elem Nat) -> Proof (Eq (mkRat n d) (Rat__divInt n d)) :=
-  n => d => rfl.
+  n => d => rfl Rat (mkRat n d).
 
 (; //LEAN:Rat.mk'_zero ;)
 Rat__mk'_zero : (d : Elem Nat) -> (h : Proof (Neq d 0)) -> (w : Proof (Nat__Coprime (Int__natAbs 0) d)) -> Proof (Eq (Rat__mk' 0 d h w) 0).
@@ -82,7 +82,7 @@ Rat__pow_eq_divInt : (q : Elem Rat) -> (n : Elem Nat) -> Proof (Eq (pow q n) (Ra
 
 (; //LEAN:Rat.mk'_pow ;)
 def Rat__mk'_pow : (num : Elem Int) -> (den : Elem Nat) -> (hd : Proof (Neq den 0)) -> (hdn : Proof (Nat__Coprime (Int__natAbs num) den)) -> (n : Elem Nat) -> Proof (Eq (pow (Rat__mk' num den hd hdn) n) (Rat__mk' (pow num n) (pow den n) (Rat__mk'_pow___proof_2 den hd n) (Rat__mk'_pow___proof_3 num den hdn n))) :=
-  num => den => hd => hdn => n => rfl.
+  num => den => hd => hdn => n => rfl Rat (pow (Rat__mk' num den hd hdn) n).
 
 (; //LEAN:Rat.inv_mkRat ;)
 Rat__inv_mkRat : (a : Elem Int) -> (b : Elem Nat) -> Proof (Eq (Inv__inv (mkRat a b)) (Rat__divInt b a)).
@@ -104,19 +104,19 @@ Rat__zero_ne_one : Proof (Neq 0 1).
 
 (; //LEAN:Rat.den_neg_eq_den ;)
 def Rat__den_neg_eq_den : (q : Elem Rat) -> Proof (Eq (Rat__den (Neg__neg q)) (Rat__den q)) :=
-  q => rfl.
+  q => rfl Nat (Rat__den (Neg__neg q)).
 
 (; //LEAN:Rat.num_neg_eq_neg_num ;)
 def Rat__num_neg_eq_neg_num : (q : Elem Rat) -> Proof (Eq (Rat__num (Neg__neg q)) (Neg__neg (Rat__num q))) :=
-  q => rfl.
+  q => rfl Int (Rat__num (Neg__neg q)).
 
 (; //LEAN:Rat.num_zero ;)
 def Rat__num_zero : Proof (Eq (Rat__num 0) 0) :=
-  rfl.
+  rfl Int (Rat__num 0).
 
 (; //LEAN:Rat.den_zero ;)
 def Rat__den_zero : Proof (Eq (Rat__den 0) 1) :=
-  rfl.
+  rfl Nat (Rat__den 0).
 
 (; //LEAN:Rat.zero_of_num_zero ;)
 Rat__zero_of_num_zero : (q : Elem Rat) -> (hq : Proof (Eq (Rat__num q) 0)) -> Proof (Eq q 0).
@@ -127,11 +127,11 @@ def Rat__zero_iff_num_zero : (q : Elem Rat) -> Proof (iff (Eq q 0) (Eq (Rat__num
 
 (; //LEAN:Rat.num_one ;)
 def Rat__num_one : Proof (Eq (Rat__num 1) 1) :=
-  rfl.
+  rfl Int (Rat__num 1).
 
 (; //LEAN:Rat.den_one ;)
 def Rat__den_one : Proof (Eq (Rat__den 1) 1) :=
-  rfl.
+  rfl Nat (Rat__den 1).
 
 (; //LEAN:Rat.mk_num_ne_zero_of_ne_zero ;)
 def Rat__mk_num_ne_zero_of_ne_zero : (q : Elem Rat) -> (n : Elem Int) -> (d : Elem Int) -> (hq : Proof (Neq q 0)) -> (hqnd : Proof (Eq q (Rat__divInt n d))) -> Proof (Neq n 0) :=
@@ -146,8 +146,7 @@ def Rat__divInt_ne_zero_of_ne_zero : (n : Elem Int) -> (d : Elem Int) -> (h : Pr
   n => d => h => hd => iffEr (Neq (Rat__divInt n d) 0) (Neq n 0) (Rat__divInt_ne_zero n d hd) h.
 
 (; //LEAN:Rat.add_divInt ;)
-def Rat__add_divInt : (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> Proof (Eq (Rat__divInt (plus a b) c) (plus (Rat__divInt a c) (Rat__divInt b c))) :=
-  a => b => c => dite (Eq c 0) (ifI (Eq c 0) (Eq (Rat__divInt (plus a b) c) (plus (Rat__divInt a c) (Rat__divInt b c))) (h => of_eq_true (Eq (Rat__divInt (plus a b) c) (plus (Rat__divInt a c) (Rat__divInt b c))) (Eq__trans Prop (Eq (Rat__divInt (plus a b) c) (plus (Rat__divInt a c) (Rat__divInt b c))) (Eq 0 0) True (congr Rat Prop (Eq (Rat__divInt (plus a b) c)) (Eq 0) (plus (Rat__divInt a c) (Rat__divInt b c)) 0 (congrArg Rat (Elem Rat -> Prop) (Rat__divInt (plus a b) c) 0 Eq (Eq__trans Rat (Rat__divInt (plus a b) c) (Rat__divInt (plus a b) 0) 0 (congrArg Int Rat c 0 (Rat__divInt (plus a b)) h) (Rat__divInt_zero (plus a b)))) (Eq__trans Rat (plus (Rat__divInt a c) (Rat__divInt b c)) (plus 0 0) 0 (congr Rat Rat (plus (Rat__divInt a c)) (plus 0) (Rat__divInt b c) 0 (congrArg Rat (Elem Rat -> Rat) (Rat__divInt a c) 0 plus (Eq__trans Rat (Rat__divInt a c) (Rat__divInt a 0) 0 (congrArg Int Rat c 0 (Rat__divInt a) h) (Rat__divInt_zero a))) (Eq__trans Rat (Rat__divInt b c) (Rat__divInt b 0) 0 (congrArg Int Rat c 0 (Rat__divInt b) h) (Rat__divInt_zero b))) (add_zero Rat 0))) (eq_self Rat 0)))) (ifI (not (Eq c 0)) (Eq (Rat__divInt (plus a b) c) (plus (Rat__divInt a c) (Rat__divInt b c))) (h1 => Eq__mpr (id (congrArg Rat Prop (plus (Rat__divInt a c) (Rat__divInt b c)) (Rat__divInt (plus (times a c) (times b c)) (times c c)) (_a => Eq (Rat__divInt (plus a b) c) _a) (Rat__divInt_add_divInt a b c c h1 h1))) (Eq__mpr (id (congrArg Prop Prop (Eq (Rat__divInt (plus a b) c) (Rat__divInt (plus (times a c) (times b c)) (times c c))) (Eq (times (plus a b) (times c c)) (times (plus (times a c) (times b c)) c)) (_a1 => _a1) (propext (Rat__divInt_eq_divInt_iff c (times c c) (plus a b) (plus (times a c) (times b c)) h1 (Int__mul_ne_zero c c h1 h1))))) (of_eq_true (Eq (times (plus a b) (times c c)) (times (plus (times a c) (times b c)) c)) (Eq__trans Prop (Eq (times (plus a b) (times c c)) (times (plus (times a c) (times b c)) c)) (Eq (plus (times a (times c c)) (times b (times c c))) (plus (times a (times c c)) (times b (times c c)))) True (congr Int Prop (Eq (times (plus a b) (times c c))) (Eq (plus (times a (times c c)) (times b (times c c)))) (times (plus (times a c) (times b c)) c) (plus (times a (times c c)) (times b (times c c))) (congrArg Int (Elem Int -> Prop) (times (plus a b) (times c c)) (plus (times a (times c c)) (times b (times c c))) Eq (Int__add_mul a b (times c c))) (Eq__trans Int (times (plus (times a c) (times b c)) c) (plus (times (times a c) c) (times (times b c) c)) (plus (times a (times c c)) (times b (times c c))) (Int__add_mul (times a c) (times b c) c) (congr Int Int (plus (times (times a c) c)) (plus (times a (times c c))) (times (times b c) c) (times b (times c c)) (congrArg Int (Elem Int -> Int) (times (times a c) c) (times a (times c c)) plus (Int__mul_assoc a c c)) (Int__mul_assoc b c c)))) (eq_self Int (plus (times a (times c c)) (times b (times c c))))))))).
+Rat__add_divInt : (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> Proof (Eq (Rat__divInt (plus a b) c) (plus (Rat__divInt a c) (Rat__divInt b c))).
 
 (; //LEAN:Rat.intCast_div_eq_divInt ;)
 Rat__intCast_div_eq_divInt : (n : Elem Int) -> (d : Elem Int) -> Proof (Eq (div n d) (Rat__divInt n d)).

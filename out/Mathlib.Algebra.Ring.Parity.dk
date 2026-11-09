@@ -12,7 +12,7 @@ def IsSquare__zero : (X : Set) -> (_ : Proof (MulZeroClass X)) -> Proof (IsSquar
 
 (; //LEAN:even_two ;)
 def even_two : (X : Set) -> (_ : Proof (AddMonoidWithOne X)) -> Proof (even 2) :=
-  X => x => existsI X (r => Eqt X 2 (plus r r)) 1 (Eq__mpr (id (congrArg X Prop (plus 1 1) 2 (_a => Eqt X 2 _a) (one_add_one_eq_two X))) (Eq__refl 2)).
+  X => x => existsI X (r => Eqt X 2 (plus r r)) 1 (Eq__mpr (id (congrArg X Prop (plus 1 1) 2 (_a => Eqt X 2 _a) (one_add_one_eq_two X))) (Eq__refl X 2)).
 
 (; //LEAN:Even.mul_left ;)
 Even__mul_left : (X : Set) -> (a : Elem X) -> (_ : Proof (LeftDistribClass X)) -> (ha : Proof (even a)) -> (b : Elem X) -> Proof (even (times b a)).
@@ -97,7 +97,7 @@ def Odd__one_add : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (h :
 
 (; //LEAN:odd_two_mul_add_one ;)
 def odd_two_mul_add_one : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> Proof (odd (plus (times 2 a) 1)) :=
-  X => x => a => existsI X (k => Eqt X (plus (times 2 a) 1) (plus (times 2 k) 1)) a rfl.
+  X => x => a => existsI X (k => Eqt X (plus (times 2 a) 1) (plus (times 2 k) 1)) a (rfl X (plus (times 2 a) 1)).
 
 (; //LEAN:odd_add_self_one' ;)
 odd_add_self_one' : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> Proof (odd (plus a (plus a 1))).
@@ -323,7 +323,7 @@ Function__Involutive__iterate_odd : (X : Set) -> (f : (Elem X -> X)) -> (n : Ele
 
 (; //LEAN:Function.Involutive.iterate_eq_self ;)
 def Function__Involutive__iterate_eq_self : (X : Set) -> (f : (Elem X -> X)) -> (n : Elem Nat) -> (hf : Proof (Function__Involutive f)) -> (hne : Proof (Neq f id)) -> Proof (iff (Eqt (Elem X -> X) (Nat__iterate f n) f) (odd n)) :=
-  X => f => n => hf => hne => iffI (Eqt (Elem X -> X) (Nat__iterate f n) f) (odd n) (H => iffEl (not (even n)) (odd n) (Nat__not_even_iff_odd n) (hn => ifE (Eqt (Elem X -> X) f id) false hne (Eq__mp (congrArg Prop Prop (Eqt (Elem X -> X) id f) (Eqt (Elem X -> X) f id) (_a => _a) (propext (eq_comm (Elem X -> X) id f))) (Eq__mp (congrArg (Elem X -> X) Prop (Nat__iterate f n) id (_a1 => Eqt (Elem X -> X) _a1 f) (Function__Involutive__iterate_even X f n hf hn)) H)))) (Function__Involutive__iterate_odd X f n hf).
+  X => f => n => hf => hne => iffI (Eqt (Elem X -> X) (Nat__iterate f n) f) (odd n) (H => iffEl (not (even n)) (odd n) (Nat__not_even_iff_odd n) (hn => ifE (Eqt (Elem X -> X) f id) false hne (Eq__mp (congrArg Prop Prop (Eqt (Elem X -> X) id f) (Eqt (Elem X -> X) f id) (_a => _a) (propext (Eqt (Elem X -> X) id f) (Eqt (Elem X -> X) f id) (eq_comm (Elem X -> X) id f))) (Eq__mp (congrArg (Elem X -> X) Prop (Nat__iterate f n) id (_a1 => Eqt (Elem X -> X) _a1 f) (Function__Involutive__iterate_even X f n hf hn)) H)))) (Function__Involutive__iterate_odd X f n hf).
 
 (; //LEAN:Function.Involutive.iterate_eq_id ;)
 def Function__Involutive__iterate_eq_id : (X : Set) -> (f : (Elem X -> X)) -> (n : Elem Nat) -> (hf : Proof (Function__Involutive f)) -> (hne : Proof (Neq f id)) -> Proof (iff (Eqt (Elem X -> X) (Nat__iterate f n) id) (even n)) :=

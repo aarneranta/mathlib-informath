@@ -18,7 +18,7 @@ ZMod__val_zero : (n : Elem Nat) -> Proof (Eq (ZMod__val 0) 0).
 
 (; //LEAN:ZMod.val_one' ;)
 def ZMod__val_one' : Proof (Eq (ZMod__val 1) 1) :=
-  rfl.
+  rfl Nat (ZMod__val 1).
 
 (; //LEAN:ZMod.val_neg' ;)
 def ZMod__val_neg' : (n : Elem (ZMod 0)) -> Proof (Eq (ZMod__val (Neg__neg n)) (ZMod__val n)) :=
@@ -155,7 +155,7 @@ def ZMod__castHom : (h : Proof (divide m n)) -> (R : Set) -> Elem (RingHom (ZMod
 
 (; //LEAN:ZMod.castHom_apply ;)
 def ZMod__castHom_apply : (n : Elem Nat) -> (R : Set) -> (_ : Proof (Ring R)) -> (m : Elem Nat) -> (_ : Proof (CharP R m)) -> (h1 : Proof (divide m n)) -> (i : Elem (ZMod n)) -> Proof (Eqt R (ZMod__castHom__app h1 R i) (ZMod__cast i)) :=
-  n => R => x => m => h => h1 => i => rfl.
+  n => R => x => m => h => h1 => i => rfl R (ZMod__castHom__app h1 R i).
 
 (; //LEAN:ZMod.cast_sub ;)
 def ZMod__cast_sub : (n : Elem Nat) -> (R : Set) -> (_ : Proof (Ring R)) -> (m : Elem Nat) -> (_ : Proof (CharP R m)) -> (h1 : Proof (divide m n)) -> (a : Elem (ZMod n)) -> (b : Elem (ZMod n)) -> Proof (Eqt R (ZMod__cast (minus a b)) (minus (ZMod__cast a) (ZMod__cast b))) :=
@@ -217,7 +217,7 @@ def ZMod__ringEquivOfPrime : (R : Set) -> (hp : Proof (prime p)) -> (hR : Proof 
 
 (; //LEAN:ZMod.ringEquivOfPrime_eq_ringEquiv ;)
 def ZMod__ringEquivOfPrime_eq_ringEquiv : (R : Set) -> (_ : Proof (Ring R)) -> (_ : Proof (Fintype R)) -> (p : Elem Nat) -> (_ : Proof (CharP R p)) -> (hp : Proof (prime p)) -> (hR : Proof (Eq (Fintype__card R) p)) -> Proof (Eqt (RingEquiv (ZMod p) R) (ZMod__ringEquivOfPrime R hp hR) (ZMod__ringEquiv R hR)) :=
-  R => x => x1 => p => h => hp => hR => rfl.
+  R => x => x1 => p => h => hp => hR => rfl (RingEquiv (ZMod p) R) (ZMod__ringEquivOfPrime R hp hR).
 
 (; //LEAN:ZMod.ringEquivCongr ;)
 ZMod__ringEquivCongr : (h : Proof (Eq m n)) -> Elem (RingEquiv (ZMod m) (ZMod n)).
@@ -432,7 +432,7 @@ def ZMod__unitOfCoprime : (x : Elem Nat) -> (h : Proof (Nat__Coprime x n)) -> El
 
 (; //LEAN:ZMod.coe_unitOfCoprime ;)
 def ZMod__coe_unitOfCoprime : (n : Elem Nat) -> (x : Elem Nat) -> (h : Proof (Nat__Coprime x n)) -> Proof (Eqt (ZMod n) (Units__val (ZMod__unitOfCoprime x h)) x) :=
-  n => x => h => rfl.
+  n => x => h => rfl (ZMod n) (Units__val (ZMod__unitOfCoprime x h)).
 
 (; //LEAN:ZMod.val_coe_unit_coprime ;)
 ZMod__val_coe_unit_coprime : (n : Elem Nat) -> (u : Elem (Units (ZMod n))) -> Proof (Nat__Coprime (ZMod__val (Units__val u)) n).
@@ -529,7 +529,7 @@ ZMod__val_cast_zmod_lt : (m : Elem Nat) -> (_ : Proof (NeZero m)) -> (n : Elem N
 
 (; //LEAN:ZMod.neg_val' ;)
 def ZMod__neg_val' : (n : Elem Nat) -> (_ : Proof (NeZero n)) -> (a : Elem (ZMod n)) -> Proof (Eq (ZMod__val (Neg__neg a)) (HMod__hMod (minus n (ZMod__val a)) n)) :=
-  n => h => a => Trans__trans (Eq__mpr (id (congrArg Nat Prop (HMod__hMod (ZMod__val (Neg__neg a)) n) (ZMod__val (Neg__neg a)) (_a => Eq (ZMod__val (Neg__neg a)) _a) (Nat__mod_eq_of_lt (ZMod__val (Neg__neg a)) n (ZMod__val_lt n (Neg__neg a))))) (Eq__refl (ZMod__val (Neg__neg a)))) (Nat__ModEq__add_right_cancel' n (ZMod__val (Neg__neg a)) (minus n (ZMod__val a)) (ZMod__val a) (Eq__mpr (id (congrArg Prop Prop (Nat__ModEq n (plus (ZMod__val (Neg__neg a)) (ZMod__val a)) (plus (minus n (ZMod__val a)) (ZMod__val a))) (Eq (HMod__hMod (plus (ZMod__val (Neg__neg a)) (ZMod__val a)) n) (HMod__hMod (plus (minus n (ZMod__val a)) (ZMod__val a)) n)) (_a1 => _a1) (Nat__ModEq__eq_1 n (plus (ZMod__val (Neg__neg a)) (ZMod__val a)) (plus (minus n (ZMod__val a)) (ZMod__val a))))) (Eq__mpr (id (congrArg Nat Prop (HMod__hMod (plus (ZMod__val (Neg__neg a)) (ZMod__val a)) n) (ZMod__val (plus (Neg__neg a) a)) (_a2 => Eq _a2 (HMod__hMod (plus (minus n (ZMod__val a)) (ZMod__val a)) n)) (Eq__symm Nat (ZMod__val (plus (Neg__neg a) a)) (HMod__hMod (plus (ZMod__val (Neg__neg a)) (ZMod__val a)) n) (ZMod__val_add n (Neg__neg a) a)))) (Eq__mpr (id (congrArg (ZMod n) Prop (plus (Neg__neg a) a) 0 (_a3 => Eq (ZMod__val _a3) (HMod__hMod (plus (minus n (ZMod__val a)) (ZMod__val a)) n)) (neg_add_cancel (ZMod n) a))) (Eq__mpr (id (congrArg Nat Prop (plus (minus n (ZMod__val a)) (ZMod__val a)) n (_a4 => Eq (ZMod__val 0) (HMod__hMod _a4 n)) (tsub_add_cancel_of_le Nat (ZMod__val a) n (ZMod__val_le n a)))) (Eq__mpr (id (congrArg Nat Prop (HMod__hMod n n) 0 (_a5 => Eq (ZMod__val 0) _a5) (Nat__mod_self n))) (Eq__mpr (id (congrArg Nat Prop (ZMod__val 0) 0 (_a6 => Eq _a6 0) (ZMod__val_zero n))) (Eq__refl 0)))))))).
+  n => h => a => Trans__trans (Eq__mpr (id (congrArg Nat Prop (HMod__hMod (ZMod__val (Neg__neg a)) n) (ZMod__val (Neg__neg a)) (_a => Eq (ZMod__val (Neg__neg a)) _a) (Nat__mod_eq_of_lt (ZMod__val (Neg__neg a)) n (ZMod__val_lt n (Neg__neg a))))) (Eq__refl Nat (ZMod__val (Neg__neg a)))) (Nat__ModEq__add_right_cancel' n (ZMod__val (Neg__neg a)) (minus n (ZMod__val a)) (ZMod__val a) (Eq__mpr (id (congrArg Prop Prop (Nat__ModEq n (plus (ZMod__val (Neg__neg a)) (ZMod__val a)) (plus (minus n (ZMod__val a)) (ZMod__val a))) (Eq (HMod__hMod (plus (ZMod__val (Neg__neg a)) (ZMod__val a)) n) (HMod__hMod (plus (minus n (ZMod__val a)) (ZMod__val a)) n)) (_a1 => _a1) (Nat__ModEq__eq_1 n (plus (ZMod__val (Neg__neg a)) (ZMod__val a)) (plus (minus n (ZMod__val a)) (ZMod__val a))))) (Eq__mpr (id (congrArg Nat Prop (HMod__hMod (plus (ZMod__val (Neg__neg a)) (ZMod__val a)) n) (ZMod__val (plus (Neg__neg a) a)) (_a2 => Eq _a2 (HMod__hMod (plus (minus n (ZMod__val a)) (ZMod__val a)) n)) (Eq__symm Nat (ZMod__val (plus (Neg__neg a) a)) (HMod__hMod (plus (ZMod__val (Neg__neg a)) (ZMod__val a)) n) (ZMod__val_add n (Neg__neg a) a)))) (Eq__mpr (id (congrArg (ZMod n) Prop (plus (Neg__neg a) a) 0 (_a3 => Eq (ZMod__val _a3) (HMod__hMod (plus (minus n (ZMod__val a)) (ZMod__val a)) n)) (neg_add_cancel (ZMod n) a))) (Eq__mpr (id (congrArg Nat Prop (plus (minus n (ZMod__val a)) (ZMod__val a)) n (_a4 => Eq (ZMod__val 0) (HMod__hMod _a4 n)) (tsub_add_cancel_of_le Nat (ZMod__val a) n (ZMod__val_le n a)))) (Eq__mpr (id (congrArg Nat Prop (HMod__hMod n n) 0 (_a5 => Eq (ZMod__val 0) _a5) (Nat__mod_self n))) (Eq__mpr (id (congrArg Nat Prop (ZMod__val 0) 0 (_a6 => Eq _a6 0) (ZMod__val_zero n))) (Eq__refl Nat 0)))))))).
 
 (; //LEAN:ZMod.neg_val ;)
 ZMod__neg_val : (n : Elem Nat) -> (_ : Proof (NeZero n)) -> (a : Elem (ZMod n)) -> Proof (Eq (ZMod__val (Neg__neg a)) (ite (Eqt (ZMod n) a 0) 0 (minus n (ZMod__val a)))).
@@ -605,11 +605,11 @@ zmod_smul_mem : (n : Elem Nat) -> (S : Set) -> (G : Set) -> (_ : Proof (AddCommG
 
 (; //LEAN:smulMemClass ;)
 def smulMemClass : (n : Elem Nat) -> (S : Set) -> (G : Set) -> (_ : Proof (AddCommGroup G)) -> (_ : Proof (AddSubgroupClass S G)) -> (_ : Proof (Module (ZMod n) G)) -> Proof (SMulMemClass S (ZMod n) G) :=
-  n => S => G => x => h => x2 => SMulMemClass__mk (forallI S (x3 => forall (ZMod n) (x5 => forall G (_x2 => if (Membership__mem x3 _x2) (Membership__mem x3 (HSMul__hSMul x5 _x2))))) (x3 => forallI (ZMod n) (x4 => forall G (_x1 => if (Membership__mem x3 _x1) (Membership__mem x3 (HSMul__hSMul x4 _x1)))) (x4 => forallI G (_x => if (Membership__mem x3 _x) (Membership__mem x3 (HSMul__hSMul x4 _x))) (_x => ifI (Membership__mem x3 _x) (Membership__mem x3 (HSMul__hSMul x4 _x)) (hx => zmod_smul_mem n S G x3 _x hx x4))))).
+  n => S => G => x => h => x2 => SMulMemClass__mk S (ZMod n) G (forallI S (x3 => forall (ZMod n) (x5 => forall G (_x2 => if (Membership__mem x3 _x2) (Membership__mem x3 (HSMul__hSMul x5 _x2))))) (x3 => forallI (ZMod n) (x4 => forall G (_x1 => if (Membership__mem x3 _x1) (Membership__mem x3 (HSMul__hSMul x4 _x1)))) (x4 => forallI G (_x => if (Membership__mem x3 _x) (Membership__mem x3 (HSMul__hSMul x4 _x))) (_x => ifI (Membership__mem x3 _x) (Membership__mem x3 (HSMul__hSMul x4 _x)) (hx => zmod_smul_mem n S G x3 _x hx x4))))).
 
 (; //LEAN:AddSubgroupClass.coe_zmod_smul ;)
 def AddSubgroupClass__coe_zmod_smul : (n : Elem Nat) -> (S : Set) -> (G : Set) -> (_ : Proof (AddCommGroup G)) -> (_ : Proof (AddSubgroupClass S G)) -> (K : Elem S) -> (_ : Proof (Module (ZMod n) G)) -> (a : Elem (ZMod n)) -> (x3 : Elem (Subtype (x4 => Membership__mem K x4))) -> Proof (Eqt G (HSMul__hSMul a x3) (HSMul__hSMul a x3)) :=
-  n => S => G => x => h => K => x2 => a => x3 => rfl.
+  n => S => G => x => h => K => x2 => a => x3 => rfl G (HSMul__hSMul a x3).
 
 (; //LEAN:ZModModule.char_nsmul_eq_zero ;)
 ZModModule__char_nsmul_eq_zero : (n : Elem Nat) -> (G : Set) -> (_ : Proof (AddCommGroup G)) -> (_ : Proof (Module (ZMod n) G)) -> (x2 : Elem G) -> Proof (Eqt G (HSMul__hSMul n x2) 0).

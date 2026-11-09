@@ -397,7 +397,7 @@ def commutative_of_le : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder X)) -
 
 (; //LEAN:associative_of_commutative_of_le ;)
 def associative_of_commutative_of_le : (X : Set) -> (_ : Proof (PartialOrder X)) -> (f : (Elem X -> Elem X -> X)) -> (comm : Proof (Std__Commutative f)) -> (assoc : Proof (forall X (a => forall X (b => forall X (c => Leq (f (f a b) c) (f a (f b c))))))) -> Proof (Std__Associative f) :=
-  X => x => f => comm => assoc => Std__Associative__mk (forallI X (a => forall X (b5 => forall X (c8 => Eqt X (f (f a b5) c8) (f a (f b5 c8))))) (a => forallI X (b => forall X (c7 => Eqt X (f (f a b) c7) (f a (f b c7)))) (b => forallI X (c => Eqt X (f (f a b) c) (f a (f b c))) (c => le_antisymm X (f (f a b) c) (f a (f b c)) (forallE X (c3 => Leq (f (f a b) c3) (f a (f b c3))) (forallE X (b2 => forall X (c2 => Leq (f (f a b2) c2) (f a (f b2 c2)))) (forallE X (a1 => forall X (b1 => forall X (c1 => Leq (f (f a1 b1) c1) (f a1 (f b1 c1))))) assoc a) b) c) (Eq__mpr (id (congrArg X Prop (f a (f b c)) (f (f b c) a) (_a => Leq _a (f (f a b) c)) (Std__Commutative__comm X f a (f b c)))) (Eq__mpr (id (congrArg X Prop (f b c) (f c b) (_a1 => Leq (f _a1 a) (f (f a b) c)) (Std__Commutative__comm X f b c))) (Eq__mpr (id (congrArg X Prop (f (f a b) c) (f c (f a b)) (_a2 => Leq (f (f c b) a) _a2) (Std__Commutative__comm X f (f a b) c))) (Eq__mpr (id (congrArg X Prop (f a b) (f b a) (_a3 => Leq (f (f c b) a) (f c _a3)) (Std__Commutative__comm X f a b))) (forallE X (c6 => Leq (f (f c b) c6) (f c (f b c6))) (forallE X (b4 => forall X (c5 => Leq (f (f c b4) c5) (f c (f b4 c5)))) (forallE X (a2 => forall X (b3 => forall X (c4 => Leq (f (f a2 b3) c4) (f a2 (f b3 c4))))) assoc c) b) a))))))))).
+  X => x => f => comm => assoc => Std__Associative__mk X f (forallI X (a => forall X (b5 => forall X (c8 => Eqt X (f (f a b5) c8) (f a (f b5 c8))))) (a => forallI X (b => forall X (c7 => Eqt X (f (f a b) c7) (f a (f b c7)))) (b => forallI X (c => Eqt X (f (f a b) c) (f a (f b c))) (c => le_antisymm X (f (f a b) c) (f a (f b c)) (forallE X (c3 => Leq (f (f a b) c3) (f a (f b c3))) (forallE X (b2 => forall X (c2 => Leq (f (f a b2) c2) (f a (f b2 c2)))) (forallE X (a1 => forall X (b1 => forall X (c1 => Leq (f (f a1 b1) c1) (f a1 (f b1 c1))))) assoc a) b) c) (Eq__mpr (id (congrArg X Prop (f a (f b c)) (f (f b c) a) (_a => Leq _a (f (f a b) c)) (Std__Commutative__comm X f a (f b c)))) (Eq__mpr (id (congrArg X Prop (f b c) (f c b) (_a1 => Leq (f _a1 a) (f (f a b) c)) (Std__Commutative__comm X f b c))) (Eq__mpr (id (congrArg X Prop (f (f a b) c) (f c (f a b)) (_a2 => Leq (f (f c b) a) _a2) (Std__Commutative__comm X f (f a b) c))) (Eq__mpr (id (congrArg X Prop (f a b) (f b a) (_a3 => Leq (f (f c b) a) (f c _a3)) (Std__Commutative__comm X f a b))) (forallE X (c6 => Leq (f (f c b) c6) (f c (f b c6))) (forallE X (b4 => forall X (c5 => Leq (f (f c b4) c5) (f c (f b4 c5)))) (forallE X (a2 => forall X (b3 => forall X (c4 => Leq (f (f a2 b3) c4) (f a2 (f b3 c4))))) assoc c) b) a))))))))).
 
 (; //LEAN:LE.le.lt_or_ge ;)
 LE__le__lt_or_ge : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq b a)) -> (c : Elem X) -> Proof (or (Lt c a) (Leq b c)).
@@ -476,14 +476,14 @@ def forall_lt_iff_le : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) 
 
 (; //LEAN:le_of_forall_lt_imp_ne ;)
 def le_of_forall_lt_imp_ne : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (H : Proof (forall X (c => if (Lt c a) (Neq c b)))) -> Proof (Leq a b) :=
-  X => x => a => b => H => le_of_not_gt X a b (ifI (Lt b a) false (hb => ifE (Eqt X b b) false (ifE (Lt b a) (Neq b b) (forallE X (c => if (Lt c a) (Neq c b)) H b) hb) rfl)).
+  X => x => a => b => H => le_of_not_gt X a b (ifI (Lt b a) false (hb => ifE (Eqt X b b) false (ifE (Lt b a) (Neq b b) (forallE X (c => if (Lt c a) (Neq c b)) H b) hb) (rfl X b))).
 
 (; //LEAN:le_of_forall_gt_imp_ne ;)
 le_of_forall_gt_imp_ne : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (H : Proof (forall X (c => if (Lt a c) (Neq c b)))) -> Proof (Leq b a).
 
 (; //LEAN:lt_of_forall_le_imp_ne ;)
 def lt_of_forall_le_imp_ne : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (H : Proof (forall X (c => if (Leq c a) (Neq c b)))) -> Proof (Lt a b) :=
-  X => x => a => b => H => lt_of_not_ge X a b (ifI (Leq b a) false (hb => ifE (Eqt X b b) false (ifE (Leq b a) (Neq b b) (forallE X (c => if (Leq c a) (Neq c b)) H b) hb) rfl)).
+  X => x => a => b => H => lt_of_not_ge X a b (ifI (Leq b a) false (hb => ifE (Eqt X b b) false (ifE (Leq b a) (Neq b b) (forallE X (c => if (Leq c a) (Neq c b)) H b) hb) (rfl X b))).
 
 (; //LEAN:lt_of_forall_ge_imp_ne ;)
 lt_of_forall_ge_imp_ne : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (H : Proof (forall X (c => if (Leq a c) (Neq c b)))) -> Proof (Lt b a).
@@ -597,7 +597,7 @@ def LinearOrder__ext_lt : (X : Set) -> (A : Proof (LinearOrder X)) -> (B : Proof
 
 (; //LEAN:Pi.compl_def ;)
 def Pi__compl_def : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Compl (x i3))) -> (x2 : ((i2 : Elem I) -> x i2)) -> Proof (Eqt ((i : Elem I) -> x i) (Compl__compl x2) (i1 => Compl__compl (x2 i1))) :=
-  I => x => x1 => x2 => rfl.
+  I => x => x1 => x2 => rfl ((i : Elem I) -> x i) (Compl__compl x2).
 
 (; //LEAN:Pi.hnot_def ;)
 Pi__hnot_def : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> HNot (x i3))) -> (x2 : ((i2 : Elem I) -> x i2)) -> Proof (Eqt ((i : Elem I) -> x i) (HNot__hnot x2) (i1 => HNot__hnot (x2 i1))).
@@ -607,7 +607,7 @@ Pi__hnot_apply : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I)
 
 (; //LEAN:Pi.compl_apply ;)
 def Pi__compl_apply : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Compl (x i2))) -> (x2 : ((i1 : Elem I) -> x i1)) -> (i : Elem I) -> Proof (Eqt (x i) (Compl__compl x2 i) (Compl__compl (x2 i))) :=
-  I => x => x1 => x2 => i => rfl.
+  I => x => x1 => x2 => i => rfl (x i) (Compl__compl x2 i).
 
 (; //LEAN:compl_lt ;)
 compl_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> Proof (Eqt (Elem X -> Elem X -> Prop) (Compl__compl (x3 => x4 => Lt x3 x4)) (x5 => x6 => Geq x5 x6)).
@@ -701,14 +701,14 @@ Pi__himp_def : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i4 : Elem I) -
 
 (; //LEAN:Pi.sdiff_def ;)
 def Pi__sdiff_def : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i4 : Elem I) -> SDiff (x i4))) -> (x2 : ((i3 : Elem I) -> x i3)) -> (y : ((i2 : Elem I) -> x i2)) -> Proof (Eqt ((i : Elem I) -> x i) (SDiff__sdiff x2 y) (i1 => SDiff__sdiff (x2 i1) (y i1))) :=
-  I => x => x1 => x2 => y => rfl.
+  I => x => x1 => x2 => y => rfl ((i : Elem I) -> x i) (SDiff__sdiff x2 y).
 
 (; //LEAN:Pi.himp_apply ;)
 Pi__himp_apply : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> HImp (x i3))) -> (x2 : ((i2 : Elem I) -> x i2)) -> (y : ((i1 : Elem I) -> x i1)) -> (i : Elem I) -> Proof (Eqt (x i) (HImp__himp y x2 i) (HImp__himp (y i) (x2 i))).
 
 (; //LEAN:Pi.sdiff_apply ;)
 def Pi__sdiff_apply : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> SDiff (x i3))) -> (x2 : ((i2 : Elem I) -> x i2)) -> (y : ((i1 : Elem I) -> x i1)) -> (i : Elem I) -> Proof (Eqt (x i) (SDiff__sdiff x2 y i) (SDiff__sdiff (x2 i) (y i))) :=
-  I => x => x1 => x2 => y => i => rfl.
+  I => x => x1 => x2 => y => i => rfl (x i) (SDiff__sdiff x2 y i).
 
 (; //LEAN:Function.const_le_const ;)
 Function__const_le_const : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Leq (Function__const Y a) (Function__const Y b)) (Leq a b)).
@@ -857,7 +857,7 @@ def exists_between : (X : Set) -> (_ : Proof (LT X)) -> (_ : Proof (DenselyOrder
 
 (; //LEAN:Subsingleton.instDenselyOrdered ;)
 def Subsingleton__instDenselyOrdered : (X : Set) -> (_ : Proof (Subsingleton X)) -> (_ : Proof (LT X)) -> Proof (DenselyOrdered X) :=
-  X => h => x => DenselyOrdered__mk (forallI X (x1 => forall X (x3 => if (Lt x1 x3) (exists X (a3 => and (Lt x1 a3) (Lt a3 x3))))) (x1 => forallI X (x2 => if (Lt x1 x2) (exists X (a2 => and (Lt x1 a2) (Lt a2 x2)))) (x2 => ifI (Lt x1 x2) (exists X (a1 => and (Lt x1 a1) (Lt a1 x2))) (h1 => existsI X (a => and (Lt x1 a) (Lt a x2)) x1 (andI (Lt x1 x1) (Lt x1 x2) (LT__lt__trans_eq X x1 x2 x1 h1 (Subsingleton__elim X x2 x1)) h1))))).
+  X => h => x => DenselyOrdered__mk X (forallI X (x1 => forall X (x3 => if (Lt x1 x3) (exists X (a3 => and (Lt x1 a3) (Lt a3 x3))))) (x1 => forallI X (x2 => if (Lt x1 x2) (exists X (a2 => and (Lt x1 a2) (Lt a2 x2)))) (x2 => ifI (Lt x1 x2) (exists X (a1 => and (Lt x1 a1) (Lt a1 x2))) (h1 => existsI X (a => and (Lt x1 a) (Lt a x2)) x1 (andI (Lt x1 x1) (Lt x1 x2) (LT__lt__trans_eq X x1 x2 x1 h1 (Subsingleton__elim X x2 x1)) h1))))).
 
 (; //LEAN:le_of_forall_lt_imp_le_of_dense ;)
 le_of_forall_lt_imp_le_of_dense : (X : Set) -> (_ : Proof (LinearOrder X)) -> (_ : Proof (DenselyOrdered X)) -> (x1 : Elem X) -> (x2 : Elem X) -> (h1 : Proof (forall X (a => if (Lt a x2) (Leq a x1)))) -> Proof (Leq x2 x1).
@@ -898,7 +898,7 @@ PUnit__min_eq : (a : Elem PUnit) -> (b : Elem PUnit) -> Proof (Eqt PUnit (Min__m
 
 (; //LEAN:PUnit.max_eq ;)
 def PUnit__max_eq : (a : Elem PUnit) -> (b : Elem PUnit) -> Proof (Eqt PUnit (Max__max a b) PUnit__unit) :=
-  a => b => rfl.
+  a => b => rfl PUnit (Max__max a b).
 
 (; //LEAN:PUnit.le ;)
 def PUnit__le : (a : Elem PUnit) -> (b : Elem PUnit) -> Proof (Leq a b) :=

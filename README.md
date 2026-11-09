@@ -131,7 +131,9 @@ is irreducible"), and a theorem a `def` whose definiens is its proof. In a
 proof, a λ proving an implication or a universal statement becomes `ifI` or
 `forallI`, a hypothesis applied to arguments `ifE` or `forallE`, Lean's logical
 rules the rules of `nd.dk` (`mapping.tsv`, third column `all`), and Mathlib
-lemmas keep their arguments but for type class instances. The proofs are
+lemmas keep their arguments but for type class instances, as do the other
+constants that are proofs (`Equivalence.mk`, `propext`), whose types are
+stated with their implicit arguments too. The proofs are
 written out by `RunInformath -proof-text`. A definiens with compiled pattern
 matching (`match_` functions, recursors) is not translated.
 
@@ -214,8 +216,8 @@ mathematics that most of Mathlib imports, in six tiers (`modules.txt`):
 
 All of them are exported with their tactic proofs too. `coverage.md`
 (`python3 coverage.py`) tells, module by module, how much reads well; over
-all modules, 7011 of the 9126 readings are fully worded, and 7586 of the 8472
-theorems have a proof text (3640 from terms, 3946 from tactics); 169 proofs
+all modules, 7024 of the 9126 readings are fully worded, and 7596 of the 8472
+theorems have a proof text (3647 from terms, 3949 from tactics); 41 proofs
 fail, mostly where a λ proves a proposition that is a ∀ only after a definition
 is unfolded. The
 readings are English only for now (`LANGUAGES` in `build-index.py`).

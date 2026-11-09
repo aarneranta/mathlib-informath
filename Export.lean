@@ -299,8 +299,13 @@ partial def app (c : Name) (args : Array Expr) (whole : Expr) : M String := do
   let expl ← try explicitArgs c catch _ => pure (args.map fun _ => true)
   -- in a proof, a theorem is a rule whose premisses -proof-text reads off its
   -- type: so its arguments are kept, but for the instances of type classes,
-  -- which the base of the proof texts leaves out of the rules' types
-  let isThm := match (← getEnv).find? c with | some (.thmInfo _) => true | _ => false
+  -- which the base of the proof texts leaves out of the rules' types; so is
+  -- any other constant that is a proof (Equivalence.mk, propext), as its type
+  -- is stated with its implicit arguments too
+  let isThm ← match (← getEnv).find? c with
+    | some (.thmInfo _) => pure true
+    | some ci => if (← get).proofMode then (try isProp ci.type catch _ => pure false) else pure false
+    | none => pure false
   let keep := (← get).keepAll.contains c
   let expl ← if keep then pure (args.map fun _ => true)
     else if (← get).proofMode && isThm then
@@ -1137,6 +1142,19 @@ def latexToken (t : String) : Option String :=
   | "ℚ≥0" => "\\mathbb{Q}_{\\geq 0}" | "ℝ≥0" => "\\mathbb{R}_{\\geq 0}" | "ℝ≥0∞" => "[0, \\infty]"
   | "#" => "\\#" | "ℕ∞" => "\\mathbb{N}_{\\infty}" | "ℕ+" => "\\mathbb{N}^{+}"
   | "⁅" => "[" | "⁆" => "]" | "∫" => "\\int" | "⟪" => "\\langle" | "⟫" => "\\rangle"
+  | "+ᵥ" => "+_{v}" | "-ᵥ" => "-_{v}" | "×ˢ" => "\\times" | "⋃₀" => "\\bigcup" | "⋂₀" => "\\bigcap"
+  | "ˣ" => "^{\\times}" | "ᵐᵒᵖ" => "^{\\mathrm{mop}}" | "ᵃᵒᵖ" => "^{\\mathrm{aop}}" | "ᵈ" => "^{\\mathrm{d}}"
+  | "→" => "\\to" | "→*" => "\\to_{*}" | "→+" => "\\to_{+}" | "→+*" => "\\to_{+*}" | "→*₀" => "\\to_{*0}"
+  | "→ₗ" => "\\to_{l}" | "→ₐ" => "\\to_{a}" | "≃ₗ" => "\\simeq_{l}" | "≃ₐ" => "\\simeq_{a}" | "→₀" => "\\to_{0}"
+  | "↪" => "\\hookrightarrow" | "⇔" => "\\Leftrightarrow" | "∼" => "\\sim" | "~" => "\\sim" | "≌" => "\\simeq"
+  | "⊗ₜ" => "\\otimes" | "⨁" => "\\bigoplus" | "⋊" => "\\rtimes" | "⨿" => "\\amalg" | "∐" => "\\coprod"
+  | "⊙" => "\\odot" | "⊼" => "\\barwedge" | "⊻" => "\\veebar" | "⇨" => "\\Rightarrow" | "⊑" => "\\sqsubseteq"
+  | "≼" => "\\preceq" | "⋖" => "\\lessdot" | "∠" => "\\angle" | "∡" => "\\measuredangle" | "∂" => "\\partial"
+  | "ℵ₀" => "\\aleph_{0}" | "ℵ" => "\\aleph" | "ℶ" => "\\beth" | "ℍ" => "\\mathbb{H}" | "†" => "^{\\dagger}"
+  | "ε" => "\\varepsilon" | "ω" => "\\omega" | "η" => "\\eta" | "σ" => "\\sigma" | "μ" => "\\mu"
+  | "λ" => "\\lambda" | "ρ" => "\\rho" | "θ" => "\\theta" | "ζ" => "\\zeta" | "α" => "\\alpha"
+  | "β" => "\\beta" | "π" => "\\pi" | "ψ" => "\\psi" | "φ" => "\\varphi" | "τ" => "\\tau"
+  | "Γ" => "\\Gamma" | "Δ" => "\\Delta" | "Ω" => "\\Omega" | "Λ" => "\\Lambda"
   | _ => if t.startsWith "#" && (t.drop 1).all Char.isDigit then some t else none
 
 /-- The notation of a definition, as Lean prints its application to its
@@ -1191,7 +1209,10 @@ def notationOf (n : Name) (ci : ConstantInfo) : MetaM (Option String) := do
     for t in args do
       match latexToken t with
       | some l => parts := parts.push l
-      | none => return none
+      | none =>
+        -- the tokens without LaTeX, to be added to latexToken
+        if (← IO.getEnv "EXPORT_NOTATION_TOKENS").isSome then IO.eprintln s!"NOTATION-TOKEN {t}"
+        return none
     -- at least one symbol, not the arguments alone or brackets
     if parts.all (fun p => p.startsWith "#" || ["(", ")", ",", "[", "]"].contains p) then return none
     -- an exponent in braces: #1 ^ #2 as {#1}^{#2}

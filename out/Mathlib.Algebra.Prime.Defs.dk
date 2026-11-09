@@ -44,7 +44,7 @@ def Prime__dvd_pow_iff_dvd : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> 
 
 (; //LEAN:not_prime_zero ;)
 def not_prime_zero : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> Proof (not (Prime 0)) :=
-  M => x => ifI (Prime 0) false (h => Prime__ne_zero M 0 h rfl).
+  M => x => ifI (Prime 0) false (h => Prime__ne_zero M 0 h (rfl M 0)).
 
 (; //LEAN:not_prime_one ;)
 def not_prime_one : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> Proof (not (Prime 1)) :=
@@ -87,7 +87,7 @@ def Irreducible__prime : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (_ :
 
 (; //LEAN:Prime.irreducible ;)
 def Prime__irreducible : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (_ : Proof (IsCancelMulZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> Proof (Irreducible p) :=
-  M => x => h => p => hp => Irreducible__mk (Prime__not_isUnit M p hp) (forallI M (a => forall M (b1 => if (Eqt M p (times a b1)) (or (IsUnit a) (IsUnit b1)))) (a => forallI M (b => if (Eqt M p (times a b)) (or (IsUnit a) (IsUnit b))) (b => ifI (Eqt M p (times a b)) (or (IsUnit a) (IsUnit b)) (h1 => Eq__ndrec (ifI (Prime (times a b)) (or (IsUnit a) (IsUnit b)) (hp1 => Or__imp (divide (times a b) b) (IsUnit a) (divide (times a b) a) (IsUnit b) (ifI (divide (times a b) b) (IsUnit a) (h2 => isUnit_of_dvd_one M a (iffEl (divide (times a b) (times 1 b)) (divide a 1) (mul_dvd_mul_iff_right M a 1 b (right_ne_zero_of_mul M a b (Prime__ne_zero M (times a b) hp1))) (dvd_mul_of_dvd_right M (times a b) b h2 1)))) (ifI (divide (times a b) a) (IsUnit b) (h3 => isUnit_of_dvd_one M b (iffEl (divide (times a b) (times a 1)) (divide b 1) (mul_dvd_mul_iff_left M a b 1 (left_ne_zero_of_mul M a b (Prime__ne_zero M (times a b) hp1))) (dvd_mul_of_dvd_left M (times a b) a h3 1)))) (Or__symm (divide (times a b) a) (divide (times a b) b) (Prime__dvd_or_dvd M (times a b) hp1 a b (dvd_rfl M (times a b)))))) (Eq__symm M p (times a b) h1) hp)))).
+  M => x => h => p => hp => Irreducible__mk M p (Prime__not_isUnit M p hp) (forallI M (a => forall M (b1 => if (Eqt M p (times a b1)) (or (IsUnit a) (IsUnit b1)))) (a => forallI M (b => if (Eqt M p (times a b)) (or (IsUnit a) (IsUnit b))) (b => ifI (Eqt M p (times a b)) (or (IsUnit a) (IsUnit b)) (h1 => Eq__ndrec (ifI (Prime (times a b)) (or (IsUnit a) (IsUnit b)) (hp1 => Or__imp (divide (times a b) b) (IsUnit a) (divide (times a b) a) (IsUnit b) (ifI (divide (times a b) b) (IsUnit a) (h2 => isUnit_of_dvd_one M a (iffEl (divide (times a b) (times 1 b)) (divide a 1) (mul_dvd_mul_iff_right M a 1 b (right_ne_zero_of_mul M a b (Prime__ne_zero M (times a b) hp1))) (dvd_mul_of_dvd_right M (times a b) b h2 1)))) (ifI (divide (times a b) a) (IsUnit b) (h3 => isUnit_of_dvd_one M b (iffEl (divide (times a b) (times a 1)) (divide b 1) (mul_dvd_mul_iff_left M a b 1 (left_ne_zero_of_mul M a b (Prime__ne_zero M (times a b) hp1))) (dvd_mul_of_dvd_left M (times a b) a h3 1)))) (Or__symm (divide (times a b) a) (divide (times a b) b) (Prime__dvd_or_dvd M (times a b) hp1 a b (dvd_rfl M (times a b)))))) (Eq__symm M p (times a b) h1) hp)))).
 
 (; //LEAN:irreducible_iff_prime ;)
 def irreducible_iff_prime : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (_ : Proof (IsCancelMulZero M)) -> (_ : Proof (DecompositionMonoid M)) -> (a : Elem M) -> Proof (iff (Irreducible a) (Prime a)) :=

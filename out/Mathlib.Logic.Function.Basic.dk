@@ -6,11 +6,11 @@ def Function__eval : (x1 : Elem X) -> (f : ((x2 : Elem X) -> x x2)) -> Elem (x x
 
 (; //LEAN:Function.eval_apply ;)
 def Function__eval_apply : (X : Set) -> (x : (Elem X -> Set)) -> (x1 : Elem X) -> (f : ((x2 : Elem X) -> x x2)) -> Proof (Eqt (x x1) (Function__eval x1 f) (f x1)) :=
-  X => x => x1 => f => rfl.
+  X => x => x1 => f => rfl (x x1) (Function__eval x1 f).
 
 (; //LEAN:Function.const_def ;)
 def Function__const_def : (X : Set) -> (Y : Set) -> (y : Elem Y) -> Proof (Eqt (Elem X -> Y) (x1 => y) (Function__const X y)) :=
-  X => Y => y => rfl.
+  X => Y => y => rfl (Elem X -> Y) (x1 => y).
 
 (; //LEAN:Function.const_injective ;)
 Function__const_injective : (X : Set) -> (Y : Set) -> Proof (Function__Injective (Function__const X)).
@@ -23,35 +23,35 @@ Function__eq_const_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (b : E
 
 (; //LEAN:Function.onFun_apply ;)
 def Function__onFun_apply : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem Y -> Elem Y -> Z)) -> (g : (Elem X -> Y)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt Z (Function__onFun f g a b) (f (g a) (g b))) :=
-  X => Y => Z => f => g => a => b => rfl.
+  X => Y => Z => f => g => a => b => rfl Z (Function__onFun f g a b).
 
 (; //LEAN:Function.onFun_onFun_eq ;)
 def Function__onFun_onFun_eq : (X : Set) -> (Y : Set) -> (Z : Set) -> (W : Set) -> (f : (Elem X -> Elem X -> Z)) -> (g : (Elem Y -> X)) -> (h : (Elem W -> Y)) -> Proof (Eqt (Elem W -> Elem W -> Z) (Function__onFun (Function__onFun f g) h) (Function__onFun f (Function__comp g h))) :=
-  X => Y => Z => W => f => g => h => rfl.
+  X => Y => Z => W => f => g => h => rfl (Elem W -> Elem W -> Z) (Function__onFun (Function__onFun f g) h).
 
 (; //LEAN:Function.onFun_comp_eq ;)
 def Function__onFun_comp_eq : (X : Set) -> (Y : Set) -> (Z : Set) -> (W : Set) -> (f : (Elem X -> Elem X -> Z)) -> (g : (Elem Y -> X)) -> (h : (Elem W -> Y)) -> Proof (Eqt (Elem W -> Elem W -> Z) (Function__onFun f (Function__comp g h)) (Function__onFun (Function__onFun f g) h)) :=
-  X => Y => Z => W => f => g => h => rfl.
+  X => Y => Z => W => f => g => h => rfl (Elem W -> Elem W -> Z) (Function__onFun f (Function__comp g h)).
 
 (; //LEAN:Function.Injective.antisymm_onFun ;)
 def Function__Injective__antisymm_onFun : (X : Set) -> (Y : Set) -> (r : (Elem Y -> Elem Y -> Prop)) -> (f : (Elem X -> Y)) -> (hinj : Proof (Function__Injective f)) -> (_ : Proof (Std__Antisymm r)) -> Proof (Std__Antisymm (Function__onFun r f)) :=
-  X => Y => r => f => hinj => h => Std__Antisymm__mk (forallI X (x => forall X (x5 => if (Function__onFun r f x x5) (if (Function__onFun r f x5 x) (Eqt X x x5)))) (x => forallI X (x1 => if (Function__onFun r f x x1) (if (Function__onFun r f x1 x) (Eqt X x x1))) (x1 => ifI (Function__onFun r f x x1) (if (Function__onFun r f x1 x) (Eqt X x x1)) (hab => ifI (Function__onFun r f x1 x) (Eqt X x x1) (hba => ifE (Eqt Y (f x) (f x1)) (Eqt X x x1) (forallE X (x4 => if (Eqt Y (f x) (f x4)) (Eqt X x x4)) (forallE X (x2 => forall X (x3 => if (Eqt Y (f x2) (f x3)) (Eqt X x2 x3))) hinj x) x1) (antisymm_of Y r (f x) (f x1) hab hba)))))).
+  X => Y => r => f => hinj => h => Std__Antisymm__mk X (Function__onFun r f) (forallI X (x => forall X (x5 => if (Function__onFun r f x x5) (if (Function__onFun r f x5 x) (Eqt X x x5)))) (x => forallI X (x1 => if (Function__onFun r f x x1) (if (Function__onFun r f x1 x) (Eqt X x x1))) (x1 => ifI (Function__onFun r f x x1) (if (Function__onFun r f x1 x) (Eqt X x x1)) (hab => ifI (Function__onFun r f x1 x) (Eqt X x x1) (hba => ifE (Eqt Y (f x) (f x1)) (Eqt X x x1) (forallE X (x4 => if (Eqt Y (f x) (f x4)) (Eqt X x x4)) (forallE X (x2 => forall X (x3 => if (Eqt Y (f x2) (f x3)) (Eqt X x2 x3))) hinj x) x1) (antisymm_of Y r (f x) (f x1) hab hba)))))).
 
 (; //LEAN:Function.Injective.trichotomous_onFun ;)
 def Function__Injective__trichotomous_onFun : (X : Set) -> (Y : Set) -> (r : (Elem Y -> Elem Y -> Prop)) -> (f : (Elem X -> Y)) -> (hinj : Proof (Function__Injective f)) -> (_ : Proof (Std__Trichotomous r)) -> Proof (Std__Trichotomous (Function__onFun r f)) :=
-  X => Y => r => f => hinj => h => Std__Trichotomous__mk (forallI X (a => forall X (b1 => if (not (Function__onFun r f a b1)) (if (not (Function__onFun r f b1 a)) (Eqt X a b1)))) (a => forallI X (b => if (not (Function__onFun r f a b)) (if (not (Function__onFun r f b a)) (Eqt X a b))) (b => ifI (not (Function__onFun r f a b)) (if (not (Function__onFun r f b a)) (Eqt X a b)) (hab => ifI (not (Function__onFun r f b a)) (Eqt X a b) (hba => ifE (Eqt Y (f a) (f b)) (Eqt X a b) (forallE X (x2 => if (Eqt Y (f a) (f x2)) (Eqt X a x2)) (forallE X (x => forall X (x1 => if (Eqt Y (f x) (f x1)) (Eqt X x x1))) hinj a) b) (Std__Trichotomous__trichotomous Y r (f a) (f b) hab hba)))))).
+  X => Y => r => f => hinj => h => Std__Trichotomous__mk X (Function__onFun r f) (forallI X (a => forall X (b1 => if (not (Function__onFun r f a b1)) (if (not (Function__onFun r f b1 a)) (Eqt X a b1)))) (a => forallI X (b => if (not (Function__onFun r f a b)) (if (not (Function__onFun r f b a)) (Eqt X a b))) (b => ifI (not (Function__onFun r f a b)) (if (not (Function__onFun r f b a)) (Eqt X a b)) (hab => ifI (not (Function__onFun r f b a)) (Eqt X a b) (hba => ifE (Eqt Y (f a) (f b)) (Eqt X a b) (forallE X (x2 => if (Eqt Y (f a) (f x2)) (Eqt X a x2)) (forallE X (x => forall X (x1 => if (Eqt Y (f x) (f x1)) (Eqt X x x1))) hinj a) b) (Std__Trichotomous__trichotomous Y r (f a) (f b) hab hba)))))).
 
 (; //LEAN:Function.Injective.isPartialOrder_onFun ;)
 def Function__Injective__isPartialOrder_onFun : (X : Set) -> (Y : Set) -> (r : (Elem Y -> Elem Y -> Prop)) -> (f : (Elem X -> Y)) -> (hinj : Proof (Function__Injective f)) -> (_ : Proof (IsPartialOrder Y r)) -> Proof (IsPartialOrder X (Function__onFun r f)) :=
-  X => Y => r => f => hinj => h => IsPartialOrder__mk.
+  X => Y => r => f => hinj => h => IsPartialOrder__mk X (Function__onFun r f).
 
 (; //LEAN:Function.Injective.isLinearOrder_onFun ;)
 def Function__Injective__isLinearOrder_onFun : (X : Set) -> (Y : Set) -> (r : (Elem Y -> Elem Y -> Prop)) -> (f : (Elem X -> Y)) -> (hinj : Proof (Function__Injective f)) -> (_ : Proof (IsLinearOrder Y r)) -> Proof (IsLinearOrder X (Function__onFun r f)) :=
-  X => Y => r => f => hinj => h => IsLinearOrder__mk.
+  X => Y => r => f => hinj => h => IsLinearOrder__mk X (Function__onFun r f).
 
 (; //LEAN:Function.Injective.isStrictTotalOrder_onFun ;)
 def Function__Injective__isStrictTotalOrder_onFun : (X : Set) -> (Y : Set) -> (r : (Elem Y -> Elem Y -> Prop)) -> (f : (Elem X -> Y)) -> (hinj : Proof (Function__Injective f)) -> (_ : Proof (IsStrictTotalOrder Y r)) -> Proof (IsStrictTotalOrder X (Function__onFun r f)) :=
-  X => Y => r => f => hinj => h => IsStrictTotalOrder__mk.
+  X => Y => r => f => hinj => h => IsStrictTotalOrder__mk X (Function__onFun r f).
 
 (; //LEAN:Function.hfunext ;)
 Function__hfunext : (X : Set) -> (X1 : Set) -> (x : (Elem X -> Set)) -> (x1 : (Elem X1 -> Set)) -> (f : ((a2 : Elem X) -> x a2)) -> (f' : ((a1 : Elem X1) -> x1 a1)) -> (h : Proof (Eqt Set X X1)) -> (h1 : Proof (forall X (a => forall X1 (a' => if (HEq a a') (HEq (f a) (f' a')))))) -> Proof (HEq f f').
@@ -65,19 +65,19 @@ Function__funext_iff_of_subsingleton : (X : Set) -> (Y : Set) -> (f : (Elem X ->
 
 (; //LEAN:Function.swap_lt ;)
 def Function__swap_lt : (X : Set) -> (_ : Proof (LT X)) -> Proof (Eqt (Elem X -> Elem X -> Prop) (Function__swap (x2 => x3 => Lt x2 x3)) (x4 => x5 => Gt x4 x5)) :=
-  X => x => rfl.
+  X => x => rfl (Elem X -> Elem X -> Prop) (Function__swap (x2 => x3 => Lt x2 x3)).
 
 (; //LEAN:Function.swap_le ;)
 def Function__swap_le : (X : Set) -> (_ : Proof (LE X)) -> Proof (Eqt (Elem X -> Elem X -> Prop) (Function__swap (x2 => x3 => Leq x2 x3)) (x4 => x5 => Geq x4 x5)) :=
-  X => x => rfl.
+  X => x => rfl (Elem X -> Elem X -> Prop) (Function__swap (x2 => x3 => Leq x2 x3)).
 
 (; //LEAN:Function.swap_gt ;)
 def Function__swap_gt : (X : Set) -> (_ : Proof (LT X)) -> Proof (Eqt (Elem X -> Elem X -> Prop) (Function__swap (x2 => x3 => Gt x2 x3)) (x4 => x5 => Lt x4 x5)) :=
-  X => x => rfl.
+  X => x => rfl (Elem X -> Elem X -> Prop) (Function__swap (x2 => x3 => Gt x2 x3)).
 
 (; //LEAN:Function.swap_ge ;)
 def Function__swap_ge : (X : Set) -> (_ : Proof (LE X)) -> Proof (Eqt (Elem X -> Elem X -> Prop) (Function__swap (x2 => x3 => Geq x2 x3)) (x4 => x5 => Leq x4 x5)) :=
-  X => x => rfl.
+  X => x => rfl (Elem X -> Elem X -> Prop) (Function__swap (x2 => x3 => Geq x2 x3)).
 
 (; //LEAN:Function.Bijective.injective ;)
 def Function__Bijective__injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Bijective f)) -> Proof (Function__Injective f) :=
@@ -199,7 +199,7 @@ Function__Injective__existsUnique_iff_exists : (X : Set) -> (Y : Set) -> (f : (E
 
 (; //LEAN:Function.bijective_iff_existsUnique ;)
 def Function__bijective_iff_existsUnique : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Proof (iff (Function__Bijective f) (forall Y (b => ExistsUnique (a => Eqt Y (f a) b)))) :=
-  X => Y => f => iffI (Function__Bijective f) (forall Y (b => ExistsUnique (a => Eqt Y (f a) b))) (hf => forallI Y (b1 => ExistsUnique (a3 => Eqt Y (f a3) b1)) (b1 => iffEr (ExistsUnique (a1 => Eqt Y (f a1) b1)) (exists X (a2 => Eqt Y (f a2) b1)) (Function__Injective__existsUnique_iff_exists X Y f (Function__Bijective__injective X Y f hf) b1) (Function__Bijective__surjective X Y f hf b1))) (he => andI (Function__Injective f) (Function__Surjective f) (_a => forallI X (a' => if (Eqt Y (f _a) (f a')) (Eqt X _a a')) (a' => ifI (Eqt Y (f _a) (f a')) (Eqt X _a a') (h => ExistsUnique__unique X (a4 => Eqt Y (f a4) (f a')) (forallE Y (b2 => ExistsUnique (a5 => Eqt Y (f a5) b2)) he (f a')) _a a' h rfl))) (b3 => ExistsUnique__exists X (a6 => Eqt Y (f a6) b3) (forallE Y (b4 => ExistsUnique (a7 => Eqt Y (f a7) b4)) he b3))).
+  X => Y => f => iffI (Function__Bijective f) (forall Y (b => ExistsUnique (a => Eqt Y (f a) b))) (hf => forallI Y (b1 => ExistsUnique (a3 => Eqt Y (f a3) b1)) (b1 => iffEr (ExistsUnique (a1 => Eqt Y (f a1) b1)) (exists X (a2 => Eqt Y (f a2) b1)) (Function__Injective__existsUnique_iff_exists X Y f (Function__Bijective__injective X Y f hf) b1) (Function__Bijective__surjective X Y f hf b1))) (he => andI (Function__Injective f) (Function__Surjective f) (_a => forallI X (a' => if (Eqt Y (f _a) (f a')) (Eqt X _a a')) (a' => ifI (Eqt Y (f _a) (f a')) (Eqt X _a a') (h => ExistsUnique__unique X (a4 => Eqt Y (f a4) (f a')) (forallE Y (b2 => ExistsUnique (a5 => Eqt Y (f a5) b2)) he (f a')) _a a' h (rfl Y (f a'))))) (b3 => ExistsUnique__exists X (a6 => Eqt Y (f a6) b3) (forallE Y (b4 => ExistsUnique (a7 => Eqt Y (f a7) b4)) he b3))).
 
 (; //LEAN:Function.Bijective.existsUnique ;)
 def Function__Bijective__existsUnique : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Bijective f)) -> (b : Elem Y) -> Proof (ExistsUnique (a => Eqt Y (f a) b)) :=
@@ -238,7 +238,7 @@ def Function__IsPartialInv : (f : (Elem X -> Y)) -> (g : (Elem Y -> Option X)) -
 
 (; //LEAN:Function.IsPartialInv.eq ;)
 def Function__IsPartialInv__eq : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> Option X)) -> (H : Proof (Function__IsPartialInv f g)) -> (x : Elem X) -> Proof (Eqt (Option X) (g (f x)) (Option__some x)) :=
-  X => Y => f => g => H => x => iffEr (Eqt (Option X) (g (f x)) (Option__some x)) (Eqt Y (f x) (f x)) (forallE Y (y1 => iff (Eqt (Option X) (g y1) (Option__some x)) (Eqt Y (f x) y1)) (forallE X (x1 => forall Y (y => iff (Eqt (Option X) (g y) (Option__some x1)) (Eqt Y (f x1) y))) H x) (f x)) rfl.
+  X => Y => f => g => H => x => iffEr (Eqt (Option X) (g (f x)) (Option__some x)) (Eqt Y (f x) (f x)) (forallE Y (y1 => iff (Eqt (Option X) (g y1) (Option__some x)) (Eqt Y (f x) y1)) (forallE X (x1 => forall Y (y => iff (Eqt (Option X) (g y) (Option__some x1)) (Eqt Y (f x1) y))) H x) (f x)) (rfl Y (f x)).
 
 (; //LEAN:Function.IsPartialInv.get_eq ;)
 def Function__IsPartialInv__get_eq : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> Option X)) -> (H : Proof (Function__IsPartialInv f g)) -> (x : Elem Y) -> (h : Proof (Eqt Bool (Option__isSome (g x)) Bool__true)) -> Proof (Eqt Y (f (Option__get (g x) h)) x) :=
@@ -250,7 +250,7 @@ def Function__IsPartialInv__surjective_getD : (X : Set) -> (Y : Set) -> (f : (El
 
 (; //LEAN:Function.IsPartialInv.injective ;)
 def Function__IsPartialInv__injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> Option X)) -> (H : Proof (Function__IsPartialInv f g)) -> Proof (Function__Injective f) :=
-  X => Y => f => g => H => forallI X (x => forall X (x4 => if (Eqt Y (f x) (f x4)) (Eqt X x x4))) (x => forallI X (x1 => if (Eqt Y (f x) (f x1)) (Eqt X x x1)) (x1 => ifI (Eqt Y (f x) (f x1)) (Eqt X x x1) (h => Option__some__inj X x x1 (Eq__trans (Option X) (Option__some x) (g (f x1)) (Option__some x1) (Eq__symm (Option X) (g (f x1)) (Option__some x) (iffEr (Eqt (Option X) (g (f x1)) (Option__some x)) (Eqt Y (f x) (f x1)) (forallE Y (y1 => iff (Eqt (Option X) (g y1) (Option__some x)) (Eqt Y (f x) y1)) (forallE X (x2 => forall Y (y => iff (Eqt (Option X) (g y) (Option__some x2)) (Eqt Y (f x2) y))) H x) (f x1)) h)) (iffEr (Eqt (Option X) (g (f x1)) (Option__some x1)) (Eqt Y (f x1) (f x1)) (forallE Y (y3 => iff (Eqt (Option X) (g y3) (Option__some x1)) (Eqt Y (f x1) y3)) (forallE X (x3 => forall Y (y2 => iff (Eqt (Option X) (g y2) (Option__some x3)) (Eqt Y (f x3) y2))) H x1) (f x1)) rfl))))).
+  X => Y => f => g => H => forallI X (x => forall X (x4 => if (Eqt Y (f x) (f x4)) (Eqt X x x4))) (x => forallI X (x1 => if (Eqt Y (f x) (f x1)) (Eqt X x x1)) (x1 => ifI (Eqt Y (f x) (f x1)) (Eqt X x x1) (h => Option__some__inj X x x1 (Eq__trans (Option X) (Option__some x) (g (f x1)) (Option__some x1) (Eq__symm (Option X) (g (f x1)) (Option__some x) (iffEr (Eqt (Option X) (g (f x1)) (Option__some x)) (Eqt Y (f x) (f x1)) (forallE Y (y1 => iff (Eqt (Option X) (g y1) (Option__some x)) (Eqt Y (f x) y1)) (forallE X (x2 => forall Y (y => iff (Eqt (Option X) (g y) (Option__some x2)) (Eqt Y (f x2) y))) H x) (f x1)) h)) (iffEr (Eqt (Option X) (g (f x1)) (Option__some x1)) (Eqt Y (f x1) (f x1)) (forallE Y (y3 => iff (Eqt (Option X) (g y3) (Option__some x1)) (Eqt Y (f x1) y3)) (forallE X (x3 => forall Y (y2 => iff (Eqt (Option X) (g y2) (Option__some x3)) (Eqt Y (f x3) y2))) H x1) (f x1)) (rfl Y (f x1))))))).
 
 (; //LEAN:Function.injective_of_isPartialInv_right ;)
 def Function__injective_of_isPartialInv_right : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> Option X)) -> (H : Proof (Function__IsPartialInv f g)) -> (x : Elem Y) -> (y : Elem Y) -> (b : Elem X) -> (h : Proof (Membership__mem (g x) b)) -> (h1 : Proof (Membership__mem (g y) b)) -> Proof (Eqt Y x y) :=
@@ -285,7 +285,7 @@ def Function__rightInverse_iff_comp : (X : Set) -> (Y : Set) -> (f : (Elem X -> 
 
 (; //LEAN:Function.LeftInverse.comp ;)
 def Function__LeftInverse__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> X)) -> (h : (Elem Y -> Z)) -> (i : (Elem Z -> Y)) -> (hf : Proof (Function__LeftInverse f g)) -> (hh : Proof (Function__LeftInverse h i)) -> Proof (Function__LeftInverse (Function__comp h f) (Function__comp g i)) :=
-  X => Y => Z => f => g => h => i => hf => hh => forallI Z (a => Eqt Z (h (f (g (i a)))) a) (a => Eq__mpr (id (congrArg Y Prop (f (g (i a))) (i a) (_a => Eqt Z (h _a) a) (forallE Y (x => Eqt Y (f (g x)) x) hf (i a)))) (Eq__mpr (id (congrArg Z Prop (h (i a)) a (_a1 => Eqt Z _a1 a) (forallE Z (x1 => Eqt Z (h (i x1)) x1) hh a))) (Eq__refl a))).
+  X => Y => Z => f => g => h => i => hf => hh => forallI Z (a => Eqt Z (h (f (g (i a)))) a) (a => Eq__mpr (id (congrArg Y Prop (f (g (i a))) (i a) (_a => Eqt Z (h _a) a) (forallE Y (x => Eqt Y (f (g x)) x) hf (i a)))) (Eq__mpr (id (congrArg Z Prop (h (i a)) a (_a1 => Eqt Z _a1 a) (forallE Z (x1 => Eqt Z (h (i x1)) x1) hh a))) (Eq__refl Z a))).
 
 (; //LEAN:Function.RightInverse.comp ;)
 def Function__RightInverse__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> X)) -> (h : (Elem Y -> Z)) -> (i : (Elem Z -> Y)) -> (hf : Proof (Function__RightInverse f g)) -> (hh : Proof (Function__RightInverse h i)) -> Proof (Function__RightInverse (Function__comp h f) (Function__comp g i)) :=
@@ -324,7 +324,7 @@ def Function__RightInverse__leftInverse_of_injective : (X : Set) -> (Y : Set) ->
 
 (; //LEAN:Function.LeftInverse.eq_rightInverse ;)
 def Function__LeftInverse__eq_rightInverse : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x : (Elem Y -> X)) -> (x1 : (Elem Y -> X)) -> (h : Proof (Function__LeftInverse x f)) -> (h1 : Proof (Function__RightInverse x1 f)) -> Proof (Eqt (Elem Y -> X) x x1) :=
-  X => Y => f => x => x1 => h => h1 => Trans__trans (Eq__mpr (id (congrArg (Elem Y -> Y) Prop (Function__comp f x1) id (_a => Eqt (Elem Y -> X) x (Function__comp x _a)) (Function__RightInverse__comp_eq_id Y X x1 f h1))) (Eq__mpr (id (congrArg (Elem Y -> X) Prop (Function__comp x id) x (_a1 => Eqt (Elem Y -> X) x _a1) (Function__comp_id Y X x))) (Eq__refl x))) (Eq__mpr (id (congrArg (Elem Y -> X) Prop (Function__comp x (Function__comp f x1)) (Function__comp (Function__comp x f) x1) (_a2 => Eqt (Elem Y -> X) _a2 x1) (Eq__symm (Elem Y -> X) (Function__comp (Function__comp x f) x1) (Function__comp x (Function__comp f x1)) (Function__comp_assoc Y X Y X x f x1)))) (Eq__mpr (id (congrArg (Elem X -> X) Prop (Function__comp x f) id (_a3 => Eqt (Elem Y -> X) (Function__comp _a3 x1) x1) (Function__LeftInverse__comp_eq_id Y X x f h))) (Eq__mpr (id (congrArg (Elem Y -> X) Prop (Function__comp id x1) x1 (_a4 => Eqt (Elem Y -> X) _a4 x1) (Function__id_comp Y X x1))) (Eq__refl x1)))).
+  X => Y => f => x => x1 => h => h1 => Trans__trans (Eq__mpr (id (congrArg (Elem Y -> Y) Prop (Function__comp f x1) id (_a => Eqt (Elem Y -> X) x (Function__comp x _a)) (Function__RightInverse__comp_eq_id Y X x1 f h1))) (Eq__mpr (id (congrArg (Elem Y -> X) Prop (Function__comp x id) x (_a1 => Eqt (Elem Y -> X) x _a1) (Function__comp_id Y X x))) (Eq__refl (Elem Y -> X) x))) (Eq__mpr (id (congrArg (Elem Y -> X) Prop (Function__comp x (Function__comp f x1)) (Function__comp (Function__comp x f) x1) (_a2 => Eqt (Elem Y -> X) _a2 x1) (Eq__symm (Elem Y -> X) (Function__comp (Function__comp x f) x1) (Function__comp x (Function__comp f x1)) (Function__comp_assoc Y X Y X x f x1)))) (Eq__mpr (id (congrArg (Elem X -> X) Prop (Function__comp x f) id (_a3 => Eqt (Elem Y -> X) (Function__comp _a3 x1) x1) (Function__LeftInverse__comp_eq_id Y X x f h))) (Eq__mpr (id (congrArg (Elem Y -> X) Prop (Function__comp id x1) x1 (_a4 => Eqt (Elem Y -> X) _a4 x1) (Function__id_comp Y X x1))) (Eq__refl (Elem Y -> X) x1)))).
 
 (; //LEAN:Function.partialInv ;)
 def Function__partialInv : (f : (Elem X -> Y)) -> (b : Elem Y) -> Elem (Option X) :=
@@ -346,7 +346,7 @@ Function__invFun_eq : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (b : Elem
 
 (; //LEAN:Function.apply_invFun_apply ;)
 def Function__apply_invFun_apply : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (a : Elem X) -> Proof (Eqt Y (f (Function__invFun f (f a))) (f a)) :=
-  X => Y => f => a => Function__invFun_eq X Y f (f a) (existsI X (a1 => Eqt Y (f a1) (f a)) a rfl).
+  X => Y => f => a => Function__invFun_eq X Y f (f a) (existsI X (a1 => Eqt Y (f a1) (f a)) a (rfl Y (f a))).
 
 (; //LEAN:Function.invFun_neg ;)
 def Function__invFun_neg : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (b : Elem Y) -> (h1 : Proof (not (exists X (a => Eqt Y (f a) b)))) -> Proof (Eqt X (Function__invFun f b) (Classical__choice h)) :=
@@ -362,7 +362,7 @@ def Function__rightInverse_invFun : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)
 
 (; //LEAN:Function.leftInverse_invFun ;)
 def Function__leftInverse_invFun : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective f)) -> Proof (Function__LeftInverse (Function__invFun f) f) :=
-  X => Y => f => hf => forallI X (b => Eqt X (Function__invFun f (f b)) b) (b => ifE (Eqt Y (f (Function__invFun f (f b))) (f b)) (Eqt X (Function__invFun f (f b)) b) (forallE X (x2 => if (Eqt Y (f (Function__invFun f (f b))) (f x2)) (Eqt X (Function__invFun f (f b)) x2)) (forallE X (x => forall X (x1 => if (Eqt Y (f x) (f x1)) (Eqt X x x1))) hf (Function__invFun f (f b))) b) (Function__invFun_eq X Y f (f b) (existsI X (a => Eqt Y (f a) (f b)) b rfl))).
+  X => Y => f => hf => forallI X (b => Eqt X (Function__invFun f (f b)) b) (b => ifE (Eqt Y (f (Function__invFun f (f b))) (f b)) (Eqt X (Function__invFun f (f b)) b) (forallE X (x2 => if (Eqt Y (f (Function__invFun f (f b))) (f x2)) (Eqt X (Function__invFun f (f b)) x2)) (forallE X (x => forall X (x1 => if (Eqt Y (f x) (f x1)) (Eqt X x x1))) hf (Function__invFun f (f b))) b) (Function__invFun_eq X Y f (f b) (existsI X (a => Eqt Y (f a) (f b)) b (rfl Y (f b))))).
 
 (; //LEAN:Function.invFun_surjective ;)
 def Function__invFun_surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective f)) -> Proof (Function__Surjective (Function__invFun f)) :=
@@ -447,7 +447,7 @@ def Function__update : (f : ((a1 : Elem X) -> x a1)) -> (a' : Elem X) -> (v : El
 
 (; //LEAN:Function.update_self ;)
 def Function__update_self : (X : Set) -> (x : (Elem X -> Set)) -> (a : Elem X) -> (v : Elem (x a)) -> (f : ((a1 : Elem X) -> x a1)) -> Proof (Eqt (x a) (Function__update f a v a) v) :=
-  X => x => a => v => f => dite_eq_left (Eqt X a a) (x1 a a) rfl (x a) (h => Eq__ndrec v (Eq__symm X a a h)) (h1 => f a).
+  X => x => a => v => f => dite_eq_left (Eqt X a a) (x1 a a) (rfl X a) (x a) (h => Eq__ndrec v (Eq__symm X a a h)) (h1 => f a).
 
 (; //LEAN:Function.update_of_ne ;)
 def Function__update_of_ne : (X : Set) -> (x : (Elem X -> Set)) -> (a : Elem X) -> (a' : Elem X) -> (h : Proof (Neq a a')) -> (v : Elem (x a')) -> (f : ((a1 : Elem X) -> x a1)) -> Proof (Eqt (x a) (Function__update f a' v a) (f a)) :=
@@ -500,7 +500,7 @@ def Function__update_ne_self_iff : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((
 
 (; //LEAN:Function.update_eq_self ;)
 def Function__update_eq_self : (X : Set) -> (x : (Elem X -> Set)) -> (a : Elem X) -> (f : ((a2 : Elem X) -> x a2)) -> Proof (Eqt ((a1 : Elem X) -> x a1) (Function__update f a (f a)) f) :=
-  X => x => a => f => iffEr (Eqt ((a1 : Elem X) -> x a1) (Function__update f a (f a)) f) (and (Eqt (x a) (f a) (f a)) (forall X (x2 => if (Neq x2 a) (Eqt (x x2) (f x2) (f x2))))) (Function__update_eq_iff X x a (f a) f f) (andI (Eqt (x a) (f a) (f a)) (forall X (x3 => if (Neq x3 a) (Eqt (x x3) (f x3) (f x3)))) rfl (x4 => ifI (Neq x4 a) (Eqt (x x4) (f x4) (f x4)) (h2 => rfl))).
+  X => x => a => f => iffEr (Eqt ((a1 : Elem X) -> x a1) (Function__update f a (f a)) f) (and (Eqt (x a) (f a) (f a)) (forall X (x2 => if (Neq x2 a) (Eqt (x x2) (f x2) (f x2))))) (Function__update_eq_iff X x a (f a) f f) (andI (Eqt (x a) (f a) (f a)) (forall X (x3 => if (Neq x3 a) (Eqt (x x3) (f x3) (f x3)))) (rfl (x a) (f a)) (x4 => ifI (Neq x4 a) (Eqt (x x4) (f x4) (f x4)) (h2 => rfl (x x4) (f x4)))).
 
 (; //LEAN:Function.update_comp_eq_of_forall_ne' ;)
 def Function__update_comp_eq_of_forall_ne' : (X : Set) -> (x : (Elem X -> Set)) -> (X1 : Set) -> (g : ((a1 : Elem X) -> x a1)) -> (f : (Elem X1 -> X)) -> (i : Elem X) -> (a : Elem (x i)) -> (h : Proof (forall X1 (x2 => Neq (f x2) i))) -> Proof (Eqt ((j : Elem X1) -> x (f j)) (j1 => Function__update g i a (f j1)) (j2 => g (f j2))) :=
@@ -597,7 +597,7 @@ Function__Injective__extend_comp : (Z : Set) -> (X : Set) -> (X1 : Set) -> (X2 :
 
 (; //LEAN:Function.factorsThrough_iff ;)
 def Function__factorsThrough_iff : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Z)) -> Proof (iff (Function__FactorsThrough g f) (exists (Elem Y -> Z) (e => Eqt (Elem X -> Z) g (Function__comp e f)))) :=
-  X => Y => Z => f => g => iffI (Function__FactorsThrough g f) (exists (Elem Y -> Z) (e => Eqt (Elem X -> Z) g (Function__comp e f))) (hf => existsI (Elem Y -> Z) (e1 => Eqt (Elem X -> Z) g (Function__comp e1 f)) (Function__extend f g (Function__const Y (Classical__arbitrary Z))) (funext X (x4 => Z) g (Function__comp (Function__extend f g (Function__const Y (Classical__arbitrary Z))) f) (forallI X (x5 => Eqt Z (g x5) (Function__comp (Function__extend f g (Function__const Y (Classical__arbitrary Z))) f x5)) (x5 => of_eq_true (Eqt Z (g x5) (Function__comp (Function__extend f g (Function__const Y (Classical__arbitrary Z))) f x5)) (Eq__trans Prop (Eqt Z (g x5) (Function__comp (Function__extend f g (Function__const Y (Classical__arbitrary Z))) f x5)) (Eqt Z (g x5) (g x5)) True (congrArg Z Prop (Function__comp (Function__extend f g (Function__const Y (Classical__arbitrary Z))) f x5) (g x5) (Eq (g x5)) ((forallI (Elem Y -> Z) (e' => forall X (a1 => Eqt Z (Function__extend f g e' (f a1)) (g a1))) (e' => forallI X (a => Eqt Z (Function__extend f g e' (f a)) (g a)) (a => Function__FactorsThrough__extend_apply X Y Z f g hf e' a))) (Function__const Y (Classical__arbitrary Z)) x5)) (eq_self Z (g x5))))))) (h1 => forallI X (x7 => forall X (x13 => if (Eqt Y (f x7) (f x13)) (Eqt Z (g x7) (g x13)))) (x7 => forallI X (x8 => if (Eqt Y (f x7) (f x8)) (Eqt Z (g x7) (g x8))) (x8 => ifI (Eqt Y (f x7) (f x8)) (Eqt Z (g x7) (g x8)) (hf1 => Eq__mpr (id (congrArg (Elem X -> Z) Prop g (Function__comp (Classical__choose h1) f) (_a => Eqt Z (_a x7) (_a x8)) (Classical__choose_spec (Elem Y -> Z) (x11 => Eqt (Elem X -> Z) g (Function__comp x11 f)) h1))) (Eq__mpr (id (congrArg Z Prop (Function__comp (Classical__choose h1) f x7) (Classical__choose h1 (f x7)) (_a1 => Eqt Z _a1 (Function__comp (Classical__choose h1) f x8)) (Function__comp_apply Y Z X (Classical__choose h1) f x7))) (Eq__mpr (id (congrArg Z Prop (Function__comp (Classical__choose h1) f x8) (Classical__choose h1 (f x8)) (_a2 => Eqt Z (Classical__choose h1 (f x7)) _a2) (Function__comp_apply Y Z X (Classical__choose h1) f x8))) (Eq__mpr (id (congrArg Y Prop (f x7) (f x8) (_a3 => Eqt Z (Classical__choose h1 _a3) (Classical__choose h1 (f x8))) hf1)) (Eq__refl (Classical__choose h1 (f x8)))))))))).
+  X => Y => Z => f => g => iffI (Function__FactorsThrough g f) (exists (Elem Y -> Z) (e => Eqt (Elem X -> Z) g (Function__comp e f))) (hf => existsI (Elem Y -> Z) (e1 => Eqt (Elem X -> Z) g (Function__comp e1 f)) (Function__extend f g (Function__const Y (Classical__arbitrary Z))) (funext X (x4 => Z) g (Function__comp (Function__extend f g (Function__const Y (Classical__arbitrary Z))) f) (forallI X (x5 => Eqt Z (g x5) (Function__comp (Function__extend f g (Function__const Y (Classical__arbitrary Z))) f x5)) (x5 => of_eq_true (Eqt Z (g x5) (Function__comp (Function__extend f g (Function__const Y (Classical__arbitrary Z))) f x5)) (Eq__trans Prop (Eqt Z (g x5) (Function__comp (Function__extend f g (Function__const Y (Classical__arbitrary Z))) f x5)) (Eqt Z (g x5) (g x5)) True (congrArg Z Prop (Function__comp (Function__extend f g (Function__const Y (Classical__arbitrary Z))) f x5) (g x5) (Eq (g x5)) ((forallI (Elem Y -> Z) (e' => forall X (a1 => Eqt Z (Function__extend f g e' (f a1)) (g a1))) (e' => forallI X (a => Eqt Z (Function__extend f g e' (f a)) (g a)) (a => Function__FactorsThrough__extend_apply X Y Z f g hf e' a))) (Function__const Y (Classical__arbitrary Z)) x5)) (eq_self Z (g x5))))))) (h1 => forallI X (x7 => forall X (x13 => if (Eqt Y (f x7) (f x13)) (Eqt Z (g x7) (g x13)))) (x7 => forallI X (x8 => if (Eqt Y (f x7) (f x8)) (Eqt Z (g x7) (g x8))) (x8 => ifI (Eqt Y (f x7) (f x8)) (Eqt Z (g x7) (g x8)) (hf1 => Eq__mpr (id (congrArg (Elem X -> Z) Prop g (Function__comp (Classical__choose h1) f) (_a => Eqt Z (_a x7) (_a x8)) (Classical__choose_spec (Elem Y -> Z) (x11 => Eqt (Elem X -> Z) g (Function__comp x11 f)) h1))) (Eq__mpr (id (congrArg Z Prop (Function__comp (Classical__choose h1) f x7) (Classical__choose h1 (f x7)) (_a1 => Eqt Z _a1 (Function__comp (Classical__choose h1) f x8)) (Function__comp_apply Y Z X (Classical__choose h1) f x7))) (Eq__mpr (id (congrArg Z Prop (Function__comp (Classical__choose h1) f x8) (Classical__choose h1 (f x8)) (_a2 => Eqt Z (Classical__choose h1 (f x7)) _a2) (Function__comp_apply Y Z X (Classical__choose h1) f x8))) (Eq__mpr (id (congrArg Y Prop (f x7) (f x8) (_a3 => Eqt Z (Classical__choose h1 _a3) (Classical__choose h1 (f x8))) hf1)) (Eq__refl Z (Classical__choose h1 (f x8)))))))))).
 
 (; //LEAN:Function.apply_extend ;)
 def Function__apply_extend : (X : Set) -> (Y : Set) -> (Z : Set) -> (W : Set) -> (g : (Elem X -> Z)) -> (F : (Elem Z -> W)) -> (f : (Elem X -> Y)) -> (e' : (Elem Y -> Z)) -> (b : Elem Y) -> Proof (Eqt W (F (Function__extend f g e' b)) (Function__extend f (Function__comp F g) (Function__comp F e') b)) :=
@@ -650,7 +650,7 @@ def Function__FactorsThrough__comp_right : (X : Set) -> (Y : Set) -> (Z : Set) -
 
 (; //LEAN:Function.uncurry_def ;)
 def Function__uncurry_def : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y -> Z)) -> Proof (Eqt (Elem (Prod X Y) -> Z) (Function__uncurry f) (p => f (Prod__fst p) (Prod__snd p))) :=
-  X => Y => Z => f => rfl.
+  X => Y => Z => f => rfl (Elem (Prod X Y) -> Z) (Function__uncurry f).
 
 (; //LEAN:Function.uncurry_injective ;)
 def Function__uncurry_injective : (X : Set) -> (Y : Set) -> (Z : Set) -> Proof (Function__Injective Function__uncurry) :=
@@ -662,11 +662,11 @@ def Function__curry_injective : (X : Set) -> (Y : Set) -> (Z : Set) -> Proof (Fu
 
 (; //LEAN:Function.uncurry_flip ;)
 def Function__uncurry_flip : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y -> Z)) -> Proof (Eqt (Elem (Prod Y X) -> Z) (Function__uncurry (flip f)) (Function__comp (Function__uncurry f) Prod__swap)) :=
-  X => Y => Z => f => rfl.
+  X => Y => Z => f => rfl (Elem (Prod Y X) -> Z) (Function__uncurry (flip f)).
 
 (; //LEAN:Function.flip_curry ;)
 def Function__flip_curry : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem (Prod X Y) -> Z)) -> Proof (Eqt (Elem Y -> Elem X -> Z) (flip (Function__curry f)) (Function__curry (Function__comp f Prod__swap))) :=
-  X => Y => Z => f => rfl.
+  X => Y => Z => f => rfl (Elem Y -> Elem X -> Z) (flip (Function__curry f)).
 
 (; //LEAN:Function.curry_update ;)
 Function__curry_update : (X : Set) -> (X1 : Set) -> (Y : Set) -> (f : (Elem (Prod X X1) -> Y)) -> (aa' : Elem (Prod X X1)) -> (b : Elem Y) -> Proof (Eqt (Elem X -> Elem X1 -> Y) (Function__curry (Function__update f aa' b)) (Function__update (Function__curry f) (Prod__fst aa') (Function__update (Function__curry f (Prod__fst aa')) (Prod__snd aa') b))).
@@ -730,7 +730,7 @@ def Function__Involutive__eq_iff : (X : Set) -> (f : (Elem X -> X)) -> (h : Proo
 
 (; //LEAN:Function.not_involutive ;)
 def Function__not_involutive : Proof (Function__Involutive not) :=
-  forallI Prop (x => Eqt Prop (not (not x)) x) (x => propext (Classical__not_not x)).
+  forallI Prop (x => Eqt Prop (not (not x)) x) (x => propext (not (not x)) x (Classical__not_not x)).
 
 (; //LEAN:Function.not_injective ;)
 def Function__not_injective : Proof (Function__Injective not) :=
@@ -777,7 +777,7 @@ def Function__sometimes : (f : (Elem X -> Y)) -> Elem Y :=
 
 (; //LEAN:Function.sometimes_eq ;)
 def Function__sometimes_eq : (p : Prop) -> (X : Set) -> (f : (Proof p -> X)) -> (a : Proof p) -> Proof (Eqt X (Function__sometimes f) (f a)) :=
-  p => X => f => a => dite_eq_left (Nonempty p) (Classical__propDecidable (Nonempty p)) (Nonempty__intro a) X (h1 => f (Classical__choice h1)) (h2 => Classical__choice h).
+  p => X => f => a => dite_eq_left (Nonempty p) (Classical__propDecidable (Nonempty p)) (Nonempty__intro p a) X (h1 => f (Classical__choice h1)) (h2 => Classical__choice h).
 
 (; //LEAN:Function.sometimes_spec ;)
 Function__sometimes_spec : (p : Prop) -> (X : Set) -> (P : (Elem X -> Prop)) -> (f : (Proof p -> X)) -> (a : Proof p) -> (h1 : Proof (P (f a))) -> Proof (P (Function__sometimes f)).
@@ -837,17 +837,17 @@ Set__separatesPoints_mono : (X : Set) -> (Y : Set) -> (A : Elem (powerset (Elem 
 
 (; //LEAN:InvImage.equivalence ;)
 def InvImage__equivalence : (X : Set) -> (Y : Set) -> (r : (Elem Y -> Elem Y -> Prop)) -> (f : (Elem X -> Y)) -> (h : Proof (Equivalence r)) -> Proof (Equivalence (InvImage r f)) :=
-  X => Y => r => f => h => Equivalence__mk (forallI X (x => r (f x) (f x)) (x => Equivalence__refl Y r h (f x))) (forallI X (x1 => forall X (x3 => if (r (f x1) (f x3)) (r (f x3) (f x1)))) (x1 => forallI X (x2 => if (r (f x1) (f x2)) (r (f x2) (f x1))) (x2 => Equivalence__symm Y r h (f x1) (f x2)))) (forallI X (x4 => forall X (x8 => forall X (x9 => if (r (f x4) (f x8)) (if (r (f x8) (f x9)) (r (f x4) (f x9)))))) (x4 => forallI X (x5 => forall X (x7 => if (r (f x4) (f x5)) (if (r (f x5) (f x7)) (r (f x4) (f x7))))) (x5 => forallI X (x6 => if (r (f x4) (f x5)) (if (r (f x5) (f x6)) (r (f x4) (f x6)))) (x6 => Equivalence__trans Y r h (f x4) (f x5) (f x6))))).
+  X => Y => r => f => h => Equivalence__mk X (InvImage r f) (forallI X (x => r (f x) (f x)) (x => Equivalence__refl Y r h (f x))) (forallI X (x1 => forall X (x3 => if (r (f x1) (f x3)) (r (f x3) (f x1)))) (x1 => forallI X (x2 => if (r (f x1) (f x2)) (r (f x2) (f x1))) (x2 => Equivalence__symm Y r h (f x1) (f x2)))) (forallI X (x4 => forall X (x8 => forall X (x9 => if (r (f x4) (f x8)) (if (r (f x8) (f x9)) (r (f x4) (f x9)))))) (x4 => forallI X (x5 => forall X (x7 => if (r (f x4) (f x5)) (if (r (f x5) (f x7)) (r (f x4) (f x7))))) (x5 => forallI X (x6 => if (r (f x4) (f x5)) (if (r (f x5) (f x6)) (r (f x4) (f x6)))) (x6 => Equivalence__trans Y r h (f x4) (f x5) (f x6))))).
 
 (; //LEAN:Pi.map_id ;)
 def Pi__map_id : (I : Set) -> (x : (Elem I -> Set)) -> Proof (Eqt (((i1 : Elem I) -> x i1) -> (i : Elem I) -> x i) (Pi__map (i2 => id)) id) :=
-  I => x => rfl.
+  I => x => rfl (((i1 : Elem I) -> x i1) -> (i : Elem I) -> x i) (Pi__map (i2 => id)).
 
 (; //LEAN:Pi.map_id' ;)
 def Pi__map_id' : (I : Set) -> (x : (Elem I -> Set)) -> Proof (Eqt (((i1 : Elem I) -> x i1) -> (i : Elem I) -> x i) (Pi__map (i2 => a => a)) (x2 => x2)) :=
-  I => x => rfl.
+  I => x => rfl (((i1 : Elem I) -> x i1) -> (i : Elem I) -> x i) (Pi__map (i2 => a => a)).
 
 (; //LEAN:Pi.map_comp_map ;)
 def Pi__map_comp_map : (I : Set) -> (x : (Elem I -> Set)) -> (x1 : (Elem I -> Set)) -> (x2 : (Elem I -> Set)) -> (f : ((i4 : Elem I) -> Elem (x i4) -> x1 i4)) -> (g : ((i3 : Elem I) -> Elem (x1 i3) -> x2 i3)) -> Proof (Eqt (((i1 : Elem I) -> x i1) -> (i : Elem I) -> x2 i) (Function__comp (Pi__map g) (Pi__map f)) (Pi__map (i2 => Function__comp (g i2) (f i2)))) :=
-  I => x => x1 => x2 => f => g => rfl.
+  I => x => x1 => x2 => f => g => rfl (((i1 : Elem I) -> x i1) -> (i : Elem I) -> x2 i) (Function__comp (Pi__map g) (Pi__map f)).
 

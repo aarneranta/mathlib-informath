@@ -24,7 +24,7 @@ def Set__eqOn_comm : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (x : (
 
 (; //LEAN:Set.eqOn_refl ;)
 def Set__eqOn_refl : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Proof (Set__EqOn f f s) :=
-  X => Y => f => s => forallI X (x => if (Membership__mem s x) (Eqt Y (f x) (f x))) (x => ifI (Membership__mem s x) (Eqt Y (f x) (f x)) (h => rfl)).
+  X => Y => f => s => forallI X (x => if (Membership__mem s x) (Eqt Y (f x) (f x))) (x => ifI (Membership__mem s x) (Eqt Y (f x) (f x)) (h => rfl Y (f x))).
 
 (; //LEAN:Set.EqOn.trans ;)
 def Set__EqOn__trans : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : (Elem X -> Y)) -> (h : Proof (Set__EqOn x x1 s)) -> (h1 : Proof (Set__EqOn x1 x2 s)) -> Proof (Set__EqOn x x2 s) :=
@@ -81,7 +81,7 @@ def Set__mapsTo_iff_subset_preimage : (X : Set) -> (Y : Set) -> (s : Elem (power
 
 (; //LEAN:Set.mapsTo_prodMap_diagonal ;)
 def Set__mapsTo_prodMap_diagonal : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Proof (Set__MapsTo (Prod__map f f) (Set__diagonal X) (Set__diagonal Y)) :=
-  X => Y => f => iffEr (Set__MapsTo (Prod__map f f) (Set__diagonal X) (Set__diagonal Y)) (Set__Subset (Set__diagonal X) (Set__preimage (Prod__map f f) (Set__diagonal Y))) (Set__mapsTo_iff_subset_preimage (Prod X X) (Prod Y Y) (Set__diagonal X) (Set__diagonal Y) (Prod__map f f)) (iffEr (Set__Subset (Set__diagonal X) (Set__preimage (Prod__map f f) (Set__diagonal Y))) (forall X (x => Membership__mem (Set__preimage (Prod__map f f) (Set__diagonal Y)) (Prod__mk x x))) (Set__diagonal_subset_iff X (Set__preimage (Prod__map f f) (Set__diagonal Y))) (x1 => rfl)).
+  X => Y => f => iffEr (Set__MapsTo (Prod__map f f) (Set__diagonal X) (Set__diagonal Y)) (Set__Subset (Set__diagonal X) (Set__preimage (Prod__map f f) (Set__diagonal Y))) (Set__mapsTo_iff_subset_preimage (Prod X X) (Prod Y Y) (Set__diagonal X) (Set__diagonal Y) (Prod__map f f)) (iffEr (Set__Subset (Set__diagonal X) (Set__preimage (Prod__map f f) (Set__diagonal Y))) (forall X (x => Membership__mem (Set__preimage (Prod__map f f) (Set__diagonal Y)) (Prod__mk x x))) (Set__diagonal_subset_iff X (Set__preimage (Prod__map f f) (Set__diagonal Y))) (x1 => rfl Y (Prod__fst (Prod__map f f (Prod__mk x1 x1))))).
 
 (; //LEAN:Set.mapsTo_singleton ;)
 def Set__mapsTo_singleton : (X : Set) -> (Y : Set) -> (t : Elem (powerset Y)) -> (f : (Elem X -> Y)) -> (x : Elem X) -> Proof (iff (Set__MapsTo f (Singleton__singleton x) t) (Membership__mem t (f x))) :=
@@ -186,7 +186,7 @@ Set__mapsTo_image_iff : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y
 
 (; //LEAN:Set.MapsTo.comp_left ;)
 def Set__MapsTo__comp_left : (X : Set) -> (Y : Set) -> (Z : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> Z)) -> (hf : Proof (Set__MapsTo f s t)) -> Proof (Set__MapsTo (Function__comp g f) s (Set__image g t)) :=
-  X => Y => Z => s => t => f => g => hf => forallI X (x => if (Membership__mem s x) (exists Y (a2 => and (Membership__mem t a2) (Eqt Z (g a2) (Function__comp g f x))))) (x => ifI (Membership__mem s x) (exists Y (a1 => and (Membership__mem t a1) (Eqt Z (g a1) (Function__comp g f x)))) (hx => existsI Y (a => and (Membership__mem t a) (Eqt Z (g a) (Function__comp g f x))) (f x) (andI (Membership__mem t (f x)) (Eqt Z (g (f x)) (Function__comp g f x)) (ifE (Membership__mem s x) (Membership__mem t (f x)) (forallE X (x1 => if (Membership__mem s x1) (Membership__mem t (f x1))) hf x) hx) rfl))).
+  X => Y => Z => s => t => f => g => hf => forallI X (x => if (Membership__mem s x) (exists Y (a2 => and (Membership__mem t a2) (Eqt Z (g a2) (Function__comp g f x))))) (x => ifI (Membership__mem s x) (exists Y (a1 => and (Membership__mem t a1) (Eqt Z (g a1) (Function__comp g f x)))) (hx => existsI Y (a => and (Membership__mem t a) (Eqt Z (g a) (Function__comp g f x))) (f x) (andI (Membership__mem t (f x)) (Eqt Z (g (f x)) (Function__comp g f x)) (ifE (Membership__mem s x) (Membership__mem t (f x)) (forallE X (x1 => if (Membership__mem s x1) (Membership__mem t (f x1))) hf x) hx) (rfl Z (g (f x)))))).
 
 (; //LEAN:Set.MapsTo.comp_right ;)
 def Set__MapsTo__comp_right : (X : Set) -> (Y : Set) -> (Z : Set) -> (g : (Elem Y -> Z)) -> (s : Elem (powerset Y)) -> (t : Elem (powerset Z)) -> (hg : Proof (Set__MapsTo g s t)) -> (f : (Elem X -> Y)) -> Proof (Set__MapsTo (Function__comp g f) (Set__preimage f s) t) :=
@@ -334,7 +334,7 @@ Set__InjOn__image_inter : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : 
 
 (; //LEAN:Set.InjOn.image ;)
 def Set__InjOn__image : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (h : Proof (Set__InjOn f s)) -> Proof (Set__InjOn (Set__image f) (Set__powerset s)) :=
-  X => Y => s => f => h => forallI (powerset X) (x => if (Membership__mem (Set__powerset s) x) (forall (powerset X) (x3 => if (Membership__mem (Set__powerset s) x3) (if (Eqt (powerset Y) (Set__image f x) (Set__image f x3)) (Eqt (powerset X) x x3))))) (x => ifI (Membership__mem (Set__powerset s) x) (forall (powerset X) (x2 => if (Membership__mem (Set__powerset s) x2) (if (Eqt (powerset Y) (Set__image f x) (Set__image f x2)) (Eqt (powerset X) x x2)))) (h1 => forallI (powerset X) (x1 => if (Membership__mem (Set__powerset s) x1) (if (Eqt (powerset Y) (Set__image f x) (Set__image f x1)) (Eqt (powerset X) x x1))) (x1 => ifI (Membership__mem (Set__powerset s) x1) (if (Eqt (powerset Y) (Set__image f x) (Set__image f x1)) (Eqt (powerset X) x x1)) (h2 => ifI (Eqt (powerset Y) (Set__image f x) (Set__image f x1)) (Eqt (powerset X) x x1) (h' => Eq__mpr (id (congrArg (powerset X) Prop x (Inter__inter (Set__preimage f (Set__image f x)) s) (_a => Eqt (powerset X) _a x1) (Eq__symm (powerset X) (Inter__inter (Set__preimage f (Set__image f x)) s) x (Set__InjOn__preimage_image_inter X Y s x f h h1)))) (Eq__mpr (id (congrArg (powerset Y) Prop (Set__image f x) (Set__image f x1) (_a1 => Eqt (powerset X) (Inter__inter (Set__preimage f _a1) s) x1) h')) (Eq__mpr (id (congrArg (powerset X) Prop (Inter__inter (Set__preimage f (Set__image f x1)) s) x1 (_a2 => Eqt (powerset X) _a2 x1) (Set__InjOn__preimage_image_inter X Y s x1 f h h2))) (Eq__refl x1)))))))).
+  X => Y => s => f => h => forallI (powerset X) (x => if (Membership__mem (Set__powerset s) x) (forall (powerset X) (x3 => if (Membership__mem (Set__powerset s) x3) (if (Eqt (powerset Y) (Set__image f x) (Set__image f x3)) (Eqt (powerset X) x x3))))) (x => ifI (Membership__mem (Set__powerset s) x) (forall (powerset X) (x2 => if (Membership__mem (Set__powerset s) x2) (if (Eqt (powerset Y) (Set__image f x) (Set__image f x2)) (Eqt (powerset X) x x2)))) (h1 => forallI (powerset X) (x1 => if (Membership__mem (Set__powerset s) x1) (if (Eqt (powerset Y) (Set__image f x) (Set__image f x1)) (Eqt (powerset X) x x1))) (x1 => ifI (Membership__mem (Set__powerset s) x1) (if (Eqt (powerset Y) (Set__image f x) (Set__image f x1)) (Eqt (powerset X) x x1)) (h2 => ifI (Eqt (powerset Y) (Set__image f x) (Set__image f x1)) (Eqt (powerset X) x x1) (h' => Eq__mpr (id (congrArg (powerset X) Prop x (Inter__inter (Set__preimage f (Set__image f x)) s) (_a => Eqt (powerset X) _a x1) (Eq__symm (powerset X) (Inter__inter (Set__preimage f (Set__image f x)) s) x (Set__InjOn__preimage_image_inter X Y s x f h h1)))) (Eq__mpr (id (congrArg (powerset Y) Prop (Set__image f x) (Set__image f x1) (_a1 => Eqt (powerset X) (Inter__inter (Set__preimage f _a1) s) x1) h')) (Eq__mpr (id (congrArg (powerset X) Prop (Inter__inter (Set__preimage f (Set__image f x1)) s) x1 (_a2 => Eqt (powerset X) _a2 x1) (Set__InjOn__preimage_image_inter X Y s x1 f h h2))) (Eq__refl (powerset X) x1)))))))).
 
 (; //LEAN:Set.InjOn.image_eq_image_iff ;)
 def Set__InjOn__image_eq_image_iff : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (h : Proof (Set__InjOn f s)) -> (h1 : Proof (Set__Subset x s)) -> (h2 : Proof (Set__Subset x1 s)) -> Proof (iff (Eqt (powerset Y) (Set__image f x) (Set__image f x1)) (Eqt (powerset X) x x1)) :=
@@ -688,7 +688,7 @@ Set__LeftInvOn__mapsTo : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (t
 
 (; //LEAN:Set.leftInvOn_id ;)
 def Set__leftInvOn_id : (X : Set) -> (s : Elem (powerset X)) -> Proof (Set__LeftInvOn id id s) :=
-  X => s => forallI X (x => if (Membership__mem s x) (Eqt X (id (id x)) (id (id x)))) (x => ifI (Membership__mem s x) (Eqt X (id (id x)) (id (id x))) (h => rfl)).
+  X => s => forallI X (x => if (Membership__mem s x) (Eqt X (id (id x)) (id (id x)))) (x => ifI (Membership__mem s x) (Eqt X (id (id x)) (id (id x))) (h => rfl X (id (id x)))).
 
 (; //LEAN:Set.LeftInvOn.comp ;)
 def Set__LeftInvOn__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> Z)) -> (f' : (Elem Y -> X)) -> (g' : (Elem Z -> Y)) -> (hf' : Proof (Set__LeftInvOn f' f s)) -> (hg' : Proof (Set__LeftInvOn g' g t)) -> (hf : Proof (Set__MapsTo f s t)) -> Proof (Set__LeftInvOn (Function__comp f' g') (Function__comp g f) s) :=
@@ -740,7 +740,7 @@ def Set__RightInvOn__mapsTo : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) 
 
 (; //LEAN:Set.rightInvOn_id ;)
 def Set__rightInvOn_id : (X : Set) -> (s : Elem (powerset X)) -> Proof (Set__RightInvOn id id s) :=
-  X => s => forallI X (x => if (Membership__mem s x) (Eqt X (id (id x)) (id (id x)))) (x => ifI (Membership__mem s x) (Eqt X (id (id x)) (id (id x))) (h => rfl)).
+  X => s => forallI X (x => if (Membership__mem s x) (Eqt X (id (id x)) (id (id x)))) (x => ifI (Membership__mem s x) (Eqt X (id (id x)) (id (id x))) (h => rfl X (id (id x)))).
 
 (; //LEAN:Set.RightInvOn.comp ;)
 def Set__RightInvOn__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (t : Elem (powerset Y)) -> (p : Elem (powerset Z)) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> Z)) -> (f' : (Elem Y -> X)) -> (g' : (Elem Z -> Y)) -> (hf : Proof (Set__RightInvOn f' f t)) -> (hg : Proof (Set__RightInvOn g' g p)) -> (g'pt : Proof (Set__MapsTo g' p t)) -> Proof (Set__RightInvOn (Function__comp f' g') (Function__comp g f) p) :=
@@ -804,11 +804,11 @@ Function__invFunOn_neg : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (f
 
 (; //LEAN:Function.invFunOn_apply_mem ;)
 def Function__invFunOn_apply_mem : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (a : Elem X) -> (h1 : Proof (Membership__mem s a)) -> Proof (Membership__mem s (Function__invFunOn f s (f a))) :=
-  X => Y => s => f => a => h1 => Function__invFunOn_mem X Y s f (f a) (existsI X (a1 => and (Membership__mem s a1) (Eqt Y (f a1) (f a))) a (andI (Membership__mem s a) (Eqt Y (f a) (f a)) h1 rfl)).
+  X => Y => s => f => a => h1 => Function__invFunOn_mem X Y s f (f a) (existsI X (a1 => and (Membership__mem s a1) (Eqt Y (f a1) (f a))) a (andI (Membership__mem s a) (Eqt Y (f a) (f a)) h1 (rfl Y (f a)))).
 
 (; //LEAN:Function.invFunOn_apply_eq ;)
 def Function__invFunOn_apply_eq : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (a : Elem X) -> (h1 : Proof (Membership__mem s a)) -> Proof (Eqt Y (f (Function__invFunOn f s (f a))) (f a)) :=
-  X => Y => s => f => a => h1 => Function__invFunOn_eq X Y s f (f a) (existsI X (a1 => and (Membership__mem s a1) (Eqt Y (f a1) (f a))) a (andI (Membership__mem s a) (Eqt Y (f a) (f a)) h1 rfl)).
+  X => Y => s => f => a => h1 => Function__invFunOn_eq X Y s f (f a) (existsI X (a1 => and (Membership__mem s a1) (Eqt Y (f a1) (f a))) a (andI (Membership__mem s a) (Eqt Y (f a) (f a)) h1 (rfl Y (f a)))).
 
 (; //LEAN:Set.InjOn.leftInvOn_invFunOn ;)
 def Set__InjOn__leftInvOn_invFunOn : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (h1 : Proof (Set__InjOn f s)) -> Proof (Set__LeftInvOn (Function__invFunOn f s) f s) :=

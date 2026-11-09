@@ -126,11 +126,11 @@ NNDist__nndist : (x : Elem X) -> (x1 : Elem X) -> Elem NNReal.
 
 (; //LEAN:dist_nndist ;)
 def dist_nndist : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (x1 : Elem X) -> (y : Elem X) -> Proof (Eq (Dist__dist x1 y) (NNReal__toReal (NNDist__nndist x1 y))) :=
-  X => x => x1 => y => rfl.
+  X => x => x1 => y => rfl Real (Dist__dist x1 y).
 
 (; //LEAN:coe_nndist ;)
 def coe_nndist : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (x1 : Elem X) -> (y : Elem X) -> Proof (Eq (NNReal__toReal (NNDist__nndist x1 y)) (Dist__dist x1 y)) :=
-  X => x => x1 => y => rfl.
+  X => x => x1 => y => rfl Real (NNReal__toReal (NNDist__nndist x1 y)).
 
 (; //LEAN:edist_nndist ;)
 edist_nndist : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (x1 : Elem X) -> (y : Elem X) -> Proof (Eqt ENNReal (EDist__edist x1 y) (ENNReal__ofNNReal (NNDist__nndist x1 y))).
@@ -227,7 +227,7 @@ Metric__exists_lt_mem_ball_of_mem_ball : (X : Set) -> (_ : Proof (PseudoMetricSp
 
 (; //LEAN:Metric.ball_eq_ball ;)
 def Metric__ball_eq_ball : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (x1 : Elem Real) -> (x2 : Elem X) -> Proof (Eqt (powerset X) (UniformSpace__ball x2 (Set__ofPred (p => Lt (Dist__dist (Prod__snd p) (Prod__fst p)) x1))) (Metric__ball x2 x1)) :=
-  X => x => x1 => x2 => rfl.
+  X => x => x1 => x2 => rfl (powerset X) (UniformSpace__ball x2 (Set__ofPred (p => Lt (Dist__dist (Prod__snd p) (Prod__fst p)) x1))).
 
 (; //LEAN:Metric.ball_eq_ball' ;)
 Metric__ball_eq_ball' : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (x1 : Elem Real) -> (x2 : Elem X) -> Proof (Eqt (powerset X) (UniformSpace__ball x2 (Set__ofPred (p => Lt (Dist__dist (Prod__fst p) (Prod__snd p)) x1))) (Metric__ball x2 x1)).
@@ -652,7 +652,7 @@ Metric__uniformSpace_eq_bot : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> 
 
 (; //LEAN:DiscreteTopology.of_forall_le_dist ;)
 def DiscreteTopology__of_forall_le_dist : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (r : Elem Real) -> (hpos : Proof (Lt 0 r)) -> (hr : Proof (Pairwise (x1 => x2 => Leq r (Dist__dist x1 x2)))) -> Proof (DiscreteTopology X) :=
-  X => x => r => hpos => hr => DiscreteTopology__mk (Eq__mpr (id (congrArg (UniformSpace X) Prop PseudoMetricSpace__toUniformSpace Bot__bot (_a => Eqt (TopologicalSpace X) UniformSpace__toTopologicalSpace Bot__bot) (iffEr (Eqt (UniformSpace X) PseudoMetricSpace__toUniformSpace Bot__bot) (exists Real (r1 => and (Lt 0 r1) (Pairwise (x1 => x2 => Leq r1 (Dist__dist x1 x2))))) (Metric__uniformSpace_eq_bot X) (existsI Real (r2 => and (Lt 0 r2) (Pairwise (x3 => x4 => Leq r2 (Dist__dist x3 x4)))) r (andI (Lt 0 r) (Pairwise (x5 => x6 => Leq r (Dist__dist x5 x6))) hpos hr))))) (Eq__mpr (id (congrArg (TopologicalSpace X) Prop UniformSpace__toTopologicalSpace Bot__bot (_a1 => Eqt (TopologicalSpace X) _a1 Bot__bot) (UniformSpace__toTopologicalSpace_bot X))) (Eq__refl Bot__bot))).
+  X => x => r => hpos => hr => DiscreteTopology__mk X (Eq__mpr (id (congrArg (UniformSpace X) Prop PseudoMetricSpace__toUniformSpace Bot__bot (_a => Eqt (TopologicalSpace X) UniformSpace__toTopologicalSpace Bot__bot) (iffEr (Eqt (UniformSpace X) PseudoMetricSpace__toUniformSpace Bot__bot) (exists Real (r1 => and (Lt 0 r1) (Pairwise (x1 => x2 => Leq r1 (Dist__dist x1 x2))))) (Metric__uniformSpace_eq_bot X) (existsI Real (r2 => and (Lt 0 r2) (Pairwise (x3 => x4 => Leq r2 (Dist__dist x3 x4)))) r (andI (Lt 0 r) (Pairwise (x5 => x6 => Leq r (Dist__dist x5 x6))) hpos hr))))) (Eq__mpr (id (congrArg (TopologicalSpace X) Prop UniformSpace__toTopologicalSpace Bot__bot (_a1 => Eqt (TopologicalSpace X) _a1 Bot__bot) (UniformSpace__toTopologicalSpace_bot X))) (Eq__refl (TopologicalSpace X) Bot__bot))).
 
 (; //LEAN:Metric.uniformity_edist_aux ;)
 Metric__uniformity_edist_aux : (X : Set) -> (d : (Elem X -> Elem X -> NNReal)) -> Proof (Eqt (Filter (Prod X X)) (iInf (x => iInf (h => Filter__principal (Set__ofPred (p => Lt (NNReal__toReal (d (Prod__fst p) (Prod__snd p))) x))))) (iInf (x1 => iInf (h1 => Filter__principal (Set__ofPred (p1 => Lt (ENNReal__ofNNReal (d (Prod__fst p1) (Prod__snd p1))) x1)))))).
@@ -711,11 +711,11 @@ PseudoMetricSpace__replaceBornology_eq : (X : Set) -> (_ : Proof (PseudoMetricSp
 
 (; //LEAN:Real.dist_eq ;)
 def Real__dist_eq : (x : Elem Real) -> (y : Elem Real) -> Proof (Eq (Dist__dist x y) (abs (minus x y))) :=
-  x => y => rfl.
+  x => y => rfl Real (Dist__dist x y).
 
 (; //LEAN:Real.nndist_eq ;)
 def Real__nndist_eq : (x : Elem Real) -> (y : Elem Real) -> Proof (Eqt NNReal (NNDist__nndist x y) (Real__nnabs__app (minus x y))) :=
-  x => y => rfl.
+  x => y => rfl NNReal (NNDist__nndist x y).
 
 (; //LEAN:Real.nndist_eq' ;)
 def Real__nndist_eq' : (x : Elem Real) -> (y : Elem Real) -> Proof (Eqt NNReal (NNDist__nndist x y) (Real__nnabs__app (minus y x))) :=
@@ -729,7 +729,7 @@ Real__sub_le_dist : (x : Elem Real) -> (y : Elem Real) -> Proof (Leq (minus x y)
 
 (; //LEAN:Real.ball_eq_Ioo ;)
 def Real__ball_eq_Ioo : (x : Elem Real) -> (r : Elem Real) -> Proof (Eqt (powerset Real) (Metric__ball x r) (Set__Ioo (minus x r) (plus x r))) :=
-  x => r => Set__ext Real (Metric__ball x r) (Set__Ioo (minus x r) (plus x r)) (forallI Real (y => iff (Membership__mem (Metric__ball x r) y) (Membership__mem (Set__Ioo (minus x r) (plus x r)) y)) (y => Eq__mpr (id (congrArg Prop Prop (Membership__mem (Metric__ball x r) y) (Lt (Dist__dist y x) r) (_a => iff _a (Membership__mem (Set__Ioo (minus x r) (plus x r)) y)) (propext (Metric__mem_ball Real x y r)))) (Eq__mpr (id (congrArg Real Prop (Dist__dist y x) (Dist__dist x y) (_a1 => iff (Lt _a1 r) (Membership__mem (Set__Ioo (minus x r) (plus x r)) y)) (dist_comm Real y x))) (Eq__mpr (id (congrArg Real Prop (Dist__dist x y) (abs (minus x y)) (_a2 => iff (Lt _a2 r) (Membership__mem (Set__Ioo (minus x r) (plus x r)) y)) (Real__dist_eq x y))) (Eq__mpr (id (congrArg Prop Prop (Lt (abs (minus x y)) r) (and (Lt (minus x y) r) (Lt (minus y x) r)) (_a3 => iff _a3 (Membership__mem (Set__Ioo (minus x r) (plus x r)) y)) (propext (abs_sub_lt_iff Real x y r)))) (Eq__mpr (id (congrArg Prop Prop (Membership__mem (Set__Ioo (minus x r) (plus x r)) y) (and (Lt (minus x r) y) (Lt y (plus x r))) (_a4 => iff (and (Lt (minus x y) r) (Lt (minus y x) r)) _a4) (propext (Set__mem_Ioo Real (minus x r) (plus x r) y)))) (Eq__mpr (id (congrArg Prop Prop (Lt y (plus x r)) (Lt (minus y x) r) (_a5 => iff (and (Lt (minus x y) r) (Lt (minus y x) r)) (and (Lt (minus x r) y) _a5)) (Eq__symm Prop (Lt (minus y x) r) (Lt y (plus x r)) (propext (sub_lt_iff_lt_add' Real y x r))))) (Eq__mpr (id (congrArg Prop Prop (Lt (minus x y) r) (Lt (minus x r) y) (_a6 => iff (and _a6 (Lt (minus y x) r)) (and (Lt (minus x r) y) (Lt (minus y x) r))) (propext (sub_lt_comm Real x y r)))) (Iff__rfl (and (Lt (minus x r) y) (Lt (minus y x) r))))))))))).
+  x => r => Set__ext Real (Metric__ball x r) (Set__Ioo (minus x r) (plus x r)) (forallI Real (y => iff (Membership__mem (Metric__ball x r) y) (Membership__mem (Set__Ioo (minus x r) (plus x r)) y)) (y => Eq__mpr (id (congrArg Prop Prop (Membership__mem (Metric__ball x r) y) (Lt (Dist__dist y x) r) (_a => iff _a (Membership__mem (Set__Ioo (minus x r) (plus x r)) y)) (propext (Membership__mem (Metric__ball x r) y) (Lt (Dist__dist y x) r) (Metric__mem_ball Real x y r)))) (Eq__mpr (id (congrArg Real Prop (Dist__dist y x) (Dist__dist x y) (_a1 => iff (Lt _a1 r) (Membership__mem (Set__Ioo (minus x r) (plus x r)) y)) (dist_comm Real y x))) (Eq__mpr (id (congrArg Real Prop (Dist__dist x y) (abs (minus x y)) (_a2 => iff (Lt _a2 r) (Membership__mem (Set__Ioo (minus x r) (plus x r)) y)) (Real__dist_eq x y))) (Eq__mpr (id (congrArg Prop Prop (Lt (abs (minus x y)) r) (and (Lt (minus x y) r) (Lt (minus y x) r)) (_a3 => iff _a3 (Membership__mem (Set__Ioo (minus x r) (plus x r)) y)) (propext (Lt (abs (minus x y)) r) (and (Lt (minus x y) r) (Lt (minus y x) r)) (abs_sub_lt_iff Real x y r)))) (Eq__mpr (id (congrArg Prop Prop (Membership__mem (Set__Ioo (minus x r) (plus x r)) y) (and (Lt (minus x r) y) (Lt y (plus x r))) (_a4 => iff (and (Lt (minus x y) r) (Lt (minus y x) r)) _a4) (propext (Membership__mem (Set__Ioo (minus x r) (plus x r)) y) (and (Lt (minus x r) y) (Lt y (plus x r))) (Set__mem_Ioo Real (minus x r) (plus x r) y)))) (Eq__mpr (id (congrArg Prop Prop (Lt y (plus x r)) (Lt (minus y x) r) (_a5 => iff (and (Lt (minus x y) r) (Lt (minus y x) r)) (and (Lt (minus x r) y) _a5)) (Eq__symm Prop (Lt (minus y x) r) (Lt y (plus x r)) (propext (Lt (minus y x) r) (Lt y (plus x r)) (sub_lt_iff_lt_add' Real y x r))))) (Eq__mpr (id (congrArg Prop Prop (Lt (minus x y) r) (Lt (minus x r) y) (_a6 => iff (and _a6 (Lt (minus y x) r)) (and (Lt (minus x r) y) (Lt (minus y x) r))) (propext (Lt (minus x y) r) (Lt (minus x r) y) (sub_lt_comm Real x y r)))) (Iff__rfl (and (Lt (minus x r) y) (Lt (minus y x) r))))))))))).
 
 (; //LEAN:Real.ball_zero_eq_Ioo ;)
 Real__ball_zero_eq_Ioo : (r : Elem Real) -> Proof (Eqt (powerset Real) (Metric__ball 0 r) (Set__Ioo (Neg__neg r) r)).
@@ -817,25 +817,25 @@ Metric__denseRange_iff : (X : Set) -> (Y : Set) -> (_ : Proof (PseudoMetricSpace
 
 (; //LEAN:nndist_ofMul ;)
 def nndist_ofMul : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt NNReal (NNDist__nndist (Additive__ofMul__app a) (Additive__ofMul__app b)) (NNDist__nndist a b)) :=
-  X => x => a => b => rfl.
+  X => x => a => b => rfl NNReal (NNDist__nndist (Additive__ofMul__app a) (Additive__ofMul__app b)).
 
 (; //LEAN:nndist_ofAdd ;)
 def nndist_ofAdd : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt NNReal (NNDist__nndist (Multiplicative__ofAdd__app a) (Multiplicative__ofAdd__app b)) (NNDist__nndist a b)) :=
-  X => x => a => b => rfl.
+  X => x => a => b => rfl NNReal (NNDist__nndist (Multiplicative__ofAdd__app a) (Multiplicative__ofAdd__app b)).
 
 (; //LEAN:nndist_toMul ;)
 def nndist_toMul : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (a : Elem (Additive X)) -> (b : Elem (Additive X)) -> Proof (Eqt NNReal (NNDist__nndist (Additive__toMul__app a) (Additive__toMul__app b)) (NNDist__nndist a b)) :=
-  X => x => a => b => rfl.
+  X => x => a => b => rfl NNReal (NNDist__nndist (Additive__toMul__app a) (Additive__toMul__app b)).
 
 (; //LEAN:nndist_toAdd ;)
 def nndist_toAdd : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (a : Elem (Multiplicative X)) -> (b : Elem (Multiplicative X)) -> Proof (Eqt NNReal (NNDist__nndist (Multiplicative__toAdd__app a) (Multiplicative__toAdd__app b)) (NNDist__nndist a b)) :=
-  X => x => a => b => rfl.
+  X => x => a => b => rfl NNReal (NNDist__nndist (Multiplicative__toAdd__app a) (Multiplicative__toAdd__app b)).
 
 (; //LEAN:nndist_toDual ;)
 def nndist_toDual : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt NNReal (NNDist__nndist (OrderDual__toDual__app a) (OrderDual__toDual__app b)) (NNDist__nndist a b)) :=
-  X => x => a => b => rfl.
+  X => x => a => b => rfl NNReal (NNDist__nndist (OrderDual__toDual__app a) (OrderDual__toDual__app b)).
 
 (; //LEAN:nndist_ofDual ;)
 def nndist_ofDual : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (a : Elem (OrderDual X)) -> (b : Elem (OrderDual X)) -> Proof (Eqt NNReal (NNDist__nndist (OrderDual__ofDual__app a) (OrderDual__ofDual__app b)) (NNDist__nndist a b)) :=
-  X => x => a => b => rfl.
+  X => x => a => b => rfl NNReal (NNDist__nndist (OrderDual__ofDual__app a) (OrderDual__ofDual__app b)).
 

@@ -21,7 +21,7 @@ def Ideal__Quotient__eq : (R : Set) -> (_ : Proof (Ring R)) -> (I : Elem (Ideal 
 
 (; //LEAN:Ideal.Quotient.mk_eq_mk ;)
 def Ideal__Quotient__mk_eq_mk : (R : Set) -> (_ : Proof (Ring R)) -> (I : Elem (Ideal R)) -> (_ : Proof (Ideal__IsTwoSided I)) -> (x1 : Elem R) -> Proof (Eqt (HasQuotient__Quotient R I) (Submodule__Quotient__mk x1) (Ideal__Quotient__mk__app I x1)) :=
-  R => x => I => h => x1 => rfl.
+  R => x => I => h => x1 => rfl (HasQuotient__Quotient R I) (Submodule__Quotient__mk x1).
 
 (; //LEAN:Ideal.Quotient.eq_zero_iff_mem ;)
 def Ideal__Quotient__eq_zero_iff_mem : (R : Set) -> (_ : Proof (Ring R)) -> (I : Elem (Ideal R)) -> (a : Elem R) -> (_ : Proof (Ideal__IsTwoSided I)) -> Proof (iff (Eqt (HasQuotient__Quotient R I) (Ideal__Quotient__mk__app I a) 0) (Membership__mem I a)) :=
@@ -39,7 +39,7 @@ def Ideal__Quotient__mk_out : (R : Set) -> (_ : Proof (Ring R)) -> (I : Elem (Id
 
 (; //LEAN:Ideal.Quotient.mk_surjective ;)
 def Ideal__Quotient__mk_surjective : (R : Set) -> (_ : Proof (Ring R)) -> (I : Elem (Ideal R)) -> (_ : Proof (Ideal__IsTwoSided I)) -> Proof (Function__Surjective (Ideal__Quotient__mk I)) :=
-  R => x => I => h => forallI (HasQuotient__Quotient R I) (y => exists R (a3 => Eqt (HasQuotient__Quotient R I) (Ideal__Quotient__mk__app I a3) y)) (y => Quotient__inductionOn' R (Submodule__quotientRel I) (x1 => exists R (a => Eqt (HasQuotient__Quotient R I) (Ideal__Quotient__mk__app I a) x1)) y (forallI R (x2 => exists R (a2 => Eqt (HasQuotient__Quotient R I) (Ideal__Quotient__mk__app I a2) (Quotient__mk'' x2))) (x2 => existsI R (a1 => Eqt (HasQuotient__Quotient R I) (Ideal__Quotient__mk__app I a1) (Quotient__mk'' x2)) x2 rfl))).
+  R => x => I => h => forallI (HasQuotient__Quotient R I) (y => exists R (a3 => Eqt (HasQuotient__Quotient R I) (Ideal__Quotient__mk__app I a3) y)) (y => Quotient__inductionOn' R (Submodule__quotientRel I) (x1 => exists R (a => Eqt (HasQuotient__Quotient R I) (Ideal__Quotient__mk__app I a) x1)) y (forallI R (x2 => exists R (a2 => Eqt (HasQuotient__Quotient R I) (Ideal__Quotient__mk__app I a2) (Quotient__mk'' x2))) (x2 => existsI R (a1 => Eqt (HasQuotient__Quotient R I) (Ideal__Quotient__mk__app I a1) (Quotient__mk'' x2)) x2 (rfl (HasQuotient__Quotient R I) (Ideal__Quotient__mk__app I x2))))).
 
 (; //LEAN:Ideal.Quotient.quotient_ring_saturate ;)
 Ideal__Quotient__quotient_ring_saturate : (R : Set) -> (_ : Proof (Ring R)) -> (I : Elem (Ideal R)) -> (_ : Proof (Ideal__IsTwoSided I)) -> (s : Elem (powerset R)) -> Proof (Eqt (powerset R) (Set__preimage (Ideal__Quotient__mk I) (Set__image (Ideal__Quotient__mk I) s)) (Set__iUnion (x1 => Set__image (y => plus x1 y) s))).
@@ -50,11 +50,11 @@ def Ideal__Quotient__lift : (I : Elem (Ideal R)) -> (f : Elem (RingHom R S)) -> 
 
 (; //LEAN:Ideal.Quotient.lift_mk ;)
 def Ideal__Quotient__lift_mk : (R : Set) -> (_ : Proof (Ring R)) -> (I : Elem (Ideal R)) -> (a : Elem R) -> (S : Set) -> (_ : Proof (Ideal__IsTwoSided I)) -> (_ : Proof (Semiring S)) -> (f : Elem (RingHom R S)) -> (H : Proof (forall R (a2 => if (Membership__mem I a2) (Eqt S (f a2) 0)))) -> Proof (Eqt S (Ideal__Quotient__lift__app I f H (Ideal__Quotient__mk__app I a)) (f a)) :=
-  R => x => I => a => S => h => x1 => f => H => rfl.
+  R => x => I => a => S => h => x1 => f => H => rfl S (Ideal__Quotient__lift__app I f H (Ideal__Quotient__mk__app I a)).
 
 (; //LEAN:Ideal.Quotient.lift_comp_mk ;)
 def Ideal__Quotient__lift_comp_mk : (R : Set) -> (_ : Proof (Ring R)) -> (I : Elem (Ideal R)) -> (S : Set) -> (_ : Proof (Ideal__IsTwoSided I)) -> (_ : Proof (Semiring S)) -> (f : Elem (RingHom R S)) -> (H : Proof (forall R (a => if (Membership__mem I a) (Eqt S (f a) 0)))) -> Proof (Eqt (RingHom R S) (RingHom__comp (Ideal__Quotient__lift I f H) (Ideal__Quotient__mk I)) f) :=
-  R => x => I => S => h => x1 => f => H => rfl.
+  R => x => I => S => h => x1 => f => H => rfl (RingHom R S) (RingHom__comp (Ideal__Quotient__lift I f H) (Ideal__Quotient__mk I)).
 
 (; //LEAN:Ideal.Quotient.lift_surjective_of_surjective ;)
 Ideal__Quotient__lift_surjective_of_surjective : (R : Set) -> (_ : Proof (Ring R)) -> (I : Elem (Ideal R)) -> (S : Set) -> (_ : Proof (Ideal__IsTwoSided I)) -> (_ : Proof (Semiring S)) -> (f : Elem (RingHom R S)) -> (H : Proof (forall R (a => if (Membership__mem I a) (Eqt S (f a) 0)))) -> (hf : Proof (Function__Surjective f)) -> Proof (Function__Surjective (Ideal__Quotient__lift I f H)).
@@ -65,7 +65,7 @@ def Ideal__Quotient__factor : (H : Proof (Leq S T)) -> Elem (RingHom (HasQuotien
 
 (; //LEAN:Ideal.Quotient.factor_mk ;)
 def Ideal__Quotient__factor_mk : (R : Set) -> (_ : Proof (Ring R)) -> (S : Elem (Ideal R)) -> (T : Elem (Ideal R)) -> (_ : Proof (Ideal__IsTwoSided S)) -> (_ : Proof (Ideal__IsTwoSided T)) -> (H : Proof (Leq S T)) -> (x1 : Elem R) -> Proof (Eqt (HasQuotient__Quotient R T) (Ideal__Quotient__factor__app H (Ideal__Quotient__mk__app S x1)) (Ideal__Quotient__mk__app T x1)) :=
-  R => x => S => T => h => h1 => H => x1 => rfl.
+  R => x => S => T => h => h1 => H => x1 => rfl (HasQuotient__Quotient R T) (Ideal__Quotient__factor__app H (Ideal__Quotient__mk__app S x1)).
 
 (; //LEAN:Ideal.Quotient.factor_eq ;)
 Ideal__Quotient__factor_eq : (R : Set) -> (_ : Proof (Ring R)) -> (S : Elem (Ideal R)) -> (_ : Proof (Ideal__IsTwoSided S)) -> Proof (Eqt (RingHom (HasQuotient__Quotient R S) (HasQuotient__Quotient R S)) (Ideal__Quotient__factor (le_refl S)) (RingHom__id (HasQuotient__Quotient R S))).
@@ -89,12 +89,12 @@ def Ideal__quotEquivOfEq : (h2 : Proof (Eqt (Ideal R) I J)) -> Elem (RingEquiv (
 
 (; //LEAN:Ideal.quotEquivOfEq_mk ;)
 def Ideal__quotEquivOfEq_mk : (R : Set) -> (_ : Proof (Ring R)) -> (I : Elem (Ideal R)) -> (J : Elem (Ideal R)) -> (_ : Proof (Ideal__IsTwoSided I)) -> (_ : Proof (Ideal__IsTwoSided J)) -> (h2 : Proof (Eqt (Ideal R) I J)) -> (x1 : Elem R) -> Proof (Eqt (HasQuotient__Quotient R J) (Ideal__quotEquivOfEq__app h2 (Ideal__Quotient__mk__app I x1)) (Ideal__Quotient__mk__app J x1)) :=
-  R => x => I => J => h => h1 => h2 => x1 => rfl.
+  R => x => I => J => h => h1 => h2 => x1 => rfl (HasQuotient__Quotient R J) (Ideal__quotEquivOfEq__app h2 (Ideal__Quotient__mk__app I x1)).
 
 (; //LEAN:Ideal.quotEquivOfEq_symm ;)
 Ideal__quotEquivOfEq_symm : (R : Set) -> (_ : Proof (Ring R)) -> (I : Elem (Ideal R)) -> (J : Elem (Ideal R)) -> (_ : Proof (Ideal__IsTwoSided I)) -> (_ : Proof (Ideal__IsTwoSided J)) -> (h2 : Proof (Eqt (Ideal R) I J)) -> Proof (Eqt (RingEquiv (HasQuotient__Quotient R J) (HasQuotient__Quotient R I)) (RingEquiv__symm (Ideal__quotEquivOfEq h2)) (Ideal__quotEquivOfEq (Eq__symm h2))).
 
 (; //LEAN:Ideal.quotEquivOfEq_eq_factor ;)
 def Ideal__quotEquivOfEq_eq_factor : (R : Set) -> (_ : Proof (Ring R)) -> (I : Elem (Ideal R)) -> (J : Elem (Ideal R)) -> (_ : Proof (Ideal__IsTwoSided I)) -> (_ : Proof (Ideal__IsTwoSided J)) -> (h2 : Proof (Eqt (Ideal R) I J)) -> (x1 : Elem (HasQuotient__Quotient R I)) -> Proof (Eqt (HasQuotient__Quotient R J) (Ideal__quotEquivOfEq__app h2 x1) (Ideal__Quotient__factor__app (Eq__rec (le_refl I) h2) x1)) :=
-  R => x => I => J => h => h1 => h2 => x1 => rfl.
+  R => x => I => J => h => h1 => h2 => x1 => rfl (HasQuotient__Quotient R J) (Ideal__quotEquivOfEq__app h2 x1).
 

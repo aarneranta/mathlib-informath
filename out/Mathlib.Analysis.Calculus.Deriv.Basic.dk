@@ -313,7 +313,7 @@ def HasDerivWithinAt__derivWithin : (X : Set) -> (_ : Proof (NontriviallyNormedF
 
 (; //LEAN:fderivWithin_derivWithin ;)
 def fderivWithin_derivWithin : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem X -> F)) -> (x3 : Elem X) -> (s : Elem (powerset X)) -> Proof (Eqt F (fderivWithin__app X f s x3 1) (derivWithin f s x3)) :=
-  X => x => F => x1 => x2 => f => x3 => s => rfl.
+  X => x => F => x1 => x2 => f => x3 => s => rfl F (fderivWithin__app X f s x3 1).
 
 (; //LEAN:toSpanSingleton_derivWithin ;)
 toSpanSingleton_derivWithin : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem X -> F)) -> (x3 : Elem X) -> (s : Elem (powerset X)) -> Proof (Eqt (ContinuousLinearMap (RingHom__id X) X F) (ContinuousLinearMap__toSpanSingleton X (derivWithin f s x3)) (fderivWithin X f s x3)).
@@ -323,7 +323,7 @@ norm_derivWithin_eq_norm_fderivWithin : (X : Set) -> (_ : Proof (NontriviallyNor
 
 (; //LEAN:fderiv_apply_one_eq_deriv ;)
 def fderiv_apply_one_eq_deriv : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem X -> F)) -> (x3 : Elem X) -> Proof (Eqt F (fderiv__app X f x3 1) (deriv f x3)) :=
-  X => x => F => x1 => x2 => f => x3 => rfl.
+  X => x => F => x1 => x2 => f => x3 => rfl F (fderiv__app X f x3 1).
 
 (; //LEAN:fderiv_eq_smul_deriv ;)
 fderiv_eq_smul_deriv : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem X -> F)) -> (x3 : Elem X) -> (y : Elem X) -> Proof (Eqt F (fderiv__app X f x3 y) (HSMul__hSMul y (deriv f x3))).
@@ -373,7 +373,7 @@ def derivWithin_of_isOpen : (X : Set) -> (_ : Proof (NontriviallyNormedField X))
 
 (; //LEAN:deriv_eqOn ;)
 def deriv_eqOn : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem X -> F)) -> (s : Elem (powerset X)) -> (f' : (Elem X -> F)) -> (hs : Proof (IsOpen s)) -> (hf' : Proof (forall X (x3 => if (Membership__mem s x3) (HasDerivWithinAt f (f' x3) s x3)))) -> Proof (Set__EqOn (deriv f) f' s) :=
-  X => x => F => x1 => x2 => f => s => f' => hs => hf' => forallI X (x3 => if (Membership__mem s x3) (Eqt F (deriv f x3) (f' x3))) (x3 => ifI (Membership__mem s x3) (Eqt F (deriv f x3) (f' x3)) (hx => Eq__mpr (id (congrArg F Prop (deriv f x3) (derivWithin f s x3) (_a => Eqt F _a (f' x3)) (Eq__symm F (derivWithin f s x3) (deriv f x3) (derivWithin_of_isOpen X F f x3 s hs hx)))) (Eq__mpr (id (congrArg F Prop (derivWithin f s x3) (f' x3) (_a1 => Eqt F _a1 (f' x3)) (HasDerivWithinAt__derivWithin X F f (f' x3) x3 s (ifE (Membership__mem s x3) (HasDerivWithinAt f (f' x3) s x3) (forallE X (x4 => if (Membership__mem s x4) (HasDerivWithinAt f (f' x4) s x4)) hf' x3) hx) (IsOpen__uniqueDiffWithinAt X X x3 s hs hx)))) (Eq__refl (f' x3))))).
+  X => x => F => x1 => x2 => f => s => f' => hs => hf' => forallI X (x3 => if (Membership__mem s x3) (Eqt F (deriv f x3) (f' x3))) (x3 => ifI (Membership__mem s x3) (Eqt F (deriv f x3) (f' x3)) (hx => Eq__mpr (id (congrArg F Prop (deriv f x3) (derivWithin f s x3) (_a => Eqt F _a (f' x3)) (Eq__symm F (derivWithin f s x3) (deriv f x3) (derivWithin_of_isOpen X F f x3 s hs hx)))) (Eq__mpr (id (congrArg F Prop (derivWithin f s x3) (f' x3) (_a1 => Eqt F _a1 (f' x3)) (HasDerivWithinAt__derivWithin X F f (f' x3) x3 s (ifE (Membership__mem s x3) (HasDerivWithinAt f (f' x3) s x3) (forallE X (x4 => if (Membership__mem s x4) (HasDerivWithinAt f (f' x4) s x4)) hf' x3) hx) (IsOpen__uniqueDiffWithinAt X X x3 s hs hx)))) (Eq__refl F (f' x3))))).
 
 (; //LEAN:deriv_mem_iff ;)
 deriv_mem_iff : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem X -> F)) -> (s : Elem (powerset F)) -> (x3 : Elem X) -> Proof (iff (Membership__mem s (deriv f x3)) (or (and (DifferentiableAt X f x3) (Membership__mem s (deriv f x3))) (and (not (DifferentiableAt X f x3)) (Membership__mem s 0)))).

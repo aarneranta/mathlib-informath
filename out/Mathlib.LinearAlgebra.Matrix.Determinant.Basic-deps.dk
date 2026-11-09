@@ -19,7 +19,7 @@ Matrix__of__app : (a1 : (Elem (Fin (succ 1)) -> Elem (Fin 2) -> R)) -> (Matrix (
 Matrix__reindex__app : (a1 : Elem (Equiv m n)) -> (a2 : Elem (Equiv m n)) -> (a3 : (Matrix m m R)) -> (Matrix n n R).
 
 (; a constant applied as a function: DFunLike.coe ;)
-MultilinearMap__alternatization__app : (a1 : Elem (MultilinearMap R (x3 => Elem n -> R) R)) -> Elem (AlternatingMap R (Elem n -> R) R n).
+MultilinearMap__alternatization__app : (a1 : Elem (MultilinearMap R n (x3 => Elem n -> R) R)) -> Elem (AlternatingMap R (Elem n -> R) R n).
 
 (; a constant applied as a function: DFunLike.coe ;)
 RingEquiv__mapMatrix__app : (a1 : Elem (RingEquiv R S)) -> (a2 : (Matrix n n R)) -> (Matrix n n S).
@@ -36,7 +36,7 @@ AlgEquiv : (R : Set) -> (A : Set) -> (B : Set) -> Set.
 
 (; doc: Interpret an algebra equivalence as an algebra homomorphism.  This definition is included for symmetry with the other `to*Hom` projections. The `simp` normal form is to use the coercion of the `AlgHomClass.coeTC` instance. ;)
 (; //LEAN:AlgEquiv.toAlgHom ;)
-AlgEquiv__toAlgHom : (e : Elem (AlgEquiv R X X1)) -> Elem (AlgHom R X X1).
+AlgEquiv__toAlgHom : (R : Set) -> (X : Set) -> (X1 : Set) -> (e : Elem (AlgEquiv R X X1)) -> Elem (AlgHom R X X1).
 
 (; doc: Defining the homomorphism in the category R-Alg, denoted `A →ₐ[R] B`. ;)
 (; //LEAN:AlgHom ;)
@@ -44,7 +44,7 @@ AlgHom : (R : Set) -> (A : Set) -> (B : Set) -> Set.
 
 (; doc: Reinterpret an `AlgHom` as a `RingHom` ;)
 (; //LEAN:AlgHom.toRingHom ;)
-AlgHom__toRingHom : (self : Elem (AlgHom R A B)) -> Elem (RingHom A B).
+AlgHom__toRingHom : (R : Set) -> (A : Set) -> (B : Set) -> (self : Elem (AlgHom R A B)) -> Elem (RingHom A B).
 
 (; doc: An associative unital `R`-algebra is a semiring `A` equipped with a map into its center `R → A`.  See the implementation notes in this file for discussion of the details of this definition. ;)
 (; //LEAN:Algebra ;)
@@ -62,23 +62,23 @@ AlternatingMap__map_eq_zero_of_eq : (R : Set) -> (_ : Proof (Semiring R)) -> (M 
 
 (; doc: If the arguments are linearly dependent then the result is `0`. ;)
 (; //LEAN:AlternatingMap.map_linearDependent ;)
-AlternatingMap__map_linearDependent : (I : Set) -> (K : Set) -> (M : Set) -> (N : Set) -> (_ : Proof (Ring K)) -> (_ : Proof (IsDomain K)) -> (_ : Proof (AddCommGroup M)) -> (_ : Proof (Module K M)) -> (_ : Proof (AddCommGroup N)) -> (_ : Proof (Module K N)) -> (_ : Proof (Module__IsTorsionFree K N)) -> (f : Elem (AlternatingMap K M N I)) -> (v : (Elem I -> M)) -> (h2 : Proof (not (LinearIndependent K v))) -> Proof (Eqt N (f v) 0).
+AlternatingMap__map_linearDependent : (I : Set) -> (K : Set) -> (M : Set) -> (N : Set) -> (_ : Proof (Ring K)) -> (_ : Proof (IsDomain K)) -> (_ : Proof (AddCommGroup M)) -> (_ : Proof (Module K M)) -> (_ : Proof (AddCommGroup N)) -> (_ : Proof (Module K N)) -> (_ : Proof (Module__IsTorsionFree K N)) -> (f : Elem (AlternatingMap K M N I)) -> (v : (Elem I -> M)) -> (h2 : Proof (not (LinearIndependent I K M v))) -> Proof (Eqt N (f v) 0).
 
 (; //LEAN:AlternatingMap.map_perm ;)
-AlternatingMap__map_perm : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (N' : Set) -> (_ : Proof (AddCommGroup N')) -> (_ : Proof (Module R N')) -> (I : Set) -> (g : Elem (AlternatingMap R M N' I)) -> (_ : Proof (Fintype I)) -> (v : (Elem I -> M)) -> (x7 : Elem (Equiv__Perm I)) -> Proof (Eqt N' (g (Function__comp v x7)) (HSMul__hSMul (Equiv__Perm__sign__app x7) (g v))).
+AlternatingMap__map_perm : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (N' : Set) -> (_ : Proof (AddCommGroup N')) -> (_ : Proof (Module R N')) -> (I : Set) -> (g : Elem (AlternatingMap R M N' I)) -> (_ : Proof (Fintype I)) -> (v : (Elem I -> M)) -> (x7 : Elem (Equiv__Perm I)) -> Proof (Eqt N' (g (Function__comp I I M v x7)) (HSMul__hSMul (Units Int) N' N' (Equiv__Perm__sign__app x7) (g v))).
 
 (; //LEAN:AlternatingMap.map_update_add ;)
-AlternatingMap__map_update_add : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (N : Set) -> (_ : Proof (AddCommMonoid N)) -> (_ : Proof (Module R N)) -> (I : Set) -> (f : Elem (AlternatingMap R M N I)) -> (v : (Elem I -> M)) -> (i : Elem I) -> (x6 : Elem M) -> (y : Elem M) -> Proof (Eqt N (f (Function__update v i (plus x6 y))) (plus (f (Function__update v i x6)) (f (Function__update v i y)))).
+AlternatingMap__map_update_add : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (N : Set) -> (_ : Proof (AddCommMonoid N)) -> (_ : Proof (Module R N)) -> (I : Set) -> (f : Elem (AlternatingMap R M N I)) -> (v : (Elem I -> M)) -> (i : Elem I) -> (x6 : Elem M) -> (y : Elem M) -> Proof (Eqt N (f (Function__update I (x7 => M) v i (plus x6 y))) (plus (f (Function__update I (x8 => M) v i x6)) (f (Function__update I (x9 => M) v i y)))).
 
 (; //LEAN:AlternatingMap.map_update_smul ;)
-AlternatingMap__map_update_smul : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (N : Set) -> (_ : Proof (AddCommMonoid N)) -> (_ : Proof (Module R N)) -> (I : Set) -> (f : Elem (AlternatingMap R M N I)) -> (v : (Elem I -> M)) -> (i : Elem I) -> (r : Elem R) -> (x6 : Elem M) -> Proof (Eqt N (f (Function__update v i (HSMul__hSMul r x6))) (HSMul__hSMul r (f (Function__update v i x6)))).
+AlternatingMap__map_update_smul : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (N : Set) -> (_ : Proof (AddCommMonoid N)) -> (_ : Proof (Module R N)) -> (I : Set) -> (f : Elem (AlternatingMap R M N I)) -> (v : (Elem I -> M)) -> (i : Elem I) -> (r : Elem R) -> (x6 : Elem M) -> Proof (Eqt N (f (Function__update I (x7 => M) v i (HSMul__hSMul R M M r x6))) (HSMul__hSMul R N N r (f (Function__update I (x8 => M) v i x6)))).
 
 (; //LEAN:AlternatingMap.map_zero ;)
 AlternatingMap__map_zero : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (N : Set) -> (_ : Proof (AddCommMonoid N)) -> (_ : Proof (Module R N)) -> (I : Set) -> (f : Elem (AlternatingMap R M N I)) -> Proof (Eqt N (f 0) 0).
 
 (; doc: The multilinear map associated to an alternating map ;)
 (; //LEAN:AlternatingMap.toMultilinearMap ;)
-AlternatingMap__toMultilinearMap : (self : Elem (AlternatingMap R M N I)) -> Elem (MultilinearMap R (x5 => M) N).
+AlternatingMap__toMultilinearMap : (R : Set) -> (M : Set) -> (N : Set) -> (I : Set) -> (self : Elem (AlternatingMap R M N I)) -> Elem (MultilinearMap R I (x5 => M) N).
 
 (; doc: A commutative ring is a ring with commutative multiplication. ;)
 (; //LEAN:CommRing ;)
@@ -86,11 +86,11 @@ CommRing : (X : Set) -> Prop.
 
 (; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
 (; //LEAN:Eq ;)
-Eq : (x : Elem X) -> (x1 : Elem X) -> Prop.
+Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
 (; //LEAN:Eq.mpr ;)
-Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
 
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
@@ -114,11 +114,11 @@ Equiv__Perm : (X : Set) -> Set.
 
 (; doc: Inverse of an equivalence `e : α ≃ β`. ;)
 (; //LEAN:Equiv.symm ;)
-Equiv__symm : (e : Elem (Equiv X Y)) -> Elem (Equiv Y X).
+Equiv__symm : (X : Set) -> (Y : Set) -> (e : Elem (Equiv X Y)) -> Elem (Equiv Y X).
 
 (; doc: Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. ;)
 (; //LEAN:Equiv.trans ;)
-Equiv__trans : (x : Elem (Equiv X Y)) -> (x1 : Elem (Equiv Y Z)) -> Elem (Equiv X Z).
+Equiv__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem (Equiv X Y)) -> (x1 : Elem (Equiv Y Z)) -> Elem (Equiv X Z).
 
 (; doc: A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.  An instance of `Field K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`. Those two fields are needed to implement the `DivisionRing K → Algebra ℚ K` instance since we need to control the specific definitions for some special cases of `K` (in particular `K = ℚ` itself). See also note [forgetful inheritance].  If the field has positive characteristic `p`, our division by zero convention forces `ratCast (1 / p) = 1 / 0 = 0`. ;)
 (; //LEAN:Field ;)
@@ -130,7 +130,7 @@ Fin : (n : Elem Nat) -> Set.
 
 (; doc: Coarsens a bound by one. ;)
 (; //LEAN:Fin.castSucc ;)
-Fin__castSucc : (x : Elem (Fin n)) -> Elem (Fin (plus n 1)).
+Fin__castSucc : (n : Elem Nat) -> (x : Elem (Fin n)) -> Elem (Fin (plus n 1)).
 
 (; doc: The greatest value of `Fin (n+1)`, namely `n`.  Examples: * `Fin.last 4 = (4 : Fin 5)` * `(Fin.last 0).val = (0 : Nat)` ;)
 (; //LEAN:Fin.last ;)
@@ -141,11 +141,15 @@ Fin__le_last : (n : Elem Nat) -> (i : Elem (Fin (plus n 1))) -> Proof (Leq i (Fi
 
 (; doc: The successor, with an increased bound.  This differs from adding `1`, which instead wraps around.  Examples: * `(2 : Fin 3).succ = (3 : Fin 4)` * `(2 : Fin 3) + 1 = (0 : Fin 3)` ;)
 (; //LEAN:Fin.succ ;)
-Fin__succ : (x : Elem (Fin n)) -> Elem (Fin (plus n 1)).
+Fin__succ : (n : Elem Nat) -> (x : Elem (Fin n)) -> Elem (Fin (plus n 1)).
 
 (; doc: `succAbove p i` embeds `Fin n` into `Fin (n + 1)` with a hole around `p`. ;)
 (; //LEAN:Fin.succAbove ;)
-Fin__succAbove : (p : Elem (Fin (plus n 1))) -> (i : Elem (Fin n)) -> Elem (Fin (plus n 1)).
+Fin__succAbove : (n : Elem Nat) -> (p : Elem (Fin (plus n 1))) -> (i : Elem (Fin n)) -> Elem (Fin (plus n 1)).
+
+(; doc: The number that is strictly less than `n`.  `Fin.val` is a coercion, so any `Fin n` can be used in a position where a `Nat` is expected. ;)
+(; //LEAN:Fin.val ;)
+Fin__val : (n : Elem Nat) -> (self : Elem (Fin n)) -> Elem Nat.
 
 (; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
 (; //LEAN:Finset ;)
@@ -153,22 +157,22 @@ Finset : (X : Set) -> Set.
 
 (; doc: `s.card` is the number of elements of `s`, aka its cardinality.  The notation `#s` can be accessed in the `Finset` locale. ;)
 (; //LEAN:Finset.card ;)
-Finset__card : (s : Elem (Finset X)) -> Elem Nat.
+Finset__card : (X : Set) -> (s : Elem (Finset X)) -> Elem Nat.
 
 (; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.prod ;)
-Finset__prod : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
 
 (; //LEAN:Finset.prod_const ;)
-Finset__prod_const : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (_ : Proof (CommMonoid M)) -> (b : Elem M) -> Proof (Eqt M (Finset__prod s (_x => b)) (pow b (Finset__card s))).
+Finset__prod_const : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (_ : Proof (CommMonoid M)) -> (b : Elem M) -> Proof (Eqt M (Finset__prod I M s (_x => b)) (pow b (Finset__card I s))).
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
-Finset__sum : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
 
 (; doc: `univ` is the universal finite set of type `Finset α` implied from the assumption `Fintype α`. ;)
 (; //LEAN:Finset.univ ;)
-Finset__univ : Elem (Finset X).
+Finset__univ : (X : Set) -> Elem (Finset X).
 
 (; doc: `Fintype α` means that `α` is finite, i.e. there are only finitely many distinct elements of type `α`. The evidence of this is a finset `elems` (a list up to permutation without duplicates), together with a proof that everything of type `α` is in the list. ;)
 (; //LEAN:Fintype ;)
@@ -180,23 +184,27 @@ Fintype__card : (X : Set) -> Elem Nat.
 
 (; doc: A function is called bijective if it is both injective and surjective. ;)
 (; //LEAN:Function.Bijective ;)
-Function__Bijective : (f : (Elem X -> Y)) -> Prop.
+Function__Bijective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: Function composition, usually written with the infix operator `∘`. A new function is created from two existing functions, where one function's output is used as input to the other.  Examples:  * `Function.comp List.reverse (List.drop 2) [3, 2, 4, 1] = [1, 4]`  * `(List.reverse ∘ List.drop 2) [3, 2, 4, 1] = [1, 4]`  Conventions for notations in identifiers:   * The recommended spelling of `∘` in identifiers is `comp`. ;)
 (; //LEAN:Function.comp ;)
-Function__comp : (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
+Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
 
 (; doc: The constant function that ignores its argument.  If `a : α`, then `Function.const β a : β → α` is the “constant function with value `a`”. For all arguments `b : β`, `Function.const β a b = a`. It is often written directly as `fun _ => a`.  Examples:  * `Function.const Bool 10 true = 10`  * `Function.const Bool 10 false = 10`  * `Function.const String 10 "any string" = 10` ;)
 (; //LEAN:Function.const ;)
-Function__const : (Y : Set) -> (a : Elem X) -> (x : Elem Y) -> Elem X.
+Function__const : (X : Set) -> (Y : Set) -> (a : Elem X) -> (x : Elem Y) -> Elem X.
 
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
-HSMul__hSMul : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+HSMul__hSMul : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Y) -> Elem Z.
 
 (; doc: `default` is a function that produces a "default" element of any `Inhabited` type. This element does not have any particular specified properties, but it is often an all-zeroes value. ;)
 (; //LEAN:Inhabited.default ;)
-Inhabited__default : Elem X.
+Inhabited__default : (X : Set) -> Elem X.
+
+(; doc: The canonical homomorphism `Int → R`. In most use cases, the target type will have a ring structure, and this homomorphism should be a ring homomorphism.  `IntCast` and `NatCast` exist to allow different libraries with their own types that can be notated as natural numbers to have consistent `simp` normal forms without needing to create coercion simplification sets that are aware of all combinations. Libraries should make it easy to work with `IntCast` where possible. For instance, in Mathlib there will be such a homomorphism (and thus an `IntCast R` instance) whenever `R` is an additive group with a `1`. ;)
+(; //LEAN:Int.cast ;)
+Int__cast : (R : Set) -> (x1 : Elem Int) -> Elem R.
 
 (; doc: `coe : ℤ → α` as a `RingHom`. ;)
 (; //LEAN:Int.castRingHom ;)
@@ -204,7 +212,7 @@ Int__castRingHom : (X : Set) -> Elem (RingHom Int X).
 
 (; doc: `a⁻¹` computes the inverse of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `⁻¹` in identifiers is `inv`. ;)
 (; //LEAN:Inv.inv ;)
-Inv__inv : (x : Elem X) -> Elem X.
+Inv__inv : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: A domain is a nontrivial semiring such that multiplication by a nonzero element is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying `∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and `∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.  This is implemented as a mixin for `Semiring α`. To obtain an integral domain use `[CommRing α] [IsDomain α]`. ;)
 (; //LEAN:IsDomain ;)
@@ -220,11 +228,11 @@ IsStrictOrderedRing : (R : Set) -> Prop.
 
 (; doc: `LinearIndependent R v` states the family of vectors `v` is linearly independent over `R`. ;)
 (; //LEAN:LinearIndependent ;)
-LinearIndependent : (R : Set) -> (v : (Elem I -> M)) -> Prop.
+LinearIndependent : (I : Set) -> (R : Set) -> (M : Set) -> (v : (Elem I -> M)) -> Prop.
 
 (; doc: The projections from a family of modules are linear maps.  Note: this definition would be called `Pi.evalLinearMap` if we followed the pattern established by `Pi.evalAddHom`, `Pi.evalMonoidHom`, `Pi.evalRingHom`, ... ;)
 (; //LEAN:LinearMap.proj ;)
-LinearMap__proj : (i : Elem I) -> Elem (LinearMap (RingHom__id R) ((i1 : Elem I) -> x1 i1) (x1 i)).
+LinearMap__proj : (R : Set) -> (I : Set) -> (x1 : (Elem I -> Set)) -> (i : Elem I) -> Elem (LinearMap R R (RingHom__id R) ((i1 : Elem I) -> x1 i1) (x1 i)).
 
 (; doc: A linear order is reflexive, transitive, antisymmetric and total relation `≤`. We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. ;)
 (; //LEAN:LinearOrder ;)
@@ -236,84 +244,84 @@ Matrix : (m : Set) -> (n : Set) -> (X : Set) -> Set.
 
 (; doc: `Matrix.blockDiagonal M` turns a homogeneously-indexed collection of matrices `M : o → Matrix m n α'` into an `m × o`-by-`n × o` block matrix which has the entries of `M` along the diagonal and zero elsewhere.  See also `Matrix.blockDiagonal'` if the matrices may not have the same size everywhere. ;)
 (; //LEAN:Matrix.blockDiagonal ;)
-Matrix__blockDiagonal : (M : (Elem o -> Matrix m n X)) -> (Matrix (Prod m o) (Prod n o) X).
+Matrix__blockDiagonal : (m : Set) -> (n : Set) -> (o : Set) -> (X : Set) -> (M : (Elem o -> Matrix m n X)) -> (Matrix (Prod m o) (Prod n o) X).
 
 (; doc: For an `m × n` `α`-matrix `A`, `A.col j` is the `j`th column of `A` as a vector in `m → α`. `A.col` is defeq to `Aᵀ`, but refers to the 'column function' of `A` while avoiding defeq abuse and noisy eta-expansions (and without the simplifier unfolding transposes) in expressions like `Set.Injective A.col` and `Set.range A.col`. (Note 2025-04-07 : the identifier `Matrix.col` used to refer to a matrix with all columns equal; this is now called `Matrix.replicateCol`) ;)
 (; //LEAN:Matrix.col ;)
-Matrix__col : (A : (Matrix m n X)) -> (x : Elem n) -> (x1 : Elem m) -> Elem X.
+Matrix__col : (m : Set) -> (n : Set) -> (X : Set) -> (A : (Matrix m n X)) -> (x : Elem n) -> (x1 : Elem m) -> Elem X.
 
 (; doc: The conjugate transpose of a matrix defined in term of `star`.  This is available in bundled forms as: * `Matrix.conjTransposeAddEquiv` * `Matrix.conjTransposeLinearEquiv` * `Matrix.conjTransposeRingEquiv` * `Matrix.conjTransposeAlgEquiv` ;)
 (; //LEAN:Matrix.conjTranspose ;)
-Matrix__conjTranspose : (M : (Matrix m n X)) -> (Matrix n m X).
+Matrix__conjTranspose : (m : Set) -> (n : Set) -> (X : Set) -> (M : (Matrix m n X)) -> (Matrix n m X).
 
 (; doc: The determinant, but only the terms of a given sign. `A.detp 1` is written `|A|⁺` in the literature and `A.detp (-1)` is written `|A|⁻`. ;)
 (; //LEAN:Matrix.detp ;)
-Matrix__detp : (s : Elem (Units Int)) -> (A : (Matrix n n R)) -> Elem R.
+Matrix__detp : (n : Set) -> (R : Set) -> (s : Elem (Units Int)) -> (A : (Matrix n n R)) -> Elem R.
 
 (; doc: `diagonal d` is the square matrix such that `(diagonal d) i i = d i` and `(diagonal d) i j = 0` if `i ≠ j`.  This is available in bundled forms as: * `Matrix.diagonalAddMonoidHom` * `Matrix.diagonalLinearMap` * `Matrix.diagonalRingHom` * `Matrix.diagonalAlgHom` ;)
 (; //LEAN:Matrix.diagonal ;)
-Matrix__diagonal : (d : (Elem n -> X)) -> (Matrix n n X).
+Matrix__diagonal : (n : Set) -> (X : Set) -> (d : (Elem n -> X)) -> (Matrix n n X).
 
 (; //LEAN:Matrix.ext ;)
 Matrix__ext : (m : Set) -> (n : Set) -> (X : Set) -> (M : (Matrix m n X)) -> (N : (Matrix m n X)) -> (h : Proof (forall m (i => forall n (j => Eqt X (M i j) (N i j))))) -> Proof (Eqt (Matrix m n X) M N).
 
 (; doc: We can form a single large matrix by flattening smaller 'block' matrices of compatible dimensions. ;)
 (; //LEAN:Matrix.fromBlocks ;)
-Matrix__fromBlocks : (A : (Matrix n l X)) -> (B : (Matrix n m X)) -> (C : (Matrix o l X)) -> (D : (Matrix o m X)) -> (Matrix (Sum n o) (Sum l m) X).
+Matrix__fromBlocks : (l : Set) -> (m : Set) -> (n : Set) -> (o : Set) -> (X : Set) -> (A : (Matrix n l X)) -> (B : (Matrix n m X)) -> (C : (Matrix o l X)) -> (D : (Matrix o m X)) -> (Matrix (Sum n o) (Sum l m) X).
 
 (; doc: `M.map f` is the matrix obtained by applying `f` to each entry of the matrix `M`.  This is available in bundled forms as: * `AddMonoidHom.mapMatrix` * `LinearMap.mapMatrix` * `LinearMap.mapMatrixLinear` * `RingHom.mapMatrix` * `AlgHom.mapMatrix` * `Equiv.mapMatrix` * `AddEquiv.mapMatrix` * `LinearEquiv.mapMatrix` * `RingEquiv.mapMatrix` * `AlgEquiv.mapMatrix` ;)
 (; //LEAN:Matrix.map ;)
-Matrix__map : (M : (Matrix m n X)) -> (f : (Elem X -> Y)) -> (Matrix m n Y).
+Matrix__map : (m : Set) -> (n : Set) -> (X : Set) -> (Y : Set) -> (M : (Matrix m n X)) -> (f : (Elem X -> Y)) -> (Matrix m n Y).
 
 (; //LEAN:Matrix.mul_diagonal ;)
-Matrix__mul_diagonal : (m : Set) -> (n : Set) -> (X : Set) -> (_ : Proof (NonUnitalNonAssocSemiring X)) -> (_ : Proof (Fintype n)) -> (d : (Elem n -> X)) -> (M : (Matrix m n X)) -> (i : Elem m) -> (j : Elem n) -> Proof (Eqt X (times M (Matrix__diagonal d) i j) (times (M i j) (d j))).
+Matrix__mul_diagonal : (m : Set) -> (n : Set) -> (X : Set) -> (_ : Proof (NonUnitalNonAssocSemiring X)) -> (_ : Proof (Fintype n)) -> (d : (Elem n -> X)) -> (M : (Matrix m n X)) -> (i : Elem m) -> (j : Elem n) -> Proof (Eqt X (times M (Matrix__diagonal n X d) i j) (times (M i j) (d j))).
 
 (; //LEAN:Matrix.smul_eq_diagonal_mul ;)
-Matrix__smul_eq_diagonal_mul : (m : Set) -> (n : Set) -> (X : Set) -> (_ : Proof (NonUnitalNonAssocSemiring X)) -> (_ : Proof (Fintype m)) -> (M : (Matrix m n X)) -> (a : Elem X) -> Proof (Eqt (Matrix m n X) (HSMul__hSMul a M) (times (Matrix__diagonal (x3 => a)) M)).
+Matrix__smul_eq_diagonal_mul : (m : Set) -> (n : Set) -> (X : Set) -> (_ : Proof (NonUnitalNonAssocSemiring X)) -> (_ : Proof (Fintype m)) -> (M : (Matrix m n X)) -> (a : Elem X) -> Proof (Eqt (Matrix m n X) (HSMul__hSMul X (Matrix m n X) (Matrix m n X) a M) (times (Matrix__diagonal m X (x3 => a)) M)).
 
 (; doc: Given maps `(r : l → m)` and `(c : o → n)` reindexing the rows and columns of a matrix `M : Matrix m n α`, the matrix `M.submatrix r c : Matrix l o α` is defined by `(M.submatrix r c) i j = M (r i) (c j)` for `(i,j) : l × o`. Note that the total number of row and columns does not have to be preserved. ;)
 (; //LEAN:Matrix.submatrix ;)
-Matrix__submatrix : (A : (Matrix m n X)) -> (r : (Elem l -> m)) -> (c : (Elem o -> n)) -> (Matrix l o X).
+Matrix__submatrix : (l : Set) -> (m : Set) -> (n : Set) -> (o : Set) -> (X : Set) -> (A : (Matrix m n X)) -> (r : (Elem l -> m)) -> (c : (Elem o -> n)) -> (Matrix l o X).
 
 (; doc: The transpose of a matrix.  This is available in bundled forms as: * `Matrix.transposeAddEquiv` * `Matrix.transposeLinearEquiv` * `Matrix.transposeRingEquiv` * `Matrix.transposeAlgEquiv` * `RingEquiv.mopMatrix` * `AlgEquiv.mopMatrix` ;)
 (; //LEAN:Matrix.transpose ;)
-Matrix__transpose : (M : (Matrix m n X)) -> (Matrix n m X).
+Matrix__transpose : (m : Set) -> (n : Set) -> (X : Set) -> (M : (Matrix m n X)) -> (Matrix n m X).
 
 (; doc: Update, i.e. replace the `j`th column of matrix `A` with the values in `b`. ;)
 (; //LEAN:Matrix.updateCol ;)
-Matrix__updateCol : (M : (Matrix m n X)) -> (j : Elem n) -> (b : (Elem m -> X)) -> (Matrix m n X).
+Matrix__updateCol : (m : Set) -> (n : Set) -> (X : Set) -> (M : (Matrix m n X)) -> (j : Elem n) -> (b : (Elem m -> X)) -> (Matrix m n X).
 
 (; //LEAN:Matrix.updateCol_ne ;)
-Matrix__updateCol_ne : (m : Set) -> (n : Set) -> (X : Set) -> (M : (Matrix m n X)) -> (i : Elem m) -> (j : Elem n) -> (c : (Elem m -> X)) -> (j' : Elem n) -> (j_ne : Proof (Neq j' j)) -> Proof (Eqt X (Matrix__updateCol M j c i j') (M i j')).
+Matrix__updateCol_ne : (m : Set) -> (n : Set) -> (X : Set) -> (M : (Matrix m n X)) -> (i : Elem m) -> (j : Elem n) -> (c : (Elem m -> X)) -> (j' : Elem n) -> (j_ne : Proof (Neq j' j)) -> Proof (Eqt X (Matrix__updateCol m n X M j c i j') (M i j')).
 
 (; //LEAN:Matrix.updateCol_self ;)
-Matrix__updateCol_self : (m : Set) -> (n : Set) -> (X : Set) -> (M : (Matrix m n X)) -> (i : Elem m) -> (j : Elem n) -> (c : (Elem m -> X)) -> Proof (Eqt X (Matrix__updateCol M j c i j) (c i)).
+Matrix__updateCol_self : (m : Set) -> (n : Set) -> (X : Set) -> (M : (Matrix m n X)) -> (i : Elem m) -> (j : Elem n) -> (c : (Elem m -> X)) -> Proof (Eqt X (Matrix__updateCol m n X M j c i j) (c i)).
 
 (; doc: Update, i.e. replace the `i`th row of matrix `A` with the values in `b`. ;)
 (; //LEAN:Matrix.updateRow ;)
-Matrix__updateRow : (M : (Matrix m n X)) -> (i : Elem m) -> (b : (Elem n -> X)) -> (Matrix m n X).
+Matrix__updateRow : (m : Set) -> (n : Set) -> (X : Set) -> (M : (Matrix m n X)) -> (i : Elem m) -> (b : (Elem n -> X)) -> (Matrix m n X).
 
 (; //LEAN:Matrix.updateRow_ne ;)
-Matrix__updateRow_ne : (m : Set) -> (n : Set) -> (X : Set) -> (M : (Matrix m n X)) -> (i : Elem m) -> (b : (Elem n -> X)) -> (i' : Elem m) -> (i_ne : Proof (Neq i' i)) -> Proof (Eqt (Elem n -> X) (Matrix__updateRow M i b i') (M i')).
+Matrix__updateRow_ne : (m : Set) -> (n : Set) -> (X : Set) -> (M : (Matrix m n X)) -> (i : Elem m) -> (b : (Elem n -> X)) -> (i' : Elem m) -> (i_ne : Proof (Neq i' i)) -> Proof (Eqt (Elem n -> X) (Matrix__updateRow m n X M i b i') (M i')).
 
 (; //LEAN:Matrix.updateRow_self ;)
-Matrix__updateRow_self : (m : Set) -> (n : Set) -> (X : Set) -> (M : (Matrix m n X)) -> (i : Elem m) -> (b : (Elem n -> X)) -> Proof (Eqt (Elem n -> X) (Matrix__updateRow M i b i) b).
+Matrix__updateRow_self : (m : Set) -> (n : Set) -> (X : Set) -> (M : (Matrix m n X)) -> (i : Elem m) -> (b : (Elem n -> X)) -> Proof (Eqt (Elem n -> X) (Matrix__updateRow m n X M i b i) b).
 
 (; doc: `vecCons h t` prepends an entry `h` to a vector `t`.  The inverse functions are `vecHead` and `vecTail`. The notation `![a, b, ...]` expands to `vecCons a (vecCons b ...)`. ;)
 (; //LEAN:Matrix.vecCons ;)
-Matrix__vecCons : (h : Elem X) -> (t : (Elem (Fin n) -> X)) -> (x : Elem (Fin (succ n))) -> Elem X.
+Matrix__vecCons : (X : Set) -> (n : Elem Nat) -> (h : Elem X) -> (t : (Elem (Fin n) -> X)) -> (x : Elem (Fin (succ n))) -> Elem X.
 
 (; doc: `![]` is the vector with no entries. ;)
 (; //LEAN:Matrix.vecEmpty ;)
-Matrix__vecEmpty : (x : Elem (Fin 0)) -> Elem X.
+Matrix__vecEmpty : (X : Set) -> (x : Elem (Fin 0)) -> Elem X.
 
 (; doc: For two vectors `w` and `v`, `vecMulVec w v i j` is defined to be `w i * v j`. Put another way, `vecMulVec w v` is exactly `replicateCol ι w * replicateRow ι v` for `Unique ι`; see `vecMulVec_eq`.  This is available in a bundled form as `vecMulVecBilin`. ;)
 (; //LEAN:Matrix.vecMulVec ;)
-Matrix__vecMulVec : (w : (Elem m -> X)) -> (v : (Elem n -> X)) -> (Matrix m n X).
+Matrix__vecMulVec : (m : Set) -> (n : Set) -> (X : Set) -> (w : (Elem m -> X)) -> (v : (Elem n -> X)) -> (Matrix m n X).
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
-Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
 
 (; doc: A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. ;)
 (; //LEAN:Monoid ;)
@@ -327,7 +335,7 @@ MonoidHom : (M : Set) -> (N : Set) -> Set.
 MonoidHom__map_pow : (M : Set) -> (N : Set) -> (_ : Proof (Monoid M)) -> (_ : Proof (Monoid N)) -> (f : Elem (MonoidHom M N)) -> (a : Elem M) -> (n : Elem Nat) -> Proof (Eqt N (f (pow a n)) (pow (f a) n)).
 
 (; //LEAN:MonoidHom.mk ;)
-MonoidHom__mk : (toOneHom : Elem (OneHom M N)) -> (map_mul' : Proof (forall M (x2 => forall M (y => Eqt N (OneHom__toFun toOneHom (times x2 y)) (times (OneHom__toFun toOneHom x2) (OneHom__toFun toOneHom y)))))) -> Elem (MonoidHom M N).
+MonoidHom__mk : (M : Set) -> (N : Set) -> (toOneHom : Elem (OneHom M N)) -> (map_mul' : Proof (forall M (x2 => forall M (y => Eqt N (OneHom__toFun M N toOneHom (times x2 y)) (times (OneHom__toFun M N toOneHom x2) (OneHom__toFun M N toOneHom y)))))) -> Elem (MonoidHom M N).
 
 (; doc: Type class for monoid actions on types, with notation `g • p`.  The `MulAction G P` typeclass says that the monoid `G` acts multiplicatively on a type `P`. More precisely this means that the action satisfies the two axioms `1 • p = p` and `(g₁ * g₂) • p = g₁ • (g₂ • p)`. A mathematician might simply say that the monoid `G` acts on `P`.  For example, if `G` is a group and `X` is a type, if a mathematician says say "let `G` act on the set `X`" they will probably mean `[MulAction G X]`.  [Wikidata Q288465](https://www.wikidata.org/wiki/Q288465) ;)
 (; //LEAN:MulAction ;)
@@ -335,36 +343,40 @@ MulAction : (X : Set) -> (Y : Set) -> Prop.
 
 (; doc: Multilinear maps over the ring `R`, from `∀ i, M₁ i` to `M₂` where `M₁ i` and `M₂` are modules over `R`. ;)
 (; //LEAN:MultilinearMap ;)
-MultilinearMap : (R : Set) -> (x : (Elem I -> Set)) -> (X : Set) -> Set.
+MultilinearMap : (R : Set) -> (I : Set) -> (x : (Elem I -> Set)) -> (X : Set) -> Set.
 
 (; //LEAN:MultilinearMap.alternatization_apply ;)
-MultilinearMap__alternatization_apply : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (N' : Set) -> (_ : Proof (AddCommGroup N')) -> (_ : Proof (Module R N')) -> (I : Set) -> (_ : Proof (Fintype I)) -> (m : Elem (MultilinearMap R (x14 => M) N')) -> (v : (Elem I -> M)) -> Proof (Eqt N' (DFunLike__coe__app MultilinearMap__alternatization m v) (Finset__sum Finset__univ (x10 => HSMul__hSMul (Equiv__Perm__sign__app x10) (MultilinearMap__domDomCongr__app x10 m v)))).
+MultilinearMap__alternatization_apply : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (N' : Set) -> (_ : Proof (AddCommGroup N')) -> (_ : Proof (Module R N')) -> (I : Set) -> (_ : Proof (Fintype I)) -> (m : Elem (MultilinearMap R I (x14 => M) N')) -> (v : (Elem I -> M)) -> Proof (Eqt N' (DFunLike__coe__app (MultilinearMap__alternatization R M N' I) m v) (Finset__sum (Equiv__Perm I) N' (Finset__univ (Equiv__Perm I)) (x10 => HSMul__hSMul (Units Int) N' N' (Equiv__Perm__sign__app x10) (MultilinearMap__domDomCongr__app x10 m v)))).
 
 (; doc: If `g` is a multilinear map and `f` is a collection of linear maps, then `g (f₁ m₁, ..., fₙ mₙ)` is again a multilinear map, that we call `g.compLinearMap f`. ;)
 (; //LEAN:MultilinearMap.compLinearMap ;)
-MultilinearMap__compLinearMap : (g : Elem (MultilinearMap R x1 X)) -> (f : ((i : Elem I) -> LinearMap (RingHom__id R) (x i) (x1 i))) -> Elem (MultilinearMap R x X).
+MultilinearMap__compLinearMap : (R : Set) -> (I : Set) -> (x : (Elem I -> Set)) -> (x1 : (Elem I -> Set)) -> (X : Set) -> (g : Elem (MultilinearMap R I x1 X)) -> (f : ((i : Elem I) -> LinearMap R R (RingHom__id R) (x i) (x1 i))) -> Elem (MultilinearMap R I x X).
 
 (; doc: Multiplicativity of a multilinear map along all coordinates at the same time, writing `f (fun i => c i • m i)` as `(∏ i, c i) • f m`. ;)
 (; //LEAN:MultilinearMap.map_smul_univ ;)
-MultilinearMap__map_smul_univ : (R : Set) -> (I : Set) -> (x : (Elem I -> Set)) -> (X : Set) -> (_ : Proof (CommSemiring R)) -> (_ : Proof ((i4 : Elem I) -> AddCommMonoid (x i4))) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof ((i3 : Elem I) -> Module R (x i3))) -> (_ : Proof (Module R X)) -> (f : Elem (MultilinearMap R x X)) -> (_ : Proof (Fintype I)) -> (c : (Elem I -> R)) -> (m : ((i2 : Elem I) -> x i2)) -> Proof (Eqt X (f (i => HSMul__hSMul (c i) (m i))) (HSMul__hSMul (Finset__prod Finset__univ (i1 => c i1)) (f m))).
+MultilinearMap__map_smul_univ : (R : Set) -> (I : Set) -> (x : (Elem I -> Set)) -> (X : Set) -> (_ : Proof (CommSemiring R)) -> (_ : Proof ((i4 : Elem I) -> AddCommMonoid (x i4))) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof ((i3 : Elem I) -> Module R (x i3))) -> (_ : Proof (Module R X)) -> (f : Elem (MultilinearMap R I x X)) -> (_ : Proof (Fintype I)) -> (c : (Elem I -> R)) -> (m : ((i2 : Elem I) -> x i2)) -> Proof (Eqt X (f (i => HSMul__hSMul R (x i) (x i) (c i) (m i))) (HSMul__hSMul R X X (Finset__prod I R (Finset__univ I) (i1 => c i1)) (f m))).
 
 (; //LEAN:MultilinearMap.map_update_smul_left ;)
-MultilinearMap__map_update_smul_left : (R : Set) -> (I : Set) -> (x : (Elem I -> Set)) -> (X : Set) -> (_ : Proof (CommSemiring R)) -> (_ : Proof ((i3 : Elem I) -> AddCommMonoid (x i3))) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof ((i2 : Elem I) -> Module R (x i2))) -> (_ : Proof (Module R X)) -> (f : Elem (MultilinearMap R x X)) -> (_ : Proof (Fintype I)) -> (m : ((i1 : Elem I) -> x i1)) -> (i : Elem I) -> (c : Elem R) -> (x8 : Elem (x i)) -> Proof (Eqt X (f (Function__update (HSMul__hSMul c m) i x8)) (HSMul__hSMul (pow c (minus (Fintype__card I) 1)) (f (Function__update m i x8)))).
+MultilinearMap__map_update_smul_left : (R : Set) -> (I : Set) -> (x : (Elem I -> Set)) -> (X : Set) -> (_ : Proof (CommSemiring R)) -> (_ : Proof ((i5 : Elem I) -> AddCommMonoid (x i5))) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof ((i4 : Elem I) -> Module R (x i4))) -> (_ : Proof (Module R X)) -> (f : Elem (MultilinearMap R I x X)) -> (_ : Proof (Fintype I)) -> (m : ((i3 : Elem I) -> x i3)) -> (i : Elem I) -> (c : Elem R) -> (x8 : Elem (x i)) -> Proof (Eqt X (f (Function__update I x (HSMul__hSMul R ((i1 : Elem I) -> x i1) ((i2 : Elem I) -> x i2) c m) i x8)) (HSMul__hSMul R X X (pow c (minus (Fintype__card I) 1)) (f (Function__update I x m i x8)))).
 
 (; doc: Given an `R`-algebra `A`, `mkPiAlgebra` is the multilinear map on `A^ι` associating to `m` the product of all the `m i`.  See also `MultilinearMap.mkPiAlgebraFin` for a version that works with a non-commutative algebra `A` but requires `ι = Fin n`. ;)
 (; //LEAN:MultilinearMap.mkPiAlgebra ;)
-MultilinearMap__mkPiAlgebra : (R : Set) -> (I : Set) -> (A : Set) -> Elem (MultilinearMap R (x4 => A) A).
+MultilinearMap__mkPiAlgebra : (R : Set) -> (I : Set) -> (A : Set) -> Elem (MultilinearMap R I (x4 => A) A).
 
 (; doc: `-a` computes the negative or opposite of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `-` in identifiers is `neg` (when used as a unary operator). ;)
 (; //LEAN:Neg.neg ;)
-Neg__neg : (x : Elem X) -> Elem X.
+Neg__neg : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; //LEAN:OneHom.mk ;)
-OneHom__mk : (toFun : (Elem M -> N)) -> (map_one' : Proof (Eqt N (toFun 1) 1)) -> Elem (OneHom M N).
+OneHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> N)) -> (map_one' : Proof (Eqt N (toFun 1) 1)) -> Elem (OneHom M N).
+
+(; doc: The product type, usually written `α × β`. Product types are also called pair or tuple types. Elements of this type are pairs in which the first element is an `α` and the second element is a `β`.  Products nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.  Conventions for notations in identifiers:   * The recommended spelling of `×` in identifiers is `Prod`. ;)
+(; //LEAN:Prod ;)
+Prod : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: Canonical homomorphism from `Rat` to a division ring `K`. This is just the bare function in order to aid in creating instances of `DivisionRing`. ;)
 (; //LEAN:Rat.cast ;)
-Rat__cast : (x1 : Elem Rat) -> Elem K.
+Rat__cast : (K : Set) -> (x1 : Elem Rat) -> Elem K.
 
 (; doc: Coercion `ℚ → α` as a `RingHom`. ;)
 (; //LEAN:Rat.castHom ;)
@@ -376,7 +388,7 @@ RingEquiv : (R : Set) -> (S : Set) -> Set.
 
 (; doc: Reinterpret a ring equivalence as a ring homomorphism. ;)
 (; //LEAN:RingEquiv.toRingHom ;)
-RingEquiv__toRingHom : (e : Elem (RingEquiv R S)) -> Elem (RingHom R S).
+RingEquiv__toRingHom : (R : Set) -> (S : Set) -> (e : Elem (RingEquiv R S)) -> Elem (RingHom R S).
 
 (; doc: Bundled semiring homomorphisms; use this for bundled ring homomorphisms too.  This extends from both `MonoidHom` and `MonoidWithZeroHom` in order to put the fields in a sensible order, even though `MonoidWithZeroHom` already extends `MonoidHom`. ;)
 (; //LEAN:RingHom ;)
@@ -384,7 +396,7 @@ RingHom : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: A star operation (e.g. complex conjugate). ;)
 (; //LEAN:Star.star ;)
-Star__star : (x : Elem R) -> Elem R.
+Star__star : (R : Set) -> (x : Elem R) -> Elem R.
 
 (; doc: A \*-ring `R` is a non-unital, non-associative (semi)ring with an involutive `star` operation which is additive which makes `R` with its multiplicative structure into a \*-multiplication (i.e. `star (r * s) = star s * star r`). ;)
 (; //LEAN:StarRing ;)
@@ -394,9 +406,13 @@ StarRing : (R : Set) -> Prop.
 (; //LEAN:Subsingleton ;)
 Subsingleton : (X : Set) -> Prop.
 
+(; doc: The disjoint union of types `α` and `β`, ordinarily written `α ⊕ β`.  An element of `α ⊕ β` is either an `a : α` wrapped in `Sum.inl` or a `b : β` wrapped in `Sum.inr`. `α ⊕ β` is not equivalent to the set-theoretic union of `α` and `β` because its values include an indication of which of the two types was chosen. The union of a singleton set with itself contains one element, while `Unit ⊕ Unit` contains distinct values `inl ()` and `inr ()`. ;)
+(; //LEAN:Sum ;)
+Sum : (X : Set) -> (Y : Set) -> Set.
+
 (; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
 (; //LEAN:Trans.trans ;)
-Trans__trans : (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
+Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> Elem Y -> Set)) -> (s : (Elem Y -> Elem Z -> Set)) -> (t : (Elem X -> Elem Z -> Set)) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Z) -> (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
 
 (; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:True ;)
@@ -412,15 +428,15 @@ Units : (X : Set) -> Set.
 
 (; doc: The underlying value in the base `Monoid`. ;)
 (; //LEAN:Units.val ;)
-Units__val : (self : Elem (Units X)) -> Elem X.
+Units__val : (X : Set) -> (self : Elem (Units X)) -> Elem X.
 
 (; doc: `abs a`, denoted `|a|`, is the absolute value of `a` ;)
 (; //LEAN:abs ;)
-abs : (a : Elem X) -> Elem X.
+abs : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; doc: Anything follows from two contradictory hypotheses. Example: ``` example (hp : p) (hnp : ¬p) : q := absurd hp hnp ``` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:absurd ;)
-absurd : (h : Proof a) -> (h1 : Proof (not a)) -> Elem b.
+absurd : (a : Prop) -> (b : Set) -> (h : Proof a) -> (h1 : Proof (not a)) -> Elem b.
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
@@ -453,7 +469,7 @@ funext : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> 
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
-id : (a : Elem X) -> Elem X.
+id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:implies_true ;)
 implies_true : (X : Set) -> Proof (Eqt Prop (forall X (x => True)) True).
@@ -485,5 +501,5 @@ rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
 starRingEnd : (R : Set) -> Elem (RingHom R R).
 
 (; //LEAN:zsmul_eq_mul ;)
-zsmul_eq_mul : (X : Set) -> (_ : Proof (NonAssocRing X)) -> (a : Elem X) -> (n : Elem Int) -> Proof (Eqt X (HSMul__hSMul n a) (times n a)).
+zsmul_eq_mul : (X : Set) -> (_ : Proof (NonAssocRing X)) -> (a : Elem X) -> (n : Elem Int) -> Proof (Eqt X (HSMul__hSMul Int X X n a) (times (Int__cast X n) a)).
 

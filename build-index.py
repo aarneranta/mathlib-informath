@@ -370,8 +370,11 @@ def macros(modules, verbal):
 def main():
     global RUN, TABLE
     RUN = informath()
-    TABLE = write('table.dkgf', ''.join(open(t).read() + '\n' for t in TABLES if os.path.exists(t)))
     modules = read_modules()
+    # the implicit arguments and coercions of the modules' constants, which
+    # the readings hide (#HIDE, #COERCION: Export.lean writes them)
+    hides = [OUT + '/%s-hide.dkgf' % m for m in modules]
+    TABLE = write('table.dkgf', ''.join(open(t).read() + '\n' for t in TABLES + hides if os.path.exists(t)))
     decls, blocks, stmts, base = [], {}, [], []
     root = os.environ['INFORMATH_ROOT']
     base += [open(os.path.join(root, 'share', 'baseconstants.dk')).read(), open('nd.dk').read()]
@@ -410,7 +413,8 @@ def main():
     # at all or a word that the language lacks ([cocone_Noun]), made again
     # with the hand-written tables only, which read the constant symbolically
     old_tables = [t for t in TABLES if os.path.basename(t) not in GENERATED_TABLES]
-    old_verbal = verbal_table(write('old-table.dkgf', ''.join(open(t).read() + '\n' for t in old_tables
+    old_tables_hides = old_tables + hides     # the fallback tables hide the same arguments
+    old_verbal = verbal_table(write('old-table.dkgf', ''.join(open(t).read() + '\n' for t in old_tables_hides
                                                              if os.path.exists(t))), 'old-verbal.dkgf')
     spoiled = lambda t: not t or PLACEHOLDER.search(t)
     worse = {lang: [n for n in sblocks if spoiled(texts[n].get(lang)) and lang not in timed_out.get(n, [])]
@@ -480,7 +484,7 @@ def main():
     redo = [d['lean'] for d in proved if d['lean'] not in proofs or
             any(bad_rows(proofs[d['lean']].get(lang)) for lang in FAST_LANGUAGES)]
     if redo and len(old_tables) < len(TABLES):
-        table, TABLE = TABLE, write('old-table.dkgf', ''.join(open(t).read() + '\n' for t in old_tables
+        table, TABLE = TABLE, write('old-table.dkgf', ''.join(open(t).read() + '\n' for t in old_tables_hides
                                                              if os.path.exists(t)))
         try:
             again, _ = proof_texts(proof_base, [blocks[n] for n in redo], FAST_LANGUAGES)

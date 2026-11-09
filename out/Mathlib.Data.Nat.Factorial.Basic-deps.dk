@@ -6,19 +6,19 @@ Lean__TrailingParserDescr : Set.
 
 (; doc: `ascFactorial` implemented using binary splitting.  While this still performs the same number of multiplications, the big-integer operands to each are much smaller. ;)
 (; //LEAN:Nat.ascFactorialBinary._unary ;)
-Nat__ascFactorialBinary___unary : (_x : Elem (PSigma (n => Nat))) -> Elem Nat.
+Nat__ascFactorialBinary___unary : (_x : Elem (PSigma Nat (n => Nat))) -> Elem Nat.
 
 (; //LEAN:Nat.ascFactorial_le_factorial_mul_pow._f ;)
-Nat__ascFactorial_le_factorial_mul_pow___f : (n : Elem Nat) -> (k : Elem Nat) -> (f : Elem (Nat__below k)) -> Proof (Leq (Nat__ascFactorial n k) (times (factorial k) (pow n k))).
+Nat__ascFactorial_le_factorial_mul_pow___f : (n : Elem Nat) -> (k : Elem Nat) -> (f : Elem (Nat__below (k1 => Leq (Nat__ascFactorial n k1) (times (factorial k1) (pow n k1))) k)) -> Proof (Leq (Nat__ascFactorial n k) (times (factorial k) (pow n k))).
 
 (; //LEAN:Nat.brecOn ;)
-Nat__brecOn : (t : Elem Nat) -> (F_1 : ((t1 : Elem Nat) -> Elem (Nat__below t1) -> motive t1)) -> Elem (motive t).
+Nat__brecOn : (motive : (Elem Nat -> Set)) -> (t : Elem Nat) -> (F_1 : ((t1 : Elem Nat) -> Elem (Nat__below motive t1) -> motive t1)) -> Elem (motive t).
 
 (; //LEAN:Nat.eq_div_of_mul_eq_right ;)
 Nat__eq_div_of_mul_eq_right : (c : Elem Nat) -> (a : Elem Nat) -> (b : Elem Nat) -> (hc : Proof (Neq c 0)) -> (h : Proof (Eq (times c a) b)) -> Proof (Eq a (div b c)).
 
 (; //LEAN:Nat.factorial_le_pow._f ;)
-Nat__factorial_le_pow___f : (x : Elem Nat) -> (f : Elem (Nat__below x)) -> Proof (Leq (factorial x) (pow x x)).
+Nat__factorial_le_pow___f : (x : Elem Nat) -> (f : Elem (Nat__below (x1 => Leq (factorial x1) (pow x1 x1)) x)) -> Proof (Leq (factorial x) (pow x x)).
 
 (; //LEAN:Nat.le_of_dvd ;)
 Nat__le_of_dvd : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Lt 0 n)) -> (h1 : Proof (divide m n)) -> Proof (Leq m n).
@@ -38,11 +38,11 @@ Nat__succ_pos : (n : Elem Nat) -> Proof (Lt 0 (succ n)).
 
 (; doc: Constructs a fully universe-polymorphic dependent pair. ;)
 (; //LEAN:PSigma.mk ;)
-PSigma__mk : (fst : Elem X) -> (snd : Elem (x fst)) -> Elem (PSigma x).
+PSigma__mk : (X : Set) -> (x : (Elem X -> Set)) -> (fst : Elem X) -> (snd : Elem (x fst)) -> Elem (PSigma X x).
 
 (; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:ite ;)
-ite : (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
+ite : (X : Set) -> (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
 
 (; //LEAN:ne_of_gt ;)
 ne_of_gt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt b a)) -> Proof (Neq a b).

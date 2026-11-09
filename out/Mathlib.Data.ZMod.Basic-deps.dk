@@ -1,10 +1,10 @@
 (; constants used by Mathlib.Data.ZMod.Basic, declared with their translated types ;)
 
 (; a constant applied as a function: DFunLike.coe ;)
-DFunLike__coe__app : (a1 : Elem (Equiv (Subtype (f1 => Eqt A (f1 n) 0)) (AddMonoidHom (ZMod n) A))) -> (a2 : Elem (Subtype (f2 => Eqt A (f2 n) 0))) -> (a3 : Elem (ZMod n)) -> Elem A.
+DFunLike__coe__app : (a1 : Elem (Equiv (Subtype (AddMonoidHom Int A) (f1 => Eqt A (f1 (Nat__cast Int n)) 0)) (AddMonoidHom (ZMod n) A))) -> (a2 : Elem (Subtype (AddMonoidHom Int A) (f2 => Eqt A (f2 (Nat__cast Int n)) 0))) -> (a3 : Elem (ZMod n)) -> Elem A.
 
 (; a constant applied as a function: DFunLike.coe ;)
-Equiv__subtypeEquivRight__app : (a1 : Proof (forall (AddMonoidHom Int A) (x3 => iff (Eqt A (x3 n) 0) (Leq (AddMonoidHom__ker (Int__castAddHom (ZMod n))) (AddMonoidHom__ker x3))))) -> (a2 : Elem (Subtype (f1 => Eqt A (f1 n) 0))) -> Elem (Subtype (x4 => Leq (AddMonoidHom__ker (Int__castAddHom (ZMod n))) (AddMonoidHom__ker x4))).
+Equiv__subtypeEquivRight__app : (a1 : Proof (forall (AddMonoidHom Int A) (x3 => iff (Eqt A (x3 (Nat__cast Int n)) 0) (Leq (AddMonoidHom__ker Int (ZMod n) (Int__castAddHom (ZMod n))) (AddMonoidHom__ker Int A x3))))) -> (a2 : Elem (Subtype (AddMonoidHom Int A) (f1 => Eqt A (f1 (Nat__cast Int n)) 0))) -> Elem (Subtype (AddMonoidHom Int A) (x4 => Leq (AddMonoidHom__ker Int (ZMod n) (Int__castAddHom (ZMod n))) (AddMonoidHom__ker Int A x4))).
 
 (; a constant applied as a function: DFunLike.coe ;)
 Int__castAddHom__app : (a1 : Set) -> (a2 : Elem Int) -> Elem (ZMod n).
@@ -16,13 +16,13 @@ RingHom__fst__app : (a1 : Set) -> (a2 : Set) -> (a3 : Elem (Prod (ZMod m) (ZMod 
 RingHom__snd__app : (a1 : Set) -> (a2 : Set) -> (a3 : Elem (Prod (ZMod m) (ZMod n))) -> Elem (ZMod n).
 
 (; a constant applied as a function: DFunLike.coe ;)
-Subtype__val__app : (a1 : Elem (Subtype (f2 => Eqt A (f2 n) 0))) -> (a2 : Elem Int) -> Elem A.
+Subtype__val__app : (a1 : Elem (Subtype (AddMonoidHom Int A) (f2 => Eqt A (f2 (Nat__cast Int n)) 0))) -> (a2 : Elem Int) -> Elem A.
 
 (; a constant applied as a function: DFunLike.coe ;)
 ZMod__castHom__app : (a1 : Proof (divide m n)) -> (a2 : Set) -> (a3 : Elem (ZMod n)) -> Elem R.
 
 (; a constant applied as a function: DFunLike.coe ;)
-ZMod__lift__app : (a1 : Elem Nat) -> (a2 : Elem (Subtype (f1 => Eqt A (f1 n) 0))) -> Elem (AddMonoidHom (ZMod n) A).
+ZMod__lift__app : (a1 : Elem Nat) -> (a2 : Elem (Subtype (AddMonoidHom Int A) (f1 => Eqt A (f1 (Nat__cast Int n)) 0))) -> Elem (AddMonoidHom (ZMod n) A).
 
 (; a constant applied as a function: DFunLike.coe ;)
 ZMod__ringEquivCongr__app : (a1 : Proof (Eq a b)) -> (a2 : Elem (ZMod a)) -> Elem (ZMod b).
@@ -39,33 +39,27 @@ AddGroup : (A : Set) -> Prop.
 (; //LEAN:AddGroupWithOne ;)
 AddGroupWithOne : (R : Set) -> Prop.
 
-(; //LEAN:AddGroupWithOne.toIntCast ;)
-AddGroupWithOne__toIntCast : Proof (IntCast R).
-
 (; doc: `M →+ N` is the type of functions `M → N` that preserve the `AddZero` structure.  `AddMonoidHom` is also used for group homomorphisms.  When possible, instead of parametrizing results over `(f : M →+ N)`, you should parametrize over `(F : Type*) [AddMonoidHomClass F M N] (f : F)`.  When you extend this structure, make sure to extend `AddMonoidHomClass`.  [Wikidata Q868169](https://www.wikidata.org/wiki/Q868169) ;)
 (; //LEAN:AddMonoidHom ;)
 AddMonoidHom : (M : Set) -> (N : Set) -> Set.
 
 (; doc: Composition of additive monoid morphisms as an additive monoid morphism. ;)
 (; //LEAN:AddMonoidHom.comp ;)
-AddMonoidHom__comp : (hnp : Elem (AddMonoidHom N P)) -> (hmn : Elem (AddMonoidHom M N)) -> Elem (AddMonoidHom M P).
+AddMonoidHom__comp : (M : Set) -> (N : Set) -> (P : Set) -> (hnp : Elem (AddMonoidHom N P)) -> (hmn : Elem (AddMonoidHom M N)) -> Elem (AddMonoidHom M P).
 
 (; //LEAN:AddMonoidHom.ext ;)
 AddMonoidHom__ext : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> (g : Elem (AddMonoidHom M N)) -> (h : Proof (forall M (x2 => Eqt N (f x2) (g x2)))) -> Proof (Eqt (AddMonoidHom M N) f g).
 
 (; doc: The additive kernel of an `AddMonoid` homomorphism is the `AddSubgroup` of elements such that `f x = 0` ;)
 (; //LEAN:AddMonoidHom.ker ;)
-AddMonoidHom__ker : (f : Elem (AddMonoidHom G M)) -> Elem (AddSubgroup G).
+AddMonoidHom__ker : (G : Set) -> (M : Set) -> (f : Elem (AddMonoidHom G M)) -> Elem (AddSubgroup G).
 
 (; doc: `liftOfRightInverse f f_inv hf g hg` is the unique additive group homomorphism `φ` * such that `φ.comp f = g` (`AddMonoidHom.liftOfRightInverse_comp`), * where `f : G₁ →+ G₂` has a RightInverse `f_inv` (`hf`), * and `g : G₂ →+ G₃` satisfies `hg : f.ker ≤ g.ker`. See `AddMonoidHom.eq_liftOfRightInverse` for the uniqueness lemma. ```    G₁.    |  \  f |   \ g    |    \    v     \⌟    G₂----> G₃       ∃!φ ``` ;)
 (; //LEAN:AddMonoidHom.liftOfRightInverse ;)
-AddMonoidHom__liftOfRightInverse : (f : Elem (AddMonoidHom X X1)) -> (f_neg : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse f_neg f)) -> Elem (Equiv (Subtype (g => Leq (AddMonoidHom__ker f) (AddMonoidHom__ker g))) (AddMonoidHom X1 X2)).
+AddMonoidHom__liftOfRightInverse : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (f : Elem (AddMonoidHom X X1)) -> (f_neg : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse X X1 f_neg f)) -> Elem (Equiv (Subtype (AddMonoidHom X X2) (g => Leq (AddMonoidHom__ker X X1 f) (AddMonoidHom__ker X X2 g))) (AddMonoidHom X1 X2)).
 
 (; //LEAN:AddMonoidHom.liftOfRightInverse_comp_apply ;)
-AddMonoidHom__liftOfRightInverse_comp_apply : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (_ : Proof (AddGroup X)) -> (_ : Proof (AddGroup X1)) -> (_ : Proof (AddGroup X2)) -> (f : Elem (AddMonoidHom X X1)) -> (f_neg : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse f_neg f)) -> (g : Elem (Subtype (g4 => Leq (AddMonoidHom__ker f) (AddMonoidHom__ker g4)))) -> (x3 : Elem X) -> Proof (Eqt X2 (DFunLike__coe__app (AddMonoidHom__liftOfRightInverse f f_neg hf) g (f x3)) (Subtype__val__app g x3)).
-
-(; //LEAN:AddMonoidWithOne.toNatCast ;)
-AddMonoidWithOne__toNatCast : Proof (NatCast R).
+AddMonoidHom__liftOfRightInverse_comp_apply : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (_ : Proof (AddGroup X)) -> (_ : Proof (AddGroup X1)) -> (_ : Proof (AddGroup X2)) -> (f : Elem (AddMonoidHom X X1)) -> (f_neg : (Elem X1 -> X)) -> (hf : Proof (Function__RightInverse X X1 f_neg f)) -> (g : Elem (Subtype (AddMonoidHom X X2) (g4 => Leq (AddMonoidHom__ker X X1 f) (AddMonoidHom__ker X X2 g4)))) -> (x3 : Elem X) -> Proof (Eqt X2 (DFunLike__coe__app (AddMonoidHom__liftOfRightInverse X X1 X2 f f_neg hf) g (f x3)) (Subtype__val__app g x3)).
 
 (; doc: An additive subgroup of an additive group `G` is a subset containing 0, closed under addition and additive inverse.  [Wikidata Q466109](https://www.wikidata.org/wiki/Q466109) ;)
 (; //LEAN:AddSubgroup ;)
@@ -73,44 +67,44 @@ AddSubgroup : (G : Set) -> Set.
 
 (; doc: The additive subgroup generated by an element. ;)
 (; //LEAN:AddSubgroup.zmultiples ;)
-AddSubgroup__zmultiples : (g : Elem G) -> Elem (AddSubgroup G).
+AddSubgroup__zmultiples : (G : Set) -> (g : Elem G) -> Elem (AddSubgroup G).
 
 (; doc: `AddSubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are additive subgroups of `G`. ;)
 (; //LEAN:AddSubgroupClass ;)
-AddSubgroupClass : (S : Set) -> (G : Elem (outParam Set)) -> Prop.
+AddSubgroupClass : (S : Set) -> (G : Set) -> Prop.
 
 (; doc: The generator of the kernel of the unique homomorphism ℕ → R for a semiring R.  *Warning*: for a semiring `R`, `CharP R 0` and `CharZero R` need not coincide. * `CharP R 0` asks that only `0 : ℕ` maps to `0 : R` under the map `ℕ → R`; * `CharZero R` requires an injection `ℕ ↪ R`.  For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that `CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does. This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`. ;)
 (; //LEAN:CharP ;)
-CharP : (R : Set) -> (p : Elem (outParam Nat)) -> Prop.
+CharP : (R : Set) -> (p : Elem Nat) -> Prop.
 
 (; //LEAN:CharP.addOrderOf_one ;)
-CharP__addOrderOf_one : (R : Set) -> (_ : Proof (NonAssocRing R)) -> Proof (CharP R (addOrderOf 1)).
+CharP__addOrderOf_one : (R : Set) -> (_ : Proof (NonAssocRing R)) -> Proof (CharP R (addOrderOf R 1)).
 
 (; //LEAN:CharP.cast_eq_mod ;)
-CharP__cast_eq_mod : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> (p : Elem Nat) -> (_ : Proof (CharP R p)) -> (k : Elem Nat) -> Proof (Eqt R k (HMod__hMod k p)).
+CharP__cast_eq_mod : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> (p : Elem Nat) -> (_ : Proof (CharP R p)) -> (k : Elem Nat) -> Proof (Eqt R (Nat__cast R k) (Nat__cast R (HMod__hMod Nat Nat Nat k p))).
 
 (; //LEAN:CharP.cast_eq_zero ;)
-CharP__cast_eq_zero : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> (p : Elem Nat) -> (_ : Proof (CharP R p)) -> Proof (Eqt R p 0).
+CharP__cast_eq_zero : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> (p : Elem Nat) -> (_ : Proof (CharP R p)) -> Proof (Eqt R (Nat__cast R p) 0).
 
 (; //LEAN:CharP.eq ;)
 CharP__eq : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> (p : Elem Nat) -> (q : Elem Nat) -> (hp : Proof (CharP R p)) -> (hq : Proof (CharP R q)) -> Proof (Eq p q).
 
 (; //LEAN:CharP.intCast_eq_intCast ;)
-CharP__intCast_eq_intCast : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> (p : Elem Nat) -> (_ : Proof (CharP R p)) -> (a : Elem Int) -> (b : Elem Int) -> Proof (iff (Eqt R a b) (Int__ModEq p a b)).
+CharP__intCast_eq_intCast : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> (p : Elem Nat) -> (_ : Proof (CharP R p)) -> (a : Elem Int) -> (b : Elem Int) -> Proof (iff (Eqt R (Int__cast R a) (Int__cast R b)) (Int__ModEq (Nat__cast Int p) a b)).
 
 (; //LEAN:CharP.intCast_eq_zero_iff ;)
-CharP__intCast_eq_zero_iff : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> (p : Elem Nat) -> (_ : Proof (CharP R p)) -> (a : Elem Int) -> Proof (iff (Eqt R a 0) (divide p a)).
+CharP__intCast_eq_zero_iff : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> (p : Elem Nat) -> (_ : Proof (CharP R p)) -> (a : Elem Int) -> Proof (iff (Eqt R (Int__cast R a) 0) (divide (Nat__cast Int p) a)).
 
 (; //LEAN:CharP.neg_one_ne_one ;)
-CharP__neg_one_ne_one : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> (p : Elem Nat) -> (_ : Proof (CharP R p)) -> (_ : Proof (Fact (Lt 2 p))) -> Proof (Neq (Neg__neg 1) 1).
+CharP__neg_one_ne_one : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> (p : Elem Nat) -> (_ : Proof (CharP R p)) -> (_ : Proof (Fact (Lt 2 p))) -> Proof (Neq (Neg__neg R 1) 1).
 
 (; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
 (; //LEAN:Eq ;)
-Eq : (x : Elem X) -> (x1 : Elem X) -> Prop.
+Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
 (; //LEAN:Eq.mpr ;)
-Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
 
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
@@ -129,15 +123,15 @@ Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Pr
 Equiv : (X : Set) -> (Y : Set) -> Set.
 
 (; //LEAN:Equiv.mk ;)
-Equiv__mk : (toFun : (Elem X -> Y)) -> (invFun : (Elem Y -> X)) -> (left_inv : Proof (autoParam (Function__LeftInverse invFun toFun) Equiv__left_inv___autoParam)) -> (right_inv : Proof (autoParam (Function__RightInverse invFun toFun) Equiv__right_inv___autoParam)) -> Elem (Equiv X Y).
+Equiv__mk : (X : Set) -> (Y : Set) -> (toFun : (Elem X -> Y)) -> (invFun : (Elem Y -> X)) -> (left_inv : Proof (autoParam (Function__LeftInverse X Y invFun toFun) Equiv__left_inv___autoParam)) -> (right_inv : Proof (autoParam (Function__RightInverse X Y invFun toFun) Equiv__right_inv___autoParam)) -> Elem (Equiv X Y).
 
 (; doc: If two predicates `p` and `q` are pointwise equivalent, then `{x // p x}` is equivalent to `{x // q x}`. ;)
 (; //LEAN:Equiv.subtypeEquivRight ;)
-Equiv__subtypeEquivRight : (e : Proof (forall X (x2 => iff (p x2) (q x2)))) -> Elem (Equiv (Subtype (x => p x)) (Subtype (x1 => q x1))).
+Equiv__subtypeEquivRight : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (e : Proof (forall X (x2 => iff (p x2) (q x2)))) -> Elem (Equiv (Subtype X (x => p x)) (Subtype X (x1 => q x1))).
 
 (; doc: Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. ;)
 (; //LEAN:Equiv.trans ;)
-Equiv__trans : (x : Elem (Equiv X Y)) -> (x1 : Elem (Equiv Y Z)) -> Elem (Equiv X Z).
+Equiv__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem (Equiv X Y)) -> (x1 : Elem (Equiv Y Z)) -> Elem (Equiv X Z).
 
 (; doc: Wrapper for adding elementary propositions to the type class systems. Warning: this can easily be abused. See the rest of this docstring for details.  Certain propositions should not be treated as a class globally, but sometimes it is very convenient to be able to use the type class system in specific circumstances.  For example, `ZMod p` is a field if and only if `p` is a prime number. In order to be able to find this field instance automatically by type class search, we have to turn `p.Prime` into an instance implicit assumption.  On the other hand, making `Nat.Prime` a class would require a major refactoring of the library, and it is questionable whether making `Nat.Prime` a class is desirable at all. The compromise is to add the assumption `[Fact p.Prime]` to `ZMod.instField`.  In particular, this class is not intended for turning the type class system into an automated theorem prover for first-order logic. ;)
 (; //LEAN:Fact ;)
@@ -157,48 +151,48 @@ Fintype__card : (X : Set) -> Elem Nat.
 
 (; doc: A function is called bijective if it is both injective and surjective. ;)
 (; //LEAN:Function.Bijective ;)
-Function__Bijective : (f : (Elem X -> Y)) -> Prop.
+Function__Bijective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: A point `x` is a fixed point of `f : α → α` if `f x = x`. ;)
 (; //LEAN:Function.IsFixedPt ;)
-Function__IsFixedPt : (f : (Elem X -> X)) -> (x : Elem X) -> Prop.
+Function__IsFixedPt : (X : Set) -> (f : (Elem X -> X)) -> (x : Elem X) -> Prop.
 
 (; doc: A point `x` is a periodic point of `f : α → α` of period `n` if `f^[n] x = x`. Note that we do not require `0 < n` in this definition. Many theorems about periodic points need this assumption. ;)
 (; //LEAN:Function.IsPeriodicPt ;)
-Function__IsPeriodicPt : (f : (Elem X -> X)) -> (n : Elem Nat) -> (x : Elem X) -> Prop.
+Function__IsPeriodicPt : (X : Set) -> (f : (Elem X -> X)) -> (n : Elem Nat) -> (x : Elem X) -> Prop.
 
 (; doc: `RightInverse g f` means that `g` is a right inverse to `f`. That is, `f ∘ g = id`. ;)
 (; //LEAN:Function.RightInverse ;)
-Function__RightInverse : (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> Prop.
+Function__RightInverse : (X : Set) -> (Y : Set) -> (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Function.RightInverse.surjective ;)
-Function__RightInverse__surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> X)) -> (h : Proof (Function__RightInverse g f)) -> Proof (Function__Surjective f).
+Function__RightInverse__surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> X)) -> (h : Proof (Function__RightInverse X Y g f)) -> Proof (Function__Surjective X Y f).
 
 (; doc: A function `f : α → β` is called surjective if every `b : β` is equal to `f a` for some `a : α`. ;)
 (; //LEAN:Function.Surjective ;)
-Function__Surjective : (f : (Elem X -> Y)) -> Prop.
+Function__Surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Function.Surjective.exists ;)
-Function__Surjective__exists : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Surjective f)) -> (p : (Elem Y -> Prop)) -> Proof (iff (exists Y (y => p y)) (exists X (x => p (f x)))).
+Function__Surjective__exists : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Surjective X Y f)) -> (p : (Elem Y -> Prop)) -> Proof (iff (exists Y (y => p y)) (exists X (x => p (f x)))).
 
 (; //LEAN:Function.Surjective.forall ;)
-Function__Surjective__forall : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Surjective f)) -> (p : (Elem Y -> Prop)) -> Proof (iff (forall Y (y => p y)) (forall X (x => p (f x)))).
+Function__Surjective__forall : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Surjective X Y f)) -> (p : (Elem Y -> Prop)) -> Proof (iff (forall Y (y => p y)) (forall X (x => p (f x)))).
 
 (; doc: Function composition, usually written with the infix operator `∘`. A new function is created from two existing functions, where one function's output is used as input to the other.  Examples:  * `Function.comp List.reverse (List.drop 2) [3, 2, 4, 1] = [1, 4]`  * `(List.reverse ∘ List.drop 2) [3, 2, 4, 1] = [1, 4]`  Conventions for notations in identifiers:   * The recommended spelling of `∘` in identifiers is `comp`. ;)
 (; //LEAN:Function.comp ;)
-Function__comp : (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
+Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
 
 (; doc: Every point is a fixed point of `id`. ;)
 (; //LEAN:Function.isFixedPt_id ;)
-Function__isFixedPt_id : (X : Set) -> (x : Elem X) -> Proof (Function__IsFixedPt id x).
+Function__isFixedPt_id : (X : Set) -> (x : Elem X) -> Proof (Function__IsFixedPt X (id X) x).
 
 (; doc: The set of periodic points of a map `f : α → α`. ;)
 (; //LEAN:Function.periodicPts ;)
-Function__periodicPts : (f : (Elem X -> X)) -> Elem (powerset X).
+Function__periodicPts : (X : Set) -> (f : (Elem X -> X)) -> Elem (powerset X).
 
 (; doc: A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.  There is also a division operation `/` such that `a / b = a * b⁻¹`, with a default so that `a / b = a * b⁻¹` holds by definition.  Use `Group.ofLeftAxioms` or `Group.ofRightAxioms` to define a group structure on a type with the minimum proof obligations.  [Wikidata Q83478](https://www.wikidata.org/wiki/Q83478) ;)
 (; //LEAN:Group ;)
@@ -206,11 +200,11 @@ Group : (G : Set) -> Prop.
 
 (; doc: `a % b` computes the remainder upon dividing `a` by `b`. The meaning of this notation is type-dependent. * For `Nat` and `Int` it satisfies `a % b + b * (a / b) = a`,   and `a % 0` is defined to be `a`.  Conventions for notations in identifiers:   * The recommended spelling of `%` in identifiers is `mod`. ;)
 (; //LEAN:HMod.hMod ;)
-HMod__hMod : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+HMod__hMod : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Y) -> Elem Z.
 
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
-HSMul__hSMul : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+HSMul__hSMul : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Y) -> Elem Z.
 
 (; doc: **Alias** of `not_congr`. ;)
 (; //LEAN:Iff.not ;)
@@ -226,21 +220,25 @@ Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> 
 (; //LEAN:Int.ModEq ;)
 Int__ModEq : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> Prop.
 
+(; doc: The canonical homomorphism `Int → R`. In most use cases, the target type will have a ring structure, and this homomorphism should be a ring homomorphism.  `IntCast` and `NatCast` exist to allow different libraries with their own types that can be notated as natural numbers to have consistent `simp` normal forms without needing to create coercion simplification sets that are aware of all combinations. Libraries should make it easy to work with `IntCast` where possible. For instance, in Mathlib there will be such a homomorphism (and thus an `IntCast R` instance) whenever `R` is an additive group with a `1`. ;)
+(; //LEAN:Int.cast ;)
+Int__cast : (R : Set) -> (x1 : Elem Int) -> Elem R.
+
 (; doc: `coe : ℤ → α` as an `AddMonoidHom`. ;)
 (; //LEAN:Int.castAddHom ;)
 Int__castAddHom : (X : Set) -> Elem (AddMonoidHom Int X).
 
 (; //LEAN:Int.cast_natCast ;)
-Int__cast_natCast : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> (n : Elem Nat) -> Proof (Eqt R n n).
+Int__cast_natCast : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> (n : Elem Nat) -> Proof (Eqt R (Int__cast R (Nat__cast Int n)) (Nat__cast R n)).
 
 (; //LEAN:Int.cast_one ;)
-Int__cast_one : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> Proof (Eqt R 1 1).
+Int__cast_one : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> Proof (Eqt R (Int__cast R 1) 1).
 
 (; //LEAN:Int.cast_zero ;)
-Int__cast_zero : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> Proof (Eqt R 0 0).
+Int__cast_zero : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> Proof (Eqt R (Int__cast R 0) 0).
 
 (; //LEAN:Int.even_natCast._simp_1 ;)
-Int__even_natCast___simp_1 : (n : Elem Nat) -> Proof (Eqt Prop (even n) (even n)).
+Int__even_natCast___simp_1 : (n : Elem Nat) -> Proof (Eqt Prop (even (Nat__cast Int n)) (even n)).
 
 (; doc: The absolute value of an integer is its distance from `0`.  This function is overridden by the compiler with an efficient implementation. This definition is the logical model.  Examples:  * `(7 : Int).natAbs = 7`  * `(0 : Int).natAbs = 0`  * `(-11 : Int).natAbs = 11` ;)
 (; //LEAN:Int.natAbs ;)
@@ -250,10 +248,10 @@ Int__natAbs : (m : Elem Int) -> Elem Nat.
 Int__natAbs_mul : (a : Elem Int) -> (b : Elem Int) -> Proof (Eq (Int__natAbs (times a b)) (times (Int__natAbs a) (Int__natAbs b))).
 
 (; //LEAN:Int.natAbs_neg ;)
-Int__natAbs_neg : (a : Elem Int) -> Proof (Eq (Int__natAbs (Neg__neg a)) (Int__natAbs a)).
+Int__natAbs_neg : (a : Elem Int) -> Proof (Eq (Int__natAbs (Neg__neg Int a)) (Int__natAbs a)).
 
 (; //LEAN:Int.odd_natCast._simp_1 ;)
-Int__odd_natCast___simp_1 : (n : Elem Nat) -> Proof (Eqt Prop (odd n) (odd n)).
+Int__odd_natCast___simp_1 : (n : Elem Nat) -> Proof (Eqt Prop (odd (Nat__cast Int n)) (odd n)).
 
 (; doc: Converts an integer into a natural number. Negative numbers are converted to `0`.  Examples: * `(7 : Int).toNat = 7` * `(0 : Int).toNat = 0` * `(-7 : Int).toNat = 0` ;)
 (; //LEAN:Int.toNat ;)
@@ -261,11 +259,11 @@ Int__toNat : (x : Elem Int) -> Elem Nat.
 
 (; doc: `a⁻¹` computes the inverse of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `⁻¹` in identifiers is `inv`. ;)
 (; //LEAN:Inv.inv ;)
-Inv__inv : (x : Elem X) -> Elem X.
+Inv__inv : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse. The actual definition says that `a` is equal to some `u : Mˣ`, where `Mˣ` is a bundled version of `IsUnit`. ;)
 (; //LEAN:IsUnit ;)
-IsUnit : (a : Elem M) -> Prop.
+IsUnit : (M : Set) -> (a : Elem M) -> Prop.
 
 (; doc: **Alias** of `le_of_lt`. ;)
 (; //LEAN:LT.lt.le ;)
@@ -273,14 +271,14 @@ LT__lt__le : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem 
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
-Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
 
 (; doc: A module is a generalization of vector spaces to a scalar semiring. It consists of a scalar semiring `R` and an additive monoid of "vectors" `M`, connected by a "scalar multiplication" operation `r • x : M` (where `r : R` and `x : M`) with some natural associativity and distributivity axioms similar to those on a ring. ;)
 (; //LEAN:Module ;)
 Module : (R : Set) -> (M : Set) -> Prop.
 
 (; //LEAN:MonoidHom.mk ;)
-MonoidHom__mk : (toOneHom : Elem (OneHom M N)) -> (map_mul' : Proof (forall M (x2 => forall M (y => Eqt N (OneHom__toFun toOneHom (times x2 y)) (times (OneHom__toFun toOneHom x2) (OneHom__toFun toOneHom y)))))) -> Elem (MonoidHom M N).
+MonoidHom__mk : (M : Set) -> (N : Set) -> (toOneHom : Elem (OneHom M N)) -> (map_mul' : Proof (forall M (x2 => forall M (y => Eqt N (OneHom__toFun M N toOneHom (times x2 y)) (times (OneHom__toFun M N toOneHom x2) (OneHom__toFun M N toOneHom y)))))) -> Elem (MonoidHom M N).
 
 (; doc: A type class for natural numbers which are greater than or equal to `2`.  `NeZero` and `AtLeastTwo` are used for numeric literals, and also for groups of related lemmas sharing a common value of `n` that needs to be nonzero, or at least `2`, and where it is convenient to pass this information implicitly. Instances for these classes cover some of the cases where it is most structurally obvious from the syntactic form of `n` that it satisfies the required conditions, such as `m + 1`. Less widely used cases may be defined as lemmas rather than global instances and then made into instances locally where needed. If implicit arguments, appearing before other explicit arguments, are allowed to be `autoParam`s in a future version of Lean, such an `autoParam` that is proved `by lia` might be a more general replacement for the use of typeclass inference for this purpose. ;)
 (; //LEAN:Nat.AtLeastTwo ;)
@@ -298,48 +296,56 @@ Nat__ModEq : (n : Elem Nat) -> (a : Elem Nat) -> (b : Elem Nat) -> Prop.
 Nat__ModEq__add_right_cancel' : (n : Elem Nat) -> (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> (h : Proof (Nat__ModEq n (plus a c) (plus b c))) -> Proof (Nat__ModEq n a b).
 
 (; //LEAN:Nat.ModEq.eq_1 ;)
-Nat__ModEq__eq_1 : (n : Elem Nat) -> (a : Elem Nat) -> (b : Elem Nat) -> Proof (Eqt Prop (Nat__ModEq n a b) (Eq (HMod__hMod a n) (HMod__hMod b n))).
+Nat__ModEq__eq_1 : (n : Elem Nat) -> (a : Elem Nat) -> (b : Elem Nat) -> Proof (Eqt Prop (Nat__ModEq n a b) (Eq (HMod__hMod Nat Nat Nat a n) (HMod__hMod Nat Nat Nat b n))).
 
 (; doc: `Nat.card α` is the cardinality of `α` as a natural number. If `α` is infinite, `Nat.card α = 0`. ;)
 (; //LEAN:Nat.card ;)
 Nat__card : (X : Set) -> Elem Nat.
 
+(; doc: The canonical homomorphism `Nat → R`. In most use cases, the target type will have a (semi)ring structure, and this homomorphism should be a (semi)ring homomorphism.  `NatCast` and `IntCast` exist to allow different libraries with their own types that can be notated as natural numbers to have consistent `simp` normal forms without needing to create coercion simplification sets that are aware of all combinations. Libraries should make it easy to work with `NatCast` where possible. For instance, in Mathlib there will be such a homomorphism (and thus a `NatCast R` instance) whenever `R` is an additive monoid with a `1`.  The prototypical example is `Int.ofNat`. ;)
+(; //LEAN:Nat.cast ;)
+Nat__cast : (R : Set) -> (x1 : Elem Nat) -> Elem R.
+
 (; //LEAN:Nat.cast_one ;)
-Nat__cast_one : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> Proof (Eqt R 1 1).
+Nat__cast_one : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> Proof (Eqt R (Nat__cast R 1) 1).
 
 (; //LEAN:Nat.cast_zero ;)
-Nat__cast_zero : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> Proof (Eqt R 0 0).
+Nat__cast_zero : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> Proof (Eqt R (Nat__cast R 0) 0).
 
 (; doc: The natural number less than `n*m` congruent to `a` mod `n` and `b` mod `m` ;)
 (; //LEAN:Nat.chineseRemainder ;)
-Nat__chineseRemainder : (co : Proof (Nat__Coprime n m)) -> (a : Elem Nat) -> (b : Elem Nat) -> Elem (Subtype (k => and (Nat__ModEq n k a) (Nat__ModEq m k b))).
+Nat__chineseRemainder : (m : Elem Nat) -> (n : Elem Nat) -> (co : Proof (Nat__Coprime n m)) -> (a : Elem Nat) -> (b : Elem Nat) -> Elem (Subtype Nat (k => and (Nat__ModEq n k a) (Nat__ModEq m k b))).
 
 (; doc: Iterate a function. ;)
 (; //LEAN:Nat.iterate ;)
-Nat__iterate : (op : (Elem X -> X)) -> (x : Elem Nat) -> (x1 : Elem X) -> Elem X.
+Nat__iterate : (X : Set) -> (op : (Elem X -> X)) -> (x : Elem Nat) -> (x1 : Elem X) -> Elem X.
+
+(; doc: The least common multiple of `m` and `n` is the smallest natural number that's evenly divisible by both `m` and `n`. Returns `0` if either `m` or `n` is `0`.  Examples:  * `Nat.lcm 9 6 = 18`  * `Nat.lcm 9 3 = 9`  * `Nat.lcm 0 3 = 0`  * `Nat.lcm 3 0 = 0` ;)
+(; //LEAN:Nat.lcm ;)
+Nat__lcm : (m : Elem Nat) -> (n : Elem Nat) -> Elem Nat.
 
 (; //LEAN:Nat.mod_eq_of_lt ;)
-Nat__mod_eq_of_lt : (a : Elem Nat) -> (b : Elem Nat) -> (h : Proof (Lt a b)) -> Proof (Eq (HMod__hMod a b) a).
+Nat__mod_eq_of_lt : (a : Elem Nat) -> (b : Elem Nat) -> (h : Proof (Lt a b)) -> Proof (Eq (HMod__hMod Nat Nat Nat a b) a).
 
 (; //LEAN:Nat.mod_self ;)
-Nat__mod_self : (n : Elem Nat) -> Proof (Eq (HMod__hMod n n) 0).
+Nat__mod_self : (n : Elem Nat) -> Proof (Eq (HMod__hMod Nat Nat Nat n n) 0).
 
 (; //LEAN:Nat.residueClassesEquiv._proof_1 ;)
-Nat__residueClassesEquiv___proof_1 : (N : Elem Nat) -> (n : Elem Nat) -> Proof (Eq ((p => plus (ZMod__val (Prod__fst p)) (times N (Prod__snd p))) ((n1 => Prod__mk n1 (div n1 N)) n)) n).
+Nat__residueClassesEquiv___proof_1 : (N : Elem Nat) -> (n : Elem Nat) -> Proof (Eq ((p => plus (ZMod__val N (Prod__fst (ZMod N) Nat p)) (times N (Prod__snd (ZMod N) Nat p))) ((n1 => Prod__mk (ZMod N) Nat (Nat__cast (ZMod N) n1) (div n1 N)) n)) n).
 
 (; //LEAN:Nat.residueClassesEquiv._proof_2 ;)
-Nat__residueClassesEquiv___proof_2 : (N : Elem Nat) -> (_ : Proof (NeZero N)) -> (p : Elem (Prod (ZMod N) Nat)) -> Proof (Eqt (Prod (ZMod N) Nat) ((n => Prod__mk n (div n N)) ((p1 => plus (ZMod__val (Prod__fst p1)) (times N (Prod__snd p1))) p)) p).
+Nat__residueClassesEquiv___proof_2 : (N : Elem Nat) -> (_ : Proof (NeZero Nat N)) -> (p : Elem (Prod (ZMod N) Nat)) -> Proof (Eqt (Prod (ZMod N) Nat) ((n => Prod__mk (ZMod N) Nat (Nat__cast (ZMod N) n) (div n N)) ((p1 => plus (ZMod__val N (Prod__fst (ZMod N) Nat p1)) (times N (Prod__snd (ZMod N) Nat p1))) p)) p).
 
 (; doc: A type-class version of `n ≠ 0`. ;)
 (; //LEAN:NeZero ;)
-NeZero : (n : Elem R) -> Prop.
+NeZero : (R : Set) -> (n : Elem R) -> Prop.
 
 (; //LEAN:NeZero.pos ;)
-NeZero__pos : (X : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (IsBotZeroClass X)) -> (a : Elem X) -> (_ : Proof (NeZero a)) -> Proof (Lt 0 a).
+NeZero__pos : (X : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (IsBotZeroClass X)) -> (a : Elem X) -> (_ : Proof (NeZero X a)) -> Proof (Lt 0 a).
 
 (; doc: `-a` computes the negative or opposite of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `-` in identifiers is `neg` (when used as a unary operator). ;)
 (; //LEAN:Neg.neg ;)
-Neg__neg : (x : Elem X) -> Elem X.
+Neg__neg : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: A unital but not-necessarily-associative ring. ;)
 (; //LEAN:NonAssocRing ;)
@@ -355,10 +361,10 @@ Nontrivial : (X : Set) -> Prop.
 
 (; doc: The `OfNat.ofNat` function is automatically inserted by the parser when the user writes a numeric literal like `1 : α`. Implementations of this typeclass can therefore customize the behavior of `n : α` based on `n` and `α`. ;)
 (; //LEAN:OfNat.ofNat ;)
-OfNat__ofNat : (x : Elem Nat) -> Elem X.
+OfNat__ofNat : (X : Set) -> (x : Elem Nat) -> Elem X.
 
 (; //LEAN:OneHom.mk ;)
-OneHom__mk : (toFun : (Elem M -> N)) -> (map_one' : Proof (Eqt N (toFun 1) 1)) -> Elem (OneHom M N).
+OneHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> N)) -> (map_one' : Proof (Eqt N (toFun 1) 1)) -> Elem (OneHom M N).
 
 (; doc: The product type, usually written `α × β`. Product types are also called pair or tuple types. Elements of this type are pairs in which the first element is an `α` and the second element is a `β`.  Products nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.  Conventions for notations in identifiers:   * The recommended spelling of `×` in identifiers is `Prod`. ;)
 (; //LEAN:Prod ;)
@@ -366,15 +372,15 @@ Prod : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: The first element of a pair. ;)
 (; //LEAN:Prod.fst ;)
-Prod__fst : (self : Elem (Prod X Y)) -> Elem X.
+Prod__fst : (X : Set) -> (Y : Set) -> (self : Elem (Prod X Y)) -> Elem X.
 
 (; doc: Constructs a pair. This is usually written `(x, y)` instead of `Prod.mk x y`.  Conventions for notations in identifiers:   * The recommended spelling of `(a, b)` in identifiers is `mk`. ;)
 (; //LEAN:Prod.mk ;)
-Prod__mk : (fst : Elem X) -> (snd : Elem Y) -> Elem (Prod X Y).
+Prod__mk : (X : Set) -> (Y : Set) -> (fst : Elem X) -> (snd : Elem Y) -> Elem (Prod X Y).
 
 (; doc: The second element of a pair. ;)
 (; //LEAN:Prod.snd ;)
-Prod__snd : (self : Elem (Prod X Y)) -> Elem Y.
+Prod__snd : (X : Set) -> (Y : Set) -> (self : Elem (Prod X Y)) -> Elem Y.
 
 (; doc: A `Ring` is a `Semiring` with negation making it an additive group. ;)
 (; //LEAN:Ring ;)
@@ -385,11 +391,11 @@ Ring : (R : Set) -> Prop.
 RingEquiv : (R : Set) -> (S : Set) -> Set.
 
 (; //LEAN:RingEquiv.mk ;)
-RingEquiv__mk : (toEquiv : Elem (Equiv R S)) -> (map_mul' : Proof (forall R (x5 => forall R (y1 => Eqt S (Equiv__toFun toEquiv (times x5 y1)) (times (Equiv__toFun toEquiv x5) (Equiv__toFun toEquiv y1)))))) -> (map_add' : Proof (forall R (x4 => forall R (y => Eqt S (Equiv__toFun toEquiv (plus x4 y)) (plus (Equiv__toFun toEquiv x4) (Equiv__toFun toEquiv y)))))) -> Elem (RingEquiv R S).
+RingEquiv__mk : (R : Set) -> (S : Set) -> (toEquiv : Elem (Equiv R S)) -> (map_mul' : Proof (forall R (x5 => forall R (y1 => Eqt S (Equiv__toFun R S toEquiv (times x5 y1)) (times (Equiv__toFun R S toEquiv x5) (Equiv__toFun R S toEquiv y1)))))) -> (map_add' : Proof (forall R (x4 => forall R (y => Eqt S (Equiv__toFun R S toEquiv (plus x4 y)) (plus (Equiv__toFun R S toEquiv x4) (Equiv__toFun R S toEquiv y)))))) -> Elem (RingEquiv R S).
 
 (; doc: Produce a ring isomorphism from a bijective ring homomorphism. ;)
 (; //LEAN:RingEquiv.ofBijective ;)
-RingEquiv__ofBijective : (f : Elem F) -> (hf : Proof (Function__Bijective f)) -> Elem (RingEquiv R S).
+RingEquiv__ofBijective : (F : Set) -> (R : Set) -> (S : Set) -> (f : Elem F) -> (hf : Proof (Function__Bijective R S f)) -> Elem (RingEquiv R S).
 
 (; doc: The identity map is a ring isomorphism. ;)
 (; //LEAN:RingEquiv.refl ;)
@@ -397,11 +403,11 @@ RingEquiv__refl : (R : Set) -> Elem (RingEquiv R R).
 
 (; doc: The inverse of a ring isomorphism is a ring isomorphism. ;)
 (; //LEAN:RingEquiv.symm ;)
-RingEquiv__symm : (e : Elem (RingEquiv R S)) -> Elem (RingEquiv S R).
+RingEquiv__symm : (R : Set) -> (S : Set) -> (e : Elem (RingEquiv R S)) -> Elem (RingEquiv S R).
 
 (; doc: Transitivity of `RingEquiv`. ;)
 (; //LEAN:RingEquiv.trans ;)
-RingEquiv__trans : (x6 : Elem (RingEquiv R S)) -> (x7 : Elem (RingEquiv S S')) -> Elem (RingEquiv R S').
+RingEquiv__trans : (R : Set) -> (S : Set) -> (S' : Set) -> (x6 : Elem (RingEquiv R S)) -> (x7 : Elem (RingEquiv S S')) -> Elem (RingEquiv R S').
 
 (; doc: Bundled semiring homomorphisms; use this for bundled ring homomorphisms too.  This extends from both `MonoidHom` and `MonoidWithZeroHom` in order to put the fields in a sensible order, even though `MonoidWithZeroHom` already extends `MonoidHom`. ;)
 (; //LEAN:RingHom ;)
@@ -409,7 +415,7 @@ RingHom : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: Composition of ring homomorphisms is a ring homomorphism. ;)
 (; //LEAN:RingHom.comp ;)
-RingHom__comp : (g : Elem (RingHom Y Z)) -> (f : Elem (RingHom X Y)) -> Elem (RingHom X Z).
+RingHom__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Proof (NonAssocSemiring X)) -> (x1 : Proof (NonAssocSemiring Y)) -> (x2 : Proof (NonAssocSemiring Z)) -> (g : Elem (RingHom Y Z)) -> (f : Elem (RingHom X Y)) -> Elem (RingHom X Z).
 
 (; doc: The identity ring homomorphism from a semiring to itself. ;)
 (; //LEAN:RingHom.id ;)
@@ -417,7 +423,7 @@ RingHom__id : (X : Set) -> Elem (RingHom X X).
 
 (; doc: Ring homomorphisms preserve additive inverse. ;)
 (; //LEAN:RingHom.map_neg ;)
-RingHom__map_neg : (X : Set) -> (Y : Set) -> (_ : Proof (NonAssocRing X)) -> (_ : Proof (NonAssocRing Y)) -> (f : Elem (RingHom X Y)) -> (x2 : Elem X) -> Proof (Eqt Y (f (Neg__neg x2)) (Neg__neg (f x2))).
+RingHom__map_neg : (X : Set) -> (Y : Set) -> (_ : Proof (NonAssocRing X)) -> (_ : Proof (NonAssocRing Y)) -> (f : Elem (RingHom X Y)) -> (x2 : Elem X) -> Proof (Eqt Y (f (Neg__neg X x2)) (Neg__neg Y (f x2))).
 
 (; //LEAN:RingHom.map_pow ;)
 RingHom__map_pow : (X : Set) -> (Y : Set) -> (_ : Proof (Semiring X)) -> (_ : Proof (Semiring Y)) -> (f : Elem (RingHom X Y)) -> (a : Elem X) -> (n : Elem Nat) -> Proof (Eqt Y (f (pow a n)) (pow (f a) n)).
@@ -427,29 +433,32 @@ RingHom__map_pow : (X : Set) -> (Y : Set) -> (_ : Proof (Semiring X)) -> (_ : Pr
 RingHom__map_sub : (X : Set) -> (Y : Set) -> (_ : Proof (NonAssocRing X)) -> (_ : Proof (NonAssocRing Y)) -> (f : Elem (RingHom X Y)) -> (x2 : Elem X) -> (y : Elem X) -> Proof (Eqt Y (f (minus x2 y)) (minus (f x2) (f y))).
 
 (; //LEAN:RingHom.mk ;)
-RingHom__mk : (toMonoidHom : Elem (MonoidHom X Y)) -> (map_zero' : Proof (Eqt Y (OneHom__toFun (MonoidHom__toOneHom toMonoidHom) 0) 0)) -> (map_add' : Proof (forall X (x2 => forall X (y => Eqt Y (OneHom__toFun (MonoidHom__toOneHom toMonoidHom) (plus x2 y)) (plus (OneHom__toFun (MonoidHom__toOneHom toMonoidHom) x2) (OneHom__toFun (MonoidHom__toOneHom toMonoidHom) y)))))) -> Elem (RingHom X Y).
+RingHom__mk : (X : Set) -> (Y : Set) -> (toMonoidHom : Elem (MonoidHom X Y)) -> (map_zero' : Proof (Eqt Y (OneHom__toFun X Y (MonoidHom__toOneHom X Y toMonoidHom) 0) 0)) -> (map_add' : Proof (forall X (x2 => forall X (y => Eqt Y (OneHom__toFun X Y (MonoidHom__toOneHom X Y toMonoidHom) (plus x2 y)) (plus (OneHom__toFun X Y (MonoidHom__toOneHom X Y toMonoidHom) x2) (OneHom__toFun X Y (MonoidHom__toOneHom X Y toMonoidHom) y)))))) -> Elem (RingHom X Y).
 
 (; doc: `SMulMemClass S R M` says `S` is a type of subsets `s ≤ M` that are closed under the scalar action of `R` on `M`.  Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike` class instead. ;)
 (; //LEAN:SMulMemClass ;)
-SMulMemClass : (S : Set) -> (R : Elem (outParam Set)) -> (M : Set) -> Prop.
+SMulMemClass : (S : Set) -> (R : Set) -> (M : Set) -> Prop.
 
 (; //LEAN:SMulMemClass.mk ;)
-SMulMemClass__mk : (S : Set) -> (R : Elem (outParam Set)) -> (M : Set) -> (smul_mem : Proof (forall S (s => forall R (r => forall M (m => if (Membership__mem s m) (Membership__mem s (HSMul__hSMul r m))))))) -> Proof (SMulMemClass S R M).
+SMulMemClass__mk : (S : Set) -> (R : Set) -> (M : Set) -> (smul_mem : Proof (forall S (s => forall R (r => forall M (m => if (Membership__mem M S s m) (Membership__mem M S s (HSMul__hSMul R M M r m))))))) -> Proof (SMulMemClass S R M).
+
+(; //LEAN:Semiring.toNonAssocSemiring ;)
+Semiring__toNonAssocSemiring : (X : Set) -> Proof (NonAssocSemiring X).
 
 (; //LEAN:Set.eq_univ_of_forall ;)
-Set__eq_univ_of_forall : (X : Set) -> (s : Elem (powerset X)) -> (h : Proof (forall X (x => Membership__mem s x))) -> Proof (Eqt (powerset X) s Set__univ).
+Set__eq_univ_of_forall : (X : Set) -> (s : Elem (powerset X)) -> (h : Proof (forall X (x => Membership__mem X (powerset X) s x))) -> Proof (Eqt (powerset X) s (Set__univ X)).
 
 (; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
 (; //LEAN:Set.ofPred ;)
-Set__ofPred : (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
 
 (; doc: Range of a function.  This function is more flexible than `f '' univ`, as the image requires that the domain is in Type and not an arbitrary Sort. ;)
 (; //LEAN:Set.range ;)
-Set__range : (f : (Elem I -> X)) -> Elem (powerset X).
+Set__range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> Elem (powerset X).
 
 (; doc: The universal set on a type `α` is the set containing all elements of `α`.  This is conceptually the "same as" `α` (in set theory, it is actually the same), but type theory makes the distinction that `α` is a type while `Set.univ` is a term of type `Set α`. `Set.univ` can itself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`. ;)
 (; //LEAN:Set.univ ;)
-Set__univ : Elem (powerset X).
+Set__univ : (X : Set) -> Elem (powerset X).
 
 (; doc: A _subsingleton_ is a type with at most one element. It is either empty or has a unique element.  All propositions are subsingletons because of proof irrelevance: false propositions are empty, and all proofs of a true proposition are equal to one another. Some non-propositional types are also subsingletons. ;)
 (; //LEAN:Subsingleton ;)
@@ -461,11 +470,18 @@ Subsingleton__elim : (X : Set) -> (_ : Proof (Subsingleton X)) -> (a : Elem X) -
 
 (; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
 (; //LEAN:Subtype ;)
-Subtype : (p : (Elem X -> Prop)) -> Set.
+Subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Set.
+
+(; //LEAN:Subtype.mk ;)
+Subtype__mk : (X : Set) -> (p : (Elem X -> Prop)) -> (val : Elem X) -> (property : Proof (p val)) -> Elem (Subtype X (x => p x)).
+
+(; doc: The value in the underlying type that satisfies the predicate. ;)
+(; //LEAN:Subtype.val ;)
+Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x => p x))) -> Elem X.
 
 (; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
 (; //LEAN:Trans.trans ;)
-Trans__trans : (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
+Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> Elem Y -> Set)) -> (s : (Elem Y -> Elem Z -> Set)) -> (t : (Elem X -> Elem Z -> Set)) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Z) -> (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
 
 (; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:True ;)
@@ -476,18 +492,18 @@ True : Prop.
 Units : (X : Set) -> Set.
 
 (; //LEAN:Units.mk ;)
-Units__mk : (val : Elem X) -> (inv : Elem X) -> (val_inv : Proof (Eqt X (times val inv) 1)) -> (inv_val : Proof (Eqt X (times inv val) 1)) -> Elem (Units X).
+Units__mk : (X : Set) -> (val : Elem X) -> (inv : Elem X) -> (val_inv : Proof (Eqt X (times val inv) 1)) -> (inv_val : Proof (Eqt X (times inv val) 1)) -> Elem (Units X).
 
 (; doc: The underlying value in the base `Monoid`. ;)
 (; //LEAN:Units.val ;)
-Units__val : (self : Elem (Units X)) -> Elem X.
+Units__val : (X : Set) -> (self : Elem (Units X)) -> Elem X.
 
 (; doc: The integers modulo `n : ℕ`. ;)
 (; //LEAN:ZMod ;)
 ZMod : (x : Elem Nat) -> Set.
 
 (; //LEAN:ZMod.castHom._proof_1 ;)
-ZMod__castHom___proof_1 : (n : Elem Nat) -> (R : Set) -> (_ : Proof (Ring R)) -> Proof (Eqt R (ZMod__cast 0) 0).
+ZMod__castHom___proof_1 : (n : Elem Nat) -> (R : Set) -> (_ : Proof (Ring R)) -> Proof (Eqt R (ZMod__cast R n 0) 0).
 
 (; //LEAN:ZMod.charP ;)
 ZMod__charP : (n : Elem Nat) -> Proof (CharP (ZMod n) n).
@@ -496,49 +512,49 @@ ZMod__charP : (n : Elem Nat) -> Proof (CharP (ZMod n) n).
 ZMod__chineseRemainder___proof_2 : (m : Elem Nat) -> (n : Elem Nat) -> Proof (divide (Nat__lcm m n) (times m n)).
 
 (; //LEAN:ZMod.chineseRemainder._proof_3 ;)
-ZMod__chineseRemainder___proof_3 : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Nat__Coprime m n)) -> Proof (and (Function__LeftInverse (x => ite (Eq (times m n) 0) (ite (Eq m 1) (ZMod__cast (RingHom__snd__app (ZMod m) (ZMod n) x)) (ZMod__cast (RingHom__fst__app (ZMod m) (ZMod n) x))) (Nat__chineseRemainder h (ZMod__val (Prod__fst x)) (ZMod__val (Prod__snd x)))) (ZMod__castHom ZMod__chineseRemainder___proof_2 (Prod (ZMod m) (ZMod n)))) (Function__RightInverse (x1 => ite (Eq (times m n) 0) (ite (Eq m 1) (ZMod__cast (RingHom__snd__app (ZMod m) (ZMod n) x1)) (ZMod__cast (RingHom__fst__app (ZMod m) (ZMod n) x1))) (Nat__chineseRemainder h (ZMod__val (Prod__fst x1)) (ZMod__val (Prod__snd x1)))) (ZMod__castHom ZMod__chineseRemainder___proof_2 (Prod (ZMod m) (ZMod n))))).
+ZMod__chineseRemainder___proof_3 : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Nat__Coprime m n)) -> Proof (and (Function__LeftInverse (ZMod (times m n)) (Prod (ZMod m) (ZMod n)) (x => ite (ZMod (times m n)) (Eq (times m n) 0) (ite (ZMod (times m n)) (Eq m 1) (ZMod__cast (ZMod (times m n)) n (RingHom__snd__app (ZMod m) (ZMod n) x)) (ZMod__cast (ZMod (times m n)) m (RingHom__fst__app (ZMod m) (ZMod n) x))) (Nat__cast (ZMod (times m n)) (Subtype__val Nat (k => and (Nat__ModEq m k (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x))) (Nat__ModEq n k (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x)))) (Nat__chineseRemainder n m h (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x)) (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x)))))) (ZMod__castHom (times m n) (Nat__lcm m n) (ZMod__chineseRemainder___proof_2 m n) (Prod (ZMod m) (ZMod n)))) (Function__RightInverse (ZMod (times m n)) (Prod (ZMod m) (ZMod n)) (x1 => ite (ZMod (times m n)) (Eq (times m n) 0) (ite (ZMod (times m n)) (Eq m 1) (ZMod__cast (ZMod (times m n)) n (RingHom__snd__app (ZMod m) (ZMod n) x1)) (ZMod__cast (ZMod (times m n)) m (RingHom__fst__app (ZMod m) (ZMod n) x1))) (Nat__cast (ZMod (times m n)) (Subtype__val Nat (k1 => and (Nat__ModEq m k1 (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x1))) (Nat__ModEq n k1 (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x1)))) (Nat__chineseRemainder n m h (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x1)) (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x1)))))) (ZMod__castHom (times m n) (Nat__lcm m n) (ZMod__chineseRemainder___proof_2 m n) (Prod (ZMod m) (ZMod n))))).
 
 (; //LEAN:ZMod.chineseRemainder._proof_4 ;)
-ZMod__chineseRemainder___proof_4 : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Nat__Coprime m n)) -> (inv : Proof (and (Function__LeftInverse (x1 => ite (Eq (times m n) 0) (ite (Eq m 1) (ZMod__cast (RingHom__snd__app (ZMod m) (ZMod n) x1)) (ZMod__cast (RingHom__fst__app (ZMod m) (ZMod n) x1))) (Nat__chineseRemainder h (ZMod__val (Prod__fst x1)) (ZMod__val (Prod__snd x1)))) (ZMod__castHom ZMod__chineseRemainder___proof_2 (Prod (ZMod m) (ZMod n)))) (Function__RightInverse (x2 => ite (Eq (times m n) 0) (ite (Eq m 1) (ZMod__cast (RingHom__snd__app (ZMod m) (ZMod n) x2)) (ZMod__cast (RingHom__fst__app (ZMod m) (ZMod n) x2))) (Nat__chineseRemainder h (ZMod__val (Prod__fst x2)) (ZMod__val (Prod__snd x2)))) (ZMod__castHom ZMod__chineseRemainder___proof_2 (Prod (ZMod m) (ZMod n)))))) -> Proof (Function__LeftInverse (x => ite (Eq (times m n) 0) (ite (Eq m 1) (ZMod__cast (RingHom__snd__app (ZMod m) (ZMod n) x)) (ZMod__cast (RingHom__fst__app (ZMod m) (ZMod n) x))) (Nat__chineseRemainder h (ZMod__val (Prod__fst x)) (ZMod__val (Prod__snd x)))) (ZMod__castHom ZMod__chineseRemainder___proof_2 (Prod (ZMod m) (ZMod n)))).
+ZMod__chineseRemainder___proof_4 : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Nat__Coprime m n)) -> (inv : Proof (and (Function__LeftInverse (ZMod (times m n)) (Prod (ZMod m) (ZMod n)) (x1 => ite (ZMod (times m n)) (Eq (times m n) 0) (ite (ZMod (times m n)) (Eq m 1) (ZMod__cast (ZMod (times m n)) n (RingHom__snd__app (ZMod m) (ZMod n) x1)) (ZMod__cast (ZMod (times m n)) m (RingHom__fst__app (ZMod m) (ZMod n) x1))) (Nat__cast (ZMod (times m n)) (Subtype__val Nat (k1 => and (Nat__ModEq m k1 (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x1))) (Nat__ModEq n k1 (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x1)))) (Nat__chineseRemainder n m h (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x1)) (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x1)))))) (ZMod__castHom (times m n) (Nat__lcm m n) (ZMod__chineseRemainder___proof_2 m n) (Prod (ZMod m) (ZMod n)))) (Function__RightInverse (ZMod (times m n)) (Prod (ZMod m) (ZMod n)) (x2 => ite (ZMod (times m n)) (Eq (times m n) 0) (ite (ZMod (times m n)) (Eq m 1) (ZMod__cast (ZMod (times m n)) n (RingHom__snd__app (ZMod m) (ZMod n) x2)) (ZMod__cast (ZMod (times m n)) m (RingHom__fst__app (ZMod m) (ZMod n) x2))) (Nat__cast (ZMod (times m n)) (Subtype__val Nat (k2 => and (Nat__ModEq m k2 (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x2))) (Nat__ModEq n k2 (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x2)))) (Nat__chineseRemainder n m h (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x2)) (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x2)))))) (ZMod__castHom (times m n) (Nat__lcm m n) (ZMod__chineseRemainder___proof_2 m n) (Prod (ZMod m) (ZMod n)))))) -> Proof (Function__LeftInverse (ZMod (times m n)) (Prod (ZMod m) (ZMod n)) (x => ite (ZMod (times m n)) (Eq (times m n) 0) (ite (ZMod (times m n)) (Eq m 1) (ZMod__cast (ZMod (times m n)) n (RingHom__snd__app (ZMod m) (ZMod n) x)) (ZMod__cast (ZMod (times m n)) m (RingHom__fst__app (ZMod m) (ZMod n) x))) (Nat__cast (ZMod (times m n)) (Subtype__val Nat (k => and (Nat__ModEq m k (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x))) (Nat__ModEq n k (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x)))) (Nat__chineseRemainder n m h (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x)) (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x)))))) (ZMod__castHom (times m n) (Nat__lcm m n) (ZMod__chineseRemainder___proof_2 m n) (Prod (ZMod m) (ZMod n)))).
 
 (; //LEAN:ZMod.chineseRemainder._proof_5 ;)
-ZMod__chineseRemainder___proof_5 : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Nat__Coprime m n)) -> (inv : Proof (and (Function__LeftInverse (x1 => ite (Eq (times m n) 0) (ite (Eq m 1) (ZMod__cast (RingHom__snd__app (ZMod m) (ZMod n) x1)) (ZMod__cast (RingHom__fst__app (ZMod m) (ZMod n) x1))) (Nat__chineseRemainder h (ZMod__val (Prod__fst x1)) (ZMod__val (Prod__snd x1)))) (ZMod__castHom ZMod__chineseRemainder___proof_2 (Prod (ZMod m) (ZMod n)))) (Function__RightInverse (x2 => ite (Eq (times m n) 0) (ite (Eq m 1) (ZMod__cast (RingHom__snd__app (ZMod m) (ZMod n) x2)) (ZMod__cast (RingHom__fst__app (ZMod m) (ZMod n) x2))) (Nat__chineseRemainder h (ZMod__val (Prod__fst x2)) (ZMod__val (Prod__snd x2)))) (ZMod__castHom ZMod__chineseRemainder___proof_2 (Prod (ZMod m) (ZMod n)))))) -> Proof (Function__RightInverse (x => ite (Eq (times m n) 0) (ite (Eq m 1) (ZMod__cast (RingHom__snd__app (ZMod m) (ZMod n) x)) (ZMod__cast (RingHom__fst__app (ZMod m) (ZMod n) x))) (Nat__chineseRemainder h (ZMod__val (Prod__fst x)) (ZMod__val (Prod__snd x)))) (ZMod__castHom ZMod__chineseRemainder___proof_2 (Prod (ZMod m) (ZMod n)))).
+ZMod__chineseRemainder___proof_5 : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Nat__Coprime m n)) -> (inv : Proof (and (Function__LeftInverse (ZMod (times m n)) (Prod (ZMod m) (ZMod n)) (x1 => ite (ZMod (times m n)) (Eq (times m n) 0) (ite (ZMod (times m n)) (Eq m 1) (ZMod__cast (ZMod (times m n)) n (RingHom__snd__app (ZMod m) (ZMod n) x1)) (ZMod__cast (ZMod (times m n)) m (RingHom__fst__app (ZMod m) (ZMod n) x1))) (Nat__cast (ZMod (times m n)) (Subtype__val Nat (k1 => and (Nat__ModEq m k1 (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x1))) (Nat__ModEq n k1 (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x1)))) (Nat__chineseRemainder n m h (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x1)) (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x1)))))) (ZMod__castHom (times m n) (Nat__lcm m n) (ZMod__chineseRemainder___proof_2 m n) (Prod (ZMod m) (ZMod n)))) (Function__RightInverse (ZMod (times m n)) (Prod (ZMod m) (ZMod n)) (x2 => ite (ZMod (times m n)) (Eq (times m n) 0) (ite (ZMod (times m n)) (Eq m 1) (ZMod__cast (ZMod (times m n)) n (RingHom__snd__app (ZMod m) (ZMod n) x2)) (ZMod__cast (ZMod (times m n)) m (RingHom__fst__app (ZMod m) (ZMod n) x2))) (Nat__cast (ZMod (times m n)) (Subtype__val Nat (k2 => and (Nat__ModEq m k2 (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x2))) (Nat__ModEq n k2 (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x2)))) (Nat__chineseRemainder n m h (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x2)) (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x2)))))) (ZMod__castHom (times m n) (Nat__lcm m n) (ZMod__chineseRemainder___proof_2 m n) (Prod (ZMod m) (ZMod n)))))) -> Proof (Function__RightInverse (ZMod (times m n)) (Prod (ZMod m) (ZMod n)) (x => ite (ZMod (times m n)) (Eq (times m n) 0) (ite (ZMod (times m n)) (Eq m 1) (ZMod__cast (ZMod (times m n)) n (RingHom__snd__app (ZMod m) (ZMod n) x)) (ZMod__cast (ZMod (times m n)) m (RingHom__fst__app (ZMod m) (ZMod n) x))) (Nat__cast (ZMod (times m n)) (Subtype__val Nat (k => and (Nat__ModEq m k (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x))) (Nat__ModEq n k (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x)))) (Nat__chineseRemainder n m h (ZMod__val m (Prod__fst (ZMod m) (ZMod n) x)) (ZMod__val n (Prod__snd (ZMod m) (ZMod n) x)))))) (ZMod__castHom (times m n) (Nat__lcm m n) (ZMod__chineseRemainder___proof_2 m n) (Prod (ZMod m) (ZMod n)))).
 
 (; //LEAN:ZMod.chineseRemainder._proof_6 ;)
-ZMod__chineseRemainder___proof_6 : (m : Elem Nat) -> (n : Elem Nat) -> (x : Elem (ZMod (times m n))) -> (y : Elem (ZMod (times m n))) -> Proof (Eqt (Prod (ZMod m) (ZMod n)) (ZMod__castHom__app ZMod__chineseRemainder___proof_2 (Prod (ZMod m) (ZMod n)) (times x y)) (times (ZMod__castHom__app ZMod__chineseRemainder___proof_2 (Prod (ZMod m) (ZMod n)) x) (ZMod__castHom__app ZMod__chineseRemainder___proof_2 (Prod (ZMod m) (ZMod n)) y))).
+ZMod__chineseRemainder___proof_6 : (m : Elem Nat) -> (n : Elem Nat) -> (x : Elem (ZMod (times m n))) -> (y : Elem (ZMod (times m n))) -> Proof (Eqt (Prod (ZMod m) (ZMod n)) (ZMod__castHom__app (ZMod__chineseRemainder___proof_2 m n) (Prod (ZMod m) (ZMod n)) (times x y)) (times (ZMod__castHom__app (ZMod__chineseRemainder___proof_2 m n) (Prod (ZMod m) (ZMod n)) x) (ZMod__castHom__app (ZMod__chineseRemainder___proof_2 m n) (Prod (ZMod m) (ZMod n)) y))).
 
 (; //LEAN:ZMod.chineseRemainder._proof_9 ;)
-ZMod__chineseRemainder___proof_9 : (m : Elem Nat) -> (n : Elem Nat) -> (x : Elem (ZMod (times m n))) -> (y : Elem (ZMod (times m n))) -> Proof (Eqt (Prod (ZMod m) (ZMod n)) (ZMod__castHom__app ZMod__chineseRemainder___proof_2 (Prod (ZMod m) (ZMod n)) (plus x y)) (plus (ZMod__castHom__app ZMod__chineseRemainder___proof_2 (Prod (ZMod m) (ZMod n)) x) (ZMod__castHom__app ZMod__chineseRemainder___proof_2 (Prod (ZMod m) (ZMod n)) y))).
+ZMod__chineseRemainder___proof_9 : (m : Elem Nat) -> (n : Elem Nat) -> (x : Elem (ZMod (times m n))) -> (y : Elem (ZMod (times m n))) -> Proof (Eqt (Prod (ZMod m) (ZMod n)) (ZMod__castHom__app (ZMod__chineseRemainder___proof_2 m n) (Prod (ZMod m) (ZMod n)) (plus x y)) (plus (ZMod__castHom__app (ZMod__chineseRemainder___proof_2 m n) (Prod (ZMod m) (ZMod n)) x) (ZMod__castHom__app (ZMod__chineseRemainder___proof_2 m n) (Prod (ZMod m) (ZMod n)) y))).
 
 (; //LEAN:ZMod.lift._proof_1 ;)
-ZMod__lift___proof_1 : (n : Elem Nat) -> (A : Set) -> (_ : Proof (AddGroup A)) -> (x1 : Elem (AddMonoidHom Int A)) -> Proof (iff (Eqt A (x1 n) 0) (Leq (AddMonoidHom__ker (Int__castAddHom (ZMod n))) (AddMonoidHom__ker x1))).
+ZMod__lift___proof_1 : (n : Elem Nat) -> (A : Set) -> (_ : Proof (AddGroup A)) -> (x1 : Elem (AddMonoidHom Int A)) -> Proof (iff (Eqt A (x1 (Nat__cast Int n)) 0) (Leq (AddMonoidHom__ker Int (ZMod n) (Int__castAddHom (ZMod n))) (AddMonoidHom__ker Int A x1))).
 
 (; //LEAN:ZMod.unitOfCoprime._proof_1 ;)
-ZMod__unitOfCoprime___proof_1 : (n : Elem Nat) -> (x : Elem Nat) -> (h : Proof (Nat__Coprime x n)) -> Proof (Eqt (ZMod n) (times (Inv__inv x) x) 1).
+ZMod__unitOfCoprime___proof_1 : (n : Elem Nat) -> (x : Elem Nat) -> (h : Proof (Nat__Coprime x n)) -> Proof (Eqt (ZMod n) (times (Inv__inv (ZMod n) (Nat__cast (ZMod n) x)) (Nat__cast (ZMod n) x)) 1).
 
 (; //LEAN:ZMod.unitsEquivCoprime._proof_1 ;)
-ZMod__unitsEquivCoprime___proof_1 : (n : Elem Nat) -> (x : Elem (Subtype (x1 => Nat__Coprime (ZMod__val x1) n))) -> Proof (Nat__Coprime (ZMod__val x) n).
+ZMod__unitsEquivCoprime___proof_1 : (n : Elem Nat) -> (x : Elem (Subtype (ZMod n) (x2 => Nat__Coprime (ZMod__val n x2) n))) -> Proof (Nat__Coprime (ZMod__val n (Subtype__val (ZMod n) (x1 => Nat__Coprime (ZMod__val n x1) n) x)) n).
 
 (; //LEAN:ZMod.unitsEquivCoprime._proof_3 ;)
-ZMod__unitsEquivCoprime___proof_3 : (n : Elem Nat) -> (_ : Proof (NeZero n)) -> (x : Elem (Units (ZMod n))) -> Proof (Eqt (Units (ZMod n)) (ZMod__unitOfCoprime (ZMod__val (Units__val x)) (ZMod__unitsEquivCoprime___proof_2 x)) x).
+ZMod__unitsEquivCoprime___proof_3 : (n : Elem Nat) -> (_ : Proof (NeZero Nat n)) -> (x : Elem (Units (ZMod n))) -> Proof (Eqt (Units (ZMod n)) (ZMod__unitOfCoprime n (ZMod__val n (Subtype__val (ZMod n) (x1 => Nat__Coprime (ZMod__val n x1) n) (Subtype__mk (ZMod n) (x2 => Nat__Coprime (ZMod__val n x2) n) (Units__val (ZMod n) x) (ZMod__val_coe_unit_coprime n x)))) (ZMod__unitsEquivCoprime___proof_2 n x)) x).
 
 (; //LEAN:ZMod.unitsEquivCoprime._proof_5 ;)
-ZMod__unitsEquivCoprime___proof_5 : (n : Elem Nat) -> (_ : Proof (NeZero n)) -> (x : Elem (Subtype (x2 => Nat__Coprime (ZMod__val x2) n))) -> Proof (Eqt (Subtype (x1 => Nat__Coprime (ZMod__val x1) n)) (Units__val (ZMod__unitOfCoprime (ZMod__val x) (ZMod__unitsEquivCoprime___proof_1 x))) x).
+ZMod__unitsEquivCoprime___proof_5 : (n : Elem Nat) -> (_ : Proof (NeZero Nat n)) -> (x : Elem (Subtype (ZMod n) (x4 => Nat__Coprime (ZMod__val n x4) n))) -> Proof (Eqt (Subtype (ZMod n) (x1 => Nat__Coprime (ZMod__val n x1) n)) (Subtype__mk (ZMod n) (x2 => Nat__Coprime (ZMod__val n x2) n) (Units__val (ZMod n) (ZMod__unitOfCoprime n (ZMod__val n (Subtype__val (ZMod n) (x3 => Nat__Coprime (ZMod__val n x3) n) x)) (ZMod__unitsEquivCoprime___proof_1 n x))) (ZMod__unitsEquivCoprime___proof_4 n x)) x).
 
 (; doc: `abs a`, denoted `|a|`, is the absolute value of `a` ;)
 (; //LEAN:abs ;)
-abs : (a : Elem X) -> Elem X.
+abs : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; doc: `addOrderOf a` is the order of the element `a`, i.e. the `n ≥ 1`, s.t. `n • a = 0` if it exists. Otherwise, i.e. if `a` is of infinite order, then `addOrderOf a` is `0` by convention. ;)
 (; //LEAN:addOrderOf ;)
-addOrderOf : (x1 : Elem G) -> Elem Nat.
+addOrderOf : (G : Set) -> (x1 : Elem G) -> Elem Nat.
 
 (; //LEAN:add_left_iterate ;)
-add_left_iterate : (M : Set) -> (_ : Proof (AddMonoid M)) -> (a : Elem M) -> (n : Elem Nat) -> Proof (Eqt (Elem M -> M) (Nat__iterate (x2 => plus a x2) n) (x3 => plus (HSMul__hSMul n a) x3)).
+add_left_iterate : (M : Set) -> (_ : Proof (AddMonoid M)) -> (a : Elem M) -> (n : Elem Nat) -> Proof (Eqt (Elem M -> M) (Nat__iterate M (x2 => plus a x2) n) (x3 => plus (HSMul__hSMul Nat M M n a) x3)).
 
 (; doc: Cast across a type equality. If `h : α = β` is an equality of types, and `a : α`, then `a : β` will usually not typecheck directly, but this function will allow you to work around this and embed `a` in type `β` as `cast h a : β`.  It is best to avoid this function if you can, because it is more complicated to reason about terms containing casts, but if the types don't match up definitionally sometimes there isn't anything better you can do.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:cast ;)
-cast : (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
+cast : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
@@ -577,29 +593,29 @@ funext : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> 
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
-id : (a : Elem X) -> Elem X.
+id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:ite ;)
-ite : (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
+ite : (X : Set) -> (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
 
 (; //LEAN:map_intCast ;)
-map_intCast : (F : Set) -> (X : Set) -> (Y : Set) -> (_ : Proof (NonAssocRing X)) -> (_ : Proof (NonAssocRing Y)) -> (f : Elem F) -> (n : Elem Int) -> Proof (Eqt Y (f n) n).
+map_intCast : (F : Set) -> (X : Set) -> (Y : Set) -> (_ : Proof (NonAssocRing X)) -> (_ : Proof (NonAssocRing Y)) -> (f : Elem F) -> (n : Elem Int) -> Proof (Eqt Y (f (Int__cast X n)) (Int__cast Y n)).
 
 (; //LEAN:map_natCast ;)
-map_natCast : (R : Set) -> (S : Set) -> (F : Set) -> (_ : Proof (NonAssocSemiring R)) -> (_ : Proof (NonAssocSemiring S)) -> (f : Elem F) -> (n : Elem Nat) -> Proof (Eqt S (f n) n).
+map_natCast : (R : Set) -> (S : Set) -> (F : Set) -> (_ : Proof (NonAssocSemiring R)) -> (_ : Proof (NonAssocSemiring S)) -> (f : Elem F) -> (n : Elem Nat) -> Proof (Eqt S (f (Nat__cast R n)) (Nat__cast S n)).
 
 (; //LEAN:mul_neg ;)
-mul_neg : (X : Set) -> (_ : Proof (HasDistribNeg X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (times a (Neg__neg b)) (Neg__neg (times a b))).
+mul_neg : (X : Set) -> (_ : Proof (HasDistribNeg X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (times a (Neg__neg X b)) (Neg__neg X (times a b))).
 
 (; //LEAN:mul_one ;)
 mul_one : (M : Set) -> (_ : Proof (MulOneClass M)) -> (a : Elem M) -> Proof (Eqt M (times a 1) a).
 
 (; //LEAN:neg_add_cancel ;)
-neg_add_cancel : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (Eqt G (plus (Neg__neg a) a) 0).
+neg_add_cancel : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (Eqt G (plus (Neg__neg G a) a) 0).
 
 (; //LEAN:neg_neg ;)
-neg_neg : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> (a : Elem G) -> Proof (Eqt G (Neg__neg (Neg__neg a)) a).
+neg_neg : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> (a : Elem G) -> Proof (Eqt G (Neg__neg G (Neg__neg G a)) a).
 
 (; //LEAN:of_eq_true ;)
 of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.

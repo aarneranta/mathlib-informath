@@ -6,23 +6,23 @@ Finset : (X : Set) -> Set.
 
 (; doc: The finset $(-∞, b]$ of elements `x` such that `x ≤ b`. Basically `Set.Iic b` as a finset. ;)
 (; //LEAN:Finset.Iic ;)
-Finset__Iic : (a : Elem X) -> Elem (Finset X).
+Finset__Iic : (X : Set) -> (a : Elem X) -> Elem (Finset X).
 
 (; doc: The finset $(-∞, b)$ of elements `x` such that `x < b`. Basically `Set.Iio b` as a finset. ;)
 (; //LEAN:Finset.Iio ;)
-Finset__Iio : (a : Elem X) -> Elem (Finset X).
+Finset__Iio : (X : Set) -> (a : Elem X) -> Elem (Finset X).
 
 (; doc: `attach s` takes the elements of `s` and forms a new set of elements of the subtype `{x // x ∈ s}`. ;)
 (; //LEAN:Finset.attach ;)
-Finset__attach : (s : Elem (Finset X)) -> Elem (Finset (Subtype (x => Membership__mem s x))).
+Finset__attach : (X : Set) -> (s : Elem (Finset X)) -> Elem (Finset (Subtype X (x => Membership__mem X (Finset X) s x))).
 
 (; doc: `image f s` is the forward image of `s` under `f`. ;)
 (; //LEAN:Finset.image ;)
-Finset__image : (f : (Elem X -> Y)) -> (s : Elem (Finset X)) -> Elem (Finset Y).
+Finset__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (Finset X)) -> Elem (Finset Y).
 
 (; doc: When `f` is an embedding of `α` in `β` and `s` is a finset in `α`, then `s.map f` is the image finset in `β`. The embedding condition guarantees that there are no duplicates in the image. ;)
 (; //LEAN:Finset.map ;)
-Finset__map : (f : Elem (Function__Embedding X Y)) -> (s : Elem (Finset X)) -> Elem (Finset Y).
+Finset__map : (X : Set) -> (Y : Set) -> (f : Elem (Function__Embedding X Y)) -> (s : Elem (Finset X)) -> Elem (Finset Y).
 
 (; doc: `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that `f x = 0` for all but finitely many `x`. ;)
 (; //LEAN:Finsupp ;)
@@ -30,14 +30,18 @@ Finsupp : (X : Set) -> (M : Set) -> Set.
 
 (; doc: `prod f g` is the product of `g a (f a)` over the support of `f`. ;)
 (; //LEAN:Finsupp.prod ;)
-Finsupp__prod : (f : Elem (Finsupp X M)) -> (g : (Elem X -> Elem M -> N)) -> Elem N.
+Finsupp__prod : (X : Set) -> (M : Set) -> (N : Set) -> (f : Elem (Finsupp X M)) -> (g : (Elem X -> Elem M -> N)) -> Elem N.
 
 (; //LEAN:Function.Embedding.mk ;)
-Function__Embedding__mk : (toFun : (Elem X -> Y)) -> (inj' : Proof (Function__Injective toFun)) -> Elem (Function__Embedding X Y).
+Function__Embedding__mk : (X : Set) -> (Y : Set) -> (toFun : (Elem X -> Y)) -> (inj' : Proof (Function__Injective X Y toFun)) -> Elem (Function__Embedding X Y).
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+
+(; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
+(; //LEAN:Membership.mem ;)
+Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
 
 (; doc: `divisors n` is the `Finset` of divisors of `n`. By convention, we set `divisors 0 = ∅`. ;)
 (; //LEAN:Nat.divisors ;)
@@ -53,5 +57,17 @@ Nat__properDivisors : (n : Elem Nat) -> Elem (Finset Nat).
 
 (; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
 (; //LEAN:Set.ofPred ;)
-Set__ofPred : (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+
+(; doc: The coercion from a term of a `SetLike` to its corresponding `Set`. ;)
+(; //LEAN:SetLike.coe ;)
+SetLike__coe : (A : Set) -> (B : Set) -> (x : Elem A) -> Elem (powerset B).
+
+(; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
+(; //LEAN:Subtype ;)
+Subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Set.
+
+(; doc: The value in the underlying type that satisfies the predicate. ;)
+(; //LEAN:Subtype.val ;)
+Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x => p x))) -> Elem X.
 

@@ -88,7 +88,7 @@ Nat__factorial_mul_pow_sub_le_factorial : (n : Elem Nat) -> (m : Elem Nat) -> (h
 
 (; //LEAN:Nat.factorial_le_pow ;)
 def Nat__factorial_le_pow : (n : Elem Nat) -> Proof (Leq (factorial n) (pow n n)) :=
-  n => Nat__brecOn n Nat__factorial_le_pow___f.
+  n => Nat__brecOn (x => Leq (factorial x) (pow x x)) n Nat__factorial_le_pow___f.
 
 (; //LEAN:Nat.ascFactorial ;)
 Nat__ascFactorial : (n : Elem Nat) -> (x : Elem Nat) -> Elem Nat.
@@ -147,7 +147,7 @@ Nat__ascFactorial_le_pow_add : (n : Elem Nat) -> (k : Elem Nat) -> Proof (Leq (N
 
 (; //LEAN:Nat.ascFactorial_le_factorial_mul_pow ;)
 def Nat__ascFactorial_le_factorial_mul_pow : (n : Elem Nat) -> (k : Elem Nat) -> Proof (Leq (Nat__ascFactorial n k) (times (factorial k) (pow n k))) :=
-  n => k => Nat__brecOn k (Nat__ascFactorial_le_factorial_mul_pow___f n).
+  n => k => Nat__brecOn (k1 => Leq (Nat__ascFactorial n k1) (times (factorial k1) (pow n k1))) k (Nat__ascFactorial_le_factorial_mul_pow___f n).
 
 (; //LEAN:Nat.ascFactorial_lt_pow_add ;)
 Nat__ascFactorial_lt_pow_add : (n : Elem Nat) -> (k : Elem Nat) -> (h : Proof (Leq 2 k)) -> Proof (Lt (Nat__ascFactorial (plus n 1) k) (pow (plus n k) k)).
@@ -236,7 +236,7 @@ Nat__two_pow_mul_factorial_le_factorial_two_mul : (n : Elem Nat) -> Proof (Leq (
 
 (; //LEAN:Nat.ascFactorialBinary ;)
 def Nat__ascFactorialBinary : (n : Elem Nat) -> (k : Elem Nat) -> Elem Nat :=
-  n => k => Nat__ascFactorialBinary___unary (PSigma__mk n k).
+  n => k => Nat__ascFactorialBinary___unary (PSigma__mk Nat (n1 => Nat) n k).
 
 (; //LEAN:Nat.ascFactorial_eq_ascFactorialBinary ;)
 Nat__ascFactorial_eq_ascFactorialBinary : Proof (Eqt (Elem Nat -> Elem Nat -> Nat) Nat__ascFactorial Nat__ascFactorialBinary).
@@ -250,7 +250,7 @@ Nat__factorial_eq_factorialBinarySplitting : Proof (Eqt (Elem Nat -> Nat) factor
 
 (; //LEAN:Nat.descFactorialBinary ;)
 def Nat__descFactorialBinary : (n : Elem Nat) -> (k : Elem Nat) -> Elem Nat :=
-  n => k => ite (Lt n k) 0 (Nat__ascFactorialBinary (plus (minus n k) 1) k).
+  n => k => ite Nat (Lt n k) 0 (Nat__ascFactorialBinary (plus (minus n k) 1) k).
 
 (; //LEAN:Nat.descFactorial_eq_descFactorialBinary ;)
 Nat__descFactorial_eq_descFactorialBinary : Proof (Eqt (Elem Nat -> Elem Nat -> Nat) Nat__descFactorial Nat__descFactorialBinary).

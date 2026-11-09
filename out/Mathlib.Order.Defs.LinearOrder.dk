@@ -1,12 +1,12 @@
 (; Mathlib.Order.Defs.LinearOrder: statements exported from Mathlib by MathlibInformath/Export.lean ;)
 
 (; //LEAN:maxDefault ;)
-def maxDefault : (a : Elem X) -> (b : Elem X) -> Elem X :=
-  a => b => ite (Leq a b) b a.
+def maxDefault : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem X :=
+  X => a => b => ite X (Leq a b) b a.
 
 (; //LEAN:minDefault ;)
-def minDefault : (a : Elem X) -> (b : Elem X) -> Elem X :=
-  a => b => ite (Leq a b) a b.
+def minDefault : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem X :=
+  X => a => b => ite X (Leq a b) a b.
 
 (; //LEAN:tacticCompareOfLessAndEq_rfl ;)
 tacticCompareOfLessAndEq_rfl : Elem Lean__ParserDescr.
@@ -15,19 +15,19 @@ tacticCompareOfLessAndEq_rfl : Elem Lean__ParserDescr.
 LinearOrder : (X : Set) -> Prop.
 
 (; //LEAN:LinearOrder.mk ;)
-LinearOrder__mk : (le_total : Proof (forall X (a3 => forall X (b3 => or (Leq a3 b3) (Leq b3 a3))))) -> (toDecidableLE : Proof (DecidableLE X)) -> (toDecidableEq : Proof (DecidableEq X)) -> (toDecidableLT : Proof (DecidableLT X)) -> (min_def : Proof (autoParam (forall X (a2 => forall X (b2 => Eqt X (Min__min a2 b2) (ite (Leq a2 b2) a2 b2)))) LinearOrder__min_def___autoParam)) -> (max_def : Proof (autoParam (forall X (a1 => forall X (b1 => Eqt X (Max__max a1 b1) (ite (Leq a1 b1) b1 a1)))) LinearOrder__max_def___autoParam)) -> (compare_eq_compareOfLessAndEq : Proof (autoParam (forall X (a => forall X (b => Eqt Ordering (Ord__compare a b) (compareOfLessAndEq a b)))) LinearOrder__compare_eq_compareOfLessAndEq___autoParam)) -> Proof (LinearOrder X).
+LinearOrder__mk : (X : Set) -> (le_total : Proof (forall X (a3 => forall X (b3 => or (Leq a3 b3) (Leq b3 a3))))) -> (toDecidableLE : Proof (DecidableLE X)) -> (toDecidableEq : Proof (DecidableEq X)) -> (toDecidableLT : Proof (DecidableLT X)) -> (min_def : Proof (autoParam (forall X (a2 => forall X (b2 => Eqt X (Min__min X a2 b2) (ite X (Leq a2 b2) a2 b2)))) LinearOrder__min_def___autoParam)) -> (max_def : Proof (autoParam (forall X (a1 => forall X (b1 => Eqt X (Max__max X a1 b1) (ite X (Leq a1 b1) b1 a1)))) LinearOrder__max_def___autoParam)) -> (compare_eq_compareOfLessAndEq : Proof (autoParam (forall X (a => forall X (b => Eqt Ordering (Ord__compare X a b) (compareOfLessAndEq X a b)))) LinearOrder__compare_eq_compareOfLessAndEq___autoParam)) -> Proof (LinearOrder X).
 
 (; //LEAN:LinearOrder.le_total ;)
 LinearOrder__le_total : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (Leq a b) (Leq b a)).
 
 (; //LEAN:LinearOrder.min_def ;)
-LinearOrder__min_def : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Min__min a b) (ite (Leq a b) a b)).
+LinearOrder__min_def : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Min__min X a b) (ite X (Leq a b) a b)).
 
 (; //LEAN:LinearOrder.max_def ;)
-LinearOrder__max_def : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Max__max a b) (ite (Leq a b) b a)).
+LinearOrder__max_def : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Max__max X a b) (ite X (Leq a b) b a)).
 
 (; //LEAN:LinearOrder.compare_eq_compareOfLessAndEq ;)
-LinearOrder__compare_eq_compareOfLessAndEq : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt Ordering (Ord__compare a b) (compareOfLessAndEq a b)).
+LinearOrder__compare_eq_compareOfLessAndEq : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt Ordering (Ord__compare X a b) (compareOfLessAndEq X a b)).
 
 (; //LEAN:le_total ;)
 def le_total : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (Leq a b) (Leq b a)) :=
@@ -43,7 +43,7 @@ def lt_of_not_ge : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (
 
 (; //LEAN:lt_or_ge ;)
 def lt_or_ge : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (Lt a b) (Leq b a)) :=
-  X => x => a => b => dite (Leq b a) (ifI (Leq b a) (or (Lt a b) (Leq b a)) (hba => orIr (Lt a b) (Leq b a) hba)) (ifI (not (Leq b a)) (or (Lt a b) (Leq b a)) (hba1 => orIl (Lt a b) (Leq b a) (lt_of_not_ge X a b hba1))).
+  X => x => a => b => dite (or (Lt a b) (Leq b a)) (Leq b a) (ifI (Leq b a) (or (Lt a b) (Leq b a)) (hba => orIr (Lt a b) (Leq b a) hba)) (ifI (not (Leq b a)) (or (Lt a b) (Leq b a)) (hba1 => orIl (Lt a b) (Leq b a) (lt_of_not_ge X a b hba1))).
 
 (; //LEAN:le_or_gt ;)
 def le_or_gt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (Leq a b) (Lt b a)) :=
@@ -91,173 +91,173 @@ eq_or_lt_of_not_gt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) ->
 
 (; //LEAN:eq_or_gt_of_not_lt ;)
 def eq_or_gt_of_not_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (not (Lt a b))) -> Proof (or (Eqt X a b) (Lt b a)) :=
-  X => x => a => b => h => dite (Eqt X a b) (ifI (Eqt X a b) (or (Eqt X a b) (Lt b a)) (h1 => orIl (Eqt X a b) (Lt b a) h1)) (ifI (not (Eqt X a b)) (or (Eqt X a b) (Lt b a)) (h2 => orIr (Eqt X a b) (Lt b a) (lt_of_not_ge X b a (ifI (Leq a b) false (hge => ifE (Lt a b) false h (lt_of_le_of_ne X a b hge h2)))))).
+  X => x => a => b => h => dite (or (Eqt X a b) (Lt b a)) (Eqt X a b) (ifI (Eqt X a b) (or (Eqt X a b) (Lt b a)) (h1 => orIl (Eqt X a b) (Lt b a) h1)) (ifI (not (Eqt X a b)) (or (Eqt X a b) (Lt b a)) (h2 => orIr (Eqt X a b) (Lt b a) (lt_of_not_ge X b a (ifI (Leq a b) false (hge => ifE (Lt a b) false h (lt_of_le_of_ne X a b hge h2)))))).
 
 (; //LEAN:le_imp_le_of_lt_imp_lt ;)
 def le_imp_le_of_lt_imp_lt : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (LinearOrder Y)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem Y) -> (d : Elem Y) -> (H : Proof (if (Lt d c) (Lt b a))) -> (h : Proof (Leq a b)) -> Proof (Leq c d) :=
   X => Y => x => x1 => a => b => c => d => H => h => le_of_not_gt Y c d (ifI (Lt d c) false (h' => not_le_of_gt X b a (ifE (Lt d c) (Lt b a) H h') h)).
 
 (; //LEAN:min_def ;)
-def min_def : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Min__min a b) (ite (Leq a b) a b)) :=
+def min_def : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Min__min X a b) (ite X (Leq a b) a b)) :=
   X => x => a => b => LinearOrder__min_def X a b.
 
 (; //LEAN:max_def ;)
-def max_def : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Max__max a b) (ite (Leq a b) b a)) :=
+def max_def : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Max__max X a b) (ite X (Leq a b) b a)) :=
   X => x => a => b => LinearOrder__max_def X a b.
 
 (; //LEAN:min_ind ;)
-min_ind : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (motive : (Elem X -> Prop)) -> (ha : Proof (if (Leq a b) (motive a))) -> (hb : Proof (if (Leq b a) (motive b))) -> Proof (motive (Min__min a b)).
+min_ind : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (motive : (Elem X -> Prop)) -> (ha : Proof (if (Leq a b) (motive a))) -> (hb : Proof (if (Leq b a) (motive b))) -> Proof (motive (Min__min X a b)).
 
 (; //LEAN:max_ind ;)
-max_ind : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (motive : (Elem X -> Prop)) -> (ha : Proof (if (Leq b a) (motive a))) -> (hb : Proof (if (Leq a b) (motive b))) -> Proof (motive (Max__max a b)).
+max_ind : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (motive : (Elem X -> Prop)) -> (ha : Proof (if (Leq b a) (motive a))) -> (hb : Proof (if (Leq a b) (motive b))) -> Proof (motive (Max__max X a b)).
 
 (; //LEAN:max_le_iff ;)
-def max_le_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Leq (Max__max a b) c) (and (Leq a c) (Leq b c))) :=
+def max_le_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Leq (Max__max X a b) c) (and (Leq a c) (Leq b c))) :=
   X => x => a => b => c => max_ind X a b (x1 => iff (Leq x1 c) (and (Leq a c) (Leq b c))) (ifI (Leq b a) (iff (Leq a c) (and (Leq a c) (Leq b c))) (h => iffEr (iff (Leq a c) (and (Leq a c) (Leq b c))) (if (Leq a c) (Leq b c)) (iff_self_and (Leq a c) (Leq b c)) (le_trans X b a c h))) (ifI (Leq a b) (iff (Leq b c) (and (Leq a c) (Leq b c))) (h2 => iffEr (iff (Leq b c) (and (Leq a c) (Leq b c))) (if (Leq b c) (Leq a c)) (iff_and_self (Leq b c) (Leq a c)) (le_trans X a b c h2))).
 
 (; //LEAN:le_min_iff ;)
-le_min_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Leq c (Min__min a b)) (and (Leq c a) (Leq c b))).
+le_min_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Leq c (Min__min X a b)) (and (Leq c a) (Leq c b))).
 
 (; //LEAN:le_max_iff ;)
-le_max_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Leq c (Max__max a b)) (or (Leq c a) (Leq c b))).
+le_max_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Leq c (Max__max X a b)) (or (Leq c a) (Leq c b))).
 
 (; //LEAN:min_le_iff ;)
-def min_le_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Leq (Min__min a b) c) (or (Leq a c) (Leq b c))) :=
+def min_le_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Leq (Min__min X a b) c) (or (Leq a c) (Leq b c))) :=
   X => x => a => b => c => min_ind X a b (x1 => iff (Leq x1 c) (or (Leq a c) (Leq b c))) (ifI (Leq a b) (iff (Leq a c) (or (Leq a c) (Leq b c))) (h => iffEr (iff (Leq a c) (or (Leq a c) (Leq b c))) (if (Leq b c) (Leq a c)) (iff_self_or (Leq a c) (Leq b c)) (le_trans X a b c h))) (ifI (Leq b a) (iff (Leq b c) (or (Leq a c) (Leq b c))) (h2 => iffEr (iff (Leq b c) (or (Leq a c) (Leq b c))) (if (Leq a c) (Leq b c)) (iff_or_self (Leq a c) (Leq b c)) (le_trans X b a c h2))).
 
 (; //LEAN:max_lt_iff ;)
-def max_lt_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Lt (Max__max a b) c) (and (Lt a c) (Lt b c))) :=
+def max_lt_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Lt (Max__max X a b) c) (and (Lt a c) (Lt b c))) :=
   X => x => a => b => c => max_ind X a b (x1 => iff (Lt x1 c) (and (Lt a c) (Lt b c))) (ifI (Leq b a) (iff (Lt a c) (and (Lt a c) (Lt b c))) (h => iffEr (iff (Lt a c) (and (Lt a c) (Lt b c))) (if (Lt a c) (Lt b c)) (iff_self_and (Lt a c) (Lt b c)) (lt_of_le_of_lt X b a c h))) (ifI (Leq a b) (iff (Lt b c) (and (Lt a c) (Lt b c))) (h2 => iffEr (iff (Lt b c) (and (Lt a c) (Lt b c))) (if (Lt b c) (Lt a c)) (iff_and_self (Lt b c) (Lt a c)) (lt_of_le_of_lt X a b c h2))).
 
 (; //LEAN:lt_min_iff ;)
-lt_min_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Lt c (Min__min a b)) (and (Lt c a) (Lt c b))).
+lt_min_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Lt c (Min__min X a b)) (and (Lt c a) (Lt c b))).
 
 (; //LEAN:lt_max_iff ;)
-lt_max_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Lt c (Max__max a b)) (or (Lt c a) (Lt c b))).
+lt_max_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Lt c (Max__max X a b)) (or (Lt c a) (Lt c b))).
 
 (; //LEAN:min_lt_iff ;)
-def min_lt_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Lt (Min__min a b) c) (or (Lt a c) (Lt b c))) :=
+def min_lt_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Lt (Min__min X a b) c) (or (Lt a c) (Lt b c))) :=
   X => x => a => b => c => min_ind X a b (x1 => iff (Lt x1 c) (or (Lt a c) (Lt b c))) (ifI (Leq a b) (iff (Lt a c) (or (Lt a c) (Lt b c))) (h => iffEr (iff (Lt a c) (or (Lt a c) (Lt b c))) (if (Lt b c) (Lt a c)) (iff_self_or (Lt a c) (Lt b c)) (lt_of_le_of_lt X a b c h))) (ifI (Leq b a) (iff (Lt b c) (or (Lt a c) (Lt b c))) (h2 => iffEr (iff (Lt b c) (or (Lt a c) (Lt b c))) (if (Lt a c) (Lt b c)) (iff_or_self (Lt a c) (Lt b c)) (lt_of_le_of_lt X b a c h2))).
 
 (; //LEAN:le_max_left ;)
-le_max_left : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq a (Max__max a b)).
+le_max_left : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq a (Max__max X a b)).
 
 (; //LEAN:min_le_left ;)
-def min_le_left : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (Min__min a b) a) :=
-  X => x => a => b => iffEr (Leq (Min__min a b) a) (or (Leq a a) (Leq b a)) (min_le_iff X a b a) (orIl (Leq a a) (Leq b a) (le_rfl X a)).
+def min_le_left : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (Min__min X a b) a) :=
+  X => x => a => b => iffEr (Leq (Min__min X a b) a) (or (Leq a a) (Leq b a)) (min_le_iff X a b a) (orIl (Leq a a) (Leq b a) (le_rfl X a)).
 
 (; //LEAN:le_max_right ;)
-le_max_right : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq b (Max__max a b)).
+le_max_right : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq b (Max__max X a b)).
 
 (; //LEAN:min_le_right ;)
-def min_le_right : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (Min__min a b) b) :=
-  X => x => a => b => iffEr (Leq (Min__min a b) b) (or (Leq a b) (Leq b b)) (min_le_iff X a b b) (orIr (Leq a b) (Leq b b) (le_rfl X b)).
+def min_le_right : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (Min__min X a b) b) :=
+  X => x => a => b => iffEr (Leq (Min__min X a b) b) (or (Leq a b) (Leq b b)) (min_le_iff X a b b) (orIr (Leq a b) (Leq b b) (le_rfl X b)).
 
 (; //LEAN:le_min ;)
-def le_min : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq c a)) -> (h1 : Proof (Leq c b)) -> Proof (Leq c (Min__min a b)) :=
-  X => x => a => b => c => h => h1 => iffEr (Leq c (Min__min a b)) (and (Leq c a) (Leq c b)) (le_min_iff X a b c) (andI (Leq c a) (Leq c b) h h1).
+def le_min : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq c a)) -> (h1 : Proof (Leq c b)) -> Proof (Leq c (Min__min X a b)) :=
+  X => x => a => b => c => h => h1 => iffEr (Leq c (Min__min X a b)) (and (Leq c a) (Leq c b)) (le_min_iff X a b c) (andI (Leq c a) (Leq c b) h h1).
 
 (; //LEAN:max_le ;)
-max_le : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq a c)) -> (h1 : Proof (Leq b c)) -> Proof (Leq (Max__max a b) c).
+max_le : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq a c)) -> (h1 : Proof (Leq b c)) -> Proof (Leq (Max__max X a b) c).
 
 (; //LEAN:eq_min ;)
-def eq_min : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq c a)) -> (h1 : Proof (Leq c b)) -> (h2 : Proof (forall X (d => if (Leq d a) (if (Leq d b) (Leq d c))))) -> Proof (Eqt X c (Min__min a b)) :=
-  X => x => a => b => c => h => h1 => h2 => le_antisymm X c (Min__min a b) (le_min X a b c h h1) (ifE (Leq (Min__min a b) b) (Leq (Min__min a b) c) (ifE (Leq (Min__min a b) a) (if (Leq (Min__min a b) b) (Leq (Min__min a b) c)) (forallE X (d => if (Leq d a) (if (Leq d b) (Leq d c))) h2 (Min__min a b)) (min_le_left X a b)) (min_le_right X a b)).
+def eq_min : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq c a)) -> (h1 : Proof (Leq c b)) -> (h2 : Proof (forall X (d => if (Leq d a) (if (Leq d b) (Leq d c))))) -> Proof (Eqt X c (Min__min X a b)) :=
+  X => x => a => b => c => h => h1 => h2 => le_antisymm X c (Min__min X a b) (le_min X a b c h h1) (ifE (Leq (Min__min X a b) b) (Leq (Min__min X a b) c) (ifE (Leq (Min__min X a b) a) (if (Leq (Min__min X a b) b) (Leq (Min__min X a b) c)) (forallE X (d => if (Leq d a) (if (Leq d b) (Leq d c))) h2 (Min__min X a b)) (min_le_left X a b)) (min_le_right X a b)).
 
 (; //LEAN:eq_max ;)
-eq_max : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq a c)) -> (h1 : Proof (Leq b c)) -> (h2 : Proof (forall X (d => if (Leq a d) (if (Leq b d) (Leq c d))))) -> Proof (Eqt X c (Max__max a b)).
+eq_max : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq a c)) -> (h1 : Proof (Leq b c)) -> (h2 : Proof (forall X (d => if (Leq a d) (if (Leq b d) (Leq c d))))) -> Proof (Eqt X c (Max__max X a b)).
 
 (; //LEAN:min_comm ;)
-def min_comm : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Min__min a b) (Min__min b a)) :=
-  X => x => a => b => eq_min X b a (Min__min a b) (min_le_right X a b) (min_le_left X a b) (forallI X (x1 => if (Leq x1 b) (if (Leq x1 a) (Leq x1 (Min__min a b)))) (x1 => ifI (Leq x1 b) (if (Leq x1 a) (Leq x1 (Min__min a b))) (h => ifI (Leq x1 a) (Leq x1 (Min__min a b)) (h1 => le_min X a b x1 h1 h)))).
+def min_comm : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Min__min X a b) (Min__min X b a)) :=
+  X => x => a => b => eq_min X b a (Min__min X a b) (min_le_right X a b) (min_le_left X a b) (forallI X (x1 => if (Leq x1 b) (if (Leq x1 a) (Leq x1 (Min__min X a b)))) (x1 => ifI (Leq x1 b) (if (Leq x1 a) (Leq x1 (Min__min X a b))) (h => ifI (Leq x1 a) (Leq x1 (Min__min X a b)) (h1 => le_min X a b x1 h1 h)))).
 
 (; //LEAN:max_comm ;)
-max_comm : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Max__max a b) (Max__max b a)).
+max_comm : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Max__max X a b) (Max__max X b a)).
 
 (; //LEAN:min_def' ;)
-min_def' : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Min__min a b) (ite (Leq b a) b a)).
+min_def' : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Min__min X a b) (ite X (Leq b a) b a)).
 
 (; //LEAN:max_def' ;)
-max_def' : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Max__max a b) (ite (Leq b a) a b)).
+max_def' : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Max__max X a b) (ite X (Leq b a) a b)).
 
 (; //LEAN:min_assoc ;)
-min_assoc : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Eqt X (Min__min (Min__min a b) c) (Min__min a (Min__min b c))).
+min_assoc : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Eqt X (Min__min X (Min__min X a b) c) (Min__min X a (Min__min X b c))).
 
 (; //LEAN:max_assoc ;)
-max_assoc : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Eqt X (Max__max (Max__max a b) c) (Max__max a (Max__max b c))).
+max_assoc : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Eqt X (Max__max X (Max__max X a b) c) (Max__max X a (Max__max X b c))).
 
 (; //LEAN:max_left_comm ;)
-max_left_comm : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Eqt X (Max__max a (Max__max b c)) (Max__max b (Max__max a c))).
+max_left_comm : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Eqt X (Max__max X a (Max__max X b c)) (Max__max X b (Max__max X a c))).
 
 (; //LEAN:min_left_comm ;)
-min_left_comm : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Eqt X (Min__min a (Min__min b c)) (Min__min b (Min__min a c))).
+min_left_comm : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Eqt X (Min__min X a (Min__min X b c)) (Min__min X b (Min__min X a c))).
 
 (; //LEAN:min_self ;)
-min_self : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> Proof (Eqt X (Min__min a a) a).
+min_self : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> Proof (Eqt X (Min__min X a a) a).
 
 (; //LEAN:max_self ;)
-max_self : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> Proof (Eqt X (Max__max a a) a).
+max_self : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> Proof (Eqt X (Max__max X a a) a).
 
 (; //LEAN:max_eq_left ;)
-max_eq_left : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq b a)) -> Proof (Eqt X (Max__max a b) a).
+max_eq_left : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq b a)) -> Proof (Eqt X (Max__max X a b) a).
 
 (; //LEAN:min_eq_left ;)
-def min_eq_left : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq a b)) -> Proof (Eqt X (Min__min a b) a) :=
-  X => x => a => b => h => Eq__symm X a (Min__min a b) (eq_min X a b a (le_rfl X a) h (forallI X (x1 => if (Leq x1 a) (if (Leq x1 b) (Leq x1 a))) (x1 => ifI (Leq x1 a) (if (Leq x1 b) (Leq x1 a)) (h1 => ifI (Leq x1 b) (Leq x1 a) (h2 => h1))))).
+def min_eq_left : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq a b)) -> Proof (Eqt X (Min__min X a b) a) :=
+  X => x => a => b => h => Eq__symm X a (Min__min X a b) (eq_min X a b a (le_rfl X a) h (forallI X (x1 => if (Leq x1 a) (if (Leq x1 b) (Leq x1 a))) (x1 => ifI (Leq x1 a) (if (Leq x1 b) (Leq x1 a)) (h1 => ifI (Leq x1 b) (Leq x1 a) (h2 => h1))))).
 
 (; //LEAN:min_eq_right ;)
-min_eq_right : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq b a)) -> Proof (Eqt X (Min__min a b) b).
+min_eq_right : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq b a)) -> Proof (Eqt X (Min__min X a b) b).
 
 (; //LEAN:max_eq_right ;)
-max_eq_right : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq a b)) -> Proof (Eqt X (Max__max a b) b).
+max_eq_right : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq a b)) -> Proof (Eqt X (Max__max X a b) b).
 
 (; //LEAN:min_eq_left_of_lt ;)
-def min_eq_left_of_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt a b)) -> Proof (Eqt X (Min__min a b) a) :=
+def min_eq_left_of_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt a b)) -> Proof (Eqt X (Min__min X a b) a) :=
   X => x => a => b => h => min_eq_left X a b (le_of_lt X a b h).
 
 (; //LEAN:max_eq_left_of_lt ;)
-def max_eq_left_of_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt b a)) -> Proof (Eqt X (Max__max a b) a) :=
+def max_eq_left_of_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt b a)) -> Proof (Eqt X (Max__max X a b) a) :=
   X => x => a => b => h => max_eq_left X a b (le_of_lt X b a h).
 
 (; //LEAN:min_eq_right_of_lt ;)
-def min_eq_right_of_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt b a)) -> Proof (Eqt X (Min__min a b) b) :=
+def min_eq_right_of_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt b a)) -> Proof (Eqt X (Min__min X a b) b) :=
   X => x => a => b => h => min_eq_right X a b (le_of_lt X b a h).
 
 (; //LEAN:max_eq_right_of_lt ;)
-def max_eq_right_of_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt a b)) -> Proof (Eqt X (Max__max a b) b) :=
+def max_eq_right_of_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt a b)) -> Proof (Eqt X (Max__max X a b) b) :=
   X => x => a => b => h => max_eq_right X a b (le_of_lt X a b h).
 
 (; //LEAN:lt_min ;)
-def lt_min : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Lt a b)) -> (h1 : Proof (Lt a c)) -> Proof (Lt a (Min__min b c)) :=
-  X => x => a => b => c => h => h1 => iffEr (Lt a (Min__min b c)) (and (Lt a b) (Lt a c)) (lt_min_iff X b c a) (andI (Lt a b) (Lt a c) h h1).
+def lt_min : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Lt a b)) -> (h1 : Proof (Lt a c)) -> Proof (Lt a (Min__min X b c)) :=
+  X => x => a => b => c => h => h1 => iffEr (Lt a (Min__min X b c)) (and (Lt a b) (Lt a c)) (lt_min_iff X b c a) (andI (Lt a b) (Lt a c) h h1).
 
 (; //LEAN:max_lt ;)
-max_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Lt b a)) -> (h1 : Proof (Lt c a)) -> Proof (Lt (Max__max b c) a).
+max_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Lt b a)) -> (h1 : Proof (Lt c a)) -> Proof (Lt (Max__max X b c) a).
 
 (; //LEAN:compare_lt_iff_lt ;)
-compare_lt_iff_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt Ordering (Ord__compare a b) Ordering__lt) (Lt a b)).
+compare_lt_iff_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt Ordering (Ord__compare X a b) Ordering__lt) (Lt a b)).
 
 (; //LEAN:compare_eq_iff_eq ;)
-compare_eq_iff_eq : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt Ordering (Ord__compare a b) Ordering__eq) (Eqt X a b)).
+compare_eq_iff_eq : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt Ordering (Ord__compare X a b) Ordering__eq) (Eqt X a b)).
 
 (; //LEAN:compare_gt_iff_gt ;)
-compare_gt_iff_gt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt Ordering (Ord__compare a b) Ordering__gt) (Lt b a)).
+compare_gt_iff_gt : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt Ordering (Ord__compare X a b) Ordering__gt) (Lt b a)).
 
 (; //LEAN:compare_le_iff_le ;)
-compare_le_iff_le : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Neq (Ord__compare a b) Ordering__gt) (Leq a b)).
+compare_le_iff_le : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Neq (Ord__compare X a b) Ordering__gt) (Leq a b)).
 
 (; //LEAN:compare_ge_iff_ge ;)
-compare_ge_iff_ge : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Neq (Ord__compare a b) Ordering__lt) (Leq b a)).
+compare_ge_iff_ge : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Neq (Ord__compare X a b) Ordering__lt) (Leq b a)).
 
 (; //LEAN:compare_iff ;)
-compare_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (o : Elem Ordering) -> Proof (iff (Eqt Ordering (Ord__compare a b) o) (Ordering__Compares o a b)).
+compare_iff : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (o : Elem Ordering) -> Proof (iff (Eqt Ordering (Ord__compare X a b) o) (Ordering__Compares X o a b)).
 
 (; //LEAN:cmp_eq_compare ;)
-cmp_eq_compare : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt Ordering (cmp a b) (Ord__compare a b)).
+cmp_eq_compare : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt Ordering (cmp X a b) (Ord__compare X a b)).
 
 (; //LEAN:cmp_eq_compareOfLessAndEq ;)
-def cmp_eq_compareOfLessAndEq : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt Ordering (cmp a b) (compareOfLessAndEq a b)) :=
-  X => x => a => b => Eq__trans Ordering (cmp a b) (Ord__compare a b) (compareOfLessAndEq a b) (cmp_eq_compare X a b) (LinearOrder__compare_eq_compareOfLessAndEq X a b).
+def cmp_eq_compareOfLessAndEq : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt Ordering (cmp X a b) (compareOfLessAndEq X a b)) :=
+  X => x => a => b => Eq__trans Ordering (cmp X a b) (Ord__compare X a b) (compareOfLessAndEq X a b) (cmp_eq_compare X a b) (LinearOrder__compare_eq_compareOfLessAndEq X a b).
 
 (; //LEAN:LinOrd ;)
 LinOrd : Set.

@@ -2,11 +2,11 @@
 
 (; //LEAN:Nat.Prime ;)
 def Nat__Prime : (p : Elem Nat) -> Prop :=
-  p => Irreducible p.
+  p => Irreducible Nat p.
 
 (; //LEAN:Nat.irreducible_iff_nat_prime ;)
-def Nat__irreducible_iff_nat_prime : (a : Elem Nat) -> Proof (iff (Irreducible a) (prime a)) :=
-  a => Iff__rfl (Irreducible a).
+def Nat__irreducible_iff_nat_prime : (a : Elem Nat) -> Proof (iff (Irreducible Nat a) (prime a)) :=
+  a => Iff__rfl (Irreducible Nat a).
 
 (; //LEAN:Nat.not_prime_zero ;)
 Nat__not_prime_zero : Proof (not (prime 0)).
@@ -87,7 +87,7 @@ Nat__dvd_prime : (p : Elem Nat) -> (m : Elem Nat) -> (pp : Proof (prime p)) -> P
 
 (; //LEAN:Nat.dvd_prime_two_le ;)
 def Nat__dvd_prime_two_le : (p : Elem Nat) -> (m : Elem Nat) -> (pp : Proof (prime p)) -> (H : Proof (Leq 2 m)) -> Proof (iff (divide m p) (Eq m p)) :=
-  p => m => pp => H => Iff__trans (divide m p) (or (Eq m 1) (Eq m p)) (Eq m p) (Nat__dvd_prime p m pp) (or_iff_right_of_imp (Eq m 1) (Eq m p) (Not__elim (ne_of_gt Nat m 1 H))).
+  p => m => pp => H => Iff__trans (divide m p) (or (Eq m 1) (Eq m p)) (Eq m p) (Nat__dvd_prime p m pp) (or_iff_right_of_imp (Eq m 1) (Eq m p) (Not__elim (Eq m 1) (Eq m p) (ne_of_gt Nat m 1 H))).
 
 (; //LEAN:Nat.prime_dvd_prime_iff_eq ;)
 def Nat__prime_dvd_prime_iff_eq : (p : Elem Nat) -> (q : Elem Nat) -> (pp : Proof (prime p)) -> (qp : Proof (prime q)) -> Proof (iff (divide p q) (Eq p q)) :=
@@ -99,14 +99,14 @@ def Nat__Prime__not_dvd_one : (p : Elem Nat) -> (pp : Proof (prime p)) -> Proof 
 
 (; //LEAN:Nat.minFac_lemma ;)
 def Nat__minFac_lemma : (n : Elem Nat) -> (k : Elem Nat) -> (h : Proof (not (Lt n (times k k)))) -> Proof (Lt (minus (Nat__sqrt n) k) (minus (plus (Nat__sqrt n) 2) k)) :=
-  n => k => h => Nat__sub_lt_sub_right (Nat__sqrt n) (plus (Nat__sqrt n) 2) k (iffEr (Leq k (Nat__sqrt n)) (Leq (times k k) n) (Nat__le_sqrt k n) (le_of_not_gt Nat (times k k) n h)) (Nat__lt_add_of_pos_right 2 (Nat__sqrt n) (of_decide_eq_true (Lt 0 2) (id (Eq__refl Bool Bool__true)))).
+  n => k => h => Nat__sub_lt_sub_right (Nat__sqrt n) (plus (Nat__sqrt n) 2) k (iffEr (Leq k (Nat__sqrt n)) (Leq (times k k) n) (Nat__le_sqrt k n) (le_of_not_gt Nat (times k k) n h)) (Nat__lt_add_of_pos_right 2 (Nat__sqrt n) (of_decide_eq_true (Lt 0 2) (id (Eqt Bool (Decidable__decide (Lt 0 2)) Bool__true) (Eq__refl Bool Bool__true)))).
 
 (; //LEAN:Nat.minFacAux ;)
 Nat__minFacAux : (n : Elem Nat) -> (x : Elem Nat) -> Elem Nat.
 
 (; //LEAN:Nat.minFac ;)
 def Nat__minFac : (n : Elem Nat) -> Elem Nat :=
-  n => ite (divide 2 n) 2 (Nat__minFacAux n 3).
+  n => ite Nat (divide 2 n) 2 (Nat__minFacAux n 3).
 
 (; //LEAN:Nat.minFac_zero ;)
 def Nat__minFac_zero : Proof (Eq (Nat__minFac 0) 2) :=
@@ -119,7 +119,7 @@ Nat__minFac_one : Proof (Eq (Nat__minFac 1) 1).
 Nat__minFac_two : Proof (Eq (Nat__minFac 2) 2).
 
 (; //LEAN:Nat.minFac_eq ;)
-def Nat__minFac_eq : (n : Elem Nat) -> Proof (Eq (Nat__minFac n) (ite (divide 2 n) 2 (Nat__minFacAux n 3))) :=
+def Nat__minFac_eq : (n : Elem Nat) -> Proof (Eq (Nat__minFac n) (ite Nat (divide 2 n) 2 (Nat__minFacAux n 3))) :=
   n => rfl Nat (Nat__minFac n).
 
 (; //LEAN:Nat.minFac_dvd ;)
@@ -156,7 +156,7 @@ def Nat__Prime__minFac_eq : (p : Elem Nat) -> (hp : Proof (prime p)) -> Proof (E
 
 (; //LEAN:Nat.decidablePrime' ;)
 def Nat__decidablePrime' : (p : Elem Nat) -> Proof (Decidable (prime p)) :=
-  p => decidable_of_iff' (and (Leq 2 p) (Eq (Nat__minFac p) p)) Nat__prime_def_minFac.
+  p => decidable_of_iff' (prime p) (and (Leq 2 p) (Eq (Nat__minFac p) p)) (Nat__prime_def_minFac p).
 
 (; //LEAN:Nat.decidablePrime_csimp ;)
 Nat__decidablePrime_csimp : Proof (Eqt ((p : Elem Nat) -> Decidable (prime p)) Nat__decidablePrime Nat__decidablePrime').
@@ -170,7 +170,7 @@ Nat__minFac_le_div : (n : Elem Nat) -> (pos : Proof (Lt 0 n)) -> (np : Proof (no
 
 (; //LEAN:Nat.minFac_sq_le_self ;)
 def Nat__minFac_sq_le_self : (n : Elem Nat) -> (w : Proof (Lt 0 n)) -> (h : Proof (not (prime n))) -> Proof (Leq (pow (Nat__minFac n) 2) n) :=
-  n => w => h => Trans__trans (Trans__trans (sq Nat (Nat__minFac n)) (Nat__mul_le_mul_right (Nat__minFac n) (div n (Nat__minFac n)) (Nat__minFac n) (Nat__minFac_le_div n w h))) (Nat__div_mul_le_self n (Nat__minFac n)).
+  n => w => h => Trans__trans Nat Nat Nat Leq Leq (x => x1 => Leq x x1) (pow (Nat__minFac n) 2) (times (div n (Nat__minFac n)) (Nat__minFac n)) n (Trans__trans Nat Nat Nat (Eq Nat) Leq Leq (pow (Nat__minFac n) 2) (times (Nat__minFac n) (Nat__minFac n)) (times (div n (Nat__minFac n)) (Nat__minFac n)) (sq Nat (Nat__minFac n)) (Nat__mul_le_mul_right (Nat__minFac n) (div n (Nat__minFac n)) (Nat__minFac n) (Nat__minFac_le_div n w h))) (Nat__div_mul_le_self n (Nat__minFac n)).
 
 (; //LEAN:Nat.minFac_eq_one_iff ;)
 Nat__minFac_eq_one_iff : (n : Elem Nat) -> Proof (iff (Eq (Nat__minFac n) 1) (Eq n 1)).
@@ -200,30 +200,30 @@ def Nat__Prime__dvd_or_dvd : (p : Elem Nat) -> (m : Elem Nat) -> (n : Elem Nat) 
   p => m => n => pp => iffEl (divide p (times m n)) (or (divide p m) (divide p n)) (Nat__Prime__dvd_mul p m n pp).
 
 (; //LEAN:Nat.prime_iff ;)
-def Nat__prime_iff : (p : Elem Nat) -> Proof (iff (prime p) (Prime p)) :=
-  p => iffI (prime p) (Prime p) (h => andI (Neq p 0) (and (not (IsUnit p)) (forall Nat (a => forall Nat (b => if (divide p (times a b)) (or (divide p a) (divide p b)))))) (Nat__Prime__ne_zero p h) (andI (not (IsUnit p)) (forall Nat (a1 => forall Nat (b1 => if (divide p (times a1 b1)) (or (divide p a1) (divide p b1))))) (Irreducible__not_isUnit Nat p h) (x => forallI Nat (x1 => if (divide p (times x x1)) (or (divide p x) (divide p x1))) (x1 => iffEl (divide p (times x x1)) (or (divide p x) (divide p x1)) (Nat__Prime__dvd_mul p x x1 h))))) (Prime__irreducible Nat p).
+def Nat__prime_iff : (p : Elem Nat) -> Proof (iff (prime p) (Prime Nat p)) :=
+  p => iffI (prime p) (Prime Nat p) (h => andI (Neq p 0) (and (not (IsUnit Nat p)) (forall Nat (a => forall Nat (b => if (divide p (times a b)) (or (divide p a) (divide p b)))))) (Nat__Prime__ne_zero p h) (andI (not (IsUnit Nat p)) (forall Nat (a1 => forall Nat (b1 => if (divide p (times a1 b1)) (or (divide p a1) (divide p b1))))) (Irreducible__not_isUnit Nat p h) (x => forallI Nat (x1 => if (divide p (times x x1)) (or (divide p x) (divide p x1))) (x1 => iffEl (divide p (times x x1)) (or (divide p x) (divide p x1)) (Nat__Prime__dvd_mul p x x1 h))))) (Prime__irreducible Nat p).
 
 (; //LEAN:Prime.nat_prime ;)
-def Prime__nat_prime : (p : Elem Nat) -> (h : Proof (Prime p)) -> Proof (prime p) :=
-  p => iffEr (prime p) (Prime p) (Nat__prime_iff p).
+def Prime__nat_prime : (p : Elem Nat) -> (h : Proof (Prime Nat p)) -> Proof (prime p) :=
+  p => iffEr (prime p) (Prime Nat p) (Nat__prime_iff p).
 
 (; //LEAN:Nat.Prime.prime ;)
-def Nat__Prime__prime : (p : Elem Nat) -> (h : Proof (prime p)) -> Proof (Prime p) :=
-  p => iffEl (prime p) (Prime p) (Nat__prime_iff p).
+def Nat__Prime__prime : (p : Elem Nat) -> (h : Proof (prime p)) -> Proof (Prime Nat p) :=
+  p => iffEl (prime p) (Prime Nat p) (Nat__prime_iff p).
 
 (; //LEAN:Nat.irreducible_iff_prime ;)
-def Nat__irreducible_iff_prime : (p : Elem Nat) -> Proof (iff (Irreducible p) (Prime p)) :=
+def Nat__irreducible_iff_prime : (p : Elem Nat) -> Proof (iff (Irreducible Nat p) (Prime Nat p)) :=
   p => Nat__prime_iff p.
 
 (; //LEAN:Nat.Primes ;)
 def Nat__Primes : Set :=
-  Subtype (p => prime p).
+  Subtype Nat (p => prime p).
 
 (; //LEAN:Nat.Primes.coe_nat_injective ;)
-def Nat__Primes__coe_nat_injective : Proof (Function__Injective (p => prime p)) :=
+def Nat__Primes__coe_nat_injective : Proof (Function__Injective (Subtype Nat (p => prime p)) Nat (Subtype__val Nat (p1 => prime p1))) :=
   Subtype__coe_injective Nat (p => prime p).
 
 (; //LEAN:Nat.Primes.coe_nat_inj ;)
-def Nat__Primes__coe_nat_inj : (p : Elem Nat__Primes) -> (q : Elem Nat__Primes) -> Proof (iff (Eq p q) (Eqt Nat__Primes p q)) :=
-  p => q => Iff__symm (Eqt (Subtype (x => prime x)) p q) (Eq p q) (Subtype__ext_iff Nat prime p q).
+def Nat__Primes__coe_nat_inj : (p : Elem Nat__Primes) -> (q : Elem Nat__Primes) -> Proof (iff (Eq (Subtype__val Nat (p1 => prime p1) p) (Subtype__val Nat (p2 => prime p2) q)) (Eqt Nat__Primes p q)) :=
+  p => q => Iff__symm (Eqt (Subtype Nat (x => prime x)) p q) (Eq (Subtype__val Nat (x1 => prime x1) p) (Subtype__val Nat (x2 => prime x2) q)) (Subtype__ext_iff Nat prime p q).
 

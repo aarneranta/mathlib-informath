@@ -1,555 +1,556 @@
 (; Mathlib.Data.Finset.Card: statements exported from Mathlib by MathlibInformath/Export.lean ;)
 
 (; //LEAN:Finset.card ;)
-def Finset__card : (s : Elem (Finset X)) -> Elem Nat :=
-  s => Multiset__card (Finset__val s).
+def Finset__card : (X : Set) -> (s : Elem (Finset X)) -> Elem Nat :=
+  X => s => Multiset__card X (Finset__val X s).
 
 (; //LEAN:Finset.«term#_» ;)
 Finset__term_u23__ : Elem Lean__ParserDescr.
 
 (; //LEAN:Finset.card_def ;)
-def Finset__card_def : (X : Set) -> (s : Elem (Finset X)) -> Proof (Eq (Finset__card s) (Multiset__card (Finset__val s))) :=
-  X => s => rfl Nat (Finset__card s).
+def Finset__card_def : (X : Set) -> (s : Elem (Finset X)) -> Proof (Eq (Finset__card X s) (Multiset__card X (Finset__val X s))) :=
+  X => s => rfl Nat (Finset__card X s).
 
 (; //LEAN:Finset.card_val ;)
-def Finset__card_val : (X : Set) -> (s : Elem (Finset X)) -> Proof (Eq (Multiset__card (Finset__val s)) (Finset__card s)) :=
-  X => s => rfl Nat (Multiset__card (Finset__val s)).
+def Finset__card_val : (X : Set) -> (s : Elem (Finset X)) -> Proof (Eq (Multiset__card X (Finset__val X s)) (Finset__card X s)) :=
+  X => s => rfl Nat (Multiset__card X (Finset__val X s)).
 
 (; //LEAN:Finset.card_mk ;)
-def Finset__card_mk : (X : Set) -> (m : Elem (Multiset X)) -> (nodup : Proof (Multiset__Nodup m)) -> Proof (Eq (Finset__card (Finset__mk m nodup)) (Multiset__card m)) :=
-  X => m => nodup => rfl Nat (Finset__card (Finset__mk m nodup)).
+def Finset__card_mk : (X : Set) -> (m : Elem (Multiset X)) -> (nodup : Proof (Multiset__Nodup X m)) -> Proof (Eq (Finset__card X (Finset__mk X m nodup)) (Multiset__card X m)) :=
+  X => m => nodup => rfl Nat (Finset__card X (Finset__mk X m nodup)).
 
 (; //LEAN:Finset.card_empty ;)
-def Finset__card_empty : (X : Set) -> Proof (Eq (Finset__card EmptyCollection__emptyCollection) 0) :=
-  X => rfl Nat (Finset__card EmptyCollection__emptyCollection).
+def Finset__card_empty : (X : Set) -> Proof (Eq (Finset__card X (EmptyCollection__emptyCollection (Finset X))) 0) :=
+  X => rfl Nat (Finset__card X (EmptyCollection__emptyCollection (Finset X))).
 
 (; //LEAN:Finset.card_le_card ;)
-def Finset__card_le_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Set__Subset s t)) -> Proof (Leq (Finset__card s) (Finset__card t)) :=
-  X => s => t => Function__comp (Multiset__card_le_card X (Finset__val s) (Finset__val t)) (iffEr (Leq (Finset__val s) (Finset__val t)) (Set__Subset s t) (Finset__val_le_iff X s t)).
+def Finset__card_le_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Set__Subset X s t)) -> Proof (Leq (Finset__card X s) (Finset__card X t)) :=
+  X => s => t => Function__comp (Set__Subset X s t) (Leq (Finset__val X s) (Finset__val X t)) (Leq (Finset__card X s) (Finset__card X t)) (Multiset__card_le_card X (Finset__val X s) (Finset__val X t)) (iffEr (Leq (Finset__val X s) (Finset__val X t)) (Set__Subset X s t) (Finset__val_le_iff X s t)).
 
 (; //LEAN:Finset.card_mono ;)
-Finset__card_mono : (X : Set) -> Proof (Monotone Finset__card).
+Finset__card_mono : (X : Set) -> Proof (Monotone (Finset X) Nat (Finset__card X)).
 
 (; //LEAN:Finset.card_eq_zero ;)
-def Finset__card_eq_zero : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Eq (Finset__card s) 0) (Eqt (Finset X) s EmptyCollection__emptyCollection)) :=
-  X => s => Iff__trans (Eq (Multiset__card (Finset__val s)) 0) (Eqt (Multiset X) (Finset__val s) 0) (Eqt (Finset X) s EmptyCollection__emptyCollection) (Multiset__card_eq_zero X (Finset__val s)) (Finset__val_eq_zero X s).
+def Finset__card_eq_zero : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Eq (Finset__card X s) 0) (Eqt (Finset X) s (EmptyCollection__emptyCollection (Finset X)))) :=
+  X => s => Iff__trans (Eq (Multiset__card X (Finset__val X s)) 0) (Eqt (Multiset X) (Finset__val X s) 0) (Eqt (Finset X) s (EmptyCollection__emptyCollection (Finset X))) (Multiset__card_eq_zero X (Finset__val X s)) (Finset__val_eq_zero X s).
 
 (; //LEAN:Finset.card_ne_zero ;)
-def Finset__card_ne_zero : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Neq (Finset__card s) 0) (Finset__Nonempty s)) :=
-  X => s => Iff__trans (Neq (Finset__card s) 0) (Neq s EmptyCollection__emptyCollection) (Finset__Nonempty s) (Iff__ne Nat (Finset X) (Finset__card s) 0 s EmptyCollection__emptyCollection (Finset__card_eq_zero X s)) (Iff__symm (Finset__Nonempty s) (Neq s EmptyCollection__emptyCollection) (Finset__nonempty_iff_ne_empty X s)).
+def Finset__card_ne_zero : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Neq (Finset__card X s) 0) (Finset__Nonempty X s)) :=
+  X => s => Iff__trans (Neq (Finset__card X s) 0) (Neq s (EmptyCollection__emptyCollection (Finset X))) (Finset__Nonempty X s) (Iff__ne Nat (Finset X) (Finset__card X s) 0 s (EmptyCollection__emptyCollection (Finset X)) (Finset__card_eq_zero X s)) (Iff__symm (Finset__Nonempty X s) (Neq s (EmptyCollection__emptyCollection (Finset X))) (Finset__nonempty_iff_ne_empty X s)).
 
 (; //LEAN:Finset.card_pos ;)
-def Finset__card_pos : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 0 (Finset__card s)) (Finset__Nonempty s)) :=
-  X => s => Iff__trans (Lt 0 (Finset__card s)) (Neq (Finset__card s) 0) (Finset__Nonempty s) (Nat__pos_iff_ne_zero (Finset__card s)) (Finset__card_ne_zero X s).
+def Finset__card_pos : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 0 (Finset__card X s)) (Finset__Nonempty X s)) :=
+  X => s => Iff__trans (Lt 0 (Finset__card X s)) (Neq (Finset__card X s) 0) (Finset__Nonempty X s) (Nat__pos_iff_ne_zero (Finset__card X s)) (Finset__card_ne_zero X s).
 
 (; //LEAN:Finset.one_le_card ;)
-def Finset__one_le_card : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Leq 1 (Finset__card s)) (Finset__Nonempty s)) :=
+def Finset__one_le_card : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Leq 1 (Finset__card X s)) (Finset__Nonempty X s)) :=
   X => s => Finset__card_pos X s.
 
 (; //LEAN:Finset.Nonempty.card_pos ;)
-def Finset__Nonempty__card_pos : (X : Set) -> (s : Elem (Finset X)) -> (h : Proof (Finset__Nonempty s)) -> Proof (Lt 0 (Finset__card s)) :=
-  X => s => iffEr (Lt 0 (Finset__card s)) (Finset__Nonempty s) (Finset__card_pos X s).
+def Finset__Nonempty__card_pos : (X : Set) -> (s : Elem (Finset X)) -> (h : Proof (Finset__Nonempty X s)) -> Proof (Lt 0 (Finset__card X s)) :=
+  X => s => iffEr (Lt 0 (Finset__card X s)) (Finset__Nonempty X s) (Finset__card_pos X s).
 
 (; //LEAN:Finset.Nonempty.card_ne_zero ;)
-def Finset__Nonempty__card_ne_zero : (X : Set) -> (s : Elem (Finset X)) -> (h : Proof (Finset__Nonempty s)) -> Proof (Neq (Finset__card s) 0) :=
-  X => s => iffEr (Neq (Finset__card s) 0) (Finset__Nonempty s) (Finset__card_ne_zero X s).
+def Finset__Nonempty__card_ne_zero : (X : Set) -> (s : Elem (Finset X)) -> (h : Proof (Finset__Nonempty X s)) -> Proof (Neq (Finset__card X s) 0) :=
+  X => s => iffEr (Neq (Finset__card X s) 0) (Finset__Nonempty X s) (Finset__card_ne_zero X s).
 
 (; //LEAN:Finset.card_ne_zero_of_mem ;)
-def Finset__card_ne_zero_of_mem : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (Membership__mem s a)) -> Proof (Neq (Finset__card s) 0) :=
-  X => s => a => h => iffEr (not (Eq (Finset__card s) 0)) (not (Eqt (Finset X) s EmptyCollection__emptyCollection)) (not_congr (Eq (Finset__card s) 0) (Eqt (Finset X) s EmptyCollection__emptyCollection) (Finset__card_eq_zero X s)) (Finset__ne_empty_of_mem X a s h).
+def Finset__card_ne_zero_of_mem : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (Membership__mem X (Finset X) s a)) -> Proof (Neq (Finset__card X s) 0) :=
+  X => s => a => h => iffEr (not (Eq (Finset__card X s) 0)) (not (Eqt (Finset X) s (EmptyCollection__emptyCollection (Finset X)))) (not_congr (Eq (Finset__card X s) 0) (Eqt (Finset X) s (EmptyCollection__emptyCollection (Finset X))) (Finset__card_eq_zero X s)) (Finset__ne_empty_of_mem X a s h).
 
 (; //LEAN:Finset.card_singleton ;)
-def Finset__card_singleton : (X : Set) -> (a : Elem X) -> Proof (Eq (Finset__card (Singleton__singleton a)) 1) :=
+def Finset__card_singleton : (X : Set) -> (a : Elem X) -> Proof (Eq (Finset__card X (Singleton__singleton X (Finset X) a)) 1) :=
   X => a => Multiset__card_singleton X a.
 
 (; //LEAN:Finset.card_singleton_inter ;)
-Finset__card_singleton_inter : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> Proof (Leq (Finset__card (Inter__inter (Singleton__singleton a) s)) 1).
+Finset__card_singleton_inter : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> Proof (Leq (Finset__card X (Inter__inter (Finset X) (Singleton__singleton X (Finset X) a) s)) 1).
 
 (; //LEAN:Finset.card_cons ;)
-def Finset__card_cons : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (not (Membership__mem s a))) -> Proof (Eq (Finset__card (Finset__cons a s h)) (plus (Finset__card s) 1)) :=
-  X => s => a => h => Multiset__card_cons X a (Finset__val s).
+def Finset__card_cons : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (not (Membership__mem X (Finset X) s a))) -> Proof (Eq (Finset__card X (Finset__cons X a s h)) (plus (Finset__card X s) 1)) :=
+  X => s => a => h => Multiset__card_cons X a (Finset__val X s).
 
 (; //LEAN:Finset.card_insert_of_notMem ;)
-Finset__card_insert_of_notMem : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (not (Membership__mem s a))) -> Proof (Eq (Finset__card (Insert__insert a s)) (plus (Finset__card s) 1)).
+Finset__card_insert_of_notMem : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (not (Membership__mem X (Finset X) s a))) -> Proof (Eq (Finset__card X (Insert__insert X (Finset X) a s)) (plus (Finset__card X s) 1)).
 
 (; //LEAN:Finset.card_insert_of_mem ;)
-Finset__card_insert_of_mem : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (Membership__mem s a)) -> Proof (Eq (Finset__card (Insert__insert a s)) (Finset__card s)).
+Finset__card_insert_of_mem : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (Membership__mem X (Finset X) s a)) -> Proof (Eq (Finset__card X (Insert__insert X (Finset X) a s)) (Finset__card X s)).
 
 (; //LEAN:Finset.card_insert_le ;)
-Finset__card_insert_le : (X : Set) -> (a : Elem X) -> (s : Elem (Finset X)) -> Proof (Leq (Finset__card (Insert__insert a s)) (plus (Finset__card s) 1)).
+Finset__card_insert_le : (X : Set) -> (a : Elem X) -> (s : Elem (Finset X)) -> Proof (Leq (Finset__card X (Insert__insert X (Finset X) a s)) (plus (Finset__card X s) 1)).
 
 (; //LEAN:Finset.card_le_two ;)
-def Finset__card_le_two : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (Finset__card (Insert__insert a (Singleton__singleton b))) 2) :=
-  X => a => b => Finset__card_insert_le X a (Singleton__singleton b).
+def Finset__card_le_two : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (Finset__card X (Insert__insert X (Finset X) a (Singleton__singleton X (Finset X) b))) 2) :=
+  X => a => b => Finset__card_insert_le X a (Singleton__singleton X (Finset X) b).
 
 (; //LEAN:Finset.card_le_three ;)
-def Finset__card_le_three : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Leq (Finset__card (Insert__insert a (Insert__insert b (Singleton__singleton c)))) 3) :=
-  X => a => b => c => LE__le__trans Nat (Finset__card (Insert__insert a (Insert__insert b (Singleton__singleton c)))) (plus (Finset__card (Insert__insert b (Singleton__singleton c))) 1) 3 (Finset__card_insert_le X a (Insert__insert b (Singleton__singleton c))) (Nat__succ_le_succ (Finset__card (Insert__insert b (Singleton__singleton c))) 2 (Finset__card_le_two X b c)).
+def Finset__card_le_three : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Leq (Finset__card X (Insert__insert X (Finset X) a (Insert__insert X (Finset X) b (Singleton__singleton X (Finset X) c)))) 3) :=
+  X => a => b => c => LE__le__trans Nat (Finset__card X (Insert__insert X (Finset X) a (Insert__insert X (Finset X) b (Singleton__singleton X (Finset X) c)))) (plus (Finset__card X (Insert__insert X (Finset X) b (Singleton__singleton X (Finset X) c))) 1) 3 (Finset__card_insert_le X a (Insert__insert X (Finset X) b (Singleton__singleton X (Finset X) c))) (Nat__succ_le_succ (Finset__card X (Insert__insert X (Finset X) b (Singleton__singleton X (Finset X) c))) 2 (Finset__card_le_two X b c)).
 
 (; //LEAN:Finset.card_le_four ;)
-def Finset__card_le_four : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> Proof (Leq (Finset__card (Insert__insert a (Insert__insert b (Insert__insert c (Singleton__singleton d))))) 4) :=
-  X => a => b => c => d => LE__le__trans Nat (Finset__card (Insert__insert a (Insert__insert b (Insert__insert c (Singleton__singleton d))))) (plus (Finset__card (Insert__insert b (Insert__insert c (Singleton__singleton d)))) 1) 4 (Finset__card_insert_le X a (Insert__insert b (Insert__insert c (Singleton__singleton d)))) (Nat__succ_le_succ (Finset__card (Insert__insert b (Insert__insert c (Singleton__singleton d)))) 3 (Finset__card_le_three X b c d)).
+def Finset__card_le_four : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> Proof (Leq (Finset__card X (Insert__insert X (Finset X) a (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Singleton__singleton X (Finset X) d))))) 4) :=
+  X => a => b => c => d => LE__le__trans Nat (Finset__card X (Insert__insert X (Finset X) a (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Singleton__singleton X (Finset X) d))))) (plus (Finset__card X (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Singleton__singleton X (Finset X) d)))) 1) 4 (Finset__card_insert_le X a (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Singleton__singleton X (Finset X) d)))) (Nat__succ_le_succ (Finset__card X (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Singleton__singleton X (Finset X) d)))) 3 (Finset__card_le_three X b c d)).
 
 (; //LEAN:Finset.card_le_five ;)
-def Finset__card_le_five : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (e : Elem X) -> Proof (Leq (Finset__card (Insert__insert a (Insert__insert b (Insert__insert c (Insert__insert d (Singleton__singleton e)))))) 5) :=
-  X => a => b => c => d => e => LE__le__trans Nat (Finset__card (Insert__insert a (Insert__insert b (Insert__insert c (Insert__insert d (Singleton__singleton e)))))) (plus (Finset__card (Insert__insert b (Insert__insert c (Insert__insert d (Singleton__singleton e))))) 1) 5 (Finset__card_insert_le X a (Insert__insert b (Insert__insert c (Insert__insert d (Singleton__singleton e))))) (Nat__succ_le_succ (Finset__card (Insert__insert b (Insert__insert c (Insert__insert d (Singleton__singleton e))))) 4 (Finset__card_le_four X b c d e)).
+def Finset__card_le_five : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (e : Elem X) -> Proof (Leq (Finset__card X (Insert__insert X (Finset X) a (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Insert__insert X (Finset X) d (Singleton__singleton X (Finset X) e)))))) 5) :=
+  X => a => b => c => d => e => LE__le__trans Nat (Finset__card X (Insert__insert X (Finset X) a (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Insert__insert X (Finset X) d (Singleton__singleton X (Finset X) e)))))) (plus (Finset__card X (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Insert__insert X (Finset X) d (Singleton__singleton X (Finset X) e))))) 1) 5 (Finset__card_insert_le X a (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Insert__insert X (Finset X) d (Singleton__singleton X (Finset X) e))))) (Nat__succ_le_succ (Finset__card X (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Insert__insert X (Finset X) d (Singleton__singleton X (Finset X) e))))) 4 (Finset__card_le_four X b c d e)).
 
 (; //LEAN:Finset.card_le_six ;)
-def Finset__card_le_six : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (e : Elem X) -> (f : Elem X) -> Proof (Leq (Finset__card (Insert__insert a (Insert__insert b (Insert__insert c (Insert__insert d (Insert__insert e (Singleton__singleton f))))))) 6) :=
-  X => a => b => c => d => e => f => LE__le__trans Nat (Finset__card (Insert__insert a (Insert__insert b (Insert__insert c (Insert__insert d (Insert__insert e (Singleton__singleton f))))))) (plus (Finset__card (Insert__insert b (Insert__insert c (Insert__insert d (Insert__insert e (Singleton__singleton f)))))) 1) 6 (Finset__card_insert_le X a (Insert__insert b (Insert__insert c (Insert__insert d (Insert__insert e (Singleton__singleton f)))))) (Nat__succ_le_succ (Finset__card (Insert__insert b (Insert__insert c (Insert__insert d (Insert__insert e (Singleton__singleton f)))))) 5 (Finset__card_le_five X b c d e f)).
+def Finset__card_le_six : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (e : Elem X) -> (f : Elem X) -> Proof (Leq (Finset__card X (Insert__insert X (Finset X) a (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Insert__insert X (Finset X) d (Insert__insert X (Finset X) e (Singleton__singleton X (Finset X) f))))))) 6) :=
+  X => a => b => c => d => e => f => LE__le__trans Nat (Finset__card X (Insert__insert X (Finset X) a (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Insert__insert X (Finset X) d (Insert__insert X (Finset X) e (Singleton__singleton X (Finset X) f))))))) (plus (Finset__card X (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Insert__insert X (Finset X) d (Insert__insert X (Finset X) e (Singleton__singleton X (Finset X) f)))))) 1) 6 (Finset__card_insert_le X a (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Insert__insert X (Finset X) d (Insert__insert X (Finset X) e (Singleton__singleton X (Finset X) f)))))) (Nat__succ_le_succ (Finset__card X (Insert__insert X (Finset X) b (Insert__insert X (Finset X) c (Insert__insert X (Finset X) d (Insert__insert X (Finset X) e (Singleton__singleton X (Finset X) f)))))) 5 (Finset__card_le_five X b c d e f)).
 
 (; //LEAN:Finset.card_insert_eq_ite ;)
-Finset__card_insert_eq_ite : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> Proof (Eq (Finset__card (Insert__insert a s)) (ite (Membership__mem s a) (Finset__card s) (plus (Finset__card s) 1))).
+Finset__card_insert_eq_ite : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> Proof (Eq (Finset__card X (Insert__insert X (Finset X) a s)) (ite Nat (Membership__mem X (Finset X) s a) (Finset__card X s) (plus (Finset__card X s) 1))).
 
 (; //LEAN:Finset.card_pair_eq_one_or_two ;)
-Finset__card_pair_eq_one_or_two : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (or (Eq (Finset__card (Insert__insert a (Singleton__singleton b))) 1) (Eq (Finset__card (Insert__insert a (Singleton__singleton b))) 2)).
+Finset__card_pair_eq_one_or_two : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (or (Eq (Finset__card X (Insert__insert X (Finset X) a (Singleton__singleton X (Finset X) b))) 1) (Eq (Finset__card X (Insert__insert X (Finset X) a (Singleton__singleton X (Finset X) b))) 2)).
 
 (; //LEAN:Finset.card_pair_eq_two_iff ;)
-Finset__card_pair_eq_two_iff : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eq (Finset__card (Insert__insert a (Singleton__singleton b))) 2) (Neq a b)).
+Finset__card_pair_eq_two_iff : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eq (Finset__card X (Insert__insert X (Finset X) a (Singleton__singleton X (Finset X) b))) 2) (Neq a b)).
 
 (; //LEAN:Finset.card_pair ;)
-def Finset__card_pair : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Neq a b)) -> Proof (Eq (Finset__card (Insert__insert a (Singleton__singleton b))) 2) :=
-  X => a => b => iffEr (Eq (Finset__card (Insert__insert a (Singleton__singleton b))) 2) (Neq a b) (Finset__card_pair_eq_two_iff X a b).
+def Finset__card_pair : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Neq a b)) -> Proof (Eq (Finset__card X (Insert__insert X (Finset X) a (Singleton__singleton X (Finset X) b))) 2) :=
+  X => a => b => iffEr (Eq (Finset__card X (Insert__insert X (Finset X) a (Singleton__singleton X (Finset X) b))) 2) (Neq a b) (Finset__card_pair_eq_two_iff X a b).
 
 (; //LEAN:Finset.card_triple_eq_three_iff ;)
-Finset__card_triple_eq_three_iff : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Eq (Finset__card (Insert__insert a (Insert__insert b (Singleton__singleton c)))) 3) (and (Neq a b) (and (Neq a c) (Neq b c)))).
+Finset__card_triple_eq_three_iff : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (iff (Eq (Finset__card X (Insert__insert X (Finset X) a (Insert__insert X (Finset X) b (Singleton__singleton X (Finset X) c)))) 3) (and (Neq a b) (and (Neq a c) (Neq b c)))).
 
 (; //LEAN:Finset.card_erase_of_mem ;)
-def Finset__card_erase_of_mem : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (Membership__mem s a)) -> Proof (Eq (Finset__card (Finset__erase s a)) (minus (Finset__card s) 1)) :=
-  X => s => a => Multiset__card_erase_of_mem X a (Finset__val s).
+def Finset__card_erase_of_mem : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (Membership__mem X (Finset X) s a)) -> Proof (Eq (Finset__card X (Finset__erase X s a)) (minus (Finset__card X s) 1)) :=
+  X => s => a => Multiset__card_erase_of_mem X a (Finset__val X s).
 
 (; //LEAN:Finset.card_erase_add_one ;)
-def Finset__card_erase_add_one : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (Membership__mem s a)) -> Proof (Eq (plus (Finset__card (Finset__erase s a)) 1) (Finset__card s)) :=
-  X => s => a => Multiset__card_erase_add_one X a (Finset__val s).
+def Finset__card_erase_add_one : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (Membership__mem X (Finset X) s a)) -> Proof (Eq (plus (Finset__card X (Finset__erase X s a)) 1) (Finset__card X s)) :=
+  X => s => a => Multiset__card_erase_add_one X a (Finset__val X s).
 
 (; //LEAN:Finset.card_erase_lt_of_mem ;)
-def Finset__card_erase_lt_of_mem : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (Membership__mem s a)) -> Proof (Lt (Finset__card (Finset__erase s a)) (Finset__card s)) :=
-  X => s => a => Multiset__card_erase_lt_of_mem X a (Finset__val s).
+def Finset__card_erase_lt_of_mem : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (Membership__mem X (Finset X) s a)) -> Proof (Lt (Finset__card X (Finset__erase X s a)) (Finset__card X s)) :=
+  X => s => a => Multiset__card_erase_lt_of_mem X a (Finset__val X s).
 
 (; //LEAN:Finset.card_erase_le ;)
-def Finset__card_erase_le : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> Proof (Leq (Finset__card (Finset__erase s a)) (Finset__card s)) :=
-  X => s => a => Multiset__card_erase_le X a (Finset__val s).
+def Finset__card_erase_le : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> Proof (Leq (Finset__card X (Finset__erase X s a)) (Finset__card X s)) :=
+  X => s => a => Multiset__card_erase_le X a (Finset__val X s).
 
 (; //LEAN:Finset.pred_card_le_card_erase ;)
-Finset__pred_card_le_card_erase : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> Proof (Leq (minus (Finset__card s) 1) (Finset__card (Finset__erase s a))).
+Finset__pred_card_le_card_erase : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> Proof (Leq (minus (Finset__card X s) 1) (Finset__card X (Finset__erase X s a))).
 
 (; //LEAN:Finset.card_erase_eq_ite ;)
-def Finset__card_erase_eq_ite : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> Proof (Eq (Finset__card (Finset__erase s a)) (ite (Membership__mem s a) (minus (Finset__card s) 1) (Finset__card s))) :=
-  X => s => a => Multiset__card_erase_eq_ite X a (Finset__val s).
+def Finset__card_erase_eq_ite : (X : Set) -> (s : Elem (Finset X)) -> (a : Elem X) -> Proof (Eq (Finset__card X (Finset__erase X s a)) (ite Nat (Membership__mem X (Finset X) s a) (minus (Finset__card X s) 1) (Finset__card X s))) :=
+  X => s => a => Multiset__card_erase_eq_ite X a (Finset__val X s).
 
 (; //LEAN:Finset.card_range ;)
-def Finset__card_range : (n : Elem Nat) -> Proof (Eq (Finset__card (Finset__range n)) n) :=
+def Finset__card_range : (n : Elem Nat) -> Proof (Eq (Finset__card Nat (Finset__range n)) n) :=
   n => Multiset__card_range n.
 
 (; //LEAN:Finset.card_attach ;)
-def Finset__card_attach : (X : Set) -> (s : Elem (Finset X)) -> Proof (Eq (Finset__card (Finset__attach s)) (Finset__card s)) :=
-  X => s => Multiset__card_attach X (Finset__val s).
+def Finset__card_attach : (X : Set) -> (s : Elem (Finset X)) -> Proof (Eq (Finset__card (Subtype X (x => Membership__mem X (Finset X) s x)) (Finset__attach X s)) (Finset__card X s)) :=
+  X => s => Multiset__card_attach X (Finset__val X s).
 
 (; //LEAN:Multiset.card_toFinset ;)
-def Multiset__card_toFinset : (X : Set) -> (m : Elem (Multiset X)) -> Proof (Eq (Finset__card (Multiset__toFinset m)) (Multiset__card (Multiset__dedup m))) :=
-  X => m => rfl Nat (Finset__card (Multiset__toFinset m)).
+def Multiset__card_toFinset : (X : Set) -> (m : Elem (Multiset X)) -> Proof (Eq (Finset__card X (Multiset__toFinset X m)) (Multiset__card X (Multiset__dedup X m))) :=
+  X => m => rfl Nat (Finset__card X (Multiset__toFinset X m)).
 
 (; //LEAN:Multiset.toFinset_card_le ;)
-def Multiset__toFinset_card_le : (X : Set) -> (m : Elem (Multiset X)) -> Proof (Leq (Finset__card (Multiset__toFinset m)) (Multiset__card m)) :=
-  X => m => Multiset__card_le_card X (Finset__val (Multiset__toFinset m)) m (Multiset__dedup_le X m).
+def Multiset__toFinset_card_le : (X : Set) -> (m : Elem (Multiset X)) -> Proof (Leq (Finset__card X (Multiset__toFinset X m)) (Multiset__card X m)) :=
+  X => m => Multiset__card_le_card X (Finset__val X (Multiset__toFinset X m)) m (Multiset__dedup_le X m).
 
 (; //LEAN:Multiset.toFinset_card_of_nodup ;)
-def Multiset__toFinset_card_of_nodup : (X : Set) -> (m : Elem (Multiset X)) -> (h : Proof (Multiset__Nodup m)) -> Proof (Eq (Finset__card (Multiset__toFinset m)) (Multiset__card m)) :=
-  X => m => h => id (congrArg (Multiset X) Nat (Multiset__dedup m) m Multiset__card (iffEr (Eqt (Multiset X) (Multiset__dedup m) m) (Multiset__Nodup m) (Multiset__dedup_eq_self X m) h)).
+def Multiset__toFinset_card_of_nodup : (X : Set) -> (m : Elem (Multiset X)) -> (h : Proof (Multiset__Nodup X m)) -> Proof (Eq (Finset__card X (Multiset__toFinset X m)) (Multiset__card X m)) :=
+  X => m => h => id (Eq (Finset__card X (Multiset__toFinset X m)) (Multiset__card X m)) (congrArg (Multiset X) Nat (Multiset__dedup X m) m (Multiset__card X) (iffEr (Eqt (Multiset X) (Multiset__dedup X m) m) (Multiset__Nodup X m) (Multiset__dedup_eq_self X m) h)).
 
 (; //LEAN:Multiset.dedup_card_eq_card_iff_nodup ;)
-def Multiset__dedup_card_eq_card_iff_nodup : (X : Set) -> (m : Elem (Multiset X)) -> Proof (iff (Eq (Multiset__card (Multiset__dedup m)) (Multiset__card m)) (Multiset__Nodup m)) :=
-  X => m => Iff__trans (Eq (Multiset__card (Multiset__dedup m)) (Multiset__card m)) (Eqt (Multiset X) (Multiset__dedup m) m) (Multiset__Nodup m) (iffI (Eq (Multiset__card (Multiset__dedup m)) (Multiset__card m)) (Eqt (Multiset X) (Multiset__dedup m) m) (h => Multiset__eq_of_le_of_card_le X (Multiset__dedup m) m (Multiset__dedup_le X m) (Eq__ge Nat (Multiset__card (Multiset__dedup m)) (Multiset__card m) h)) (congr_arg (Multiset X) Nat (Multiset__dedup m) m Multiset__card)) (Multiset__dedup_eq_self X m).
+def Multiset__dedup_card_eq_card_iff_nodup : (X : Set) -> (m : Elem (Multiset X)) -> Proof (iff (Eq (Multiset__card X (Multiset__dedup X m)) (Multiset__card X m)) (Multiset__Nodup X m)) :=
+  X => m => Iff__trans (Eq (Multiset__card X (Multiset__dedup X m)) (Multiset__card X m)) (Eqt (Multiset X) (Multiset__dedup X m) m) (Multiset__Nodup X m) (iffI (Eq (Multiset__card X (Multiset__dedup X m)) (Multiset__card X m)) (Eqt (Multiset X) (Multiset__dedup X m) m) (h => Multiset__eq_of_le_of_card_le X (Multiset__dedup X m) m (Multiset__dedup_le X m) (Eq__ge Nat (Multiset__card X (Multiset__dedup X m)) (Multiset__card X m) h)) (congr_arg (Multiset X) Nat (Multiset__dedup X m) m (Multiset__card X))) (Multiset__dedup_eq_self X m).
 
 (; //LEAN:Multiset.toFinset_card_eq_card_iff_nodup ;)
-def Multiset__toFinset_card_eq_card_iff_nodup : (X : Set) -> (m : Elem (Multiset X)) -> Proof (iff (Eq (Finset__card (Multiset__toFinset m)) (Multiset__card m)) (Multiset__Nodup m)) :=
+def Multiset__toFinset_card_eq_card_iff_nodup : (X : Set) -> (m : Elem (Multiset X)) -> Proof (iff (Eq (Finset__card X (Multiset__toFinset X m)) (Multiset__card X m)) (Multiset__Nodup X m)) :=
   X => m => Multiset__dedup_card_eq_card_iff_nodup X m.
 
 (; //LEAN:nodup_iff_le_length_dedup ;)
-nodup_iff_le_length_dedup : (X : Set) -> (m : Elem (Multiset X)) -> Proof (iff (Multiset__Nodup m) (Leq (Multiset__card m) (Multiset__card (Multiset__dedup m)))).
+nodup_iff_le_length_dedup : (X : Set) -> (m : Elem (Multiset X)) -> Proof (iff (Multiset__Nodup X m) (Leq (Multiset__card X m) (Multiset__card X (Multiset__dedup X m)))).
 
 (; //LEAN:List.card_toFinset ;)
-def List__card_toFinset : (X : Set) -> (l : Elem (List X)) -> Proof (Eq (Finset__card (List__toFinset l)) (List__length (List__dedup l))) :=
-  X => l => rfl Nat (Finset__card (List__toFinset l)).
+def List__card_toFinset : (X : Set) -> (l : Elem (List X)) -> Proof (Eq (Finset__card X (List__toFinset X l)) (List__length X (List__dedup X l))) :=
+  X => l => rfl Nat (Finset__card X (List__toFinset X l)).
 
 (; //LEAN:List.toFinset_card_le ;)
-def List__toFinset_card_le : (X : Set) -> (l : Elem (List X)) -> Proof (Leq (Finset__card (List__toFinset l)) (List__length l)) :=
-  X => l => Multiset__toFinset_card_le X (Quotient__mk (List__isSetoid X) l).
+def List__toFinset_card_le : (X : Set) -> (l : Elem (List X)) -> Proof (Leq (Finset__card X (List__toFinset X l)) (List__length X l)) :=
+  X => l => Multiset__toFinset_card_le X (Quotient__mk (List X) (List__isSetoid X) l).
 
 (; //LEAN:List.toFinset_card_of_nodup ;)
-def List__toFinset_card_of_nodup : (X : Set) -> (l : Elem (List X)) -> (h : Proof (List__Nodup l)) -> Proof (Eq (Finset__card (List__toFinset l)) (List__length l)) :=
-  X => l => h => Multiset__toFinset_card_of_nodup X (Multiset__ofList l) h.
+def List__toFinset_card_of_nodup : (X : Set) -> (l : Elem (List X)) -> (h : Proof (List__Nodup X l)) -> Proof (Eq (Finset__card X (List__toFinset X l)) (List__length X l)) :=
+  X => l => h => Multiset__toFinset_card_of_nodup X (Multiset__ofList X l) h.
 
 (; //LEAN:List.Nodup.card_eq_countP ;)
-List__Nodup__card_eq_countP : (X : Set) -> (l : Elem (List X)) -> (P : (Elem X -> Prop)) -> (h : Proof (List__Nodup l)) -> Proof (Eq (Finset__card (Finset__filter (x2 => P x2) (List__toFinset l))) (List__countP (b => Decidable__decide (P b)) l)).
+List__Nodup__card_eq_countP : (X : Set) -> (l : Elem (List X)) -> (P : (Elem X -> Prop)) -> (h : Proof (List__Nodup X l)) -> Proof (Eq (Finset__card X (Finset__filter X (x2 => P x2) (List__toFinset X l))) (List__countP X (b => Decidable__decide (P b)) l)).
 
 (; //LEAN:Finset.length_toList ;)
-Finset__length_toList : (X : Set) -> (s : Elem (Finset X)) -> Proof (Eq (List__length (Finset__toList s)) (Finset__card s)).
+Finset__length_toList : (X : Set) -> (s : Elem (Finset X)) -> Proof (Eq (List__length X (Finset__toList X s)) (Finset__card X s)).
 
 (; //LEAN:Finset.card_image_le ;)
-Finset__card_image_le : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> Proof (Leq (Finset__card (Finset__image f s)) (Finset__card s)).
+Finset__card_image_le : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> Proof (Leq (Finset__card Y (Finset__image X Y f s)) (Finset__card X s)).
 
 (; //LEAN:Finset.card_image_of_injOn ;)
-Finset__card_image_of_injOn : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (H : Proof (Set__InjOn f s)) -> Proof (Eq (Finset__card (Finset__image f s)) (Finset__card s)).
+Finset__card_image_of_injOn : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (H : Proof (Set__InjOn X Y f (SetLike__coe (Finset X) X s))) -> Proof (Eq (Finset__card Y (Finset__image X Y f s)) (Finset__card X s)).
 
 (; //LEAN:Finset.injOn_of_card_image_eq ;)
-Finset__injOn_of_card_image_eq : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (H : Proof (Eq (Finset__card (Finset__image f s)) (Finset__card s))) -> Proof (Set__InjOn f s).
+Finset__injOn_of_card_image_eq : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (H : Proof (Eq (Finset__card Y (Finset__image X Y f s)) (Finset__card X s))) -> Proof (Set__InjOn X Y f (SetLike__coe (Finset X) X s)).
 
 (; //LEAN:Finset.card_image_iff ;)
-def Finset__card_image_iff : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> Proof (iff (Eq (Finset__card (Finset__image f s)) (Finset__card s)) (Set__InjOn f s)) :=
-  X => Y => s => f => iffI (Eq (Finset__card (Finset__image f s)) (Finset__card s)) (Set__InjOn f s) (Finset__injOn_of_card_image_eq X Y s f) (Finset__card_image_of_injOn X Y s f).
+def Finset__card_image_iff : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> Proof (iff (Eq (Finset__card Y (Finset__image X Y f s)) (Finset__card X s)) (Set__InjOn X Y f (SetLike__coe (Finset X) X s))) :=
+  X => Y => s => f => iffI (Eq (Finset__card Y (Finset__image X Y f s)) (Finset__card X s)) (Set__InjOn X Y f (SetLike__coe (Finset X) X s)) (Finset__injOn_of_card_image_eq X Y s f) (Finset__card_image_of_injOn X Y s f).
 
 (; //LEAN:Finset.card_image_of_injective ;)
-def Finset__card_image_of_injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (Finset X)) -> (H : Proof (Function__Injective f)) -> Proof (Eq (Finset__card (Finset__image f s)) (Finset__card s)) :=
-  X => Y => f => s => H => Finset__card_image_of_injOn X Y s f (forallI X (x1 => if (Membership__mem s x1) (forall X (x7 => if (Membership__mem s x7) (if (Eqt Y (f x1) (f x7)) (Eqt X x1 x7))))) (x1 => ifI (Membership__mem s x1) (forall X (x6 => if (Membership__mem s x6) (if (Eqt Y (f x1) (f x6)) (Eqt X x1 x6)))) (h => forallI X (x2 => if (Membership__mem s x2) (if (Eqt Y (f x1) (f x2)) (Eqt X x1 x2))) (x2 => ifI (Membership__mem s x2) (if (Eqt Y (f x1) (f x2)) (Eqt X x1 x2)) (h1 => ifI (Eqt Y (f x1) (f x2)) (Eqt X x1 x2) (h2 => ifE (Eqt Y (f x1) (f x2)) (Eqt X x1 x2) (forallE X (x5 => if (Eqt Y (f x1) (f x5)) (Eqt X x1 x5)) (forallE X (x3 => forall X (x4 => if (Eqt Y (f x3) (f x4)) (Eqt X x3 x4))) H x1) x2) h2)))))).
+def Finset__card_image_of_injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (Finset X)) -> (H : Proof (Function__Injective X Y f)) -> Proof (Eq (Finset__card Y (Finset__image X Y f s)) (Finset__card X s)) :=
+  X => Y => f => s => H => Finset__card_image_of_injOn X Y s f (forallI X (x1 => if (Membership__mem X (powerset X) (SetLike__coe (Finset X) X s) x1) (forall X (x7 => if (Membership__mem X (powerset X) (SetLike__coe (Finset X) X s) x7) (if (Eqt Y (f x1) (f x7)) (Eqt X x1 x7))))) (x1 => ifI (Membership__mem X (powerset X) (SetLike__coe (Finset X) X s) x1) (forall X (x6 => if (Membership__mem X (powerset X) (SetLike__coe (Finset X) X s) x6) (if (Eqt Y (f x1) (f x6)) (Eqt X x1 x6)))) (h => forallI X (x2 => if (Membership__mem X (powerset X) (SetLike__coe (Finset X) X s) x2) (if (Eqt Y (f x1) (f x2)) (Eqt X x1 x2))) (x2 => ifI (Membership__mem X (powerset X) (SetLike__coe (Finset X) X s) x2) (if (Eqt Y (f x1) (f x2)) (Eqt X x1 x2)) (h1 => ifI (Eqt Y (f x1) (f x2)) (Eqt X x1 x2) (h2 => ifE (Eqt Y (f x1) (f x2)) (Eqt X x1 x2) (forallE X (x5 => if (Eqt Y (f x1) (f x5)) (Eqt X x1 x5)) (forallE X (x3 => forall X (x4 => if (Eqt Y (f x3) (f x4)) (Eqt X x3 x4))) H x1) x2) h2)))))).
 
 (; //LEAN:Finset.fiber_card_ne_zero_iff_mem_image ;)
-Finset__fiber_card_ne_zero_iff_mem_image : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (y : Elem Y) -> Proof (iff (Neq (Finset__card (Finset__filter (x1 => Eqt Y (f x1) y) s)) 0) (Membership__mem (Finset__image f s) y)).
+Finset__fiber_card_ne_zero_iff_mem_image : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (y : Elem Y) -> Proof (iff (Neq (Finset__card X (Finset__filter X (x1 => Eqt Y (f x1) y) s)) 0) (Membership__mem Y (Finset Y) (Finset__image X Y f s) y)).
 
 (; //LEAN:Finset.card_filter_le_iff ;)
-Finset__card_filter_le_iff : (X : Set) -> (s : Elem (Finset X)) -> (P : (Elem X -> Prop)) -> (n : Elem Nat) -> Proof (iff (Leq (Finset__card (Finset__filter (x1 => P x1) s)) n) (forall (Finset X) (s' => if (Set__Subset s' s) (if (Lt n (Finset__card s')) (exists X (a => and (Membership__mem s' a) (not (P a)))))))).
+def Finset__card_filter_le_iff : (X : Set) -> (s : Elem (Finset X)) -> (P : (Elem X -> Prop)) -> (n : Elem Nat) -> Proof (iff (Leq (Finset__card X (Finset__filter X (x1 => P x1) s)) n) (forall (Finset X) (s' => if (Set__Subset X s' s) (if (Lt n (Finset__card X s')) (exists X (a => and (Membership__mem X (Finset X) s' a) (not (P a)))))))) :=
+  X => s => P => n => Iff__trans (Leq (Multiset__card X (Multiset__filter X P (Finset__val X s))) n) (forall (Multiset X) (s' => if (Leq s' (Finset__val X s)) (if (Lt n (Multiset__card X s')) (exists X (a => and (Membership__mem X (Multiset X) s' a) (not (P a))))))) (forall (Finset X) (s'1 => if (Set__Subset X s'1 s) (if (Lt n (Finset__card X s'1)) (exists X (a1 => and (Membership__mem X (Finset X) s'1 a1) (not (P a1))))))) (Multiset__card_filter_le_iff X (Finset__val X s) P n) (iffI (forall (Multiset X) (s'2 => if (Leq s'2 (Finset__val X s)) (if (Lt n (Multiset__card X s'2)) (exists X (a2 => and (Membership__mem X (Multiset X) s'2 a2) (not (P a2))))))) (forall (Finset X) (s'3 => if (Set__Subset X s'3 s) (if (Lt n (Finset__card X s'3)) (exists X (a3 => and (Membership__mem X (Finset X) s'3 a3) (not (P a3))))))) (H => forallI (Finset X) (s'4 => if (Set__Subset X s'4 s) (if (Lt n (Finset__card X s'4)) (exists X (a9 => and (Membership__mem X (Multiset X) (Finset__val X s'4) a9) (not (P a9)))))) (s'4 => ifI (Set__Subset X s'4 s) (if (Lt n (Finset__card X s'4)) (exists X (a8 => and (Membership__mem X (Multiset X) (Finset__val X s'4) a8) (not (P a8))))) (hs' => ifI (Lt n (Finset__card X s'4)) (exists X (a7 => and (Membership__mem X (Multiset X) (Finset__val X s'4) a7) (not (P a7)))) (h8 => ifE (Lt n (Multiset__card X (Finset__val X s'4))) (exists X (a6 => and (Membership__mem X (Multiset X) (Finset__val X s'4) a6) (not (P a6)))) (ifE (Leq (Finset__val X s'4) (Finset__val X s)) (if (Lt n (Multiset__card X (Finset__val X s'4))) (exists X (a5 => and (Membership__mem X (Multiset X) (Finset__val X s'4) a5) (not (P a5))))) (forallE (Multiset X) (s'5 => if (Leq s'5 (Finset__val X s)) (if (Lt n (Multiset__card X s'5)) (exists X (a4 => and (Membership__mem X (Multiset X) s'5 a4) (not (P a4)))))) H (Finset__val X s'4)) (of_eq_true (Leq (Finset__val X s'4) (Finset__val X s)) (Eq__trans Prop (Leq (Finset__val X s'4) (Finset__val X s)) (Set__Subset X s'4 s) True (Finset__val_le_iff___simp_1 X s'4 s) (eq_true (Set__Subset X s'4 s) hs')))) h8)))) (H1 => forallI (Multiset X) (s'6 => forall (Proof (Leq s'6 (Finset__val X s))) (hs'3 => if (Lt n (Multiset__card X s'6)) (exists X (a15 => and (Membership__mem X (Finset X) (Finset__mk X s'6 (Multiset__nodup_of_le X s'6 (Finset__val X s) hs'3 (Finset__nodup X s))) a15) (not (P a15)))))) (s'6 => ifI (Leq s'6 (Finset__val X s)) (if (Lt n (Multiset__card X s'6)) (exists X (a14 => and (Membership__mem X (Finset X) (Finset__mk X s'6 (Multiset__nodup_of_le X s'6 (Finset__val X s) hs'2 (Finset__nodup X s))) a14) (not (P a14))))) (hs'2 => ifI (Lt n (Multiset__card X s'6)) (exists X (a13 => and (Membership__mem X (Finset X) (Finset__mk X s'6 (Multiset__nodup_of_le X s'6 (Finset__val X s) hs'2 (Finset__nodup X s))) a13) (not (P a13)))) (h14 => ifE (Lt n (Finset__card X (Finset__mk X s'6 (Multiset__nodup_of_le X s'6 (Finset__val X s) hs'2 (Finset__nodup X s))))) (exists X (a12 => and (Membership__mem X (Finset X) (Finset__mk X s'6 (Multiset__nodup_of_le X s'6 (Finset__val X s) hs'2 (Finset__nodup X s))) a12) (not (P a12)))) (ifE (Set__Subset X (Finset__mk X s'6 (Multiset__nodup_of_le X s'6 (Finset__val X s) hs'2 (Finset__nodup X s))) s) (if (Lt n (Finset__card X (Finset__mk X s'6 (Multiset__nodup_of_le X s'6 (Finset__val X s) hs'2 (Finset__nodup X s))))) (exists X (a11 => and (Membership__mem X (Finset X) (Finset__mk X s'6 (Multiset__nodup_of_le X s'6 (Finset__val X s) hs'2 (Finset__nodup X s))) a11) (not (P a11))))) (forallE (Finset X) (s'7 => if (Set__Subset X s'7 s) (if (Lt n (Finset__card X s'7)) (exists X (a10 => and (Membership__mem X (Finset X) s'7 a10) (not (P a10)))))) H1 (Finset__mk X s'6 (Multiset__nodup_of_le X s'6 (Finset__val X s) hs'2 (Finset__nodup X s)))) (forallI X (x1 => if (Membership__mem X (Finset X) (Finset__mk X s'6 (Multiset__nodup_of_le X s'6 (Finset__val X s) hs'2 (Finset__nodup X s))) x1) (Membership__mem X (Multiset X) (Finset__val X s) x1)) (x1 => ifI (Membership__mem X (Finset X) (Finset__mk X s'6 (Multiset__nodup_of_le X s'6 (Finset__val X s) hs'2 (Finset__nodup X s))) x1) (Membership__mem X (Multiset X) (Finset__val X s) x1) (hx => Multiset__subset_of_le X s'6 (Finset__val X s) hs'2 x1 hx)))) h14))))).
 
 (; //LEAN:Finset.card_map ;)
-def Finset__card_map : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : Elem (Function__Embedding X Y)) -> Proof (Eq (Finset__card (Finset__map f s)) (Finset__card s)) :=
-  X => Y => s => f => Multiset__card_map X Y f (Finset__val s).
+def Finset__card_map : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : Elem (Function__Embedding X Y)) -> Proof (Eq (Finset__card Y (Finset__map X Y f s)) (Finset__card X s)) :=
+  X => Y => s => f => Multiset__card_map X Y f (Finset__val X s).
 
 (; //LEAN:Finset.card_subtype ;)
-Finset__card_subtype : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Proof (Eq (Finset__card (Finset__subtype p s)) (Finset__card (Finset__filter (x1 => p x1) s))).
+Finset__card_subtype : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Proof (Eq (Finset__card (Subtype X (x1 => p x1)) (Finset__subtype X p s)) (Finset__card X (Finset__filter X (x2 => p x2) s))).
 
 (; //LEAN:Finset.card_filter_le ;)
-def Finset__card_filter_le : (X : Set) -> (s : Elem (Finset X)) -> (p : (Elem X -> Prop)) -> Proof (Leq (Finset__card (Finset__filter (x1 => p x1) s)) (Finset__card s)) :=
-  X => s => p => Finset__card_le_card X (Finset__filter (x1 => p x1) s) s (Finset__filter_subset X p s).
+def Finset__card_filter_le : (X : Set) -> (s : Elem (Finset X)) -> (p : (Elem X -> Prop)) -> Proof (Leq (Finset__card X (Finset__filter X (x1 => p x1) s)) (Finset__card X s)) :=
+  X => s => p => Finset__card_le_card X (Finset__filter X (x1 => p x1) s) s (Finset__filter_subset X p s).
 
 (; //LEAN:Finset.eq_of_subset_of_card_le ;)
-def Finset__eq_of_subset_of_card_le : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Set__Subset s t)) -> (h1 : Proof (Leq (Finset__card t) (Finset__card s))) -> Proof (Eqt (Finset X) s t) :=
-  X => s => t => h => h1 => Finset__eq_of_veq X s t (Multiset__eq_of_le_of_card_le X (Finset__val s) (Finset__val t) (iffEr (Leq (Finset__val s) (Finset__val t)) (Set__Subset s t) (Finset__val_le_iff X s t) h) h1).
+def Finset__eq_of_subset_of_card_le : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Set__Subset X s t)) -> (h1 : Proof (Leq (Finset__card X t) (Finset__card X s))) -> Proof (Eqt (Finset X) s t) :=
+  X => s => t => h => h1 => Finset__eq_of_veq X s t (Multiset__eq_of_le_of_card_le X (Finset__val X s) (Finset__val X t) (iffEr (Leq (Finset__val X s) (Finset__val X t)) (Set__Subset X s t) (Finset__val_le_iff X s t) h) h1).
 
 (; //LEAN:Finset.eq_iff_card_le_of_subset ;)
-def Finset__eq_iff_card_le_of_subset : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (hst : Proof (Set__Subset s t)) -> Proof (iff (Leq (Finset__card t) (Finset__card s)) (Eqt (Finset X) s t)) :=
-  X => s => t => hst => iffI (Leq (Finset__card t) (Finset__card s)) (Eqt (Finset X) s t) (Finset__eq_of_subset_of_card_le X s t hst) (h => ge_of_eq Nat (Finset__card s) (Finset__card t) (congr_arg (Finset X) Nat s t Finset__card h)).
+def Finset__eq_iff_card_le_of_subset : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (hst : Proof (Set__Subset X s t)) -> Proof (iff (Leq (Finset__card X t) (Finset__card X s)) (Eqt (Finset X) s t)) :=
+  X => s => t => hst => iffI (Leq (Finset__card X t) (Finset__card X s)) (Eqt (Finset X) s t) (Finset__eq_of_subset_of_card_le X s t hst) (h => ge_of_eq Nat (Finset__card X s) (Finset__card X t) (congr_arg (Finset X) Nat s t (Finset__card X) h)).
 
 (; //LEAN:Finset.eq_of_superset_of_card_ge ;)
-def Finset__eq_of_superset_of_card_ge : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (hst : Proof (Set__Subset s t)) -> (hts : Proof (Leq (Finset__card t) (Finset__card s))) -> Proof (Eqt (Finset X) t s) :=
+def Finset__eq_of_superset_of_card_ge : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (hst : Proof (Set__Subset X s t)) -> (hts : Proof (Leq (Finset__card X t) (Finset__card X s))) -> Proof (Eqt (Finset X) t s) :=
   X => s => t => hst => hts => Eq__symm (Finset X) s t (Finset__eq_of_subset_of_card_le X s t hst hts).
 
 (; //LEAN:Finset.eq_iff_card_ge_of_superset ;)
-def Finset__eq_iff_card_ge_of_superset : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (hst : Proof (Set__Subset s t)) -> Proof (iff (Leq (Finset__card t) (Finset__card s)) (Eqt (Finset X) t s)) :=
-  X => s => t => hst => Iff__trans (Leq (Finset__card t) (Finset__card s)) (Eqt (Finset X) s t) (Eqt (Finset X) t s) (Finset__eq_iff_card_le_of_subset X s t hst) (eq_comm (Finset X) s t).
+def Finset__eq_iff_card_ge_of_superset : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (hst : Proof (Set__Subset X s t)) -> Proof (iff (Leq (Finset__card X t) (Finset__card X s)) (Eqt (Finset X) t s)) :=
+  X => s => t => hst => Iff__trans (Leq (Finset__card X t) (Finset__card X s)) (Eqt (Finset X) s t) (Eqt (Finset X) t s) (Finset__eq_iff_card_le_of_subset X s t hst) (eq_comm (Finset X) s t).
 
 (; //LEAN:Finset.subset_iff_eq_of_card_le ;)
-def Finset__subset_iff_eq_of_card_le : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Leq (Finset__card t) (Finset__card s))) -> Proof (iff (Set__Subset s t) (Eqt (Finset X) s t)) :=
-  X => s => t => h => iffI (Set__Subset s t) (Eqt (Finset X) s t) (hst => Finset__eq_of_subset_of_card_le X s t hst h) (Eq__subset (Finset X) s t).
+def Finset__subset_iff_eq_of_card_le : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Leq (Finset__card X t) (Finset__card X s))) -> Proof (iff (Set__Subset X s t) (Eqt (Finset X) s t)) :=
+  X => s => t => h => iffI (Set__Subset X s t) (Eqt (Finset X) s t) (hst => Finset__eq_of_subset_of_card_le X s t hst h) (Eq__subset (Finset X) s t).
 
 (; //LEAN:Finset.map_eq_of_subset ;)
-def Finset__map_eq_of_subset : (X : Set) -> (s : Elem (Finset X)) -> (f : Elem (Function__Embedding X X)) -> (hs : Proof (Set__Subset (Finset__map f s) s)) -> Proof (Eqt (Finset X) (Finset__map f s) s) :=
-  X => s => f => hs => Finset__eq_of_subset_of_card_le X (Finset__map f s) s hs (Eq__ge Nat (Finset__card (Finset__map f s)) (Finset__card s) (Finset__card_map X X s f)).
+def Finset__map_eq_of_subset : (X : Set) -> (s : Elem (Finset X)) -> (f : Elem (Function__Embedding X X)) -> (hs : Proof (Set__Subset X (Finset__map X X f s) s)) -> Proof (Eqt (Finset X) (Finset__map X X f s) s) :=
+  X => s => f => hs => Finset__eq_of_subset_of_card_le X (Finset__map X X f s) s hs (Eq__ge Nat (Finset__card X (Finset__map X X f s)) (Finset__card X s) (Finset__card_map X X s f)).
 
 (; //LEAN:Finset.card_filter_eq_iff ;)
-Finset__card_filter_eq_iff : (X : Set) -> (s : Elem (Finset X)) -> (p : (Elem X -> Prop)) -> Proof (iff (Eq (Finset__card (Finset__filter (x1 => p x1) s)) (Finset__card s)) (forall X (x2 => if (Membership__mem s x2) (p x2)))).
+Finset__card_filter_eq_iff : (X : Set) -> (s : Elem (Finset X)) -> (p : (Elem X -> Prop)) -> Proof (iff (Eq (Finset__card X (Finset__filter X (x1 => p x1) s)) (Finset__card X s)) (forall X (x2 => if (Membership__mem X (Finset X) s x2) (p x2)))).
 
 (; //LEAN:Finset.filter_card_eq ;)
-def Finset__filter_card_eq : (X : Set) -> (s : Elem (Finset X)) -> (p : (Elem X -> Prop)) -> (h : Proof (Eq (Finset__card (Finset__filter (x2 => p x2) s)) (Finset__card s))) -> (x1 : Elem X) -> (h1 : Proof (Membership__mem s x1)) -> Proof (p x1) :=
-  X => s => p => iffEl (Eq (Finset__card (Finset__filter (x1 => p x1) s)) (Finset__card s)) (forall X (x2 => if (Membership__mem s x2) (p x2))) (Finset__card_filter_eq_iff X s p).
+def Finset__filter_card_eq : (X : Set) -> (s : Elem (Finset X)) -> (p : (Elem X -> Prop)) -> (h : Proof (Eq (Finset__card X (Finset__filter X (x2 => p x2) s)) (Finset__card X s))) -> (x1 : Elem X) -> (h1 : Proof (Membership__mem X (Finset X) s x1)) -> Proof (p x1) :=
+  X => s => p => iffEl (Eq (Finset__card X (Finset__filter X (x1 => p x1) s)) (Finset__card X s)) (forall X (x2 => if (Membership__mem X (Finset X) s x2) (p x2))) (Finset__card_filter_eq_iff X s p).
 
 (; //LEAN:Finset.card_filter_eq_zero_iff ;)
-Finset__card_filter_eq_zero_iff : (X : Set) -> (s : Elem (Finset X)) -> (p : (Elem X -> Prop)) -> Proof (iff (Eq (Finset__card (Finset__filter (x1 => p x1) s)) 0) (forall X (x2 => if (Membership__mem s x2) (not (p x2))))).
+Finset__card_filter_eq_zero_iff : (X : Set) -> (s : Elem (Finset X)) -> (p : (Elem X -> Prop)) -> Proof (iff (Eq (Finset__card X (Finset__filter X (x1 => p x1) s)) 0) (forall X (x2 => if (Membership__mem X (Finset X) s x2) (not (p x2))))).
 
 (; //LEAN:Finset.card_lt_card ;)
-def Finset__card_lt_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (HasSSubset__SSubset s t)) -> Proof (Lt (Finset__card s) (Finset__card t)) :=
-  X => s => t => h => Multiset__card_lt_card X (Finset__val s) (Finset__val t) (iffEr (Lt (Finset__val s) (Finset__val t)) (HasSSubset__SSubset s t) (Finset__val_lt_iff X s t) h).
+def Finset__card_lt_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (HasSSubset__SSubset (Finset X) s t)) -> Proof (Lt (Finset__card X s) (Finset__card X t)) :=
+  X => s => t => h => Multiset__card_lt_card X (Finset__val X s) (Finset__val X t) (iffEr (Lt (Finset__val X s) (Finset__val X t)) (HasSSubset__SSubset (Finset X) s t) (Finset__val_lt_iff X s t) h).
 
 (; //LEAN:Finset.card_strictMono ;)
-def Finset__card_strictMono : (X : Set) -> Proof (StrictMono Finset__card) :=
-  X => forallI (Finset X) (x => forall (Finset X) (x2 => if (HasSSubset__SSubset x x2) (Lt (Finset__card x) (Finset__card x2)))) (x => forallI (Finset X) (x1 => if (HasSSubset__SSubset x x1) (Lt (Finset__card x) (Finset__card x1))) (x1 => Finset__card_lt_card X x x1)).
+def Finset__card_strictMono : (X : Set) -> Proof (StrictMono (Finset X) Nat (Finset__card X)) :=
+  X => forallI (Finset X) (x => forall (Finset X) (x2 => if (HasSSubset__SSubset (Finset X) x x2) (Lt (Finset__card X x) (Finset__card X x2)))) (x => forallI (Finset X) (x1 => if (HasSSubset__SSubset (Finset X) x x1) (Lt (Finset__card X x) (Finset__card X x1))) (x1 => Finset__card_lt_card X x x1)).
 
 (; //LEAN:Finset.card_eq_of_bijective ;)
-Finset__card_eq_of_bijective : (X : Set) -> (s : Elem (Finset X)) -> (n : Elem Nat) -> (f : ((i3 : Elem Nat) -> Proof (Lt i3 n) -> X)) -> (hf : Proof (forall X (a => if (Membership__mem s a) (exists Nat (i2 => exists (Lt i2 n) (h3 => Eqt X (f i2 h3) a)))))) -> (hf' : Proof (forall Nat (i1 => forall (Proof (Lt i1 n)) (h1 => Membership__mem s (f i1 h1))))) -> (f_inj : Proof (forall Nat (i => forall Nat (j => forall (Proof (Lt i n)) (hi => forall (Proof (Lt j n)) (hj => if (Eqt X (f i hi) (f j hj)) (Eq i j))))))) -> Proof (Eq (Finset__card s) n).
+Finset__card_eq_of_bijective : (X : Set) -> (s : Elem (Finset X)) -> (n : Elem Nat) -> (f : ((i3 : Elem Nat) -> Proof (Lt i3 n) -> X)) -> (hf : Proof (forall X (a => if (Membership__mem X (Finset X) s a) (exists Nat (i2 => exists (Lt i2 n) (h3 => Eqt X (f i2 h3) a)))))) -> (hf' : Proof (forall Nat (i1 => forall (Proof (Lt i1 n)) (h1 => Membership__mem X (Finset X) s (f i1 h1))))) -> (f_inj : Proof (forall Nat (i => forall Nat (j => forall (Proof (Lt i n)) (hi => forall (Proof (Lt j n)) (hj => if (Eqt X (f i hi) (f j hj)) (Eq i j))))))) -> Proof (Eq (Finset__card X s) n).
 
 (; //LEAN:Finset.card_bij ;)
-Finset__card_bij : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (i : ((a2 : Elem X) -> Proof (Membership__mem s a2) -> Y)) -> (hi : Proof (forall X (a1 => forall (Proof (Membership__mem s a1)) (ha1 => Membership__mem t (i a1 ha1))))) -> (i_inj : Proof (forall X (x => forall (Proof (Membership__mem s x)) (h1 => forall X (x1 => forall (Proof (Membership__mem s x1)) (h2 => if (Eqt Y (i x h1) (i x1 h2)) (Eqt X x x1))))))) -> (i_surj : Proof (forall Y (b => if (Membership__mem t b) (exists X (a => exists (Membership__mem s a) (ha => Eqt Y (i a ha) b)))))) -> Proof (Eq (Finset__card s) (Finset__card t)).
+Finset__card_bij : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (i : ((a2 : Elem X) -> Proof (Membership__mem X (Finset X) s a2) -> Y)) -> (hi : Proof (forall X (a1 => forall (Proof (Membership__mem X (Finset X) s a1)) (ha1 => Membership__mem Y (Finset Y) t (i a1 ha1))))) -> (i_inj : Proof (forall X (x => forall (Proof (Membership__mem X (Finset X) s x)) (h1 => forall X (x1 => forall (Proof (Membership__mem X (Finset X) s x1)) (h2 => if (Eqt Y (i x h1) (i x1 h2)) (Eqt X x x1))))))) -> (i_surj : Proof (forall Y (b => if (Membership__mem Y (Finset Y) t b) (exists X (a => exists (Membership__mem X (Finset X) s a) (ha => Eqt Y (i a ha) b)))))) -> Proof (Eq (Finset__card X s) (Finset__card Y t)).
 
 (; //LEAN:Finset.card_bij' ;)
-Finset__card_bij' : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (i : ((a5 : Elem X) -> Proof (Membership__mem s a5) -> Y)) -> (j : ((a4 : Elem Y) -> Proof (Membership__mem t a4) -> X)) -> (hi : Proof (forall X (a3 => forall (Proof (Membership__mem s a3)) (ha3 => Membership__mem t (i a3 ha3))))) -> (hj : Proof (forall Y (a2 => forall (Proof (Membership__mem t a2)) (ha2 => Membership__mem s (j a2 ha2))))) -> (left_inv : Proof (forall X (a1 => forall (Proof (Membership__mem s a1)) (ha1 => Eqt X (j (i a1 ha1) (hi a1 ha1)) a1)))) -> (right_inv : Proof (forall Y (a => forall (Proof (Membership__mem t a)) (ha => Eqt Y (i (j a ha) (hj a ha)) a)))) -> Proof (Eq (Finset__card s) (Finset__card t)).
+Finset__card_bij' : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (i : ((a5 : Elem X) -> Proof (Membership__mem X (Finset X) s a5) -> Y)) -> (j : ((a4 : Elem Y) -> Proof (Membership__mem Y (Finset Y) t a4) -> X)) -> (hi : Proof (forall X (a3 => forall (Proof (Membership__mem X (Finset X) s a3)) (ha3 => Membership__mem Y (Finset Y) t (i a3 ha3))))) -> (hj : Proof (forall Y (a2 => forall (Proof (Membership__mem Y (Finset Y) t a2)) (ha2 => Membership__mem X (Finset X) s (j a2 ha2))))) -> (left_inv : Proof (forall X (a1 => forall (Proof (Membership__mem X (Finset X) s a1)) (ha1 => Eqt X (j (i a1 ha1) (hi a1 ha1)) a1)))) -> (right_inv : Proof (forall Y (a => forall (Proof (Membership__mem Y (Finset Y) t a)) (ha => Eqt Y (i (j a ha) (hj a ha)) a)))) -> Proof (Eq (Finset__card X s) (Finset__card Y t)).
 
 (; //LEAN:Finset.card_nbij ;)
-def Finset__card_nbij : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (i : (Elem X -> Y)) -> (hi : Proof (Set__MapsTo i s t)) -> (i_inj : Proof (Set__InjOn i s)) -> (i_surj : Proof (Set__SurjOn i s t)) -> Proof (Eq (Finset__card s) (Finset__card t)) :=
-  X => Y => s => t => i => hi => i_inj => i_surj => Finset__card_bij X Y s t (a => h => i a) hi i_inj (Eq__mpr (id (forall_congr Y (a1 => if (Membership__mem t a1) (exists X (a2 => exists (Membership__mem s a2) (ha => Eqt Y (i a2) a1)))) (a3 => if (Membership__mem t a3) (exists X (a4 => and (Membership__mem s a4) (Eqt Y (i a4) a3)))) (forallI Y (b => Eqt Prop (if (Membership__mem t b) (exists X (a11 => exists (Membership__mem s a11) (ha3 => Eqt Y (i a11) b)))) (if (Membership__mem t b) (exists X (a12 => and (Membership__mem s a12) (Eqt Y (i a12) b))))) (b => implies_congr (Membership__mem t b) (Membership__mem t b) (exists X (a5 => exists (Membership__mem s a5) (ha1 => Eqt Y (i a5) b))) (exists X (a6 => and (Membership__mem s a6) (Eqt Y (i a6) b))) (Eq__refl Prop (Membership__mem t b)) (congrArg (Elem X -> Prop) Prop (a8 => exists (Membership__mem s a8) (ha2 => Eqt Y (i a8) b)) (a9 => and (Membership__mem s a9) (Eqt Y (i a9) b)) Exists (funext X (x => Prop) (x1 => exists (Membership__mem s x1) (_h => Eqt Y (i x1) b)) (x2 => and (Membership__mem s x2) (Eqt Y (i x2) b)) (forallI X (a10 => Eqt Prop (exists (Membership__mem s a10) (_h1 => Eqt Y (i a10) b)) (and (Membership__mem s a10) (Eqt Y (i a10) b))) (a10 => exists_prop___simp_1 (Eqt Y (i a10) b) (Membership__mem s a10))))))))) i_surj).
+def Finset__card_nbij : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (i : (Elem X -> Y)) -> (hi : Proof (Set__MapsTo X Y i (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t))) -> (i_inj : Proof (Set__InjOn X Y i (SetLike__coe (Finset X) X s))) -> (i_surj : Proof (Set__SurjOn X Y i (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t))) -> Proof (Eq (Finset__card X s) (Finset__card Y t)) :=
+  X => Y => s => t => i => hi => i_inj => i_surj => Finset__card_bij X Y s t (a => h => i a) hi i_inj (Eq__mpr (forall Y (b => if (Membership__mem Y (Finset Y) t b) (exists X (a1 => exists (Membership__mem X (Finset X) s a1) (ha => Eqt Y (i a1) b))))) (forall Y (b1 => if (Membership__mem Y (Finset Y) t b1) (exists X (a2 => and (Membership__mem X (Finset X) s a2) (Eqt Y (i a2) b1))))) (id (Eqt Prop (forall Y (b2 => if (Membership__mem Y (Finset Y) t b2) (exists X (a3 => exists (Membership__mem X (Finset X) s a3) (ha1 => Eqt Y (i a3) b2))))) (forall Y (b3 => if (Membership__mem Y (Finset Y) t b3) (exists X (a4 => and (Membership__mem X (Finset X) s a4) (Eqt Y (i a4) b3)))))) (forall_congr Y (a5 => if (Membership__mem Y (Finset Y) t a5) (exists X (a6 => exists (Membership__mem X (Finset X) s a6) (ha2 => Eqt Y (i a6) a5)))) (a7 => if (Membership__mem Y (Finset Y) t a7) (exists X (a8 => and (Membership__mem X (Finset X) s a8) (Eqt Y (i a8) a7)))) (forallI Y (b4 => Eqt Prop (if (Membership__mem Y (Finset Y) t b4) (exists X (a15 => exists (Membership__mem X (Finset X) s a15) (ha5 => Eqt Y (i a15) b4)))) (if (Membership__mem Y (Finset Y) t b4) (exists X (a16 => and (Membership__mem X (Finset X) s a16) (Eqt Y (i a16) b4))))) (b4 => implies_congr (Membership__mem Y (Finset Y) t b4) (Membership__mem Y (Finset Y) t b4) (exists X (a9 => exists (Membership__mem X (Finset X) s a9) (ha3 => Eqt Y (i a9) b4))) (exists X (a10 => and (Membership__mem X (Finset X) s a10) (Eqt Y (i a10) b4))) (Eq__refl Prop (Membership__mem Y (Finset Y) t b4)) (congrArg (Elem X -> Prop) Prop (a12 => exists (Membership__mem X (Finset X) s a12) (ha4 => Eqt Y (i a12) b4)) (a13 => and (Membership__mem X (Finset X) s a13) (Eqt Y (i a13) b4)) (Exists X) (funext X (x => Prop) (x1 => exists (Membership__mem X (Finset X) s x1) (_h => Eqt Y (i x1) b4)) (x2 => and (Membership__mem X (Finset X) s x2) (Eqt Y (i x2) b4)) (forallI X (a14 => Eqt Prop (exists (Membership__mem X (Finset X) s a14) (_h1 => Eqt Y (i a14) b4)) (and (Membership__mem X (Finset X) s a14) (Eqt Y (i a14) b4))) (a14 => exists_prop___simp_1 (Eqt Y (i a14) b4) (Membership__mem X (Finset X) s a14))))))))) i_surj).
 
 (; //LEAN:Finset.card_nbij' ;)
-def Finset__card_nbij' : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (i : (Elem X -> Y)) -> (j : (Elem Y -> X)) -> (hi : Proof (Set__MapsTo i s t)) -> (hj : Proof (Set__MapsTo j t s)) -> (left_inv : Proof (Set__LeftInvOn j i s)) -> (right_inv : Proof (Set__RightInvOn j i t)) -> Proof (Eq (Finset__card s) (Finset__card t)) :=
+def Finset__card_nbij' : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (i : (Elem X -> Y)) -> (j : (Elem Y -> X)) -> (hi : Proof (Set__MapsTo X Y i (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t))) -> (hj : Proof (Set__MapsTo Y X j (SetLike__coe (Finset Y) Y t) (SetLike__coe (Finset X) X s))) -> (left_inv : Proof (Set__LeftInvOn X Y j i (SetLike__coe (Finset X) X s))) -> (right_inv : Proof (Set__RightInvOn X Y j i (SetLike__coe (Finset Y) Y t))) -> Proof (Eq (Finset__card X s) (Finset__card Y t)) :=
   X => Y => s => t => i => j => hi => hj => left_inv => right_inv => Finset__card_bij' X Y s t (a => h => i a) (b => h1 => j b) hi hj left_inv right_inv.
 
 (; //LEAN:Finset.card_equiv ;)
-Finset__card_equiv : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (e : Elem (Equiv X Y)) -> (hst : Proof (forall X (i => iff (Membership__mem s i) (Membership__mem t (e i))))) -> Proof (Eq (Finset__card s) (Finset__card t)).
+Finset__card_equiv : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (e : Elem (Equiv X Y)) -> (hst : Proof (forall X (i => iff (Membership__mem X (Finset X) s i) (Membership__mem Y (Finset Y) t (e i))))) -> Proof (Eq (Finset__card X s) (Finset__card Y t)).
 
 (; //LEAN:Finset.card_bijective ;)
-def Finset__card_bijective : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (e : (Elem X -> Y)) -> (he : Proof (Function__Bijective e)) -> (hst : Proof (forall X (i => iff (Membership__mem s i) (Membership__mem t (e i))))) -> Proof (Eq (Finset__card s) (Finset__card t)) :=
-  X => Y => s => t => e => he => hst => Finset__card_equiv X Y s t (Equiv__ofBijective e he) hst.
+def Finset__card_bijective : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (e : (Elem X -> Y)) -> (he : Proof (Function__Bijective X Y e)) -> (hst : Proof (forall X (i => iff (Membership__mem X (Finset X) s i) (Membership__mem Y (Finset Y) t (e i))))) -> Proof (Eq (Finset__card X s) (Finset__card Y t)) :=
+  X => Y => s => t => e => he => hst => Finset__card_equiv X Y s t (Equiv__ofBijective X Y e he) hst.
 
 (; //LEAN:Set.BijOn.finsetCard_eq ;)
-def Set__BijOn__finsetCard_eq : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (e : (Elem X -> Y)) -> (he : Proof (Set__BijOn e s t)) -> Proof (Eq (Finset__card s) (Finset__card t)) :=
-  X => Y => s => t => e => he => Finset__card_nbij X Y s t e (Set__BijOn__mapsTo X Y s t e he) (Set__BijOn__injOn X Y s t e he) (Set__BijOn__surjOn X Y s t e he).
+def Set__BijOn__finsetCard_eq : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (e : (Elem X -> Y)) -> (he : Proof (Set__BijOn X Y e (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t))) -> Proof (Eq (Finset__card X s) (Finset__card Y t)) :=
+  X => Y => s => t => e => he => Finset__card_nbij X Y s t e (Set__BijOn__mapsTo X Y (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t) e he) (Set__BijOn__injOn X Y (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t) e he) (Set__BijOn__surjOn X Y (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t) e he).
 
 (; //LEAN:Finset.card_le_card_of_injOn ;)
-Finset__card_le_card_of_injOn : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Set__MapsTo f s t)) -> (f_inj : Proof (Set__InjOn f s)) -> Proof (Leq (Finset__card s) (Finset__card t)).
+Finset__card_le_card_of_injOn : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Set__MapsTo X Y f (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t))) -> (f_inj : Proof (Set__InjOn X Y f (SetLike__coe (Finset X) X s))) -> Proof (Leq (Finset__card X s) (Finset__card Y t)).
 
 (; //LEAN:Finset.card_le_card_of_injective ;)
-Finset__card_le_card_of_injective : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : (Elem (Subtype (x2 => Membership__mem s x2)) -> Subtype (x1 => Membership__mem t x1))) -> (hf : Proof (Function__Injective f)) -> Proof (Leq (Finset__card s) (Finset__card t)).
+Finset__card_le_card_of_injective : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : (Elem (Subtype X (x4 => Membership__mem X (Finset X) s x4)) -> Subtype Y (x3 => Membership__mem Y (Finset Y) t x3))) -> (hf : Proof (Function__Injective (Subtype X (x => Membership__mem X (Finset X) s x)) (Subtype Y (x1 => Membership__mem Y (Finset Y) t x1)) f)) -> Proof (Leq (Finset__card X s) (Finset__card Y t)).
 
 (; //LEAN:Finset.card_le_card_of_surjOn ;)
-Finset__card_le_card_of_surjOn : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Set__SurjOn f s t)) -> Proof (Leq (Finset__card t) (Finset__card s)).
+Finset__card_le_card_of_surjOn : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Set__SurjOn X Y f (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t))) -> Proof (Leq (Finset__card Y t) (Finset__card X s)).
 
 (; //LEAN:Finset.card_le_card_of_surjective ;)
-Finset__card_le_card_of_surjective : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : (Elem (Subtype (x2 => Membership__mem s x2)) -> Subtype (x1 => Membership__mem t x1))) -> (hf : Proof (Function__Surjective f)) -> Proof (Leq (Finset__card t) (Finset__card s)).
+Finset__card_le_card_of_surjective : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : (Elem (Subtype X (x4 => Membership__mem X (Finset X) s x4)) -> Subtype Y (x3 => Membership__mem Y (Finset Y) t x3))) -> (hf : Proof (Function__Surjective (Subtype X (x => Membership__mem X (Finset X) s x)) (Subtype Y (x1 => Membership__mem Y (Finset Y) t x1)) f)) -> Proof (Leq (Finset__card Y t) (Finset__card X s)).
 
 (; //LEAN:Finset.exists_ne_map_eq_of_card_lt_of_maps_to ;)
-Finset__exists_ne_map_eq_of_card_lt_of_maps_to : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (hc : Proof (Lt (Finset__card t) (Finset__card s))) -> (f : (Elem X -> Y)) -> (hf : Proof (Set__MapsTo f s t)) -> Proof (exists X (x => and (Membership__mem s x) (exists X (y => and (Membership__mem s y) (and (Neq x y) (Eqt Y (f x) (f y))))))).
+Finset__exists_ne_map_eq_of_card_lt_of_maps_to : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (hc : Proof (Lt (Finset__card Y t) (Finset__card X s))) -> (f : (Elem X -> Y)) -> (hf : Proof (Set__MapsTo X Y f (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t))) -> Proof (exists X (x => and (Membership__mem X (Finset X) s x) (exists X (y => and (Membership__mem X (Finset X) s y) (and (Neq x y) (Eqt Y (f x) (f y))))))).
 
 (; //LEAN:Finset.exists_ne_map_eq_of_card_image_lt ;)
-Finset__exists_ne_map_eq_of_card_image_lt : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (hc : Proof (Lt (Finset__card (Finset__image f s)) (Finset__card s))) -> Proof (exists X (x1 => and (Membership__mem s x1) (exists X (y => and (Membership__mem s y) (and (Neq x1 y) (Eqt Y (f x1) (f y))))))).
+Finset__exists_ne_map_eq_of_card_image_lt : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (hc : Proof (Lt (Finset__card Y (Finset__image X Y f s)) (Finset__card X s))) -> Proof (exists X (x1 => and (Membership__mem X (Finset X) s x1) (exists X (y => and (Membership__mem X (Finset X) s y) (and (Neq x1 y) (Eqt Y (f x1) (f y))))))).
 
 (; //LEAN:Finset.not_injOn_of_card_image_lt ;)
-def Finset__not_injOn_of_card_image_lt : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (hc : Proof (Lt (Finset__card (Finset__image f s)) (Finset__card s))) -> Proof (not (Set__InjOn f s)) :=
-  X => Y => s => f => hc => mt (Set__InjOn f s) (Eq (Finset__card (Finset__image f s)) (Finset__card s)) (Finset__card_image_of_injOn X Y s f) (LT__lt__ne Nat (Finset__card (Finset__image f s)) (Finset__card s) hc).
+def Finset__not_injOn_of_card_image_lt : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (hc : Proof (Lt (Finset__card Y (Finset__image X Y f s)) (Finset__card X s))) -> Proof (not (Set__InjOn X Y f (SetLike__coe (Finset X) X s))) :=
+  X => Y => s => f => hc => mt (Set__InjOn X Y f (SetLike__coe (Finset X) X s)) (Eq (Finset__card Y (Finset__image X Y f s)) (Finset__card X s)) (Finset__card_image_of_injOn X Y s f) (LT__lt__ne Nat (Finset__card Y (Finset__image X Y f s)) (Finset__card X s) hc).
 
 (; //LEAN:Finset.le_card_of_inj_on_range ;)
-def Finset__le_card_of_inj_on_range : (X : Set) -> (s : Elem (Finset X)) -> (n : Elem Nat) -> (f : (Elem Nat -> X)) -> (hf : Proof (forall Nat (i1 => if (Lt i1 n) (Membership__mem s (f i1))))) -> (f_inj : Proof (forall Nat (i => if (Lt i n) (forall Nat (j => if (Lt j n) (if (Eqt X (f i) (f j)) (Eq i j))))))) -> Proof (Leq n (Finset__card s)) :=
-  X => s => n => f => hf => f_inj => Trans__trans (Eq__symm Nat (Finset__card (Finset__range n)) n (Finset__card_range n)) (Finset__card_le_card_of_injOn Nat X (Finset__range n) s f (Eq__mpr (id (forall_congr Nat (a => if (Membership__mem (Finset__range n) a) (Membership__mem s (f a))) (a1 => if (Lt a1 n) (Membership__mem s (f a1))) (forallI Nat (x => Eqt Prop (if (Membership__mem (Finset__range n) x) (Membership__mem s (f x))) (if (Lt x n) (Membership__mem s (f x)))) (x => implies_congr (Membership__mem (Finset__range n) x) (Lt x n) (Membership__mem s (f x)) (Membership__mem s (f x)) (Eq__trans Prop (Membership__mem (Finset__range n) x) (Membership__mem (Set__Iio n) x) (Lt x n) (congrFun' Nat Prop (Membership__mem (Finset__range n)) (Membership__mem (Set__Iio n)) (congrArg (powerset Nat) (Elem Nat -> Prop) (Finset__range n) (Set__Iio n) Membership__mem (Finset__coe_range n)) x) (Set__mem_Iio___simp_2 Nat n x)) (SetLike__mem_coe___simp_1 (Finset X) X s (f x)))))) hf) (Eq__mpr (id (congrArg (powerset Nat) Prop (Finset__range n) (Set__Iio n) (Set__InjOn f) (Finset__coe_range n))) f_inj)).
+def Finset__le_card_of_inj_on_range : (X : Set) -> (s : Elem (Finset X)) -> (n : Elem Nat) -> (f : (Elem Nat -> X)) -> (hf : Proof (forall Nat (i1 => if (Lt i1 n) (Membership__mem X (Finset X) s (f i1))))) -> (f_inj : Proof (forall Nat (i => if (Lt i n) (forall Nat (j => if (Lt j n) (if (Eqt X (f i) (f j)) (Eq i j))))))) -> Proof (Leq n (Finset__card X s)) :=
+  X => s => n => f => hf => f_inj => Trans__trans Nat Nat Nat (Eq Nat) Leq Leq n (Finset__card Nat (Finset__range n)) (Finset__card X s) (Eq__symm Nat (Finset__card Nat (Finset__range n)) n (Finset__card_range n)) (Finset__card_le_card_of_injOn Nat X (Finset__range n) s f (Eq__mpr (Set__MapsTo Nat X f (SetLike__coe (Finset Nat) Nat (Finset__range n)) (SetLike__coe (Finset X) X s)) (forall Nat (x => if (Lt x n) (Membership__mem X (Finset X) s (f x)))) (id (Eqt Prop (Set__MapsTo Nat X f (SetLike__coe (Finset Nat) Nat (Finset__range n)) (SetLike__coe (Finset X) X s)) (forall Nat (x1 => if (Lt x1 n) (Membership__mem X (Finset X) s (f x1))))) (forall_congr Nat (a => if (Membership__mem Nat (powerset Nat) (SetLike__coe (Finset Nat) Nat (Finset__range n)) a) (Membership__mem X (powerset X) (SetLike__coe (Finset X) X s) (f a))) (a1 => if (Lt a1 n) (Membership__mem X (Finset X) s (f a1))) (forallI Nat (x2 => Eqt Prop (if (Membership__mem Nat (powerset Nat) (SetLike__coe (Finset Nat) Nat (Finset__range n)) x2) (Membership__mem X (powerset X) (SetLike__coe (Finset X) X s) (f x2))) (if (Lt x2 n) (Membership__mem X (Finset X) s (f x2)))) (x2 => implies_congr (Membership__mem Nat (powerset Nat) (SetLike__coe (Finset Nat) Nat (Finset__range n)) x2) (Lt x2 n) (Membership__mem X (powerset X) (SetLike__coe (Finset X) X s) (f x2)) (Membership__mem X (Finset X) s (f x2)) (Eq__trans Prop (Membership__mem Nat (powerset Nat) (SetLike__coe (Finset Nat) Nat (Finset__range n)) x2) (Membership__mem Nat (powerset Nat) (Set__Iio Nat n) x2) (Lt x2 n) (congrFun' Nat Prop (Membership__mem Nat (powerset Nat) (SetLike__coe (Finset Nat) Nat (Finset__range n))) (Membership__mem Nat (powerset Nat) (Set__Iio Nat n)) (congrArg (powerset Nat) (Elem Nat -> Prop) (SetLike__coe (Finset Nat) Nat (Finset__range n)) (Set__Iio Nat n) (Membership__mem Nat (powerset Nat)) (Finset__coe_range n)) x2) (Set__mem_Iio___simp_2 Nat n x2)) (SetLike__mem_coe___simp_1 (Finset X) X s (f x2)))))) hf) (Eq__mpr (Set__InjOn Nat X f (SetLike__coe (Finset Nat) Nat (Finset__range n))) (Set__InjOn Nat X f (Set__Iio Nat n)) (id (Eqt Prop (Set__InjOn Nat X f (SetLike__coe (Finset Nat) Nat (Finset__range n))) (Set__InjOn Nat X f (Set__Iio Nat n))) (congrArg (powerset Nat) Prop (SetLike__coe (Finset Nat) Nat (Finset__range n)) (Set__Iio Nat n) (Set__InjOn Nat X f) (Finset__coe_range n))) f_inj)).
 
 (; //LEAN:Finset.surjOn_of_injOn_of_card_le ;)
-Finset__surjOn_of_injOn_of_card_le : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Set__MapsTo f s t)) -> (hinj : Proof (Set__InjOn f s)) -> (hst : Proof (Leq (Finset__card t) (Finset__card s))) -> Proof (Set__SurjOn f s t).
+Finset__surjOn_of_injOn_of_card_le : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Set__MapsTo X Y f (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t))) -> (hinj : Proof (Set__InjOn X Y f (SetLike__coe (Finset X) X s))) -> (hst : Proof (Leq (Finset__card Y t) (Finset__card X s))) -> Proof (Set__SurjOn X Y f (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t)).
 
 (; //LEAN:Finset.surj_on_of_inj_on_of_card_le ;)
-Finset__surj_on_of_inj_on_of_card_le : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : ((a2 : Elem X) -> Proof (Membership__mem s a2) -> Y)) -> (hf : Proof (forall X (a1 => forall (Proof (Membership__mem s a1)) (ha1 => Membership__mem t (f a1 ha1))))) -> (hinj : Proof (forall X (x => forall X (x1 => forall (Proof (Membership__mem s x)) (h1 => forall (Proof (Membership__mem s x1)) (h2 => if (Eqt Y (f x h1) (f x1 h2)) (Eqt X x x1))))))) -> (hst : Proof (Leq (Finset__card t) (Finset__card s))) -> (b : Elem Y) -> (h : Proof (Membership__mem t b)) -> Proof (exists X (a => exists (Membership__mem s a) (ha => Eqt Y b (f a ha)))).
+Finset__surj_on_of_inj_on_of_card_le : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : ((a2 : Elem X) -> Proof (Membership__mem X (Finset X) s a2) -> Y)) -> (hf : Proof (forall X (a1 => forall (Proof (Membership__mem X (Finset X) s a1)) (ha1 => Membership__mem Y (Finset Y) t (f a1 ha1))))) -> (hinj : Proof (forall X (x => forall X (x1 => forall (Proof (Membership__mem X (Finset X) s x)) (h1 => forall (Proof (Membership__mem X (Finset X) s x1)) (h2 => if (Eqt Y (f x h1) (f x1 h2)) (Eqt X x x1))))))) -> (hst : Proof (Leq (Finset__card Y t) (Finset__card X s))) -> (b : Elem Y) -> (h : Proof (Membership__mem Y (Finset Y) t b)) -> Proof (exists X (a => exists (Membership__mem X (Finset X) s a) (ha => Eqt Y b (f a ha)))).
 
 (; //LEAN:Finset.injOn_of_surjOn_of_card_le ;)
-Finset__injOn_of_surjOn_of_card_le : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Set__MapsTo f s t)) -> (hsurj : Proof (Set__SurjOn f s t)) -> (hst : Proof (Leq (Finset__card s) (Finset__card t))) -> Proof (Set__InjOn f s).
+Finset__injOn_of_surjOn_of_card_le : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Set__MapsTo X Y f (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t))) -> (hsurj : Proof (Set__SurjOn X Y f (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t))) -> (hst : Proof (Leq (Finset__card X s) (Finset__card Y t))) -> Proof (Set__InjOn X Y f (SetLike__coe (Finset X) X s)).
 
 (; //LEAN:Finset.inj_on_of_surj_on_of_card_le ;)
-Finset__inj_on_of_surj_on_of_card_le : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : ((a2 : Elem X) -> Proof (Membership__mem s a2) -> Y)) -> (hf : Proof (forall X (a1 => forall (Proof (Membership__mem s a1)) (ha1 => Membership__mem t (f a1 ha1))))) -> (hsurj : Proof (forall Y (b => if (Membership__mem t b) (exists X (a => exists (Membership__mem s a) (ha => Eqt Y (f a ha) b)))))) -> (hst : Proof (Leq (Finset__card s) (Finset__card t))) -> (x : Elem X) -> (h : Proof (Membership__mem s x)) -> (x1 : Elem X) -> (h1 : Proof (Membership__mem s x1)) -> (h2 : Proof (Eqt Y (f x h) (f x1 h1))) -> Proof (Eqt X x x1).
+Finset__inj_on_of_surj_on_of_card_le : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : ((a2 : Elem X) -> Proof (Membership__mem X (Finset X) s a2) -> Y)) -> (hf : Proof (forall X (a1 => forall (Proof (Membership__mem X (Finset X) s a1)) (ha1 => Membership__mem Y (Finset Y) t (f a1 ha1))))) -> (hsurj : Proof (forall Y (b => if (Membership__mem Y (Finset Y) t b) (exists X (a => exists (Membership__mem X (Finset X) s a) (ha => Eqt Y (f a ha) b)))))) -> (hst : Proof (Leq (Finset__card X s) (Finset__card Y t))) -> (x : Elem X) -> (h : Proof (Membership__mem X (Finset X) s x)) -> (x1 : Elem X) -> (h1 : Proof (Membership__mem X (Finset X) s x1)) -> (h2 : Proof (Eqt Y (f x h) (f x1 h1))) -> Proof (Eqt X x x1).
 
 (; //LEAN:Finset.image_eq_iff_bijOn_of_card ;)
-Finset__image_eq_iff_bijOn_of_card : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (t : Elem (Finset Y)) -> (h : Proof (Leq (Finset__card s) (Finset__card t))) -> Proof (iff (Eqt (Finset Y) (Finset__image f s) t) (Set__BijOn f s t)).
+Finset__image_eq_iff_bijOn_of_card : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (t : Elem (Finset Y)) -> (h : Proof (Leq (Finset__card X s) (Finset__card Y t))) -> Proof (iff (Eqt (Finset Y) (Finset__image X Y f s) t) (Set__BijOn X Y f (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t))).
 
 (; //LEAN:Finset.card_disjUnion ;)
-def Finset__card_disjUnion : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Disjoint s t)) -> Proof (Eq (Finset__card (Finset__disjUnion s t h)) (plus (Finset__card s) (Finset__card t))) :=
-  X => s => t => h => Multiset__card_add X (Finset__val s) (Finset__val t).
+def Finset__card_disjUnion : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Disjoint (Finset X) s t)) -> Proof (Eq (Finset__card X (Finset__disjUnion X s t h)) (plus (Finset__card X s) (Finset__card X t))) :=
+  X => s => t => h => Multiset__card_add X (Finset__val X s) (Finset__val X t).
 
 (; //LEAN:Finset.card_union_add_card_inter ;)
-Finset__card_union_add_card_inter : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (plus (Finset__card (Union__union s t)) (Finset__card (Inter__inter s t))) (plus (Finset__card s) (Finset__card t))).
+Finset__card_union_add_card_inter : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (plus (Finset__card X (Union__union (Finset X) s t)) (Finset__card X (Inter__inter (Finset X) s t))) (plus (Finset__card X s) (Finset__card X t))).
 
 (; //LEAN:Finset.card_inter_add_card_union ;)
-Finset__card_inter_add_card_union : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (plus (Finset__card (Inter__inter s t)) (Finset__card (Union__union s t))) (plus (Finset__card s) (Finset__card t))).
+Finset__card_inter_add_card_union : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (plus (Finset__card X (Inter__inter (Finset X) s t)) (Finset__card X (Union__union (Finset X) s t))) (plus (Finset__card X s) (Finset__card X t))).
 
 (; //LEAN:Finset.card_union ;)
-Finset__card_union : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (Finset__card (Union__union s t)) (minus (plus (Finset__card s) (Finset__card t)) (Finset__card (Inter__inter s t)))).
+Finset__card_union : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (Finset__card X (Union__union (Finset X) s t)) (minus (plus (Finset__card X s) (Finset__card X t)) (Finset__card X (Inter__inter (Finset X) s t)))).
 
 (; //LEAN:Finset.card_inter ;)
-Finset__card_inter : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (Finset__card (Inter__inter s t)) (minus (plus (Finset__card s) (Finset__card t)) (Finset__card (Union__union s t)))).
+Finset__card_inter : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (Finset__card X (Inter__inter (Finset X) s t)) (minus (plus (Finset__card X s) (Finset__card X t)) (Finset__card X (Union__union (Finset X) s t)))).
 
 (; //LEAN:Finset.card_union_le ;)
-Finset__card_union_le : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Leq (Finset__card (Union__union s t)) (plus (Finset__card s) (Finset__card t))).
+Finset__card_union_le : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Leq (Finset__card X (Union__union (Finset X) s t)) (plus (Finset__card X s) (Finset__card X t))).
 
 (; //LEAN:Finset.card_union_eq_card_add_card ;)
-Finset__card_union_eq_card_add_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (iff (Eq (Finset__card (Union__union s t)) (plus (Finset__card s) (Finset__card t))) (Disjoint s t)).
+Finset__card_union_eq_card_add_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (iff (Eq (Finset__card X (Union__union (Finset X) s t)) (plus (Finset__card X s) (Finset__card X t))) (Disjoint (Finset X) s t)).
 
 (; //LEAN:Finset.card_union_of_disjoint ;)
-def Finset__card_union_of_disjoint : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Disjoint s t)) -> Proof (Eq (Finset__card (Union__union s t)) (plus (Finset__card s) (Finset__card t))) :=
-  X => s => t => iffEr (Eq (Finset__card (Union__union s t)) (plus (Finset__card s) (Finset__card t))) (Disjoint s t) (Finset__card_union_eq_card_add_card X s t).
+def Finset__card_union_of_disjoint : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Disjoint (Finset X) s t)) -> Proof (Eq (Finset__card X (Union__union (Finset X) s t)) (plus (Finset__card X s) (Finset__card X t))) :=
+  X => s => t => iffEr (Eq (Finset__card X (Union__union (Finset X) s t)) (plus (Finset__card X s) (Finset__card X t))) (Disjoint (Finset X) s t) (Finset__card_union_eq_card_add_card X s t).
 
 (; //LEAN:Finset.card_sdiff_of_subset ;)
-Finset__card_sdiff_of_subset : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Set__Subset s t)) -> Proof (Eq (Finset__card (SDiff__sdiff t s)) (minus (Finset__card t) (Finset__card s))).
+Finset__card_sdiff_of_subset : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Set__Subset X s t)) -> Proof (Eq (Finset__card X (SDiff__sdiff (Finset X) t s)) (minus (Finset__card X t) (Finset__card X s))).
 
 (; //LEAN:Finset.card_sdiff ;)
-Finset__card_sdiff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (Finset__card (SDiff__sdiff t s)) (minus (Finset__card t) (Finset__card (Inter__inter s t)))).
+Finset__card_sdiff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (Finset__card X (SDiff__sdiff (Finset X) t s)) (minus (Finset__card X t) (Finset__card X (Inter__inter (Finset X) s t)))).
 
 (; //LEAN:Finset.card_sdiff_add_card_eq_card ;)
-Finset__card_sdiff_add_card_eq_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Set__Subset s t)) -> Proof (Eq (plus (Finset__card (SDiff__sdiff t s)) (Finset__card s)) (Finset__card t)).
+Finset__card_sdiff_add_card_eq_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Set__Subset X s t)) -> Proof (Eq (plus (Finset__card X (SDiff__sdiff (Finset X) t s)) (Finset__card X s)) (Finset__card X t)).
 
 (; //LEAN:Finset.card_sub_card_eq ;)
-Finset__card_sub_card_eq : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (minus (Finset__card t) (Finset__card s)) (minus (Finset__card (SDiff__sdiff t s)) (Finset__card (SDiff__sdiff s t)))).
+Finset__card_sub_card_eq : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (minus (Finset__card X t) (Finset__card X s)) (minus (Finset__card X (SDiff__sdiff (Finset X) t s)) (Finset__card X (SDiff__sdiff (Finset X) s t)))).
 
 (; //LEAN:Finset.le_card_sdiff ;)
-Finset__le_card_sdiff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Leq (minus (Finset__card t) (Finset__card s)) (Finset__card (SDiff__sdiff t s))).
+Finset__le_card_sdiff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Leq (minus (Finset__card X t) (Finset__card X s)) (Finset__card X (SDiff__sdiff (Finset X) t s))).
 
 (; //LEAN:Finset.card_le_card_sdiff_add_card ;)
-Finset__card_le_card_sdiff_add_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Leq (Finset__card s) (plus (Finset__card (SDiff__sdiff s t)) (Finset__card t))).
+Finset__card_le_card_sdiff_add_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Leq (Finset__card X s) (plus (Finset__card X (SDiff__sdiff (Finset X) s t)) (Finset__card X t))).
 
 (; //LEAN:Finset.card_sdiff_add_card ;)
-Finset__card_sdiff_add_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (plus (Finset__card (SDiff__sdiff s t)) (Finset__card t)) (Finset__card (Union__union s t))).
+Finset__card_sdiff_add_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (plus (Finset__card X (SDiff__sdiff (Finset X) s t)) (Finset__card X t)) (Finset__card X (Union__union (Finset X) s t))).
 
 (; //LEAN:Finset.sdiff_nonempty_of_card_lt_card ;)
-Finset__sdiff_nonempty_of_card_lt_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Lt (Finset__card s) (Finset__card t))) -> Proof (Finset__Nonempty (SDiff__sdiff t s)).
+Finset__sdiff_nonempty_of_card_lt_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Lt (Finset__card X s) (Finset__card X t))) -> Proof (Finset__Nonempty X (SDiff__sdiff (Finset X) t s)).
 
 (; //LEAN:Finset.exists_mem_notMem_of_card_lt_card ;)
-Finset__exists_mem_notMem_of_card_lt_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Lt (Finset__card s) (Finset__card t))) -> Proof (exists X (e => and (Membership__mem t e) (not (Membership__mem s e)))).
+Finset__exists_mem_notMem_of_card_lt_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Lt (Finset__card X s) (Finset__card X t))) -> Proof (exists X (e => and (Membership__mem X (Finset X) t e) (not (Membership__mem X (Finset X) s e)))).
 
 (; //LEAN:Finset.card_sdiff_add_card_inter ;)
-Finset__card_sdiff_add_card_inter : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (plus (Finset__card (SDiff__sdiff s t)) (Finset__card (Inter__inter s t))) (Finset__card s)).
+Finset__card_sdiff_add_card_inter : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (plus (Finset__card X (SDiff__sdiff (Finset X) s t)) (Finset__card X (Inter__inter (Finset X) s t))) (Finset__card X s)).
 
 (; //LEAN:Finset.card_inter_add_card_sdiff ;)
-Finset__card_inter_add_card_sdiff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (plus (Finset__card (Inter__inter s t)) (Finset__card (SDiff__sdiff s t))) (Finset__card s)).
+Finset__card_inter_add_card_sdiff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eq (plus (Finset__card X (Inter__inter (Finset X) s t)) (Finset__card X (SDiff__sdiff (Finset X) s t))) (Finset__card X s)).
 
 (; //LEAN:Finset.card_sdiff_le_card_sdiff_iff ;)
-Finset__card_sdiff_le_card_sdiff_iff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (iff (Leq (Finset__card (SDiff__sdiff s t)) (Finset__card (SDiff__sdiff t s))) (Leq (Finset__card s) (Finset__card t))).
+Finset__card_sdiff_le_card_sdiff_iff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (iff (Leq (Finset__card X (SDiff__sdiff (Finset X) s t)) (Finset__card X (SDiff__sdiff (Finset X) t s))) (Leq (Finset__card X s) (Finset__card X t))).
 
 (; //LEAN:Finset.card_sdiff_lt_card_sdiff_iff ;)
-Finset__card_sdiff_lt_card_sdiff_iff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (iff (Lt (Finset__card (SDiff__sdiff s t)) (Finset__card (SDiff__sdiff t s))) (Lt (Finset__card s) (Finset__card t))).
+Finset__card_sdiff_lt_card_sdiff_iff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (iff (Lt (Finset__card X (SDiff__sdiff (Finset X) s t)) (Finset__card X (SDiff__sdiff (Finset X) t s))) (Lt (Finset__card X s) (Finset__card X t))).
 
 (; //LEAN:Finset.card_sdiff_eq_card_sdiff_iff ;)
-Finset__card_sdiff_eq_card_sdiff_iff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (iff (Eq (Finset__card (SDiff__sdiff s t)) (Finset__card (SDiff__sdiff t s))) (Eq (Finset__card s) (Finset__card t))).
+Finset__card_sdiff_eq_card_sdiff_iff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (iff (Eq (Finset__card X (SDiff__sdiff (Finset X) s t)) (Finset__card X (SDiff__sdiff (Finset X) t s))) (Eq (Finset__card X s) (Finset__card X t))).
 
 (; //LEAN:Finset.card_sdiff_comm ;)
-def Finset__card_sdiff_comm : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Eq (Finset__card s) (Finset__card t))) -> Proof (Eq (Finset__card (SDiff__sdiff s t)) (Finset__card (SDiff__sdiff t s))) :=
-  X => s => t => iffEr (Eq (Finset__card (SDiff__sdiff s t)) (Finset__card (SDiff__sdiff t s))) (Eq (Finset__card s) (Finset__card t)) (Finset__card_sdiff_eq_card_sdiff_iff X s t).
+def Finset__card_sdiff_comm : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Eq (Finset__card X s) (Finset__card X t))) -> Proof (Eq (Finset__card X (SDiff__sdiff (Finset X) s t)) (Finset__card X (SDiff__sdiff (Finset X) t s))) :=
+  X => s => t => iffEr (Eq (Finset__card X (SDiff__sdiff (Finset X) s t)) (Finset__card X (SDiff__sdiff (Finset X) t s))) (Eq (Finset__card X s) (Finset__card X t)) (Finset__card_sdiff_eq_card_sdiff_iff X s t).
 
 (; //LEAN:Finset.inter_nonempty_of_card_lt_card_add_card ;)
-Finset__inter_nonempty_of_card_lt_card_add_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (u : Elem (Finset X)) -> (hts : Proof (Set__Subset t s)) -> (hus : Proof (Set__Subset u s)) -> (hstu : Proof (Lt (Finset__card s) (plus (Finset__card t) (Finset__card u)))) -> Proof (Finset__Nonempty (Inter__inter t u)).
+Finset__inter_nonempty_of_card_lt_card_add_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (u : Elem (Finset X)) -> (hts : Proof (Set__Subset X t s)) -> (hus : Proof (Set__Subset X u s)) -> (hstu : Proof (Lt (Finset__card X s) (plus (Finset__card X t) (Finset__card X u)))) -> Proof (Finset__Nonempty X (Inter__inter (Finset X) t u)).
 
 (; //LEAN:Finset.card_filter_add_card_filter_not ;)
-Finset__card_filter_add_card_filter_not : (X : Set) -> (s : Elem (Finset X)) -> (p : (Elem X -> Prop)) -> (_ : Proof ((x3 : Elem X) -> Decidable (not (p x3)))) -> Proof (Eq (plus (Finset__card (Finset__filter (x2 => p x2) s)) (Finset__card (Finset__filter (a => not (p a)) s))) (Finset__card s)).
+Finset__card_filter_add_card_filter_not : (X : Set) -> (s : Elem (Finset X)) -> (p : (Elem X -> Prop)) -> (_ : Proof ((x3 : Elem X) -> Decidable (not (p x3)))) -> Proof (Eq (plus (Finset__card X (Finset__filter X (x2 => p x2) s)) (Finset__card X (Finset__filter X (a => not (p a)) s))) (Finset__card X s)).
 
 (; //LEAN:Finset.exists_subsuperset_card_eq ;)
-Finset__exists_subsuperset_card_eq : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (n : Elem Nat) -> (hst : Proof (Set__Subset s t)) -> (hsn : Proof (Leq (Finset__card s) n)) -> (hnt : Proof (Leq n (Finset__card t))) -> Proof (exists (Finset X) (u => and (Set__Subset s u) (and (Set__Subset u t) (Eq (Finset__card u) n)))).
+Finset__exists_subsuperset_card_eq : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (n : Elem Nat) -> (hst : Proof (Set__Subset X s t)) -> (hsn : Proof (Leq (Finset__card X s) n)) -> (hnt : Proof (Leq n (Finset__card X t))) -> Proof (exists (Finset X) (u => and (Set__Subset X s u) (and (Set__Subset X u t) (Eq (Finset__card X u) n)))).
 
 (; //LEAN:Finset.exists_subset_card_eq ;)
-Finset__exists_subset_card_eq : (X : Set) -> (s : Elem (Finset X)) -> (n : Elem Nat) -> (hns : Proof (Leq n (Finset__card s))) -> Proof (exists (Finset X) (t => and (Set__Subset t s) (Eq (Finset__card t) n))).
+Finset__exists_subset_card_eq : (X : Set) -> (s : Elem (Finset X)) -> (n : Elem Nat) -> (hns : Proof (Leq n (Finset__card X s))) -> Proof (exists (Finset X) (t => and (Set__Subset X t s) (Eq (Finset__card X t) n))).
 
 (; //LEAN:Finset.le_card_iff_exists_subset_card ;)
-Finset__le_card_iff_exists_subset_card : (X : Set) -> (s : Elem (Finset X)) -> (n : Elem Nat) -> Proof (iff (Leq n (Finset__card s)) (exists (Finset X) (t => and (Set__Subset t s) (Eq (Finset__card t) n)))).
+Finset__le_card_iff_exists_subset_card : (X : Set) -> (s : Elem (Finset X)) -> (n : Elem Nat) -> Proof (iff (Leq n (Finset__card X s)) (exists (Finset X) (t => and (Set__Subset X t s) (Eq (Finset__card X t) n)))).
 
 (; //LEAN:Finset.exists_subset_or_subset_of_two_mul_lt_card ;)
-Finset__exists_subset_or_subset_of_two_mul_lt_card : (X : Set) -> (X1 : Elem (Finset X)) -> (Y : Elem (Finset X)) -> (n : Elem Nat) -> (hXY : Proof (Lt (times 2 n) (Finset__card (Union__union X1 Y)))) -> Proof (exists (Finset X) (C => and (Lt n (Finset__card C)) (or (Set__Subset C X1) (Set__Subset C Y)))).
+Finset__exists_subset_or_subset_of_two_mul_lt_card : (X : Set) -> (X1 : Elem (Finset X)) -> (Y : Elem (Finset X)) -> (n : Elem Nat) -> (hXY : Proof (Lt (times 2 n) (Finset__card X (Union__union (Finset X) X1 Y)))) -> Proof (exists (Finset X) (C => and (Lt n (Finset__card X C)) (or (Set__Subset X C X1) (Set__Subset X C Y)))).
 
 (; //LEAN:Finset.card_eq_one ;)
-Finset__card_eq_one : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Eq (Finset__card s) 1) (exists X (a => Eqt (Finset X) s (Singleton__singleton a)))).
+Finset__card_eq_one : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Eq (Finset__card X s) 1) (exists X (a => Eqt (Finset X) s (Singleton__singleton X (Finset X) a)))).
 
 (; //LEAN:Finset.card_eq_one_iff_existsUnique ;)
-Finset__card_eq_one_iff_existsUnique : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Eq (Finset__card s) 1) (ExistsUnique (a => Membership__mem s a))).
+Finset__card_eq_one_iff_existsUnique : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Eq (Finset__card X s) 1) (ExistsUnique X (a => Membership__mem X (Finset X) s a))).
 
 (; //LEAN:Finset.exists_eq_insert_iff ;)
-Finset__exists_eq_insert_iff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (iff (exists X (a => and (not (Membership__mem s a)) (Eqt (Finset X) (Insert__insert a s) t))) (and (Set__Subset s t) (Eq (plus (Finset__card s) 1) (Finset__card t)))).
+Finset__exists_eq_insert_iff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (iff (exists X (a => and (not (Membership__mem X (Finset X) s a)) (Eqt (Finset X) (Insert__insert X (Finset X) a s) t))) (and (Set__Subset X s t) (Eq (plus (Finset__card X s) 1) (Finset__card X t)))).
 
 (; //LEAN:Finset.card_le_one ;)
-Finset__card_le_one : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Leq (Finset__card s) 1) (forall X (a => if (Membership__mem s a) (forall X (b => if (Membership__mem s b) (Eqt X a b)))))).
+Finset__card_le_one : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Leq (Finset__card X s) 1) (forall X (a => if (Membership__mem X (Finset X) s a) (forall X (b => if (Membership__mem X (Finset X) s b) (Eqt X a b)))))).
 
 (; //LEAN:Finset.card_le_one_iff ;)
-Finset__card_le_one_iff : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Leq (Finset__card s) 1) (forall X (a => forall X (b => if (Membership__mem s a) (if (Membership__mem s b) (Eqt X a b)))))).
+Finset__card_le_one_iff : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Leq (Finset__card X s) 1) (forall X (a => forall X (b => if (Membership__mem X (Finset X) s a) (if (Membership__mem X (Finset X) s b) (Eqt X a b)))))).
 
 (; //LEAN:Finset.card_le_one_iff_subsingleton_coe ;)
-def Finset__card_le_one_iff_subsingleton_coe : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Leq (Finset__card s) 1) (Subsingleton (Subtype (x => Membership__mem s x)))) :=
-  X => s => Iff__trans (Leq (Finset__card s) 1) (forall X (a => if (Membership__mem s a) (forall X (b => if (Membership__mem s b) (Eqt X a b))))) (Subsingleton (Subtype (x => Membership__mem s x))) (Finset__card_le_one X s) (Iff__symm (Subsingleton (Set__Elem s)) (Set__Subsingleton s) (Set__subsingleton_coe X s)).
+def Finset__card_le_one_iff_subsingleton_coe : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Leq (Finset__card X s) 1) (Subsingleton (Subtype X (x => Membership__mem X (Finset X) s x)))) :=
+  X => s => Iff__trans (Leq (Finset__card X s) 1) (forall X (a => if (Membership__mem X (Finset X) s a) (forall X (b => if (Membership__mem X (Finset X) s b) (Eqt X a b))))) (Subsingleton (Subtype X (x => Membership__mem X (Finset X) s x))) (Finset__card_le_one X s) (Iff__symm (Subsingleton (Set__Elem X (SetLike__coe (Finset X) X s))) (Set__Subsingleton X (SetLike__coe (Finset X) X s)) (Set__subsingleton_coe X (SetLike__coe (Finset X) X s))).
 
 (; //LEAN:Finset.card_le_one_iff_subsingleton ;)
-Finset__card_le_one_iff_subsingleton : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Leq (Finset__card s) 1) (Set__Subsingleton s)).
+Finset__card_le_one_iff_subsingleton : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Leq (Finset__card X s) 1) (Set__Subsingleton X (SetLike__coe (Finset X) X s))).
 
 (; //LEAN:Finset.card_le_one_iff_subset_singleton ;)
-Finset__card_le_one_iff_subset_singleton : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Leq (Finset__card s) 1) (exists X (x => Set__Subset s (Singleton__singleton x)))).
+Finset__card_le_one_iff_subset_singleton : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Leq (Finset__card X s) 1) (exists X (x => Set__Subset X s (Singleton__singleton X (Finset X) x)))).
 
 (; //LEAN:Finset.exists_mem_ne ;)
-Finset__exists_mem_ne : (X : Set) -> (s : Elem (Finset X)) -> (hs : Proof (Lt 1 (Finset__card s))) -> (a : Elem X) -> Proof (exists X (b => and (Membership__mem s b) (Neq b a))).
+Finset__exists_mem_ne : (X : Set) -> (s : Elem (Finset X)) -> (hs : Proof (Lt 1 (Finset__card X s))) -> (a : Elem X) -> Proof (exists X (b => and (Membership__mem X (Finset X) s b) (Neq b a))).
 
 (; //LEAN:Finset.card_le_one_of_subsingleton ;)
-def Finset__card_le_one_of_subsingleton : (X : Set) -> (_ : Proof (Subsingleton X)) -> (s : Elem (Finset X)) -> Proof (Leq (Finset__card s) 1) :=
-  X => h => s => iffEr (Leq (Finset__card s) 1) (forall X (a => forall X (b => if (Membership__mem s a) (if (Membership__mem s b) (Eqt X a b))))) (Finset__card_le_one_iff X s) (x => forallI X (x1 => if (Membership__mem s x) (if (Membership__mem s x1) (Eqt X x x1))) (x1 => ifI (Membership__mem s x) (if (Membership__mem s x1) (Eqt X x x1)) (h3 => ifI (Membership__mem s x1) (Eqt X x x1) (h4 => Subsingleton__elim X x x1)))).
+def Finset__card_le_one_of_subsingleton : (X : Set) -> (_ : Proof (Subsingleton X)) -> (s : Elem (Finset X)) -> Proof (Leq (Finset__card X s) 1) :=
+  X => h => s => iffEr (Leq (Finset__card X s) 1) (forall X (a => forall X (b => if (Membership__mem X (Finset X) s a) (if (Membership__mem X (Finset X) s b) (Eqt X a b))))) (Finset__card_le_one_iff X s) (x => forallI X (x1 => if (Membership__mem X (Finset X) s x) (if (Membership__mem X (Finset X) s x1) (Eqt X x x1))) (x1 => ifI (Membership__mem X (Finset X) s x) (if (Membership__mem X (Finset X) s x1) (Eqt X x x1)) (h3 => ifI (Membership__mem X (Finset X) s x1) (Eqt X x x1) (h4 => Subsingleton__elim X x x1)))).
 
 (; //LEAN:Finset.one_lt_card ;)
-Finset__one_lt_card : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 1 (Finset__card s)) (exists X (a => and (Membership__mem s a) (exists X (b => and (Membership__mem s b) (Neq a b)))))).
+Finset__one_lt_card : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 1 (Finset__card X s)) (exists X (a => and (Membership__mem X (Finset X) s a) (exists X (b => and (Membership__mem X (Finset X) s b) (Neq a b)))))).
 
 (; //LEAN:Finset.one_lt_card_iff ;)
-Finset__one_lt_card_iff : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 1 (Finset__card s)) (exists X (a => exists X (b => and (Membership__mem s a) (and (Membership__mem s b) (Neq a b)))))).
+Finset__one_lt_card_iff : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 1 (Finset__card X s)) (exists X (a => exists X (b => and (Membership__mem X (Finset X) s a) (and (Membership__mem X (Finset X) s b) (Neq a b)))))).
 
 (; //LEAN:Finset.one_lt_card_iff_nontrivial ;)
-Finset__one_lt_card_iff_nontrivial : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 1 (Finset__card s)) (Finset__Nontrivial s)).
+Finset__one_lt_card_iff_nontrivial : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 1 (Finset__card X s)) (Finset__Nontrivial X s)).
 
 (; //LEAN:Finset.Nontrivial.one_lt_card ;)
-def Finset__Nontrivial__one_lt_card : (X : Set) -> (s : Elem (Finset X)) -> (hs : Proof (Finset__Nontrivial s)) -> Proof (Lt 1 (Finset__card s)) :=
-  X => s => hs => iffEr (Lt 1 (Finset__card s)) (Finset__Nontrivial s) (Finset__one_lt_card_iff_nontrivial X s) hs.
+def Finset__Nontrivial__one_lt_card : (X : Set) -> (s : Elem (Finset X)) -> (hs : Proof (Finset__Nontrivial X s)) -> Proof (Lt 1 (Finset__card X s)) :=
+  X => s => hs => iffEr (Lt 1 (Finset__card X s)) (Finset__Nontrivial X s) (Finset__one_lt_card_iff_nontrivial X s) hs.
 
 (; //LEAN:Finset.Nontrivial.two_le_card ;)
-def Finset__Nontrivial__two_le_card : (X : Set) -> (s : Elem (Finset X)) -> (hs : Proof (Finset__Nontrivial s)) -> Proof (Leq 2 (Finset__card s)) :=
-  X => s => hs => iffEr (Lt 1 (Finset__card s)) (Finset__Nontrivial s) (Finset__one_lt_card_iff_nontrivial X s) hs.
+def Finset__Nontrivial__two_le_card : (X : Set) -> (s : Elem (Finset X)) -> (hs : Proof (Finset__Nontrivial X s)) -> Proof (Leq 2 (Finset__card X s)) :=
+  X => s => hs => iffEr (Lt 1 (Finset__card X s)) (Finset__Nontrivial X s) (Finset__one_lt_card_iff_nontrivial X s) hs.
 
 (; //LEAN:Finset.existsUnique_notMem_image_of_injOn_of_card_eq_add_one ;)
-Finset__existsUnique_notMem_image_of_injOn_of_card_eq_add_one : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (t : Elem (Finset Y)) -> (hf : Proof (Set__InjOn f s)) -> (hf' : Proof (Set__MapsTo f s t)) -> (h : Proof (Eq (Finset__card t) (plus (Finset__card s) 1))) -> Proof (ExistsUnique (x1 => and (Membership__mem t x1) (not (Membership__mem (Finset__image f s) x1)))).
+Finset__existsUnique_notMem_image_of_injOn_of_card_eq_add_one : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (t : Elem (Finset Y)) -> (hf : Proof (Set__InjOn X Y f (SetLike__coe (Finset X) X s))) -> (hf' : Proof (Set__MapsTo X Y f (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t))) -> (h : Proof (Eq (Finset__card Y t) (plus (Finset__card X s) 1))) -> Proof (ExistsUnique Y (x1 => and (Membership__mem Y (Finset Y) t x1) (not (Membership__mem Y (Finset Y) (Finset__image X Y f s) x1)))).
 
 (; //LEAN:Finset.exists_of_one_lt_card_pi ;)
-Finset__exists_of_one_lt_card_pi : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> DecidableEq (x i2))) -> (s : Elem (Finset ((i1 : Elem I) -> x i1))) -> (h : Proof (Lt 1 (Finset__card s))) -> Proof (exists I (i => and (Lt 1 (Finset__card (Finset__image (x2 => x2 i) s))) (forall (x i) (ai => HasSSubset__SSubset (Finset__filter (x3 => Eqt (x i) (x3 i) ai) s) s)))).
+Finset__exists_of_one_lt_card_pi : (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof ((i6 : Elem I) -> DecidableEq (x i6))) -> (s : Elem (Finset ((i5 : Elem I) -> x i5))) -> (h : Proof (Lt 1 (Finset__card ((i4 : Elem I) -> x i4) s))) -> Proof (exists I (i => and (Lt 1 (Finset__card (x i) (Finset__image ((i1 : Elem I) -> x i1) (x i) (x2 => x2 i) s))) (forall (x i) (ai => HasSSubset__SSubset (Finset ((i2 : Elem I) -> x i2)) (Finset__filter ((i3 : Elem I) -> x i3) (x3 => Eqt (x i) (x3 i) ai) s) s)))).
 
 (; //LEAN:Finset.card_eq_succ_iff_cons ;)
-Finset__card_eq_succ_iff_cons : (X : Set) -> (s : Elem (Finset X)) -> (n : Elem Nat) -> Proof (iff (Eq (Finset__card s) (plus n 1)) (exists X (a => exists (Finset X) (t => exists (not (Membership__mem t a)) (h => and (Eqt (Finset X) (Finset__cons a t h) s) (Eq (Finset__card t) n)))))).
+Finset__card_eq_succ_iff_cons : (X : Set) -> (s : Elem (Finset X)) -> (n : Elem Nat) -> Proof (iff (Eq (Finset__card X s) (plus n 1)) (exists X (a => exists (Finset X) (t => exists (not (Membership__mem X (Finset X) t a)) (h => and (Eqt (Finset X) (Finset__cons X a t h) s) (Eq (Finset__card X t) n)))))).
 
 (; //LEAN:Finset.card_eq_succ ;)
-Finset__card_eq_succ : (X : Set) -> (s : Elem (Finset X)) -> (n : Elem Nat) -> Proof (iff (Eq (Finset__card s) (plus n 1)) (exists X (a => exists (Finset X) (t => and (not (Membership__mem t a)) (and (Eqt (Finset X) (Insert__insert a t) s) (Eq (Finset__card t) n)))))).
+Finset__card_eq_succ : (X : Set) -> (s : Elem (Finset X)) -> (n : Elem Nat) -> Proof (iff (Eq (Finset__card X s) (plus n 1)) (exists X (a => exists (Finset X) (t => and (not (Membership__mem X (Finset X) t a)) (and (Eqt (Finset X) (Insert__insert X (Finset X) a t) s) (Eq (Finset__card X t) n)))))).
 
 (; //LEAN:Finset.card_eq_two ;)
-Finset__card_eq_two : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Eq (Finset__card s) 2) (exists X (x1 => exists X (y => and (Neq x1 y) (Eqt (Finset X) s (Insert__insert x1 (Singleton__singleton y))))))).
+Finset__card_eq_two : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Eq (Finset__card X s) 2) (exists X (x1 => exists X (y => and (Neq x1 y) (Eqt (Finset X) s (Insert__insert X (Finset X) x1 (Singleton__singleton X (Finset X) y))))))).
 
 (; //LEAN:Finset.card_eq_three ;)
-Finset__card_eq_three : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Eq (Finset__card s) 3) (exists X (x1 => exists X (y => exists X (z => and (Neq x1 y) (and (Neq x1 z) (and (Neq y z) (Eqt (Finset X) s (Insert__insert x1 (Insert__insert y (Singleton__singleton z))))))))))).
+Finset__card_eq_three : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Eq (Finset__card X s) 3) (exists X (x1 => exists X (y => exists X (z => and (Neq x1 y) (and (Neq x1 z) (and (Neq y z) (Eqt (Finset X) s (Insert__insert X (Finset X) x1 (Insert__insert X (Finset X) y (Singleton__singleton X (Finset X) z))))))))))).
 
 (; //LEAN:Finset.card_eq_four ;)
-Finset__card_eq_four : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Eq (Finset__card s) 4) (exists X (x1 => exists X (y => exists X (z => exists X (w => and (Neq x1 y) (and (Neq x1 z) (and (Neq x1 w) (and (Neq y z) (and (Neq y w) (and (Neq z w) (Eqt (Finset X) s (Insert__insert x1 (Insert__insert y (Insert__insert z (Singleton__singleton w)))))))))))))))).
+Finset__card_eq_four : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Eq (Finset__card X s) 4) (exists X (x1 => exists X (y => exists X (z => exists X (w => and (Neq x1 y) (and (Neq x1 z) (and (Neq x1 w) (and (Neq y z) (and (Neq y w) (and (Neq z w) (Eqt (Finset X) s (Insert__insert X (Finset X) x1 (Insert__insert X (Finset X) y (Insert__insert X (Finset X) z (Singleton__singleton X (Finset X) w)))))))))))))))).
 
 (; //LEAN:Finset.two_lt_card_iff ;)
-Finset__two_lt_card_iff : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 2 (Finset__card s)) (exists X (a => exists X (b => exists X (c => and (Membership__mem s a) (and (Membership__mem s b) (and (Membership__mem s c) (and (Neq a b) (and (Neq a c) (Neq b c)))))))))).
+Finset__two_lt_card_iff : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 2 (Finset__card X s)) (exists X (a => exists X (b => exists X (c => and (Membership__mem X (Finset X) s a) (and (Membership__mem X (Finset X) s b) (and (Membership__mem X (Finset X) s c) (and (Neq a b) (and (Neq a c) (Neq b c)))))))))).
 
 (; //LEAN:Finset.two_lt_card ;)
-Finset__two_lt_card : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 2 (Finset__card s)) (exists X (a => and (Membership__mem s a) (exists X (b => and (Membership__mem s b) (exists X (c => and (Membership__mem s c) (and (Neq a b) (and (Neq a c) (Neq b c)))))))))).
+Finset__two_lt_card : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 2 (Finset__card X s)) (exists X (a => and (Membership__mem X (Finset X) s a) (exists X (b => and (Membership__mem X (Finset X) s b) (exists X (c => and (Membership__mem X (Finset X) s c) (and (Neq a b) (and (Neq a c) (Neq b c)))))))))).
 
 (; //LEAN:Finset.three_lt_card_iff ;)
-Finset__three_lt_card_iff : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 3 (Finset__card s)) (exists X (a => exists X (b => exists X (c => exists X (d => and (Membership__mem s a) (and (Membership__mem s b) (and (Membership__mem s c) (and (Membership__mem s d) (and (Neq a b) (and (Neq a c) (and (Neq a d) (and (Neq b c) (and (Neq b d) (Neq c d))))))))))))))).
+Finset__three_lt_card_iff : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 3 (Finset__card X s)) (exists X (a => exists X (b => exists X (c => exists X (d => and (Membership__mem X (Finset X) s a) (and (Membership__mem X (Finset X) s b) (and (Membership__mem X (Finset X) s c) (and (Membership__mem X (Finset X) s d) (and (Neq a b) (and (Neq a c) (and (Neq a d) (and (Neq b c) (and (Neq b d) (Neq c d))))))))))))))).
 
 (; //LEAN:Finset.three_lt_card ;)
-Finset__three_lt_card : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 3 (Finset__card s)) (exists X (a => and (Membership__mem s a) (exists X (b => and (Membership__mem s b) (exists X (c => and (Membership__mem s c) (exists X (d => and (Membership__mem s d) (and (Neq a b) (and (Neq a c) (and (Neq a d) (and (Neq b c) (and (Neq b d) (Neq c d))))))))))))))).
+Finset__three_lt_card : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 3 (Finset__card X s)) (exists X (a => and (Membership__mem X (Finset X) s a) (exists X (b => and (Membership__mem X (Finset X) s b) (exists X (c => and (Membership__mem X (Finset X) s c) (exists X (d => and (Membership__mem X (Finset X) s d) (and (Neq a b) (and (Neq a c) (and (Neq a d) (and (Neq b c) (and (Neq b d) (Neq c d))))))))))))))).
 
 (; //LEAN:Finset.strongInduction ;)
-def Finset__strongInduction : (H : ((s1 : Elem (Finset X)) -> ((t : Elem (Finset X)) -> Proof (HasSSubset__SSubset t s1) -> p t) -> p s1)) -> (s : Elem (Finset X)) -> Elem (p s) :=
-  H => WellFounded__Nat__fix (x => Finset__card x) (s => x1 => H s (t => h => x1 t (Finset__strongInduction___proof_1 s t (Finset__card_lt_card h)))).
+def Finset__strongInduction : (X : Set) -> (p : (Elem (Finset X) -> Set)) -> (H : ((s1 : Elem (Finset X)) -> ((t : Elem (Finset X)) -> Proof (HasSSubset__SSubset (Finset X) t s1) -> p t) -> p s1)) -> (s : Elem (Finset X)) -> Elem (p s) :=
+  X => p => H => WellFounded__Nat__fix (Finset X) (s => p s) (x => Finset__card X x) (s1 => x1 => H s1 (t => h => x1 t (Finset__strongInduction___proof_1 X s1 t (Finset__card_lt_card X t s1 h)))).
 
 (; //LEAN:Finset.strongInduction_eq ;)
-Finset__strongInduction_eq : (X : Set) -> (p : (Elem (Finset X) -> Set)) -> (H : ((s1 : Elem (Finset X)) -> ((t1 : Elem (Finset X)) -> Proof (HasSSubset__SSubset t1 s1) -> p t1) -> p s1)) -> (s : Elem (Finset X)) -> Proof (Eqt (p s) (Finset__strongInduction H s) (H s (t => h => Finset__strongInduction H t))).
+Finset__strongInduction_eq : (X : Set) -> (p : (Elem (Finset X) -> Set)) -> (H : ((s1 : Elem (Finset X)) -> ((t1 : Elem (Finset X)) -> Proof (HasSSubset__SSubset (Finset X) t1 s1) -> p t1) -> p s1)) -> (s : Elem (Finset X)) -> Proof (Eqt (p s) (Finset__strongInduction X p H s) (H s (t => h => Finset__strongInduction X p H t))).
 
 (; //LEAN:Finset.strongInductionOn ;)
-def Finset__strongInductionOn : (s : Elem (Finset X)) -> (x : ((s1 : Elem (Finset X)) -> ((t : Elem (Finset X)) -> Proof (HasSSubset__SSubset t s1) -> p t) -> p s1)) -> Elem (p s) :=
-  s => x => Finset__strongInduction x s.
+def Finset__strongInductionOn : (X : Set) -> (p : (Elem (Finset X) -> Set)) -> (s : Elem (Finset X)) -> (x : ((s1 : Elem (Finset X)) -> ((t : Elem (Finset X)) -> Proof (HasSSubset__SSubset (Finset X) t s1) -> p t) -> p s1)) -> Elem (p s) :=
+  X => p => s => x => Finset__strongInduction X p x s.
 
 (; //LEAN:Finset.strongInductionOn_eq ;)
-Finset__strongInductionOn_eq : (X : Set) -> (p : (Elem (Finset X) -> Set)) -> (s : Elem (Finset X)) -> (H : ((s1 : Elem (Finset X)) -> ((t1 : Elem (Finset X)) -> Proof (HasSSubset__SSubset t1 s1) -> p t1) -> p s1)) -> Proof (Eqt (p s) (Finset__strongInductionOn s H) (H s (t => h => Finset__strongInductionOn t H))).
+Finset__strongInductionOn_eq : (X : Set) -> (p : (Elem (Finset X) -> Set)) -> (s : Elem (Finset X)) -> (H : ((s1 : Elem (Finset X)) -> ((t1 : Elem (Finset X)) -> Proof (HasSSubset__SSubset (Finset X) t1 s1) -> p t1) -> p s1)) -> Proof (Eqt (p s) (Finset__strongInductionOn X (x => p x) s H) (H s (t => h => Finset__strongInductionOn X (x1 => p x1) t H))).
 
 (; //LEAN:Finset.case_strong_induction_on ;)
-def Finset__case_strong_induction_on : (X : Set) -> (p : (Elem (Finset X) -> Prop)) -> (s : Elem (Finset X)) -> (h : Proof (p EmptyCollection__emptyCollection)) -> (h1 : Proof (forall X (a => forall (Finset X) (s1 => if (not (Membership__mem s1 a)) (if (forall (Finset X) (t => if (Set__Subset t s1) (p t))) (p (Insert__insert a s1))))))) -> Proof (p s) :=
-  X => p => s => h => h1 => Finset__strongInductionOn s (forallI (Finset X) (s1 => if (forall (Finset X) (t17 => if (HasSSubset__SSubset t17 s1) (p t17))) (p s1)) (s1 => Finset__induction_on X (x1 => if (forall (Finset X) (t => if (HasSSubset__SSubset t x1) (p t))) (p x1)) s1 (ifI (forall (Finset X) (t1 => if (HasSSubset__SSubset t1 EmptyCollection__emptyCollection) (p t1))) (p EmptyCollection__emptyCollection) (h4 => h)) (forallI X (a => forall (Finset X) (s5 => if (not (Membership__mem s5 a)) (if (if (forall (Finset X) (t16 => if (HasSSubset__SSubset t16 s5) (p t16))) (p s5)) (if (forall (Finset X) (t15 => if (HasSSubset__SSubset t15 (Insert__insert a s5)) (p t15))) (p (Insert__insert a s5)))))) (a => forallI (Finset X) (s2 => if (not (Membership__mem s2 a)) (if (if (forall (Finset X) (t14 => if (HasSSubset__SSubset t14 s2) (p t14))) (p s2)) (if (forall (Finset X) (t13 => if (HasSSubset__SSubset t13 (Insert__insert a s2)) (p t13))) (p (Insert__insert a s2))))) (s2 => ifI (not (Membership__mem s2 a)) (if (if (forall (Finset X) (t12 => if (HasSSubset__SSubset t12 s2) (p t12))) (p s2)) (if (forall (Finset X) (t11 => if (HasSSubset__SSubset t11 (Insert__insert a s2)) (p t11))) (p (Insert__insert a s2)))) (n => ifI (if (forall (Finset X) (t9 => if (HasSSubset__SSubset t9 s2) (p t9))) (p s2)) (if (forall (Finset X) (t10 => if (HasSSubset__SSubset t10 (Insert__insert a s2)) (p t10))) (p (Insert__insert a s2))) (h6 => ifI (forall (Finset X) (t8 => if (HasSSubset__SSubset t8 (Insert__insert a s2)) (p t8))) (p (Insert__insert a s2)) (ih => ifE (forall (Finset X) (t5 => if (Set__Subset t5 s2) (p t5))) (p (Insert__insert a s2)) (ifE (not (Membership__mem s2 a)) (if (forall (Finset X) (t4 => if (Set__Subset t4 s2) (p t4))) (p (Insert__insert a s2))) (forallE (Finset X) (s4 => if (not (Membership__mem s4 a)) (if (forall (Finset X) (t3 => if (Set__Subset t3 s4) (p t3))) (p (Insert__insert a s4)))) (forallE X (a1 => forall (Finset X) (s3 => if (not (Membership__mem s3 a1)) (if (forall (Finset X) (t2 => if (Set__Subset t2 s3) (p t2))) (p (Insert__insert a1 s3))))) h1 a) s2) n) (forallI (Finset X) (t6 => if (Set__Subset t6 s2) (p t6)) (t6 => ifI (Set__Subset t6 s2) (p t6) (ss => ifE (HasSSubset__SSubset t6 (Insert__insert a s2)) (p t6) (forallE (Finset X) (t7 => if (HasSSubset__SSubset t7 (Insert__insert a s2)) (p t7)) ih t6) (lt_of_le_of_lt (Finset X) t6 s2 (Insert__insert a s2) ss (Finset__ssubset_insert X s2 a n))))))))))))).
+def Finset__case_strong_induction_on : (X : Set) -> (p : (Elem (Finset X) -> Prop)) -> (s : Elem (Finset X)) -> (h : Proof (p (EmptyCollection__emptyCollection (Finset X)))) -> (h1 : Proof (forall X (a => forall (Finset X) (s1 => if (not (Membership__mem X (Finset X) s1 a)) (if (forall (Finset X) (t => if (Set__Subset X t s1) (p t))) (p (Insert__insert X (Finset X) a s1))))))) -> Proof (p s) :=
+  X => p => s => h => h1 => Finset__strongInductionOn X (x1 => p x1) s (forallI (Finset X) (s1 => if (forall (Finset X) (t17 => if (HasSSubset__SSubset (Finset X) t17 s1) (p t17))) (p s1)) (s1 => Finset__induction_on X (x2 => if (forall (Finset X) (t => if (HasSSubset__SSubset (Finset X) t x2) (p t))) (p x2)) s1 (ifI (forall (Finset X) (t1 => if (HasSSubset__SSubset (Finset X) t1 (EmptyCollection__emptyCollection (Finset X))) (p t1))) (p (EmptyCollection__emptyCollection (Finset X))) (h4 => h)) (forallI X (a => forall (Finset X) (s5 => if (not (Membership__mem X (Finset X) s5 a)) (if (if (forall (Finset X) (t16 => if (HasSSubset__SSubset (Finset X) t16 s5) (p t16))) (p s5)) (if (forall (Finset X) (t15 => if (HasSSubset__SSubset (Finset X) t15 (Insert__insert X (Finset X) a s5)) (p t15))) (p (Insert__insert X (Finset X) a s5)))))) (a => forallI (Finset X) (s2 => if (not (Membership__mem X (Finset X) s2 a)) (if (if (forall (Finset X) (t14 => if (HasSSubset__SSubset (Finset X) t14 s2) (p t14))) (p s2)) (if (forall (Finset X) (t13 => if (HasSSubset__SSubset (Finset X) t13 (Insert__insert X (Finset X) a s2)) (p t13))) (p (Insert__insert X (Finset X) a s2))))) (s2 => ifI (not (Membership__mem X (Finset X) s2 a)) (if (if (forall (Finset X) (t12 => if (HasSSubset__SSubset (Finset X) t12 s2) (p t12))) (p s2)) (if (forall (Finset X) (t11 => if (HasSSubset__SSubset (Finset X) t11 (Insert__insert X (Finset X) a s2)) (p t11))) (p (Insert__insert X (Finset X) a s2)))) (n => ifI (if (forall (Finset X) (t9 => if (HasSSubset__SSubset (Finset X) t9 s2) (p t9))) (p s2)) (if (forall (Finset X) (t10 => if (HasSSubset__SSubset (Finset X) t10 (Insert__insert X (Finset X) a s2)) (p t10))) (p (Insert__insert X (Finset X) a s2))) (h6 => ifI (forall (Finset X) (t8 => if (HasSSubset__SSubset (Finset X) t8 (Insert__insert X (Finset X) a s2)) (p t8))) (p (Insert__insert X (Finset X) a s2)) (ih => ifE (forall (Finset X) (t5 => if (Set__Subset X t5 s2) (p t5))) (p (Insert__insert X (Finset X) a s2)) (ifE (not (Membership__mem X (Finset X) s2 a)) (if (forall (Finset X) (t4 => if (Set__Subset X t4 s2) (p t4))) (p (Insert__insert X (Finset X) a s2))) (forallE (Finset X) (s4 => if (not (Membership__mem X (Finset X) s4 a)) (if (forall (Finset X) (t3 => if (Set__Subset X t3 s4) (p t3))) (p (Insert__insert X (Finset X) a s4)))) (forallE X (a1 => forall (Finset X) (s3 => if (not (Membership__mem X (Finset X) s3 a1)) (if (forall (Finset X) (t2 => if (Set__Subset X t2 s3) (p t2))) (p (Insert__insert X (Finset X) a1 s3))))) h1 a) s2) n) (forallI (Finset X) (t6 => if (Set__Subset X t6 s2) (p t6)) (t6 => ifI (Set__Subset X t6 s2) (p t6) (ss => ifE (HasSSubset__SSubset (Finset X) t6 (Insert__insert X (Finset X) a s2)) (p t6) (forallE (Finset X) (t7 => if (HasSSubset__SSubset (Finset X) t7 (Insert__insert X (Finset X) a s2)) (p t7)) ih t6) (lt_of_le_of_lt (Finset X) t6 s2 (Insert__insert X (Finset X) a s2) ss (Finset__ssubset_insert X s2 a n))))))))))))).
 
 (; //LEAN:Finset.Nonempty.strong_induction ;)
-def Finset__Nonempty__strong_induction : (X : Set) -> (p : ((s2 : Elem (Finset X)) -> Proof (Finset__Nonempty s2) -> Prop)) -> (h : Proof (forall X (a => p (Singleton__singleton a) (Finset__singleton_nonempty a)))) -> (h1 : Proof (forall (Finset X) (s1 => forall (Proof (Finset__Nontrivial s1)) (hs1 => if (forall (Finset X) (t => forall (Proof (Finset__Nonempty t)) (ht => if (HasSSubset__SSubset t s1) (p t ht)))) (p s1 (Finset__Nontrivial__nonempty hs1)))))) -> (s : Elem (Finset X)) -> (hs : Proof (Finset__Nonempty s)) -> Proof (p s hs) :=
-  X => p => h => h1 => s => hs => Finset__Nonempty__strong_induction___unary X p h h1 (PSigma__mk s hs).
+def Finset__Nonempty__strong_induction : (X : Set) -> (p : ((s2 : Elem (Finset X)) -> Proof (Finset__Nonempty X s2) -> Prop)) -> (h : Proof (forall X (a => p (Singleton__singleton X (Finset X) a) (Finset__singleton_nonempty X a)))) -> (h1 : Proof (forall (Finset X) (s1 => forall (Proof (Finset__Nontrivial X s1)) (hs1 => if (forall (Finset X) (t => forall (Proof (Finset__Nonempty X t)) (ht => if (HasSSubset__SSubset (Finset X) t s1) (p t ht)))) (p s1 (Finset__Nontrivial__nonempty X s1 hs1)))))) -> (s : Elem (Finset X)) -> (hs : Proof (Finset__Nonempty X s)) -> Proof (p s hs) :=
+  X => p => h => h1 => s => hs => Finset__Nonempty__strong_induction___unary X p h h1 (PSigma__mk (Finset X) (s1 => Finset__Nonempty X s1) s hs).
 
 (; //LEAN:Finset.strongDownwardInduction ;)
-def Finset__strongDownwardInduction : (H : ((x : Elem (Finset X)) -> ((x2 : Elem (Finset X)) -> Proof (Leq (Finset__card x2) n) -> Proof (HasSSubset__SSubset x x2) -> p x2) -> Proof (Leq (Finset__card x) n) -> p x)) -> (s : Elem (Finset X)) -> (h : Proof (Leq (Finset__card s) n)) -> Elem (p s) :=
-  H => WellFounded__Nat__fix (x => minus n (Finset__card x)) (s => x1 => H s (t => ht => h => x1 t (Finset__strongDownwardInduction___proof_3 s (Finset__strongDownwardInduction___proof_2 s ht (Finset__card_lt_card h))) ht)).
+def Finset__strongDownwardInduction : (X : Set) -> (p : (Elem (Finset X) -> Set)) -> (n : Elem Nat) -> (H : ((x : Elem (Finset X)) -> ((x2 : Elem (Finset X)) -> Proof (Leq (Finset__card X x2) n) -> Proof (HasSSubset__SSubset (Finset X) x x2) -> p x2) -> Proof (Leq (Finset__card X x) n) -> p x)) -> (s : Elem (Finset X)) -> (h : Proof (Leq (Finset__card X s) n)) -> Elem (p s) :=
+  X => p => n => H => WellFounded__Nat__fix (Finset X) (s => Proof (Leq (Finset__card X s) n) -> p s) (x => minus n (Finset__card X x)) (s1 => x1 => H s1 (t => ht => h1 => x1 t (Finset__strongDownwardInduction___proof_3 X n s1 t (Finset__strongDownwardInduction___proof_2 X n s1 t ht (Finset__card_lt_card X s1 t h1))) ht)).
 
 (; //LEAN:Finset.strongDownwardInduction_eq ;)
-Finset__strongDownwardInduction_eq : (X : Set) -> (n : Elem Nat) -> (p : (Elem (Finset X) -> Set)) -> (H : ((x : Elem (Finset X)) -> ((x2 : Elem (Finset X)) -> Proof (Leq (Finset__card x2) n) -> Proof (HasSSubset__SSubset x x2) -> p x2) -> Proof (Leq (Finset__card x) n) -> p x)) -> (s : Elem (Finset X)) -> Proof (Eqt (Proof (Leq (Finset__card s) n) -> p s) (Finset__strongDownwardInduction H s) (H s (t => ht => h1 => Finset__strongDownwardInduction H t ht))).
+Finset__strongDownwardInduction_eq : (X : Set) -> (n : Elem Nat) -> (p : (Elem (Finset X) -> Set)) -> (H : ((x : Elem (Finset X)) -> ((x2 : Elem (Finset X)) -> Proof (Leq (Finset__card X x2) n) -> Proof (HasSSubset__SSubset (Finset X) x x2) -> p x2) -> Proof (Leq (Finset__card X x) n) -> p x)) -> (s : Elem (Finset X)) -> Proof (Eqt (Proof (Leq (Finset__card X s) n) -> p s) (Finset__strongDownwardInduction X p n H s) (H s (t => ht => h1 => Finset__strongDownwardInduction X p n H t ht))).
 
 (; //LEAN:Finset.strongDownwardInductionOn ;)
-def Finset__strongDownwardInductionOn : (s : Elem (Finset X)) -> (H : ((x : Elem (Finset X)) -> ((x2 : Elem (Finset X)) -> Proof (Leq (Finset__card x2) n) -> Proof (HasSSubset__SSubset x x2) -> p x2) -> Proof (Leq (Finset__card x) n) -> p x)) -> (h : Proof (Leq (Finset__card s) n)) -> Elem (p s) :=
-  s => H => Finset__strongDownwardInduction H s.
+def Finset__strongDownwardInductionOn : (X : Set) -> (n : Elem Nat) -> (p : (Elem (Finset X) -> Set)) -> (s : Elem (Finset X)) -> (H : ((x : Elem (Finset X)) -> ((x2 : Elem (Finset X)) -> Proof (Leq (Finset__card X x2) n) -> Proof (HasSSubset__SSubset (Finset X) x x2) -> p x2) -> Proof (Leq (Finset__card X x) n) -> p x)) -> (h : Proof (Leq (Finset__card X s) n)) -> Elem (p s) :=
+  X => n => p => s => H => Finset__strongDownwardInduction X p n H s.
 
 (; //LEAN:Finset.strongDownwardInductionOn_eq ;)
-Finset__strongDownwardInductionOn_eq : (X : Set) -> (n : Elem Nat) -> (p : (Elem (Finset X) -> Set)) -> (s : Elem (Finset X)) -> (H : ((x : Elem (Finset X)) -> ((x2 : Elem (Finset X)) -> Proof (Leq (Finset__card x2) n) -> Proof (HasSSubset__SSubset x x2) -> p x2) -> Proof (Leq (Finset__card x) n) -> p x)) -> Proof (Eqt (Proof (Leq (Finset__card s) n) -> p s) (h1 => Finset__strongDownwardInductionOn s H h1) (H s (t => ht => h2 => Finset__strongDownwardInductionOn t H ht))).
+Finset__strongDownwardInductionOn_eq : (X : Set) -> (n : Elem Nat) -> (p : (Elem (Finset X) -> Set)) -> (s : Elem (Finset X)) -> (H : ((x2 : Elem (Finset X)) -> ((x4 : Elem (Finset X)) -> Proof (Leq (Finset__card X x4) n) -> Proof (HasSSubset__SSubset (Finset X) x2 x4) -> p x4) -> Proof (Leq (Finset__card X x2) n) -> p x2)) -> Proof (Eqt (Proof (Leq (Finset__card X s) n) -> p s) (h1 => Finset__strongDownwardInductionOn X n (x => p x) s H h1) (H s (t => ht => h2 => Finset__strongDownwardInductionOn X n (x1 => p x1) t H ht))).
 
 (; //LEAN:Finset.lt_wf ;)
-def Finset__lt_wf : (X : Set) -> Proof (WellFounded Lt) :=
-  X => Subrelation__wf (Finset X) (InvImage (x => x1 => Lt x x1) Finset__card) Lt (forallI (Finset X) (x2 => forall (Finset X) (x7 => if (HasSSubset__SSubset x2 x7) (Lt (Finset__card x2) (Finset__card x7)))) (x2 => forallI (Finset X) (x3 => if (HasSSubset__SSubset x2 x3) (Lt (Finset__card x2) (Finset__card x3))) (x3 => (forallI (Finset X) (x4 => forall (Finset X) (x6 => if (HasSSubset__SSubset x4 x6) (Lt (Finset__card x4) (Finset__card x6)))) (x4 => forallI (Finset X) (x5 => if (HasSSubset__SSubset x4 x5) (Lt (Finset__card x4) (Finset__card x5))) (x5 => ifI (HasSSubset__SSubset x4 x5) (Lt (Finset__card x4) (Finset__card x5)) (hxy => Finset__card_lt_card X x4 x5 hxy)))) x2 x3))) (InvImage__wf (Finset X) Nat (x8 => x9 => Lt x8 x9) Finset__card (WellFoundedRelation__wf Nat)).
+def Finset__lt_wf : (X : Set) -> Proof (WellFounded (Finset X) Lt) :=
+  X => Subrelation__wf (Finset X) (InvImage (Finset X) Nat (x => x1 => Lt x x1) (Finset__card X)) Lt (forallI (Finset X) (x2 => forall (Finset X) (x7 => if (HasSSubset__SSubset (Finset X) x2 x7) (Lt (Finset__card X x2) (Finset__card X x7)))) (x2 => forallI (Finset X) (x3 => if (HasSSubset__SSubset (Finset X) x2 x3) (Lt (Finset__card X x2) (Finset__card X x3))) (x3 => (forallI (Finset X) (x4 => forall (Finset X) (x6 => if (HasSSubset__SSubset (Finset X) x4 x6) (Lt (Finset__card X x4) (Finset__card X x6)))) (x4 => forallI (Finset X) (x5 => if (HasSSubset__SSubset (Finset X) x4 x5) (Lt (Finset__card X x4) (Finset__card X x5))) (x5 => ifI (HasSSubset__SSubset (Finset X) x4 x5) (Lt (Finset__card X x4) (Finset__card X x5)) (hxy => Finset__card_lt_card X x4 x5 hxy)))) x2 x3))) (InvImage__wf (Finset X) Nat (x8 => x9 => Lt x8 x9) (Finset__card X) (WellFoundedRelation__wf Nat)).
 
 (; //LEAN:Finset.eraseInduction ;)
-def Finset__eraseInduction : (X : Set) -> (p : (Elem (Finset X) -> Prop)) -> (H : Proof (forall (Finset X) (S1 => if (forall X (s => if (Membership__mem S1 s) (p (Finset__erase S1 s)))) (p S1)))) -> (S : Elem (Finset X)) -> Proof (p S) :=
-  X => p => H => S => Finset__strongInduction (forallI (Finset X) (S1 => if (forall (Finset X) (t2 => if (HasSSubset__SSubset t2 S1) (p t2))) (p S1)) (S1 => ifI (forall (Finset X) (t1 => if (HasSSubset__SSubset t1 S1) (p t1))) (p S1) (ih => ifE (forall X (s1 => if (Membership__mem S1 s1) (p (Finset__erase S1 s1)))) (p S1) (forallE (Finset X) (S2 => if (forall X (s => if (Membership__mem S2 s) (p (Finset__erase S2 s)))) (p S2)) H S1) (forallI X (x1 => if (Membership__mem S1 x1) (p (Finset__erase S1 x1))) (x1 => ifI (Membership__mem S1 x1) (p (Finset__erase S1 x1)) (hs => ifE (HasSSubset__SSubset (Finset__erase S1 x1) S1) (p (Finset__erase S1 x1)) (forallE (Finset X) (t => if (HasSSubset__SSubset t S1) (p t)) ih (Finset__erase S1 x1)) (Finset__erase_ssubset X x1 S1 hs))))))) S.
+def Finset__eraseInduction : (X : Set) -> (p : (Elem (Finset X) -> Prop)) -> (H : Proof (forall (Finset X) (S1 => if (forall X (s => if (Membership__mem X (Finset X) S1 s) (p (Finset__erase X S1 s)))) (p S1)))) -> (S : Elem (Finset X)) -> Proof (p S) :=
+  X => p => H => S => Finset__strongInduction X p (forallI (Finset X) (S1 => if (forall (Finset X) (t2 => if (HasSSubset__SSubset (Finset X) t2 S1) (p t2))) (p S1)) (S1 => ifI (forall (Finset X) (t1 => if (HasSSubset__SSubset (Finset X) t1 S1) (p t1))) (p S1) (ih => ifE (forall X (s1 => if (Membership__mem X (Finset X) S1 s1) (p (Finset__erase X S1 s1)))) (p S1) (forallE (Finset X) (S2 => if (forall X (s => if (Membership__mem X (Finset X) S2 s) (p (Finset__erase X S2 s)))) (p S2)) H S1) (forallI X (x1 => if (Membership__mem X (Finset X) S1 x1) (p (Finset__erase X S1 x1))) (x1 => ifI (Membership__mem X (Finset X) S1 x1) (p (Finset__erase X S1 x1)) (hs => ifE (HasSSubset__SSubset (Finset X) (Finset__erase X S1 x1) S1) (p (Finset__erase X S1 x1)) (forallE (Finset X) (t => if (HasSSubset__SSubset (Finset X) t S1) (p t)) ih (Finset__erase X S1 x1)) (Finset__erase_ssubset X x1 S1 hs))))))) S.
 
 (; //LEAN:Finset.image_iterate_stabilises_lt_card ;)
-Finset__image_iterate_stabilises_lt_card : (X : Set) -> (f : (Elem X -> X)) -> (s : Elem (Finset X)) -> (hs : Proof (Set__MapsTo f s s)) -> (h : Proof (Finset__Nonempty s)) -> Proof (exists Nat (n => and (Lt n (Finset__card s)) (forall Nat (m => if (Leq n m) (Eqt (Finset X) (Finset__image (Nat__iterate f m) s) (Finset__image (Nat__iterate f n) s)))))).
+Finset__image_iterate_stabilises_lt_card : (X : Set) -> (f : (Elem X -> X)) -> (s : Elem (Finset X)) -> (hs : Proof (Set__MapsTo X X f (SetLike__coe (Finset X) X s) (SetLike__coe (Finset X) X s))) -> (h : Proof (Finset__Nonempty X s)) -> Proof (exists Nat (n => and (Lt n (Finset__card X s)) (forall Nat (m => if (Leq n m) (Eqt (Finset X) (Finset__image X X (Nat__iterate X f m) s) (Finset__image X X (Nat__iterate X f n) s)))))).
 
 (; //LEAN:Finset.image_iterate_stabilises_le_card ;)
-Finset__image_iterate_stabilises_le_card : (X : Set) -> (f : (Elem X -> X)) -> (s : Elem (Finset X)) -> (hs : Proof (Set__MapsTo f s s)) -> Proof (exists Nat (n => and (Leq n (Finset__card s)) (forall Nat (m => if (Leq n m) (Eqt (Finset X) (Finset__image (Nat__iterate f m) s) (Finset__image (Nat__iterate f n) s)))))).
+Finset__image_iterate_stabilises_le_card : (X : Set) -> (f : (Elem X -> X)) -> (s : Elem (Finset X)) -> (hs : Proof (Set__MapsTo X X f (SetLike__coe (Finset X) X s) (SetLike__coe (Finset X) X s))) -> Proof (exists Nat (n => and (Leq n (Finset__card X s)) (forall Nat (m => if (Leq n m) (Eqt (Finset X) (Finset__image X X (Nat__iterate X f m) s) (Finset__image X X (Nat__iterate X f n) s)))))).
 

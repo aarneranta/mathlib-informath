@@ -18,14 +18,14 @@ CommSemiring : (R : Set) -> Prop.
 
 (; doc: Two elements commute if `a * b = b * a`. ;)
 (; //LEAN:Commute ;)
-Commute : (a : Elem M) -> (b : Elem M) -> Prop.
+Commute : (M : Set) -> (a : Elem M) -> (b : Elem M) -> Prop.
 
 (; //LEAN:Commute.all ;)
-Commute__all : (S : Set) -> (_ : Proof (CommMagma S)) -> (a : Elem S) -> (b : Elem S) -> Proof (Commute a b).
+Commute__all : (S : Set) -> (_ : Proof (CommMagma S)) -> (a : Elem S) -> (b : Elem S) -> Proof (Commute S a b).
 
 (; doc: `∅` or `{}` is the empty set or empty collection. It is supported by the `EmptyCollection` typeclass.  Conventions for notations in identifiers:   * The recommended spelling of `{}` in identifiers is `empty`.   * The recommended spelling of `∅` in identifiers is `empty`. ;)
 (; //LEAN:EmptyCollection.emptyCollection ;)
-EmptyCollection__emptyCollection : Elem X.
+EmptyCollection__emptyCollection : (X : Set) -> Elem X.
 
 (; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
 (; //LEAN:Finset ;)
@@ -33,27 +33,27 @@ Finset : (X : Set) -> Set.
 
 (; doc: The antidiagonal of an element `n` is the finset of pairs `(i, j)` such that `i + j = n`. ;)
 (; //LEAN:Finset.HasAntidiagonal.antidiagonal ;)
-Finset__HasAntidiagonal__antidiagonal : (x1 : Elem A) -> Elem (Finset (Prod A A)).
+Finset__HasAntidiagonal__antidiagonal : (A : Set) -> (x : Proof (Add A)) -> (x1 : Elem A) -> Elem (Finset (Prod A A)).
 
 (; doc: The finset $[a, b]$ of elements `x` such that `a ≤ x` and `x ≤ b`. Basically `Set.Icc a b` as a finset. ;)
 (; //LEAN:Finset.Icc ;)
-Finset__Icc : (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
+Finset__Icc : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
 
 (; doc: The property `s.Nonempty` expresses the fact that the finset `s` is not empty. It should be used in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks to the dot notation. ;)
 (; //LEAN:Finset.Nonempty ;)
-Finset__Nonempty : (s : Elem (Finset X)) -> Prop.
+Finset__Nonempty : (X : Set) -> (s : Elem (Finset X)) -> Prop.
 
 (; doc: `s.card` is the number of elements of `s`, aka its cardinality.  The notation `#s` can be accessed in the `Finset` locale. ;)
 (; //LEAN:Finset.card ;)
-Finset__card : (s : Elem (Finset X)) -> Elem Nat.
+Finset__card : (X : Set) -> (s : Elem (Finset X)) -> Elem Nat.
 
 (; doc: When `s` is a finset, `s.powerset` is the finset of all subsets of `s` (seen as finsets). ;)
 (; //LEAN:Finset.powerset ;)
-Finset__powerset : (s : Elem (Finset X)) -> Elem (Finset (Finset X)).
+Finset__powerset : (X : Set) -> (s : Elem (Finset X)) -> Elem (Finset (Finset X)).
 
 (; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.prod ;)
-Finset__prod : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
 
 (; doc: `range n` is the set of natural numbers less than `n`. ;)
 (; //LEAN:Finset.range ;)
@@ -61,11 +61,15 @@ Finset__range : (n : Elem Nat) -> Elem (Finset Nat).
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
-Finset__sum : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
 
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
-HSMul__hSMul : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+HSMul__hSMul : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Y) -> Elem Z.
+
+(; doc: The canonical homomorphism `Nat → R`. In most use cases, the target type will have a (semi)ring structure, and this homomorphism should be a (semi)ring homomorphism.  `NatCast` and `IntCast` exist to allow different libraries with their own types that can be notated as natural numbers to have consistent `simp` normal forms without needing to create coercion simplification sets that are aware of all combinations. Libraries should make it easy to work with `NatCast` where possible. For instance, in Mathlib there will be such a homomorphism (and thus a `NatCast R` instance) whenever `R` is an additive monoid with a `1`.  The prototypical example is `Int.ofNat`. ;)
+(; //LEAN:Nat.cast ;)
+Nat__cast : (R : Set) -> (x1 : Elem Nat) -> Elem R.
 
 (; doc: `choose n k` is the number of `k`-element subsets in an `n`-element set. Also known as binomial coefficients. For the fact that this is the number of `k`-element-subsets of an `n`-element set, see `Finset.card_powersetCard`. ;)
 (; //LEAN:Nat.choose ;)
@@ -77,25 +81,32 @@ Nat__multichoose : (x : Elem Nat) -> (x1 : Elem Nat) -> Elem Nat.
 
 (; doc: `-a` computes the negative or opposite of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `-` in identifiers is `neg` (when used as a unary operator). ;)
 (; //LEAN:Neg.neg ;)
-Neg__neg : (x : Elem X) -> Elem X.
+Neg__neg : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: A unital but not-necessarily-associative semiring. ;)
 (; //LEAN:NonAssocSemiring ;)
 NonAssocSemiring : (X : Set) -> Prop.
 
+(; doc: The product type, usually written `α × β`. Product types are also called pair or tuple types. Elements of this type are pairs in which the first element is an `α` and the second element is a `β`.  Products nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.  Conventions for notations in identifiers:   * The recommended spelling of `×` in identifiers is `Prod`. ;)
+(; //LEAN:Prod ;)
+Prod : (X : Set) -> (Y : Set) -> Set.
+
 (; doc: The first element of a pair. ;)
 (; //LEAN:Prod.fst ;)
-Prod__fst : (self : Elem (Prod X Y)) -> Elem X.
+Prod__fst : (X : Set) -> (Y : Set) -> (self : Elem (Prod X Y)) -> Elem X.
 
 (; doc: The second element of a pair. ;)
 (; //LEAN:Prod.snd ;)
-Prod__snd : (self : Elem (Prod X Y)) -> Elem Y.
+Prod__snd : (X : Set) -> (Y : Set) -> (self : Elem (Prod X Y)) -> Elem Y.
 
 (; doc: A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is commutative and associative, multiplication is associative and left and right distributive over addition, and `0` and `1` are additive and multiplicative identities. ;)
 (; //LEAN:Semiring ;)
 Semiring : (X : Set) -> Prop.
 
+(; //LEAN:instAddNat ;)
+instAddNat : Proof (Add Nat).
+
 (; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:ite ;)
-ite : (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
+ite : (X : Set) -> (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
 

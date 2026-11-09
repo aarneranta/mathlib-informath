@@ -13,11 +13,11 @@ CommMonoidWithZero : (X : Set) -> Prop.
 DecompositionMonoid : (X : Set) -> Prop.
 
 (; //LEAN:DecompositionMonoid.primal ;)
-DecompositionMonoid__primal : (X : Set) -> (x : Proof (Semigroup X)) -> (_ : Proof (DecompositionMonoid X)) -> (a : Elem X) -> Proof (IsPrimal a).
+DecompositionMonoid__primal : (X : Set) -> (x : Proof (Semigroup X)) -> (_ : Proof (DecompositionMonoid X)) -> (a : Elem X) -> Proof (IsPrimal X a).
 
 (; doc: Non-dependent recursor for the equality type. ;)
 (; //LEAN:Eq.ndrec ;)
-Eq__ndrec : (m : Elem (motive a)) -> (h : Proof (Eqt X a b)) -> Elem (motive b).
+Eq__ndrec : (X : Set) -> (a : Elem X) -> (motive : (Elem X -> Set)) -> (m : Elem (motive a)) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Elem (motive b).
 
 (; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.symm ;)
@@ -29,14 +29,14 @@ Iff__not : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff (not 
 
 (; doc: `Irreducible p` states that `p` is non-unit and only factors into units.  We explicitly avoid stating that `p` is non-zero, this would require a semiring. Assuming only a monoid allows us to reuse irreducible for associated elements.  [Wikidata Q2989575](https://www.wikidata.org/wiki/Q2989575) ;)
 (; //LEAN:Irreducible ;)
-Irreducible : (p : Elem M) -> Prop.
+Irreducible : (M : Set) -> (p : Elem M) -> Prop.
 
 (; //LEAN:Irreducible.mk ;)
-Irreducible__mk : (M : Set) -> (_ : Proof (Monoid M)) -> (p : Elem M) -> (not_isUnit : Proof (not (IsUnit p))) -> (isUnit_or_isUnit : Proof (forall M (a => forall M (b => if (Eqt M p (times a b)) (or (IsUnit a) (IsUnit b)))))) -> Proof (Irreducible p).
+Irreducible__mk : (M : Set) -> (_ : Proof (Monoid M)) -> (p : Elem M) -> (not_isUnit : Proof (not (IsUnit M p))) -> (isUnit_or_isUnit : Proof (forall M (a => forall M (b => if (Eqt M p (times a b)) (or (IsUnit M a) (IsUnit M b)))))) -> Proof (Irreducible M p).
 
 (; doc: An irreducible element is not a unit. ;)
 (; //LEAN:Irreducible.not_isUnit ;)
-Irreducible__not_isUnit : (M : Set) -> (_ : Proof (Monoid M)) -> (p : Elem M) -> (self : Proof (Irreducible p)) -> Proof (not (IsUnit p)).
+Irreducible__not_isUnit : (M : Set) -> (_ : Proof (Monoid M)) -> (p : Elem M) -> (self : Proof (Irreducible M p)) -> Proof (not (IsUnit M p)).
 
 (; doc: A mixin for cancellative multiplication by nonzero elements. ;)
 (; //LEAN:IsCancelMulZero ;)
@@ -44,11 +44,11 @@ IsCancelMulZero : (X : Set) -> Prop.
 
 (; doc: An element `a` in a semigroup is primal if whenever `a` is a divisor of `b * c`, it can be factored as the product of a divisor of `b` and a divisor of `c`. ;)
 (; //LEAN:IsPrimal ;)
-IsPrimal : (a : Elem X) -> Prop.
+IsPrimal : (X : Set) -> (a : Elem X) -> Prop.
 
 (; doc: An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse. The actual definition says that `a` is equal to some `u : Mˣ`, where `Mˣ` is a bundled version of `IsUnit`. ;)
 (; //LEAN:IsUnit ;)
-IsUnit : (a : Elem M) -> Prop.
+IsUnit : (M : Set) -> (a : Elem M) -> Prop.
 
 (; doc: A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. ;)
 (; //LEAN:Monoid ;)
@@ -65,18 +65,18 @@ Or__imp : (a : Prop) -> (c : Prop) -> (b : Prop) -> (d : Prop) -> (f : Proof (if
 Or__symm : (a : Prop) -> (b : Prop) -> (h : Proof (or a b)) -> Proof (or b a).
 
 (; //LEAN:SemigroupWithZero.toSemigroup ;)
-SemigroupWithZero__toSemigroup : Proof (Semigroup X).
+SemigroupWithZero__toSemigroup : (X : Set) -> Proof (Semigroup X).
 
 (; doc: Units of a `Monoid`, bundled version. Notation: `αˣ`.  An element of a `Monoid` is a unit if it has a two-sided inverse. This version bundles the inverse element so that it can be computed. For a predicate see `IsUnit`. ;)
 (; //LEAN:Units ;)
 Units : (X : Set) -> Set.
 
 (; //LEAN:Units.isUnit ;)
-Units__isUnit : (M : Set) -> (_ : Proof (Monoid M)) -> (u : Elem (Units M)) -> Proof (IsUnit (Units__val u)).
+Units__isUnit : (M : Set) -> (_ : Proof (Monoid M)) -> (u : Elem (Units M)) -> Proof (IsUnit M (Units__val M u)).
 
 (; doc: The underlying value in the base `Monoid`. ;)
 (; //LEAN:Units.val ;)
-Units__val : (self : Elem (Units X)) -> Elem X.
+Units__val : (X : Set) -> (self : Elem (Units X)) -> Elem X.
 
 (; //LEAN:dvd_mul_of_dvd_left ;)
 dvd_mul_of_dvd_left : (X : Set) -> (_ : Proof (Semigroup X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (divide a b)) -> (c : Elem X) -> Proof (divide a (times b c)).
@@ -91,13 +91,13 @@ dvd_pow : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) -> (b : Elem X) ->
 dvd_rfl : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) -> Proof (divide a a).
 
 (; //LEAN:isUnit_of_dvd_one ;)
-isUnit_of_dvd_one : (X : Set) -> (_ : Proof (CommMonoid X)) -> (a : Elem X) -> (h : Proof (divide a 1)) -> Proof (IsUnit a).
+isUnit_of_dvd_one : (X : Set) -> (_ : Proof (CommMonoid X)) -> (a : Elem X) -> (h : Proof (divide a 1)) -> Proof (IsUnit X a).
 
 (; //LEAN:isUnit_of_dvd_unit ;)
-isUnit_of_dvd_unit : (X : Set) -> (_ : Proof (CommMonoid X)) -> (x1 : Elem X) -> (y : Elem X) -> (xy : Proof (divide x1 y)) -> (hu : Proof (IsUnit y)) -> Proof (IsUnit x1).
+isUnit_of_dvd_unit : (X : Set) -> (_ : Proof (CommMonoid X)) -> (x1 : Elem X) -> (y : Elem X) -> (xy : Proof (divide x1 y)) -> (hu : Proof (IsUnit X y)) -> Proof (IsUnit X x1).
 
 (; //LEAN:isUnit_one ;)
-isUnit_one : (M : Set) -> (_ : Proof (Monoid M)) -> Proof (IsUnit 1).
+isUnit_one : (M : Set) -> (_ : Proof (Monoid M)) -> Proof (IsUnit M 1).
 
 (; //LEAN:left_ne_zero_of_mul ;)
 left_ne_zero_of_mul : (X : Set) -> (_ : Proof (MulZeroClass X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Neq (times a b) 0)) -> Proof (Neq a 0).

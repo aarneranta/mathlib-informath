@@ -1,9 +1,6 @@
 (; constants used by Mathlib.Algebra.Polynomial.Roots, declared with their translated types ;)
 
 (; a constant applied as a function: DFunLike.coe ;)
-AlgHom__comp__app : (a1 : Elem (AlgHom T S S')) -> (a2 : Elem (AlgHom T (Polynomial T) S)) -> (a3 : Elem (Polynomial T)) -> Elem S'.
-
-(; a constant applied as a function: DFunLike.coe ;)
 Algebra__algebraMap__app : (a1 : Set) -> (a2 : Set) -> (a3 : Elem T) -> Elem S.
 
 (; a constant applied as a function: DFunLike.coe ;)
@@ -11,6 +8,9 @@ Polynomial__C__app : (a1 : Elem R) -> Elem (Polynomial R).
 
 (; a constant applied as a function: DFunLike.coe ;)
 Polynomial__aeval__app : (a1 : Elem R) -> (a2 : Elem (Polynomial S)) -> Elem R.
+
+(; a constant applied as a function: DFunLike.coe ;)
+Polynomial__coeff__app : (a1 : Elem (Polynomial R)) -> (a2 : Elem Nat) -> Elem R.
 
 (; a constant applied as a function: DFunLike.coe ;)
 Polynomial__monomial__app : (a1 : Elem Nat) -> (a2 : Elem T) -> Elem (Polynomial T).
@@ -22,28 +22,25 @@ Polynomial__ofMultiset__app : (a1 : Elem (Multiset R)) -> Elem (Polynomial R).
 (; //LEAN:AlgHom ;)
 AlgHom : (R : Set) -> (A : Set) -> (B : Set) -> Set.
 
-(; doc: If `φ₁` and `φ₂` are `R`-algebra homomorphisms with the domain of `φ₁` equal to the codomain of `φ₂`, then `φ₁.comp φ₂` is the algebra homomorphism `x ↦ φ₁ (φ₂ x)`. ;)
-(; //LEAN:AlgHom.comp ;)
-AlgHom__comp : (x7 : Elem (AlgHom R B C)) -> (x8 : Elem (AlgHom R A B)) -> Elem (AlgHom R A C).
-
-(; //LEAN:AlgHom.comp_apply ;)
-AlgHom__comp_apply : (R : Set) -> (A : Set) -> (B : Set) -> (C : Set) -> (_ : Proof (CommSemiring R)) -> (_ : Proof (Semiring A)) -> (_ : Proof (Semiring B)) -> (_ : Proof (Semiring C)) -> (_ : Proof (Algebra R A)) -> (_ : Proof (Algebra R B)) -> (_ : Proof (Algebra R C)) -> (x7 : Elem (AlgHom R B C)) -> (x8 : Elem (AlgHom R A B)) -> (p : Elem A) -> Proof (Eqt C (AlgHom__comp__app x7 x8 p) (x7 (x8 p))).
-
 (; doc: An associative unital `R`-algebra is a semiring `A` equipped with a map into its center `R → A`.  See the implementation notes in this file for discussion of the details of this definition. ;)
 (; //LEAN:Algebra ;)
 Algebra : (R : Set) -> (A : Set) -> Prop.
 
 (; doc: Embedding `R →+* A` given by `Algebra` structure. ;)
 (; //LEAN:Algebra.algebraMap ;)
-Algebra__algebraMap : (R : Set) -> (A : Set) -> Elem (RingHom R A).
+Algebra__algebraMap : (R : Set) -> (A : Set) -> (x : Proof (CommSemiring R)) -> (x1 : Proof (Semiring A)) -> Elem (RingHom R A).
 
 (; doc: Two elements of a `Monoid` are `Associated` if one of them is another one multiplied by a unit on the right. ;)
 (; //LEAN:Associated ;)
-Associated : (x1 : Elem M) -> (y : Elem M) -> Prop.
+Associated : (M : Set) -> (x1 : Elem M) -> (y : Elem M) -> Prop.
 
 (; doc: The bot (`⊥`, `\bot`) element  Conventions for notations in identifiers:   * The recommended spelling of `⊥` in identifiers is `bot`. ;)
 (; //LEAN:Bot.bot ;)
-Bot__bot : Elem X.
+Bot__bot : (X : Set) -> Elem X.
+
+(; doc: `Cardinal.{u}` is the type of cardinal numbers in `Type u`, defined as the quotient of `Type u` by existence of an equivalence (a bijection with explicit inverse). ;)
+(; //LEAN:Cardinal ;)
+Cardinal : Set.
 
 (; doc: The cardinal number of a type ;)
 (; //LEAN:Cardinal.mk ;)
@@ -51,7 +48,7 @@ Cardinal__mk : (x : Set) -> Elem Cardinal.
 
 (; doc: Given that there exists an element satisfying `p`, returns one such element.  This is a straightforward consequence of, and equivalent to, `Classical.choice`.  See also `choose_spec`, which asserts that the returned value has property `p`. ;)
 (; //LEAN:Classical.choose ;)
-Classical__choose : (h : Proof (exists X (x => p x))) -> Elem X.
+Classical__choose : (X : Set) -> (p : (Elem X -> Prop)) -> (h : Proof (exists X (x => p x))) -> Elem X.
 
 (; doc: Any prop `p` is decidable classically. A shorthand for `Classical.propDecidable`. ;)
 (; //LEAN:Classical.dec ;)
@@ -61,9 +58,19 @@ Classical__dec : (p : Prop) -> Proof (Decidable p).
 (; //LEAN:CommRing ;)
 CommRing : (X : Set) -> Prop.
 
+(; //LEAN:CommRing.toCommSemiring ;)
+CommRing__toCommSemiring : (X : Set) -> Proof (CommSemiring X).
+
+(; //LEAN:CommSemiring.toSemiring ;)
+CommSemiring__toSemiring : (R : Set) -> Proof (Semiring R).
+
 (; doc: `∅` or `{}` is the empty set or empty collection. It is supported by the `EmptyCollection` typeclass.  Conventions for notations in identifiers:   * The recommended spelling of `{}` in identifiers is `empty`.   * The recommended spelling of `∅` in identifiers is `empty`. ;)
 (; //LEAN:EmptyCollection.emptyCollection ;)
-EmptyCollection__emptyCollection : Elem X.
+EmptyCollection__emptyCollection : (X : Set) -> Elem X.
+
+(; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
+(; //LEAN:Eq ;)
+Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: **Alias** of `ge_of_eq`. ;)
 (; //LEAN:Eq.ge ;)
@@ -71,11 +78,11 @@ Eq__ge : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -
 
 (; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
 (; //LEAN:Eq.mp ;)
-Eq__mp : (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
+Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
 
 (; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
 (; //LEAN:Eq.mpr ;)
-Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
 
 (; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.symm ;)
@@ -87,15 +94,15 @@ Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Pr
 
 (; doc: `f.Eventually p` or `∀ᶠ x in f, p x` mean that `{x | p x} ∈ f`. E.g., `∀ᶠ x in atTop, p x` means that `p` holds true for sufficiently large `x`. ;)
 (; //LEAN:Filter.Eventually ;)
-Filter__Eventually : (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> Prop.
+Filter__Eventually : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> Prop.
 
 (; doc: The class of functions `f` such that `Tendsto f cofinite cofinite`, it is equivalent to `f` having finite fibers, see `Filter.tendstoCofinite_iff_finite_preimage_singleton`. ;)
 (; //LEAN:Filter.TendstoCofinite ;)
-Filter__TendstoCofinite : (f : (Elem X -> Y)) -> Prop.
+Filter__TendstoCofinite : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: The cofinite filter is the filter of subsets whose complements are finite. ;)
 (; //LEAN:Filter.cofinite ;)
-Filter__cofinite : Elem (Filter X).
+Filter__cofinite : (X : Set) -> Elem (Filter X).
 
 (; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
 (; //LEAN:Finset ;)
@@ -103,18 +110,18 @@ Finset : (X : Set) -> Set.
 
 (; doc: `s.card` is the number of elements of `s`, aka its cardinality.  The notation `#s` can be accessed in the `Finset` locale. ;)
 (; //LEAN:Finset.card ;)
-Finset__card : (s : Elem (Finset X)) -> Elem Nat.
+Finset__card : (X : Set) -> (s : Elem (Finset X)) -> Elem Nat.
 
 (; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.prod ;)
-Finset__prod : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
 
 (; doc: The underlying multiset ;)
 (; //LEAN:Finset.val ;)
-Finset__val : (self : Elem (Finset X)) -> Elem (Multiset X).
+Finset__val : (X : Set) -> (self : Elem (Finset X)) -> Elem (Multiset X).
 
 (; //LEAN:Finset.val_le_iff_val_subset ;)
-Finset__val_le_iff_val_subset : (X : Set) -> (a : Elem (Finset X)) -> (b : Elem (Multiset X)) -> Proof (iff (Leq (Finset__val a) b) (HasSubset__Subset (Finset__val a) b)).
+Finset__val_le_iff_val_subset : (X : Set) -> (a : Elem (Finset X)) -> (b : Elem (Multiset X)) -> Proof (iff (Leq (Finset__val X a) b) (HasSubset__Subset (Multiset X) (Finset__val X a) b)).
 
 (; doc: `Fintype α` means that `α` is finite, i.e. there are only finitely many distinct elements of type `α`. The evidence of this is a finset `elems` (a list up to permutation without duplicates), together with a proof that everything of type `α` is in the list. ;)
 (; //LEAN:Fintype ;)
@@ -125,37 +132,37 @@ Fintype : (X : Set) -> Prop.
 Fintype__card : (X : Set) -> Elem Nat.
 
 (; //LEAN:Fintype.card_coe ;)
-Fintype__card_coe : (X : Set) -> (s : Elem (Finset X)) -> (_ : Proof (Fintype (Subtype (x2 => Membership__mem s x2)))) -> Proof (Eq (Fintype__card (Subtype (x1 => Membership__mem s x1))) (Finset__card s)).
+Fintype__card_coe : (X : Set) -> (s : Elem (Finset X)) -> (_ : Proof (Fintype (Subtype X (x2 => Membership__mem X (Finset X) s x2)))) -> Proof (Eq (Fintype__card (Subtype X (x1 => Membership__mem X (Finset X) s x1))) (Finset__card X s)).
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: `RightInverse g f` means that `g` is a right inverse to `f`. That is, `f ∘ g = id`. ;)
 (; //LEAN:Function.RightInverse ;)
-Function__RightInverse : (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> Prop.
+Function__RightInverse : (X : Set) -> (Y : Set) -> (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Function.RightInverse.injective ;)
-Function__RightInverse__injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> X)) -> (h : Proof (Function__RightInverse f g)) -> Proof (Function__Injective f).
+Function__RightInverse__injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> X)) -> (h : Proof (Function__RightInverse Y X f g)) -> Proof (Function__Injective X Y f).
 
 (; doc: `mulSupport` of a function is the set of points `x` such that `f x ≠ 1`. ;)
 (; //LEAN:Function.mulSupport ;)
-Function__mulSupport : (f : (Elem I -> M)) -> Elem (powerset I).
+Function__mulSupport : (I : Set) -> (M : Set) -> (f : (Elem I -> M)) -> Elem (powerset I).
 
 (; doc: A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.  There is also a division operation `/` such that `a / b = a * b⁻¹`, with a default so that `a / b = a * b⁻¹` holds by definition.  Use `Group.ofLeftAxioms` or `Group.ofRightAxioms` to define a group structure on a type with the minimum proof obligations.  [Wikidata Q83478](https://www.wikidata.org/wiki/Q83478) ;)
 (; //LEAN:Group ;)
 Group : (G : Set) -> Prop.
 
 (; //LEAN:Group.isUnit ;)
-Group__isUnit : (X : Set) -> (_ : Proof (Group X)) -> (a : Elem X) -> Proof (IsUnit a).
+Group__isUnit : (X : Set) -> (_ : Proof (Group X)) -> (a : Elem X) -> Proof (IsUnit X a).
 
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
-HSMul__hSMul : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+HSMul__hSMul : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Y) -> Elem Z.
 
 (; doc: Subset relation: `a ⊆ b`  Conventions for notations in identifiers:   * The recommended spelling of `⊆` in identifiers is `subset`. ;)
 (; //LEAN:HasSubset.Subset ;)
-HasSubset__Subset : (x : Elem X) -> (x1 : Elem X) -> Prop.
+HasSubset__Subset : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; //LEAN:Iff.trans ;)
 Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
@@ -166,15 +173,15 @@ Infinite : (X : Set) -> Prop.
 
 (; doc: `insert x xs` inserts the element `x` into the collection `xs`. ;)
 (; //LEAN:Insert.insert ;)
-Insert__insert : (x1 : Elem x) -> (x2 : Elem Z) -> Elem Z.
+Insert__insert : (X : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Z) -> Elem Z.
 
 (; doc: `a⁻¹` computes the inverse of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `⁻¹` in identifiers is `inv`. ;)
 (; //LEAN:Inv.inv ;)
-Inv__inv : (x : Elem X) -> Elem X.
+Inv__inv : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: `Irreducible p` states that `p` is non-unit and only factors into units.  We explicitly avoid stating that `p` is non-zero, this would require a semiring. Assuming only a monoid allows us to reuse irreducible for associated elements.  [Wikidata Q2989575](https://www.wikidata.org/wiki/Q2989575) ;)
 (; //LEAN:Irreducible ;)
-Irreducible : (p : Elem M) -> Prop.
+Irreducible : (M : Set) -> (p : Elem M) -> Prop.
 
 (; doc: A domain is a nontrivial semiring such that multiplication by a nonzero element is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying `∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and `∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.  This is implemented as a mixin for `Semiring α`. To obtain an integral domain use `[CommRing α] [IsDomain α]`. ;)
 (; //LEAN:IsDomain ;)
@@ -182,11 +189,11 @@ IsDomain : (X : Set) -> Prop.
 
 (; doc: An element `a` of a type `α` with multiplication satisfies `IsSquare a` if `a = r * r`, for some root `r : α`.  [OEIS A000290](https://oeis.org/A000290) ;)
 (; //LEAN:IsSquare ;)
-IsSquare : (a : Elem X) -> Prop.
+IsSquare : (X : Set) -> (a : Elem X) -> Prop.
 
 (; doc: An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse. The actual definition says that `a` is equal to some `u : Mˣ`, where `Mˣ` is a bundled version of `IsUnit`. ;)
 (; //LEAN:IsUnit ;)
-IsUnit : (a : Elem M) -> Prop.
+IsUnit : (M : Set) -> (a : Elem M) -> Prop.
 
 (; doc: **Alias** of `le_trans`. ;)
 (; //LEAN:LE.le.trans ;)
@@ -206,15 +213,15 @@ List : (X : Set) -> Set.
 
 (; doc: Computes the product of the elements of a list.  Examples: * `[a, b, c].prod = a * (b * (c * 1))` * `[1, 2, 5].prod = 10` ;)
 (; //LEAN:List.prod ;)
-List__prod : (x2 : Elem (List X)) -> Elem X.
+List__prod : (X : Set) -> (x2 : Elem (List X)) -> Elem X.
 
 (; doc: Returns the greater of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `max` in identifiers is `max`.   * The recommended spelling of `⊔` in identifiers is `sup` (`⊔` is the preferred notation for `max` when the type is not linearly ordered.). ;)
 (; //LEAN:Max.max ;)
-Max__max : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+Max__max : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
-Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
 
 (; doc: An `R`-module `M` is torsion-free if scalar multiplication by an element `r : R` is injective if multiplication (on `R`) by `r` is.  For domains, this is equivalent to the usual condition of `r • m = 0 → r = 0 ∨ m = 0`. See `smul_eq_zero`. ;)
 (; //LEAN:Module.IsTorsionFree ;)
@@ -234,52 +241,56 @@ Multiset : (X : Set) -> Set.
 
 (; doc: `s.bind f` is the monad bind operation, defined as `(s.map f).join`. It is the union of `f a` as `a` ranges over `s`. ;)
 (; //LEAN:Multiset.bind ;)
-Multiset__bind : (s : Elem (Multiset X)) -> (f : (Elem X -> Multiset Y)) -> Elem (Multiset Y).
+Multiset__bind : (X : Set) -> (Y : Set) -> (s : Elem (Multiset X)) -> (f : (Elem X -> Multiset Y)) -> Elem (Multiset Y).
 
 (; doc: The cardinality of a multiset is the sum of the multiplicities of all its elements, or simply the length of the underlying list. ;)
 (; //LEAN:Multiset.card ;)
-Multiset__card : (x : Elem (Multiset X)) -> Elem Nat.
+Multiset__card : (X : Set) -> (x : Elem (Multiset X)) -> Elem Nat.
 
 (; //LEAN:Multiset.card_le_card ;)
-Multiset__card_le_card : (X : Set) -> (s : Elem (Multiset X)) -> (t : Elem (Multiset X)) -> (h : Proof (Leq s t)) -> Proof (Leq (Multiset__card s) (Multiset__card t)).
+Multiset__card_le_card : (X : Set) -> (s : Elem (Multiset X)) -> (t : Elem (Multiset X)) -> (h : Proof (Leq s t)) -> Proof (Leq (Multiset__card X s) (Multiset__card X t)).
 
 (; //LEAN:Multiset.card_map ;)
-Multiset__card_map : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (Multiset X)) -> Proof (Eq (Multiset__card (Multiset__map f s)) (Multiset__card s)).
+Multiset__card_map : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (Multiset X)) -> Proof (Eq (Multiset__card Y (Multiset__map X Y f s)) (Multiset__card X s)).
 
 (; doc: `count a s` is the multiplicity of `a` in `s`. ;)
 (; //LEAN:Multiset.count ;)
-Multiset__count : (a : Elem X) -> (x1 : Elem (Multiset X)) -> Elem Nat.
+Multiset__count : (X : Set) -> (a : Elem X) -> (x1 : Elem (Multiset X)) -> Elem Nat.
 
 (; //LEAN:Multiset.eq_of_le_of_card_le ;)
-Multiset__eq_of_le_of_card_le : (X : Set) -> (s : Elem (Multiset X)) -> (t : Elem (Multiset X)) -> (h : Proof (Leq s t)) -> (h1 : Proof (Leq (Multiset__card t) (Multiset__card s))) -> Proof (Eqt (Multiset X) s t).
+Multiset__eq_of_le_of_card_le : (X : Set) -> (s : Elem (Multiset X)) -> (t : Elem (Multiset X)) -> (h : Proof (Leq s t)) -> (h1 : Proof (Leq (Multiset__card X t) (Multiset__card X s))) -> Proof (Eqt (Multiset X) s t).
 
 (; doc: `Filter p s` returns the elements in `s` (with the same multiplicities) which satisfy `p`, and removes the rest. ;)
 (; //LEAN:Multiset.filter ;)
-Multiset__filter : (p : (Elem X -> Prop)) -> (s : Elem (Multiset X)) -> Elem (Multiset X).
+Multiset__filter : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Multiset X)) -> Elem (Multiset X).
 
 (; doc: `map f s` is the lift of the list `map` operation. The multiplicity of `b` in `map f s` is the number of `a ∈ s` (counting multiplicity) such that `f a = b`. ;)
 (; //LEAN:Multiset.map ;)
-Multiset__map : (f : (Elem X -> Y)) -> (s : Elem (Multiset X)) -> Elem (Multiset Y).
+Multiset__map : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (Multiset X)) -> Elem (Multiset Y).
 
 (; doc: The quotient map from `List α` to `Multiset α`. ;)
 (; //LEAN:Multiset.ofList ;)
-Multiset__ofList : (x : Elem (List X)) -> Elem (Multiset X).
+Multiset__ofList : (X : Set) -> (x : Elem (List X)) -> Elem (Multiset X).
 
 (; doc: Product of a multiset given a commutative monoid structure on `M`. `prod {a, b, c} = a * b * c` ;)
 (; //LEAN:Multiset.prod ;)
-Multiset__prod : (x1 : Elem (Multiset M)) -> Elem M.
+Multiset__prod : (M : Set) -> (x1 : Elem (Multiset M)) -> Elem M.
 
 (; doc: `replicate n a` is the multiset containing only `a` with multiplicity `n`. ;)
 (; //LEAN:Multiset.replicate ;)
-Multiset__replicate : (n : Elem Nat) -> (a : Elem X) -> Elem (Multiset X).
+Multiset__replicate : (X : Set) -> (n : Elem Nat) -> (a : Elem X) -> Elem (Multiset X).
 
 (; doc: `toFinset s` removes duplicates from the multiset `s` to produce a finset. ;)
 (; //LEAN:Multiset.toFinset ;)
-Multiset__toFinset : (s : Elem (Multiset X)) -> Elem (Finset X).
+Multiset__toFinset : (X : Set) -> (s : Elem (Multiset X)) -> Elem (Finset X).
+
+(; doc: The canonical homomorphism `Nat → R`. In most use cases, the target type will have a (semi)ring structure, and this homomorphism should be a (semi)ring homomorphism.  `NatCast` and `IntCast` exist to allow different libraries with their own types that can be notated as natural numbers to have consistent `simp` normal forms without needing to create coercion simplification sets that are aware of all combinations. Libraries should make it easy to work with `NatCast` where possible. For instance, in Mathlib there will be such a homomorphism (and thus a `NatCast R` instance) whenever `R` is an additive monoid with a `1`.  The prototypical example is `Int.ofNat`. ;)
+(; //LEAN:Nat.cast ;)
+Nat__cast : (R : Set) -> (x1 : Elem Nat) -> Elem R.
 
 (; doc: `-a` computes the negative or opposite of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `-` in identifiers is `neg` (when used as a unary operator). ;)
 (; //LEAN:Neg.neg ;)
-Neg__neg : (x : Elem X) -> Elem X.
+Neg__neg : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: `Polynomial R` is the type of univariate polynomials over `R`, denoted as `R[X]` within the `Polynomial` namespace.  Polynomials should be seen as (semi-)rings with the additional constructor `X`. The embedding from `R` is called `C`. ;)
 (; //LEAN:Polynomial ;)
@@ -287,111 +298,104 @@ Polynomial : (R : Set) -> Set.
 
 (; doc: `IsRoot p x` implies `x` is a root of `p`. The evaluation of `p` at `x` is zero ;)
 (; //LEAN:Polynomial.IsRoot ;)
-Polynomial__IsRoot : (p : Elem (Polynomial R)) -> (a : Elem R) -> Prop.
+Polynomial__IsRoot : (R : Set) -> (p : Elem (Polynomial R)) -> (a : Elem R) -> Prop.
 
 (; doc: a polynomial is `Monic` if its leading coefficient is 1 ;)
 (; //LEAN:Polynomial.Monic ;)
-Polynomial__Monic : (p : Elem (Polynomial R)) -> Prop.
+Polynomial__Monic : (R : Set) -> (p : Elem (Polynomial R)) -> Prop.
 
 (; //LEAN:Polynomial.Monic.leadingCoeff ;)
-Polynomial__Monic__leadingCoeff : (R : Set) -> (_ : Proof (Semiring R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Polynomial__Monic p)) -> Proof (Eqt R (Polynomial__leadingCoeff p) 1).
+Polynomial__Monic__leadingCoeff : (R : Set) -> (_ : Proof (Semiring R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Polynomial__Monic R p)) -> Proof (Eqt R (Polynomial__leadingCoeff R p) 1).
 
 (; doc: `X` is the polynomial variable (aka indeterminate). ;)
 (; //LEAN:Polynomial.X ;)
-Polynomial__X : Elem (Polynomial R).
+Polynomial__X : (R : Set) -> Elem (Polynomial R).
 
 (; //LEAN:Polynomial.X_pow_sub_C_ne_zero ;)
-Polynomial__X_pow_sub_C_ne_zero : (R : Set) -> (_ : Proof (Ring R)) -> (n : Elem Nat) -> (hn : Proof (Lt 0 n)) -> (a : Elem R) -> Proof (Neq (minus (pow Polynomial__X n) (Polynomial__C__app a)) 0).
-
-(; doc: Given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.  This is a stronger variant of the linear map `Polynomial.leval`. ;)
-(; //LEAN:Polynomial.aeval ;)
-Polynomial__aeval : (x3 : Elem A) -> Elem (AlgHom R (Polynomial R) A).
-
-(; //LEAN:Polynomial.aeval_algHom ;)
-Polynomial__aeval_algHom : (R : Set) -> (A : Set) -> (B : Set) -> (_ : Proof (CommSemiring R)) -> (_ : Proof (Semiring A)) -> (_ : Proof (Semiring B)) -> (_ : Proof (Algebra R A)) -> (_ : Proof (Algebra R B)) -> (f : Elem (AlgHom R A B)) -> (x5 : Elem A) -> Proof (Eqt (AlgHom R (Polynomial R) B) (Polynomial__aeval (f x5)) (AlgHom__comp f (Polynomial__aeval x5))).
+Polynomial__X_pow_sub_C_ne_zero : (R : Set) -> (_ : Proof (Ring R)) -> (n : Elem Nat) -> (hn : Proof (Lt 0 n)) -> (a : Elem R) -> Proof (Neq (minus (pow (Polynomial__X R) n) (Polynomial__C__app a)) 0).
 
 (; doc: The composition of polynomials as a polynomial. ;)
 (; //LEAN:Polynomial.comp ;)
-Polynomial__comp : (p : Elem (Polynomial R)) -> (q : Elem (Polynomial R)) -> Elem (Polynomial R).
+Polynomial__comp : (R : Set) -> (p : Elem (Polynomial R)) -> (q : Elem (Polynomial R)) -> Elem (Polynomial R).
 
 (; doc: `degree p` is the degree of the polynomial `p`, i.e. the largest `X`-exponent in `p`. `degree p = some n` when `p ≠ 0` and `n` is the highest power of `X` that appears in `p`, otherwise `degree 0 = ⊥`. ;)
 (; //LEAN:Polynomial.degree ;)
-Polynomial__degree : (p : Elem (Polynomial R)) -> Elem (WithBot Nat).
+Polynomial__degree : (R : Set) -> (p : Elem (Polynomial R)) -> Elem (WithBot Nat).
 
 (; //LEAN:Polynomial.degree_X_pow_sub_C ;)
-Polynomial__degree_X_pow_sub_C : (R : Set) -> (n : Elem Nat) -> (_ : Proof (Ring R)) -> (hn : Proof (Lt 0 n)) -> (a : Elem R) -> Proof (Eqt (WithBot Nat) (Polynomial__degree (minus (pow Polynomial__X n) (Polynomial__C__app a))) n).
+Polynomial__degree_X_pow_sub_C : (R : Set) -> (n : Elem Nat) -> (_ : Proof (Ring R)) -> (hn : Proof (Lt 0 n)) -> (a : Elem R) -> Proof (Eqt (WithBot Nat) (Polynomial__degree R (minus (pow (Polynomial__X R) n) (Polynomial__C__app a))) (Nat__cast (WithBot Nat) n)).
 
 (; //LEAN:Polynomial.degree_eq_natDegree ;)
-Polynomial__degree_eq_natDegree : (R : Set) -> (_ : Proof (Semiring R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Neq p 0)) -> Proof (Eqt (WithBot Nat) (Polynomial__degree p) (Polynomial__natDegree p)).
+Polynomial__degree_eq_natDegree : (R : Set) -> (_ : Proof (Semiring R)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Neq p 0)) -> Proof (Eqt (WithBot Nat) (Polynomial__degree R p) (Nat__cast (WithBot Nat) (Polynomial__natDegree R p))).
 
 (; doc: **Alias** of the forward direction of `Polynomial.natDegree_le_iff_degree_le`. ;)
 (; //LEAN:Polynomial.degree_le_of_natDegree_le ;)
-Polynomial__degree_le_of_natDegree_le : (R : Set) -> (_ : Proof (Semiring R)) -> (p : Elem (Polynomial R)) -> (n : Elem Nat) -> (h : Proof (Leq (Polynomial__natDegree p) n)) -> Proof (Leq (Polynomial__degree p) n).
+Polynomial__degree_le_of_natDegree_le : (R : Set) -> (_ : Proof (Semiring R)) -> (p : Elem (Polynomial R)) -> (n : Elem Nat) -> (h : Proof (Leq (Polynomial__natDegree R p) n)) -> Proof (Leq (Polynomial__degree R p) (Nat__cast (WithBot Nat) n)).
 
 (; //LEAN:Polynomial.eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le ;)
-Polynomial__eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le : (R : Set) -> (_ : Proof (CommSemiring R)) -> (p : Elem (Polynomial R)) -> (q : Elem (Polynomial R)) -> (hp : Proof (Polynomial__Monic p)) -> (hdvd : Proof (divide p q)) -> (hdeg : Proof (Leq (Polynomial__natDegree q) (Polynomial__natDegree p))) -> Proof (Eqt (Polynomial R) q (times (Polynomial__C__app (Polynomial__leadingCoeff q)) p)).
+Polynomial__eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le : (R : Set) -> (_ : Proof (CommSemiring R)) -> (p : Elem (Polynomial R)) -> (q : Elem (Polynomial R)) -> (hp : Proof (Polynomial__Monic R p)) -> (hdvd : Proof (divide p q)) -> (hdeg : Proof (Leq (Polynomial__natDegree R q) (Polynomial__natDegree R p))) -> Proof (Eqt (Polynomial R) q (times (Polynomial__C__app (Polynomial__leadingCoeff R q)) p)).
 
 (; doc: `eval x p` is the evaluation of the polynomial `p` at `x` ;)
 (; //LEAN:Polynomial.eval ;)
-Polynomial__eval : (x1 : Elem R) -> (p : Elem (Polynomial R)) -> Elem R.
+Polynomial__eval : (R : Set) -> (x1 : Elem R) -> (p : Elem (Polynomial R)) -> Elem R.
 
 (; doc: Evaluate a polynomial `p` given a ring hom `f` from the scalar ring to the target and a value `x` for the variable in the target ;)
 (; //LEAN:Polynomial.eval₂ ;)
-Polynomial__eval_u2082_ : (f : Elem (RingHom R S)) -> (x2 : Elem S) -> (p : Elem (Polynomial R)) -> Elem S.
+Polynomial__eval_u2082_ : (R : Set) -> (S : Set) -> (f : Elem (RingHom R S)) -> (x2 : Elem S) -> (p : Elem (Polynomial R)) -> Elem S.
 
 (; //LEAN:Polynomial.exists_multiset_roots ;)
-Polynomial__exists_multiset_roots : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (h1 : Proof (Neq p 0)) -> Proof (exists (Multiset R) (s => and (Leq (Multiset__card s) (Polynomial__degree p)) (forall R (a => Eq (Multiset__count a s) (Polynomial__rootMultiplicity a p))))).
+Polynomial__exists_multiset_roots : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (h1 : Proof (Neq p 0)) -> Proof (exists (Multiset R) (s => and (Leq (Nat__cast (WithBot Nat) (Multiset__card R s)) (Polynomial__degree R p)) (forall R (a => Eq (Multiset__count R a s) (Polynomial__rootMultiplicity R a p))))).
 
 (; doc: `leadingCoeff p` gives the coefficient of the highest power of `X` in `p`. ;)
 (; //LEAN:Polynomial.leadingCoeff ;)
-Polynomial__leadingCoeff : (p : Elem (Polynomial R)) -> Elem R.
+Polynomial__leadingCoeff : (R : Set) -> (p : Elem (Polynomial R)) -> Elem R.
 
 (; //LEAN:Polynomial.leadingCoeff_dvd_leadingCoeff ;)
-Polynomial__leadingCoeff_dvd_leadingCoeff : (R : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (NoZeroDivisors R)) -> (a : Elem (Polynomial R)) -> (p : Elem (Polynomial R)) -> (hap : Proof (divide a p)) -> Proof (divide (Polynomial__leadingCoeff a) (Polynomial__leadingCoeff p)).
+Polynomial__leadingCoeff_dvd_leadingCoeff : (R : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (NoZeroDivisors R)) -> (a : Elem (Polynomial R)) -> (p : Elem (Polynomial R)) -> (hap : Proof (divide a p)) -> Proof (divide (Polynomial__leadingCoeff R a) (Polynomial__leadingCoeff R p)).
 
 (; doc: `map f p` maps a polynomial `p` across a ring hom `f` ;)
 (; //LEAN:Polynomial.map ;)
-Polynomial__map : (f : Elem (RingHom R S)) -> (x2 : Elem (Polynomial R)) -> Elem (Polynomial S).
+Polynomial__map : (R : Set) -> (S : Set) -> (f : Elem (RingHom R S)) -> (x2 : Elem (Polynomial R)) -> Elem (Polynomial S).
 
 (; //LEAN:Polynomial.map_monic_ne_zero ;)
-Polynomial__map_monic_ne_zero : (R : Set) -> (S : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (f : Elem (RingHom R S)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Polynomial__Monic p)) -> Proof (Neq (Polynomial__map f p) 0).
+Polynomial__map_monic_ne_zero : (R : Set) -> (S : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (f : Elem (RingHom R S)) -> (p : Elem (Polynomial R)) -> (hp : Proof (Polynomial__Monic R p)) -> Proof (Neq (Polynomial__map R S f p) 0).
 
 (; //LEAN:Polynomial.monic_X_sub_C ;)
-Polynomial__monic_X_sub_C : (R : Set) -> (_ : Proof (Ring R)) -> (x1 : Elem R) -> Proof (Polynomial__Monic (minus Polynomial__X (Polynomial__C__app x1))).
+Polynomial__monic_X_sub_C : (R : Set) -> (_ : Proof (Ring R)) -> (x1 : Elem R) -> Proof (Polynomial__Monic R (minus (Polynomial__X R) (Polynomial__C__app x1))).
 
 (; //LEAN:Polynomial.monic_finprod_of_monic ;)
-Polynomial__monic_finprod_of_monic : (R : Set) -> (_ : Proof (CommSemiring R)) -> (X : Set) -> (f : (Elem X -> Polynomial R)) -> (hf : Proof (forall X (i => if (Membership__mem (Function__mulSupport f) i) (Polynomial__Monic (f i))))) -> Proof (Polynomial__Monic (finprod f)).
+Polynomial__monic_finprod_of_monic : (R : Set) -> (_ : Proof (CommSemiring R)) -> (X : Set) -> (f : (Elem X -> Polynomial R)) -> (hf : Proof (forall X (i => if (Membership__mem X (powerset X) (Function__mulSupport X (Polynomial R) f) i) (Polynomial__Monic R (f i))))) -> Proof (Polynomial__Monic R (finprod (Polynomial R) X f)).
 
 (; //LEAN:Polynomial.monic_multiset_prod_of_monic ;)
-Polynomial__monic_multiset_prod_of_monic : (R : Set) -> (I : Set) -> (_ : Proof (CommSemiring R)) -> (t : Elem (Multiset I)) -> (f : (Elem I -> Polynomial R)) -> (ht : Proof (forall I (i => if (Membership__mem t i) (Polynomial__Monic (f i))))) -> Proof (Polynomial__Monic (Multiset__prod (Multiset__map f t))).
+Polynomial__monic_multiset_prod_of_monic : (R : Set) -> (I : Set) -> (_ : Proof (CommSemiring R)) -> (t : Elem (Multiset I)) -> (f : (Elem I -> Polynomial R)) -> (ht : Proof (forall I (i => if (Membership__mem I (Multiset I) t i) (Polynomial__Monic R (f i))))) -> Proof (Polynomial__Monic R (Multiset__prod (Polynomial R) (Multiset__map I (Polynomial R) f t))).
 
 (; //LEAN:Polynomial.monic_prod_of_monic ;)
-Polynomial__monic_prod_of_monic : (R : Set) -> (I : Set) -> (_ : Proof (CommSemiring R)) -> (s : Elem (Finset I)) -> (f : (Elem I -> Polynomial R)) -> (hs : Proof (forall I (i1 => if (Membership__mem s i1) (Polynomial__Monic (f i1))))) -> Proof (Polynomial__Monic (Finset__prod s (i => f i))).
+Polynomial__monic_prod_of_monic : (R : Set) -> (I : Set) -> (_ : Proof (CommSemiring R)) -> (s : Elem (Finset I)) -> (f : (Elem I -> Polynomial R)) -> (hs : Proof (forall I (i1 => if (Membership__mem I (Finset I) s i1) (Polynomial__Monic R (f i1))))) -> Proof (Polynomial__Monic R (Finset__prod I (Polynomial R) s (i => f i))).
 
 (; doc: `natDegree p` forces `degree p` to ℕ, by defining `natDegree 0 = 0`. ;)
 (; //LEAN:Polynomial.natDegree ;)
-Polynomial__natDegree : (p : Elem (Polynomial R)) -> Elem Nat.
+Polynomial__natDegree : (R : Set) -> (p : Elem (Polynomial R)) -> Elem Nat.
 
 (; //LEAN:Polynomial.natDegree_map_le ;)
-Polynomial__natDegree_map_le : (R : Set) -> (S : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (f : Elem (RingHom R S)) -> (p : Elem (Polynomial R)) -> Proof (Leq (Polynomial__natDegree (Polynomial__map f p)) (Polynomial__natDegree p)).
+Polynomial__natDegree_map_le : (R : Set) -> (S : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (f : Elem (RingHom R S)) -> (p : Elem (Polynomial R)) -> Proof (Leq (Polynomial__natDegree S (Polynomial__map R S f p)) (Polynomial__natDegree R p)).
 
 (; //LEAN:Polynomial.natDegree_multiset_prod_X_sub_C_eq_card ;)
-Polynomial__natDegree_multiset_prod_X_sub_C_eq_card : (R : Set) -> (_ : Proof (CommRing R)) -> (s : Elem (Multiset R)) -> Proof (Eq (Polynomial__natDegree (Multiset__prod (Multiset__map (x1 => minus Polynomial__X (Polynomial__C__app x1)) s))) (Multiset__card s)).
+Polynomial__natDegree_multiset_prod_X_sub_C_eq_card : (R : Set) -> (_ : Proof (CommRing R)) -> (s : Elem (Multiset R)) -> Proof (Eq (Polynomial__natDegree R (Multiset__prod (Polynomial R) (Multiset__map R (Polynomial R) (x1 => minus (Polynomial__X R) (Polynomial__C__app x1)) s))) (Multiset__card R s)).
 
 (; doc: The map sending a collection of roots into a polynomial, as a morphism. ;)
 (; //LEAN:Polynomial.ofMultiset ;)
-Polynomial__ofMultiset : Elem (AddChar (Multiset R) (Polynomial R)).
+Polynomial__ofMultiset : (R : Set) -> Elem (AddChar (Multiset R) (Polynomial R)).
 
 (; doc: The largest power of `X - C a` which divides `p`. ;)
 (; //LEAN:Polynomial.rootMultiplicity ;)
-Polynomial__rootMultiplicity : (a : Elem R) -> (p : Elem (Polynomial R)) -> Elem Nat.
+Polynomial__rootMultiplicity : (R : Set) -> (a : Elem R) -> (p : Elem (Polynomial R)) -> Elem Nat.
 
 (; //LEAN:Polynomial.roots._proof_1 ;)
-Polynomial__roots___proof_1 : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (h1 : Proof (not (Eqt (Polynomial R) p 0))) -> Proof (exists (Multiset R) (s => and (Leq (Multiset__card s) (Polynomial__degree p)) (forall R (a => Eq (Multiset__count a s) (Polynomial__rootMultiplicity a p))))).
+Polynomial__roots___proof_1 : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (p : Elem (Polynomial R)) -> (h1 : Proof (not (Eqt (Polynomial R) p 0))) -> Proof (exists (Multiset R) (s => and (Leq (Nat__cast (WithBot Nat) (Multiset__card R s)) (Polynomial__degree R p)) (forall R (a => Eq (Multiset__count R a s) (Polynomial__rootMultiplicity R a p))))).
 
 (; doc: Introduce a function `inverse` on a monoid with zero `M₀`, which sends `x` to `x⁻¹` if `x` is invertible and to `0` otherwise.  This definition is somewhat ad hoc, but one needs a fully (rather than partially) defined inverse function for some purposes, including for calculus.  Note that while this is in the `Ring` namespace for brevity, it requires the weaker assumption `MonoidWithZero M₀` instead of `Ring M₀`. ;)
 (; //LEAN:Ring.inverse ;)
-Ring__inverse : (x1 : Elem X) -> Elem X.
+Ring__inverse : (X : Set) -> (x1 : Elem X) -> Elem X.
 
 (; doc: Bundled semiring homomorphisms; use this for bundled ring homomorphisms too.  This extends from both `MonoidHom` and `MonoidWithZeroHom` in order to put the fields in a sensible order, even though `MonoidWithZeroHom` already extends `MonoidHom`. ;)
 (; //LEAN:RingHom ;)
@@ -399,7 +403,7 @@ RingHom : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: The range of a ring homomorphism, as a subring of the target. See Note [range copy pattern]. ;)
 (; //LEAN:RingHom.range ;)
-RingHom__range : (f : Elem (RingHom R S)) -> Elem (Subring S).
+RingHom__range : (R : Set) -> (S : Set) -> (f : Elem (RingHom R S)) -> Elem (Subring S).
 
 (; doc: A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is commutative and associative, multiplication is associative and left and right distributive over addition, and `0` and `1` are additive and multiplicative identities. ;)
 (; //LEAN:Semiring ;)
@@ -407,67 +411,79 @@ Semiring : (X : Set) -> Prop.
 
 (; doc: Given the set `s`, `Elem s` is the `Type` of element of `s`.  It is currently an abbreviation so that instance coming from `Subtype` are available. If you're interested in making it a `def`, as it probably should be, you'll then need to create additional instances (and possibly prove lemmas about them). See e.g. `Mathlib/Data/Set/Order.lean`. ;)
 (; //LEAN:Set.Elem ;)
-Set__Elem : (s : Elem (powerset X)) -> Set.
+Set__Elem : (X : Set) -> (s : Elem (powerset X)) -> Set.
 
 (; doc: A set is finite if the corresponding `Subtype` is finite, i.e., if there exists a natural `n : ℕ` and an equivalence `s ≃ Fin n`. ;)
 (; //LEAN:Set.Finite ;)
-Set__Finite : (s : Elem (powerset X)) -> Prop.
+Set__Finite : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Set.Finite.compl_mem_cofinite ;)
-Set__Finite__compl_mem_cofinite : (X : Set) -> (s : Elem (powerset X)) -> (hs : Proof (Set__Finite s)) -> Proof (Membership__mem Filter__cofinite (Compl__compl s)).
+Set__Finite__compl_mem_cofinite : (X : Set) -> (s : Elem (powerset X)) -> (hs : Proof (Set__Finite X s)) -> Proof (Membership__mem (powerset X) (Filter X) (Filter__cofinite X) (Compl__compl (powerset X) s)).
 
 (; doc: A set is infinite if it is not finite.  This is protected so that it does not conflict with global `Infinite`. ;)
 (; //LEAN:Set.Infinite ;)
-Set__Infinite : (s : Elem (powerset X)) -> Prop.
+Set__Infinite : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: `MapsTo f s t` means that the image of `s` is contained in `t`. ;)
 (; //LEAN:Set.MapsTo ;)
-Set__MapsTo : (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> Prop.
+Set__MapsTo : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> Prop.
 
 (; //LEAN:Set.exists_lower_bound_image ;)
-Set__exists_lower_bound_image : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (h1 : Proof (Set__Finite s)) -> Proof (exists X (a => forall X (b => if (Membership__mem s b) (Leq (f a) (f b))))).
+Set__exists_lower_bound_image : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (h1 : Proof (Set__Finite X s)) -> Proof (exists X (a => forall X (b => if (Membership__mem X (powerset X) s b) (Leq (f a) (f b))))).
 
 (; //LEAN:Set.exists_upper_bound_image ;)
-Set__exists_upper_bound_image : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (h1 : Proof (Set__Finite s)) -> Proof (exists X (a => forall X (b => if (Membership__mem s b) (Leq (f b) (f a))))).
+Set__exists_upper_bound_image : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (h1 : Proof (Set__Finite X s)) -> Proof (exists X (a => forall X (b => if (Membership__mem X (powerset X) s b) (Leq (f b) (f a))))).
 
 (; doc: Indexed union of a family of sets ;)
 (; //LEAN:Set.iUnion ;)
-Set__iUnion : (s : (Elem I -> powerset X)) -> Elem (powerset X).
+Set__iUnion : (X : Set) -> (I : Set) -> (s : (Elem I -> powerset X)) -> Elem (powerset X).
 
 (; doc: The cardinality of `s : Set α` . Has the junk value `0` if `s` is infinite ;)
 (; //LEAN:Set.ncard ;)
-Set__ncard : (s : Elem (powerset X)) -> Elem Nat.
+Set__ncard : (X : Set) -> (s : Elem (powerset X)) -> Elem Nat.
 
 (; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
 (; //LEAN:Set.ofPred ;)
-Set__ofPred : (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
 
 (; doc: The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`, is the set of `x : α` such that `f x ∈ s`. ;)
 (; //LEAN:Set.preimage ;)
-Set__preimage : (f : (Elem X -> Y)) -> (s : Elem (powerset Y)) -> Elem (powerset X).
+Set__preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset Y)) -> Elem (powerset X).
 
 (; doc: Constructor for `Set.Finite` using a `Finite` instance. ;)
 (; //LEAN:Set.toFinite ;)
-Set__toFinite : (X : Set) -> (s : Elem (powerset X)) -> (_ : Proof (Finite (Set__Elem s))) -> Proof (Set__Finite s).
+Set__toFinite : (X : Set) -> (s : Elem (powerset X)) -> (_ : Proof (Finite (Set__Elem X s))) -> Proof (Set__Finite X s).
+
+(; doc: The coercion from a term of a `SetLike` to its corresponding `Set`. ;)
+(; //LEAN:SetLike.coe ;)
+SetLike__coe : (A : Set) -> (B : Set) -> (x : Elem A) -> Elem (powerset B).
 
 (; doc: `singleton x` is a collection with the single element `x` (notation: `{x}`).  Conventions for notations in identifiers:   * The recommended spelling of `{x}` in identifiers is `singleton`. ;)
 (; //LEAN:Singleton.singleton ;)
-Singleton__singleton : (x1 : Elem x) -> Elem Y.
+Singleton__singleton : (X : Set) -> (Y : Set) -> (x : Elem X) -> Elem Y.
+
+(; doc: `Subring R` is the type of subrings of `R`. A subring of `R` is a subset `s` that is a multiplicative submonoid and an additive subgroup. Note in particular that it shares the same 0 and 1 as R. ;)
+(; //LEAN:Subring ;)
+Subring : (R : Set) -> Set.
 
 (; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
 (; //LEAN:Subtype ;)
-Subtype : (p : (Elem X -> Prop)) -> Set.
+Subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Set.
 
 (; doc: A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x` instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib/Data/Set/Basic.lean`. ;)
 (; //LEAN:Subtype.prop ;)
-Subtype__prop : (X : Set) -> (p : (Elem X -> Prop)) -> (x : Elem (Subtype (x1 => p x1))) -> Proof (p x).
+Subtype__prop : (X : Set) -> (p : (Elem X -> Prop)) -> (x : Elem (Subtype X (x1 => p x1))) -> Proof (p (Subtype__val X p x)).
+
+(; doc: The value in the underlying type that satisfies the predicate. ;)
+(; //LEAN:Subtype.val ;)
+Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x => p x))) -> Elem X.
 
 (; //LEAN:Subtype.val_injective ;)
-Subtype__val_injective : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Function__Injective p).
+Subtype__val_injective : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Function__Injective (Subtype X (x => p x)) X (Subtype__val X p)).
 
 (; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
 (; //LEAN:Trans.trans ;)
-Trans__trans : (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
+Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> Elem Y -> Set)) -> (s : (Elem Y -> Elem Z -> Set)) -> (t : (Elem X -> Elem Z -> Set)) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Z) -> (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
 
 (; doc: Units of a `Monoid`, bundled version. Notation: `αˣ`.  An element of a `Monoid` is a unit if it has a two-sided inverse. This version bundles the inverse element so that it can be computed. For a predicate see `IsUnit`. ;)
 (; //LEAN:Units ;)
@@ -475,18 +491,18 @@ Units : (X : Set) -> Set.
 
 (; doc: The underlying value in the base `Monoid`. ;)
 (; //LEAN:Units.val ;)
-Units__val : (self : Elem (Units X)) -> Elem X.
+Units__val : (X : Set) -> (self : Elem (Units X)) -> Elem X.
 
 (; doc: Attach `⊥` to a type. ;)
 (; //LEAN:WithBot ;)
 WithBot : (X : Set) -> Set.
 
 (; //LEAN:WithBot.coe_le_coe ;)
-WithBot__coe_le_coe : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (LE X)) -> Proof (iff (Leq (WithBot__some a) (WithBot__some b)) (Leq a b)).
+WithBot__coe_le_coe : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (LE X)) -> Proof (iff (Leq (WithBot__some X a) (WithBot__some X b)) (Leq a b)).
 
 (; doc: The canonical map from `α` into `WithBot α` ;)
 (; //LEAN:WithBot.some ;)
-WithBot__some : (x : Elem X) -> Elem (WithBot X).
+WithBot__some : (X : Set) -> (x : Elem X) -> Elem (WithBot X).
 
 (; //LEAN:and_iff_right ;)
 and_iff_right : (a : Prop) -> (b : Prop) -> (ha : Proof a) -> Proof (iff (and a b) b).
@@ -497,21 +513,21 @@ congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem
 
 (; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:dite ;)
-dite : (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
+dite : (X : Set) -> (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
 
 (; //LEAN:dite_eq_left ;)
-dite_eq_left : (c : Prop) -> (h : Proof (Decidable c)) -> (hc : Proof c) -> (X : Set) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Proof (Eqt X (dite c t e) (t hc)).
+dite_eq_left : (c : Prop) -> (h : Proof (Decidable c)) -> (hc : Proof c) -> (X : Set) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Proof (Eqt X (dite X c t e) (t hc)).
 
 (; doc: Product of `f x` as `x` ranges over the elements of the multiplicative support of `f`, if it's finite. One otherwise. ;)
 (; //LEAN:finprod ;)
-finprod : (f : (Elem X -> M)) -> Elem M.
+finprod : (M : Set) -> (X : Set) -> (f : (Elem X -> M)) -> Elem M.
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
-id : (a : Elem X) -> Elem X.
+id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:isUnit_of_dvd_one ;)
-isUnit_of_dvd_one : (X : Set) -> (_ : Proof (CommMonoid X)) -> (a : Elem X) -> (h : Proof (divide a 1)) -> Proof (IsUnit a).
+isUnit_of_dvd_one : (X : Set) -> (_ : Proof (CommMonoid X)) -> (a : Elem X) -> (h : Proof (divide a 1)) -> Proof (IsUnit X a).
 
 (; //LEAN:le_of_eq ;)
 le_of_eq : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Eqt X a b)) -> Proof (Leq a b).
@@ -520,21 +536,11 @@ le_of_eq : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X)
 (; //LEAN:le_trans ;)
 le_trans : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq b c)) -> Proof (Leq a c).
 
-(; //LEAN:map_zero ;)
-map_zero : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Proof (Eqt N (f 0) 0).
-
-(; //LEAN:mt ;)
-mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
-
 (; //LEAN:not_imp_comm ;)
 not_imp_comm : (a : Prop) -> (b : Prop) -> Proof (iff (if (not a) b) (if (not b) a)).
 
 (; //LEAN:not_lt_bot._simp_1 ;)
-not_lt_bot___simp_1 : (X : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (OrderBot X)) -> (a : Elem X) -> Proof (Eqt Prop (Lt a Bot__bot) false).
-
-(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
-(; //LEAN:propext ;)
-propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a b).
+not_lt_bot___simp_1 : (X : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (OrderBot X)) -> (a : Elem X) -> Proof (Eqt Prop (Lt a (Bot__bot X)) false).
 
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)

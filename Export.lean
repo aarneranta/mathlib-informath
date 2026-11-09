@@ -10,8 +10,9 @@ structures and classes with their fields), the type is translated:
 * a binder `(x : α)` with `α : Type` becomes `(x : Elem α)`, one with `α : Prop`
   becomes `(h : Proof α)`, and `(α : Type u)` becomes `(α : Set)`;
 * an instance binder `[Group G]` becomes a hypothesis `(_ : Proof (Group G))`;
-* in applications, implicit and instance arguments are dropped, so that only the
-  arguments a reader sees in Mathlib remain;
+* in applications, instance arguments are dropped; the implicit ones are kept,
+  and out/<Module>-hide.dkgf has the #HIDE lines that hide them in the readings
+  (and #COERCION lines for the coercions, which are kept too);
 * the constants of `mapping.tsv` become Informath's own (`Dvd.dvd` is `divide`,
   `Nat.Prime` is `prime`, ...), so that Informath's base readings apply, and the
   logical constants become `and`, `or`, `if`, `not`, `iff`, `forall`, `exists`;
@@ -23,8 +24,9 @@ and Lean's own statement, for the index and for comparing the readings.
 out/<Module>-deps.dk declares the constants that the statements use but that
 are neither exported nor mapped, with their types translated the same way.
 
-The output is meant to be read by Informath, not checked by Dedukti: dropping
-implicit arguments loses information that a type checker would need.
+The output is meant to be read by Informath, not checked by Dedukti: universe
+levels, instances and computation rules are left out.  The definitions export
+(--definitions) keeps the explicit arguments only, as its entries count them.
 -/
 import Lean
 import Mathlib.Tactic.Translate.ToAdditive
@@ -49,10 +51,25 @@ structure St where
   binders : Std.HashSet Name := {}   -- constants of binders.txt
   names : Std.HashSet String := {}   -- variable names in use
   proofMode : Bool := false          -- in a proof term, theorems keep all their arguments
+  -- the statements and proofs of the modules: the constants that are not
+  -- mapped keep their implicit arguments, which #HIDE lines of out/<M>-hide.dkgf
+  -- hide in the readings, and coercions are kept (#COERCION); the definitions
+  -- export (--definitions) shows the explicit arguments only, as before
+  keepImplicit : Bool := false
   keepAll : Std.HashSet Name := {}   -- mapped to rules of nd.dk, which take all arguments
   opers : Std.HashMap FVarId (String × String) := {}  -- binary operations of a structure: name, carrier
 
 abbrev M := StateRefT St MetaM
+
+/-- The coercions: the identity in the readings (#COERCION), the casts
+between number types, the values of subtypes and of bundled sets. -/
+def coercions : List Name :=
+  [``Nat.cast, ``Int.cast, ``NatCast.natCast, ``IntCast.intCast, ``Subtype.val, `SetLike.coe,
+   `Fin.val, `Subgroup.toSubmonoid, `AddSubgroup.toAddSubmonoid, `Submonoid.toSubsemigroup, ``Subtype.mk]
+
+/-- A sort, or a sort as an outParam (the collection type of Membership). -/
+def sortish (t : Expr) : Bool :=
+  t.isSort || (t.isAppOfArity ``outParam 1 && t.appArg!.isSort)
 
 /-- A variable name for a binder: the user's name if it is a plain identifier
 and free, else a fresh one. -/
@@ -170,7 +187,7 @@ type elsewhere. -/
 partial def binder (n : Name) (t b : Expr) (bi : BinderInfo) (isLam : Bool)
     (plain : Nat := 0) : M String := do
   let prop ← isProp t
-  let nm ← freshName n prop t.isSort
+  let nm ← freshName n prop (sortish t)
   -- in a proof, a λ that proves an implication or a ∀ is its introduction
   -- rule, ifI or forallI; but not the λs that rules take as arguments (plain)
   let intro ← if isLam && plain == 0 && (← get).proofMode then isProp (← inferType (.lam n t b bi))
@@ -208,7 +225,7 @@ partial def hypoType (t : Expr) : M String := do
   -- an instance of a class is a proof of it, as classes are predicates here
   if (← isClass? t).isSome then return s!"Proof {paren (← tr t)}"
   if t.isProp then return "Prop"
-  if t.isSort then return "Set"
+  if sortish t then return "Set"
   if (← isType t) then
     -- t is a type of types (α → Type): a function into Set
     if (← whnf t).isForall then return s!"({← tr t})"
@@ -255,30 +272,48 @@ partial def app (c : Name) (args : Array Expr) (whole : Expr) : M String := do
       else if c == ``Max.max && args.size == 4 then some `Union.union
       else if c == ``Min.min && args.size == 4 then some `Inter.inter
       else none
+    -- with keepImplicit, as the applications they are, with their implicit
+    -- arguments, if Lean can build them
+    if (← get).keepImplicit then
+      let built? : Option Expr ← try
+          if let some op := setOp then pure (some (← mkAppM op #[args[2]!, args[3]!]))
+          else if c == `Top.top && args.size == 2 then pure (some (← mkAppOptM `Set.univ #[some (args[0]!.appArg!)]))
+          else if c == `Bot.bot && args.size == 2 then pure (some (← mkAppOptM `EmptyCollection.emptyCollection #[some args[0]!, none]))
+          else pure none
+        catch _ => pure none
+      if let some e := built? then return ← tr e
+    -- else (finite sets) by hand, with the type argument that #HIDE hides: the
+    -- elements' type for Set.Subset and Set.univ, the collection's for the others
+    let ty (elem : Bool) : M String := do
+      if !(← get).keepImplicit then return ""
+      let t := if elem then args[0]!.appArg! else args[0]!
+      return " " ++ paren (← tr t)
     if let some op := setOp then
       modify fun s => { s with used := s.used.insert op }
-      return s!"{mangle op} {paren (← tr args[2]!)} {paren (← tr args[3]!)}"
+      return s!"{mangle op}{← ty (op == `Set.Subset)} {paren (← tr args[2]!)} {paren (← tr args[3]!)}"
     if c == `Top.top && args.size == 2 then
       modify fun s => { s with used := s.used.insert `Set.univ }
-      return mangle `Set.univ
+      return s!"{mangle `Set.univ}{← ty true}"
     if c == `Bot.bot && args.size == 2 then
       modify fun s => { s with used := s.used.insert `EmptyCollection.emptyCollection }
-      return mangle `EmptyCollection.emptyCollection
+      return s!"{mangle `EmptyCollection.emptyCollection}{← ty false}"
   -- the coercion of a bundled function not applied (⇑OrderDual.ofDual,
   -- f ∘ ⇑e) is the function itself
   if c == `DFunLike.coe && args.size == 5 then
     return ← tr args[4]!
+  -- outParam α is α, a hint to the elaborator
+  if (c == ``outParam || c == ``semiOutParam) && args.size == 1 then
+    return ← tr args[0]!
   -- numerals: OfNat.ofNat α n inst
   if c == ``OfNat.ofNat && args.size ≥ 2 then
     if let .lit (.natVal n) := args[1]!.consumeMData then return numeral n
-  -- casts between number types are the identity in Informath's Num
-  if (c == ``Nat.cast || c == ``Int.cast || c == ``NatCast.natCast || c == ``IntCast.intCast
-      || c == ``Subtype.val || c == `SetLike.coe || c == `Fin.val || c == `Subgroup.toSubmonoid
-      || c == `AddSubgroup.toAddSubmonoid || c == `Submonoid.toSubsemigroup)
-      && args.size ≥ 1 then
+  -- casts between number types are the identity in Informath's Num; with
+  -- keepImplicit they are kept, and #COERCION lines say which argument the
+  -- readings show
+  if coercions.contains c && args.size ≥ 1 && !(← get).keepImplicit then
     return ← tr args.back!
   -- an element of a subtype, Subtype.mk x h, is x
-  if c == ``Subtype.mk && args.size == 4 then
+  if c == ``Subtype.mk && args.size == 4 && !(← get).keepImplicit then
     return ← tr args[2]!
   -- ∃ x, p x  /  Exists (fun x => p x)
   if c == ``Exists && args.size == 2 then
@@ -308,7 +343,7 @@ partial def app (c : Name) (args : Array Expr) (whole : Expr) : M String := do
     | none => pure false
   let keep := (← get).keepAll.contains c
   let expl ← if keep then pure (args.map fun _ => true)
-    else if (← get).proofMode && isThm then
+    else if ((← get).proofMode && isThm) || (target.isNone && (← get).keepImplicit) then
       try nonInstanceArgs c catch _ => pure (args.map fun _ => true)
     else pure expl
   let shown := (args.toList.zip (expl.toList ++ List.replicate args.size true)).filter (·.2) |>.map (·.1)
@@ -366,10 +401,10 @@ partial def statementGo (explicitOnly : Bool) (t : Expr) : M String := do
     match t with
     | .forallE n ty b bi => do
       let prop ← isProp ty
-      let nm ← freshName n prop ty.isSort
+      let nm ← freshName n prop (sortish ty)
       withLocalDecl (Name.mkSimple nm) bi ty fun y => do
         let rest ← statementGo explicitOnly (b.instantiate1 y)
-        if explicitOnly && bi != .default then return rest
+        if explicitOnly && bi != .default && (bi == .instImplicit || !(← get).keepImplicit) then return rest
         -- decidability and technical instances are not hypotheses of the statement
         if droppedInstance ty bi then
           return rest
@@ -393,10 +428,10 @@ partial def valueGo (explicitOnly : Bool) (t v : Expr) : M String := do
   match t, v with
   | .forallE n ty b bi, .lam _ _ vb _ =>
     let prop ← isProp ty
-    let nm ← freshName n prop ty.isSort
+    let nm ← freshName n prop (sortish ty)
     withLocalDecl (Name.mkSimple nm) bi ty fun y => do
       let rest ← valueGo explicitOnly (b.instantiate1 y) (vb.instantiate1 y)
-      if explicitOnly && bi != .default then return rest
+      if explicitOnly && bi != .default && (bi == .instImplicit || !(← get).keepImplicit) then return rest
       -- the hypotheses that the statement leaves out have no λ either
       if droppedInstance ty bi then return rest
       return s!"{nm} => {rest}"
@@ -518,7 +553,7 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
   let mut derived : Std.HashMap String String := {}
   for (n, ci) in decls do
     let act : M String := statement ci.type
-    let res ← ((act.run {mapping, binders, keepAll}).run' {} {}).toIO ctx st |>.toBaseIO
+    let res ← ((act.run {mapping, binders, keepAll, keepImplicit := true}).run' {} {}).toIO ctx st |>.toBaseIO
     let doc ← (Lean.findDocString? env n)
     let pp ← ((Meta.ppExpr ci.type).run' {} {}).toIO ctx st |>.toBaseIO
     let ppStr := match pp with | .ok (f, _) => toString f | .error _ => ""
@@ -533,15 +568,20 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
       let mut defn := ""
       if let some v := ci.value? (allowOpaque := true) then
         if termDefiniens src (lineOf.getD orig r) && !isClass env n then
-          let vres ← (((value ci.type v).run {mapping, binders, keepAll, proofMode := isThm}).run' {} {}).toIO ctx st
+          let vres ← (((value ci.type v).run {mapping, binders, keepAll, proofMode := isThm, keepImplicit := true}).run' {} {}).toIO ctx st
                      |>.toBaseIO
+          if (← IO.getEnv "EXPORT_DEBUG").isSome then
+            match vres with
+            | .ok ((vs, _), _) => IO.eprintln s!"DEFN {n}: {vs.length} {(vs.take 300)}"
+            | .error e => IO.eprintln s!"DEFN {n}: ERROR {e}"
           if let .ok ((vs, vst), _) := vres then
             -- compiled pattern matching (match_ functions, recursors) is not an
             -- expression of the source: such a definiens is not kept
             let compiled := ["UNSUPPORTED", "match_", "casesOn", "__rec ", "_private"].any
                               fun w => (vs.splitOn w).length > 1
             if compiled then pure () else
-            if vs.length ≤ 3000 then
+            -- (6000: the implicit arguments, which the readings hide, are counted too)
+            if vs.length ≤ 6000 then
               defn := vs
               used := vst.used.fold (fun acc c => acc.insert c) used
               derived := vst.derived.fold (fun acc k v => acc.insert k v) derived
@@ -558,15 +598,50 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
   for c in used.toList.toArray.qsort (·.toString < ·.toString) do
     if exported.contains c then continue
     let some ci := env.find? c | continue
-    let res ← (((statement ci.type).run {mapping, binders, keepAll}).run' {} {}).toIO ctx st |>.toBaseIO
+    let res ← (((statement ci.type).run {mapping, binders, keepAll, keepImplicit := true}).run' {} {}).toIO ctx st |>.toBaseIO
     match res with
     | .ok ((s, _), _) =>
       let doc := ((← Lean.findDocString? env c).getD "").replace "\n" " " |>.replace ";)" "; )"
       let docLine := if doc.isEmpty then "" else s!"(; doc: {doc} ;)\n"
       deps := deps ++ s!"{docLine}(; //LEAN:{c} ;)\n{mangle c} : {asPredicate env c s}.\n\n"
     | .error _ => deps := deps ++ s!"(; NOT EXPORTED: {c} ;)\n\n"
+  -- the arguments that the readings hide, as Lean's elaborator fills them in
+  -- (#HIDE c i j: the i'th and j'th arguments, counting those Dedukti has, which
+  -- are all but the instances), and the coercions (#COERCION c k: c is read as
+  -- its k'th argument)
+  let mut hide := s!"# {mod}: the implicit arguments of its constants and the coercions (Export.lean)\n"
+  let consts := (exported.toList ++ used.toList).toArray.qsort (·.toString < ·.toString)
+  let mut seen : Std.HashSet Name := {}
+  for c in consts do
+    -- not the constants that tr writes otherwise (Eq as Eq or Eqt, Exists as exists);
+    -- OfNat.ofNat is a numeral when applied to a literal, else a constant
+    if seen.contains c || mapping.contains c || [``Eq, ``Exists, `DFunLike.coe, ``outParam,
+        ``semiOutParam].contains c then continue
+    seen := seen.insert c
+    let some ci := env.find? c | continue
+    let r ← (((do
+        forallTelescope ci.type fun xs _ => do
+          let mut hidden := #[]
+          let mut firstExpl : Option Nat := none
+          let mut i := 0
+          for x in xs do
+            let bi ← x.fvarId!.getBinderInfo
+            if bi == .instImplicit then continue
+            i := i + 1
+            if bi == .default then
+              if firstExpl.isNone then firstExpl := some i
+            else hidden := hidden.push i
+          return (hidden, firstExpl) : MetaM (Array Nat × Option Nat))).run' {} {}).toIO ctx st |>.toBaseIO
+    match r with
+    | .ok ((hidden, firstExpl), _) =>
+      if !hidden.isEmpty then
+        hide := hide ++ s!"#HIDE {mangle c} {" ".intercalate (hidden.toList.map toString)}\n"
+      if coercions.contains c then
+        if let some k := firstExpl then hide := hide ++ s!"#COERCION {mangle c} {k}\n"
+    | .error _ => pure ()
   IO.FS.createDirAll outDir
   IO.FS.writeFile s!"{outDir}/{mod}.dk" dk
+  IO.FS.writeFile s!"{outDir}/{mod}-hide.dkgf" hide
   IO.FS.writeFile s!"{outDir}/{mod}-deps.dk" deps
   IO.FS.writeFile s!"{outDir}/{mod}.json" ("[\n" ++ ",\n".intercalate json.toList ++ "\n]\n")
   IO.println s!"{mod}: {decls.length} declarations -> {outDir}/{mod}.dk, {outDir}/{mod}.json; {used.size} constants used"
@@ -1036,7 +1111,7 @@ def exportStructures (env : Environment) (outName : Name) (classes : List Name)
         let parent := match primaryParent env c classes nouns doc with
           | some p => some p
           | none => instanceParent env c (classes ++ nouns.map (·.2))
-        let r ← (((structureDecl c parent (fromInstance && parent.isSome)).run {mapping, binders, keepAll}).run' {} {}).toIO ctx st |>.toBaseIO
+        let r ← (((structureDecl c parent (fromInstance && parent.isSome)).run {mapping, binders, keepAll, keepImplicit := true}).run' {} {}).toIO ctx st |>.toBaseIO
         pure (match r with
           | .ok (((decl, left, pdef), _), _) => Except.ok (decl, left, pdef, parent)
           | .error e => Except.error (toString e))
@@ -1341,7 +1416,7 @@ def goalJson (ci : ContextInfo) (mctx : MetavarContext) (g : MVarId)
         let tgt ← tr (← Core.betaReduce (← instantiateMVars target))
         return s!"\{\"hyps\": [{", ".intercalate hs.toList}], \"target\": {jsonStr tgt}}"
       let run (ds : Array LocalDecl) (target : Expr) : MetaM String :=
-        (m ds target).run' {mapping, binders, keepAll, proofMode := true}
+        (m ds target).run' {mapping, binders, keepAll, proofMode := true, keepImplicit := true}
       if translate == 0 then run locals decl.type else
       let mut e ← instantiateMVars (← mkForallFVars (locals.map (·.toExpr)) decl.type)
       for _ in [0:translate] do

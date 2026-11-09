@@ -41,11 +41,11 @@ LinearOrder__min_def___autoParam : Elem Lean__Syntax.
 
 (; doc: Returns the greater of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `max` in identifiers is `max`.   * The recommended spelling of `⊔` in identifiers is `sup` (`⊔` is the preferred notation for `max` when the type is not linearly ordered.). ;)
 (; //LEAN:Max.max ;)
-Max__max : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+Max__max : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: Returns the lesser of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `min` in identifiers is `min`.   * The recommended spelling of `⊓` in identifiers is `inf` (`⊓` is the preferred notation for `min` when the type is not linearly ordered.). ;)
 (; //LEAN:Min.min ;)
-Min__min : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+Min__min : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; //LEAN:Or.imp_right ;)
 Or__imp_right : (b : Prop) -> (c : Prop) -> (a : Prop) -> (f : Proof (if b c)) -> (h : Proof (or a b)) -> Proof (or a c).
@@ -61,7 +61,7 @@ Or__symm : (a : Prop) -> (b : Prop) -> (h : Proof (or a b)) -> Proof (or b a).
 
 (; doc: Compare two elements in `α` using the comparator contained in an `[Ord α]` instance. ;)
 (; //LEAN:Ord.compare ;)
-Ord__compare : (x : Elem X) -> (x1 : Elem X) -> Elem Ordering.
+Ord__compare : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem Ordering.
 
 (; doc: The result of a comparison according to a total order.  The relationship between the compared items may be: * `Ordering.lt`: less than * `Ordering.eq`: equal * `Ordering.gt`: greater than ;)
 (; //LEAN:Ordering ;)
@@ -69,7 +69,7 @@ Ordering : Set.
 
 (; doc: `Compares o a b` means that `a` and `b` have the ordering relation `o` between them, assuming that the relation `a < b` is defined. ;)
 (; //LEAN:Ordering.Compares ;)
-Ordering__Compares : (x1 : Elem Ordering) -> (x2 : Elem X) -> (x3 : Elem X) -> Prop.
+Ordering__Compares : (X : Set) -> (x1 : Elem Ordering) -> (x2 : Elem X) -> (x3 : Elem X) -> Prop.
 
 (; doc: Equal. ;)
 (; //LEAN:Ordering.eq ;)
@@ -93,15 +93,15 @@ autoParam : (X : Set) -> (tactic : Elem Lean__Syntax) -> Set.
 
 (; doc: Construct an `Ordering` from a type with a decidable `LT` instance, assuming that incomparable terms are `Ordering.eq`. ;)
 (; //LEAN:cmp ;)
-cmp : (a : Elem X) -> (b : Elem X) -> Elem Ordering.
+cmp : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem Ordering.
 
 (; doc: Uses decidable less-than and equality relations to find an `Ordering`.  In particular, if `x < y` then the result is `Ordering.lt`. If `x = y` then the result is `Ordering.eq`. Otherwise, it is `Ordering.gt`.  `compareOfLessAndBEq` uses `BEq` instead of `DecidableEq`. ;)
 (; //LEAN:compareOfLessAndEq ;)
-compareOfLessAndEq : (x : Elem X) -> (y : Elem X) -> Elem Ordering.
+compareOfLessAndEq : (X : Set) -> (x : Elem X) -> (y : Elem X) -> Elem Ordering.
 
 (; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:dite ;)
-dite : (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
+dite : (X : Set) -> (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
 
 (; //LEAN:iff_and_self ;)
 iff_and_self : (p : Prop) -> (q : Prop) -> Proof (iff (iff p (and q p)) (if p q)).
@@ -117,7 +117,7 @@ iff_self_or : (a : Prop) -> (b : Prop) -> Proof (iff (iff a (or a b)) (if b a)).
 
 (; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:ite ;)
-ite : (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
+ite : (X : Set) -> (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
 
 (; //LEAN:le_antisymm ;)
 le_antisymm : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq b a)) -> Proof (Eqt X a b).

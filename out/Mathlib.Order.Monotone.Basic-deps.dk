@@ -5,14 +5,14 @@ OrderDual__toDual__app : (a1 : Elem X) -> Elem (OrderDual X).
 
 (; doc: A function `f` is antitone if `a ≤ b` implies `f b ≤ f a`. ;)
 (; //LEAN:Antitone ;)
-Antitone : (f : (Elem X -> Y)) -> Prop.
+Antitone : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Antitone.strictAnti_of_injective ;)
-Antitone__strictAnti_of_injective : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (PartialOrder Y)) -> (f : (Elem X -> Y)) -> (h : Proof (Antitone f)) -> (h1 : Proof (Function__Injective f)) -> Proof (StrictAnti f).
+Antitone__strictAnti_of_injective : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (PartialOrder Y)) -> (f : (Elem X -> Y)) -> (h : Proof (Antitone X Y f)) -> (h1 : Proof (Function__Injective X Y f)) -> Proof (StrictAnti X Y f).
 
 (; doc: A function `f` is antitone on `s` if, for all `a, b ∈ s`, `a ≤ b` implies `f b ≤ f a`. ;)
 (; //LEAN:AntitoneOn ;)
-AntitoneOn : (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+AntitoneOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: **Alias** of `ge_of_eq`. ;)
 (; //LEAN:Eq.ge ;)
@@ -24,7 +24,7 @@ Eq__le : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -
 
 (; doc: Non-dependent recursor for the equality type. ;)
 (; //LEAN:Eq.ndrec ;)
-Eq__ndrec : (m : Elem (motive a)) -> (h : Proof (Eqt X a b)) -> Elem (motive b).
+Eq__ndrec : (X : Set) -> (a : Elem X) -> (motive : (Elem X -> Set)) -> (m : Elem (motive a)) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Elem (motive b).
 
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
@@ -36,11 +36,11 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: Function composition, usually written with the infix operator `∘`. A new function is created from two existing functions, where one function's output is used as input to the other.  Examples:  * `Function.comp List.reverse (List.drop 2) [3, 2, 4, 1] = [1, 4]`  * `(List.reverse ∘ List.drop 2) [3, 2, 4, 1] = [1, 4]`  Conventions for notations in identifiers:   * The recommended spelling of `∘` in identifiers is `comp`. ;)
 (; //LEAN:Function.comp ;)
-Function__comp : (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
+Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
 
 (; //LEAN:Iff.rfl ;)
 Iff__rfl : (a : Prop) -> Proof (iff a a).
@@ -50,19 +50,19 @@ Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> 
 
 (; doc: The inverse image of `r : β → β → Prop` by a function `α → β` is the relation `s : α → α → Prop` defined by `s a b = r (f a) (f b)`. ;)
 (; //LEAN:InvImage ;)
-InvImage : (r : (Elem Y -> Elem Y -> Prop)) -> (f : (Elem X -> Y)) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
+InvImage : (X : Set) -> (Y : Set) -> (r : (Elem Y -> Elem Y -> Prop)) -> (f : (Elem X -> Y)) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: `a` is a maximal element of `α` if no element is strictly greater than it. We spell it without `<` to avoid having to convert between `≤` and `<`. Instead, `isMax_iff_forall_not_lt` does the conversion. ;)
 (; //LEAN:IsMax ;)
-IsMax : (a : Elem X) -> Prop.
+IsMax : (X : Set) -> (a : Elem X) -> Prop.
 
 (; doc: `a` is a minimal element of `α` if no element is strictly less than it. We spell it without `<` to avoid having to convert between `≤` and `<`. Instead, `isMin_iff_forall_not_lt` does the conversion. ;)
 (; //LEAN:IsMin ;)
-IsMin : (a : Elem X) -> Prop.
+IsMin : (X : Set) -> (a : Elem X) -> Prop.
 
 (; doc: `σ` is *stable* for `f` if it breaks ties by increasing index: among elements with equal `f`-value, `σ` preserves their order. This property does not use the order on the codomain of `f`, only its equality, so it is unchanged by reversing that order. ;)
 (; //LEAN:IsStable ;)
-IsStable : (f : (Elem X -> Z)) -> (x1 : (Elem X -> X)) -> Prop.
+IsStable : (X : Set) -> (Z : Set) -> (f : (Elem X -> Z)) -> (x1 : (Elem X -> X)) -> Prop.
 
 (; doc: `IsTrans X r` means the binary relation `r` on `X` is transitive. ;)
 (; //LEAN:IsTrans ;)
@@ -106,29 +106,29 @@ List : (X : Set) -> Set.
 
 (; doc: Folds a function over a list from the left, accumulating a value starting with `init`. The accumulated value is combined with the each element of the list in order, using `f`.  Examples:  * `[a, b, c].foldl f z  = f (f (f z a) b) c`  * `[1, 2, 3].foldl (· ++ toString ·) "" = "123"`  * `[1, 2, 3].foldl (s!"({·} {·})") "" = "((( 1) 2) 3)"` ;)
 (; //LEAN:List.foldl ;)
-List__foldl : (f : (Elem X -> Elem Y -> X)) -> (init : Elem X) -> (x : Elem (List Y)) -> Elem X.
+List__foldl : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y -> X)) -> (init : Elem X) -> (x : Elem (List Y)) -> Elem X.
 
 (; doc: Folds a function over a list from the right, accumulating a value starting with `init`. The accumulated value is combined with each element of the list in reverse order, using `f`.  `O(|l|)`. Replaced at runtime with `List.foldrTR`.  Examples:  * `[a, b, c].foldr f init  = f a (f b (f c init))`  * `[1, 2, 3].foldr (toString · ++ ·) "" = "123"`  * `[1, 2, 3].foldr (s!"({·} {·})") "!" = "(1 (2 (3 !)))"` ;)
 (; //LEAN:List.foldr ;)
-List__foldr : (f : (Elem X -> Elem Y -> Y)) -> (init : Elem Y) -> (l : Elem (List X)) -> Elem Y.
+List__foldr : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y -> Y)) -> (init : Elem Y) -> (l : Elem (List X)) -> Elem Y.
 
 (; //LEAN:List.recOn ;)
-List__recOn : (t : Elem (List X)) -> (nil : Elem (motive List__nil)) -> (cons : ((head : Elem X) -> (tail : Elem (List X)) -> Elem (motive tail) -> motive (List__cons head tail))) -> Elem (motive t).
+List__recOn : (X : Set) -> (motive : (Elem (List X) -> Set)) -> (t : Elem (List X)) -> (nil : Elem (motive (List__nil X))) -> (cons : ((head : Elem X) -> (tail : Elem (List X)) -> Elem (motive tail) -> motive (List__cons X head tail))) -> Elem (motive t).
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
-Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
 
 (; doc: A function `f` is monotone if `a ≤ b` implies `f a ≤ f b`. ;)
 (; //LEAN:Monotone ;)
-Monotone : (f : (Elem X -> Y)) -> Prop.
+Monotone : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Monotone.strictMono_of_injective ;)
-Monotone__strictMono_of_injective : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (PartialOrder Y)) -> (f : (Elem X -> Y)) -> (h : Proof (Monotone f)) -> (h1 : Proof (Function__Injective f)) -> Proof (StrictMono f).
+Monotone__strictMono_of_injective : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (PartialOrder Y)) -> (f : (Elem X -> Y)) -> (h : Proof (Monotone X Y f)) -> (h1 : Proof (Function__Injective X Y f)) -> Proof (StrictMono X Y f).
 
 (; doc: A function `f` is monotone on `s` if, for all `a, b ∈ s`, `a ≤ b` implies `f a ≤ f b`. ;)
 (; //LEAN:MonotoneOn ;)
-MonotoneOn : (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+MonotoneOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Nat.add_le_add_iff_right ;)
 Nat__add_le_add_iff_right : (m : Elem Nat) -> (k : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Leq (plus m n) (plus k n)) (Leq m k)).
@@ -162,11 +162,11 @@ OrderDual : (X : Set) -> Set.
 
 (; doc: `ofDual` is the identity function from the `OrderDual` of a linear order. ;)
 (; //LEAN:OrderDual.ofDual ;)
-OrderDual__ofDual : Elem (Equiv (OrderDual X) X).
+OrderDual__ofDual : (X : Set) -> Elem (Equiv (OrderDual X) X).
 
 (; doc: `toDual` is the identity function to the `OrderDual` of a linear order. ;)
 (; //LEAN:OrderDual.toDual ;)
-OrderDual__toDual : Elem (Equiv X (OrderDual X)).
+OrderDual__toDual : (X : Set) -> Elem (Equiv X (OrderDual X)).
 
 (; doc: The result of a comparison according to a total order.  The relationship between the compared items may be: * `Ordering.lt`: less than * `Ordering.eq`: equal * `Ordering.gt`: greater than ;)
 (; //LEAN:Ordering ;)
@@ -174,10 +174,10 @@ Ordering : Set.
 
 (; doc: `Compares o a b` means that `a` and `b` have the ordering relation `o` between them, assuming that the relation `a < b` is defined. ;)
 (; //LEAN:Ordering.Compares ;)
-Ordering__Compares : (x1 : Elem Ordering) -> (x2 : Elem X) -> (x3 : Elem X) -> Prop.
+Ordering__Compares : (X : Set) -> (x1 : Elem Ordering) -> (x2 : Elem X) -> (x3 : Elem X) -> Prop.
 
 (; //LEAN:Ordering.Compares.cmp_eq ;)
-Ordering__Compares__cmp_eq : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (o : Elem Ordering) -> (h : Proof (Ordering__Compares o a b)) -> Proof (Eqt Ordering (cmp a b) o).
+Ordering__Compares__cmp_eq : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (o : Elem Ordering) -> (h : Proof (Ordering__Compares X o a b)) -> Proof (Eqt Ordering (cmp X a b) o).
 
 (; doc: Equal. ;)
 (; //LEAN:Ordering.eq ;)
@@ -197,58 +197,58 @@ Prod : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: The first element of a pair. ;)
 (; //LEAN:Prod.fst ;)
-Prod__fst : (self : Elem (Prod X Y)) -> Elem X.
+Prod__fst : (X : Set) -> (Y : Set) -> (self : Elem (Prod X Y)) -> Elem X.
 
 (; doc: The second element of a pair. ;)
 (; //LEAN:Prod.snd ;)
-Prod__snd : (self : Elem (Prod X Y)) -> Elem Y.
+Prod__snd : (X : Set) -> (Y : Set) -> (self : Elem (Prod X Y)) -> Elem Y.
 
 (; doc: `f` is injective on `s` if the restriction of `f` to `s` is injective. ;)
 (; //LEAN:Set.InjOn ;)
-Set__InjOn : (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+Set__InjOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
 (; //LEAN:Set.ofPred ;)
-Set__ofPred : (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
 
 (; doc: The universal set on a type `α` is the set containing all elements of `α`.  This is conceptually the "same as" `α` (in set theory, it is actually the same), but type theory makes the distinction that `α` is a type while `Set.univ` is a term of type `Set α`. `Set.univ` can itself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`. ;)
 (; //LEAN:Set.univ ;)
-Set__univ : Elem (powerset X).
+Set__univ : (X : Set) -> Elem (powerset X).
 
 (; doc: `Refl r` means the binary relation `r` is reflexive, that is, `r x x` always holds. ;)
 (; //LEAN:Std.Refl ;)
-Std__Refl : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Std__Refl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; doc: A function `f` is strictly antitone if `a < b` implies `f b < f a`. ;)
 (; //LEAN:StrictAnti ;)
-StrictAnti : (f : (Elem X -> Y)) -> Prop.
+StrictAnti : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:StrictAnti.imp ;)
-StrictAnti__imp : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (a : Elem X) -> (b : Elem X) -> (hf : Proof (StrictAnti f)) -> (h : Proof (Lt a b)) -> Proof (Lt (f b) (f a)).
+StrictAnti__imp : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (a : Elem X) -> (b : Elem X) -> (hf : Proof (StrictAnti X Y f)) -> (h : Proof (Lt a b)) -> Proof (Lt (f b) (f a)).
 
 (; //LEAN:StrictAnti.strictAntiOn ;)
-StrictAnti__strictAntiOn : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (StrictAnti f)) -> (s : Elem (powerset X)) -> Proof (StrictAntiOn f s).
+StrictAnti__strictAntiOn : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (StrictAnti X Y f)) -> (s : Elem (powerset X)) -> Proof (StrictAntiOn X Y f s).
 
 (; doc: A function `f` is strictly antitone on `s` if, for all `a, b ∈ s`, `a < b` implies `f b < f a`. ;)
 (; //LEAN:StrictAntiOn ;)
-StrictAntiOn : (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+StrictAntiOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: A function `f` is strictly monotone if `a < b` implies `f a < f b`. ;)
 (; //LEAN:StrictMono ;)
-StrictMono : (f : (Elem X -> Y)) -> Prop.
+StrictMono : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:StrictMono.imp ;)
-StrictMono__imp : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (a : Elem X) -> (b : Elem X) -> (hf : Proof (StrictMono f)) -> (h : Proof (Lt a b)) -> Proof (Lt (f a) (f b)).
+StrictMono__imp : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (a : Elem X) -> (b : Elem X) -> (hf : Proof (StrictMono X Y f)) -> (h : Proof (Lt a b)) -> Proof (Lt (f a) (f b)).
 
 (; //LEAN:StrictMono.strictMonoOn ;)
-StrictMono__strictMonoOn : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (StrictMono f)) -> (s : Elem (powerset X)) -> Proof (StrictMonoOn f s).
+StrictMono__strictMonoOn : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (StrictMono X Y f)) -> (s : Elem (powerset X)) -> Proof (StrictMonoOn X Y f s).
 
 (; doc: A function `f` is strictly monotone on `s` if, for all `a, b ∈ s`, `a < b` implies `f a < f b`. ;)
 (; //LEAN:StrictMonoOn ;)
-StrictMonoOn : (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+StrictMonoOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Subrelation.isWellFounded ;)
-Subrelation__isWellFounded : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (WellFounded r)) -> (s : (Elem X -> Elem X -> Prop)) -> (h : Proof (Subrelation s r)) -> Proof (WellFounded s).
+Subrelation__isWellFounded : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (WellFounded X r)) -> (s : (Elem X -> Elem X -> Prop)) -> (h : Proof (Subrelation X s r)) -> Proof (WellFounded X s).
 
 (; doc: A class for a well-founded relation `>`. ;)
 (; //LEAN:WellFoundedGT ;)
@@ -260,10 +260,10 @@ WellFoundedLT : (X : Set) -> Prop.
 
 (; doc: Construct an `Ordering` from a type with a decidable `LT` instance, assuming that incomparable terms are `Ordering.eq`. ;)
 (; //LEAN:cmp ;)
-cmp : (a : Elem X) -> (b : Elem X) -> Elem Ordering.
+cmp : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem Ordering.
 
 (; //LEAN:cmp_compares ;)
-cmp_compares : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Ordering__Compares (cmp a b) a b).
+cmp_compares : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Ordering__Compares X (cmp X a b) a b).
 
 (; //LEAN:eq_comm ;)
 eq_comm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X a b) (Eqt X b a)).
@@ -276,11 +276,11 @@ forall_u2082__comm : (X : Set) -> (X1 : Set) -> (x : (Elem X -> Set)) -> (x1 : (
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
-id : (a : Elem X) -> Elem X.
+id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:ite ;)
-ite : (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
+ite : (X : Set) -> (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
 
 (; //LEAN:le_antisymm ;)
 le_antisymm : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq b a)) -> Proof (Eqt X a b).
@@ -293,7 +293,7 @@ le_rfl : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> Proof (Leq a a
 mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
 
 (; //LEAN:toDual_compares_toDual ;)
-toDual_compares_toDual : (X : Set) -> (_ : Proof (LT X)) -> (a : Elem X) -> (b : Elem X) -> (o : Elem Ordering) -> Proof (iff (Ordering__Compares o (OrderDual__toDual__app a) (OrderDual__toDual__app b)) (Ordering__Compares o b a)).
+toDual_compares_toDual : (X : Set) -> (_ : Proof (LT X)) -> (a : Elem X) -> (b : Elem X) -> (o : Elem Ordering) -> Proof (iff (Ordering__Compares (OrderDual X) o (OrderDual__toDual__app a) (OrderDual__toDual__app b)) (Ordering__Compares X o b a)).
 
 (; doc: `True` is true, and `True.intro` (or more commonly, `trivial`) is the proof. ;)
 (; //LEAN:trivial ;)

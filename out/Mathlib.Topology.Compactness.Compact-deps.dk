@@ -2,17 +2,17 @@
 
 (; doc: A point `x` is an accumulation point of a filter `F` if `𝓝[≠] x ⊓ F ≠ ⊥`. See also `ClusterPt`. ;)
 (; //LEAN:AccPt ;)
-AccPt : (x1 : Elem X) -> (F : Elem (Filter X)) -> Prop.
+AccPt : (X : Set) -> (x1 : Elem X) -> (F : Elem (Filter X)) -> Prop.
 
 (; doc: If `x` is an accumulation point of `F` and `F ≤ G`, then `x` is an accumulation point of `G`. ;)
 (; //LEAN:AccPt.mono ;)
-AccPt__mono : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (F : Elem (Filter X)) -> (G : Elem (Filter X)) -> (h : Proof (AccPt x1 F)) -> (hFG : Proof (Leq F G)) -> Proof (AccPt x1 G).
+AccPt__mono : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (F : Elem (Filter X)) -> (G : Elem (Filter X)) -> (h : Proof (AccPt X x1 F)) -> (hFG : Proof (Leq F G)) -> Proof (AccPt X x1 G).
 
 (; //LEAN:And.imp_right ;)
 And__imp_right : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (and c a)) -> Proof (and c b).
 
 (; //LEAN:Antitone.directed_ge ;)
-Antitone__directed_ge : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (IsDirectedOrder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Antitone f)) -> Proof (Directed (x2 => x3 => Leq x3 x2) f).
+Antitone__directed_ge : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (IsDirectedOrder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Antitone X Y f)) -> Proof (Directed Y X (x2 => x3 => Leq x3 x2) f).
 
 (; doc: A **bornology** on a type `α` is a filter of cobounded sets which contains the cofinite filter. Such spaces are equivalently specified by their bounded sets, see `Bornology.ofBounded` and `Bornology.ext_iff_isBounded` ;)
 (; //LEAN:Bornology ;)
@@ -20,21 +20,21 @@ Bornology : (X : Set) -> Prop.
 
 (; doc: `IsBounded` is the predicate that `s` is bounded relative to the ambient bornology on `α`. ;)
 (; //LEAN:Bornology.IsBounded ;)
-Bornology__IsBounded : (s : Elem (powerset X)) -> Prop.
+Bornology__IsBounded : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Bornology.mk ;)
-Bornology__mk : (cobounded : Elem (Filter X)) -> (le_cofinite : Proof (Leq cobounded Filter__cofinite)) -> Proof (Bornology X).
+Bornology__mk : (X : Set) -> (cobounded : Elem (Filter X)) -> (le_cofinite : Proof (Leq cobounded (Filter__cofinite X))) -> Proof (Bornology X).
 
 (; doc: The bot (`⊥`, `\bot`) element  Conventions for notations in identifiers:   * The recommended spelling of `⊥` in identifiers is `bot`. ;)
 (; //LEAN:Bot.bot ;)
-Bot__bot : Elem X.
+Bot__bot : (X : Set) -> Elem X.
 
 (; doc: A point `x` is a cluster point of a filter `F` if `𝓝 x ⊓ F ≠ ⊥`. Also known as an accumulation point or a limit point, but beware that terminology varies. This is *not* the same as asking `𝓝[≠] x ⊓ F ≠ ⊥`, which is called `AccPt` in Mathlib. See `mem_closure_iff_clusterPt` in particular. ;)
 (; //LEAN:ClusterPt ;)
-ClusterPt : (x1 : Elem X) -> (F : Elem (Filter X)) -> Prop.
+ClusterPt : (X : Set) -> (x1 : Elem X) -> (F : Elem (Filter X)) -> Prop.
 
 (; //LEAN:ClusterPt.of_le_nhds' ;)
-ClusterPt__of_le_nhds' : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (f : Elem (Filter X)) -> (H : Proof (Leq f (nhds x1))) -> (_hf : Proof (Filter__NeBot f)) -> Proof (ClusterPt x1 f).
+ClusterPt__of_le_nhds' : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 : Elem X) -> (f : Elem (Filter X)) -> (H : Proof (Leq f (nhds X x1))) -> (_hf : Proof (Filter__NeBot X f)) -> Proof (ClusterPt X x1 f).
 
 (; doc: Type class for compact spaces. Separation is sometimes included in the definition, especially in the French literature, but we do not include it here. ;)
 (; //LEAN:CompactSpace ;)
@@ -42,33 +42,33 @@ CompactSpace : (X : Set) -> Prop.
 
 (; doc: In a compact space, `Set.univ` is a compact set. ;)
 (; //LEAN:CompactSpace.isCompact_univ ;)
-CompactSpace__isCompact_univ : (X : Set) -> (x : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> Proof (IsCompact Set__univ).
+CompactSpace__isCompact_univ : (X : Set) -> (x : Proof (TopologicalSpace X)) -> (_ : Proof (CompactSpace X)) -> Proof (IsCompact X (Set__univ X)).
 
 (; //LEAN:CompactSpace.mk ;)
-CompactSpace__mk : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (isCompact_univ : Proof (IsCompact Set__univ)) -> Proof (CompactSpace X).
+CompactSpace__mk : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (isCompact_univ : Proof (IsCompact X (Set__univ X))) -> Proof (CompactSpace X).
 
 (; doc: Set / lattice complement  Conventions for notations in identifiers:   * The recommended spelling of `ᶜ` in identifiers is `compl`. ;)
 (; //LEAN:Compl.compl ;)
-Compl__compl : (x : Elem X) -> Elem X.
+Compl__compl : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: A function between topological spaces is continuous if the preimage of every open set is open. Registered as a structure to make sure it is not unfolded by Lean. ;)
 (; //LEAN:Continuous ;)
-Continuous : (f : (Elem X -> Y)) -> Prop.
+Continuous : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Continuous.continuousOn ;)
-Continuous__continuousOn : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (h : Proof (Continuous f)) -> Proof (ContinuousOn f s).
+Continuous__continuousOn : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (h : Proof (Continuous X Y f)) -> Proof (ContinuousOn X Y f s).
 
 (; doc: A function between topological spaces is continuous on a subset `s` when it's continuous at every point of `s` within `s`. ;)
 (; //LEAN:ContinuousOn ;)
-ContinuousOn : (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+ContinuousOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: A family of elements of `α` is directed (with respect to a relation `≼` on `α`) if there is a member of the family `≼`-above any pair in the family. ;)
 (; //LEAN:Directed ;)
-Directed : (r : (Elem X -> Elem X -> Prop)) -> (f : (Elem I -> X)) -> Prop.
+Directed : (X : Set) -> (I : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (f : (Elem I -> X)) -> Prop.
 
 (; doc: A subset of `α` is directed if there is an element of the set `≼`-above any pair of elements in the set. ;)
 (; //LEAN:DirectedOn ;)
-DirectedOn : (r : (Elem X -> Elem X -> Prop)) -> (s : Elem (powerset X)) -> Prop.
+DirectedOn : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: A topological space is discrete if every set is open, that is, its topology equals the discrete topology `⊥`. ;)
 (; //LEAN:DiscreteTopology ;)
@@ -76,19 +76,19 @@ DiscreteTopology : (X : Set) -> Prop.
 
 (; doc: Two elements of a lattice are disjoint if their inf is the bottom element.   (This generalizes disjoint sets, viewed as members of the subset lattice.)  Note that we define this without reference to `⊓`, as this allows us to talk about orders where the infimum is not unique, or where implementing `Inf` would require additional `Decidable` arguments. ;)
 (; //LEAN:Disjoint ;)
-Disjoint : (a : Elem X) -> (b : Elem X) -> Prop.
+Disjoint : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Prop.
 
 (; doc: `∅` or `{}` is the empty set or empty collection. It is supported by the `EmptyCollection` typeclass.  Conventions for notations in identifiers:   * The recommended spelling of `{}` in identifiers is `empty`.   * The recommended spelling of `∅` in identifiers is `empty`. ;)
 (; //LEAN:EmptyCollection.emptyCollection ;)
-EmptyCollection__emptyCollection : Elem X.
+EmptyCollection__emptyCollection : (X : Set) -> Elem X.
 
 (; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
 (; //LEAN:Eq.mp ;)
-Eq__mp : (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
+Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
 
 (; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
 (; //LEAN:Eq.mpr ;)
-Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
 
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
@@ -104,7 +104,7 @@ Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Pr
 
 (; doc: Existential quantification. If `p : α → Prop` is a predicate, then `∃ x : α, p x` asserts that there is some `x` of type `α` such that `p x` holds. To create an existential proof, use the `exists` tactic, or the anonymous constructor notation `⟨x, h⟩`. To unpack an existential, use `cases h` where `h` is a proof of `∃ x : α, p x`, or `let ⟨x, hx⟩ := h`.  Because Lean has proof irrelevance, any two proofs of an existential are definitionally equal. One consequence of this is that it is impossible to recover the witness of an existential from the mere fact of its existence. For example, the following does not compile: ``` example (h : ∃ x : Nat, x = x) : Nat :=   let ⟨x, _⟩ := h  -- fail, because the goal is `Nat : Type`   x ``` The error message `recursor 'Exists.casesOn' can only eliminate into Prop` means that this only works when the current goal is another proposition: ``` example (h : ∃ x : Nat, x = x) : True :=   let ⟨x, _⟩ := h  -- ok, because the goal is `True : Prop`   trivial ``` ;)
 (; //LEAN:Exists ;)
-Exists : (p : (Elem X -> Prop)) -> Prop.
+Exists : (X : Set) -> (p : (Elem X -> Prop)) -> Prop.
 
 (; //LEAN:Exists.imp ;)
 Exists__imp : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h : Proof (forall X (a2 => if (p a2) (q a2)))) -> (h1 : Proof (exists X (a1 => p a1))) -> Proof (exists X (a => q a)).
@@ -115,46 +115,46 @@ Filter : (X : Set) -> Set.
 
 (; doc: `f.Eventually p` or `∀ᶠ x in f, p x` mean that `{x | p x} ∈ f`. E.g., `∀ᶠ x in atTop, p x` means that `p` holds true for sufficiently large `x`. ;)
 (; //LEAN:Filter.Eventually ;)
-Filter__Eventually : (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> Prop.
+Filter__Eventually : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> Prop.
 
 (; doc: `f.Frequently p` or `∃ᶠ x in f, p x` mean that `{x | ¬p x} ∉ f`. E.g., `∃ᶠ x in atTop, p x` means that there exist arbitrarily large `x` for which `p` holds true. ;)
 (; //LEAN:Filter.Frequently ;)
-Filter__Frequently : (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> Prop.
+Filter__Frequently : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)) -> Prop.
 
 (; doc: We say that a filter `l` has a basis `s : ι → Set α` bounded by `p : ι → Prop`, if `t ∈ l` if and only if `t` includes `s i` for some `i` such that `p i`. ;)
 (; //LEAN:Filter.HasBasis ;)
-Filter__HasBasis : (l : Elem (Filter X)) -> (p : (Elem I -> Prop)) -> (s : (Elem I -> powerset X)) -> Prop.
+Filter__HasBasis : (X : Set) -> (I : Set) -> (l : Elem (Filter X)) -> (p : (Elem I -> Prop)) -> (s : (Elem I -> powerset X)) -> Prop.
 
 (; //LEAN:Filter.HasBasis.eq_bot_iff ;)
-Filter__HasBasis__eq_bot_iff : (X : Set) -> (I : Set) -> (l : Elem (Filter X)) -> (p : (Elem I -> Prop)) -> (s : (Elem I -> powerset X)) -> (hl : Proof (Filter__HasBasis l p s)) -> Proof (iff (Eqt (Filter X) l Bot__bot) (exists I (i => and (p i) (Eqt (powerset X) (s i) EmptyCollection__emptyCollection)))).
+Filter__HasBasis__eq_bot_iff : (X : Set) -> (I : Set) -> (l : Elem (Filter X)) -> (p : (Elem I -> Prop)) -> (s : (Elem I -> powerset X)) -> (hl : Proof (Filter__HasBasis X I l p s)) -> Proof (iff (Eqt (Filter X) l (Bot__bot (Filter X))) (exists I (i => and (p i) (Eqt (powerset X) (s i) (EmptyCollection__emptyCollection (powerset X)))))).
 
 (; doc: Definition of `HasBasis` unfolded with implicit set argument. ;)
 (; //LEAN:Filter.HasBasis.mem_iff ;)
-Filter__HasBasis__mem_iff : (X : Set) -> (I : Set) -> (l : Elem (Filter X)) -> (p : (Elem I -> Prop)) -> (s : (Elem I -> powerset X)) -> (t : Elem (powerset X)) -> (hl : Proof (Filter__HasBasis l p s)) -> Proof (iff (Membership__mem l t) (exists I (i => and (p i) (Set__Subset (s i) t)))).
+Filter__HasBasis__mem_iff : (X : Set) -> (I : Set) -> (l : Elem (Filter X)) -> (p : (Elem I -> Prop)) -> (s : (Elem I -> powerset X)) -> (t : Elem (powerset X)) -> (hl : Proof (Filter__HasBasis X I l p s)) -> Proof (iff (Membership__mem (powerset X) (Filter X) l t) (exists I (i => and (p i) (Set__Subset X (s i) t)))).
 
 (; //LEAN:Filter.HasBasis.mem_of_mem ;)
-Filter__HasBasis__mem_of_mem : (X : Set) -> (I : Set) -> (l : Elem (Filter X)) -> (p : (Elem I -> Prop)) -> (s : (Elem I -> powerset X)) -> (i : Elem I) -> (hl : Proof (Filter__HasBasis l p s)) -> (hi : Proof (p i)) -> Proof (Membership__mem l (s i)).
+Filter__HasBasis__mem_of_mem : (X : Set) -> (I : Set) -> (l : Elem (Filter X)) -> (p : (Elem I -> Prop)) -> (s : (Elem I -> powerset X)) -> (i : Elem I) -> (hl : Proof (Filter__HasBasis X I l p s)) -> (hi : Proof (p i)) -> Proof (Membership__mem (powerset X) (Filter X) l (s i)).
 
 (; //LEAN:Filter.HasBasis.tendsto_right_iff ;)
-Filter__HasBasis__tendsto_right_iff : (X : Set) -> (Y : Set) -> (X1 : Set) -> (la : Elem (Filter X)) -> (lb : Elem (Filter Y)) -> (pb : (Elem X1 -> Prop)) -> (sb : (Elem X1 -> powerset Y)) -> (f : (Elem X -> Y)) -> (hlb : Proof (Filter__HasBasis lb pb sb)) -> Proof (iff (Filter__Tendsto f la lb) (forall X1 (i => if (pb i) (Filter__Eventually (x => Membership__mem (sb i) (f x)) la)))).
+Filter__HasBasis__tendsto_right_iff : (X : Set) -> (Y : Set) -> (X1 : Set) -> (la : Elem (Filter X)) -> (lb : Elem (Filter Y)) -> (pb : (Elem X1 -> Prop)) -> (sb : (Elem X1 -> powerset Y)) -> (f : (Elem X -> Y)) -> (hlb : Proof (Filter__HasBasis Y X1 lb pb sb)) -> Proof (iff (Filter__Tendsto X Y f la lb) (forall X1 (i => if (pb i) (Filter__Eventually X (x => Membership__mem Y (powerset Y) (sb i) (f x)) la)))).
 
 (; doc: A filter is `NeBot` if it is not equal to `⊥`, or equivalently the empty set does not belong to the filter. Bourbaki include this assumption in the definition of a filter but we prefer to have a `CompleteLattice` structure on `Filter _`, so we use a typeclass argument in lemmas instead. ;)
 (; //LEAN:Filter.NeBot ;)
-Filter__NeBot : (f : Elem (Filter X)) -> Prop.
+Filter__NeBot : (X : Set) -> (f : Elem (Filter X)) -> Prop.
 
 (; //LEAN:Filter.NeBot.ne ;)
-Filter__NeBot__ne : (X : Set) -> (f : Elem (Filter X)) -> (hf : Proof (Filter__NeBot f)) -> Proof (Neq f Bot__bot).
+Filter__NeBot__ne : (X : Set) -> (f : Elem (Filter X)) -> (hf : Proof (Filter__NeBot X f)) -> Proof (Neq f (Bot__bot (Filter X))).
 
 (; doc: `Filter.Tendsto` is the generic "limit of a function" predicate. `Tendsto f l₁ l₂` asserts that for every `l₂` neighborhood `a`, the `f`-preimage of `a` is an `l₁` neighborhood. ;)
 (; //LEAN:Filter.Tendsto ;)
-Filter__Tendsto : (f : (Elem X -> Y)) -> (x : Elem (Filter X)) -> (x1 : Elem (Filter Y)) -> Prop.
+Filter__Tendsto : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x : Elem (Filter X)) -> (x1 : Elem (Filter Y)) -> Prop.
 
 (; //LEAN:Filter.Tendsto.neBot ;)
-Filter__Tendsto__neBot : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x : Elem (Filter X)) -> (y : Elem (Filter Y)) -> (h : Proof (Filter__Tendsto f x y)) -> (_ : Proof (Filter__NeBot x)) -> Proof (Filter__NeBot y).
+Filter__Tendsto__neBot : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x : Elem (Filter X)) -> (y : Elem (Filter Y)) -> (h : Proof (Filter__Tendsto X Y f x y)) -> (_ : Proof (Filter__NeBot X x)) -> Proof (Filter__NeBot Y y).
 
 (; doc: `atTop` is the filter representing the limit `→ ∞` on an ordered set. It is generated by the collection of up-sets `{b | a ≤ b}`. (The preorder need not have a top element for this to be well defined, and indeed is trivial when a top element `x` exists, i.e., it coincides with `pure x`.) ;)
 (; //LEAN:Filter.atTop ;)
-Filter__atTop : Elem (Filter X).
+Filter__atTop : (X : Set) -> Elem (Filter X).
 
 (; doc: `Filter.coclosedCompact` is the filter generated by complements to closed compact sets. In a Hausdorff space, this is the same as `Filter.cocompact`. ;)
 (; //LEAN:Filter.coclosedCompact ;)
@@ -166,57 +166,57 @@ Filter__cocompact : (X : Set) -> Elem (Filter X).
 
 (; doc: The cofinite filter is the filter of subsets whose complements are finite. ;)
 (; //LEAN:Filter.cofinite ;)
-Filter__cofinite : Elem (Filter X).
+Filter__cofinite : (X : Set) -> Elem (Filter X).
 
 (; doc: The inverse map of a filter. A set `s` belongs to `Filter.comap m f` if either of the following equivalent conditions hold.  1. There exists a set `t ∈ f` such that `m ⁻¹' t ⊆ s`. This is used as a definition. 2. The set `kernImage m s = {y | ∀ x, m x = y → x ∈ s}` belongs to `f`, see `Filter.mem_comap'`. 3. The set `(m '' sᶜ)ᶜ` belongs to `f`, see `Filter.mem_comap_iff_compl` and    `Filter.compl_mem_comap`. ;)
 (; //LEAN:Filter.comap ;)
-Filter__comap : (m : (Elem X -> Y)) -> (f : Elem (Filter Y)) -> Elem (Filter X).
+Filter__comap : (X : Set) -> (Y : Set) -> (m : (Elem X -> Y)) -> (f : Elem (Filter Y)) -> Elem (Filter X).
 
 (; doc: Coproduct of filters. ;)
 (; //LEAN:Filter.coprod ;)
-Filter__coprod : (f : Elem (Filter X)) -> (g : Elem (Filter Y)) -> Elem (Filter (Prod X Y)).
+Filter__coprod : (X : Set) -> (Y : Set) -> (f : Elem (Filter X)) -> (g : Elem (Filter Y)) -> Elem (Filter (Prod X Y)).
 
 (; doc: Coproduct of filters. ;)
 (; //LEAN:Filter.coprodᵢ ;)
-Filter__coprod_u1d62_ : (f : ((i1 : Elem I) -> Filter (x i1))) -> Elem (Filter ((i : Elem I) -> x i)).
+Filter__coprod_u1d62_ : (I : Set) -> (x : (Elem I -> Set)) -> (f : ((i1 : Elem I) -> Filter (x i1))) -> Elem (Filter ((i : Elem I) -> x i)).
 
 (; //LEAN:Filter.empty_mem_iff_bot ;)
-Filter__empty_mem_iff_bot : (X : Set) -> (f : Elem (Filter X)) -> Proof (iff (Membership__mem f EmptyCollection__emptyCollection) (Eqt (Filter X) f Bot__bot)).
+Filter__empty_mem_iff_bot : (X : Set) -> (f : Elem (Filter X)) -> Proof (iff (Membership__mem (powerset X) (Filter X) f (EmptyCollection__emptyCollection (powerset X))) (Eqt (Filter X) f (Bot__bot (Filter X)))).
 
 (; //LEAN:Filter.hasBasis_biInf_principal' ;)
-Filter__hasBasis_biInf_principal' : (X : Set) -> (I : Set) -> (p : (Elem I -> Prop)) -> (s : (Elem I -> powerset X)) -> (h : Proof (forall I (i2 => if (p i2) (forall I (j => if (p j) (exists I (k => and (p k) (and (Set__Subset (s k) (s i2)) (Set__Subset (s k) (s j)))))))))) -> (ne : Proof (exists I (i1 => p i1))) -> Proof (Filter__HasBasis (iInf (i => iInf (h1 => Filter__principal (s i)))) p s).
+Filter__hasBasis_biInf_principal' : (X : Set) -> (I : Set) -> (p : (Elem I -> Prop)) -> (s : (Elem I -> powerset X)) -> (h : Proof (forall I (i2 => if (p i2) (forall I (j => if (p j) (exists I (k => and (p k) (and (Set__Subset X (s k) (s i2)) (Set__Subset X (s k) (s j)))))))))) -> (ne : Proof (exists I (i1 => p i1))) -> Proof (Filter__HasBasis X I (iInf (Filter X) I (i => iInf (Filter X) (p i) (h1 => Filter__principal X (s i)))) p s).
 
 (; //LEAN:Filter.le_principal_iff ;)
-Filter__le_principal_iff : (X : Set) -> (s : Elem (powerset X)) -> (f : Elem (Filter X)) -> Proof (iff (Leq f (Filter__principal s)) (Membership__mem f s)).
+Filter__le_principal_iff : (X : Set) -> (s : Elem (powerset X)) -> (f : Elem (Filter X)) -> Proof (iff (Leq f (Filter__principal X s)) (Membership__mem (powerset X) (Filter X) f s)).
 
 (; doc: The forward map of a filter ;)
 (; //LEAN:Filter.map ;)
-Filter__map : (m : (Elem X -> Y)) -> (f : Elem (Filter X)) -> Elem (Filter Y).
+Filter__map : (X : Set) -> (Y : Set) -> (m : (Elem X -> Y)) -> (f : Elem (Filter X)) -> Elem (Filter Y).
 
 (; //LEAN:Filter.map_neBot ;)
-Filter__map_neBot : (X : Set) -> (Y : Set) -> (f : Elem (Filter X)) -> (m : (Elem X -> Y)) -> (_ : Proof (Filter__NeBot f)) -> Proof (Filter__NeBot (Filter__map m f)).
+Filter__map_neBot : (X : Set) -> (Y : Set) -> (f : Elem (Filter X)) -> (m : (Elem X -> Y)) -> (_ : Proof (Filter__NeBot X f)) -> Proof (Filter__NeBot Y (Filter__map X Y m f)).
 
 (; //LEAN:Filter.mem_iSup._simp_1 ;)
-Filter__mem_iSup___simp_1 : (X : Set) -> (I : Set) -> (x : Elem (powerset X)) -> (f : (Elem I -> Filter X)) -> Proof (Eqt Prop (Membership__mem (iSup f) x) (forall I (i => Membership__mem (f i) x))).
+Filter__mem_iSup___simp_1 : (X : Set) -> (I : Set) -> (x : Elem (powerset X)) -> (f : (Elem I -> Filter X)) -> Proof (Eqt Prop (Membership__mem (powerset X) (Filter X) (iSup (Filter X) I f) x) (forall I (i => Membership__mem (powerset X) (Filter X) (f i) x))).
 
 (; //LEAN:Filter.mem_map ;)
-Filter__mem_map : (X : Set) -> (Y : Set) -> (f : Elem (Filter X)) -> (m : (Elem X -> Y)) -> (t : Elem (powerset Y)) -> Proof (iff (Membership__mem (Filter__map m f) t) (Membership__mem f (Set__preimage m t))).
+Filter__mem_map : (X : Set) -> (Y : Set) -> (f : Elem (Filter X)) -> (m : (Elem X -> Y)) -> (t : Elem (powerset Y)) -> Proof (iff (Membership__mem (powerset Y) (Filter Y) (Filter__map X Y m f) t) (Membership__mem (powerset X) (Filter X) f (Set__preimage X Y m t))).
 
 (; //LEAN:Filter.nonempty_of_mem ;)
-Filter__nonempty_of_mem : (X : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot f)) -> (s : Elem (powerset X)) -> (hs : Proof (Membership__mem f s)) -> Proof (Set__Nonempty s).
+Filter__nonempty_of_mem : (X : Set) -> (f : Elem (Filter X)) -> (_ : Proof (Filter__NeBot X f)) -> (s : Elem (powerset X)) -> (hs : Proof (Membership__mem (powerset X) (Filter X) f s)) -> Proof (Set__Nonempty X s).
 
 (; doc: The principal filter of `s` is the collection of all supersets of `s`. ;)
 (; //LEAN:Filter.principal ;)
-Filter__principal : (s : Elem (powerset X)) -> Elem (Filter X).
+Filter__principal : (X : Set) -> (s : Elem (powerset X)) -> Elem (Filter X).
 
 (; //LEAN:Filter.principal_singleton ;)
-Filter__principal_singleton : (X : Set) -> (a : Elem X) -> Proof (Eqt (Filter X) (Filter__principal (Singleton__singleton a)) (Pure__pure a)).
+Filter__principal_singleton : (X : Set) -> (a : Elem X) -> Proof (Eqt (Filter X) (Filter__principal X (Singleton__singleton X (powerset X) a)) (Pure__pure Filter X a)).
 
 (; //LEAN:Filter.prod_mono ;)
-Filter__prod_mono : (X : Set) -> (Y : Set) -> (x : Elem (Filter X)) -> (x1 : Elem (Filter X)) -> (x2 : Elem (Filter Y)) -> (x3 : Elem (Filter Y)) -> (hf : Proof (Leq x x1)) -> (hg : Proof (Leq x2 x3)) -> Proof (Leq (SProd__sprod x x2) (SProd__sprod x1 x3)).
+Filter__prod_mono : (X : Set) -> (Y : Set) -> (x : Elem (Filter X)) -> (x1 : Elem (Filter X)) -> (x2 : Elem (Filter Y)) -> (x3 : Elem (Filter Y)) -> (hf : Proof (Leq x x1)) -> (hg : Proof (Leq x2 x3)) -> Proof (Leq (SProd__sprod (Filter X) (Filter Y) (Filter (Prod X Y)) x x2) (SProd__sprod (Filter X) (Filter Y) (Filter (Prod X Y)) x1 x3)).
 
 (; //LEAN:Filter.univ_mem ;)
-Filter__univ_mem : (X : Set) -> (f : Elem (Filter X)) -> Proof (Membership__mem f Set__univ).
+Filter__univ_mem : (X : Set) -> (f : Elem (Filter X)) -> Proof (Membership__mem (powerset X) (Filter X) f (Set__univ X)).
 
 (; doc: A type is `Finite` if it is in bijective correspondence to some `Fin n`.  This is similar to `Fintype`, but `Finite` is a proposition rather than data. A particular benefit to this is that `Finite` instances are definitionally equal to one another (due to proof irrelevance) rather than being merely propositionally equal, and, furthermore, `Finite` instances generally avoid the need for `Decidable` instances. One other notable difference is that `Finite` allows there to be `Finite p` instances for all `p : Prop`, which is not allowed by `Fintype` due to universe constraints. An application of this is that `Finite (x ∈ s → β x)` follows from the general instance for pi types, assuming `[∀ x, Finite (β x)]`. Implementation note: this is a reason `Finite α` is not defined as `Nonempty (Fintype α)`.  Every `Fintype` instance provides a `Finite` instance via `Finite.of_fintype`. Conversely, one can noncomputably create a `Fintype` instance from a `Finite` instance via `Fintype.ofFinite`. In a proof one might write ```lean   have := Fintype.ofFinite α ``` to obtain such an instance.  Do not write noncomputable `Fintype` instances; instead write `Finite` instances and use this `Fintype.ofFinite` interface. The `Fintype` instances should be relied upon to be computable for evaluation purposes.  Theorems should use `Finite` instead of `Fintype`, unless definitions in the theorem statement require `Fintype`. Definitions should prefer `Finite` as well, unless it is important that the definitions are meant to be computable in the reduction or `#eval` sense. ;)
 (; //LEAN:Finite ;)
@@ -224,7 +224,7 @@ Finite : (X : Set) -> Prop.
 
 (; doc: **Alias** of the forward direction of `Set.finite_univ_iff`. ;)
 (; //LEAN:Finite.of_finite_univ ;)
-Finite__of_finite_univ : (X : Set) -> (h : Proof (Set__Finite Set__univ)) -> Proof (Finite X).
+Finite__of_finite_univ : (X : Set) -> (h : Proof (Set__Finite X (Set__univ X))) -> Proof (Finite X).
 
 (; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
 (; //LEAN:Finset ;)
@@ -232,15 +232,15 @@ Finset : (X : Set) -> Set.
 
 (; doc: Gives a `Set.Finite` for the `Finset` coerced to a `Set`. This is a wrapper around `Set.toFinite`. ;)
 (; //LEAN:Finset.finite_toSet ;)
-Finset__finite_toSet : (X : Set) -> (s : Elem (Finset X)) -> Proof (Set__Finite s).
+Finset__finite_toSet : (X : Set) -> (s : Elem (Finset X)) -> Proof (Set__Finite X (SetLike__coe (Finset X) X s)).
 
 (; doc: A function `f : α → β` is called surjective if every `b : β` is equal to `f a` for some `a : α`. ;)
 (; //LEAN:Function.Surjective ;)
-Function__Surjective : (f : (Elem X -> Y)) -> Prop.
+Function__Surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: Evaluate a function at an argument. Useful if you want to talk about the partially applied `Function.eval x : (∀ x, β x) → β x`. ;)
 (; //LEAN:Function.eval ;)
-Function__eval : (x1 : Elem X) -> (f : ((x2 : Elem X) -> x x2)) -> Elem (x x1).
+Function__eval : (X : Set) -> (x : (Elem X -> Set)) -> (x1 : Elem X) -> (f : ((x2 : Elem X) -> x x2)) -> Elem (x x1).
 
 (; //LEAN:Iff.trans ;)
 Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
@@ -251,27 +251,27 @@ Infinite : (X : Set) -> Prop.
 
 (; doc: `insert x xs` inserts the element `x` into the collection `xs`. ;)
 (; //LEAN:Insert.insert ;)
-Insert__insert : (x1 : Elem x) -> (x2 : Elem Z) -> Elem Z.
+Insert__insert : (X : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Z) -> Elem Z.
 
 (; doc: `a ∩ b` is the intersection of `a` and `b`.  Conventions for notations in identifiers:   * The recommended spelling of `∩` in identifiers is `inter`. ;)
 (; //LEAN:Inter.inter ;)
-Inter__inter : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+Inter__inter : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: A set is closed if its complement is open ;)
 (; //LEAN:IsClosed ;)
-IsClosed : (s : Elem (powerset X)) -> Prop.
+IsClosed : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: A set `s` is compact if for every nontrivial filter `f` that contains `s`, there exists `a ∈ s` such that every set of `f` meets every neighborhood of `a`. ;)
 (; //LEAN:IsCompact ;)
-IsCompact : (s : Elem (powerset X)) -> Prop.
+IsCompact : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: A subset `s` is **discrete** if the corresponding subtype (with the subspace topology) is a discrete space. ;)
 (; //LEAN:IsDiscrete ;)
-IsDiscrete : (s : Elem (powerset X)) -> Prop.
+IsDiscrete : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: `IsOpen s` means that `s` is open in the ambient topological space on `X` ;)
 (; //LEAN:IsOpen ;)
-IsOpen : (x1 : Elem (powerset X)) -> Prop.
+IsOpen : (X : Set) -> (x1 : Elem (powerset X)) -> Prop.
 
 (; doc: **Alias** of `le_trans`. ;)
 (; //LEAN:LE.le.trans ;)
@@ -279,15 +279,15 @@ LE__le__trans : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : El
 
 (; doc: A point `x` is a cluster point of a sequence `u` along a filter `F` if it is a cluster point of `map u F`. ;)
 (; //LEAN:MapClusterPt ;)
-MapClusterPt : (x1 : Elem X) -> (F : Elem (Filter I)) -> (u : (Elem I -> X)) -> Prop.
+MapClusterPt : (X : Set) -> (I : Set) -> (x1 : Elem X) -> (F : Elem (Filter I)) -> (u : (Elem I -> X)) -> Prop.
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
-Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
 
 (; doc: Returns the lesser of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `min` in identifiers is `min`.   * The recommended spelling of `⊓` in identifiers is `inf` (`⊓` is the preferred notation for `min` when the type is not linearly ordered.). ;)
 (; //LEAN:Min.min ;)
-Min__min : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+Min__min : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; //LEAN:Nat.zero_le ;)
 Nat__zero_le : (n : Elem Nat) -> Proof (Leq 0 n).
@@ -297,11 +297,11 @@ Nat__zero_le : (n : Elem Nat) -> Proof (Leq 0 n).
 NoncompactSpace : (X : Set) -> Prop.
 
 (; //LEAN:NoncompactSpace.mk ;)
-NoncompactSpace__mk : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (noncompact_univ : Proof (not (IsCompact Set__univ))) -> Proof (NoncompactSpace X).
+NoncompactSpace__mk : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (noncompact_univ : Proof (not (IsCompact X (Set__univ X)))) -> Proof (NoncompactSpace X).
 
 (; doc: In a noncompact space, `Set.univ` is not a compact set. ;)
 (; //LEAN:NoncompactSpace.noncompact_univ ;)
-NoncompactSpace__noncompact_univ : (X : Set) -> (x : Proof (TopologicalSpace X)) -> (_ : Proof (NoncompactSpace X)) -> Proof (not (IsCompact Set__univ)).
+NoncompactSpace__noncompact_univ : (X : Set) -> (x : Proof (TopologicalSpace X)) -> (_ : Proof (NoncompactSpace X)) -> Proof (not (IsCompact X (Set__univ X))).
 
 (; doc: `Nonempty α` is a typeclass that says that `α` is not an empty type, that is, there exists an element in the type. It differs from `Inhabited α` in that `Nonempty α` is a `Prop`, which means that it does not actually carry an element of `α`, only a proof that *there exists* such an element. Given `Nonempty α`, you can construct an element of `α` *nonconstructively* using `Classical.choice`. ;)
 (; //LEAN:Nonempty ;)
@@ -309,7 +309,7 @@ Nonempty : (X : Set) -> Prop.
 
 (; doc: *Ex falso* for negation: from `¬a` and `a` anything follows. This is the same as `absurd` with the arguments flipped, but it is in the `Not` namespace so that projection notation can be used. ;)
 (; //LEAN:Not.elim ;)
-Not__elim : (H1 : Proof (not a)) -> (H2 : Proof a) -> Elem X.
+Not__elim : (a : Prop) -> (X : Set) -> (H1 : Proof (not a)) -> (H2 : Proof a) -> Elem X.
 
 (; doc: The product type, usually written `α × β`. Product types are also called pair or tuple types. Elements of this type are pairs in which the first element is an `α` and the second element is a `β`.  Products nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.  Conventions for notations in identifiers:   * The recommended spelling of `×` in identifiers is `Prod`. ;)
 (; //LEAN:Prod ;)
@@ -317,175 +317,186 @@ Prod : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: The first element of a pair. ;)
 (; //LEAN:Prod.fst ;)
-Prod__fst : (self : Elem (Prod X Y)) -> Elem X.
+Prod__fst : (X : Set) -> (Y : Set) -> (self : Elem (Prod X Y)) -> Elem X.
 
 (; doc: Constructs a pair. This is usually written `(x, y)` instead of `Prod.mk x y`.  Conventions for notations in identifiers:   * The recommended spelling of `(a, b)` in identifiers is `mk`. ;)
 (; //LEAN:Prod.mk ;)
-Prod__mk : (fst : Elem X) -> (snd : Elem Y) -> Elem (Prod X Y).
+Prod__mk : (X : Set) -> (Y : Set) -> (fst : Elem X) -> (snd : Elem Y) -> Elem (Prod X Y).
 
 (; doc: The second element of a pair. ;)
 (; //LEAN:Prod.snd ;)
-Prod__snd : (self : Elem (Prod X Y)) -> Elem Y.
+Prod__snd : (X : Set) -> (Y : Set) -> (self : Elem (Prod X Y)) -> Elem Y.
 
 (; doc: Given `a : α`, then `pure a : f α` represents an action that does nothing and returns `a`.  Examples: * `(pure "hello" : Option String) = some "hello"` * `(pure "hello" : Except (Array String) String) = Except.ok "hello"` * `(pure "hello" : StateM Nat String).run 105 = ("hello", 105)` ;)
 (; //LEAN:Pure.pure ;)
-Pure__pure : (x : Elem X) -> Elem (f X).
+Pure__pure : (f : (Set -> Set)) -> (X : Set) -> (x : Elem X) -> Elem (f X).
 
 (; doc: `a \ b` is the set difference of `a` and `b`, consisting of all elements in `a` that are not in `b`.  Conventions for notations in identifiers:   * The recommended spelling of `\` in identifiers is `sdiff`. ;)
 (; //LEAN:SDiff.sdiff ;)
-SDiff__sdiff : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+SDiff__sdiff : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: The Cartesian product `s ×ˢ t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. ;)
 (; //LEAN:SProd.sprod ;)
-SProd__sprod : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+SProd__sprod : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Y) -> Elem Z.
 
 (; doc: Given the set `s`, `Elem s` is the `Type` of element of `s`.  It is currently an abbreviation so that instance coming from `Subtype` are available. If you're interested in making it a `def`, as it probably should be, you'll then need to create additional instances (and possibly prove lemmas about them). See e.g. `Mathlib/Data/Set/Order.lean`. ;)
 (; //LEAN:Set.Elem ;)
-Set__Elem : (s : Elem (powerset X)) -> Set.
+Set__Elem : (X : Set) -> (s : Elem (powerset X)) -> Set.
 
 (; doc: A set is finite if the corresponding `Subtype` is finite, i.e., if there exists a natural `n : ℕ` and an equivalence `s ≃ Fin n`. ;)
 (; //LEAN:Set.Finite ;)
-Set__Finite : (s : Elem (powerset X)) -> Prop.
+Set__Finite : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: A set is infinite if it is not finite.  This is protected so that it does not conflict with global `Infinite`. ;)
 (; //LEAN:Set.Infinite ;)
-Set__Infinite : (s : Elem (powerset X)) -> Prop.
+Set__Infinite : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: The property `s.Nonempty` expresses the fact that the set `s` is not empty. It should be used in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks to the dot notation. ;)
 (; //LEAN:Set.Nonempty ;)
-Set__Nonempty : (s : Elem (powerset X)) -> Prop.
+Set__Nonempty : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: **Alias** of the forward direction of `Set.nonempty_iff_ne_empty`.  ---  See also `Set.not_nonempty_iff_eq_empty`. ;)
 (; //LEAN:Set.Nonempty.ne_empty ;)
-Set__Nonempty__ne_empty : (X : Set) -> (s : Elem (powerset X)) -> (h : Proof (Set__Nonempty s)) -> Proof (Neq s EmptyCollection__emptyCollection).
+Set__Nonempty__ne_empty : (X : Set) -> (s : Elem (powerset X)) -> (h : Proof (Set__Nonempty X s)) -> Proof (Neq s (EmptyCollection__emptyCollection (powerset X))).
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Set.Subset.rfl ;)
-Set__Subset__rfl : (X : Set) -> (s : Elem (powerset X)) -> Proof (Set__Subset s s).
+Set__Subset__rfl : (X : Set) -> (s : Elem (powerset X)) -> Proof (Set__Subset X s s).
 
 (; doc: A set `s` is a `Subsingleton` if it has at most one element. ;)
 (; //LEAN:Set.Subsingleton ;)
-Set__Subsingleton : (s : Elem (powerset X)) -> Prop.
+Set__Subsingleton : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Set.Subsingleton.induction_on ;)
-Set__Subsingleton__induction_on : (X : Set) -> (s : Elem (powerset X)) -> (p : (Elem (powerset X) -> Prop)) -> (hs : Proof (Set__Subsingleton s)) -> (he : Proof (p EmptyCollection__emptyCollection)) -> (h : Proof (forall X (x => p (Singleton__singleton x)))) -> Proof (p s).
+Set__Subsingleton__induction_on : (X : Set) -> (s : Elem (powerset X)) -> (p : (Elem (powerset X) -> Prop)) -> (hs : Proof (Set__Subsingleton X s)) -> (he : Proof (p (EmptyCollection__emptyCollection (powerset X)))) -> (h : Proof (forall X (x => p (Singleton__singleton X (powerset X) x)))) -> Proof (p s).
 
 (; doc: `accumulate s` is the union of `s y` for `y ≤ x`. ;)
 (; //LEAN:Set.accumulate ;)
-Set__accumulate : (s : (Elem X -> powerset Y)) -> (x1 : Elem X) -> Elem (powerset Y).
+Set__accumulate : (X : Set) -> (Y : Set) -> (s : (Elem X -> powerset Y)) -> (x1 : Elem X) -> Elem (powerset Y).
 
 (; //LEAN:Set.biInter_subset_biInter_left ;)
-Set__biInter_subset_biInter_left : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (s' : Elem (powerset X)) -> (t : (Elem X -> powerset Y)) -> (h : Proof (Set__Subset s' s)) -> Proof (Set__Subset (Set__iInter (x => Set__iInter (h1 => t x))) (Set__iInter (x1 => Set__iInter (h2 => t x1)))).
+Set__biInter_subset_biInter_left : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (s' : Elem (powerset X)) -> (t : (Elem X -> powerset Y)) -> (h : Proof (Set__Subset X s' s)) -> Proof (Set__Subset Y (Set__iInter Y X (x => Set__iInter Y (Membership__mem X (powerset X) s x) (h1 => t x))) (Set__iInter Y X (x1 => Set__iInter Y (Membership__mem X (powerset X) s' x1) (h2 => t x1)))).
 
 (; //LEAN:Set.compl_subset_comm ;)
-Set__compl_subset_comm : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Set__Subset (Compl__compl s) t) (Set__Subset (Compl__compl t) s)).
+Set__compl_subset_comm : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Set__Subset X (Compl__compl (powerset X) s) t) (Set__Subset X (Compl__compl (powerset X) t) s)).
 
 (; //LEAN:Set.compl_subset_compl ;)
-Set__compl_subset_compl : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Set__Subset (Compl__compl s) (Compl__compl t)) (Set__Subset t s)).
+Set__compl_subset_compl : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Set__Subset X (Compl__compl (powerset X) s) (Compl__compl (powerset X) t)) (Set__Subset X t s)).
 
 (; //LEAN:Set.compl_univ ;)
-Set__compl_univ : (X : Set) -> Proof (Eqt (powerset X) (Compl__compl Set__univ) EmptyCollection__emptyCollection).
+Set__compl_univ : (X : Set) -> Proof (Eqt (powerset X) (Compl__compl (powerset X) (Set__univ X)) (EmptyCollection__emptyCollection (powerset X))).
 
 (; doc: `diagonal α` is the set of `α × α` consisting of all pairs of the form `(a, a)`. ;)
 (; //LEAN:Set.diagonal ;)
 Set__diagonal : (X : Set) -> Elem (powerset (Prod X X)).
 
 (; //LEAN:Set.finite_coe_iff ;)
-Set__finite_coe_iff : (X : Set) -> (s : Elem (powerset X)) -> Proof (iff (Finite (Set__Elem s)) (Set__Finite s)).
+Set__finite_coe_iff : (X : Set) -> (s : Elem (powerset X)) -> Proof (iff (Finite (Set__Elem X s)) (Set__Finite X s)).
 
 (; //LEAN:Set.finite_le_nat ;)
-Set__finite_le_nat : (n : Elem Nat) -> Proof (Set__Finite (Set__ofPred (i => Leq i n))).
+Set__finite_le_nat : (n : Elem Nat) -> Proof (Set__Finite Nat (Set__ofPred Nat (i => Leq i n))).
 
 (; //LEAN:Set.finite_range ;)
-Set__finite_range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (_ : Proof (Finite I)) -> Proof (Set__Finite (Set__range f)).
+Set__finite_range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (_ : Proof (Finite I)) -> Proof (Set__Finite X (Set__range X I f)).
 
 (; //LEAN:Set.forall_mem_range ;)
-Set__forall_mem_range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (p : (Elem X -> Prop)) -> Proof (iff (forall X (a => if (Membership__mem (Set__range f) a) (p a))) (forall I (i => p (f i)))).
+Set__forall_mem_range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (p : (Elem X -> Prop)) -> Proof (iff (forall X (a => if (Membership__mem X (powerset X) (Set__range X I f) a) (p a))) (forall I (i => p (f i)))).
 
 (; doc: Indexed intersection of a family of sets ;)
 (; //LEAN:Set.iInter ;)
-Set__iInter : (s : (Elem I -> powerset X)) -> Elem (powerset X).
+Set__iInter : (X : Set) -> (I : Set) -> (s : (Elem I -> powerset X)) -> Elem (powerset X).
 
 (; doc: Intersection of an indexed family of sets `s : ι → Set α` is equal to the intersection of the intersections of finite subfamilies. This version assumes `ι : Type*`. See also `iInter_eq_iInter_finset'` for a version that works for `ι : Sort*`. ;)
 (; //LEAN:Set.iInter_eq_iInter_finset ;)
-Set__iInter_eq_iInter_finset : (X : Set) -> (I : Set) -> (s : (Elem I -> powerset X)) -> Proof (Eqt (powerset X) (Set__iInter (i => s i)) (Set__iInter (t => Set__iInter (i1 => Set__iInter (h => s i1))))).
+Set__iInter_eq_iInter_finset : (X : Set) -> (I : Set) -> (s : (Elem I -> powerset X)) -> Proof (Eqt (powerset X) (Set__iInter X I (i => s i)) (Set__iInter X (Finset I) (t => Set__iInter X I (i1 => Set__iInter X (Membership__mem I (Finset I) t i1) (h => s i1))))).
 
 (; doc: Indexed union of a family of sets ;)
 (; //LEAN:Set.iUnion ;)
-Set__iUnion : (s : (Elem I -> powerset X)) -> Elem (powerset X).
+Set__iUnion : (X : Set) -> (I : Set) -> (s : (Elem I -> powerset X)) -> Elem (powerset X).
 
 (; doc: The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that `f a = b` for some `a ∈ s`. ;)
 (; //LEAN:Set.image ;)
-Set__image : (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
+Set__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
 
 (; //LEAN:Set.image_univ ;)
-Set__image_univ : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Proof (Eqt (powerset Y) (Set__image f Set__univ) (Set__range f)).
+Set__image_univ : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Proof (Eqt (powerset Y) (Set__image X Y f (Set__univ X)) (Set__range Y X f)).
 
 (; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
 (; //LEAN:Set.ofPred ;)
-Set__ofPred : (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
 
 (; doc: Given an index set `ι` and a family of sets `t : Π i, Set (α i)`, `pi s t` is the set of dependent functions `f : Πa, π a` such that `f i` belongs to `t i` whenever `i ∈ s`. ;)
 (; //LEAN:Set.pi ;)
-Set__pi : (s : Elem (powerset I)) -> (t : ((i1 : Elem I) -> powerset (x i1))) -> Elem (powerset ((i : Elem I) -> x i)).
+Set__pi : (I : Set) -> (x : (Elem I -> Set)) -> (s : Elem (powerset I)) -> (t : ((i1 : Elem I) -> powerset (x i1))) -> Elem (powerset ((i : Elem I) -> x i)).
 
 (; doc: The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`, is the set of `x : α` such that `f x ∈ s`. ;)
 (; //LEAN:Set.preimage ;)
-Set__preimage : (f : (Elem X -> Y)) -> (s : Elem (powerset Y)) -> Elem (powerset X).
+Set__preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset Y)) -> Elem (powerset X).
 
 (; doc: Range of a function.  This function is more flexible than `f '' univ`, as the image requires that the domain is in Type and not an arbitrary Sort. ;)
 (; //LEAN:Set.range ;)
-Set__range : (f : (Elem I -> X)) -> Elem (powerset X).
+Set__range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> Elem (powerset X).
 
 (; doc: Intersection of a set of sets. ;)
 (; //LEAN:Set.sInter ;)
-Set__sInter : (S : Elem (powerset (powerset X))) -> Elem (powerset X).
+Set__sInter : (X : Set) -> (S : Elem (powerset (powerset X))) -> Elem (powerset X).
 
 (; doc: Union of a set of sets. ;)
 (; //LEAN:Set.sUnion ;)
-Set__sUnion : (S : Elem (powerset (powerset X))) -> Elem (powerset X).
+Set__sUnion : (X : Set) -> (S : Elem (powerset (powerset X))) -> Elem (powerset X).
 
 (; //LEAN:Set.sUnion_isCompact_eq_univ.match_1 ;)
-Set__sUnion_isCompact_eq_univ__match_1 : (motive : (Elem (powerset X) -> Set)) -> (x : Elem (powerset X)) -> (h_1 : ((s : Elem (powerset X)) -> motive s)) -> Elem (motive x).
+Set__sUnion_isCompact_eq_univ__match_1 : (X : Set) -> (motive : (Elem (powerset X) -> Set)) -> (x : Elem (powerset X)) -> (h_1 : ((s : Elem (powerset X)) -> motive s)) -> Elem (motive x).
 
 (; doc: Indexed sum of sets. `s.sigma t` is the set of dependent pairs `⟨i, a⟩` such that `i ∈ s` and `a ∈ t i`. ;)
 (; //LEAN:Set.sigma ;)
-Set__sigma : (s : Elem (powerset I)) -> (t : ((i1 : Elem I) -> powerset (x i1))) -> Elem (powerset (Sigma (i => x i))).
+Set__sigma : (I : Set) -> (x : (Elem I -> Set)) -> (s : Elem (powerset I)) -> (t : ((i1 : Elem I) -> powerset (x i1))) -> Elem (powerset (Sigma I (i => x i))).
 
 (; //LEAN:Set.subset_union_left ;)
-Set__subset_union_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Set__Subset s (Union__union s t)).
+Set__subset_union_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Set__Subset X s (Union__union (powerset X) s t)).
 
 (; //LEAN:Set.subset_union_right ;)
-Set__subset_union_right : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Set__Subset t (Union__union s t)).
+Set__subset_union_right : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Set__Subset X t (Union__union (powerset X) s t)).
 
 (; //LEAN:Set.subset_univ ;)
-Set__subset_univ : (X : Set) -> (s : Elem (powerset X)) -> Proof (Set__Subset s Set__univ).
+Set__subset_univ : (X : Set) -> (s : Elem (powerset X)) -> Proof (Set__Subset X s (Set__univ X)).
 
 (; doc: The universal set on a type `α` is the set containing all elements of `α`.  This is conceptually the "same as" `α` (in set theory, it is actually the same), but type theory makes the distinction that `α` is a type while `Set.univ` is a term of type `Set α`. `Set.univ` can itself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`. ;)
 (; //LEAN:Set.univ ;)
-Set__univ : Elem (powerset X).
+Set__univ : (X : Set) -> Elem (powerset X).
 
 (; //LEAN:Set.univ_disjoint._simp_1 ;)
-Set__univ_disjoint___simp_1 : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt Prop (Disjoint Set__univ s) (Eqt (powerset X) s EmptyCollection__emptyCollection)).
+Set__univ_disjoint___simp_1 : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt Prop (Disjoint (powerset X) (Set__univ X) s) (Eqt (powerset X) s (EmptyCollection__emptyCollection (powerset X)))).
+
+(; //LEAN:Set.univ_subset_iff._simp_1 ;)
+Set__univ_subset_iff___simp_1 : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt Prop (Set__Subset X (Set__univ X) s) (Eqt (powerset X) s (Set__univ X))).
+
+(; doc: The coercion from a term of a `SetLike` to its corresponding `Set`. ;)
+(; //LEAN:SetLike.coe ;)
+SetLike__coe : (A : Set) -> (B : Set) -> (x : Elem A) -> Elem (powerset B).
 
 (; doc: Dependent pairs, in which the second element's type depends on the value of the first element. The type `Sigma β` is typically written `Σ a : α, β a` or `(a : α) × β a`.  Although its values are pairs, `Sigma` is sometimes known as the *dependent sum type*, since it is the type level version of an indexed summation. ;)
 (; //LEAN:Sigma ;)
-Sigma : (x : (Elem X -> Set)) -> Set.
+Sigma : (X : Set) -> (x : (Elem X -> Set)) -> Set.
 
 (; doc: `singleton x` is a collection with the single element `x` (notation: `{x}`).  Conventions for notations in identifiers:   * The recommended spelling of `{x}` in identifiers is `singleton`. ;)
 (; //LEAN:Singleton.singleton ;)
-Singleton__singleton : (x1 : Elem x) -> Elem Y.
+Singleton__singleton : (X : Set) -> (Y : Set) -> (x : Elem X) -> Elem Y.
 
 (; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
 (; //LEAN:Subtype ;)
-Subtype : (p : (Elem X -> Prop)) -> Set.
+Subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Set.
 
 (; doc: The proof that `val` satisfies the predicate `p`. ;)
 (; //LEAN:Subtype.property ;)
-Subtype__property : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype (x => p x))) -> Proof (p self).
+Subtype__property : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x => p x))) -> Proof (p (Subtype__val X p self)).
+
+(; doc: The value in the underlying type that satisfies the predicate. ;)
+(; //LEAN:Subtype.val ;)
+Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x => p x))) -> Elem X.
 
 (; doc: A topology on `X`. ;)
 (; //LEAN:TopologicalSpace ;)
@@ -493,32 +504,32 @@ TopologicalSpace : (X : Set) -> Prop.
 
 (; doc: The smallest topological space containing the collection `g` of basic sets ;)
 (; //LEAN:TopologicalSpace.generateFrom ;)
-TopologicalSpace__generateFrom : (g : Elem (powerset (powerset X))) -> Proof (TopologicalSpace X).
+TopologicalSpace__generateFrom : (X : Set) -> (g : Elem (powerset (powerset X))) -> Proof (TopologicalSpace X).
 
 (; doc: A closed embedding is an embedding with closed image. ;)
 (; //LEAN:Topology.IsClosedEmbedding ;)
-Topology__IsClosedEmbedding : (f : (Elem X -> Y)) -> Prop.
+Topology__IsClosedEmbedding : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: The range of a closed embedding is a closed set. ;)
 (; //LEAN:Topology.IsClosedEmbedding.isClosed_range ;)
-Topology__IsClosedEmbedding__isClosed_range : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (self : Proof (Topology__IsClosedEmbedding f)) -> Proof (IsClosed (Set__range f)).
+Topology__IsClosedEmbedding__isClosed_range : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (self : Proof (Topology__IsClosedEmbedding X Y f)) -> Proof (IsClosed Y (Set__range Y X f)).
 
 (; //LEAN:Topology.IsClosedEmbedding.isInducing ;)
-Topology__IsClosedEmbedding__isInducing : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (hf : Proof (Topology__IsClosedEmbedding f)) -> Proof (Topology__IsInducing f).
+Topology__IsClosedEmbedding__isInducing : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (hf : Proof (Topology__IsClosedEmbedding X Y f)) -> Proof (Topology__IsInducing X Y f).
 
 (; doc: A function between topological spaces is an embedding if it is injective, and for all `s : Set X`, `s` is open iff it is the preimage of an open set. ;)
 (; //LEAN:Topology.IsEmbedding ;)
-Topology__IsEmbedding : (f : (Elem X -> Y)) -> Prop.
+Topology__IsEmbedding : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Topology.IsEmbedding.isInducing ;)
-Topology__IsEmbedding__isInducing : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (hf : Proof (Topology__IsEmbedding f)) -> Proof (Topology__IsInducing f).
+Topology__IsEmbedding__isInducing : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (hf : Proof (Topology__IsEmbedding X Y f)) -> Proof (Topology__IsInducing X Y f).
 
 (; //LEAN:Topology.IsEmbedding.subtypeVal ;)
-Topology__IsEmbedding__subtypeVal : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (p : (Elem X -> Prop)) -> Proof (Topology__IsEmbedding p).
+Topology__IsEmbedding__subtypeVal : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (p : (Elem X -> Prop)) -> Proof (Topology__IsEmbedding (Subtype X (x1 => p x1)) X (Subtype__val X p)).
 
 (; doc: A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage under `f` of some open set `t : Set Y`. ;)
 (; //LEAN:Topology.IsInducing ;)
-Topology__IsInducing : (f : (Elem X -> Y)) -> Prop.
+Topology__IsInducing : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: An ultrafilter is a minimal (maximal in the set order) proper filter. ;)
 (; //LEAN:Ultrafilter ;)
@@ -526,24 +537,24 @@ Ultrafilter : (X : Set) -> Set.
 
 (; doc: If `F` is an ultrafilter, then `Filter.Ultrafilter.lim F` is a limit of the filter, if it exists. Note that dot notation `F.lim` can be used for `F : Filter.Ultrafilter X`. ;)
 (; //LEAN:Ultrafilter.lim ;)
-Ultrafilter__lim : (F : Elem (Ultrafilter X)) -> Elem X.
+Ultrafilter__lim : (X : Set) -> (F : Elem (Ultrafilter X)) -> Elem X.
 
 (; //LEAN:Ultrafilter.toFilter ;)
-Ultrafilter__toFilter : (self : Elem (Ultrafilter X)) -> Elem (Filter X).
+Ultrafilter__toFilter : (X : Set) -> (self : Elem (Ultrafilter X)) -> Elem (Filter X).
 
 (; doc: `a ∪ b` is the union of `a` and `b`.  Conventions for notations in identifiers:   * The recommended spelling of `∪` in identifiers is `union`. ;)
 (; //LEAN:Union.union ;)
-Union__union : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+Union__union : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; //LEAN:and_congr_right ;)
 and_congr_right : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (if a (iff b c))) -> Proof (iff (and a b) (and a c)).
 
 (; //LEAN:antitone_nat_of_succ_le ;)
-antitone_nat_of_succ_le : (X : Set) -> (_ : Proof (Preorder X)) -> (f : (Elem Nat -> X)) -> (hf : Proof (forall Nat (n => Leq (f (plus n 1)) (f n)))) -> Proof (Antitone f).
+antitone_nat_of_succ_le : (X : Set) -> (_ : Proof (Preorder X)) -> (f : (Elem Nat -> X)) -> (hf : Proof (forall Nat (n => Leq (f (plus n 1)) (f n)))) -> Proof (Antitone Nat X f).
 
 (; doc: The closure of `s` is the smallest closed set containing `s`. ;)
 (; //LEAN:closure ;)
-closure : (s : Elem (powerset X)) -> Elem (powerset X).
+closure : (X : Set) -> (s : Elem (powerset X)) -> Elem (powerset X).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
@@ -555,7 +566,7 @@ congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y))
 
 (; doc: A monotone function on an upwards-directed type is directed. ;)
 (; //LEAN:directed_of_isDirected_le ;)
-directed_of_isDirected_le : (X : Set) -> (Y : Set) -> (_ : Proof (LE X)) -> (_ : Proof (IsDirectedOrder X)) -> (f : (Elem X -> Y)) -> (r : (Elem Y -> Elem Y -> Prop)) -> (H : Proof (forall X (i => forall X (j => if (Leq i j) (r (f i) (f j)))))) -> Proof (Directed r f).
+directed_of_isDirected_le : (X : Set) -> (Y : Set) -> (_ : Proof (LE X)) -> (_ : Proof (IsDirectedOrder X)) -> (f : (Elem X -> Y)) -> (r : (Elem Y -> Elem Y -> Prop)) -> (H : Proof (forall X (i => forall X (j => if (Leq i j) (r (f i) (f j)))))) -> Proof (Directed Y X r f).
 
 (; //LEAN:exists_congr ;)
 exists_congr : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h : Proof (forall X (a2 => iff (p a2) (q a2)))) -> Proof (iff (exists X (a => p a)) (exists X (a1 => q a1))).
@@ -569,47 +580,47 @@ funext : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> 
 
 (; doc: Indexed infimum ;)
 (; //LEAN:iInf ;)
-iInf : (s : (Elem I -> X)) -> Elem X.
+iInf : (X : Set) -> (I : Set) -> (s : (Elem I -> X)) -> Elem X.
 
 (; //LEAN:iInf_mono ;)
-iInf_mono : (X : Set) -> (I : Set) -> (_ : Proof (CompleteLattice X)) -> (f : (Elem I -> X)) -> (g : (Elem I -> X)) -> (h : Proof (forall I (i => Leq (g i) (f i)))) -> Proof (Leq (iInf g) (iInf f)).
+iInf_mono : (X : Set) -> (I : Set) -> (_ : Proof (CompleteLattice X)) -> (f : (Elem I -> X)) -> (g : (Elem I -> X)) -> (h : Proof (forall I (i => Leq (g i) (f i)))) -> Proof (Leq (iInf X I g) (iInf X I f)).
 
 (; doc: Indexed supremum ;)
 (; //LEAN:iSup ;)
-iSup : (s : (Elem I -> X)) -> Elem X.
+iSup : (X : Set) -> (I : Set) -> (s : (Elem I -> X)) -> Elem X.
 
 (; //LEAN:iSup₂_le ;)
-iSup_u2082__le : (X : Set) -> (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof (CompleteLattice X)) -> (a : Elem X) -> (f : ((i2 : Elem I) -> Elem (x i2) -> X)) -> (h : Proof (forall I (i1 => forall (x i1) (j1 => Leq (f i1 j1) a)))) -> Proof (Leq (iSup (i => iSup (j => f i j))) a).
+iSup_u2082__le : (X : Set) -> (I : Set) -> (x : (Elem I -> Set)) -> (_ : Proof (CompleteLattice X)) -> (a : Elem X) -> (f : ((i2 : Elem I) -> Elem (x i2) -> X)) -> (h : Proof (forall I (i1 => forall (x i1) (j1 => Leq (f i1 j1) a)))) -> Proof (Leq (iSup X I (i => iSup X (x i) (j => f i j))) a).
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
-id : (a : Elem X) -> Elem X.
+id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:implies_congr ;)
 implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h : Proof (Eqt Set X X1)) -> (h1 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> X2) (Elem X1 -> X3)).
 
 (; //LEAN:inf_le_right ;)
-inf_le_right : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (Min__min a b) b).
+inf_le_right : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (Min__min X a b) b).
 
 (; doc: `inferInstance` synthesizes a value of any target type by typeclass inference. This function has the same type signature as the identity function, but the square brackets on the `[i : α]` argument means that it will attempt to construct this argument by typeclass inference. (This will fail if `α` is not a `class`.) Example: ``` #check (inferInstance : Inhabited Nat) -- Inhabited Nat  def foo : Inhabited (Nat × Nat) :=   inferInstance  example : foo.default = (default, default) :=   rfl ``` ;)
 (; //LEAN:inferInstance ;)
-inferInstance : Elem X.
+inferInstance : (X : Set) -> Elem X.
 
 (; doc: The interior of a set `s` is the largest open subset of `s`. ;)
 (; //LEAN:interior ;)
-interior : (s : Elem (powerset X)) -> Elem (powerset X).
+interior : (X : Set) -> (s : Elem (powerset X)) -> Elem (powerset X).
 
 (; //LEAN:isClosed_biInter ;)
-isClosed_biInter : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X1)) -> (f : (Elem X1 -> powerset X)) -> (h : Proof (forall X1 (i1 => if (Membership__mem s i1) (IsClosed (f i1))))) -> Proof (IsClosed (Set__iInter (i => Set__iInter (h1 => f i)))).
+isClosed_biInter : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X1)) -> (f : (Elem X1 -> powerset X)) -> (h : Proof (forall X1 (i1 => if (Membership__mem X1 (powerset X1) s i1) (IsClosed X (f i1))))) -> Proof (IsClosed X (Set__iInter X X1 (i => Set__iInter X (Membership__mem X1 (powerset X1) s i) (h1 => f i)))).
 
 (; //LEAN:isClosed_compl_iff ;)
-isClosed_compl_iff : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (IsClosed (Compl__compl s)) (IsOpen s)).
+isClosed_compl_iff : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> Proof (iff (IsClosed X (Compl__compl (powerset X) s)) (IsOpen X s)).
 
 (; //LEAN:le_antisymm ;)
 le_antisymm : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq b a)) -> Proof (Eqt X a b).
 
 (; //LEAN:le_iInf ;)
-le_iInf : (X : Set) -> (I : Set) -> (_ : Proof (CompleteLattice X)) -> (f : (Elem I -> X)) -> (a : Elem X) -> (h : Proof (forall I (i => Leq a (f i)))) -> Proof (Leq a (iInf f)).
+le_iInf : (X : Set) -> (I : Set) -> (_ : Proof (CompleteLattice X)) -> (f : (Elem I -> X)) -> (a : Elem X) -> (h : Proof (forall I (i => Leq a (f i)))) -> Proof (Leq a (iInf X I f)).
 
 (; doc: A version of `le_refl` where the argument is implicit ;)
 (; //LEAN:le_rfl ;)
@@ -617,34 +628,34 @@ le_rfl : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> Proof (Leq a a
 
 (; doc: A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the infimum over the principal filters of all open sets containing `x`.  [Wikidata Q3275652](https://www.wikidata.org/wiki/Q3275652) ;)
 (; //LEAN:nhds ;)
-nhds : (x1 : Elem X) -> Elem (Filter X).
+nhds : (X : Set) -> (x1 : Elem X) -> Elem (Filter X).
 
 (; doc: The filter of neighborhoods of a set in a topological space. ;)
 (; //LEAN:nhdsSet ;)
-nhdsSet : (s : Elem (powerset X)) -> Elem (Filter X).
+nhdsSet : (X : Set) -> (s : Elem (powerset X)) -> Elem (Filter X).
 
 (; doc: The "neighbourhood within" filter for sets. Elements of `𝓝[t] s` are sets containing the intersection of `t` and a neighbourhood of `s`. ;)
 (; //LEAN:nhdsSetWithin ;)
-nhdsSetWithin : (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Elem (Filter X).
+nhdsSetWithin : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Elem (Filter X).
 
 (; doc: The "neighborhood within" filter. Elements of `𝓝[s] x` are sets containing the intersection of `s` and a neighborhood of `x`. ;)
 (; //LEAN:nhdsWithin ;)
-nhdsWithin : (x1 : Elem X) -> (s : Elem (powerset X)) -> Elem (Filter X).
+nhdsWithin : (X : Set) -> (x1 : Elem X) -> (s : Elem (powerset X)) -> Elem (Filter X).
 
 (; //LEAN:nhds_le_nhdsSet ;)
-nhds_le_nhdsSet : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (x1 : Elem X) -> (h : Proof (Membership__mem s x1)) -> Proof (Leq (nhds x1) (nhdsSet s)).
+nhds_le_nhdsSet : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (x1 : Elem X) -> (h : Proof (Membership__mem X (powerset X) s x1)) -> Proof (Leq (nhds X x1) (nhdsSet X s)).
 
 (; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
 (; //LEAN:propext ;)
 propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a b).
 
 (; //LEAN:pure_le_nhds ;)
-pure_le_nhds : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (Leq Pure__pure nhds).
+pure_le_nhds : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (Leq (Pure__pure Filter X) (nhds X)).
 
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)
 rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
 
 (; //LEAN:subset_of_mem_nhdsSet ;)
-subset_of_mem_nhdsSet : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Membership__mem (nhdsSet s) t)) -> Proof (Set__Subset s t).
+subset_of_mem_nhdsSet : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Membership__mem (powerset X) (Filter X) (nhdsSet X s) t)) -> Proof (Set__Subset X s t).
 

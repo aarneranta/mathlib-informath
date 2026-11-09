@@ -2,26 +2,26 @@
 
 (; doc: Non-dependent recursor for the equality type. ;)
 (; //LEAN:Eq.ndrec ;)
-Eq__ndrec : (m : Elem (motive a)) -> (h : Proof (Eqt X a b)) -> Elem (motive b).
+Eq__ndrec : (X : Set) -> (a : Elem X) -> (motive : (Elem X -> Set)) -> (m : Elem (motive a)) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Elem (motive b).
 
 (; doc: An equivalence relation `r : α → α → Prop` is a relation that is  * reflexive: `r x x`, * symmetric: `r x y` implies `r y x`, and * transitive: `r x y` and `r y z` implies `r x z`.  Equality is an equivalence relation, and equivalence relations share many of the properties of equality. ;)
 (; //LEAN:Equivalence ;)
-Equivalence : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Equivalence : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; //LEAN:Equivalence.mk ;)
-Equivalence__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (refl : Proof (forall X (x2 => r x2 x2))) -> (symm : Proof (forall X (x1 => forall X (y1 => if (r x1 y1) (r y1 x1))))) -> (trans : Proof (forall X (x => forall X (y => forall X (z => if (r x y) (if (r y z) (r x z))))))) -> Proof (Equivalence r).
+Equivalence__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (refl : Proof (forall X (x2 => r x2 x2))) -> (symm : Proof (forall X (x1 => forall X (y1 => if (r x1 y1) (r y1 x1))))) -> (trans : Proof (forall X (x => forall X (y => forall X (z => if (r x y) (if (r y z) (r x z))))))) -> Proof (Equivalence X r).
 
 (; doc: An equivalence relation is reflexive: `r x x` ;)
 (; //LEAN:Equivalence.refl ;)
-Equivalence__refl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (self : Proof (Equivalence r)) -> (x : Elem X) -> Proof (r x x).
+Equivalence__refl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (self : Proof (Equivalence X r)) -> (x : Elem X) -> Proof (r x x).
 
 (; doc: An equivalence relation is symmetric: `r x y` implies `r y x` ;)
 (; //LEAN:Equivalence.symm ;)
-Equivalence__symm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (self : Proof (Equivalence r)) -> (x : Elem X) -> (y : Elem X) -> (h : Proof (r x y)) -> Proof (r y x).
+Equivalence__symm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (self : Proof (Equivalence X r)) -> (x : Elem X) -> (y : Elem X) -> (h : Proof (r x y)) -> Proof (r y x).
 
 (; doc: An equivalence relation is transitive: `r x y` and `r y z` implies `r x z` ;)
 (; //LEAN:Equivalence.trans ;)
-Equivalence__trans : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (self : Proof (Equivalence r)) -> (x : Elem X) -> (y : Elem X) -> (z : Elem X) -> (h : Proof (r x y)) -> (h1 : Proof (r y z)) -> Proof (r x z).
+Equivalence__trans : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (self : Proof (Equivalence X r)) -> (x : Elem X) -> (y : Elem X) -> (z : Elem X) -> (h : Proof (r x y)) -> (h1 : Proof (r y z)) -> Proof (r x z).
 
 (; //LEAN:Iff.rfl ;)
 Iff__rfl : (a : Prop) -> Proof (iff a a).
@@ -32,7 +32,7 @@ LE : (X : Set) -> Prop.
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
-Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
 
 (; //LEAN:Or.resolve_left ;)
 Or__resolve_left : (a : Prop) -> (b : Prop) -> (h : Proof (or a b)) -> (na : Proof (not a)) -> Proof b.
@@ -42,36 +42,36 @@ Or__resolve_right : (a : Prop) -> (b : Prop) -> (h : Proof (or a b)) -> (nb : Pr
 
 (; doc: `Antisymm r` says that `r` is antisymmetric, that is, `r a b → r b a → a = b`. ;)
 (; //LEAN:Std.Antisymm ;)
-Std__Antisymm : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Std__Antisymm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; doc: An antisymmetric relation `r` satisfies `r a b → r b a → a = b`. ;)
 (; //LEAN:Std.Antisymm.antisymm ;)
-Std__Antisymm__antisymm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Antisymm r)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (r a b)) -> (h1 : Proof (r b a)) -> Proof (Eqt X a b).
+Std__Antisymm__antisymm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Antisymm X r)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (r a b)) -> (h1 : Proof (r b a)) -> Proof (Eqt X a b).
 
 (; //LEAN:Std.Antisymm.mk ;)
-Std__Antisymm__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (antisymm : Proof (forall X (a => forall X (b => if (r a b) (if (r b a) (Eqt X a b)))))) -> Proof (Std__Antisymm r).
+Std__Antisymm__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (antisymm : Proof (forall X (a => forall X (b => if (r a b) (if (r b a) (Eqt X a b)))))) -> Proof (Std__Antisymm X r).
 
 (; doc: `Asymm r` means that the binary relation `r` is asymmetric, that is, `r a b → ¬ r b a`. ;)
 (; //LEAN:Std.Asymm ;)
-Std__Asymm : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Std__Asymm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; doc: An asymmetric relation satisfies `r a b → ¬ r b a`. ;)
 (; //LEAN:Std.Asymm.asymm ;)
-Std__Asymm__asymm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Asymm r)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (r a b)) -> Proof (not (r b a)).
+Std__Asymm__asymm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Asymm X r)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (r a b)) -> Proof (not (r b a)).
 
 (; //LEAN:Std.Asymm.mk ;)
-Std__Asymm__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (asymm : Proof (forall X (a => forall X (b => if (r a b) (not (r b a)))))) -> Proof (Std__Asymm r).
+Std__Asymm__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (asymm : Proof (forall X (a => forall X (b => if (r a b) (not (r b a)))))) -> Proof (Std__Asymm X r).
 
 (; doc: `Irrefl r` means the binary relation `r` is irreflexive, that is, `r x x` never holds. ;)
 (; //LEAN:Std.Irrefl ;)
-Std__Irrefl : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Std__Irrefl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; doc: An irreflexive relation satisfies `¬ r a a`. ;)
 (; //LEAN:Std.Irrefl.irrefl ;)
-Std__Irrefl__irrefl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl r)) -> (a : Elem X) -> Proof (not (r a a)).
+Std__Irrefl__irrefl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl X r)) -> (a : Elem X) -> Proof (not (r a a)).
 
 (; //LEAN:Std.Irrefl.mk ;)
-Std__Irrefl__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (irrefl : Proof (forall X (a => not (r a a)))) -> Proof (Std__Irrefl r).
+Std__Irrefl__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (irrefl : Proof (forall X (a => not (r a a)))) -> Proof (Std__Irrefl X r).
 
 (; doc: This typeclass states that the order structure on `α`, represented by an `LE α` instance, is a linear order. In other words, the less-or-equal relation is reflexive, transitive, antisymmetric and total. ;)
 (; //LEAN:Std.IsLinearOrder ;)
@@ -90,50 +90,50 @@ Std__IsPreorder__mk : (X : Set) -> (_ : Proof (LE X)) -> (le_refl : Proof (foral
 
 (; doc: `Refl r` means the binary relation `r` is reflexive, that is, `r x x` always holds. ;)
 (; //LEAN:Std.Refl ;)
-Std__Refl : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Std__Refl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; //LEAN:Std.Refl.mk ;)
-Std__Refl__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (refl : Proof (forall X (a => r a a))) -> Proof (Std__Refl r).
+Std__Refl__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (refl : Proof (forall X (a => r a a))) -> Proof (Std__Refl X r).
 
 (; doc: A reflexive relation satisfies `r a a`. ;)
 (; //LEAN:Std.Refl.refl ;)
-Std__Refl__refl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Refl r)) -> (a : Elem X) -> Proof (r a a).
+Std__Refl__refl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Refl X r)) -> (a : Elem X) -> Proof (r a a).
 
 (; doc: `Symm r` means that the binary relation `r` is symmetric, that is, `r a b → r b a`. ;)
 (; //LEAN:Std.Symm ;)
-Std__Symm : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Std__Symm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; //LEAN:Std.Symm.mk ;)
-Std__Symm__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (symm : Proof (forall X (a => forall X (b => if (r a b) (r b a))))) -> Proof (Std__Symm r).
+Std__Symm__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (symm : Proof (forall X (a => forall X (b => if (r a b) (r b a))))) -> Proof (Std__Symm X r).
 
 (; doc: A symmetric relation satisfies `r a b → r b a`. ;)
 (; //LEAN:Std.Symm.symm ;)
-Std__Symm__symm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Symm r)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (r a b)) -> Proof (r b a).
+Std__Symm__symm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Symm X r)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (r a b)) -> Proof (r b a).
 
 (; doc: `Total X r` means that the binary relation `r` on `X` is total, that is, `r a b` or `r b a`. ;)
 (; //LEAN:Std.Total ;)
-Std__Total : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Std__Total : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; //LEAN:Std.Total.mk ;)
-Std__Total__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (total : Proof (forall X (a => forall X (b => or (r a b) (r b a))))) -> Proof (Std__Total r).
+Std__Total__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (total : Proof (forall X (a => forall X (b => or (r a b) (r b a))))) -> Proof (Std__Total X r).
 
 (; doc: A total relation satisfies `r a b` or `r b a`. ;)
 (; //LEAN:Std.Total.total ;)
-Std__Total__total : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Total r)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (r a b) (r b a)).
+Std__Total__total : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Total X r)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (r a b) (r b a)).
 
 (; doc: `Trichotomous r` says that `r` is trichotomous, that is, `¬ r a b → ¬ r b a → a = b`. ;)
 (; //LEAN:Std.Trichotomous ;)
-Std__Trichotomous : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Std__Trichotomous : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; //LEAN:Std.Trichotomous.mk ;)
-Std__Trichotomous__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (trichotomous : Proof (forall X (a => forall X (b => if (not (r a b)) (if (not (r b a)) (Eqt X a b)))))) -> Proof (Std__Trichotomous r).
+Std__Trichotomous__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (trichotomous : Proof (forall X (a => forall X (b => if (not (r a b)) (if (not (r b a)) (Eqt X a b)))))) -> Proof (Std__Trichotomous X r).
 
 (; //LEAN:Std.Trichotomous.rel_or_eq_or_rel_swap ;)
-Std__Trichotomous__rel_or_eq_or_rel_swap : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Trichotomous r)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (r a b) (or (Eqt X a b) (r b a))).
+Std__Trichotomous__rel_or_eq_or_rel_swap : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Trichotomous X r)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (r a b) (or (Eqt X a b) (r b a))).
 
 (; doc: An trichotomous relation `r` satisfies `¬ r a b → ¬ r b a → a = b`. ;)
 (; //LEAN:Std.Trichotomous.trichotomous ;)
-Std__Trichotomous__trichotomous : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Trichotomous r)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (not (r a b))) -> (h1 : Proof (not (r b a))) -> Proof (Eqt X a b).
+Std__Trichotomous__trichotomous : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Trichotomous X r)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (not (r a b))) -> (h1 : Proof (not (r b a))) -> Proof (Eqt X a b).
 
 (; doc: A _subsingleton_ is a type with at most one element. It is either empty or has a unique element.  All propositions are subsingletons because of proof irrelevance: false propositions are empty, and all proofs of a true proposition are equal to one another. Some non-propositional types are also subsingletons. ;)
 (; //LEAN:Subsingleton ;)
@@ -141,11 +141,11 @@ Subsingleton : (X : Set) -> Prop.
 
 (; doc: The empty relation is the relation on `α` which is always `False`. ;)
 (; //LEAN:emptyRelation ;)
-emptyRelation : (x : Elem X) -> (x1 : Elem X) -> Prop.
+emptyRelation : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: `inferInstance` synthesizes a value of any target type by typeclass inference. This function has the same type signature as the identity function, but the square brackets on the `[i : α]` argument means that it will attempt to construct this argument by typeclass inference. (This will fail if `α` is not a `class`.) Example: ``` #check (inferInstance : Inhabited Nat) -- Inhabited Nat  def foo : Inhabited (Nat × Nat) :=   inferInstance  example : foo.default = (default, default) :=   rfl ``` ;)
 (; //LEAN:inferInstance ;)
-inferInstance : Elem X.
+inferInstance : (X : Set) -> Elem X.
 
 (; //LEAN:mt ;)
 mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).

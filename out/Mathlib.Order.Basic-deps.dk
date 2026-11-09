@@ -9,11 +9,11 @@ Compl : (X : Set) -> Prop.
 
 (; doc: Set / lattice complement  Conventions for notations in identifiers:   * The recommended spelling of `ᶜ` in identifiers is `compl`. ;)
 (; //LEAN:Compl.compl ;)
-Compl__compl : (x : Elem X) -> Elem X.
+Compl__compl : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: Construct a `q` if some proposition `p` is decidable, and both the truth and falsity of `p` are sufficient to construct a `q`.  This is a synonym for `dite`, the dependent if-then-else operator. ;)
 (; //LEAN:Decidable.byCases ;)
-Decidable__byCases : (h1 : (Proof p -> q)) -> (h2 : (Proof (not p) -> q)) -> Elem q.
+Decidable__byCases : (p : Prop) -> (q : Set) -> (h1 : (Proof p -> q)) -> (h2 : (Proof (not p) -> q)) -> Elem q.
 
 (; //LEAN:Decidable.le_iff_lt_or_eq ;)
 Decidable__le_iff_lt_or_eq : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Leq a b) (or (Lt a b) (Eqt X a b))).
@@ -26,26 +26,26 @@ Decidable__lt_or_eq_of_le' : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : E
 
 (; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
 (; //LEAN:Eq.mpr ;)
-Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Function.Injective.linearOrder._proof_2 ;)
-Function__Injective__linearOrder___proof_2 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective f)) -> (le : Proof (forall X (x6 => forall X (y1 => iff (Leq (f x6) (f y1)) (Leq x6 y1))))) -> (lt : Proof (forall X (x5 => forall X (y => iff (Lt (f x5) (f y)) (Lt x5 y))))) -> (x3 : Elem X) -> (x4 : Elem X) -> Proof (or (Leq x3 x4) (Leq x4 x3)).
+Function__Injective__linearOrder___proof_2 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective X Y f)) -> (le : Proof (forall X (x6 => forall X (y1 => iff (Leq (f x6) (f y1)) (Leq x6 y1))))) -> (lt : Proof (forall X (x5 => forall X (y => iff (Lt (f x5) (f y)) (Lt x5 y))))) -> (x3 : Elem X) -> (x4 : Elem X) -> Proof (or (Leq x3 x4) (Leq x4 x3)).
 
 (; //LEAN:Function.Injective.linearOrder._proof_4 ;)
-Function__Injective__linearOrder___proof_4 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (_ : Proof (Min X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective f)) -> (le : Proof (forall X (x9 => forall X (y2 => iff (Leq (f x9) (f y2)) (Leq x9 y2))))) -> (lt : Proof (forall X (x8 => forall X (y1 => iff (Lt (f x8) (f y1)) (Lt x8 y1))))) -> (min : Proof (forall X (x7 => forall X (y => Eqt Y (f (Min__min x7 y)) (Min__min (f x7) (f y)))))) -> (x5 : Elem X) -> (x6 : Elem X) -> Proof (Eqt X (Min__min x5 x6) (ite (Leq x5 x6) x5 x6)).
+Function__Injective__linearOrder___proof_4 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (_ : Proof (Min X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective X Y f)) -> (le : Proof (forall X (x9 => forall X (y2 => iff (Leq (f x9) (f y2)) (Leq x9 y2))))) -> (lt : Proof (forall X (x8 => forall X (y1 => iff (Lt (f x8) (f y1)) (Lt x8 y1))))) -> (min : Proof (forall X (x7 => forall X (y => Eqt Y (f (Min__min X x7 y)) (Min__min Y (f x7) (f y)))))) -> (x5 : Elem X) -> (x6 : Elem X) -> Proof (Eqt X (Min__min X x5 x6) (ite X (Leq x5 x6) x5 x6)).
 
 (; //LEAN:Function.Injective.linearOrder._proof_6 ;)
-Function__Injective__linearOrder___proof_6 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (_ : Proof (Max X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective f)) -> (le : Proof (forall X (x9 => forall X (y2 => iff (Leq (f x9) (f y2)) (Leq x9 y2))))) -> (lt : Proof (forall X (x8 => forall X (y1 => iff (Lt (f x8) (f y1)) (Lt x8 y1))))) -> (max : Proof (forall X (x7 => forall X (y => Eqt Y (f (Max__max x7 y)) (Max__max (f x7) (f y)))))) -> (x5 : Elem X) -> (x6 : Elem X) -> Proof (Eqt X (Max__max x5 x6) (ite (Leq x5 x6) x6 x5)).
+Function__Injective__linearOrder___proof_6 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (_ : Proof (Max X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective X Y f)) -> (le : Proof (forall X (x9 => forall X (y2 => iff (Leq (f x9) (f y2)) (Leq x9 y2))))) -> (lt : Proof (forall X (x8 => forall X (y1 => iff (Lt (f x8) (f y1)) (Lt x8 y1))))) -> (max : Proof (forall X (x7 => forall X (y => Eqt Y (f (Max__max X x7 y)) (Max__max Y (f x7) (f y)))))) -> (x5 : Elem X) -> (x6 : Elem X) -> Proof (Eqt X (Max__max X x5 x6) (ite X (Leq x5 x6) x6 x5)).
 
 (; //LEAN:Function.Injective.linearOrder._proof_7 ;)
-Function__Injective__linearOrder___proof_7 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (_ : Proof (Ord X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective f)) -> (le : Proof (forall X (x10 => forall X (y2 => iff (Leq (f x10) (f y2)) (Leq x10 y2))))) -> (lt : Proof (forall X (x9 => forall X (y1 => iff (Lt (f x9) (f y1)) (Lt x9 y1))))) -> (compare : Proof (forall X (x8 => forall X (y => Eqt Ordering (Ord__compare (f x8) (f y)) (Ord__compare x8 y))))) -> (x6 : Elem X) -> (x7 : Elem X) -> Proof (Eqt Ordering (Ord__compare x6 x7) (compareOfLessAndEq x6 x7)).
+Function__Injective__linearOrder___proof_7 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (_ : Proof (Ord X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective X Y f)) -> (le : Proof (forall X (x10 => forall X (y2 => iff (Leq (f x10) (f y2)) (Leq x10 y2))))) -> (lt : Proof (forall X (x9 => forall X (y1 => iff (Lt (f x9) (f y1)) (Lt x9 y1))))) -> (compare : Proof (forall X (x8 => forall X (y => Eqt Ordering (Ord__compare Y (f x8) (f y)) (Ord__compare X x8 y))))) -> (x6 : Elem X) -> (x7 : Elem X) -> Proof (Eqt Ordering (Ord__compare X x6 x7) (compareOfLessAndEq X x6 x7)).
 
 (; //LEAN:Function.Injective.partialOrder._proof_1 ;)
-Function__Injective__partialOrder___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder Y)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective f)) -> (le : Proof (forall X (x6 => forall X (y1 => iff (Leq (f x6) (f y1)) (Leq x6 y1))))) -> (lt : Proof (forall X (x5 => forall X (y => iff (Lt (f x5) (f y)) (Lt x5 y))))) -> (x3 : Elem X) -> (x4 : Elem X) -> (h : Proof (Leq x3 x4)) -> (h1 : Proof (Leq x4 x3)) -> Proof (Eqt X x3 x4).
+Function__Injective__partialOrder___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder Y)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective X Y f)) -> (le : Proof (forall X (x6 => forall X (y1 => iff (Leq (f x6) (f y1)) (Leq x6 y1))))) -> (lt : Proof (forall X (x5 => forall X (y => iff (Lt (f x5) (f y)) (Lt x5 y))))) -> (x3 : Elem X) -> (x4 : Elem X) -> (h : Proof (Leq x3 x4)) -> (h1 : Proof (Leq x4 x3)) -> Proof (Eqt X x3 x4).
 
 (; //LEAN:Function.Injective.preorder._proof_1 ;)
 Function__Injective__preorder___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (f : (Elem X -> Y)) -> (le : Proof (forall X (x6 => forall X (y1 => iff (Leq (f x6) (f y1)) (Leq x6 y1))))) -> (lt : Proof (forall X (x5 => forall X (y => iff (Lt (f x5) (f y)) (Lt x5 y))))) -> (x3 : Elem X) -> (x4 : Elem X) -> Proof (iff (Lt x3 x4) (and (Leq x3 x4) (not (Leq x4 x3)))).
@@ -58,18 +58,18 @@ Function__Injective__preorder___proof_3 : (X : Set) -> (Y : Set) -> (_ : Proof (
 
 (; doc: Function composition, usually written with the infix operator `∘`. A new function is created from two existing functions, where one function's output is used as input to the other.  Examples:  * `Function.comp List.reverse (List.drop 2) [3, 2, 4, 1] = [1, 4]`  * `(List.reverse ∘ List.drop 2) [3, 2, 4, 1] = [1, 4]`  Conventions for notations in identifiers:   * The recommended spelling of `∘` in identifiers is `comp`. ;)
 (; //LEAN:Function.comp ;)
-Function__comp : (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
+Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
 
 (; doc: The constant function that ignores its argument.  If `a : α`, then `Function.const β a : β → α` is the “constant function with value `a`”. For all arguments `b : β`, `Function.const β a b = a`. It is often written directly as `fun _ => a`.  Examples:  * `Function.const Bool 10 true = 10`  * `Function.const Bool 10 false = 10`  * `Function.const String 10 "any string" = 10` ;)
 (; //LEAN:Function.const ;)
-Function__const : (Y : Set) -> (a : Elem X) -> (x : Elem Y) -> Elem X.
+Function__const : (X : Set) -> (Y : Set) -> (a : Elem X) -> (x : Elem Y) -> Elem X.
 
 (; //LEAN:Function.forall_update_iff ;)
-Function__forall_update_iff : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((a2 : Elem X) -> x a2)) -> (a : Elem X) -> (b : Elem (x a)) -> (p : ((a1 : Elem X) -> Elem (x a1) -> Prop)) -> Proof (iff (forall X (x2 => p x2 (Function__update f a b x2))) (and (p a b) (forall X (x3 => if (Neq x3 a) (p x3 (f x3)))))).
+Function__forall_update_iff : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((a2 : Elem X) -> x a2)) -> (a : Elem X) -> (b : Elem (x a)) -> (p : ((a1 : Elem X) -> Elem (x a1) -> Prop)) -> Proof (iff (forall X (x2 => p x2 (Function__update X x f a b x2))) (and (p a b) (forall X (x3 => if (Neq x3 a) (p x3 (f x3)))))).
 
 (; doc: Replacing the value of a function at a given point by a given value. ;)
 (; //LEAN:Function.update ;)
-Function__update : (f : ((a1 : Elem X) -> x a1)) -> (a' : Elem X) -> (v : Elem (x a')) -> (a : Elem X) -> Elem (x a).
+Function__update : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((a1 : Elem X) -> x a1)) -> (a' : Elem X) -> (v : Elem (x a')) -> (a : Elem X) -> Elem (x a).
 
 (; doc: Syntax typeclass for Heyting implication `⇨`. ;)
 (; //LEAN:HImp ;)
@@ -77,7 +77,7 @@ HImp : (X : Set) -> Prop.
 
 (; doc: Heyting implication `⇨`  Conventions for notations in identifiers:   * The recommended spelling of `⇨` in identifiers is `himp`. ;)
 (; //LEAN:HImp.himp ;)
-HImp__himp : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+HImp__himp : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: Syntax typeclass for Heyting negation `￢`.  The difference between `Compl` and `HNot` is that the former belongs to Heyting algebras, while the latter belongs to co-Heyting algebras. They are both pseudo-complements, but `compl` underestimates while `HNot` overestimates. In Boolean algebras, they are equal. See `hnot_eq_compl`. ;)
 (; //LEAN:HNot ;)
@@ -85,7 +85,7 @@ HNot : (X : Set) -> Prop.
 
 (; doc: Heyting negation `￢`  Conventions for notations in identifiers:   * The recommended spelling of `￢` in identifiers is `hnot`. ;)
 (; //LEAN:HNot.hnot ;)
-HNot__hnot : (x : Elem X) -> Elem X.
+HNot__hnot : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: **Alias** of `not_congr`. ;)
 (; //LEAN:Iff.not ;)
@@ -124,10 +124,10 @@ Lean__TrailingParserDescr : Set.
 LinearOrder : (X : Set) -> Prop.
 
 (; //LEAN:LinearOrder.lift'._proof_1 ;)
-LinearOrder__lift'___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (f : (Elem X -> Y)) -> (x1 : Elem X) -> (x2 : Elem X) -> Proof (Eqt Y (f (ite (Leq (f x1) (f x2)) x2 x1)) (Max__max (f x1) (f x2))).
+LinearOrder__lift'___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (f : (Elem X -> Y)) -> (x1 : Elem X) -> (x2 : Elem X) -> Proof (Eqt Y (f (ite X (Leq (f x1) (f x2)) x2 x1)) (Max__max Y (f x1) (f x2))).
 
 (; //LEAN:LinearOrder.lift'._proof_2 ;)
-LinearOrder__lift'___proof_2 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (f : (Elem X -> Y)) -> (x1 : Elem X) -> (x2 : Elem X) -> Proof (Eqt Y (f (ite (Leq (f x1) (f x2)) x1 x2)) (Min__min (f x1) (f x2))).
+LinearOrder__lift'___proof_2 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (f : (Elem X -> Y)) -> (x1 : Elem X) -> (x2 : Elem X) -> Proof (Eqt Y (f (ite X (Leq (f x1) (f x2)) x1 x2)) (Min__min Y (f x1) (f x2))).
 
 (; //LEAN:LinearOrder.lift._proof_1 ;)
 LinearOrder__lift___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (f : (Elem X -> Y)) -> (x1 : Elem X) -> (x2 : Elem X) -> Proof (iff (Leq (f x1) (f x2)) (Leq (f x1) (f x2))).
@@ -136,25 +136,25 @@ LinearOrder__lift___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder 
 LinearOrder__lift___proof_2 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (f : (Elem X -> Y)) -> (x1 : Elem X) -> (x2 : Elem X) -> Proof (iff (Lt (f x1) (f x2)) (Lt (f x1) (f x2))).
 
 (; //LEAN:LinearOrder.lift._proof_3 ;)
-LinearOrder__lift___proof_3 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (f : (Elem X -> Y)) -> (x1 : Elem X) -> (x2 : Elem X) -> Proof (Eqt Ordering (Ord__compare (f x1) (f x2)) (Ord__compare (f x1) (f x2))).
+LinearOrder__lift___proof_3 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (f : (Elem X -> Y)) -> (x1 : Elem X) -> (x2 : Elem X) -> Proof (Eqt Ordering (Ord__compare Y (f x1) (f x2)) (Ord__compare Y (f x1) (f x2))).
 
 (; //LEAN:LinearOrder.liftWithOrd._proof_1 ;)
-LinearOrder__liftWithOrd___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (Ord X)) -> (f : (Elem X -> Y)) -> (compare_f : Proof (forall X (a => forall X (b => Eqt Ordering (Ord__compare a b) (Ord__compare (f a) (f b)))))) -> (x2 : Elem X) -> (x3 : Elem X) -> Proof (Eqt Ordering (Ord__compare (f x2) (f x3)) (Ord__compare x2 x3)).
+LinearOrder__liftWithOrd___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (Ord X)) -> (f : (Elem X -> Y)) -> (compare_f : Proof (forall X (a => forall X (b => Eqt Ordering (Ord__compare X a b) (Ord__compare Y (f a) (f b)))))) -> (x2 : Elem X) -> (x3 : Elem X) -> Proof (Eqt Ordering (Ord__compare Y (f x2) (f x3)) (Ord__compare X x2 x3)).
 
 (; //LEAN:LinearOrder.mk ;)
-LinearOrder__mk : (le_total : Proof (forall X (a3 => forall X (b3 => or (Leq a3 b3) (Leq b3 a3))))) -> (toDecidableLE : Proof (DecidableLE X)) -> (toDecidableEq : Proof (DecidableEq X)) -> (toDecidableLT : Proof (DecidableLT X)) -> (min_def : Proof (autoParam (forall X (a2 => forall X (b2 => Eqt X (Min__min a2 b2) (ite (Leq a2 b2) a2 b2)))) LinearOrder__min_def___autoParam)) -> (max_def : Proof (autoParam (forall X (a1 => forall X (b1 => Eqt X (Max__max a1 b1) (ite (Leq a1 b1) b1 a1)))) LinearOrder__max_def___autoParam)) -> (compare_eq_compareOfLessAndEq : Proof (autoParam (forall X (a => forall X (b => Eqt Ordering (Ord__compare a b) (compareOfLessAndEq a b)))) LinearOrder__compare_eq_compareOfLessAndEq___autoParam)) -> Proof (LinearOrder X).
+LinearOrder__mk : (X : Set) -> (le_total : Proof (forall X (a3 => forall X (b3 => or (Leq a3 b3) (Leq b3 a3))))) -> (toDecidableLE : Proof (DecidableLE X)) -> (toDecidableEq : Proof (DecidableEq X)) -> (toDecidableLT : Proof (DecidableLT X)) -> (min_def : Proof (autoParam (forall X (a2 => forall X (b2 => Eqt X (Min__min X a2 b2) (ite X (Leq a2 b2) a2 b2)))) LinearOrder__min_def___autoParam)) -> (max_def : Proof (autoParam (forall X (a1 => forall X (b1 => Eqt X (Max__max X a1 b1) (ite X (Leq a1 b1) b1 a1)))) LinearOrder__max_def___autoParam)) -> (compare_eq_compareOfLessAndEq : Proof (autoParam (forall X (a => forall X (b => Eqt Ordering (Ord__compare X a b) (compareOfLessAndEq X a b)))) LinearOrder__compare_eq_compareOfLessAndEq___autoParam)) -> Proof (LinearOrder X).
 
 (; //LEAN:LinearOrder.ofSubsingleton._proof_2 ;)
-LinearOrder__ofSubsingleton___proof_2 : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (ite ((x => x1 => True) a b) a b) (ite True a b)).
+LinearOrder__ofSubsingleton___proof_2 : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (ite X ((x => x1 => True) a b) a b) (ite X True a b)).
 
 (; //LEAN:LinearOrder.ofSubsingleton._proof_3 ;)
-LinearOrder__ofSubsingleton___proof_3 : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (ite ((x => x1 => True) a b) b a) (ite True b a)).
+LinearOrder__ofSubsingleton___proof_3 : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (ite X ((x => x1 => True) a b) b a) (ite X True b a)).
 
 (; //LEAN:LinearOrder.ofSubsingleton._proof_4 ;)
-LinearOrder__ofSubsingleton___proof_4 : (X : Set) -> (_ : Proof (Subsingleton X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt Ordering (compareOfLessAndEq a b) (compareOfLessAndEq a b)).
+LinearOrder__ofSubsingleton___proof_4 : (X : Set) -> (_ : Proof (Subsingleton X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt Ordering (compareOfLessAndEq X a b) (compareOfLessAndEq X a b)).
 
 (; //LEAN:LinearOrder.toPartialOrder ;)
-LinearOrder__toPartialOrder : Proof (PartialOrder X).
+LinearOrder__toPartialOrder : (X : Set) -> Proof (PartialOrder X).
 
 (; doc: An extension for `gcongr_forward`. ;)
 (; //LEAN:Mathlib.Tactic.GCongr.ForwardExt ;)
@@ -162,11 +162,11 @@ Mathlib__Tactic__GCongr__ForwardExt : Set.
 
 (; doc: Returns the greater of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `max` in identifiers is `max`.   * The recommended spelling of `⊔` in identifiers is `sup` (`⊔` is the preferred notation for `max` when the type is not linearly ordered.). ;)
 (; //LEAN:Max.max ;)
-Max__max : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+Max__max : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: Returns the lesser of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `min` in identifiers is `min`.   * The recommended spelling of `⊓` in identifiers is `inf` (`⊓` is the preferred notation for `min` when the type is not linearly ordered.). ;)
 (; //LEAN:Min.min ;)
-Min__min : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+Min__min : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; //LEAN:Or.imp ;)
 Or__imp : (a : Prop) -> (c : Prop) -> (b : Prop) -> (d : Prop) -> (f : Proof (if a c)) -> (g : Proof (if b d)) -> (h : Proof (or a b)) -> Proof (or c d).
@@ -179,7 +179,7 @@ Or__symm : (a : Prop) -> (b : Prop) -> (h : Proof (or a b)) -> Proof (or b a).
 
 (; doc: Compare two elements in `α` using the comparator contained in an `[Ord α]` instance. ;)
 (; //LEAN:Ord.compare ;)
-Ord__compare : (x : Elem X) -> (x1 : Elem X) -> Elem Ordering.
+Ord__compare : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem Ordering.
 
 (; doc: The result of a comparison according to a total order.  The relationship between the compared items may be: * `Ordering.lt`: less than * `Ordering.eq`: equal * `Ordering.gt`: greater than ;)
 (; //LEAN:Ordering ;)
@@ -204,10 +204,10 @@ PartialOrder__lift___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrde
 PartialOrder__lift___proof_2 : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder Y)) -> (f : (Elem X -> Y)) -> (x1 : Elem X) -> (x2 : Elem X) -> Proof (iff (Lt (f x1) (f x2)) (Lt (f x1) (f x2))).
 
 (; //LEAN:PartialOrder.mk ;)
-PartialOrder__mk : (le_antisymm : Proof (forall X (a => forall X (b => if (Leq a b) (if (Leq b a) (Eqt X a b)))))) -> Proof (PartialOrder X).
+PartialOrder__mk : (X : Set) -> (le_antisymm : Proof (forall X (a => forall X (b => if (Leq a b) (if (Leq b a) (Eqt X a b)))))) -> Proof (PartialOrder X).
 
 (; //LEAN:PartialOrder.toPreorder ;)
-PartialOrder__toPreorder : Proof (Preorder X).
+PartialOrder__toPreorder : (X : Set) -> Proof (Preorder X).
 
 (; doc: A preorder is a reflexive, transitive relation `≤`. In a preorder, `a < b` means `a ≤ b ∧ ¬b ≤ a`, and `<` is defined this way by default. You can override this definition to set a better def-eq. ;)
 (; //LEAN:Preorder ;)
@@ -220,10 +220,10 @@ Preorder__lift___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) ->
 Preorder__lift___proof_2 : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (x1 : Elem X) -> (x2 : Elem X) -> Proof (iff (Lt (f x1) (f x2)) (Lt (f x1) (f x2))).
 
 (; //LEAN:Preorder.mk ;)
-Preorder__mk : (le_refl : Proof (forall X (a2 => Leq a2 a2))) -> (le_trans : Proof (forall X (a1 => forall X (b1 => forall X (c => if (Leq a1 b1) (if (Leq b1 c) (Leq a1 c))))))) -> (lt_iff_le_not_ge : Proof (autoParam (forall X (a => forall X (b => iff (Lt a b) (and (Leq a b) (not (Leq b a)))))) Preorder__lt_iff_le_not_ge___autoParam)) -> Proof (Preorder X).
+Preorder__mk : (X : Set) -> (le_refl : Proof (forall X (a2 => Leq a2 a2))) -> (le_trans : Proof (forall X (a1 => forall X (b1 => forall X (c => if (Leq a1 b1) (if (Leq b1 c) (Leq a1 c))))))) -> (lt_iff_le_not_ge : Proof (autoParam (forall X (a => forall X (b => iff (Lt a b) (and (Leq a b) (not (Leq b a)))))) Preorder__lt_iff_le_not_ge___autoParam)) -> Proof (Preorder X).
 
 (; //LEAN:Preorder.toLE ;)
-Preorder__toLE : Proof (LE X).
+Preorder__toLE : (X : Set) -> Proof (LE X).
 
 (; doc: The product type, usually written `α × β`. Product types are also called pair or tuple types. Elements of this type are pairs in which the first element is an `α` and the second element is a `β`.  Products nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.  Conventions for notations in identifiers:   * The recommended spelling of `×` in identifiers is `Prod`. ;)
 (; //LEAN:Prod ;)
@@ -231,19 +231,19 @@ Prod : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: The first element of a pair. ;)
 (; //LEAN:Prod.fst ;)
-Prod__fst : (self : Elem (Prod X Y)) -> Elem X.
+Prod__fst : (X : Set) -> (Y : Set) -> (self : Elem (Prod X Y)) -> Elem X.
 
 (; doc: Constructs a pair. This is usually written `(x, y)` instead of `Prod.mk x y`.  Conventions for notations in identifiers:   * The recommended spelling of `(a, b)` in identifiers is `mk`. ;)
 (; //LEAN:Prod.mk ;)
-Prod__mk : (fst : Elem X) -> (snd : Elem Y) -> Elem (Prod X Y).
+Prod__mk : (X : Set) -> (Y : Set) -> (fst : Elem X) -> (snd : Elem Y) -> Elem (Prod X Y).
 
 (; doc: The second element of a pair. ;)
 (; //LEAN:Prod.snd ;)
-Prod__snd : (self : Elem (Prod X Y)) -> Elem Y.
+Prod__snd : (X : Set) -> (Y : Set) -> (self : Elem (Prod X Y)) -> Elem Y.
 
 (; doc: Swaps the elements in a pair.  Examples: * `(1, 2).swap = (2, 1)` * `("orange", -87).swap = (-87, "orange")` ;)
 (; //LEAN:Prod.swap ;)
-Prod__swap : (x : Elem (Prod X Y)) -> Elem (Prod Y X).
+Prod__swap : (X : Set) -> (Y : Set) -> (x : Elem (Prod X Y)) -> Elem (Prod Y X).
 
 (; doc: Notation type class for the set difference `\`. ;)
 (; //LEAN:SDiff ;)
@@ -251,30 +251,30 @@ SDiff : (X : Set) -> Prop.
 
 (; doc: `a \ b` is the set difference of `a` and `b`, consisting of all elements in `a` that are not in `b`.  Conventions for notations in identifiers:   * The recommended spelling of `\` in identifiers is `sdiff`. ;)
 (; //LEAN:SDiff.sdiff ;)
-SDiff__sdiff : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+SDiff__sdiff : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: `Associative op` indicates `op` is an associative operation, i.e. `(a ∘ b) ∘ c = a ∘ (b ∘ c)`. ;)
 (; //LEAN:Std.Associative ;)
-Std__Associative : (op : (Elem X -> Elem X -> X)) -> Prop.
+Std__Associative : (X : Set) -> (op : (Elem X -> Elem X -> X)) -> Prop.
 
 (; //LEAN:Std.Associative.mk ;)
-Std__Associative__mk : (X : Set) -> (op : (Elem X -> Elem X -> X)) -> (assoc : Proof (forall X (a => forall X (b => forall X (c => Eqt X (op (op a b) c) (op a (op b c))))))) -> Proof (Std__Associative op).
+Std__Associative__mk : (X : Set) -> (op : (Elem X -> Elem X -> X)) -> (assoc : Proof (forall X (a => forall X (b => forall X (c => Eqt X (op (op a b) c) (op a (op b c))))))) -> Proof (Std__Associative X op).
 
 (; doc: `Commutative op` says that `op` is a commutative operation, i.e. `a ∘ b = b ∘ a`. ;)
 (; //LEAN:Std.Commutative ;)
-Std__Commutative : (op : (Elem X -> Elem X -> X)) -> Prop.
+Std__Commutative : (X : Set) -> (op : (Elem X -> Elem X -> X)) -> Prop.
 
 (; doc: A commutative operation satisfies `a ∘ b = b ∘ a`. ;)
 (; //LEAN:Std.Commutative.comm ;)
-Std__Commutative__comm : (X : Set) -> (op : (Elem X -> Elem X -> X)) -> (_ : Proof (Std__Commutative op)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (op a b) (op b a)).
+Std__Commutative__comm : (X : Set) -> (op : (Elem X -> Elem X -> X)) -> (_ : Proof (Std__Commutative X op)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (op a b) (op b a)).
 
 (; doc: `Symm r` means that the binary relation `r` is symmetric, that is, `r a b → r b a`. ;)
 (; //LEAN:Std.Symm ;)
-Std__Symm : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Std__Symm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; doc: `Subrelation q r` means that `q ⊆ r` or `∀ x y, q x y → r x y`. It is the analogue of the subset relation on relations. ;)
 (; //LEAN:Subrelation ;)
-Subrelation : (q : (Elem X -> Elem X -> Prop)) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Subrelation : (X : Set) -> (q : (Elem X -> Elem X -> Prop)) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; doc: A _subsingleton_ is a type with at most one element. It is either empty or has a unique element.  All propositions are subsingletons because of proof irrelevance: false propositions are empty, and all proofs of a true proposition are equal to one another. Some non-propositional types are also subsingletons. ;)
 (; //LEAN:Subsingleton ;)
@@ -286,7 +286,14 @@ Subsingleton__elim : (X : Set) -> (_ : Proof (Subsingleton X)) -> (a : Elem X) -
 
 (; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
 (; //LEAN:Subtype ;)
-Subtype : (p : (Elem X -> Prop)) -> Set.
+Subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Set.
+
+(; //LEAN:Subtype.mk ;)
+Subtype__mk : (X : Set) -> (p : (Elem X -> Prop)) -> (val : Elem X) -> (property : Proof (p val)) -> Elem (Subtype X (x => p x)).
+
+(; doc: The value in the underlying type that satisfies the predicate. ;)
+(; //LEAN:Subtype.val ;)
+Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x => p x))) -> Elem X.
 
 (; doc: The disjoint union of types `α` and `β`, ordinarily written `α ⊕ β`.  An element of `α ⊕ β` is either an `a : α` wrapped in `Sum.inl` or a `b : β` wrapped in `Sum.inr`. `α ⊕ β` is not equivalent to the set-theoretic union of `α` and `β` because its values include an indication of which of the two types was chosen. The union of a singleton set with itself contains one element, while `Unit ⊕ Unit` contains distinct values `inl ()` and `inr ()`. ;)
 (; //LEAN:Sum ;)
@@ -294,10 +301,10 @@ Sum : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: Case analysis for sums that applies the appropriate function `f` or `g` after checking which constructor is present. ;)
 (; //LEAN:Sum.elim ;)
-Sum__elim : (f : (Elem X -> Z)) -> (g : (Elem Y -> Z)) -> (x : Elem (Sum X Y)) -> Elem Z.
+Sum__elim : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Z)) -> (g : (Elem Y -> Z)) -> (x : Elem (Sum X Y)) -> Elem Z.
 
 (; //LEAN:Sum.forall ;)
-Sum__forall : (X : Set) -> (Y : Set) -> (p : (Elem (Sum X Y) -> Prop)) -> Proof (iff (forall (Sum X Y) (x => p x)) (and (forall X (a => p (Sum__inl a))) (forall Y (b => p (Sum__inr b))))).
+Sum__forall : (X : Set) -> (Y : Set) -> (p : (Elem (Sum X Y) -> Prop)) -> Proof (iff (forall (Sum X Y) (x => p x)) (and (forall X (a => p (Sum__inl X Y a))) (forall Y (b => p (Sum__inr X Y b))))).
 
 (; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:True ;)
@@ -317,7 +324,7 @@ and_iff_right : (a : Prop) -> (b : Prop) -> (ha : Proof a) -> Proof (iff (and a 
 
 (; doc: Uses decidable less-than and equality relations to find an `Ordering`.  In particular, if `x < y` then the result is `Ordering.lt`. If `x = y` then the result is `Ordering.eq`. Otherwise, it is `Ordering.gt`.  `compareOfLessAndBEq` uses `BEq` instead of `DecidableEq`. ;)
 (; //LEAN:compareOfLessAndEq ;)
-compareOfLessAndEq : (x : Elem X) -> (y : Elem X) -> Elem Ordering.
+compareOfLessAndEq : (X : Set) -> (x : Elem X) -> (y : Elem X) -> Elem Ordering.
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
@@ -325,18 +332,18 @@ congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem
 
 (; doc: Equality is decidable if `≤` is. ;)
 (; //LEAN:decidableEqOfDecidableLE ;)
-decidableEqOfDecidableLE : Proof (DecidableEq X).
+decidableEqOfDecidableLE : (X : Set) -> Proof (DecidableEq X).
 
 (; doc: `<` is decidable if `≤` is. ;)
 (; //LEAN:decidableLTOfDecidableLE ;)
-decidableLTOfDecidableLE : Proof (DecidableLT X).
+decidableLTOfDecidableLE : (X : Set) -> Proof (DecidableLT X).
 
 (; //LEAN:eq_comm ;)
 eq_comm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X a b) (Eqt X b a)).
 
 (; doc: `flip f a b` is `f b a`. It is useful for "point-free" programming, since it can sometimes be used to avoid introducing variables. For example, `(·<·)` is the less-than relation, and `flip (·<·)` is the greater-than relation. ;)
 (; //LEAN:flip ;)
-flip : (f : (Elem X -> Elem Y -> X1)) -> (x : Elem Y) -> (x1 : Elem X) -> Elem X1.
+flip : (X : Set) -> (Y : Set) -> (X1 : Set) -> (f : (Elem X -> Elem Y -> X1)) -> (x : Elem Y) -> (x1 : Elem X) -> Elem X1.
 
 (; //LEAN:ge_antisymm ;)
 ge_antisymm : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq b a)) -> (h1 : Proof (Leq a b)) -> Proof (Eqt X a b).
@@ -352,14 +359,14 @@ gt_trans : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X)
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
-id : (a : Elem X) -> Elem X.
+id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:instDecidableTrue ;)
 instDecidableTrue : Proof (Decidable True).
 
 (; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:ite ;)
-ite : (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
+ite : (X : Set) -> (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
 
 (; //LEAN:le_antisymm ;)
 le_antisymm : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq b a)) -> Proof (Eqt X a b).
@@ -501,7 +508,7 @@ or_congr : (a : Prop) -> (c : Prop) -> (b : Prop) -> (d : Prop) -> (h : Proof (i
 rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
 
 (; //LEAN:symm ;)
-symm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (Std__Symm r)) -> (h1 : Proof (r a b)) -> Proof (r b a).
+symm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (Std__Symm X r)) -> (h1 : Proof (r a b)) -> Proof (r b a).
 
 (; doc: `True` is true, and `True.intro` (or more commonly, `trivial`) is the proof. ;)
 (; //LEAN:trivial ;)

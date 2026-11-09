@@ -25,27 +25,27 @@ Finset : (X : Set) -> Set.
 
 (; doc: The finset $[a, b]$ of elements `x` such that `a ≤ x` and `x ≤ b`. Basically `Set.Icc a b` as a finset. ;)
 (; //LEAN:Finset.Icc ;)
-Finset__Icc : (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
+Finset__Icc : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
 
 (; doc: The finset $[a, b)$ of elements `x` such that `a ≤ x` and `x < b`. Basically `Set.Ico a b` as a finset. ;)
 (; //LEAN:Finset.Ico ;)
-Finset__Ico : (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
+Finset__Ico : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
 
 (; doc: The finset $(a, b]$ of elements `x` such that `a < x` and `x ≤ b`. Basically `Set.Ioc a b` as a finset. ;)
 (; //LEAN:Finset.Ioc ;)
-Finset__Ioc : (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
+Finset__Ioc : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
 
 (; doc: `s.card` is the number of elements of `s`, aka its cardinality.  The notation `#s` can be accessed in the `Finset` locale. ;)
 (; //LEAN:Finset.card ;)
-Finset__card : (s : Elem (Finset X)) -> Elem Nat.
+Finset__card : (X : Set) -> (s : Elem (Finset X)) -> Elem Nat.
 
 (; doc: `Finset.filter p s` is the set of elements of `s` that satisfy `p`.  For example, one can use `s.filter (· ∈ t)` to get the intersection of `s` with `t : Set α` as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available). ;)
 (; //LEAN:Finset.filter ;)
-Finset__filter : (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Elem (Finset X).
+Finset__filter : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Elem (Finset X).
 
 (; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.prod ;)
-Finset__prod : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
 
 (; doc: `range n` is the set of natural numbers less than `n`. ;)
 (; //LEAN:Finset.range ;)
@@ -53,11 +53,11 @@ Finset__range : (n : Elem Nat) -> Elem (Finset Nat).
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
-Finset__sum : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
 
 (; doc: `univ` is the universal finite set of type `Finset α` implied from the assumption `Fintype α`. ;)
 (; //LEAN:Finset.univ ;)
-Finset__univ : Elem (Finset X).
+Finset__univ : (X : Set) -> Elem (Finset X).
 
 (; doc: `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that `f x = 0` for all but finitely many `x`. ;)
 (; //LEAN:Finsupp ;)
@@ -65,29 +65,29 @@ Finsupp : (X : Set) -> (M : Set) -> Set.
 
 (; doc: `erase a f` is the finitely supported function equal to `f` except at `a` where it is equal to `0`. If `a` is not in the support of `f` then `erase a f = f`. ;)
 (; //LEAN:Finsupp.erase ;)
-Finsupp__erase : (a : Elem X) -> (f : Elem (Finsupp X M)) -> Elem (Finsupp X M).
+Finsupp__erase : (X : Set) -> (M : Set) -> (a : Elem X) -> (f : Elem (Finsupp X M)) -> Elem (Finsupp X M).
 
 (; //LEAN:Finsupp.mem_support_iff ;)
-Finsupp__mem_support_iff : (X : Set) -> (M : Set) -> (f : Elem (Finsupp X M)) -> (a : Elem X) -> Proof (iff (Membership__mem (Finsupp__support f) a) (Neq (f a) 0)).
+Finsupp__mem_support_iff : (X : Set) -> (M : Set) -> (f : Elem (Finsupp X M)) -> (a : Elem X) -> Proof (iff (Membership__mem X (Finset X) (Finsupp__support X M f) a) (Neq (f a) 0)).
 
 (; //LEAN:Finsupp.notMem_support_iff ;)
-Finsupp__notMem_support_iff : (X : Set) -> (M : Set) -> (f : Elem (Finsupp X M)) -> (a : Elem X) -> Proof (iff (not (Membership__mem (Finsupp__support f) a)) (Eqt M (f a) 0)).
+Finsupp__notMem_support_iff : (X : Set) -> (M : Set) -> (f : Elem (Finsupp X M)) -> (a : Elem X) -> Proof (iff (not (Membership__mem X (Finset X) (Finsupp__support X M f) a)) (Eqt M (f a) 0)).
 
 (; doc: `prod f g` is the product of `g a (f a)` over the support of `f`. ;)
 (; //LEAN:Finsupp.prod ;)
-Finsupp__prod : (f : Elem (Finsupp X M)) -> (g : (Elem X -> Elem M -> N)) -> Elem N.
+Finsupp__prod : (X : Set) -> (M : Set) -> (N : Set) -> (f : Elem (Finsupp X M)) -> (g : (Elem X -> Elem M -> N)) -> Elem N.
 
 (; doc: `single a b` is the finitely supported function with value `b` at `a` and zero otherwise. ;)
 (; //LEAN:Finsupp.single ;)
-Finsupp__single : (a : Elem X) -> (b : Elem M) -> Elem (Finsupp X M).
+Finsupp__single : (X : Set) -> (M : Set) -> (a : Elem X) -> (b : Elem M) -> Elem (Finsupp X M).
 
 (; doc: The support of a finitely supported function (aka `Finsupp`). ;)
 (; //LEAN:Finsupp.support ;)
-Finsupp__support : (self : Elem (Finsupp X M)) -> Elem (Finset X).
+Finsupp__support : (X : Set) -> (M : Set) -> (self : Elem (Finsupp X M)) -> Elem (Finset X).
 
 (; doc: Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation from `β` to `α`. ;)
 (; //LEAN:Function.onFun ;)
-Function__onFun : (f : (Elem Y -> Elem Y -> X1)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> (x1 : Elem X) -> Elem X1.
+Function__onFun : (X : Set) -> (Y : Set) -> (X1 : Set) -> (f : (Elem Y -> Elem Y -> X1)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> (x1 : Elem X) -> Elem X1.
 
 (; //LEAN:Iff.trans ;)
 Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
@@ -96,17 +96,21 @@ Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> 
 (; //LEAN:LT.lt.ne' ;)
 LT__lt__ne' : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt b a)) -> Proof (Neq a b).
 
+(; doc: Linked lists: ordered lists, in which each element has a reference to the next element.  Most operations on linked lists take time proportional to the length of the list, because each element must be traversed to find the next element.  `List α` is isomorphic to `Array α`, but they are useful for different things: * `List α` is easier for reasoning, and `Array α` is modeled as a wrapper around `List α`. * `List α` works well as a persistent data structure, when many copies of the tail are shared. When   the value is not shared, `Array α` will have better performance because it can do destructive   updates. ;)
+(; //LEAN:List ;)
+List : (X : Set) -> Set.
+
 (; doc: Returns the greater of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `max` in identifiers is `max`.   * The recommended spelling of `⊔` in identifiers is `sup` (`⊔` is the preferred notation for `max` when the type is not linearly ordered.). ;)
 (; //LEAN:Max.max ;)
-Max__max : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+Max__max : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
-Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
 
 (; doc: Returns the lesser of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `min` in identifiers is `min`.   * The recommended spelling of `⊓` in identifiers is `inf` (`⊓` is the preferred notation for `min` when the type is not linearly ordered.). ;)
 (; //LEAN:Min.min ;)
-Min__min : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+Min__min : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: `m` and `n` are coprime, or relatively prime, if their `gcd` is 1. ;)
 (; //LEAN:Nat.Coprime ;)
@@ -125,7 +129,7 @@ Nat__div_dvd_of_dvd : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (divide n m
 Nat__div_le_self : (n : Elem Nat) -> (k : Elem Nat) -> Proof (Leq (div n k) n).
 
 (; //LEAN:Nat.dvd_of_mem_primeFactorsList ;)
-Nat__dvd_of_mem_primeFactorsList : (n : Elem Nat) -> (p : Elem Nat) -> (h : Proof (Membership__mem (Nat__primeFactorsList n) p)) -> Proof (divide p n).
+Nat__dvd_of_mem_primeFactorsList : (n : Elem Nat) -> (p : Elem Nat) -> (h : Proof (Membership__mem Nat (List Nat) (Nat__primeFactorsList n) p)) -> Proof (divide p n).
 
 (; doc: `n.factorization` is the finitely supported function `ℕ →₀ ℕ` mapping each prime factor of `n` to its multiplicity in `n`. ;)
 (; //LEAN:Nat.factorization ;)
@@ -139,10 +143,10 @@ Nat__lcm : (m : Elem Nat) -> (n : Elem Nat) -> Elem Nat.
 Nat__le_of_dvd : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Lt 0 n)) -> (h1 : Proof (divide m n)) -> Proof (Leq m n).
 
 (; //LEAN:Nat.le_of_mem_primeFactors ;)
-Nat__le_of_mem_primeFactors : (n : Elem Nat) -> (p : Elem Nat) -> (h : Proof (Membership__mem (Nat__primeFactors n) p)) -> Proof (Leq p n).
+Nat__le_of_mem_primeFactors : (n : Elem Nat) -> (p : Elem Nat) -> (h : Proof (Membership__mem Nat (Finset Nat) (Nat__primeFactors n) p)) -> Proof (Leq p n).
 
 (; //LEAN:Nat.mem_primeFactors_iff_mem_primeFactorsList ;)
-Nat__mem_primeFactors_iff_mem_primeFactorsList : (n : Elem Nat) -> (p : Elem Nat) -> Proof (iff (Membership__mem (Nat__primeFactors n) p) (Membership__mem (Nat__primeFactorsList n) p)).
+Nat__mem_primeFactors_iff_mem_primeFactorsList : (n : Elem Nat) -> (p : Elem Nat) -> Proof (iff (Membership__mem Nat (Finset Nat) (Nat__primeFactors n) p) (Membership__mem Nat (List Nat) (Nat__primeFactorsList n) p)).
 
 (; //LEAN:Nat.mul_div_cancel' ;)
 Nat__mul_div_cancel' : (n : Elem Nat) -> (m : Elem Nat) -> (H : Proof (divide n m)) -> Proof (Eq (times n (div m n)) m).
@@ -159,26 +163,34 @@ Nat__primeFactors : (n : Elem Nat) -> Elem (Finset Nat).
 Nat__primeFactorsList : (x : Elem Nat) -> Elem (List Nat).
 
 (; //LEAN:Nat.prod_factorization_pow_eq_self ;)
-Nat__prod_factorization_pow_eq_self : (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (Eq (Finsupp__prod (Nat__factorization n) (x => x1 => pow x x1)) n).
+Nat__prod_factorization_pow_eq_self : (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (Eq (Finsupp__prod Nat Nat Nat (Nat__factorization n) (x => x1 => pow x x1)) n).
 
 (; //LEAN:Ne.bot_lt ;)
-Ne__bot_lt : (X : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (OrderBot X)) -> (a : Elem X) -> (h : Proof (Neq a Bot__bot)) -> Proof (Lt Bot__bot a).
+Ne__bot_lt : (X : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (OrderBot X)) -> (a : Elem X) -> (h : Proof (Neq a (Bot__bot X))) -> Proof (Lt (Bot__bot X) a).
 
 (; doc: A relation `r` holds pairwise if `r i j` for all `i ≠ j`. ;)
 (; //LEAN:Pairwise ;)
-Pairwise : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Pairwise : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; doc: `Icc a b` is the left-closed right-closed interval $[a, b]$. ;)
 (; //LEAN:Set.Icc ;)
-Set__Icc : (a : Elem X) -> (b : Elem X) -> Elem (powerset X).
+Set__Icc : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (powerset X).
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
 
 (; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
 (; //LEAN:Set.ofPred ;)
-Set__ofPred : (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+
+(; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
+(; //LEAN:Subtype ;)
+Subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Set.
+
+(; doc: The value in the underlying type that satisfies the predicate. ;)
+(; //LEAN:Subtype.val ;)
+Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x => p x))) -> Elem X.
 
 (; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:True ;)

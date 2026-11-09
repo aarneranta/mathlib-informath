@@ -8,30 +8,30 @@ OrderDual__toDual__app : (a1 : Elem X) -> Elem (OrderDual X).
 
 (; doc: A function `f` is antitone if `a ≤ b` implies `f b ≤ f a`. ;)
 (; //LEAN:Antitone ;)
-Antitone : (f : (Elem X -> Y)) -> Prop.
+Antitone : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: **Alias** of the reverse direction of `monotone_comp_ofDual_iff`. ;)
 (; //LEAN:Antitone.dual_left ;)
-Antitone__dual_left : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (h : Proof (Antitone f)) -> Proof (Monotone (Function__comp f OrderDual__ofDual)).
+Antitone__dual_left : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (h : Proof (Antitone X Y f)) -> Proof (Monotone (OrderDual X) Y (Function__comp (OrderDual X) X Y f (OrderDual__ofDual X))).
 
 (; doc: **Alias** of the reverse direction of `monotone_toDual_comp_iff`. ;)
 (; //LEAN:Antitone.dual_right ;)
-Antitone__dual_right : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (h : Proof (Antitone f)) -> Proof (Monotone (Function__comp OrderDual__toDual f)).
+Antitone__dual_right : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (h : Proof (Antitone X Y f)) -> Proof (Monotone X (OrderDual Y) (Function__comp X Y (OrderDual Y) (OrderDual__toDual Y) f)).
 
 (; doc: A function `f` is antitone on `s` if, for all `a, b ∈ s`, `a ≤ b` implies `f b ≤ f a`. ;)
 (; //LEAN:AntitoneOn ;)
-AntitoneOn : (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+AntitoneOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: A distributive lattice is a lattice that satisfies any of four equivalent distributive properties (of `sup` over `inf` or `inf` over `sup`, on the left or right).  The definition here chooses `le_sup_inf`: `(x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ (y ⊓ z)`. To prove distributivity from the dual law, use `DistribLattice.ofInfSupLe`.  A classic example of a distributive lattice is the lattice of subsets of a set, and in fact this example is generic in the sense that every distributive lattice is realizable as a sublattice of a powerset lattice. ;)
 (; //LEAN:DistribLattice ;)
 DistribLattice : (X : Set) -> Prop.
 
 (; //LEAN:DistribLattice.mk ;)
-DistribLattice__mk : (le_sup_inf : Proof (forall X (x => forall X (y => forall X (z => Leq (Min__min (Max__max x y) (Max__max x z)) (Max__max x (Min__min y z))))))) -> Proof (DistribLattice X).
+DistribLattice__mk : (X : Set) -> (le_sup_inf : Proof (forall X (x => forall X (y => forall X (z => Leq (Min__min X (Max__max X x y) (Max__max X x z)) (Max__max X x (Min__min X y z))))))) -> Proof (DistribLattice X).
 
 (; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
 (; //LEAN:Eq ;)
-Eq : (x : Elem X) -> (x1 : Elem X) -> Prop.
+Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: **Alias** of `ge_of_eq`. ;)
 (; //LEAN:Eq.ge ;)
@@ -39,7 +39,7 @@ Eq__ge : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -
 
 (; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
 (; //LEAN:Eq.mpr ;)
-Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
 
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
@@ -63,27 +63,27 @@ Equiv : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Function.Injective.distribLattice._proof_1 ;)
-Function__Injective__distribLattice___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (Max X)) -> (_ : Proof (Min X)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (_ : Proof (DistribLattice Y)) -> (f : (Elem X -> Y)) -> (hf_inj : Proof (Function__Injective f)) -> (le : Proof (forall X (x6 => forall X (y1 => iff (Leq (f x6) (f y1)) (Leq x6 y1))))) -> (lt : Proof (forall X (x5 => forall X (y => iff (Lt (f x5) (f y)) (Lt x5 y))))) -> (map_sup : Proof (forall X (a2 => forall X (b2 => Eqt Y (f (Max__max a2 b2)) (Max__max (f a2) (f b2)))))) -> (map_inf : Proof (forall X (a1 => forall X (b1 => Eqt Y (f (Min__min a1 b1)) (Min__min (f a1) (f b1)))))) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Leq (Min__min (Max__max a b) (Max__max a c)) (Max__max a (Min__min b c))).
+Function__Injective__distribLattice___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (Max X)) -> (_ : Proof (Min X)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (_ : Proof (DistribLattice Y)) -> (f : (Elem X -> Y)) -> (hf_inj : Proof (Function__Injective X Y f)) -> (le : Proof (forall X (x6 => forall X (y1 => iff (Leq (f x6) (f y1)) (Leq x6 y1))))) -> (lt : Proof (forall X (x5 => forall X (y => iff (Lt (f x5) (f y)) (Lt x5 y))))) -> (map_sup : Proof (forall X (a2 => forall X (b2 => Eqt Y (f (Max__max X a2 b2)) (Max__max Y (f a2) (f b2)))))) -> (map_inf : Proof (forall X (a1 => forall X (b1 => Eqt Y (f (Min__min X a1 b1)) (Min__min Y (f a1) (f b1)))))) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Leq (Min__min X (Max__max X a b) (Max__max X a c)) (Max__max X a (Min__min X b c))).
 
 (; //LEAN:Function.Injective.semilatticeSup._proof_1 ;)
-Function__Injective__semilatticeSup___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (Max X)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (_ : Proof (SemilatticeSup Y)) -> (f : (Elem X -> Y)) -> (hf_inj : Proof (Function__Injective f)) -> (le : Proof (forall X (x5 => forall X (y1 => iff (Leq (f x5) (f y1)) (Leq x5 y1))))) -> (lt : Proof (forall X (x4 => forall X (y => iff (Lt (f x4) (f y)) (Lt x4 y))))) -> (map_sup : Proof (forall X (a1 => forall X (b1 => Eqt Y (f (Max__max a1 b1)) (Max__max (f a1) (f b1)))))) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq a (Max__max a b)).
+Function__Injective__semilatticeSup___proof_1 : (X : Set) -> (Y : Set) -> (_ : Proof (Max X)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (_ : Proof (SemilatticeSup Y)) -> (f : (Elem X -> Y)) -> (hf_inj : Proof (Function__Injective X Y f)) -> (le : Proof (forall X (x5 => forall X (y1 => iff (Leq (f x5) (f y1)) (Leq x5 y1))))) -> (lt : Proof (forall X (x4 => forall X (y => iff (Lt (f x4) (f y)) (Lt x4 y))))) -> (map_sup : Proof (forall X (a1 => forall X (b1 => Eqt Y (f (Max__max X a1 b1)) (Max__max Y (f a1) (f b1)))))) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq a (Max__max X a b)).
 
 (; //LEAN:Function.Injective.semilatticeSup._proof_2 ;)
-Function__Injective__semilatticeSup___proof_2 : (X : Set) -> (Y : Set) -> (_ : Proof (Max X)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (_ : Proof (SemilatticeSup Y)) -> (f : (Elem X -> Y)) -> (hf_inj : Proof (Function__Injective f)) -> (le : Proof (forall X (x5 => forall X (y1 => iff (Leq (f x5) (f y1)) (Leq x5 y1))))) -> (lt : Proof (forall X (x4 => forall X (y => iff (Lt (f x4) (f y)) (Lt x4 y))))) -> (map_sup : Proof (forall X (a1 => forall X (b1 => Eqt Y (f (Max__max a1 b1)) (Max__max (f a1) (f b1)))))) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq b (Max__max a b)).
+Function__Injective__semilatticeSup___proof_2 : (X : Set) -> (Y : Set) -> (_ : Proof (Max X)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (_ : Proof (SemilatticeSup Y)) -> (f : (Elem X -> Y)) -> (hf_inj : Proof (Function__Injective X Y f)) -> (le : Proof (forall X (x5 => forall X (y1 => iff (Leq (f x5) (f y1)) (Leq x5 y1))))) -> (lt : Proof (forall X (x4 => forall X (y => iff (Lt (f x4) (f y)) (Lt x4 y))))) -> (map_sup : Proof (forall X (a1 => forall X (b1 => Eqt Y (f (Max__max X a1 b1)) (Max__max Y (f a1) (f b1)))))) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq b (Max__max X a b)).
 
 (; //LEAN:Function.Injective.semilatticeSup._proof_3 ;)
-Function__Injective__semilatticeSup___proof_3 : (X : Set) -> (Y : Set) -> (_ : Proof (Max X)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (_ : Proof (SemilatticeSup Y)) -> (f : (Elem X -> Y)) -> (hf_inj : Proof (Function__Injective f)) -> (le : Proof (forall X (x5 => forall X (y1 => iff (Leq (f x5) (f y1)) (Leq x5 y1))))) -> (lt : Proof (forall X (x4 => forall X (y => iff (Lt (f x4) (f y)) (Lt x4 y))))) -> (map_sup : Proof (forall X (a1 => forall X (b1 => Eqt Y (f (Max__max a1 b1)) (Max__max (f a1) (f b1)))))) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (ha : Proof (Leq a c)) -> (hb : Proof (Leq b c)) -> Proof (Leq (Max__max a b) c).
+Function__Injective__semilatticeSup___proof_3 : (X : Set) -> (Y : Set) -> (_ : Proof (Max X)) -> (_ : Proof (LE X)) -> (_ : Proof (LT X)) -> (_ : Proof (SemilatticeSup Y)) -> (f : (Elem X -> Y)) -> (hf_inj : Proof (Function__Injective X Y f)) -> (le : Proof (forall X (x5 => forall X (y1 => iff (Leq (f x5) (f y1)) (Leq x5 y1))))) -> (lt : Proof (forall X (x4 => forall X (y => iff (Lt (f x4) (f y)) (Lt x4 y))))) -> (map_sup : Proof (forall X (a1 => forall X (b1 => Eqt Y (f (Max__max X a1 b1)) (Max__max Y (f a1) (f b1)))))) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (ha : Proof (Leq a c)) -> (hb : Proof (Leq b c)) -> Proof (Leq (Max__max X a b) c).
 
 (; doc: Function composition, usually written with the infix operator `∘`. A new function is created from two existing functions, where one function's output is used as input to the other.  Examples:  * `Function.comp List.reverse (List.drop 2) [3, 2, 4, 1] = [1, 4]`  * `(List.reverse ∘ List.drop 2) [3, 2, 4, 1] = [1, 4]`  Conventions for notations in identifiers:   * The recommended spelling of `∘` in identifiers is `comp`. ;)
 (; //LEAN:Function.comp ;)
-Function__comp : (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
+Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
 
 (; doc: Replacing the value of a function at a given point by a given value. ;)
 (; //LEAN:Function.update ;)
-Function__update : (f : ((a1 : Elem X) -> x a1)) -> (a' : Elem X) -> (v : Elem (x a')) -> (a : Elem X) -> Elem (x a).
+Function__update : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((a1 : Elem X) -> x a1)) -> (a' : Elem X) -> (v : Elem (x a')) -> (a : Elem X) -> Elem (x a).
 
 (; //LEAN:Iff.rfl ;)
 Iff__rfl : (a : Prop) -> Proof (iff a a).
@@ -111,41 +111,41 @@ LE__le__trans_lt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b :
 Lattice : (X : Set) -> Prop.
 
 (; //LEAN:Lattice.mk ;)
-Lattice__mk : (inf : (Elem X -> Elem X -> X)) -> (inf_le_left : Proof (forall X (a2 => forall X (b2 => Leq (inf a2 b2) a2)))) -> (inf_le_right : Proof (forall X (a1 => forall X (b1 => Leq (inf a1 b1) b1)))) -> (le_inf : Proof (forall X (a => forall X (b => forall X (c => if (Leq a b) (if (Leq a c) (Leq a (inf b c)))))))) -> Proof (Lattice X).
+Lattice__mk : (X : Set) -> (inf : (Elem X -> Elem X -> X)) -> (inf_le_left : Proof (forall X (a2 => forall X (b2 => Leq (inf a2 b2) a2)))) -> (inf_le_right : Proof (forall X (a1 => forall X (b1 => Leq (inf a1 b1) b1)))) -> (le_inf : Proof (forall X (a => forall X (b => forall X (c => if (Leq a b) (if (Leq a c) (Leq a (inf b c)))))))) -> Proof (Lattice X).
 
 (; //LEAN:Lattice.mk'._proof_5 ;)
-Lattice__mk'___proof_5 : (X : Set) -> (_ : Proof (Max X)) -> (_ : Proof (Min X)) -> (sup_comm : Proof (forall X (a4 => forall X (b6 => Eqt X (Max__max a4 b6) (Max__max b6 a4))))) -> (sup_assoc : Proof (forall X (a3 => forall X (b5 => forall X (c1 => Eqt X (Max__max (Max__max a3 b5) c1) (Max__max a3 (Max__max b5 c1))))))) -> (inf_comm : Proof (forall X (a2 => forall X (b4 => Eqt X (Min__min a2 b4) (Min__min b4 a2))))) -> (inf_assoc : Proof (forall X (a1 => forall X (b3 => forall X (c => Eqt X (Min__min (Min__min a1 b3) c) (Min__min a1 (Min__min b3 c))))))) -> (sup_idem : Proof (forall X (b2 => Eqt X (Max__max b2 b2) b2))) -> (inf_idem : Proof (forall X (b1 => Eqt X (Min__min b1 b1) b1))) -> (partial_order_eq : Proof (Eqt (PartialOrder X) SemilatticeSup__toPartialOrder SemilatticeInf__toPartialOrder)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (SemilatticeInf__inf a b) a).
+Lattice__mk'___proof_5 : (X : Set) -> (_ : Proof (Max X)) -> (_ : Proof (Min X)) -> (sup_comm : Proof (forall X (a4 => forall X (b6 => Eqt X (Max__max X a4 b6) (Max__max X b6 a4))))) -> (sup_assoc : Proof (forall X (a3 => forall X (b5 => forall X (c1 => Eqt X (Max__max X (Max__max X a3 b5) c1) (Max__max X a3 (Max__max X b5 c1))))))) -> (inf_comm : Proof (forall X (a2 => forall X (b4 => Eqt X (Min__min X a2 b4) (Min__min X b4 a2))))) -> (inf_assoc : Proof (forall X (a1 => forall X (b3 => forall X (c => Eqt X (Min__min X (Min__min X a1 b3) c) (Min__min X a1 (Min__min X b3 c))))))) -> (sup_idem : Proof (forall X (b2 => Eqt X (Max__max X b2 b2) b2))) -> (inf_idem : Proof (forall X (b1 => Eqt X (Min__min X b1 b1) b1))) -> (partial_order_eq : Proof (Eqt (PartialOrder X) (SemilatticeSup__toPartialOrder X) (SemilatticeInf__toPartialOrder X))) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (SemilatticeInf__inf X a b) a).
 
 (; //LEAN:Lattice.mk'._proof_6 ;)
-Lattice__mk'___proof_6 : (X : Set) -> (_ : Proof (Max X)) -> (_ : Proof (Min X)) -> (sup_comm : Proof (forall X (a4 => forall X (b6 => Eqt X (Max__max a4 b6) (Max__max b6 a4))))) -> (sup_assoc : Proof (forall X (a3 => forall X (b5 => forall X (c1 => Eqt X (Max__max (Max__max a3 b5) c1) (Max__max a3 (Max__max b5 c1))))))) -> (inf_comm : Proof (forall X (a2 => forall X (b4 => Eqt X (Min__min a2 b4) (Min__min b4 a2))))) -> (inf_assoc : Proof (forall X (a1 => forall X (b3 => forall X (c => Eqt X (Min__min (Min__min a1 b3) c) (Min__min a1 (Min__min b3 c))))))) -> (sup_idem : Proof (forall X (b2 => Eqt X (Max__max b2 b2) b2))) -> (inf_idem : Proof (forall X (b1 => Eqt X (Min__min b1 b1) b1))) -> (partial_order_eq : Proof (Eqt (PartialOrder X) SemilatticeSup__toPartialOrder SemilatticeInf__toPartialOrder)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (SemilatticeInf__inf a b) b).
+Lattice__mk'___proof_6 : (X : Set) -> (_ : Proof (Max X)) -> (_ : Proof (Min X)) -> (sup_comm : Proof (forall X (a4 => forall X (b6 => Eqt X (Max__max X a4 b6) (Max__max X b6 a4))))) -> (sup_assoc : Proof (forall X (a3 => forall X (b5 => forall X (c1 => Eqt X (Max__max X (Max__max X a3 b5) c1) (Max__max X a3 (Max__max X b5 c1))))))) -> (inf_comm : Proof (forall X (a2 => forall X (b4 => Eqt X (Min__min X a2 b4) (Min__min X b4 a2))))) -> (inf_assoc : Proof (forall X (a1 => forall X (b3 => forall X (c => Eqt X (Min__min X (Min__min X a1 b3) c) (Min__min X a1 (Min__min X b3 c))))))) -> (sup_idem : Proof (forall X (b2 => Eqt X (Max__max X b2 b2) b2))) -> (inf_idem : Proof (forall X (b1 => Eqt X (Min__min X b1 b1) b1))) -> (partial_order_eq : Proof (Eqt (PartialOrder X) (SemilatticeSup__toPartialOrder X) (SemilatticeInf__toPartialOrder X))) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (SemilatticeInf__inf X a b) b).
 
 (; //LEAN:Lattice.mk'._proof_7 ;)
-Lattice__mk'___proof_7 : (X : Set) -> (_ : Proof (Max X)) -> (_ : Proof (Min X)) -> (sup_comm : Proof (forall X (a4 => forall X (b6 => Eqt X (Max__max a4 b6) (Max__max b6 a4))))) -> (sup_assoc : Proof (forall X (a3 => forall X (b5 => forall X (c2 => Eqt X (Max__max (Max__max a3 b5) c2) (Max__max a3 (Max__max b5 c2))))))) -> (inf_comm : Proof (forall X (a2 => forall X (b4 => Eqt X (Min__min a2 b4) (Min__min b4 a2))))) -> (inf_assoc : Proof (forall X (a1 => forall X (b3 => forall X (c1 => Eqt X (Min__min (Min__min a1 b3) c1) (Min__min a1 (Min__min b3 c1))))))) -> (sup_idem : Proof (forall X (b2 => Eqt X (Max__max b2 b2) b2))) -> (inf_idem : Proof (forall X (b1 => Eqt X (Min__min b1 b1) b1))) -> (partial_order_eq : Proof (Eqt (PartialOrder X) SemilatticeSup__toPartialOrder SemilatticeInf__toPartialOrder)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq a c)) -> Proof (Leq a (SemilatticeInf__inf b c)).
+Lattice__mk'___proof_7 : (X : Set) -> (_ : Proof (Max X)) -> (_ : Proof (Min X)) -> (sup_comm : Proof (forall X (a4 => forall X (b6 => Eqt X (Max__max X a4 b6) (Max__max X b6 a4))))) -> (sup_assoc : Proof (forall X (a3 => forall X (b5 => forall X (c2 => Eqt X (Max__max X (Max__max X a3 b5) c2) (Max__max X a3 (Max__max X b5 c2))))))) -> (inf_comm : Proof (forall X (a2 => forall X (b4 => Eqt X (Min__min X a2 b4) (Min__min X b4 a2))))) -> (inf_assoc : Proof (forall X (a1 => forall X (b3 => forall X (c1 => Eqt X (Min__min X (Min__min X a1 b3) c1) (Min__min X a1 (Min__min X b3 c1))))))) -> (sup_idem : Proof (forall X (b2 => Eqt X (Max__max X b2 b2) b2))) -> (inf_idem : Proof (forall X (b1 => Eqt X (Min__min X b1 b1) b1))) -> (partial_order_eq : Proof (Eqt (PartialOrder X) (SemilatticeSup__toPartialOrder X) (SemilatticeInf__toPartialOrder X))) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq a c)) -> Proof (Leq a (SemilatticeInf__inf X b c)).
 
 (; //LEAN:Lattice.mk'._proof_8 ;)
-Lattice__mk'___proof_8 : (X : Set) -> (_ : Proof (Max X)) -> (_ : Proof (Min X)) -> (sup_inf_self : Proof (forall X (a1 => forall X (b2 => Eqt X (Max__max a1 (Min__min a1 b2)) a1)))) -> (inf_sup_self : Proof (forall X (a => forall X (b1 => Eqt X (Min__min a (Max__max a b1)) a)))) -> (b : Elem X) -> Proof (Eqt X (Max__max b b) b).
+Lattice__mk'___proof_8 : (X : Set) -> (_ : Proof (Max X)) -> (_ : Proof (Min X)) -> (sup_inf_self : Proof (forall X (a1 => forall X (b2 => Eqt X (Max__max X a1 (Min__min X a1 b2)) a1)))) -> (inf_sup_self : Proof (forall X (a => forall X (b1 => Eqt X (Min__min X a (Max__max X a b1)) a)))) -> (b : Elem X) -> Proof (Eqt X (Max__max X b b) b).
 
 (; //LEAN:Lattice.mk'._proof_9 ;)
-Lattice__mk'___proof_9 : (X : Set) -> (_ : Proof (Max X)) -> (_ : Proof (Min X)) -> (sup_inf_self : Proof (forall X (a1 => forall X (b2 => Eqt X (Max__max a1 (Min__min a1 b2)) a1)))) -> (inf_sup_self : Proof (forall X (a => forall X (b1 => Eqt X (Min__min a (Max__max a b1)) a)))) -> (b : Elem X) -> Proof (Eqt X (Min__min b b) b).
+Lattice__mk'___proof_9 : (X : Set) -> (_ : Proof (Max X)) -> (_ : Proof (Min X)) -> (sup_inf_self : Proof (forall X (a1 => forall X (b2 => Eqt X (Max__max X a1 (Min__min X a1 b2)) a1)))) -> (inf_sup_self : Proof (forall X (a => forall X (b1 => Eqt X (Min__min X a (Max__max X a b1)) a)))) -> (b : Elem X) -> Proof (Eqt X (Min__min X b b) b).
 
 (; //LEAN:Lattice.toLinearOrder._proof_1 ;)
-Lattice__toLinearOrder___proof_1 : (X : Set) -> (_ : Proof (Lattice X)) -> (_ : Proof (Std__Total (x2 => x3 => Leq x2 x3))) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Min__min a b) (ite (Leq a b) a b)).
+Lattice__toLinearOrder___proof_1 : (X : Set) -> (_ : Proof (Lattice X)) -> (_ : Proof (Std__Total X (x2 => x3 => Leq x2 x3))) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Min__min X a b) (ite X (Leq a b) a b)).
 
 (; //LEAN:Lattice.toLinearOrder._proof_2 ;)
-Lattice__toLinearOrder___proof_2 : (X : Set) -> (_ : Proof (Lattice X)) -> (_ : Proof (Std__Total (x2 => x3 => Leq x2 x3))) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Max__max a b) (ite (Leq a b) b a)).
+Lattice__toLinearOrder___proof_2 : (X : Set) -> (_ : Proof (Lattice X)) -> (_ : Proof (Std__Total X (x2 => x3 => Leq x2 x3))) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Max__max X a b) (ite X (Leq a b) b a)).
 
 (; //LEAN:Lattice.toLinearOrder._proof_3 ;)
-Lattice__toLinearOrder___proof_3 : (X : Set) -> (_ : Proof (Lattice X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt Ordering (compareOfLessAndEq a b) (compareOfLessAndEq a b)).
+Lattice__toLinearOrder___proof_3 : (X : Set) -> (_ : Proof (Lattice X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt Ordering (compareOfLessAndEq X a b) (compareOfLessAndEq X a b)).
 
 (; //LEAN:Lattice.toLinearOrder._proof_4 ;)
-Lattice__toLinearOrder___proof_4 : (X : Set) -> (_ : Proof (Lattice X)) -> (_ : Proof (Std__Total (x1 => x2 => Leq x1 x2))) -> (a : Elem X) -> (b : Elem X) -> Proof (or (Leq a b) (Leq b a)).
+Lattice__toLinearOrder___proof_4 : (X : Set) -> (_ : Proof (Lattice X)) -> (_ : Proof (Std__Total X (x1 => x2 => Leq x1 x2))) -> (a : Elem X) -> (b : Elem X) -> Proof (or (Leq a b) (Leq b a)).
 
 (; doc: A linear order is reflexive, transitive, antisymmetric and total relation `≤`. We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. ;)
 (; //LEAN:LinearOrder ;)
 LinearOrder : (X : Set) -> Prop.
 
 (; //LEAN:LinearOrder.mk ;)
-LinearOrder__mk : (le_total : Proof (forall X (a3 => forall X (b3 => or (Leq a3 b3) (Leq b3 a3))))) -> (toDecidableLE : Proof (DecidableLE X)) -> (toDecidableEq : Proof (DecidableEq X)) -> (toDecidableLT : Proof (DecidableLT X)) -> (min_def : Proof (autoParam (forall X (a2 => forall X (b2 => Eqt X (Min__min a2 b2) (ite (Leq a2 b2) a2 b2)))) LinearOrder__min_def___autoParam)) -> (max_def : Proof (autoParam (forall X (a1 => forall X (b1 => Eqt X (Max__max a1 b1) (ite (Leq a1 b1) b1 a1)))) LinearOrder__max_def___autoParam)) -> (compare_eq_compareOfLessAndEq : Proof (autoParam (forall X (a => forall X (b => Eqt Ordering (Ord__compare a b) (compareOfLessAndEq a b)))) LinearOrder__compare_eq_compareOfLessAndEq___autoParam)) -> Proof (LinearOrder X).
+LinearOrder__mk : (X : Set) -> (le_total : Proof (forall X (a3 => forall X (b3 => or (Leq a3 b3) (Leq b3 a3))))) -> (toDecidableLE : Proof (DecidableLE X)) -> (toDecidableEq : Proof (DecidableEq X)) -> (toDecidableLT : Proof (DecidableLT X)) -> (min_def : Proof (autoParam (forall X (a2 => forall X (b2 => Eqt X (Min__min X a2 b2) (ite X (Leq a2 b2) a2 b2)))) LinearOrder__min_def___autoParam)) -> (max_def : Proof (autoParam (forall X (a1 => forall X (b1 => Eqt X (Max__max X a1 b1) (ite X (Leq a1 b1) b1 a1)))) LinearOrder__max_def___autoParam)) -> (compare_eq_compareOfLessAndEq : Proof (autoParam (forall X (a => forall X (b => Eqt Ordering (Ord__compare X a b) (compareOfLessAndEq X a b)))) LinearOrder__compare_eq_compareOfLessAndEq___autoParam)) -> Proof (LinearOrder X).
 
 (; doc: An overloaded operation to find the greater of two values of type `α`. ;)
 (; //LEAN:Max ;)
@@ -153,11 +153,11 @@ Max : (X : Set) -> Prop.
 
 (; doc: Returns the greater of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `max` in identifiers is `max`.   * The recommended spelling of `⊔` in identifiers is `sup` (`⊔` is the preferred notation for `max` when the type is not linearly ordered.). ;)
 (; //LEAN:Max.max ;)
-Max__max : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+Max__max : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
-Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
 
 (; doc: An overloaded operation to find the lesser of two values of type `α`. ;)
 (; //LEAN:Min ;)
@@ -165,15 +165,15 @@ Min : (X : Set) -> Prop.
 
 (; doc: Returns the lesser of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `min` in identifiers is `min`.   * The recommended spelling of `⊓` in identifiers is `inf` (`⊓` is the preferred notation for `min` when the type is not linearly ordered.). ;)
 (; //LEAN:Min.min ;)
-Min__min : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+Min__min : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: A function `f` is monotone if `a ≤ b` implies `f a ≤ f b`. ;)
 (; //LEAN:Monotone ;)
-Monotone : (f : (Elem X -> Y)) -> Prop.
+Monotone : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: A function `f` is monotone on `s` if, for all `a, b ∈ s`, `a ≤ b` implies `f a ≤ f b`. ;)
 (; //LEAN:MonotoneOn ;)
-MonotoneOn : (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+MonotoneOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Ne.not_le_or_not_ge ;)
 Ne__not_le_or_not_ge : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Neq a b)) -> Proof (or (not (Leq a b)) (not (Leq b a))).
@@ -199,15 +199,15 @@ OrderDual__instSemilatticeSup : (X : Set) -> Proof (SemilatticeSup (OrderDual X)
 
 (; doc: `ofDual` is the identity function from the `OrderDual` of a linear order. ;)
 (; //LEAN:OrderDual.ofDual ;)
-OrderDual__ofDual : Elem (Equiv (OrderDual X) X).
+OrderDual__ofDual : (X : Set) -> Elem (Equiv (OrderDual X) X).
 
 (; doc: `toDual` is the identity function to the `OrderDual` of a linear order. ;)
 (; //LEAN:OrderDual.toDual ;)
-OrderDual__toDual : Elem (Equiv X (OrderDual X)).
+OrderDual__toDual : (X : Set) -> Elem (Equiv X (OrderDual X)).
 
 (; doc: A relation `r` holds pairwise if `r i j` for all `i ≠ j`. ;)
 (; //LEAN:Pairwise ;)
-Pairwise : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Pairwise : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; doc: A partial order is a reflexive, transitive, antisymmetric relation `≤`. ;)
 (; //LEAN:PartialOrder ;)
@@ -226,19 +226,19 @@ Prod : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: The first element of a pair. ;)
 (; //LEAN:Prod.fst ;)
-Prod__fst : (self : Elem (Prod X Y)) -> Elem X.
+Prod__fst : (X : Set) -> (Y : Set) -> (self : Elem (Prod X Y)) -> Elem X.
 
 (; doc: Constructs a pair. This is usually written `(x, y)` instead of `Prod.mk x y`.  Conventions for notations in identifiers:   * The recommended spelling of `(a, b)` in identifiers is `mk`. ;)
 (; //LEAN:Prod.mk ;)
-Prod__mk : (fst : Elem X) -> (snd : Elem Y) -> Elem (Prod X Y).
+Prod__mk : (X : Set) -> (Y : Set) -> (fst : Elem X) -> (snd : Elem Y) -> Elem (Prod X Y).
 
 (; doc: The second element of a pair. ;)
 (; //LEAN:Prod.snd ;)
-Prod__snd : (self : Elem (Prod X Y)) -> Elem Y.
+Prod__snd : (X : Set) -> (Y : Set) -> (self : Elem (Prod X Y)) -> Elem Y.
 
 (; doc: Swaps the elements in a pair.  Examples: * `(1, 2).swap = (2, 1)` * `("orange", -87).swap = (-87, "orange")` ;)
 (; //LEAN:Prod.swap ;)
-Prod__swap : (x : Elem (Prod X Y)) -> Elem (Prod Y X).
+Prod__swap : (X : Set) -> (Y : Set) -> (x : Elem (Prod X Y)) -> Elem (Prod Y X).
 
 (; doc: A `SemilatticeInf` is a meet-semilattice, that is, a partial order with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation `⊓` which is the greatest element smaller than both factors. ;)
 (; //LEAN:SemilatticeInf ;)
@@ -246,102 +246,112 @@ SemilatticeInf : (X : Set) -> Prop.
 
 (; doc: The binary infimum, used to derive `Min α` ;)
 (; //LEAN:SemilatticeInf.inf ;)
-SemilatticeInf__inf : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+SemilatticeInf__inf : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: The infimum is a lower bound on the first argument ;)
 (; //LEAN:SemilatticeInf.inf_le_left ;)
-SemilatticeInf__inf_le_left : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (SemilatticeInf__inf a b) a).
+SemilatticeInf__inf_le_left : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (SemilatticeInf__inf X a b) a).
 
 (; doc: The infimum is a lower bound on the second argument ;)
 (; //LEAN:SemilatticeInf.inf_le_right ;)
-SemilatticeInf__inf_le_right : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (SemilatticeInf__inf a b) b).
+SemilatticeInf__inf_le_right : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq (SemilatticeInf__inf X a b) b).
 
 (; doc: The infimum is the *greatest* lower bound ;)
 (; //LEAN:SemilatticeInf.le_inf ;)
-SemilatticeInf__le_inf : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq a c)) -> Proof (Leq a (SemilatticeInf__inf b c)).
+SemilatticeInf__le_inf : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq a c)) -> Proof (Leq a (SemilatticeInf__inf X b c)).
 
 (; //LEAN:SemilatticeInf.mk ;)
-SemilatticeInf__mk : (inf : (Elem X -> Elem X -> X)) -> (inf_le_left : Proof (forall X (a2 => forall X (b2 => Leq (inf a2 b2) a2)))) -> (inf_le_right : Proof (forall X (a1 => forall X (b1 => Leq (inf a1 b1) b1)))) -> (le_inf : Proof (forall X (a => forall X (b => forall X (c => if (Leq a b) (if (Leq a c) (Leq a (inf b c)))))))) -> Proof (SemilatticeInf X).
+SemilatticeInf__mk : (X : Set) -> (inf : (Elem X -> Elem X -> X)) -> (inf_le_left : Proof (forall X (a2 => forall X (b2 => Leq (inf a2 b2) a2)))) -> (inf_le_right : Proof (forall X (a1 => forall X (b1 => Leq (inf a1 b1) b1)))) -> (le_inf : Proof (forall X (a => forall X (b => forall X (c => if (Leq a b) (if (Leq a c) (Leq a (inf b c)))))))) -> Proof (SemilatticeInf X).
 
 (; //LEAN:SemilatticeInf.mk'._proof_4 ;)
-SemilatticeInf__mk'___proof_4 : (X : Set) -> (_ : Proof (Min X)) -> (inf_assoc : Proof (forall X (a2 => forall X (b1 => forall X (c => Eqt X (Min__min (Min__min a2 b1) c) (Min__min a2 (Min__min b1 c))))))) -> (inf_idem : Proof (forall X (a1 => Eqt X (Min__min a1 a1) a1))) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Min__min a (Min__min a b)) (Min__min a b)).
+SemilatticeInf__mk'___proof_4 : (X : Set) -> (_ : Proof (Min X)) -> (inf_assoc : Proof (forall X (a2 => forall X (b1 => forall X (c => Eqt X (Min__min X (Min__min X a2 b1) c) (Min__min X a2 (Min__min X b1 c))))))) -> (inf_idem : Proof (forall X (a1 => Eqt X (Min__min X a1 a1) a1))) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Min__min X a (Min__min X a b)) (Min__min X a b)).
 
 (; //LEAN:SemilatticeInf.mk'._proof_5 ;)
-SemilatticeInf__mk'___proof_5 : (X : Set) -> (_ : Proof (Min X)) -> (inf_comm : Proof (forall X (a3 => forall X (b2 => Eqt X (Min__min a3 b2) (Min__min b2 a3))))) -> (inf_assoc : Proof (forall X (a2 => forall X (b1 => forall X (c => Eqt X (Min__min (Min__min a2 b1) c) (Min__min a2 (Min__min b1 c))))))) -> (inf_idem : Proof (forall X (a1 => Eqt X (Min__min a1 a1) a1))) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Min__min b (Min__min a b)) (Min__min a b)).
+SemilatticeInf__mk'___proof_5 : (X : Set) -> (_ : Proof (Min X)) -> (inf_comm : Proof (forall X (a3 => forall X (b2 => Eqt X (Min__min X a3 b2) (Min__min X b2 a3))))) -> (inf_assoc : Proof (forall X (a2 => forall X (b1 => forall X (c => Eqt X (Min__min X (Min__min X a2 b1) c) (Min__min X a2 (Min__min X b1 c))))))) -> (inf_idem : Proof (forall X (a1 => Eqt X (Min__min X a1 a1) a1))) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Min__min X b (Min__min X a b)) (Min__min X a b)).
 
 (; //LEAN:SemilatticeInf.mk'._proof_6 ;)
-SemilatticeInf__mk'___proof_6 : (X : Set) -> (_ : Proof (Min X)) -> (inf_assoc : Proof (forall X (a1 => forall X (b1 => forall X (c1 => Eqt X (Min__min (Min__min a1 b1) c1) (Min__min a1 (Min__min b1 c1))))))) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (hac : Proof (Eqt X (Min__min b a) a)) -> (hbc : Proof (Eqt X (Min__min c a) a)) -> Proof (Eqt X (Min__min (Min__min b c) a) a).
+SemilatticeInf__mk'___proof_6 : (X : Set) -> (_ : Proof (Min X)) -> (inf_assoc : Proof (forall X (a1 => forall X (b1 => forall X (c1 => Eqt X (Min__min X (Min__min X a1 b1) c1) (Min__min X a1 (Min__min X b1 c1))))))) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (hac : Proof (Eqt X (Min__min X b a) a)) -> (hbc : Proof (Eqt X (Min__min X c a) a)) -> Proof (Eqt X (Min__min X (Min__min X b c) a) a).
 
 (; //LEAN:SemilatticeInf.toPartialOrder ;)
-SemilatticeInf__toPartialOrder : Proof (PartialOrder X).
+SemilatticeInf__toPartialOrder : (X : Set) -> Proof (PartialOrder X).
 
 (; doc: A `SemilatticeSup` is a join-semilattice, that is, a partial order with a join (a.k.a. lub / least upper bound, sup / supremum) operation `⊔` which is the least element larger than both factors. ;)
 (; //LEAN:SemilatticeSup ;)
 SemilatticeSup : (X : Set) -> Prop.
 
 (; //LEAN:SemilatticeSup.mk ;)
-SemilatticeSup__mk : (sup : (Elem X -> Elem X -> X)) -> (le_sup_left : Proof (forall X (a2 => forall X (b2 => Leq a2 (sup a2 b2))))) -> (le_sup_right : Proof (forall X (a1 => forall X (b1 => Leq b1 (sup a1 b1))))) -> (sup_le : Proof (forall X (a => forall X (b => forall X (c => if (Leq a c) (if (Leq b c) (Leq (sup a b) c))))))) -> Proof (SemilatticeSup X).
+SemilatticeSup__mk : (X : Set) -> (sup : (Elem X -> Elem X -> X)) -> (le_sup_left : Proof (forall X (a2 => forall X (b2 => Leq a2 (sup a2 b2))))) -> (le_sup_right : Proof (forall X (a1 => forall X (b1 => Leq b1 (sup a1 b1))))) -> (sup_le : Proof (forall X (a => forall X (b => forall X (c => if (Leq a c) (if (Leq b c) (Leq (sup a b) c))))))) -> Proof (SemilatticeSup X).
 
 (; //LEAN:SemilatticeSup.mk'._proof_4 ;)
-SemilatticeSup__mk'___proof_4 : (X : Set) -> (_ : Proof (Max X)) -> (sup_assoc : Proof (forall X (a2 => forall X (b1 => forall X (c => Eqt X (Max__max (Max__max a2 b1) c) (Max__max a2 (Max__max b1 c))))))) -> (sup_idem : Proof (forall X (a1 => Eqt X (Max__max a1 a1) a1))) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Max__max a (Max__max a b)) (Max__max a b)).
+SemilatticeSup__mk'___proof_4 : (X : Set) -> (_ : Proof (Max X)) -> (sup_assoc : Proof (forall X (a2 => forall X (b1 => forall X (c => Eqt X (Max__max X (Max__max X a2 b1) c) (Max__max X a2 (Max__max X b1 c))))))) -> (sup_idem : Proof (forall X (a1 => Eqt X (Max__max X a1 a1) a1))) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Max__max X a (Max__max X a b)) (Max__max X a b)).
 
 (; //LEAN:SemilatticeSup.mk'._proof_5 ;)
-SemilatticeSup__mk'___proof_5 : (X : Set) -> (_ : Proof (Max X)) -> (sup_comm : Proof (forall X (a3 => forall X (b2 => Eqt X (Max__max a3 b2) (Max__max b2 a3))))) -> (sup_assoc : Proof (forall X (a2 => forall X (b1 => forall X (c => Eqt X (Max__max (Max__max a2 b1) c) (Max__max a2 (Max__max b1 c))))))) -> (sup_idem : Proof (forall X (a1 => Eqt X (Max__max a1 a1) a1))) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Max__max b (Max__max a b)) (Max__max a b)).
+SemilatticeSup__mk'___proof_5 : (X : Set) -> (_ : Proof (Max X)) -> (sup_comm : Proof (forall X (a3 => forall X (b2 => Eqt X (Max__max X a3 b2) (Max__max X b2 a3))))) -> (sup_assoc : Proof (forall X (a2 => forall X (b1 => forall X (c => Eqt X (Max__max X (Max__max X a2 b1) c) (Max__max X a2 (Max__max X b1 c))))))) -> (sup_idem : Proof (forall X (a1 => Eqt X (Max__max X a1 a1) a1))) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Max__max X b (Max__max X a b)) (Max__max X a b)).
 
 (; //LEAN:SemilatticeSup.mk'._proof_6 ;)
-SemilatticeSup__mk'___proof_6 : (X : Set) -> (_ : Proof (Max X)) -> (sup_assoc : Proof (forall X (a1 => forall X (b1 => forall X (c1 => Eqt X (Max__max (Max__max a1 b1) c1) (Max__max a1 (Max__max b1 c1))))))) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (hac : Proof (Eqt X (Max__max a c) c)) -> (hbc : Proof (Eqt X (Max__max b c) c)) -> Proof (Eqt X (Max__max (Max__max a b) c) c).
+SemilatticeSup__mk'___proof_6 : (X : Set) -> (_ : Proof (Max X)) -> (sup_assoc : Proof (forall X (a1 => forall X (b1 => forall X (c1 => Eqt X (Max__max X (Max__max X a1 b1) c1) (Max__max X a1 (Max__max X b1 c1))))))) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (hac : Proof (Eqt X (Max__max X a c) c)) -> (hbc : Proof (Eqt X (Max__max X b c) c)) -> Proof (Eqt X (Max__max X (Max__max X a b) c) c).
 
 (; //LEAN:SemilatticeSup.toPartialOrder ;)
-SemilatticeSup__toPartialOrder : Proof (PartialOrder X).
+SemilatticeSup__toPartialOrder : (X : Set) -> Proof (PartialOrder X).
 
 (; doc: `Symm r` means that the binary relation `r` is symmetric, that is, `r a b → r b a`. ;)
 (; //LEAN:Std.Symm ;)
-Std__Symm : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Std__Symm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; doc: `Total X r` means that the binary relation `r` on `X` is total, that is, `r a b` or `r b a`. ;)
 (; //LEAN:Std.Total ;)
-Std__Total : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Std__Total : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; doc: A total relation satisfies `r a b` or `r b a`. ;)
 (; //LEAN:Std.Total.total ;)
-Std__Total__total : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Total r)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (r a b) (r b a)).
+Std__Total__total : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Total X r)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (r a b) (r b a)).
 
 (; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
 (; //LEAN:Subtype ;)
-Subtype : (p : (Elem X -> Prop)) -> Set.
+Subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Set.
 
 (; //LEAN:Subtype.coe_injective ;)
-Subtype__coe_injective : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Function__Injective (a => a)).
+Subtype__coe_injective : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Function__Injective (Subtype X (x => p x)) X (a => Subtype__val X p a)).
 
 (; //LEAN:Subtype.distribLattice._proof_1 ;)
-Subtype__distribLattice___proof_1 : (X : Set) -> (_ : Proof (DistribLattice X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem (Subtype (x4 => P x4))) -> (x2 : Elem (Subtype (x3 => P x3))) -> Proof (iff (Leq x1 x2) (Leq x1 x2)).
+Subtype__distribLattice___proof_1 : (X : Set) -> (_ : Proof (DistribLattice X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem (Subtype X (x4 => P x4))) -> (x2 : Elem (Subtype X (x3 => P x3))) -> Proof (iff (Leq (Subtype__val X P x1) (Subtype__val X P x2)) (Leq x1 x2)).
 
 (; //LEAN:Subtype.distribLattice._proof_2 ;)
-Subtype__distribLattice___proof_2 : (X : Set) -> (_ : Proof (DistribLattice X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem (Subtype (x4 => P x4))) -> (x2 : Elem (Subtype (x3 => P x3))) -> Proof (iff (Lt x1 x2) (Lt x1 x2)).
+Subtype__distribLattice___proof_2 : (X : Set) -> (_ : Proof (DistribLattice X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem (Subtype X (x4 => P x4))) -> (x2 : Elem (Subtype X (x3 => P x3))) -> Proof (iff (Lt (Subtype__val X P x1) (Subtype__val X P x2)) (Lt x1 x2)).
 
 (; //LEAN:Subtype.distribLattice._proof_3 ;)
-Subtype__distribLattice___proof_3 : (X : Set) -> (_ : Proof (DistribLattice X)) -> (P : (Elem X -> Prop)) -> (Psup : Proof (forall X (s => forall X (t => if (P s) (if (P t) (P (Max__max s t))))))) -> (x1 : Elem (Subtype (x3 => P x3))) -> (y : Elem (Subtype (x2 => P x2))) -> Proof (Eqt X (Max__max x1 y) (Max__max x1 y)).
+Subtype__distribLattice___proof_3 : (X : Set) -> (_ : Proof (DistribLattice X)) -> (P : (Elem X -> Prop)) -> (Psup : Proof (forall X (s => forall X (t => if (P s) (if (P t) (P (Max__max X s t))))))) -> (x1 : Elem (Subtype X (x4 => P x4))) -> (y : Elem (Subtype X (x3 => P x3))) -> Proof (Eqt X (Subtype__val X P (Max__max (Subtype X (x2 => P x2)) x1 y)) (Max__max X (Subtype__val X P x1) (Subtype__val X P y))).
 
 (; //LEAN:Subtype.distribLattice._proof_4 ;)
-Subtype__distribLattice___proof_4 : (X : Set) -> (_ : Proof (DistribLattice X)) -> (P : (Elem X -> Prop)) -> (Pinf : Proof (forall X (s => forall X (t => if (P s) (if (P t) (P (Min__min s t))))))) -> (x1 : Elem (Subtype (x3 => P x3))) -> (y : Elem (Subtype (x2 => P x2))) -> Proof (Eqt X (Min__min x1 y) (Min__min x1 y)).
+Subtype__distribLattice___proof_4 : (X : Set) -> (_ : Proof (DistribLattice X)) -> (P : (Elem X -> Prop)) -> (Pinf : Proof (forall X (s => forall X (t => if (P s) (if (P t) (P (Min__min X s t))))))) -> (x1 : Elem (Subtype X (x4 => P x4))) -> (y : Elem (Subtype X (x3 => P x3))) -> Proof (Eqt X (Subtype__val X P (Min__min (Subtype X (x2 => P x2)) x1 y)) (Min__min X (Subtype__val X P x1) (Subtype__val X P y))).
 
 (; //LEAN:Subtype.lattice._proof_4 ;)
-Subtype__lattice___proof_4 : (X : Set) -> (_ : Proof (Lattice X)) -> (P : (Elem X -> Prop)) -> (Pinf : Proof (forall X (x3 => forall X (y => if (P x3) (if (P y) (P (Min__min x3 y))))))) -> (a : Elem (Subtype (x2 => P x2))) -> (b : Elem (Subtype (x1 => P x1))) -> Proof (Leq (SemilatticeInf__inf a b) a).
+Subtype__lattice___proof_4 : (X : Set) -> (_ : Proof (Lattice X)) -> (P : (Elem X -> Prop)) -> (Pinf : Proof (forall X (x4 => forall X (y => if (P x4) (if (P y) (P (Min__min X x4 y))))))) -> (a : Elem (Subtype X (x3 => P x3))) -> (b : Elem (Subtype X (x2 => P x2))) -> Proof (Leq (SemilatticeInf__inf (Subtype X (x1 => P x1)) a b) a).
 
 (; //LEAN:Subtype.lattice._proof_5 ;)
-Subtype__lattice___proof_5 : (X : Set) -> (_ : Proof (Lattice X)) -> (P : (Elem X -> Prop)) -> (Pinf : Proof (forall X (x3 => forall X (y => if (P x3) (if (P y) (P (Min__min x3 y))))))) -> (a : Elem (Subtype (x2 => P x2))) -> (b : Elem (Subtype (x1 => P x1))) -> Proof (Leq (SemilatticeInf__inf a b) b).
+Subtype__lattice___proof_5 : (X : Set) -> (_ : Proof (Lattice X)) -> (P : (Elem X -> Prop)) -> (Pinf : Proof (forall X (x4 => forall X (y => if (P x4) (if (P y) (P (Min__min X x4 y))))))) -> (a : Elem (Subtype X (x3 => P x3))) -> (b : Elem (Subtype X (x2 => P x2))) -> Proof (Leq (SemilatticeInf__inf (Subtype X (x1 => P x1)) a b) b).
 
 (; //LEAN:Subtype.lattice._proof_6 ;)
-Subtype__lattice___proof_6 : (X : Set) -> (_ : Proof (Lattice X)) -> (P : (Elem X -> Prop)) -> (Pinf : Proof (forall X (x4 => forall X (y => if (P x4) (if (P y) (P (Min__min x4 y))))))) -> (a : Elem (Subtype (x3 => P x3))) -> (b : Elem (Subtype (x2 => P x2))) -> (c : Elem (Subtype (x1 => P x1))) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq a c)) -> Proof (Leq a (SemilatticeInf__inf b c)).
+Subtype__lattice___proof_6 : (X : Set) -> (_ : Proof (Lattice X)) -> (P : (Elem X -> Prop)) -> (Pinf : Proof (forall X (x5 => forall X (y => if (P x5) (if (P y) (P (Min__min X x5 y))))))) -> (a : Elem (Subtype X (x4 => P x4))) -> (b : Elem (Subtype X (x3 => P x3))) -> (c : Elem (Subtype X (x2 => P x2))) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq a c)) -> Proof (Leq a (SemilatticeInf__inf (Subtype X (x1 => P x1)) b c)).
+
+(; //LEAN:Subtype.mk ;)
+Subtype__mk : (X : Set) -> (p : (Elem X -> Prop)) -> (val : Elem X) -> (property : Proof (p val)) -> Elem (Subtype X (x => p x)).
+
+(; //LEAN:Subtype.semilatticeSup._proof_1 ;)
+Subtype__semilatticeSup___proof_1 : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (P : (Elem X -> Prop)) -> (Psup : Proof (forall X (x6 => forall X (y1 => if (P x6) (if (P y1) (P (Max__max X x6 y1))))))) -> (x1 : Elem (Subtype X (x5 => P x5))) -> (y : Elem (Subtype X (x4 => P x4))) -> Proof (P (Max__max X (Subtype__val X (x2 => P x2) x1) (Subtype__val X (x3 => P x3) y))).
 
 (; //LEAN:Subtype.semilatticeSup._proof_2 ;)
-Subtype__semilatticeSup___proof_2 : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem (Subtype (x4 => P x4))) -> (x2 : Elem (Subtype (x3 => P x3))) -> Proof (Leq x1 (Max__max x1 x2)).
+Subtype__semilatticeSup___proof_2 : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem (Subtype X (x7 => P x7))) -> (x2 : Elem (Subtype X (x6 => P x6))) -> Proof (Leq (Subtype__val X (x3 => P x3) x1) (Max__max X (Subtype__val X (x4 => P x4) x1) (Subtype__val X (x5 => P x5) x2))).
 
 (; //LEAN:Subtype.semilatticeSup._proof_3 ;)
-Subtype__semilatticeSup___proof_3 : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem (Subtype (x4 => P x4))) -> (x2 : Elem (Subtype (x3 => P x3))) -> Proof (Leq x2 (Max__max x1 x2)).
+Subtype__semilatticeSup___proof_3 : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem (Subtype X (x7 => P x7))) -> (x2 : Elem (Subtype X (x6 => P x6))) -> Proof (Leq (Subtype__val X (x3 => P x3) x2) (Max__max X (Subtype__val X (x4 => P x4) x1) (Subtype__val X (x5 => P x5) x2))).
 
 (; //LEAN:Subtype.semilatticeSup._proof_4 ;)
-Subtype__semilatticeSup___proof_4 : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem (Subtype (x6 => P x6))) -> (x2 : Elem (Subtype (x5 => P x5))) -> (x3 : Elem (Subtype (x4 => P x4))) -> (h1 : Proof (Leq x1 x3)) -> (h2 : Proof (Leq x2 x3)) -> Proof (Leq (Max__max x1 x2) x3).
+Subtype__semilatticeSup___proof_4 : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem (Subtype X (x9 => P x9))) -> (x2 : Elem (Subtype X (x8 => P x8))) -> (x3 : Elem (Subtype X (x7 => P x7))) -> (h1 : Proof (Leq x1 x3)) -> (h2 : Proof (Leq x2 x3)) -> Proof (Leq (Max__max X (Subtype__val X (x4 => P x4) x1) (Subtype__val X (x5 => P x5) x2)) (Subtype__val X (x6 => P x6) x3)).
+
+(; doc: The value in the underlying type that satisfies the predicate. ;)
+(; //LEAN:Subtype.val ;)
+Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x => p x))) -> Elem X.
 
 (; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:True ;)
@@ -357,44 +367,44 @@ congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem
 
 (; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:dite ;)
-dite : (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
+dite : (X : Set) -> (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
 
 (; //LEAN:eq_self ;)
 eq_self : (X : Set) -> (a : Elem X) -> Proof (Eqt Prop (Eqt X a a) True).
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
-id : (a : Elem X) -> Elem X.
+id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:inf_eq_left ;)
-inf_eq_left : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X (Min__min a b) a) (Leq a b)).
+inf_eq_left : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X (Min__min X a b) a) (Leq a b)).
 
 (; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:ite ;)
-ite : (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
+ite : (X : Set) -> (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
 
 (; //LEAN:ite_eq_left ;)
-ite_eq_left : (c : Prop) -> (h : Proof (Decidable c)) -> (hc : Proof c) -> (X : Set) -> (t : Elem X) -> (e : Elem X) -> Proof (Eqt X (ite c t e) t).
+ite_eq_left : (c : Prop) -> (h : Proof (Decidable c)) -> (hc : Proof c) -> (X : Set) -> (t : Elem X) -> (e : Elem X) -> Proof (Eqt X (ite X c t e) t).
 
 (; //LEAN:ite_eq_right ;)
-ite_eq_right : (c : Prop) -> (h : Proof (Decidable c)) -> (hnc : Proof (not c)) -> (X : Set) -> (t : Elem X) -> (e : Elem X) -> Proof (Eqt X (ite c t e) e).
+ite_eq_right : (c : Prop) -> (h : Proof (Decidable c)) -> (hnc : Proof (not c)) -> (X : Set) -> (t : Elem X) -> (e : Elem X) -> Proof (Eqt X (ite X c t e) e).
 
 (; //LEAN:le_sup_left ;)
-le_sup_left : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq a (Max__max a b)).
+le_sup_left : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq a (Max__max X a b)).
 
 (; //LEAN:le_sup_right ;)
-le_sup_right : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq b (Max__max a b)).
+le_sup_right : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq b (Max__max X a b)).
 
 (; //LEAN:left_eq_sup ;)
-left_eq_sup : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X a (Max__max a b)) (Leq b a)).
+left_eq_sup : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X a (Max__max X a b)) (Leq b a)).
 
 (; doc: Default definition of `max`. ;)
 (; //LEAN:maxDefault ;)
-maxDefault : (a : Elem X) -> (b : Elem X) -> Elem X.
+maxDefault : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem X.
 
 (; doc: Default definition of `min`. ;)
 (; //LEAN:minDefault ;)
-minDefault : (a : Elem X) -> (b : Elem X) -> Elem X.
+minDefault : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem X.
 
 (; //LEAN:not_congr ;)
 not_congr : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff (not a) (not b)).
@@ -407,28 +417,28 @@ of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
 rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
 
 (; //LEAN:right_eq_sup ;)
-right_eq_sup : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X b (Max__max a b)) (Leq a b)).
+right_eq_sup : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X b (Max__max X a b)) (Leq a b)).
 
 (; //LEAN:sup_eq_left ;)
-sup_eq_left : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X (Max__max a b) a) (Leq b a)).
+sup_eq_left : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X (Max__max X a b) a) (Leq b a)).
 
 (; //LEAN:sup_eq_right ;)
-sup_eq_right : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X (Max__max a b) b) (Leq a b)).
+sup_eq_right : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X (Max__max X a b) b) (Leq a b)).
 
 (; //LEAN:sup_le ;)
-sup_le : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq a c)) -> (h1 : Proof (Leq b c)) -> Proof (Leq (Max__max a b) c).
+sup_le : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq a c)) -> (h1 : Proof (Leq b c)) -> Proof (Leq (Max__max X a b) c).
 
 (; //LEAN:sup_le_sup ;)
-sup_le_sup : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq c d)) -> Proof (Leq (Max__max a c) (Max__max b d)).
+sup_le_sup : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq c d)) -> Proof (Leq (Max__max X a c) (Max__max X b d)).
 
 (; doc: **Alias** of the reverse direction of `sup_eq_left`. ;)
 (; //LEAN:sup_of_le_left ;)
-sup_of_le_left : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq b a)) -> Proof (Eqt X (Max__max a b) a).
+sup_of_le_left : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq b a)) -> Proof (Eqt X (Max__max X a b) a).
 
 (; doc: **Alias** of the reverse direction of `sup_eq_right`. ;)
 (; //LEAN:sup_of_le_right ;)
-sup_of_le_right : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq a b)) -> Proof (Eqt X (Max__max a b) b).
+sup_of_le_right : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq a b)) -> Proof (Eqt X (Max__max X a b) b).
 
 (; //LEAN:sup_sup_sup_comm ;)
-sup_sup_sup_comm : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> Proof (Eqt X (Max__max (Max__max a b) (Max__max c d)) (Max__max (Max__max a c) (Max__max b d))).
+sup_sup_sup_comm : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> Proof (Eqt X (Max__max X (Max__max X a b) (Max__max X c d)) (Max__max X (Max__max X a c) (Max__max X b d))).
 

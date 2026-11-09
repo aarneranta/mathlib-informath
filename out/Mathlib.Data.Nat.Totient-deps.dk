@@ -8,36 +8,40 @@ Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Pr
 (; //LEAN:Even.two_dvd ;)
 Even__two_dvd : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (h : Proof (even a)) -> Proof (divide 2 a).
 
+(; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
+(; //LEAN:Finset ;)
+Finset : (X : Set) -> Set.
+
 (; doc: The finset $[a, b)$ of elements `x` such that `a ≤ x` and `x < b`. Basically `Set.Ico a b` as a finset. ;)
 (; //LEAN:Finset.Ico ;)
-Finset__Ico : (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
+Finset__Ico : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
 
 (; doc: `s.card` is the number of elements of `s`, aka its cardinality.  The notation `#s` can be accessed in the `Finset` locale. ;)
 (; //LEAN:Finset.card ;)
-Finset__card : (s : Elem (Finset X)) -> Elem Nat.
+Finset__card : (X : Set) -> (s : Elem (Finset X)) -> Elem Nat.
 
 (; //LEAN:Finset.card_filter_le ;)
-Finset__card_filter_le : (X : Set) -> (s : Elem (Finset X)) -> (p : (Elem X -> Prop)) -> Proof (Leq (Finset__card (Finset__filter (x1 => p x1) s)) (Finset__card s)).
+Finset__card_filter_le : (X : Set) -> (s : Elem (Finset X)) -> (p : (Elem X -> Prop)) -> Proof (Leq (Finset__card X (Finset__filter X (x1 => p x1) s)) (Finset__card X s)).
 
 (; //LEAN:Finset.card_lt_card ;)
-Finset__card_lt_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (HasSSubset__SSubset s t)) -> Proof (Lt (Finset__card s) (Finset__card t)).
+Finset__card_lt_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (HasSSubset__SSubset (Finset X) s t)) -> Proof (Lt (Finset__card X s) (Finset__card X t)).
 
 (; //LEAN:Finset.card_range ;)
-Finset__card_range : (n : Elem Nat) -> Proof (Eq (Finset__card (Finset__range n)) n).
+Finset__card_range : (n : Elem Nat) -> Proof (Eq (Finset__card Nat (Finset__range n)) n).
 
 (; doc: `Finset.filter p s` is the set of elements of `s` that satisfy `p`.  For example, one can use `s.filter (· ∈ t)` to get the intersection of `s` with `t : Set α` as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available). ;)
 (; //LEAN:Finset.filter ;)
-Finset__filter : (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Elem (Finset X).
+Finset__filter : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Elem (Finset X).
 
 (; //LEAN:Finset.filter_ssubset ;)
-Finset__filter_ssubset : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Proof (iff (HasSSubset__SSubset (Finset__filter (x1 => p x1) s) s) (exists X (x2 => and (Membership__mem s x2) (not (p x2))))).
+Finset__filter_ssubset : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Proof (iff (HasSSubset__SSubset (Finset X) (Finset__filter X (x1 => p x1) s) s) (exists X (x2 => and (Membership__mem X (Finset X) s x2) (not (p x2))))).
 
 (; //LEAN:Finset.mem_range._simp_1 ;)
-Finset__mem_range___simp_1 : (n : Elem Nat) -> (m : Elem Nat) -> Proof (Eqt Prop (Membership__mem (Finset__range n) m) (Lt m n)).
+Finset__mem_range___simp_1 : (n : Elem Nat) -> (m : Elem Nat) -> Proof (Eqt Prop (Membership__mem Nat (Finset Nat) (Finset__range n) m) (Lt m n)).
 
 (; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.prod ;)
-Finset__prod : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
 
 (; doc: `range n` is the set of natural numbers less than `n`. ;)
 (; //LEAN:Finset.range ;)
@@ -45,11 +49,11 @@ Finset__range : (n : Elem Nat) -> Elem (Finset Nat).
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
-Finset__sum : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
 
 (; doc: `prod f g` is the product of `g a (f a)` over the support of `f`. ;)
 (; //LEAN:Finsupp.prod ;)
-Finsupp__prod : (f : Elem (Finsupp X M)) -> (g : (Elem X -> Elem M -> N)) -> Elem N.
+Finsupp__prod : (X : Set) -> (M : Set) -> (N : Set) -> (f : Elem (Finsupp X M)) -> (g : (Elem X -> Elem M -> N)) -> Elem N.
 
 (; doc: `Fintype α` means that `α` is finite, i.e. there are only finitely many distinct elements of type `α`. The evidence of this is a finset `elems` (a list up to permutation without duplicates), together with a proof that everything of type `α` is in the list. ;)
 (; //LEAN:Fintype ;)
@@ -61,11 +65,11 @@ Fintype__card : (X : Set) -> Elem Nat.
 
 (; doc: Strict subset relation: `a ⊂ b`  Conventions for notations in identifiers:   * The recommended spelling of `⊂` in identifiers is `ssubset`. ;)
 (; //LEAN:HasSSubset.SSubset ;)
-HasSSubset__SSubset : (x : Elem X) -> (x1 : Elem X) -> Prop.
+HasSSubset__SSubset : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: `a⁻¹` computes the inverse of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `⁻¹` in identifiers is `inv`. ;)
 (; //LEAN:Inv.inv ;)
-Inv__inv : (x : Elem X) -> Elem X.
+Inv__inv : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: **Alias** of `le_of_le_of_eq`. ;)
 (; //LEAN:LE.le.trans_eq ;)
@@ -89,7 +93,7 @@ Mathlib__Meta__Positivity__PositivityExt : Set.
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
-Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
 
 (; doc: `m` and `n` are coprime, or relatively prime, if their `gcd` is 1. ;)
 (; //LEAN:Nat.Coprime ;)
@@ -98,6 +102,10 @@ Nat__Coprime : (m : Elem Nat) -> (n : Elem Nat) -> Prop.
 (; doc: `Nat.card α` is the cardinality of `α` as a natural number. If `α` is infinite, `Nat.card α = 0`. ;)
 (; //LEAN:Nat.card ;)
 Nat__card : (X : Set) -> Elem Nat.
+
+(; doc: The canonical homomorphism `Nat → R`. In most use cases, the target type will have a (semi)ring structure, and this homomorphism should be a (semi)ring homomorphism.  `NatCast` and `IntCast` exist to allow different libraries with their own types that can be notated as natural numbers to have consistent `simp` normal forms without needing to create coercion simplification sets that are aware of all combinations. Libraries should make it easy to work with `NatCast` where possible. For instance, in Mathlib there will be such a homomorphism (and thus a `NatCast R` instance) whenever `R` is an additive monoid with a `1`.  The prototypical example is `Int.ofNat`. ;)
+(; //LEAN:Nat.cast ;)
+Nat__cast : (R : Set) -> (x1 : Elem Nat) -> Elem R.
 
 (; //LEAN:Nat.coprime_zero_right._simp_1 ;)
 Nat__coprime_zero_right___simp_1 : (n : Elem Nat) -> Proof (Eqt Prop (Nat__Coprime n 0) (Eq n 1)).
@@ -119,15 +127,15 @@ Nat__prime_two : Proof (prime 2).
 
 (; doc: A type-class version of `n ≠ 0`. ;)
 (; //LEAN:NeZero ;)
-NeZero : (n : Elem R) -> Prop.
+NeZero : (R : Set) -> (n : Elem R) -> Prop.
 
 (; doc: Given the set `s`, `Elem s` is the `Type` of element of `s`.  It is currently an abbreviation so that instance coming from `Subtype` are available. If you're interested in making it a `def`, as it probably should be, you'll then need to create additional instances (and possibly prove lemmas about them). See e.g. `Mathlib/Data/Set/Order.lean`. ;)
 (; //LEAN:Set.Elem ;)
-Set__Elem : (s : Elem (powerset X)) -> Set.
+Set__Elem : (X : Set) -> (s : Elem (powerset X)) -> Set.
 
 (; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
 (; //LEAN:Set.ofPred ;)
-Set__ofPred : (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
 
 (; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:True ;)

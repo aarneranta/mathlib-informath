@@ -4,7 +4,7 @@
 Preorder : (X : Set) -> Prop.
 
 (; //LEAN:Preorder.mk ;)
-Preorder__mk : (le_refl : Proof (forall X (a2 => Leq a2 a2))) -> (le_trans : Proof (forall X (a1 => forall X (b1 => forall X (c => if (Leq a1 b1) (if (Leq b1 c) (Leq a1 c))))))) -> (lt_iff_le_not_ge : Proof (autoParam (forall X (a => forall X (b => iff (Lt a b) (and (Leq a b) (not (Leq b a)))))) Preorder__lt_iff_le_not_ge___autoParam)) -> Proof (Preorder X).
+Preorder__mk : (X : Set) -> (le_refl : Proof (forall X (a2 => Leq a2 a2))) -> (le_trans : Proof (forall X (a1 => forall X (b1 => forall X (c => if (Leq a1 b1) (if (Leq b1 c) (Leq a1 c))))))) -> (lt_iff_le_not_ge : Proof (autoParam (forall X (a => forall X (b => iff (Lt a b) (and (Leq a b) (not (Leq b a)))))) Preorder__lt_iff_le_not_ge___autoParam)) -> Proof (Preorder X).
 
 (; //LEAN:Preorder.le_refl ;)
 Preorder__le_refl : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> Proof (Leq a a).
@@ -127,19 +127,19 @@ lt_iff_le_iff_gt_iff_ge : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) 
 lt_iff_ge_iff_gt_iff_le : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (iff (Lt a b) (Leq b a)) (iff (Lt b a) (Leq a b))).
 
 (; //LEAN:decidableLTOfDecidableLE ;)
-def decidableLTOfDecidableLE : Proof (DecidableLT X) :=
-  x2 => x3 => decidable_of_iff (and (Leq x2 x3) (not (Leq x3 x2))) (decidableLTOfDecidableLE___proof_1 x2 x3).
+def decidableLTOfDecidableLE : (X : Set) -> Proof (DecidableLT X) :=
+  X => x2 => x3 => decidable_of_iff (Lt x2 x3) (and (Leq x2 x3) (not (Leq x3 x2))) (decidableLTOfDecidableLE___proof_1 X x2 x3).
 
 (; //LEAN:WCovBy ;)
-def WCovBy : (a : Elem X) -> (b : Elem X) -> Prop :=
-  a => b => and (Leq a b) (forall X (c => if (Lt a c) (not (Lt c b)))).
+def WCovBy : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Prop :=
+  X => a => b => and (Leq a b) (forall X (c => if (Lt a c) (not (Lt c b)))).
 
 (; //LEAN:«term_⩿_» ;)
 term__u2a7f__ : Elem Lean__TrailingParserDescr.
 
 (; //LEAN:CovBy ;)
-def CovBy : (a : Elem X) -> (b : Elem X) -> Prop :=
-  a => b => and (Lt a b) (forall X (c => if (Lt a c) (not (Lt c b)))).
+def CovBy : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Prop :=
+  X => a => b => and (Lt a b) (forall X (c => if (Lt a c) (not (Lt c b)))).
 
 (; //LEAN:«term_⋖_» ;)
 term__u22d6__ : Elem Lean__TrailingParserDescr.
@@ -148,7 +148,7 @@ term__u22d6__ : Elem Lean__TrailingParserDescr.
 PartialOrder : (X : Set) -> Prop.
 
 (; //LEAN:PartialOrder.mk ;)
-PartialOrder__mk : (le_antisymm : Proof (forall X (a => forall X (b => if (Leq a b) (if (Leq b a) (Eqt X a b)))))) -> Proof (PartialOrder X).
+PartialOrder__mk : (X : Set) -> (le_antisymm : Proof (forall X (a => forall X (b => if (Leq a b) (if (Leq b a) (Eqt X a b)))))) -> Proof (PartialOrder X).
 
 (; //LEAN:PartialOrder.le_antisymm ;)
 PartialOrder__le_antisymm : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq b a)) -> Proof (Eqt X a b).
@@ -189,20 +189,20 @@ def lt_of_le_of_ne : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -
 
 (; //LEAN:lt_of_ne_of_le ;)
 def lt_of_ne_of_le : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Neq a b)) -> (h1 : Proof (Leq a b)) -> Proof (Lt a b) :=
-  X => x => a => b => flip (lt_of_le_of_ne X a b).
+  X => x => a => b => flip (Leq a b) (Neq a b) (Lt a b) (lt_of_le_of_ne X a b).
 
 (; //LEAN:lt_of_ne_of_le' ;)
 lt_of_ne_of_le' : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Neq a b)) -> (h1 : Proof (Leq b a)) -> Proof (Lt b a).
 
 (; //LEAN:decidableEqOfDecidableLE ;)
-decidableEqOfDecidableLE : Proof (DecidableEq X).
+decidableEqOfDecidableLE : (X : Set) -> Proof (DecidableEq X).
 
 (; //LEAN:Decidable.lt_or_eq_of_le' ;)
 Decidable__lt_or_eq_of_le' : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Leq b a)) -> Proof (or (Lt b a) (Eqt X a b)).
 
 (; //LEAN:Decidable.lt_or_eq_of_le ;)
 def Decidable__lt_or_eq_of_le : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Leq a b)) -> Proof (or (Lt a b) (Eqt X a b)) :=
-  X => x => a => b => hab => dite (Leq b a) (ifI (Leq b a) (or (Lt a b) (Eqt X a b)) (hba => orIr (Lt a b) (Eqt X a b) (le_antisymm X a b hab hba))) (ifI (not (Leq b a)) (or (Lt a b) (Eqt X a b)) (hba1 => orIl (Lt a b) (Eqt X a b) (lt_of_le_not_ge X a b hab hba1))).
+  X => x => a => b => hab => dite (or (Lt a b) (Eqt X a b)) (Leq b a) (ifI (Leq b a) (or (Lt a b) (Eqt X a b)) (hba => orIr (Lt a b) (Eqt X a b) (le_antisymm X a b hab hba))) (ifI (not (Leq b a)) (or (Lt a b) (Eqt X a b)) (hba1 => orIl (Lt a b) (Eqt X a b) (lt_of_le_not_ge X a b hab hba1))).
 
 (; //LEAN:Decidable.le_iff_lt_or_eq ;)
 def Decidable__le_iff_lt_or_eq : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Leq a b) (or (Lt a b) (Eqt X a b))) :=

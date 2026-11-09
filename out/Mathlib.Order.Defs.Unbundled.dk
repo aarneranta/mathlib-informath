@@ -13,31 +13,31 @@ IsTrans__trans : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Is
 IsPreorder : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; //LEAN:IsPreorder.mk ;)
-IsPreorder__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Refl r)) -> (_ : Proof (IsTrans X r)) -> Proof (IsPreorder X r).
+IsPreorder__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Refl X r)) -> (_ : Proof (IsTrans X r)) -> Proof (IsPreorder X r).
 
 (; //LEAN:IsPartialOrder ;)
 IsPartialOrder : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; //LEAN:IsPartialOrder.mk ;)
-IsPartialOrder__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (IsPreorder X r)) -> (_ : Proof (Std__Antisymm r)) -> Proof (IsPartialOrder X r).
+IsPartialOrder__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (IsPreorder X r)) -> (_ : Proof (Std__Antisymm X r)) -> Proof (IsPartialOrder X r).
 
 (; //LEAN:IsLinearOrder ;)
 IsLinearOrder : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; //LEAN:IsLinearOrder.mk ;)
-IsLinearOrder__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (IsPartialOrder X r)) -> (_ : Proof (Std__Total r)) -> Proof (IsLinearOrder X r).
+IsLinearOrder__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (IsPartialOrder X r)) -> (_ : Proof (Std__Total X r)) -> Proof (IsLinearOrder X r).
 
 (; //LEAN:IsEquiv ;)
 IsEquiv : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; //LEAN:IsEquiv.mk ;)
-IsEquiv__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (IsPreorder X r)) -> (_ : Proof (Std__Symm r)) -> Proof (IsEquiv X r).
+IsEquiv__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (IsPreorder X r)) -> (_ : Proof (Std__Symm X r)) -> Proof (IsEquiv X r).
 
 (; //LEAN:IsStrictOrder ;)
 IsStrictOrder : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; //LEAN:IsStrictOrder.mk ;)
-IsStrictOrder__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl r)) -> (_ : Proof (IsTrans X r)) -> Proof (IsStrictOrder X r).
+IsStrictOrder__mk : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl X r)) -> (_ : Proof (IsTrans X r)) -> Proof (IsStrictOrder X r).
 
 (; //LEAN:IsStrictWeakOrder ;)
 IsStrictWeakOrder : (X : Set) -> (lt : (Elem X -> Elem X -> Prop)) -> Prop.
@@ -52,26 +52,26 @@ IsStrictWeakOrder__incomp_trans : (X : Set) -> (lt : (Elem X -> Elem X -> Prop))
 IsStrictTotalOrder : (X : Set) -> (lt : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; //LEAN:IsStrictTotalOrder.mk ;)
-IsStrictTotalOrder__mk : (X : Set) -> (lt : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Trichotomous lt)) -> (_ : Proof (IsStrictOrder X lt)) -> Proof (IsStrictTotalOrder X lt).
+IsStrictTotalOrder__mk : (X : Set) -> (lt : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Trichotomous X lt)) -> (_ : Proof (IsStrictOrder X lt)) -> Proof (IsStrictTotalOrder X lt).
 
 (; //LEAN:Equivalence.of_isEquiv ;)
-def Equivalence__of_isEquiv : (X : Set) -> (lt : (Elem X -> Elem X -> Prop)) -> (_ : Proof (IsEquiv X lt)) -> Proof (Equivalence lt) :=
+def Equivalence__of_isEquiv : (X : Set) -> (lt : (Elem X -> Elem X -> Prop)) -> (_ : Proof (IsEquiv X lt)) -> Proof (Equivalence X lt) :=
   X => lt => h => Equivalence__mk X lt (Std__Refl__refl X lt) (forallI X (x => forall X (x2 => if (lt x x2) (lt x2 x))) (x => forallI X (x1 => if (lt x x1) (lt x1 x)) (x1 => Std__Symm__symm X lt x x1))) (forallI X (x3 => forall X (x7 => forall X (x8 => if (lt x3 x7) (if (lt x7 x8) (lt x3 x8))))) (x3 => forallI X (x4 => forall X (x6 => if (lt x3 x4) (if (lt x4 x6) (lt x3 x6)))) (x4 => forallI X (x5 => if (lt x3 x4) (if (lt x4 x5) (lt x3 x5))) (x5 => IsTrans__trans X lt x3 x4 x5)))).
 
 (; //LEAN:IsEquiv.of_equivalence ;)
-def IsEquiv__of_equivalence : (X : Set) -> (lt : (Elem X -> Elem X -> Prop)) -> (h : Proof (Equivalence lt)) -> Proof (IsEquiv X lt) :=
+def IsEquiv__of_equivalence : (X : Set) -> (lt : (Elem X -> Elem X -> Prop)) -> (h : Proof (Equivalence X lt)) -> Proof (IsEquiv X lt) :=
   X => lt => h => IsEquiv__mk X lt.
 
 (; //LEAN:equivalence_iff_isEquiv ;)
-def equivalence_iff_isEquiv : (X : Set) -> (lt : (Elem X -> Elem X -> Prop)) -> Proof (iff (Equivalence lt) (IsEquiv X lt)) :=
-  X => lt => iffI (Equivalence lt) (IsEquiv X lt) (IsEquiv__of_equivalence X lt) (h => Equivalence__of_isEquiv X lt).
+def equivalence_iff_isEquiv : (X : Set) -> (lt : (Elem X -> Elem X -> Prop)) -> Proof (iff (Equivalence X lt) (IsEquiv X lt)) :=
+  X => lt => iffI (Equivalence X lt) (IsEquiv X lt) (IsEquiv__of_equivalence X lt) (h => Equivalence__of_isEquiv X lt).
 
 (; //LEAN:irrefl ;)
-def irrefl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl r)) -> (a : Elem X) -> Proof (not (r a a)) :=
+def irrefl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl X r)) -> (a : Elem X) -> Proof (not (r a a)) :=
   X => r => h => a => Std__Irrefl__irrefl X r a.
 
 (; //LEAN:refl ;)
-def refl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Refl r)) -> (a : Elem X) -> Proof (r a a) :=
+def refl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Refl X r)) -> (a : Elem X) -> Proof (r a a) :=
   X => r => h => a => Std__Refl__refl X r a.
 
 (; //LEAN:trans ;)
@@ -79,59 +79,59 @@ def trans : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> (b 
   X => r => a => b => c => h => IsTrans__trans X r a b c.
 
 (; //LEAN:symm ;)
-def symm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (Std__Symm r)) -> (h1 : Proof (r a b)) -> Proof (r b a) :=
+def symm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (Std__Symm X r)) -> (h1 : Proof (r a b)) -> Proof (r b a) :=
   X => r => a => b => h => Std__Symm__symm X r a b.
 
 (; //LEAN:antisymm ;)
-def antisymm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (Std__Antisymm r)) -> (h1 : Proof (r a b)) -> (h2 : Proof (r b a)) -> Proof (Eqt X a b) :=
+def antisymm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (Std__Antisymm X r)) -> (h1 : Proof (r a b)) -> (h2 : Proof (r b a)) -> Proof (Eqt X a b) :=
   X => r => a => b => h => Std__Antisymm__antisymm X r a b.
 
 (; //LEAN:asymm ;)
-def asymm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (Std__Asymm r)) -> (h1 : Proof (r a b)) -> Proof (not (r b a)) :=
+def asymm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (Std__Asymm X r)) -> (h1 : Proof (r a b)) -> Proof (not (r b a)) :=
   X => r => a => b => h => Std__Asymm__asymm X r a b.
 
 (; //LEAN:trichotomous ;)
-def trichotomous : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Trichotomous r)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (r a b) (or (Eqt X a b) (r b a))) :=
+def trichotomous : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Trichotomous X r)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (r a b) (or (Eqt X a b) (r b a))) :=
   X => r => h => a => b => Std__Trichotomous__rel_or_eq_or_rel_swap X r a b.
 
 (; //LEAN:irrefl_def ;)
-def irrefl_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (Std__Irrefl r) (forall X (a => not (r a a)))) :=
-  X => r => iffI (Std__Irrefl r) (forall X (a => not (r a a))) (h => Std__Irrefl__irrefl X r) (Std__Irrefl__mk X r).
+def irrefl_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (Std__Irrefl X r) (forall X (a => not (r a a)))) :=
+  X => r => iffI (Std__Irrefl X r) (forall X (a => not (r a a))) (h => Std__Irrefl__irrefl X r) (Std__Irrefl__mk X r).
 
 (; //LEAN:refl_def ;)
-def refl_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (Std__Refl r) (forall X (a => r a a))) :=
-  X => r => iffI (Std__Refl r) (forall X (a => r a a)) (h => Std__Refl__refl X r) (Std__Refl__mk X r).
+def refl_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (Std__Refl X r) (forall X (a => r a a))) :=
+  X => r => iffI (Std__Refl X r) (forall X (a => r a a)) (h => Std__Refl__refl X r) (Std__Refl__mk X r).
 
 (; //LEAN:isTrans_def ;)
 def isTrans_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (IsTrans X r) (forall X (a => forall X (b => forall X (c => if (r a b) (if (r b c) (r a c))))))) :=
   X => r => iffI (IsTrans X r) (forall X (a => forall X (b => forall X (c => if (r a b) (if (r b c) (r a c)))))) (h2 => IsTrans__trans X r) (IsTrans__mk X r).
 
 (; //LEAN:symm_def ;)
-def symm_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (Std__Symm r) (forall X (a => forall X (b => if (r a b) (r b a))))) :=
-  X => r => iffI (Std__Symm r) (forall X (a => forall X (b => if (r a b) (r b a)))) (h1 => Std__Symm__symm X r) (Std__Symm__mk X r).
+def symm_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (Std__Symm X r) (forall X (a => forall X (b => if (r a b) (r b a))))) :=
+  X => r => iffI (Std__Symm X r) (forall X (a => forall X (b => if (r a b) (r b a)))) (h1 => Std__Symm__symm X r) (Std__Symm__mk X r).
 
 (; //LEAN:antisymm_def ;)
-def antisymm_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (Std__Antisymm r) (forall X (a => forall X (b => if (r a b) (if (r b a) (Eqt X a b)))))) :=
-  X => r => iffI (Std__Antisymm r) (forall X (a => forall X (b => if (r a b) (if (r b a) (Eqt X a b))))) (h2 => Std__Antisymm__antisymm X r) (Std__Antisymm__mk X r).
+def antisymm_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (Std__Antisymm X r) (forall X (a => forall X (b => if (r a b) (if (r b a) (Eqt X a b)))))) :=
+  X => r => iffI (Std__Antisymm X r) (forall X (a => forall X (b => if (r a b) (if (r b a) (Eqt X a b))))) (h2 => Std__Antisymm__antisymm X r) (Std__Antisymm__mk X r).
 
 (; //LEAN:asymm_def ;)
-def asymm_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (Std__Asymm r) (forall X (a => forall X (b => if (r a b) (not (r b a)))))) :=
-  X => r => iffI (Std__Asymm r) (forall X (a => forall X (b => if (r a b) (not (r b a))))) (h1 => Std__Asymm__asymm X r) (Std__Asymm__mk X r).
+def asymm_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (Std__Asymm X r) (forall X (a => forall X (b => if (r a b) (not (r b a)))))) :=
+  X => r => iffI (Std__Asymm X r) (forall X (a => forall X (b => if (r a b) (not (r b a))))) (h1 => Std__Asymm__asymm X r) (Std__Asymm__mk X r).
 
 (; //LEAN:total_def ;)
-def total_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (Std__Total r) (forall X (a => forall X (b => or (r a b) (r b a))))) :=
-  X => r => iffI (Std__Total r) (forall X (a => forall X (b => or (r a b) (r b a)))) (h => Std__Total__total X r) (Std__Total__mk X r).
+def total_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (Std__Total X r) (forall X (a => forall X (b => or (r a b) (r b a))))) :=
+  X => r => iffI (Std__Total X r) (forall X (a => forall X (b => or (r a b) (r b a)))) (h => Std__Total__total X r) (Std__Total__mk X r).
 
 (; //LEAN:trichotomous_def ;)
-def trichotomous_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (Std__Trichotomous r) (forall X (a => forall X (b => if (not (r a b)) (if (not (r b a)) (Eqt X a b)))))) :=
-  X => r => iffI (Std__Trichotomous r) (forall X (a => forall X (b => if (not (r a b)) (if (not (r b a)) (Eqt X a b))))) (h2 => Std__Trichotomous__trichotomous X r) (Std__Trichotomous__mk X r).
+def trichotomous_def : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Proof (iff (Std__Trichotomous X r) (forall X (a => forall X (b => if (not (r a b)) (if (not (r b a)) (Eqt X a b)))))) :=
+  X => r => iffI (Std__Trichotomous X r) (forall X (a => forall X (b => if (not (r a b)) (if (not (r b a)) (Eqt X a b))))) (h2 => Std__Trichotomous__trichotomous X r) (Std__Trichotomous__mk X r).
 
 (; //LEAN:irrefl_of ;)
-def irrefl_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl r)) -> (a : Elem X) -> Proof (not (r a a)) :=
+def irrefl_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl X r)) -> (a : Elem X) -> Proof (not (r a a)) :=
   X => r => h => a => irrefl X r a.
 
 (; //LEAN:refl_of ;)
-def refl_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Refl r)) -> (a : Elem X) -> Proof (r a a) :=
+def refl_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Refl X r)) -> (a : Elem X) -> Proof (r a a) :=
   X => r => h => a => refl X r a.
 
 (; //LEAN:trans_of ;)
@@ -139,19 +139,19 @@ def trans_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> 
   X => r => a => b => c => h => trans X r a b c.
 
 (; //LEAN:symm_of ;)
-def symm_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (Std__Symm r)) -> (h1 : Proof (r a b)) -> Proof (r b a) :=
+def symm_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (Std__Symm X r)) -> (h1 : Proof (r a b)) -> Proof (r b a) :=
   X => r => a => b => h => symm X r a b.
 
 (; //LEAN:asymm_of ;)
-def asymm_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (Std__Asymm r)) -> (h1 : Proof (r a b)) -> Proof (not (r b a)) :=
+def asymm_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (Std__Asymm X r)) -> (h1 : Proof (r a b)) -> Proof (not (r b a)) :=
   X => r => a => b => h => asymm X r a b.
 
 (; //LEAN:total_of ;)
-def total_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Total r)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (r a b) (r b a)) :=
+def total_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Total X r)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (r a b) (r b a)) :=
   X => r => h => a => b => Std__Total__total X r a b.
 
 (; //LEAN:trichotomous_of ;)
-def trichotomous_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Trichotomous r)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (r a b) (or (Eqt X a b) (r b a))) :=
+def trichotomous_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Trichotomous X r)) -> (a : Elem X) -> (b : Elem X) -> Proof (or (r a b) (or (Eqt X a b) (r b a))) :=
   X => r => h => trichotomous X r.
 
 (; //LEAN:stdIsPreorder_iff ;)
@@ -165,198 +165,198 @@ stdIsPartialOrder_iff : (X : Set) -> (_ : Proof (LE X)) -> Proof (iff (Std__IsPa
 stdIsLinearOrder_iff : (X : Set) -> (_ : Proof (LE X)) -> Proof (iff (Std__IsLinearOrder X) (IsLinearOrder X (x1 => x2 => Leq x1 x2))).
 
 (; //LEAN:Equivalence.stdRefl ;)
-def Equivalence__stdRefl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (h : Proof (Equivalence r)) -> Proof (Std__Refl r) :=
+def Equivalence__stdRefl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (h : Proof (Equivalence X r)) -> Proof (Std__Refl X r) :=
   X => r => h => Std__Refl__mk X r (Equivalence__refl X r h).
 
 (; //LEAN:Equivalence.stdSymm ;)
-def Equivalence__stdSymm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (h : Proof (Equivalence r)) -> Proof (Std__Symm r) :=
+def Equivalence__stdSymm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (h : Proof (Equivalence X r)) -> Proof (Std__Symm X r) :=
   X => r => h => Std__Symm__mk X r (forallI X (x => forall X (x2 => if (r x x2) (r x2 x))) (x => forallI X (x1 => if (r x x1) (r x1 x)) (x1 => Equivalence__symm X r h x x1))).
 
 (; //LEAN:Equivalence.isTrans ;)
-def Equivalence__isTrans : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (h : Proof (Equivalence r)) -> Proof (IsTrans X r) :=
+def Equivalence__isTrans : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (h : Proof (Equivalence X r)) -> Proof (IsTrans X r) :=
   X => r => h => IsTrans__mk X r (forallI X (x => forall X (x4 => forall X (x5 => if (r x x4) (if (r x4 x5) (r x x5))))) (x => forallI X (x1 => forall X (x3 => if (r x x1) (if (r x1 x3) (r x x3)))) (x1 => forallI X (x2 => if (r x x1) (if (r x1 x2) (r x x2))) (x2 => Equivalence__trans X r h x x1 x2)))).
 
 (; //LEAN:Equivalence.isEquiv ;)
-def Equivalence__isEquiv : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (h : Proof (Equivalence r)) -> Proof (IsEquiv X r) :=
+def Equivalence__isEquiv : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (h : Proof (Equivalence X r)) -> Proof (IsEquiv X r) :=
   X => r => h => IsEquiv__mk X r.
 
 (; //LEAN:Minimal ;)
-def Minimal : (P : (Elem X -> Prop)) -> (x1 : Elem X) -> Prop :=
-  P => x1 => and (P x1) (forall X (y => if (P y) (if (Leq y x1) (Leq x1 y)))).
+def Minimal : (X : Set) -> (P : (Elem X -> Prop)) -> (x1 : Elem X) -> Prop :=
+  X => P => x1 => and (P x1) (forall X (y => if (P y) (if (Leq y x1) (Leq x1 y)))).
 
 (; //LEAN:Maximal ;)
-Maximal : (P : (Elem X -> Prop)) -> (x1 : Elem X) -> Prop.
+Maximal : (X : Set) -> (P : (Elem X -> Prop)) -> (x1 : Elem X) -> Prop.
 
 (; //LEAN:Maximal.prop ;)
-Maximal__prop : (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem X) -> (h : Proof (Maximal P x1)) -> Proof (P x1).
+Maximal__prop : (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem X) -> (h : Proof (Maximal X P x1)) -> Proof (P x1).
 
 (; //LEAN:Minimal.prop ;)
-def Minimal__prop : (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem X) -> (h : Proof (Minimal P x1)) -> Proof (P x1) :=
+def Minimal__prop : (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem X) -> (h : Proof (Minimal X P x1)) -> Proof (P x1) :=
   X => x => P => x1 => h => andEl (P x1) (forall X (y => if (P y) (if (Leq y x1) (Leq x1 y)))) h.
 
 (; //LEAN:Maximal.le_of_ge ;)
-Maximal__le_of_ge : (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem X) -> (y : Elem X) -> (h : Proof (Maximal P x1)) -> (hy : Proof (P y)) -> (hle : Proof (Leq x1 y)) -> Proof (Leq y x1).
+Maximal__le_of_ge : (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem X) -> (y : Elem X) -> (h : Proof (Maximal X P x1)) -> (hy : Proof (P y)) -> (hle : Proof (Leq x1 y)) -> Proof (Leq y x1).
 
 (; //LEAN:Minimal.le_of_le ;)
-def Minimal__le_of_le : (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem X) -> (y : Elem X) -> (h : Proof (Minimal P x1)) -> (hy : Proof (P y)) -> (hle : Proof (Leq y x1)) -> Proof (Leq x1 y) :=
+def Minimal__le_of_le : (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem X -> Prop)) -> (x1 : Elem X) -> (y : Elem X) -> (h : Proof (Minimal X P x1)) -> (hy : Proof (P y)) -> (hle : Proof (Leq y x1)) -> Proof (Leq x1 y) :=
   X => x => P => x1 => y => h => hy => hle => andEr (P x1) (forall X (y1 => if (P y1) (if (Leq y1 x1) (Leq x1 y1)))) h y hy hle.
 
 (; //LEAN:MinimalFor ;)
-def MinimalFor : (P : (Elem I -> Prop)) -> (f : (Elem I -> X)) -> (i : Elem I) -> Prop :=
-  P => f => i => and (P i) (forall I (j => if (P j) (if (Leq (f j) (f i)) (Leq (f i) (f j))))).
+def MinimalFor : (I : Set) -> (X : Set) -> (P : (Elem I -> Prop)) -> (f : (Elem I -> X)) -> (i : Elem I) -> Prop :=
+  I => X => P => f => i => and (P i) (forall I (j => if (P j) (if (Leq (f j) (f i)) (Leq (f i) (f j))))).
 
 (; //LEAN:MaximalFor ;)
-MaximalFor : (P : (Elem I -> Prop)) -> (f : (Elem I -> X)) -> (i : Elem I) -> Prop.
+MaximalFor : (I : Set) -> (X : Set) -> (P : (Elem I -> Prop)) -> (f : (Elem I -> X)) -> (i : Elem I) -> Prop.
 
 (; //LEAN:MaximalFor.prop ;)
-MaximalFor__prop : (I : Set) -> (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem I -> Prop)) -> (f : (Elem I -> X)) -> (i : Elem I) -> (h : Proof (MaximalFor P f i)) -> Proof (P i).
+MaximalFor__prop : (I : Set) -> (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem I -> Prop)) -> (f : (Elem I -> X)) -> (i : Elem I) -> (h : Proof (MaximalFor I X P f i)) -> Proof (P i).
 
 (; //LEAN:MinimalFor.prop ;)
-def MinimalFor__prop : (I : Set) -> (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem I -> Prop)) -> (f : (Elem I -> X)) -> (i : Elem I) -> (h : Proof (MinimalFor P f i)) -> Proof (P i) :=
+def MinimalFor__prop : (I : Set) -> (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem I -> Prop)) -> (f : (Elem I -> X)) -> (i : Elem I) -> (h : Proof (MinimalFor I X P f i)) -> Proof (P i) :=
   I => X => x => P => f => i => h => andEl (P i) (forall I (j => if (P j) (if (Leq (f j) (f i)) (Leq (f i) (f j))))) h.
 
 (; //LEAN:MaximalFor.le_of_le ;)
-MaximalFor__le_of_le : (I : Set) -> (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem I -> Prop)) -> (f : (Elem I -> X)) -> (i : Elem I) -> (j : Elem I) -> (h : Proof (MaximalFor P f i)) -> (hj : Proof (P j)) -> (hji : Proof (Leq (f i) (f j))) -> Proof (Leq (f j) (f i)).
+MaximalFor__le_of_le : (I : Set) -> (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem I -> Prop)) -> (f : (Elem I -> X)) -> (i : Elem I) -> (j : Elem I) -> (h : Proof (MaximalFor I X P f i)) -> (hj : Proof (P j)) -> (hji : Proof (Leq (f i) (f j))) -> Proof (Leq (f j) (f i)).
 
 (; //LEAN:MinimalFor.le_of_le ;)
-def MinimalFor__le_of_le : (I : Set) -> (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem I -> Prop)) -> (f : (Elem I -> X)) -> (i : Elem I) -> (j : Elem I) -> (h : Proof (MinimalFor P f i)) -> (hj : Proof (P j)) -> (hji : Proof (Leq (f j) (f i))) -> Proof (Leq (f i) (f j)) :=
+def MinimalFor__le_of_le : (I : Set) -> (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem I -> Prop)) -> (f : (Elem I -> X)) -> (i : Elem I) -> (j : Elem I) -> (h : Proof (MinimalFor I X P f i)) -> (hj : Proof (P j)) -> (hji : Proof (Leq (f j) (f i))) -> Proof (Leq (f i) (f j)) :=
   I => X => x => P => f => i => j => h => hj => hji => andEr (P i) (forall I (j1 => if (P j1) (if (Leq (f j1) (f i)) (Leq (f i) (f j1))))) h j hj hji.
 
 (; //LEAN:IsUpperSet ;)
-def IsUpperSet : (s : Elem (powerset X)) -> Prop :=
-  s => forall X (a => forall X (b => if (Leq a b) (if (Membership__mem s a) (Membership__mem s b)))).
+def IsUpperSet : (X : Set) -> (s : Elem (powerset X)) -> Prop :=
+  X => s => forall X (a => forall X (b => if (Leq a b) (if (Membership__mem X (powerset X) s a) (Membership__mem X (powerset X) s b)))).
 
 (; //LEAN:IsLowerSet ;)
-IsLowerSet : (s : Elem (powerset X)) -> Prop.
+IsLowerSet : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; //LEAN:UpperSet ;)
 UpperSet : (X : Set) -> Set.
 
 (; //LEAN:UpperSet.mk ;)
-UpperSet__mk : (carrier : Elem (powerset X)) -> (upper' : Proof (IsUpperSet carrier)) -> Elem (UpperSet X).
+UpperSet__mk : (X : Set) -> (carrier : Elem (powerset X)) -> (upper' : Proof (IsUpperSet X carrier)) -> Elem (UpperSet X).
 
 (; //LEAN:UpperSet.carrier ;)
-UpperSet__carrier : (self : Elem (UpperSet X)) -> Elem (powerset X).
+UpperSet__carrier : (X : Set) -> (self : Elem (UpperSet X)) -> Elem (powerset X).
 
 (; //LEAN:UpperSet.upper' ;)
-UpperSet__upper' : (X : Set) -> (_ : Proof (LE X)) -> (self : Elem (UpperSet X)) -> Proof (IsUpperSet (UpperSet__carrier self)).
+UpperSet__upper' : (X : Set) -> (_ : Proof (LE X)) -> (self : Elem (UpperSet X)) -> Proof (IsUpperSet X (UpperSet__carrier X self)).
 
 (; //LEAN:LowerSet ;)
 LowerSet : (X : Set) -> Set.
 
 (; //LEAN:LowerSet.mk ;)
-LowerSet__mk : (carrier : Elem (powerset X)) -> (lower' : Proof (IsLowerSet carrier)) -> Elem (LowerSet X).
+LowerSet__mk : (X : Set) -> (carrier : Elem (powerset X)) -> (lower' : Proof (IsLowerSet X carrier)) -> Elem (LowerSet X).
 
 (; //LEAN:LowerSet.carrier ;)
-LowerSet__carrier : (self : Elem (LowerSet X)) -> Elem (powerset X).
+LowerSet__carrier : (X : Set) -> (self : Elem (LowerSet X)) -> Elem (powerset X).
 
 (; //LEAN:LowerSet.lower' ;)
-LowerSet__lower' : (X : Set) -> (_ : Proof (LE X)) -> (self : Elem (LowerSet X)) -> Proof (IsLowerSet (LowerSet__carrier self)).
+LowerSet__lower' : (X : Set) -> (_ : Proof (LE X)) -> (self : Elem (LowerSet X)) -> Proof (IsLowerSet X (LowerSet__carrier X self)).
 
 (; //LEAN:IsRelUpperSet ;)
-def IsRelUpperSet : (s : Elem (powerset X)) -> (P : (Elem X -> Prop)) -> Prop :=
-  s => P => forall X (a => if (Membership__mem s a) (and (P a) (forall X (b => if (Leq a b) (if (P b) (Membership__mem s b)))))).
+def IsRelUpperSet : (X : Set) -> (s : Elem (powerset X)) -> (P : (Elem X -> Prop)) -> Prop :=
+  X => s => P => forall X (a => if (Membership__mem X (powerset X) s a) (and (P a) (forall X (b => if (Leq a b) (if (P b) (Membership__mem X (powerset X) s b)))))).
 
 (; //LEAN:IsRelLowerSet ;)
-IsRelLowerSet : (s : Elem (powerset X)) -> (P : (Elem X -> Prop)) -> Prop.
+IsRelLowerSet : (X : Set) -> (s : Elem (powerset X)) -> (P : (Elem X -> Prop)) -> Prop.
 
 (; //LEAN:RelUpperSet ;)
-RelUpperSet : (P : (Elem X -> Prop)) -> Set.
+RelUpperSet : (X : Set) -> (P : (Elem X -> Prop)) -> Set.
 
 (; //LEAN:RelUpperSet.mk ;)
-RelUpperSet__mk : (carrier : Elem (powerset X)) -> (isRelUpperSet' : Proof (IsRelUpperSet carrier P)) -> Elem (RelUpperSet P).
+RelUpperSet__mk : (X : Set) -> (P : (Elem X -> Prop)) -> (carrier : Elem (powerset X)) -> (isRelUpperSet' : Proof (IsRelUpperSet X carrier P)) -> Elem (RelUpperSet X P).
 
 (; //LEAN:RelUpperSet.carrier ;)
-RelUpperSet__carrier : (self : Elem (RelUpperSet P)) -> Elem (powerset X).
+RelUpperSet__carrier : (X : Set) -> (P : (Elem X -> Prop)) -> (self : Elem (RelUpperSet X P)) -> Elem (powerset X).
 
 (; //LEAN:RelUpperSet.isRelUpperSet' ;)
-RelUpperSet__isRelUpperSet' : (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem X -> Prop)) -> (self : Elem (RelUpperSet P)) -> Proof (IsRelUpperSet (RelUpperSet__carrier self) P).
+RelUpperSet__isRelUpperSet' : (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem X -> Prop)) -> (self : Elem (RelUpperSet X P)) -> Proof (IsRelUpperSet X (RelUpperSet__carrier X P self) P).
 
 (; //LEAN:RelLowerSet ;)
-RelLowerSet : (P : (Elem X -> Prop)) -> Set.
+RelLowerSet : (X : Set) -> (P : (Elem X -> Prop)) -> Set.
 
 (; //LEAN:RelLowerSet.mk ;)
-RelLowerSet__mk : (carrier : Elem (powerset X)) -> (isRelLowerSet' : Proof (IsRelLowerSet carrier P)) -> Elem (RelLowerSet P).
+RelLowerSet__mk : (X : Set) -> (P : (Elem X -> Prop)) -> (carrier : Elem (powerset X)) -> (isRelLowerSet' : Proof (IsRelLowerSet X carrier P)) -> Elem (RelLowerSet X P).
 
 (; //LEAN:RelLowerSet.carrier ;)
-RelLowerSet__carrier : (self : Elem (RelLowerSet P)) -> Elem (powerset X).
+RelLowerSet__carrier : (X : Set) -> (P : (Elem X -> Prop)) -> (self : Elem (RelLowerSet X P)) -> Elem (powerset X).
 
 (; //LEAN:RelLowerSet.isRelLowerSet' ;)
-RelLowerSet__isRelLowerSet' : (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem X -> Prop)) -> (self : Elem (RelLowerSet P)) -> Proof (IsRelLowerSet (RelLowerSet__carrier self) P).
+RelLowerSet__isRelLowerSet' : (X : Set) -> (_ : Proof (LE X)) -> (P : (Elem X -> Prop)) -> (self : Elem (RelLowerSet X P)) -> Proof (IsRelLowerSet X (RelLowerSet__carrier X P self) P).
 
 (; //LEAN:of_eq ;)
-of_eq : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Refl r)) -> (a : Elem X) -> (b : Elem X) -> (h1 : Proof (Eqt X a b)) -> Proof (r a b).
+of_eq : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Refl X r)) -> (a : Elem X) -> (b : Elem X) -> (h1 : Proof (Eqt X a b)) -> Proof (r a b).
 
 (; //LEAN:comm ;)
-def comm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Symm r)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (r a b) (r b a)) :=
+def comm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Symm X r)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (r a b) (r b a)) :=
   X => r => h => a => b => iffI (r a b) (r b a) (symm X r a b) (symm X r b a).
 
 (; //LEAN:antisymm' ;)
-def antisymm' : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Antisymm r)) -> (a : Elem X) -> (b : Elem X) -> (h1 : Proof (r a b)) -> (h2 : Proof (r b a)) -> Proof (Eqt X b a) :=
+def antisymm' : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Antisymm X r)) -> (a : Elem X) -> (b : Elem X) -> (h1 : Proof (r a b)) -> (h2 : Proof (r b a)) -> Proof (Eqt X b a) :=
   X => r => h => a => b => h1 => h2 => antisymm X r b a h2 h1.
 
 (; //LEAN:antisymm_iff ;)
-def antisymm_iff : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Refl r)) -> (_ : Proof (Std__Antisymm r)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (and (r a b) (r b a)) (Eqt X a b)) :=
-  X => r => h => h1 => a => b => iffI (and (r a b) (r b a)) (Eqt X a b) (h2 => antisymm X r a b (andEl (r a b) (r b a) h2) (andEr (r a b) (r b a) h2)) (h3 => Eq__ndrec (andI (r a a) (r a a) (refl X r a) (refl X r a)) h3).
+def antisymm_iff : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Refl X r)) -> (_ : Proof (Std__Antisymm X r)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (and (r a b) (r b a)) (Eqt X a b)) :=
+  X => r => h => h1 => a => b => iffI (and (r a b) (r b a)) (Eqt X a b) (h2 => antisymm X r a b (andEl (r a b) (r b a) h2) (andEr (r a b) (r b a) h2)) (h3 => Eq__ndrec X a (b1 => and (r a b1) (r b1 a)) (andI (r a a) (r a a) (refl X r a) (refl X r a)) b h3).
 
 (; //LEAN:antisymm_of ;)
-def antisymm_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Antisymm r)) -> (a : Elem X) -> (b : Elem X) -> (h1 : Proof (r a b)) -> (h2 : Proof (r b a)) -> Proof (Eqt X a b) :=
+def antisymm_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Antisymm X r)) -> (a : Elem X) -> (b : Elem X) -> (h1 : Proof (r a b)) -> (h2 : Proof (r b a)) -> Proof (Eqt X a b) :=
   X => r => h => a => b => antisymm X r a b.
 
 (; //LEAN:antisymm_of' ;)
-def antisymm_of' : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Antisymm r)) -> (a : Elem X) -> (b : Elem X) -> (h1 : Proof (r a b)) -> (h2 : Proof (r b a)) -> Proof (Eqt X b a) :=
+def antisymm_of' : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Antisymm X r)) -> (a : Elem X) -> (b : Elem X) -> (h1 : Proof (r a b)) -> (h2 : Proof (r b a)) -> Proof (Eqt X b a) :=
   X => r => h => a => b => antisymm' X r a b.
 
 (; //LEAN:comm_of ;)
-def comm_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Symm r)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (r a b) (r b a)) :=
+def comm_of : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Symm X r)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (r a b) (r b a)) :=
   X => r => h => a => b => comm X r a b.
 
 (; //LEAN:Std.Asymm.antisymm ;)
-def Std__Asymm__antisymm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Asymm r)) -> Proof (Std__Antisymm r) :=
-  X => r => h => inferInstance.
+def Std__Asymm__antisymm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Asymm X r)) -> Proof (Std__Antisymm X r) :=
+  X => r => h => inferInstance (Std__Antisymm X r).
 
 (; //LEAN:Std.Asymm.irrefl ;)
-def Std__Asymm__irrefl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Asymm r)) -> Proof (Std__Irrefl r) :=
-  X => r => h => inferInstance.
+def Std__Asymm__irrefl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Asymm X r)) -> Proof (Std__Irrefl X r) :=
+  X => r => h => inferInstance (Std__Irrefl X r).
 
 (; //LEAN:Std.Total.trichotomous ;)
-def Std__Total__trichotomous : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Total r)) -> Proof (Std__Trichotomous r) :=
-  X => r => h => inferInstance.
+def Std__Total__trichotomous : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Total X r)) -> Proof (Std__Trichotomous X r) :=
+  X => r => h => inferInstance (Std__Trichotomous X r).
 
 (; //LEAN:ne_of_irrefl ;)
-ne_of_irrefl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl r)) -> (x : Elem X) -> (y : Elem X) -> (h1 : Proof (r x y)) -> Proof (Neq x y).
+ne_of_irrefl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl X r)) -> (x : Elem X) -> (y : Elem X) -> (h1 : Proof (r x y)) -> Proof (Neq x y).
 
 (; //LEAN:ne_of_irrefl' ;)
-ne_of_irrefl' : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl r)) -> (x : Elem X) -> (y : Elem X) -> (h1 : Proof (r x y)) -> Proof (Neq y x).
+ne_of_irrefl' : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl X r)) -> (x : Elem X) -> (y : Elem X) -> (h1 : Proof (r x y)) -> Proof (Neq y x).
 
 (; //LEAN:not_rel_of_subsingleton ;)
-not_rel_of_subsingleton : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl r)) -> (_ : Proof (Subsingleton X)) -> (x : Elem X) -> (y : Elem X) -> Proof (not (r x y)).
+not_rel_of_subsingleton : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl X r)) -> (_ : Proof (Subsingleton X)) -> (x : Elem X) -> (y : Elem X) -> Proof (not (r x y)).
 
 (; //LEAN:rel_of_subsingleton ;)
-rel_of_subsingleton : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Refl r)) -> (_ : Proof (Subsingleton X)) -> (x : Elem X) -> (y : Elem X) -> Proof (r x y).
+rel_of_subsingleton : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Refl X r)) -> (_ : Proof (Subsingleton X)) -> (x : Elem X) -> (y : Elem X) -> Proof (r x y).
 
 (; //LEAN:empty_relation_apply ;)
-def empty_relation_apply : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (emptyRelation a b) false) :=
-  X => a => b => Iff__rfl (emptyRelation a b).
+def empty_relation_apply : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (emptyRelation X a b) false) :=
+  X => a => b => Iff__rfl (emptyRelation X a b).
 
 (; //LEAN:rel_congr_left ;)
-def rel_congr_left : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Symm r)) -> (_ : Proof (IsTrans X r)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h2 : Proof (r a b)) -> Proof (iff (r a c) (r b c)) :=
+def rel_congr_left : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Symm X r)) -> (_ : Proof (IsTrans X r)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h2 : Proof (r a b)) -> Proof (iff (r a c) (r b c)) :=
   X => r => h => h1 => a => b => c => h2 => iffI (r a c) (r b c) (trans_of X r b a c (symm_of X r a b h2)) (trans_of X r a b c h2).
 
 (; //LEAN:rel_congr_right ;)
-def rel_congr_right : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Symm r)) -> (_ : Proof (IsTrans X r)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h2 : Proof (r b c)) -> Proof (iff (r a b) (r a c)) :=
+def rel_congr_right : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Symm X r)) -> (_ : Proof (IsTrans X r)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h2 : Proof (r b c)) -> Proof (iff (r a b) (r a c)) :=
   X => r => h => h1 => a => b => c => h2 => iffI (r a b) (r a c) (h3 => trans_of X r a b c h3 h2) (h4 => trans_of X r a c b h4 (symm_of X r b c h2)).
 
 (; //LEAN:rel_congr ;)
-rel_congr : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Symm r)) -> (_ : Proof (IsTrans X r)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (h2 : Proof (r a b)) -> (h3 : Proof (r c d)) -> Proof (iff (r a c) (r b d)).
+rel_congr : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Symm X r)) -> (_ : Proof (IsTrans X r)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (h2 : Proof (r a b)) -> (h3 : Proof (r c d)) -> Proof (iff (r a c) (r b d)).
 
 (; //LEAN:trans_trichotomous_left ;)
-trans_trichotomous_left : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (IsTrans X r)) -> (_ : Proof (Std__Trichotomous r)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h2 : Proof (not (r b a))) -> (h3 : Proof (r b c)) -> Proof (r a c).
+trans_trichotomous_left : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (IsTrans X r)) -> (_ : Proof (Std__Trichotomous X r)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h2 : Proof (not (r b a))) -> (h3 : Proof (r b c)) -> Proof (r a c).
 
 (; //LEAN:trans_trichotomous_right ;)
-trans_trichotomous_right : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (IsTrans X r)) -> (_ : Proof (Std__Trichotomous r)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h2 : Proof (r a b)) -> (h3 : Proof (not (r c b))) -> Proof (r a c).
+trans_trichotomous_right : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (IsTrans X r)) -> (_ : Proof (Std__Trichotomous X r)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h2 : Proof (r a b)) -> (h3 : Proof (not (r c b))) -> Proof (r a c).
 
 (; //LEAN:extensional_of_trichotomous_of_irrefl ;)
-def extensional_of_trichotomous_of_irrefl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Trichotomous r)) -> (_ : Proof (Std__Irrefl r)) -> (a : Elem X) -> (b : Elem X) -> (H : Proof (forall X (x => iff (r x a) (r x b)))) -> Proof (Eqt X a b) :=
+def extensional_of_trichotomous_of_irrefl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Trichotomous X r)) -> (_ : Proof (Std__Irrefl X r)) -> (a : Elem X) -> (b : Elem X) -> (H : Proof (forall X (x => iff (r x a) (r x b)))) -> Proof (Eqt X a b) :=
   X => r => h => h1 => a => b => H => Or__resolve_right (Eqt X a b) (r b a) (Or__resolve_left (r a b) (or (Eqt X a b) (r b a)) (trichotomous X r a b) (mt (r a b) (r a a) (iffEr (r a a) (r a b) (forallE X (x => iff (r x a) (r x b)) H a)) (irrefl X r a))) (mt (r b a) (r b b) (iffEl (r b a) (r b b) (forallE X (x1 => iff (r x1 a) (r x1 b)) H b)) (irrefl X r b)).
 

@@ -5,87 +5,87 @@ def Ideal : (R : Set) -> Set :=
   R => Submodule R R.
 
 (; //LEAN:Ideal.IsTwoSided ;)
-Ideal__IsTwoSided : (I : Elem (Ideal X)) -> Prop.
+Ideal__IsTwoSided : (X : Set) -> (I : Elem (Ideal X)) -> Prop.
 
 (; //LEAN:Ideal.IsTwoSided.mk ;)
-Ideal__IsTwoSided__mk : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (mul_mem_of_left : Proof (forall X (a => forall X (b => if (Membership__mem I a) (Membership__mem I (times a b)))))) -> Proof (Ideal__IsTwoSided I).
+Ideal__IsTwoSided__mk : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (mul_mem_of_left : Proof (forall X (a => forall X (b => if (Membership__mem X (Ideal X) I a) (Membership__mem X (Ideal X) I (times a b)))))) -> Proof (Ideal__IsTwoSided X I).
 
 (; //LEAN:Ideal.isTwoSided_iff ;)
-Ideal__isTwoSided_iff : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> Proof (iff (Ideal__IsTwoSided I) (forall X (a => forall X (b => if (Membership__mem I a) (Membership__mem I (times a b)))))).
+Ideal__isTwoSided_iff : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> Proof (iff (Ideal__IsTwoSided X I) (forall X (a => forall X (b => if (Membership__mem X (Ideal X) I a) (Membership__mem X (Ideal X) I (times a b)))))).
 
 (; //LEAN:Ideal.IsTwoSided.mul_mem_of_left ;)
-Ideal__IsTwoSided__mul_mem_of_left : (X : Set) -> (x : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (_ : Proof (Ideal__IsTwoSided I)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Membership__mem I a)) -> Proof (Membership__mem I (times a b)).
+Ideal__IsTwoSided__mul_mem_of_left : (X : Set) -> (x : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (_ : Proof (Ideal__IsTwoSided X I)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Membership__mem X (Ideal X) I a)) -> Proof (Membership__mem X (Ideal X) I (times a b)).
 
 (; //LEAN:Ideal.zero_mem ;)
-def Ideal__zero_mem : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> Proof (Membership__mem I 0) :=
-  X => x => I => Submodule__zero_mem X X Semiring__toModule I.
+def Ideal__zero_mem : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> Proof (Membership__mem X (Ideal X) I 0) :=
+  X => x => I => Submodule__zero_mem X X (Semiring__toModule X) I.
 
 (; //LEAN:Ideal.add_mem ;)
-def Ideal__add_mem : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Membership__mem I a)) -> (h1 : Proof (Membership__mem I b)) -> Proof (Membership__mem I (plus a b)) :=
-  X => x => I => a => b => Submodule__add_mem X X Semiring__toModule I a b.
+def Ideal__add_mem : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Membership__mem X (Ideal X) I a)) -> (h1 : Proof (Membership__mem X (Ideal X) I b)) -> Proof (Membership__mem X (Ideal X) I (plus a b)) :=
+  X => x => I => a => b => Submodule__add_mem X X (Semiring__toModule X) I a b.
 
 (; //LEAN:Ideal.mul_mem_left ;)
-def Ideal__mul_mem_left : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Membership__mem I b)) -> Proof (Membership__mem I (times a b)) :=
-  X => x => I => a => b => Submodule__smul_mem X X Semiring__toModule I b a.
+def Ideal__mul_mem_left : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Membership__mem X (Ideal X) I b)) -> Proof (Membership__mem X (Ideal X) I (times a b)) :=
+  X => x => I => a => b => Submodule__smul_mem X X (Semiring__toModule X) I b a.
 
 (; //LEAN:Ideal.mul_mem_right ;)
-def Ideal__mul_mem_right : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (_ : Proof (Ideal__IsTwoSided I)) -> (h1 : Proof (Membership__mem I a)) -> Proof (Membership__mem I (times a b)) :=
+def Ideal__mul_mem_right : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (_ : Proof (Ideal__IsTwoSided X I)) -> (h1 : Proof (Membership__mem X (Ideal X) I a)) -> Proof (Membership__mem X (Ideal X) I (times a b)) :=
   X => a => b => x => I => h => h1 => Ideal__IsTwoSided__mul_mem_of_left X x I a b h1.
 
 (; //LEAN:Ideal.ext ;)
-def Ideal__ext : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (J : Elem (Ideal X)) -> (h : Proof (forall X (x1 => iff (Membership__mem I x1) (Membership__mem J x1)))) -> Proof (Eqt (Ideal X) I J) :=
+def Ideal__ext : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (J : Elem (Ideal X)) -> (h : Proof (forall X (x1 => iff (Membership__mem X (Ideal X) I x1) (Membership__mem X (Ideal X) J x1)))) -> Proof (Eqt (Ideal X) I J) :=
   X => x => I => J => h => Submodule__ext X X I J h.
 
 (; //LEAN:Ideal.ext_iff ;)
-Ideal__ext_iff : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (J : Elem (Ideal X)) -> Proof (iff (Eqt (Ideal X) I J) (forall X (x1 => iff (Membership__mem I x1) (Membership__mem J x1)))).
+Ideal__ext_iff : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (J : Elem (Ideal X)) -> Proof (iff (Eqt (Ideal X) I J) (forall X (x1 => iff (Membership__mem X (Ideal X) I x1) (Membership__mem X (Ideal X) J x1)))).
 
 (; //LEAN:Ideal.unit_mul_mem_iff_mem ;)
-Ideal__unit_mul_mem_iff_mem : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (x1 : Elem X) -> (y : Elem X) -> (hy : Proof (IsUnit y)) -> Proof (iff (Membership__mem I (times y x1)) (Membership__mem I x1)).
+Ideal__unit_mul_mem_iff_mem : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (x1 : Elem X) -> (y : Elem X) -> (hy : Proof (IsUnit X y)) -> Proof (iff (Membership__mem X (Ideal X) I (times y x1)) (Membership__mem X (Ideal X) I x1)).
 
 (; //LEAN:Ideal.pow_mem_of_mem ;)
-Ideal__pow_mem_of_mem : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (ha : Proof (Membership__mem I a)) -> (n : Elem Nat) -> (hn : Proof (Lt 0 n)) -> Proof (Membership__mem I (pow a n)).
+Ideal__pow_mem_of_mem : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (ha : Proof (Membership__mem X (Ideal X) I a)) -> (n : Elem Nat) -> (hn : Proof (Lt 0 n)) -> Proof (Membership__mem X (Ideal X) I (pow a n)).
 
 (; //LEAN:Ideal.pow_mem_of_pow_mem ;)
-Ideal__pow_mem_of_pow_mem : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (m : Elem Nat) -> (n : Elem Nat) -> (ha : Proof (Membership__mem I (pow a m))) -> (h : Proof (Leq m n)) -> Proof (Membership__mem I (pow a n)).
+Ideal__pow_mem_of_pow_mem : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (m : Elem Nat) -> (n : Elem Nat) -> (ha : Proof (Membership__mem X (Ideal X) I (pow a m))) -> (h : Proof (Leq m n)) -> Proof (Membership__mem X (Ideal X) I (pow a n)).
 
 (; //LEAN:Module.eqIdeal ;)
-def Module__eqIdeal : (R : Set) -> (m : Elem M) -> (m' : Elem M) -> Elem (Ideal R) :=
-  R => m => m' => Submodule__mk (AddSubmonoid__mk (AddSubsemigroup__mk (Set__ofPred (r => Eqt M (HSMul__hSMul r m) (HSMul__hSMul r m'))) (x3 => x4 => h => h' => Module__eqIdeal___proof_1 R m m' h h')) (Module__eqIdeal___proof_3 R m m')) (x5 => x6 => h1 => Module__eqIdeal___proof_4 R m m' x5 x6 h1).
+def Module__eqIdeal : (R : Set) -> (M : Set) -> (m : Elem M) -> (m' : Elem M) -> Elem (Ideal R) :=
+  R => M => m => m' => Submodule__mk R R (AddSubmonoid__mk R (AddSubsemigroup__mk R (Set__ofPred R (r => Eqt M (HSMul__hSMul R M M r m) (HSMul__hSMul R M M r m'))) (x3 => x4 => h => h' => Module__eqIdeal___proof_1 R M m m' x3 x4 h h')) (Module__eqIdeal___proof_3 R M m m')) (x5 => x6 => h1 => Module__eqIdeal___proof_4 R M m m' x5 x6 h1).
 
 (; //LEAN:Ideal.mul_unit_mem_iff_mem ;)
-Ideal__mul_unit_mem_iff_mem : (X : Set) -> (_ : Proof (CommSemiring X)) -> (I : Elem (Ideal X)) -> (x1 : Elem X) -> (y : Elem X) -> (hy : Proof (IsUnit y)) -> Proof (iff (Membership__mem I (times x1 y)) (Membership__mem I x1)).
+Ideal__mul_unit_mem_iff_mem : (X : Set) -> (_ : Proof (CommSemiring X)) -> (I : Elem (Ideal X)) -> (x1 : Elem X) -> (y : Elem X) -> (hy : Proof (IsUnit X y)) -> Proof (iff (Membership__mem X (Ideal X) I (times x1 y)) (Membership__mem X (Ideal X) I x1)).
 
 (; //LEAN:Ideal.mem_of_dvd ;)
-Ideal__mem_of_dvd : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (CommSemiring X)) -> (I : Elem (Ideal X)) -> (hab : Proof (divide a b)) -> (ha : Proof (Membership__mem I a)) -> Proof (Membership__mem I b).
+Ideal__mem_of_dvd : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (_ : Proof (CommSemiring X)) -> (I : Elem (Ideal X)) -> (hab : Proof (divide a b)) -> (ha : Proof (Membership__mem X (Ideal X) I a)) -> Proof (Membership__mem X (Ideal X) I b).
 
 (; //LEAN:Ideal.neg_mem_iff ;)
-def Ideal__neg_mem_iff : (X : Set) -> (_ : Proof (Ring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> Proof (iff (Membership__mem I (Neg__neg a)) (Membership__mem I a)) :=
-  X => x => I => a => Submodule__neg_mem_iff X X Semiring__toModule I a.
+def Ideal__neg_mem_iff : (X : Set) -> (_ : Proof (Ring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> Proof (iff (Membership__mem X (Ideal X) I (Neg__neg X a)) (Membership__mem X (Ideal X) I a)) :=
+  X => x => I => a => Submodule__neg_mem_iff X X (Semiring__toModule X) I a.
 
 (; //LEAN:Ideal.add_mem_iff_left ;)
-def Ideal__add_mem_iff_left : (X : Set) -> (_ : Proof (Ring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Membership__mem I b)) -> Proof (iff (Membership__mem I (plus a b)) (Membership__mem I a)) :=
-  X => x => I => a => b => Submodule__add_mem_iff_left X X Semiring__toModule I a b.
+def Ideal__add_mem_iff_left : (X : Set) -> (_ : Proof (Ring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Membership__mem X (Ideal X) I b)) -> Proof (iff (Membership__mem X (Ideal X) I (plus a b)) (Membership__mem X (Ideal X) I a)) :=
+  X => x => I => a => b => Submodule__add_mem_iff_left X X (Semiring__toModule X) I a b.
 
 (; //LEAN:Ideal.add_mem_iff_right ;)
-def Ideal__add_mem_iff_right : (X : Set) -> (_ : Proof (Ring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Membership__mem I a)) -> Proof (iff (Membership__mem I (plus a b)) (Membership__mem I b)) :=
-  X => x => I => a => b => Submodule__add_mem_iff_right X X Semiring__toModule I a b.
+def Ideal__add_mem_iff_right : (X : Set) -> (_ : Proof (Ring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Membership__mem X (Ideal X) I a)) -> Proof (iff (Membership__mem X (Ideal X) I (plus a b)) (Membership__mem X (Ideal X) I b)) :=
+  X => x => I => a => b => Submodule__add_mem_iff_right X X (Semiring__toModule X) I a b.
 
 (; //LEAN:Ideal.sub_mem ;)
-def Ideal__sub_mem : (X : Set) -> (_ : Proof (Ring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Membership__mem I a)) -> (h1 : Proof (Membership__mem I b)) -> Proof (Membership__mem I (minus a b)) :=
-  X => x => I => a => b => Submodule__sub_mem X X Semiring__toModule I a b.
+def Ideal__sub_mem : (X : Set) -> (_ : Proof (Ring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Membership__mem X (Ideal X) I a)) -> (h1 : Proof (Membership__mem X (Ideal X) I b)) -> Proof (Membership__mem X (Ideal X) I (minus a b)) :=
+  X => x => I => a => b => Submodule__sub_mem X X (Semiring__toModule X) I a b.
 
 (; //LEAN:Ideal.mul_sub_mul_mem ;)
-Ideal__mul_sub_mul_mem : (X : Set) -> (_ : Proof (Ring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (_ : Proof (Ideal__IsTwoSided I)) -> (h1 : Proof (Membership__mem I (minus a b))) -> (h2 : Proof (Membership__mem I (minus c d))) -> Proof (Membership__mem I (minus (times a c) (times b d))).
+Ideal__mul_sub_mul_mem : (X : Set) -> (_ : Proof (Ring X)) -> (I : Elem (Ideal X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (_ : Proof (Ideal__IsTwoSided X I)) -> (h1 : Proof (Membership__mem X (Ideal X) I (minus a b))) -> (h2 : Proof (Membership__mem X (Ideal X) I (minus c d))) -> Proof (Membership__mem X (Ideal X) I (minus (times a c) (times b d))).
 
 (; //LEAN:Ideal.inertia ;)
-def Ideal__inertia : (G : Set) -> (I : Elem (Ideal X)) -> Elem (Subgroup G) :=
-  G => I => AddSubgroup__inertia (Submodule__toAddSubgroup I) G.
+def Ideal__inertia : (X : Set) -> (G : Set) -> (I : Elem (Ideal X)) -> Elem (Subgroup G) :=
+  X => G => I => AddSubgroup__inertia X (Submodule__toAddSubgroup X X (Semiring__toModule X) I) G.
 
 (; //LEAN:Ideal.mem_inertia ;)
-def Ideal__mem_inertia : (X : Set) -> (_ : Proof (Ring X)) -> (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (MulAction G X)) -> (I : Elem (Ideal X)) -> (x3 : Elem G) -> Proof (iff (Membership__mem (Ideal__inertia G I) x3) (forall X (x4 => Membership__mem I (minus (HSMul__hSMul x3 x4) x4)))) :=
-  X => x => G => x1 => x2 => I => x3 => AddSubgroup__mem_inertia X (Submodule__toAddSubgroup I) G x3.
+def Ideal__mem_inertia : (X : Set) -> (_ : Proof (Ring X)) -> (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (MulAction G X)) -> (I : Elem (Ideal X)) -> (x3 : Elem G) -> Proof (iff (Membership__mem G (Subgroup G) (Ideal__inertia X G I) x3) (forall X (x4 => Membership__mem X (Ideal X) I (minus (HSMul__hSMul G X X x3 x4) x4)))) :=
+  X => x => G => x1 => x2 => I => x3 => AddSubgroup__mem_inertia X (Submodule__toAddSubgroup X X (Semiring__toModule X) I) G x3.
 
 (; //LEAN:Ideal.coe_mem_inertia ;)
-def Ideal__coe_mem_inertia : (X : Set) -> (_ : Proof (Ring X)) -> (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (MulAction G X)) -> (I : Elem (Ideal X)) -> (H : Elem (Subgroup G)) -> (x3 : Elem (Subtype (x5 => Membership__mem H x5))) -> Proof (iff (Membership__mem (Ideal__inertia G I) x3) (Membership__mem (Ideal__inertia (Subtype (x4 => Membership__mem H x4)) I) x3)) :=
-  X => x => G => x1 => x2 => I => H => x3 => AddSubgroup__coe_mem_inertia X (Submodule__toAddSubgroup I) G H x3.
+def Ideal__coe_mem_inertia : (X : Set) -> (_ : Proof (Ring X)) -> (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (MulAction G X)) -> (I : Elem (Ideal X)) -> (H : Elem (Subgroup G)) -> (x3 : Elem (Subtype G (x8 => Membership__mem G (Subgroup G) H x8))) -> Proof (iff (Membership__mem G (Subgroup G) (Ideal__inertia X G I) (Subtype__val G (x4 => Membership__mem G (Subgroup G) H x4) x3)) (Membership__mem (Subtype G (x5 => Membership__mem G (Subgroup G) H x5)) (Subgroup (Subtype G (x6 => Membership__mem G (Subgroup G) H x6))) (Ideal__inertia X (Subtype G (x7 => Membership__mem G (Subgroup G) H x7)) I) x3)) :=
+  X => x => G => x1 => x2 => I => H => x3 => AddSubgroup__coe_mem_inertia X (Submodule__toAddSubgroup X X (Semiring__toModule X) I) G H x3.
 

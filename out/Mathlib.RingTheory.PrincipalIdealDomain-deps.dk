@@ -6,18 +6,18 @@ AddCommMonoid : (M : Set) -> Prop.
 
 (; doc: Two elements of a `Monoid` are `Associated` if one of them is another one multiplied by a unit on the right. ;)
 (; //LEAN:Associated ;)
-Associated : (x1 : Elem M) -> (y : Elem M) -> Prop.
+Associated : (M : Set) -> (x1 : Elem M) -> (y : Elem M) -> Prop.
 
 (; doc: The bot (`⊥`, `\bot`) element  Conventions for notations in identifiers:   * The recommended spelling of `⊥` in identifiers is `bot`. ;)
 (; //LEAN:Bot.bot ;)
-Bot__bot : Elem X.
+Bot__bot : (X : Set) -> Elem X.
 
 (; doc: Given that there exists an element satisfying `p`, returns one such element.  This is a straightforward consequence of, and equivalent to, `Classical.choice`.  See also `choose_spec`, which asserts that the returned value has property `p`. ;)
 (; //LEAN:Classical.choose ;)
-Classical__choose : (h : Proof (exists X (x => p x))) -> Elem X.
+Classical__choose : (X : Set) -> (p : (Elem X -> Prop)) -> (h : Proof (exists X (x => p x))) -> Elem X.
 
 (; //LEAN:Classical.choose_spec ;)
-Classical__choose_spec : (X : Set) -> (p : (Elem X -> Prop)) -> (h : Proof (exists X (x => p x))) -> Proof (p (Classical__choose h)).
+Classical__choose_spec : (X : Set) -> (p : (Elem X -> Prop)) -> (h : Proof (exists X (x => p x))) -> Proof (p (Classical__choose X p h)).
 
 (; doc: A commutative ring is a ring with commutative multiplication. ;)
 (; //LEAN:CommRing ;)
@@ -26,6 +26,12 @@ CommRing : (X : Set) -> Prop.
 (; doc: A commutative semiring is a semiring with commutative multiplication. ;)
 (; //LEAN:CommSemiring ;)
 CommSemiring : (R : Set) -> Prop.
+
+(; //LEAN:CommSemiring.toCommMonoidWithZero ;)
+CommSemiring__toCommMonoidWithZero : (X : Set) -> Proof (CommMonoidWithZero X).
+
+(; //LEAN:CommSemiring.toSemiring ;)
+CommSemiring__toSemiring : (R : Set) -> Proof (Semiring R).
 
 (; doc: **Alias** of `dvd_mul_of_dvd_right`. ;)
 (; //LEAN:Dvd.dvd.mul_left ;)
@@ -37,15 +43,15 @@ Dvd__dvd__trans : (X : Set) -> (_ : Proof (Semigroup X)) -> (a : Elem X) -> (b :
 
 (; doc: `∅` or `{}` is the empty set or empty collection. It is supported by the `EmptyCollection` typeclass.  Conventions for notations in identifiers:   * The recommended spelling of `{}` in identifiers is `empty`.   * The recommended spelling of `∅` in identifiers is `empty`. ;)
 (; //LEAN:EmptyCollection.emptyCollection ;)
-EmptyCollection__emptyCollection : Elem X.
+EmptyCollection__emptyCollection : (X : Set) -> Elem X.
 
 (; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
 (; //LEAN:Eq ;)
-Eq : (x : Elem X) -> (x1 : Elem X) -> Prop.
+Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
 (; //LEAN:Eq.mpr ;)
-Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
 
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
@@ -72,22 +78,22 @@ Finite : (X : Set) -> Prop.
 Finset : (X : Set) -> Set.
 
 (; //LEAN:Finset.coe_singleton ;)
-Finset__coe_singleton : (X : Set) -> (a : Elem X) -> Proof (Eqt (powerset X) (Singleton__singleton a) (Singleton__singleton a)).
+Finset__coe_singleton : (X : Set) -> (a : Elem X) -> Proof (Eqt (powerset X) (SetLike__coe (Finset X) X (Singleton__singleton X (Finset X) a)) (Singleton__singleton X (powerset X) a)).
 
 (; doc: Greatest common divisor of a finite set ;)
 (; //LEAN:Finset.gcd ;)
-Finset__gcd : (s : Elem (Finset Y)) -> (f : (Elem Y -> X)) -> Elem X.
+Finset__gcd : (X : Set) -> (Y : Set) -> (s : Elem (Finset Y)) -> (f : (Elem Y -> X)) -> Elem X.
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
-Finset__sum : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
 
 (; doc: A function `f : α → β` is called surjective if every `b : β` is equal to `f a` for some `a : α`. ;)
 (; //LEAN:Function.Surjective ;)
-Function__Surjective : (f : (Elem X -> Y)) -> Prop.
+Function__Surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Function.surjective_eval ;)
-Function__surjective_eval : (X : Set) -> (x : (Elem X -> Set)) -> (_ : Proof (forall X (a1 => Nonempty (x a1)))) -> (a : Elem X) -> Proof (Function__Surjective (Function__eval a)).
+Function__surjective_eval : (X : Set) -> (x : (Elem X -> Set)) -> (_ : Proof (forall X (a1 => Nonempty (x a1)))) -> (a : Elem X) -> Proof (Function__Surjective ((x1 : Elem X) -> x x1) (x a) (Function__eval X x a)).
 
 (; doc: GCD monoid: a cancellative `CommMonoidWithZero` with `gcd` (greatest common divisor) and `lcm` (least common multiple) operations, determined up to a unit. The type class focuses on `gcd` and we derive the corresponding `lcm` facts from `gcd`. ;)
 (; //LEAN:GCDMonoid ;)
@@ -95,19 +101,19 @@ GCDMonoid : (X : Set) -> Prop.
 
 (; doc: The greatest common divisor between two elements. ;)
 (; //LEAN:GCDMonoid.gcd ;)
-GCDMonoid__gcd : (x1 : Elem X) -> (x2 : Elem X) -> Elem X.
+GCDMonoid__gcd : (X : Set) -> (x : Proof (CommMonoidWithZero X)) -> (x1 : Elem X) -> (x2 : Elem X) -> Elem X.
 
 (; doc: The least common multiple between two elements. ;)
 (; //LEAN:GCDMonoid.lcm ;)
-GCDMonoid__lcm : (x1 : Elem X) -> (x2 : Elem X) -> Elem X.
+GCDMonoid__lcm : (X : Set) -> (x : Proof (CommMonoidWithZero X)) -> (x1 : Elem X) -> (x2 : Elem X) -> Elem X.
 
 (; doc: `a % b` computes the remainder upon dividing `a` by `b`. The meaning of this notation is type-dependent. * For `Nat` and `Int` it satisfies `a % b + b * (a / b) = a`,   and `a % 0` is defined to be `a`.  Conventions for notations in identifiers:   * The recommended spelling of `%` in identifiers is `mod`. ;)
 (; //LEAN:HMod.hMod ;)
-HMod__hMod : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+HMod__hMod : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Y) -> Elem Z.
 
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
-HSMul__hSMul : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+HSMul__hSMul : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Y) -> Elem Z.
 
 (; doc: A (left) ideal in a semiring `R` is an additive submonoid `s` such that `a * b ∈ s` whenever `b ∈ s`. If `R` is a ring, then `s` is an additive subgroup. ;)
 (; //LEAN:Ideal ;)
@@ -115,88 +121,98 @@ Ideal : (R : Set) -> Set.
 
 (; doc: An ideal of `R` is finitely generated if it is the span of a finite subset of `R`.  This is defeq to `Submodule.FG`, but unfolds more nicely. ;)
 (; //LEAN:Ideal.FG ;)
-Ideal__FG : (I : Elem (Ideal R)) -> Prop.
+Ideal__FG : (R : Set) -> (I : Elem (Ideal R)) -> Prop.
 
 (; doc: An ideal is maximal if it is maximal in the collection of proper ideals. ;)
 (; //LEAN:Ideal.IsMaximal ;)
-Ideal__IsMaximal : (I : Elem (Ideal X)) -> Prop.
+Ideal__IsMaximal : (X : Set) -> (I : Elem (Ideal X)) -> Prop.
 
 (; doc: An ideal `P` of a ring `R` is prime if `P ≠ R` and `xy ∈ P → x ∈ P ∨ y ∈ P` ;)
 (; //LEAN:Ideal.IsPrime ;)
-Ideal__IsPrime : (I : Elem (Ideal X)) -> Prop.
+Ideal__IsPrime : (X : Set) -> (I : Elem (Ideal X)) -> Prop.
+
+(; doc: If a product lies in the prime ideal, then at least one element lies in the prime ideal. ;)
+(; //LEAN:Ideal.IsPrime.mem_or_mem' ;)
+Ideal__IsPrime__mem_or_mem' : (X : Set) -> (x : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (_ : Proof (Ideal__IsPrime X I)) -> (x1 : Elem X) -> (y : Elem X) -> (h : Proof (Membership__mem X (Ideal X) I (times x1 y))) -> Proof (or (Membership__mem X (Ideal X) I x1) (Membership__mem X (Ideal X) I y)).
+
+(; //LEAN:Ideal.IsPrime.ne_top ;)
+Ideal__IsPrime__ne_top : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (hI : Proof (Ideal__IsPrime X I)) -> Proof (Neq I (Top__top (Ideal X))).
 
 (; doc: `I.comap f` is the preimage of `I` under `f`. ;)
 (; //LEAN:Ideal.comap ;)
-Ideal__comap : (f : Elem F) -> (I : Elem (Ideal S)) -> Elem (Ideal R).
+Ideal__comap : (R : Set) -> (S : Set) -> (F : Set) -> (f : Elem F) -> (I : Elem (Ideal S)) -> Elem (Ideal R).
+
+(; //LEAN:Ideal.eq_top_of_isUnit_mem ;)
+Ideal__eq_top_of_isUnit_mem : (X : Set) -> (_ : Proof (Semiring X)) -> (I : Elem (Ideal X)) -> (x1 : Elem X) -> (hx : Proof (Membership__mem X (Ideal X) I x1)) -> (h : Proof (IsUnit X x1)) -> Proof (Eqt (Ideal X) I (Top__top (Ideal X))).
 
 (; //LEAN:Ideal.irreducible_of_isMaximal_span_singleton ;)
-Ideal__irreducible_of_isMaximal_span_singleton : (X : Set) -> (_ : Proof (CommSemiring X)) -> (_ : Proof (IsDomain X)) -> (a : Elem X) -> (ha : Proof (Neq a 0)) -> (max : Proof (Ideal__IsMaximal (Ideal__span (Singleton__singleton a)))) -> Proof (Irreducible a).
+Ideal__irreducible_of_isMaximal_span_singleton : (X : Set) -> (_ : Proof (CommSemiring X)) -> (_ : Proof (IsDomain X)) -> (a : Elem X) -> (ha : Proof (Neq a 0)) -> (max : Proof (Ideal__IsMaximal X (Ideal__span X (Singleton__singleton X (powerset X) a)))) -> Proof (Irreducible X a).
 
 (; doc: `I.map f` is the span of the image of the ideal `I` under `f`, which may be bigger than the image itself. ;)
 (; //LEAN:Ideal.map ;)
-Ideal__map : (f : Elem F) -> (I : Elem (Ideal R)) -> Elem (Ideal S).
+Ideal__map : (R : Set) -> (S : Set) -> (F : Set) -> (f : Elem F) -> (I : Elem (Ideal R)) -> Elem (Ideal S).
 
 (; //LEAN:Ideal.map_span ;)
-Ideal__map_span : (R : Set) -> (S : Set) -> (F : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (f : Elem F) -> (s : Elem (powerset R)) -> Proof (Eqt (Ideal S) (Ideal__map f (Ideal__span s)) (Ideal__span (Set__image f s))).
+Ideal__map_span : (R : Set) -> (S : Set) -> (F : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (f : Elem F) -> (s : Elem (powerset R)) -> Proof (Eqt (Ideal S) (Ideal__map R S F f (Ideal__span R s)) (Ideal__span S (Set__image R S f s))).
 
 (; //LEAN:Ideal.mem_span_pair ;)
-Ideal__mem_span_pair : (X : Set) -> (_ : Proof (Semiring X)) -> (x1 : Elem X) -> (y : Elem X) -> (z : Elem X) -> Proof (iff (Membership__mem (Ideal__span (Insert__insert x1 (Singleton__singleton y))) z) (exists X (a => exists X (b => Eqt X (plus (times a x1) (times b y)) z)))).
+Ideal__mem_span_pair : (X : Set) -> (_ : Proof (Semiring X)) -> (x1 : Elem X) -> (y : Elem X) -> (z : Elem X) -> Proof (iff (Membership__mem X (Ideal X) (Ideal__span X (Insert__insert X (powerset X) x1 (Singleton__singleton X (powerset X) y))) z) (exists X (a => exists X (b => Eqt X (plus (times a x1) (times b y)) z)))).
 
 (; doc: The ideal generated by a subset of a ring ;)
 (; //LEAN:Ideal.span ;)
-Ideal__span : (s : Elem (powerset X)) -> Elem (Ideal X).
+Ideal__span : (X : Set) -> (s : Elem (powerset X)) -> Elem (Ideal X).
 
 (; //LEAN:Ideal.submodule_span_eq ;)
-Ideal__submodule_span_eq : (X : Set) -> (_ : Proof (Semiring X)) -> (s : Elem (powerset X)) -> Proof (Eqt (Submodule X X) (Submodule__span X s) (Ideal__span s)).
+Ideal__submodule_span_eq : (X : Set) -> (_ : Proof (Semiring X)) -> (s : Elem (powerset X)) -> Proof (Eqt (Submodule X X) (Submodule__span X X s) (Ideal__span X s)).
 
 (; //LEAN:Ideal.subset_span ;)
-Ideal__subset_span : (X : Set) -> (_ : Proof (Semiring X)) -> (s : Elem (powerset X)) -> Proof (Set__Subset s (Ideal__span s)).
+Ideal__subset_span : (X : Set) -> (_ : Proof (Semiring X)) -> (s : Elem (powerset X)) -> Proof (Set__Subset X s (SetLike__coe (Ideal X) X (Ideal__span X s))).
 
 (; //LEAN:Iff.trans ;)
 Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
 
 (; doc: `insert x xs` inserts the element `x` into the collection `xs`. ;)
 (; //LEAN:Insert.insert ;)
-Insert__insert : (x1 : Elem x) -> (x2 : Elem Z) -> Elem Z.
+Insert__insert : (X : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Z) -> Elem Z.
 
 (; doc: `Irreducible p` states that `p` is non-unit and only factors into units.  We explicitly avoid stating that `p` is non-zero, this would require a semiring. Assuming only a monoid allows us to reuse irreducible for associated elements.  [Wikidata Q2989575](https://www.wikidata.org/wiki/Q2989575) ;)
 (; //LEAN:Irreducible ;)
-Irreducible : (p : Elem M) -> Prop.
+Irreducible : (M : Set) -> (p : Elem M) -> Prop.
 
 (; //LEAN:Irreducible.dvd_or_isRelPrime ;)
-Irreducible__dvd_or_isRelPrime : (M : Set) -> (_ : Proof (Monoid M)) -> (p : Elem M) -> (n : Elem M) -> (hp : Proof (Irreducible p)) -> Proof (or (divide p n) (IsRelPrime p n)).
+Irreducible__dvd_or_isRelPrime : (M : Set) -> (_ : Proof (Monoid M)) -> (p : Elem M) -> (n : Elem M) -> (hp : Proof (Irreducible M p)) -> Proof (or (divide p n) (IsRelPrime M p n)).
 
 (; //LEAN:Irreducible.ne_zero ;)
-Irreducible__ne_zero : (M : Set) -> (_ : Proof (MonoidWithZero M)) -> (p : Elem M) -> (h : Proof (Irreducible p)) -> Proof (Neq p 0).
+Irreducible__ne_zero : (M : Set) -> (_ : Proof (MonoidWithZero M)) -> (p : Elem M) -> (h : Proof (Irreducible M p)) -> Proof (Neq p 0).
 
 (; //LEAN:Irreducible.prime ;)
-Irreducible__prime : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (_ : Proof (DecompositionMonoid M)) -> (a : Elem M) -> (irr : Proof (Irreducible a)) -> Proof (Prime a).
+Irreducible__prime : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (_ : Proof (DecompositionMonoid M)) -> (a : Elem M) -> (irr : Proof (Irreducible M a)) -> Proof (Prime M a).
 
 (; //LEAN:IsBezout.toGCDDomain._proof_2 ;)
-IsBezout__toGCDDomain___proof_2 : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsBezout R)) -> (x1 : Elem R) -> (x2 : Elem R) -> Proof (divide (IsBezout__gcd x1 x2) x1).
+IsBezout__toGCDDomain___proof_2 : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsBezout R)) -> (x1 : Elem R) -> (x2 : Elem R) -> Proof (divide (IsBezout__gcd R x1 x2) x1).
 
 (; //LEAN:IsBezout.toGCDDomain._proof_3 ;)
-IsBezout__toGCDDomain___proof_3 : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsBezout R)) -> (x1 : Elem R) -> (x2 : Elem R) -> Proof (divide (IsBezout__gcd x1 x2) x2).
+IsBezout__toGCDDomain___proof_3 : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsBezout R)) -> (x1 : Elem R) -> (x2 : Elem R) -> Proof (divide (IsBezout__gcd R x1 x2) x2).
 
 (; //LEAN:IsBezout.toGCDDomain._proof_5 ;)
-IsBezout__toGCDDomain___proof_5 : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsBezout R)) -> (x1 : Elem R) -> (x2 : Elem R) -> (x3 : Elem R) -> (hx : Proof (divide x1 x3)) -> (hy : Proof (divide x1 x2)) -> Proof (divide x1 (IsBezout__gcd x3 x2)).
+IsBezout__toGCDDomain___proof_5 : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsBezout R)) -> (x1 : Elem R) -> (x2 : Elem R) -> (x3 : Elem R) -> (hx : Proof (divide x1 x3)) -> (hy : Proof (divide x1 x2)) -> Proof (divide x1 (IsBezout__gcd R x3 x2)).
 
 (; doc: A chain is a set `s` satisfying `x ≺ y ∨ x = y ∨ y ≺ x` for all `x y ∈ s`. ;)
 (; //LEAN:IsChain ;)
-IsChain : (r : (Elem X -> Elem X -> Prop)) -> (s : Elem (powerset X)) -> Prop.
+IsChain : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: The proposition that `x` and `y` are coprime, defined to be the existence of `a` and `b` such that `a * x + b * y = 1`. Note that elements with no common divisors are not necessarily coprime, e.g., the multivariate polynomials `x₁` and `x₂` are not coprime. ;)
 (; //LEAN:IsCoprime ;)
-IsCoprime : (x1 : Elem R) -> (y : Elem R) -> Prop.
+IsCoprime : (R : Set) -> (x1 : Elem R) -> (y : Elem R) -> Prop.
 
 (; //LEAN:IsCoprime.isRelPrime ;)
-IsCoprime__isRelPrime : (R : Set) -> (_ : Proof (CommSemiring R)) -> (a : Elem R) -> (b : Elem R) -> (h : Proof (IsCoprime a b)) -> Proof (IsRelPrime a b).
+IsCoprime__isRelPrime : (R : Set) -> (_ : Proof (CommSemiring R)) -> (a : Elem R) -> (b : Elem R) -> (h : Proof (IsCoprime R a b)) -> Proof (IsRelPrime R a b).
 
 (; //LEAN:IsCoprime.pow_right ;)
-IsCoprime__pow_right : (R : Set) -> (_ : Proof (CommSemiring R)) -> (x1 : Elem R) -> (y : Elem R) -> (n : Elem Nat) -> (H : Proof (IsCoprime x1 y)) -> Proof (IsCoprime x1 (pow y n)).
+IsCoprime__pow_right : (R : Set) -> (_ : Proof (CommSemiring R)) -> (x1 : Elem R) -> (y : Elem R) -> (n : Elem Nat) -> (H : Proof (IsCoprime R x1 y)) -> Proof (IsCoprime R x1 (pow y n)).
 
 (; //LEAN:IsCoprime.symm ;)
-IsCoprime__symm : (R : Set) -> (_ : Proof (CommSemiring R)) -> (x1 : Elem R) -> (y : Elem R) -> (H : Proof (IsCoprime x1 y)) -> Proof (IsCoprime y x1).
+IsCoprime__symm : (R : Set) -> (_ : Proof (CommSemiring R)) -> (x1 : Elem R) -> (y : Elem R) -> (H : Proof (IsCoprime R x1 y)) -> Proof (IsCoprime R y x1).
 
 (; doc: A domain is a nontrivial semiring such that multiplication by a nonzero element is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying `∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and `∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.  This is implemented as a mixin for `Semiring α`. To obtain an integral domain use `[CommRing α] [IsDomain α]`. ;)
 (; //LEAN:IsDomain ;)
@@ -211,39 +227,43 @@ IsField : (R : Set) -> Prop.
 IsPrincipalIdealRing : (R : Set) -> Prop.
 
 (; //LEAN:IsPrincipalIdealRing.mk ;)
-IsPrincipalIdealRing__mk : (R : Set) -> (_ : Proof (Semiring R)) -> (principal : Proof (forall (Ideal R) (S => Submodule__IsPrincipal S))) -> Proof (IsPrincipalIdealRing R).
+IsPrincipalIdealRing__mk : (R : Set) -> (_ : Proof (Semiring R)) -> (principal : Proof (forall (Ideal R) (S => Submodule__IsPrincipal R R S))) -> Proof (IsPrincipalIdealRing R).
 
 (; doc: `x` and `y` are relatively prime if every common divisor is a unit. ;)
 (; //LEAN:IsRelPrime ;)
-IsRelPrime : (x1 : Elem X) -> (y : Elem X) -> Prop.
+IsRelPrime : (X : Set) -> (x1 : Elem X) -> (y : Elem X) -> Prop.
 
 (; doc: An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse. The actual definition says that `a` is equal to some `u : Mˣ`, where `Mˣ` is a bundled version of `IsUnit`. ;)
 (; //LEAN:IsUnit ;)
-IsUnit : (a : Elem M) -> Prop.
+IsUnit : (M : Set) -> (a : Elem M) -> Prop.
 
 (; doc: A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and `f (c • x) = (σ c) • f x`. Elements of `LinearMap σ M M₂` (available under the notation `M →ₛₗ[σ] M₂`) are bundled versions of such maps. For plain linear maps (i.e. for which `σ = RingHom.id R`), the notation `M →ₗ[R] M₂` is available. An unbundled version of plain linear maps is available with the predicate `IsLinearMap`, but it should be avoided most of the time. ;)
 (; //LEAN:LinearMap ;)
-LinearMap : (x2 : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> Set.
+LinearMap : (R : Set) -> (S : Set) -> (x2 : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> Set.
 
 (; doc: If `O` is a submodule of `M`, and `Φ : O →ₗ M'` is a linear map, then `(ϕ : O →ₗ M').submoduleImage N` is `ϕ(N)` as a submodule of `M'` ;)
 (; //LEAN:LinearMap.submoduleImage ;)
-LinearMap__submoduleImage : (x5 : Elem (LinearMap (RingHom__id R) (Subtype (x6 => Membership__mem O x6)) M')) -> (N : Elem (Submodule R M)) -> Elem (Submodule R M').
+LinearMap__submoduleImage : (R : Set) -> (M : Set) -> (M' : Set) -> (O : Elem (Submodule R M)) -> (x5 : Elem (LinearMap R R (RingHom__id R) (Subtype M (x6 => Membership__mem M (Submodule R M) O x6)) M')) -> (N : Elem (Submodule R M)) -> Elem (Submodule R M').
 
 (; doc: `Maximal P x` means that `x` is a maximal element satisfying `P`. ;)
 (; //LEAN:Maximal ;)
-Maximal : (P : (Elem X -> Prop)) -> (x1 : Elem X) -> Prop.
+Maximal : (X : Set) -> (P : (Elem X -> Prop)) -> (x1 : Elem X) -> Prop.
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
-Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
 
 (; doc: Returns the lesser of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `min` in identifiers is `min`.   * The recommended spelling of `⊓` in identifiers is `inf` (`⊓` is the preferred notation for `min` when the type is not linearly ordered.). ;)
 (; //LEAN:Min.min ;)
-Min__min : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+Min__min : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: A module is a generalization of vector spaces to a scalar semiring. It consists of a scalar semiring `R` and an additive monoid of "vectors" `M`, connected by a "scalar multiplication" operation `r • x : M` (where `r : R` and `x : M`) with some natural associativity and distributivity axioms similar to those on a ring. ;)
 (; //LEAN:Module ;)
 Module : (R : Set) -> (M : Set) -> Prop.
+
+(; doc: `M →* N` is the type of functions `M → N` that preserve the `MulOne` structure. `MonoidHom` is used for both monoid and group homomorphisms.  When possible, instead of parametrizing results over `(f : M →* N)`, you should parametrize over `(F : Type*) [MonoidHomClass F M N] (f : F)`.  When you extend this structure, make sure to extend `MonoidHomClass`.  [Wikidata Q868169](https://www.wikidata.org/wiki/Q868169) ;)
+(; //LEAN:MonoidHom ;)
+MonoidHom : (M : Set) -> (N : Set) -> Set.
 
 (; doc: `Multiset α` is the quotient of `List α` by list permutation. The result is a type of finite sets with duplicates allowed. ;)
 (; //LEAN:Multiset ;)
@@ -251,7 +271,7 @@ Multiset : (X : Set) -> Set.
 
 (; doc: Product of a multiset given a commutative monoid structure on `M`. `prod {a, b, c} = a * b * c` ;)
 (; //LEAN:Multiset.prod ;)
-Multiset__prod : (x1 : Elem (Multiset M)) -> Elem M.
+Multiset__prod : (M : Set) -> (x1 : Elem (Multiset M)) -> Elem M.
 
 (; doc: A unital but not-necessarily-associative semiring. ;)
 (; //LEAN:NonAssocSemiring ;)
@@ -270,17 +290,17 @@ Or__imp_right : (b : Prop) -> (c : Prop) -> (a : Prop) -> (f : Proof (if b c)) -
 
 (; doc: Evaluation of functions into an indexed collection of rings at a point is a ring homomorphism. This is `Function.eval` as a `RingHom`. ;)
 (; //LEAN:Pi.evalRingHom ;)
-Pi__evalRingHom : (f : (Elem I -> Set)) -> (i : Elem I) -> Elem (RingHom ((i1 : Elem I) -> f i1) (f i)).
+Pi__evalRingHom : (I : Set) -> (f : (Elem I -> Set)) -> (i : Elem I) -> Elem (RingHom ((i1 : Elem I) -> f i1) (f i)).
 
 (; doc: An element `p` of a commutative monoid with zero (e.g., a ring) is called *prime*, if it's not zero, not a unit, and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`. ;)
 (; //LEAN:Prime ;)
-Prime : (p : Elem M) -> Prop.
+Prime : (M : Set) -> (p : Elem M) -> Prop.
 
 (; //LEAN:Prime.irreducible ;)
-Prime__irreducible : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (_ : Proof (IsCancelMulZero M)) -> (p : Elem M) -> (hp : Proof (Prime p)) -> Proof (Irreducible p).
+Prime__irreducible : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (_ : Proof (IsCancelMulZero M)) -> (p : Elem M) -> (hp : Proof (Prime M p)) -> Proof (Irreducible M p).
 
 (; //LEAN:PrincipalIdealRing.factors._proof_1 ;)
-PrincipalIdealRing__factors___proof_1 : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (IsPrincipalIdealRing R)) -> (a : Elem R) -> (h2 : Proof (not (Eqt R a 0))) -> Proof (exists (Multiset R) (f => and (forall R (b => if (Membership__mem f b) (Irreducible b))) (Associated (Multiset__prod f) a))).
+PrincipalIdealRing__factors___proof_1 : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (IsPrincipalIdealRing R)) -> (a : Elem R) -> (h2 : Proof (not (Eqt R a 0))) -> Proof (exists (Multiset R) (f => and (forall R (b => if (Membership__mem R (Multiset R) f b) (Irreducible R b))) (Associated R (Multiset__prod R f) a))).
 
 (; doc: The product type, usually written `α × β`. Product types are also called pair or tuple types. Elements of this type are pairs in which the first element is an `α` and the second element is a `β`.  Products nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.  Conventions for notations in identifiers:   * The recommended spelling of `×` in identifiers is `Prod`. ;)
 (; //LEAN:Prod ;)
@@ -300,42 +320,46 @@ RingHom__id : (X : Set) -> Elem (RingHom X X).
 
 (; doc: Reinterpret a ring homomorphism `f : α →+* β` as a monoid homomorphism `α →* β`. The `simp`-normal form is `(f : α →* β)`. ;)
 (; //LEAN:RingHom.toMonoidHom ;)
-RingHom__toMonoidHom : (self : Elem (RingHom X Y)) -> Elem (MonoidHom X Y).
+RingHom__toMonoidHom : (X : Set) -> (Y : Set) -> (self : Elem (RingHom X Y)) -> Elem (MonoidHom X Y).
 
 (; doc: A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is commutative and associative, multiplication is associative and left and right distributive over addition, and `0` and `1` are additive and multiplicative identities. ;)
 (; //LEAN:Semiring ;)
 Semiring : (X : Set) -> Prop.
 
 (; //LEAN:Semiring.toAddCommMonoid ;)
-Semiring__toAddCommMonoid : Proof (AddCommMonoid X).
+Semiring__toAddCommMonoid : (X : Set) -> Proof (AddCommMonoid X).
 
 (; //LEAN:Semiring.toModule ;)
-Semiring__toModule : Proof (Module R R).
+Semiring__toModule : (R : Set) -> Proof (Module R R).
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
 
 (; doc: The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that `f a = b` for some `a ∈ s`. ;)
 (; //LEAN:Set.image ;)
-Set__image : (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
+Set__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
 
 (; //LEAN:Set.image_singleton ;)
-Set__image_singleton : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (a : Elem X) -> Proof (Eqt (powerset Y) (Set__image f (Singleton__singleton a)) (Singleton__singleton (f a))).
+Set__image_singleton : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (a : Elem X) -> Proof (Eqt (powerset Y) (Set__image X Y f (Singleton__singleton X (powerset X) a)) (Singleton__singleton Y (powerset Y) (f a))).
 
 (; //LEAN:Set.mem_insert_iff._simp_1 ;)
-Set__mem_insert_iff___simp_1 : (X : Set) -> (x : Elem X) -> (a : Elem X) -> (s : Elem (powerset X)) -> Proof (Eqt Prop (Membership__mem (Insert__insert a s) x) (or (Eqt X x a) (Membership__mem s x))).
+Set__mem_insert_iff___simp_1 : (X : Set) -> (x : Elem X) -> (a : Elem X) -> (s : Elem (powerset X)) -> Proof (Eqt Prop (Membership__mem X (powerset X) (Insert__insert X (powerset X) a s) x) (or (Eqt X x a) (Membership__mem X (powerset X) s x))).
 
 (; //LEAN:Set.mem_singleton_iff._simp_1 ;)
-Set__mem_singleton_iff___simp_1 : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt Prop (Membership__mem (Singleton__singleton b) a) (Eqt X a b)).
+Set__mem_singleton_iff___simp_1 : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt Prop (Membership__mem X (powerset X) (Singleton__singleton X (powerset X) b) a) (Eqt X a b)).
 
 (; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
 (; //LEAN:Set.ofPred ;)
-Set__ofPred : (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+
+(; doc: The coercion from a term of a `SetLike` to its corresponding `Set`. ;)
+(; //LEAN:SetLike.coe ;)
+SetLike__coe : (A : Set) -> (B : Set) -> (x : Elem A) -> Elem (powerset B).
 
 (; doc: `singleton x` is a collection with the single element `x` (notation: `{x}`).  Conventions for notations in identifiers:   * The recommended spelling of `{x}` in identifiers is `singleton`. ;)
 (; //LEAN:Singleton.singleton ;)
-Singleton__singleton : (x1 : Elem x) -> Elem Y.
+Singleton__singleton : (X : Set) -> (Y : Set) -> (x : Elem X) -> Elem Y.
 
 (; doc: A submodule of a module is one which is closed under vector operations. This is a sufficient condition for the subset of vectors in the submodule to themselves form a module. ;)
 (; //LEAN:Submodule ;)
@@ -343,43 +367,43 @@ Submodule : (R : Set) -> (M : Set) -> Set.
 
 (; doc: A submodule of `M` is finitely generated if it is the span of a finite subset of `M`. ;)
 (; //LEAN:Submodule.FG ;)
-Submodule__FG : (N : Elem (Submodule R M)) -> Prop.
+Submodule__FG : (R : Set) -> (M : Set) -> (N : Elem (Submodule R M)) -> Prop.
 
 (; doc: An `R`-submodule of `M` is principal if it is generated by one element. ;)
 (; //LEAN:Submodule.IsPrincipal ;)
-Submodule__IsPrincipal : (S : Elem (Submodule R M)) -> Prop.
+Submodule__IsPrincipal : (R : Set) -> (M : Set) -> (S : Elem (Submodule R M)) -> Prop.
 
 (; doc: `generator I`, if `I` is a principal submodule, is an `x ∈ M` such that `span R {x} = I` ;)
 (; //LEAN:Submodule.IsPrincipal.generator ;)
-Submodule__IsPrincipal__generator : (S : Elem (Submodule R M)) -> Elem M.
+Submodule__IsPrincipal__generator : (R : Set) -> (M : Set) -> (S : Elem (Submodule R M)) -> Elem M.
 
 (; //LEAN:Submodule.IsPrincipal.mk ;)
-Submodule__IsPrincipal__mk : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (S : Elem (Submodule R M)) -> (principal : Proof (exists M (a => Eqt (Submodule R M) S (Submodule__span R (Singleton__singleton a))))) -> Proof (Submodule__IsPrincipal S).
+Submodule__IsPrincipal__mk : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (S : Elem (Submodule R M)) -> (principal : Proof (exists M (a => Eqt (Submodule R M) S (Submodule__span R M (Singleton__singleton M (powerset M) a))))) -> Proof (Submodule__IsPrincipal R M S).
 
 (; //LEAN:Submodule.IsPrincipal.principal ;)
-Submodule__IsPrincipal__principal : (R : Set) -> (M : Set) -> (x : Proof (Semiring R)) -> (x1 : Proof (AddCommMonoid M)) -> (x2 : Proof (Module R M)) -> (S : Elem (Submodule R M)) -> (_ : Proof (Submodule__IsPrincipal S)) -> Proof (exists M (a => Eqt (Submodule R M) S (Submodule__span R (Singleton__singleton a)))).
+Submodule__IsPrincipal__principal : (R : Set) -> (M : Set) -> (x : Proof (Semiring R)) -> (x1 : Proof (AddCommMonoid M)) -> (x2 : Proof (Module R M)) -> (S : Elem (Submodule R M)) -> (_ : Proof (Submodule__IsPrincipal R M S)) -> Proof (exists M (a => Eqt (Submodule R M) S (Submodule__span R M (Singleton__singleton M (powerset M) a)))).
 
 (; //LEAN:Submodule.IsPrincipal.span_singleton_generator ;)
-Submodule__IsPrincipal__span_singleton_generator : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (S : Elem (Submodule R M)) -> (_ : Proof (Submodule__IsPrincipal S)) -> Proof (Eqt (Submodule R M) (Submodule__span R (Singleton__singleton (Submodule__IsPrincipal__generator S))) S).
+Submodule__IsPrincipal__span_singleton_generator : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (S : Elem (Submodule R M)) -> (_ : Proof (Submodule__IsPrincipal R M S)) -> Proof (Eqt (Submodule R M) (Submodule__span R M (Singleton__singleton M (powerset M) (Submodule__IsPrincipal__generator R M S))) S).
 
 (; doc: The pullback of a submodule `p ⊆ M₂` along `f : M → M₂` ;)
 (; //LEAN:Submodule.comap ;)
-Submodule__comap : (f : Elem (LinearMap x6 M X1)) -> (p : Elem (Submodule X X1)) -> Elem (Submodule R M).
+Submodule__comap : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (x6 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X x6 M X1)) -> (p : Elem (Submodule X X1)) -> Elem (Submodule R M).
 
 (; doc: The pushforward of a submodule `p ⊆ M` by `f : M → M₂` ;)
 (; //LEAN:Submodule.map ;)
-Submodule__map : (f : Elem (LinearMap x6 M X1)) -> (p : Elem (Submodule R M)) -> Elem (Submodule X X1).
+Submodule__map : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (x6 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X x6 M X1)) -> (p : Elem (Submodule R M)) -> Elem (Submodule X X1).
 
 (; //LEAN:Submodule.map_span ;)
-Submodule__map_span : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (_ : Proof (Semiring X)) -> (x4 : Elem (RingHom R X)) -> (_ : Proof (AddCommMonoid X1)) -> (_ : Proof (Module X X1)) -> (f : Elem (LinearMap x4 M X1)) -> (s : Elem (powerset M)) -> Proof (Eqt (Submodule X X1) (Submodule__map f (Submodule__span R s)) (Submodule__span X (Set__image f s))).
+Submodule__map_span : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (_ : Proof (Semiring X)) -> (x4 : Elem (RingHom R X)) -> (_ : Proof (AddCommMonoid X1)) -> (_ : Proof (Module X X1)) -> (f : Elem (LinearMap R X x4 M X1)) -> (s : Elem (powerset M)) -> Proof (Eqt (Submodule X X1) (Submodule__map R X M X1 x4 f (Submodule__span R M s)) (Submodule__span X X1 (Set__image M X1 f s))).
 
 (; doc: The span of a set `s ⊆ M` is the smallest submodule of M that contains `s`. ;)
 (; //LEAN:Submodule.span ;)
-Submodule__span : (R : Set) -> (s : Elem (powerset M)) -> Elem (Submodule R M).
+Submodule__span : (R : Set) -> (M : Set) -> (s : Elem (powerset M)) -> Elem (Submodule R M).
 
 (; doc: An induction principle for span membership. If `p` holds for 0 and all elements of `s`, and is preserved under addition and scalar multiplication, then `p` holds for all elements of the span of `s`. ;)
 (; //LEAN:Submodule.span_induction ;)
-Submodule__span_induction : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (s : Elem (powerset M)) -> (p : ((x7 : Elem M) -> Proof (Membership__mem (Submodule__span R s) x7) -> Prop)) -> (mem : Proof (forall M (x6 => forall (Proof (Membership__mem s x6)) (h3 => p x6 (Submodule__subset_span x6 h3))))) -> (zero : Proof (p 0 (Submodule__zero_mem (Submodule__span R s)))) -> (add : Proof (forall M (x5 => forall M (y => forall (Proof (Membership__mem (Submodule__span R s) x5)) (hx2 => forall (Proof (Membership__mem (Submodule__span R s) y)) (hy => if (p x5 hx2) (if (p y hy) (p (plus x5 y) (Submodule__add_mem (Submodule__span R s) hx2 hy))))))))) -> (smul : Proof (forall R (a => forall M (x4 => forall (Proof (Membership__mem (Submodule__span R s) x4)) (hx1 => if (p x4 hx1) (p (HSMul__hSMul a x4) (Submodule__smul_mem (Submodule__span R s) a hx1))))))) -> (x3 : Elem M) -> (hx : Proof (Membership__mem (Submodule__span R s) x3)) -> Proof (p x3 hx).
+Submodule__span_induction : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (s : Elem (powerset M)) -> (p : ((x7 : Elem M) -> Proof (Membership__mem M (Submodule R M) (Submodule__span R M s) x7) -> Prop)) -> (mem : Proof (forall M (x6 => forall (Proof (Membership__mem M (powerset M) s x6)) (h3 => p x6 (Submodule__subset_span R M s x6 h3))))) -> (zero : Proof (p 0 (Submodule__zero_mem R M x2 (Submodule__span R M s)))) -> (add : Proof (forall M (x5 => forall M (y => forall (Proof (Membership__mem M (Submodule R M) (Submodule__span R M s) x5)) (hx2 => forall (Proof (Membership__mem M (Submodule R M) (Submodule__span R M s) y)) (hy => if (p x5 hx2) (if (p y hy) (p (plus x5 y) (Submodule__add_mem R M x2 (Submodule__span R M s) x5 y hx2 hy))))))))) -> (smul : Proof (forall R (a => forall M (x4 => forall (Proof (Membership__mem M (Submodule R M) (Submodule__span R M s) x4)) (hx1 => if (p x4 hx1) (p (HSMul__hSMul R M M a x4) (Submodule__smul_mem R M x2 (Submodule__span R M s) x4 a hx1))))))) -> (x3 : Elem M) -> (hx : Proof (Membership__mem M (Submodule R M) (Submodule__span R M s) x3)) -> Proof (p x3 hx).
 
 (; doc: A submonoid of a monoid `M` is a subset containing 1 and closed under multiplication. ;)
 (; //LEAN:Submonoid ;)
@@ -387,11 +411,14 @@ Submonoid : (M : Set) -> Set.
 
 (; doc: The preimage of a `Submonoid` along a `MonoidHom` is a `Submonoid`. ;)
 (; //LEAN:Submonoid.comap ;)
-Submonoid__comap : (f : Elem F) -> (S : Elem (Submonoid N)) -> Elem (Submonoid M).
+Submonoid__comap : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> (S : Elem (Submonoid N)) -> Elem (Submonoid M).
 
 (; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
 (; //LEAN:Subtype ;)
-Subtype : (p : (Elem X -> Prop)) -> Set.
+Subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Set.
+
+(; //LEAN:Subtype.mk ;)
+Subtype__mk : (X : Set) -> (p : (Elem X -> Prop)) -> (val : Elem X) -> (property : Proof (p val)) -> Elem (Subtype X (x => p x)).
 
 (; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:True ;)
@@ -403,10 +430,10 @@ Units : (X : Set) -> Set.
 
 (; doc: The underlying value in the base `Monoid`. ;)
 (; //LEAN:Units.val ;)
-Units__val : (self : Elem (Units X)) -> Elem X.
+Units__val : (X : Set) -> (self : Elem (Units X)) -> Elem X.
 
 (; //LEAN:WfDvdMonoid.isRelPrime_of_no_irreducible_factors ;)
-WfDvdMonoid__isRelPrime_of_no_irreducible_factors : (X : Set) -> (_ : Proof (CommMonoidWithZero X)) -> (_ : Proof (WfDvdMonoid X)) -> (x1 : Elem X) -> (y : Elem X) -> (nonzero : Proof (not (and (Eqt X x1 0) (Eqt X y 0)))) -> (H : Proof (forall X (z => if (Irreducible z) (if (divide z x1) (not (divide z y)))))) -> Proof (IsRelPrime x1 y).
+WfDvdMonoid__isRelPrime_of_no_irreducible_factors : (X : Set) -> (_ : Proof (CommMonoidWithZero X)) -> (_ : Proof (WfDvdMonoid X)) -> (x1 : Elem X) -> (y : Elem X) -> (nonzero : Proof (not (and (Eqt X x1 0) (Eqt X y 0)))) -> (H : Proof (forall X (z => if (Irreducible X z) (if (divide z x1) (not (divide z y)))))) -> Proof (IsRelPrime X x1 y).
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
@@ -422,7 +449,7 @@ congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y))
 
 (; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:dite ;)
-dite : (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
+dite : (X : Set) -> (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
 
 (; //LEAN:dvd_add ;)
 dvd_add : (X : Set) -> (_ : Proof (Semigroup X)) -> (_ : Proof (LeftDistribClass X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (divide a b)) -> (h2 : Proof (divide a c)) -> Proof (divide a (plus b c)).
@@ -442,14 +469,14 @@ exists_congr : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> 
 
 (; doc: Define `GCDMonoid` on a structure just from the `gcd` and its properties. ;)
 (; //LEAN:gcdMonoidOfGCD ;)
-gcdMonoidOfGCD : (gcd : (Elem X -> Elem X -> X)) -> (gcd_dvd_left : Proof (forall X (a2 => forall X (b2 => divide (gcd a2 b2) a2)))) -> (gcd_dvd_right : Proof (forall X (a1 => forall X (b1 => divide (gcd a1 b1) b1)))) -> (dvd_gcd : Proof (forall X (a => forall X (b => forall X (c => if (divide a c) (if (divide a b) (divide a (gcd c b)))))))) -> Proof (GCDMonoid X).
+gcdMonoidOfGCD : (X : Set) -> (gcd : (Elem X -> Elem X -> X)) -> (gcd_dvd_left : Proof (forall X (a2 => forall X (b2 => divide (gcd a2 b2) a2)))) -> (gcd_dvd_right : Proof (forall X (a1 => forall X (b1 => divide (gcd a1 b1) b1)))) -> (dvd_gcd : Proof (forall X (a => forall X (b => forall X (c => if (divide a c) (if (divide a b) (divide a (gcd c b)))))))) -> Proof (GCDMonoid X).
 
 (; //LEAN:gcd_greatest_associated ;)
-gcd_greatest_associated : (X : Set) -> (_ : Proof (CommMonoidWithZero X)) -> (_ : Proof (GCDMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (d : Elem X) -> (hda : Proof (divide d a)) -> (hdb : Proof (divide d b)) -> (hd : Proof (forall X (e => if (divide e a) (if (divide e b) (divide e d))))) -> Proof (Associated d (GCDMonoid__gcd a b)).
+gcd_greatest_associated : (X : Set) -> (_ : Proof (CommMonoidWithZero X)) -> (_ : Proof (GCDMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (d : Elem X) -> (hda : Proof (divide d a)) -> (hdb : Proof (divide d b)) -> (hd : Proof (forall X (e => if (divide e a) (if (divide e b) (divide e d))))) -> Proof (Associated X d (GCDMonoid__gcd X x a b)).
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
-id : (a : Elem X) -> Elem X.
+id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:iff_not_comm ;)
 iff_not_comm : (a : Prop) -> (b : Prop) -> Proof (iff (iff a (not b)) (iff b (not a))).
@@ -457,12 +484,15 @@ iff_not_comm : (a : Prop) -> (b : Prop) -> Proof (iff (iff a (not b)) (iff b (no
 (; //LEAN:iff_self ;)
 iff_self : (p : Prop) -> Proof (Eqt Prop (iff p p) True).
 
+(; //LEAN:implies_congr ;)
+implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h : Proof (Eqt Set X X1)) -> (h1 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> X2) (Elem X1 -> X3)).
+
 (; doc: `inferInstance` synthesizes a value of any target type by typeclass inference. This function has the same type signature as the identity function, but the square brackets on the `[i : α]` argument means that it will attempt to construct this argument by typeclass inference. (This will fail if `α` is not a `class`.) Example: ``` #check (inferInstance : Inhabited Nat) -- Inhabited Nat  def foo : Inhabited (Nat × Nat) :=   inferInstance  example : foo.default = (default, default) :=   rfl ``` ;)
 (; //LEAN:inferInstance ;)
-inferInstance : Elem X.
+inferInstance : (X : Set) -> Elem X.
 
 (; //LEAN:isRelPrime_of_no_nonunits_factors ;)
-isRelPrime_of_no_nonunits_factors : (X : Set) -> (_ : Proof (MonoidWithZero X)) -> (x1 : Elem X) -> (y : Elem X) -> (nonzero : Proof (not (and (Eqt X x1 0) (Eqt X y 0)))) -> (H : Proof (forall X (z => if (not (IsUnit z)) (if (Neq z 0) (if (divide z x1) (not (divide z y))))))) -> Proof (IsRelPrime x1 y).
+isRelPrime_of_no_nonunits_factors : (X : Set) -> (_ : Proof (MonoidWithZero X)) -> (x1 : Elem X) -> (y : Elem X) -> (nonzero : Proof (not (and (Eqt X x1 0) (Eqt X y 0)))) -> (H : Proof (forall X (z => if (not (IsUnit X z)) (if (Neq z 0) (if (divide z x1) (not (divide z y))))))) -> Proof (IsRelPrime X x1 y).
 
 (; //LEAN:mul_comm ;)
 mul_comm : (G : Set) -> (_ : Proof (CommMagma G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (times a b) (times b a)).
@@ -473,13 +503,17 @@ nonunits : (X : Set) -> Elem (powerset X).
 
 (; doc: Chooses an element of each associate class, by multiplying by `normUnit` ;)
 (; //LEAN:normalize ;)
-normalize : (x2 : Elem X) -> Elem X.
+normalize : (X : Set) -> (x2 : Elem X) -> Elem X.
 
 (; //LEAN:of_eq_true ;)
 of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
 
 (; //LEAN:or_true ;)
 or_true : (p : Prop) -> Proof (Eqt Prop (or p True) True).
+
+(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
+(; //LEAN:propext ;)
+propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a b).
 
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)
@@ -489,5 +523,5 @@ rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
 true_or : (p : Prop) -> Proof (Eqt Prop (or True p) True).
 
 (; //LEAN:zorn_le₀ ;)
-zorn_le_u2080_ : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X)) -> (ih : Proof (forall (powerset X) (c => if (Set__Subset c s) (if (IsChain (x2 => x3 => Leq x2 x3) c) (exists X (ub => and (Membership__mem s ub) (forall X (z => if (Membership__mem c z) (Leq z ub))))))))) -> Proof (exists X (m => Maximal (x1 => Membership__mem s x1) m)).
+zorn_le_u2080_ : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X)) -> (ih : Proof (forall (powerset X) (c => if (Set__Subset X c s) (if (IsChain X (x2 => x3 => Leq x2 x3) c) (exists X (ub => and (Membership__mem X (powerset X) s ub) (forall X (z => if (Membership__mem X (powerset X) c z) (Leq z ub))))))))) -> Proof (exists X (m => Maximal X (x1 => Membership__mem X (powerset X) s x1) m)).
 

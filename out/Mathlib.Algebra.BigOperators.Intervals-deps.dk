@@ -16,9 +16,13 @@ CommGroup : (G : Set) -> Prop.
 (; //LEAN:CommMonoid ;)
 CommMonoid : (M : Set) -> Prop.
 
+(; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
+(; //LEAN:Eq ;)
+Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
+
 (; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
 (; //LEAN:Eq.mpr ;)
-Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
 
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
@@ -38,15 +42,19 @@ Fin : (n : Elem Nat) -> Set.
 
 (; doc: Coarsens a bound by one. ;)
 (; //LEAN:Fin.castSucc ;)
-Fin__castSucc : (x : Elem (Fin n)) -> Elem (Fin (plus n 1)).
+Fin__castSucc : (n : Elem Nat) -> (x : Elem (Fin n)) -> Elem (Fin (plus n 1)).
 
 (; doc: Creates a `Fin n` from `i : Nat` and a proof that `i < n`. ;)
 (; //LEAN:Fin.mk ;)
-Fin__mk : (val : Elem Nat) -> (isLt : Proof (Lt val n)) -> Elem (Fin n).
+Fin__mk : (n : Elem Nat) -> (val : Elem Nat) -> (isLt : Proof (Lt val n)) -> Elem (Fin n).
 
 (; doc: The successor, with an increased bound.  This differs from adding `1`, which instead wraps around.  Examples: * `(2 : Fin 3).succ = (3 : Fin 4)` * `(2 : Fin 3) + 1 = (0 : Fin 3)` ;)
 (; //LEAN:Fin.succ ;)
-Fin__succ : (x : Elem (Fin n)) -> Elem (Fin (plus n 1)).
+Fin__succ : (n : Elem Nat) -> (x : Elem (Fin n)) -> Elem (Fin (plus n 1)).
+
+(; doc: The number that is strictly less than `n`.  `Fin.val` is a coercion, so any `Fin n` can be used in a position where a `Nat` is expected. ;)
+(; //LEAN:Fin.val ;)
+Fin__val : (n : Elem Nat) -> (self : Elem (Fin n)) -> Elem Nat.
 
 (; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
 (; //LEAN:Finset ;)
@@ -54,43 +62,43 @@ Finset : (X : Set) -> Set.
 
 (; doc: The finset $[a, b]$ of elements `x` such that `a ≤ x` and `x ≤ b`. Basically `Set.Icc a b` as a finset. ;)
 (; //LEAN:Finset.Icc ;)
-Finset__Icc : (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
+Finset__Icc : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
 
 (; doc: The finset $[a, b)$ of elements `x` such that `a ≤ x` and `x < b`. Basically `Set.Ico a b` as a finset. ;)
 (; //LEAN:Finset.Ico ;)
-Finset__Ico : (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
+Finset__Ico : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
 
 (; doc: The finset $(-∞, b]$ of elements `x` such that `x ≤ b`. Basically `Set.Iic b` as a finset. ;)
 (; //LEAN:Finset.Iic ;)
-Finset__Iic : (a : Elem X) -> Elem (Finset X).
+Finset__Iic : (X : Set) -> (a : Elem X) -> Elem (Finset X).
 
 (; doc: The finset $(a, b]$ of elements `x` such that `a < x` and `x ≤ b`. Basically `Set.Ioc a b` as a finset. ;)
 (; //LEAN:Finset.Ioc ;)
-Finset__Ioc : (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
+Finset__Ioc : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
 
 (; doc: `s.card` is the number of elements of `s`, aka its cardinality.  The notation `#s` can be accessed in the `Finset` locale. ;)
 (; //LEAN:Finset.card ;)
-Finset__card : (s : Elem (Finset X)) -> Elem Nat.
+Finset__card : (X : Set) -> (s : Elem (Finset X)) -> Elem Nat.
 
 (; //LEAN:Finset.card_range ;)
-Finset__card_range : (n : Elem Nat) -> Proof (Eq (Finset__card (Finset__range n)) n).
+Finset__card_range : (n : Elem Nat) -> Proof (Eq (Finset__card Nat (Finset__range n)) n).
 
 (; doc: `Finset.filter p s` is the set of elements of `s` that satisfy `p`.  For example, one can use `s.filter (· ∈ t)` to get the intersection of `s` with `t : Set α` as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available). ;)
 (; //LEAN:Finset.filter ;)
-Finset__filter : (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Elem (Finset X).
+Finset__filter : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Elem (Finset X).
 
 (; //LEAN:Finset.mem_range ;)
-Finset__mem_range : (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Membership__mem (Finset__range n) m) (Lt m n)).
+Finset__mem_range : (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Membership__mem Nat (Finset Nat) (Finset__range n) m) (Lt m n)).
 
 (; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.prod ;)
-Finset__prod : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
 
 (; //LEAN:Finset.prod_eq_prod_Ico_succ_bot ;)
-Finset__prod_eq_prod_Ico_succ_bot : (M : Set) -> (_ : Proof (CommMonoid M)) -> (a : Elem Nat) -> (b : Elem Nat) -> (hab : Proof (Lt a b)) -> (f : (Elem Nat -> M)) -> Proof (Eqt M (Finset__prod (Finset__Ico a b) (k => f k)) (times (f a) (Finset__prod (Finset__Ico (plus a 1) b) (k1 => f k1)))).
+Finset__prod_eq_prod_Ico_succ_bot : (M : Set) -> (_ : Proof (CommMonoid M)) -> (a : Elem Nat) -> (b : Elem Nat) -> (hab : Proof (Lt a b)) -> (f : (Elem Nat -> M)) -> Proof (Eqt M (Finset__prod Nat M (Finset__Ico Nat a b) (k => f k)) (times (f a) (Finset__prod Nat M (Finset__Ico Nat (plus a 1) b) (k1 => f k1)))).
 
 (; //LEAN:Finset.prod_range_succ ;)
-Finset__prod_range_succ : (M : Set) -> (_ : Proof (CommMonoid M)) -> (f : (Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__prod (Finset__range (plus n 1)) (x1 => f x1)) (times (Finset__prod (Finset__range n) (x2 => f x2)) (f n))).
+Finset__prod_range_succ : (M : Set) -> (_ : Proof (CommMonoid M)) -> (f : (Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__prod Nat M (Finset__range (plus n 1)) (x1 => f x1)) (times (Finset__prod Nat M (Finset__range n) (x2 => f x2)) (f n))).
 
 (; doc: `range n` is the set of natural numbers less than `n`. ;)
 (; //LEAN:Finset.range ;)
@@ -98,30 +106,30 @@ Finset__range : (n : Elem Nat) -> Elem (Finset Nat).
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
-Finset__sum : (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
 
 (; //LEAN:Finset.sum_add_distrib ;)
-Finset__sum_add_distrib : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem I -> M)) -> (g : (Elem I -> M)) -> Proof (Eqt M (Finset__sum s (x1 => plus (f x1) (g x1))) (plus (Finset__sum s (x2 => f x2)) (Finset__sum s (x3 => g x3)))).
+Finset__sum_add_distrib : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem I -> M)) -> (g : (Elem I -> M)) -> Proof (Eqt M (Finset__sum I M s (x1 => plus (f x1) (g x1))) (plus (Finset__sum I M s (x2 => f x2)) (Finset__sum I M s (x3 => g x3)))).
 
 (; //LEAN:Finset.sum_congr ;)
-Finset__sum_congr : (I : Set) -> (M : Set) -> (x : Elem (Finset I)) -> (x1 : Elem (Finset I)) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem I -> M)) -> (g : (Elem I -> M)) -> (h : Proof (Eqt (Finset I) x x1)) -> (h1 : Proof (forall I (x5 => if (Membership__mem x1 x5) (Eqt M (f x5) (g x5))))) -> Proof (Eqt M (Finset__sum x (x3 => f x3)) (Finset__sum x1 (x4 => g x4))).
+Finset__sum_congr : (I : Set) -> (M : Set) -> (x : Elem (Finset I)) -> (x1 : Elem (Finset I)) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem I -> M)) -> (g : (Elem I -> M)) -> (h : Proof (Eqt (Finset I) x x1)) -> (h1 : Proof (forall I (x5 => if (Membership__mem I (Finset I) x1 x5) (Eqt M (f x5) (g x5))))) -> Proof (Eqt M (Finset__sum I M x (x3 => f x3)) (Finset__sum I M x1 (x4 => g x4))).
 
 (; //LEAN:Finset.sum_const ;)
-Finset__sum_const : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (_ : Proof (AddCommMonoid M)) -> (b : Elem M) -> Proof (Eqt M (Finset__sum s (_x => b)) (HSMul__hSMul (Finset__card s) b)).
+Finset__sum_const : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (_ : Proof (AddCommMonoid M)) -> (b : Elem M) -> Proof (Eqt M (Finset__sum I M s (_x => b)) (HSMul__hSMul Nat M M (Finset__card I s) b)).
 
 (; //LEAN:Finset.sum_eq_sum_Ico_succ_bot ;)
-Finset__sum_eq_sum_Ico_succ_bot : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (a : Elem Nat) -> (b : Elem Nat) -> (hab : Proof (Lt a b)) -> (f : (Elem Nat -> M)) -> Proof (Eqt M (Finset__sum (Finset__Ico a b) (k => f k)) (plus (f a) (Finset__sum (Finset__Ico (plus a 1) b) (k1 => f k1)))).
+Finset__sum_eq_sum_Ico_succ_bot : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (a : Elem Nat) -> (b : Elem Nat) -> (hab : Proof (Lt a b)) -> (f : (Elem Nat -> M)) -> Proof (Eqt M (Finset__sum Nat M (Finset__Ico Nat a b) (k => f k)) (plus (f a) (Finset__sum Nat M (Finset__Ico Nat (plus a 1) b) (k1 => f k1)))).
 
 (; //LEAN:Finset.sum_range_succ ;)
-Finset__sum_range_succ : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__sum (Finset__range (plus n 1)) (x1 => f x1)) (plus (Finset__sum (Finset__range n) (x2 => f x2)) (f n))).
+Finset__sum_range_succ : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__sum Nat M (Finset__range (plus n 1)) (x1 => f x1)) (plus (Finset__sum Nat M (Finset__range n) (x2 => f x2)) (f n))).
 
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
-HSMul__hSMul : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+HSMul__hSMul : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Y) -> Elem Z.
 
 (; doc: `a⁻¹` computes the inverse of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `⁻¹` in identifiers is `inv`. ;)
 (; //LEAN:Inv.inv ;)
-Inv__inv : (x : Elem X) -> Elem X.
+Inv__inv : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: An ordered cancellative additive monoid is an ordered additive monoid in which addition is cancellative and monotone. ;)
 (; //LEAN:IsOrderedCancelAddMonoid ;)
@@ -133,17 +141,17 @@ LocallyFiniteOrder : (X : Set) -> Prop.
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
-Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
 
 (; //LEAN:Nat.le_sub_one_of_lt ;)
 Nat__le_sub_one_of_lt : (a : Elem Nat) -> (b : Elem Nat) -> (h : Proof (Lt a b)) -> Proof (Leq a (minus b 1)).
 
 (; //LEAN:Nat.nsmul_eq_mul ;)
-Nat__nsmul_eq_mul : (m : Elem Nat) -> (n : Elem Nat) -> Proof (Eq (HSMul__hSMul m n) (times m n)).
+Nat__nsmul_eq_mul : (m : Elem Nat) -> (n : Elem Nat) -> Proof (Eq (HSMul__hSMul Nat Nat Nat m n) (times m n)).
 
 (; doc: `-a` computes the negative or opposite of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `-` in identifiers is `neg` (when used as a unary operator). ;)
 (; //LEAN:Neg.neg ;)
-Neg__neg : (x : Elem X) -> Elem X.
+Neg__neg : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: `OrderedSub α` means that `α` has a subtraction characterized by `a - b ≤ c ↔ a ≤ c + b`. In other words, `a - b` is the least `c` such that `a ≤ b + c`.  This is satisfied both by the subtraction in additive ordered groups and by truncated subtraction in canonically ordered monoids on many specific types. ;)
 (; //LEAN:OrderedSub ;)
@@ -155,7 +163,7 @@ PartialOrder : (X : Set) -> Prop.
 
 (; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
 (; //LEAN:Trans.trans ;)
-Trans__trans : (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
+Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> Elem Y -> Set)) -> (s : (Elem Y -> Elem Z -> Set)) -> (t : (Elem X -> Elem Z -> Set)) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Z) -> (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
 
 (; //LEAN:add_comm ;)
 add_comm : (G : Set) -> (_ : Proof (AddCommMagma G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus a b) (plus b a)).
@@ -169,7 +177,7 @@ congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem
 
 (; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:dite ;)
-dite : (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
+dite : (X : Set) -> (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
 
 (; //LEAN:div_eq_iff_eq_mul ;)
 div_eq_iff_eq_mul : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (div a b) c) (Eqt G a (times c b))).
@@ -178,14 +186,14 @@ div_eq_iff_eq_mul : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : E
 div_eq_iff_eq_mul' : (G : Set) -> (_ : Proof (CommGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (div a b) c) (Eqt G a (times b c))).
 
 (; //LEAN:eq_add_neg_iff_add_eq ;)
-eq_add_neg_iff_add_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G a (plus b (Neg__neg c))) (Eqt G (plus a c) b)).
+eq_add_neg_iff_add_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G a (plus b (Neg__neg G c))) (Eqt G (plus a c) b)).
 
 (; //LEAN:eq_mul_inv_iff_mul_eq ;)
-eq_mul_inv_iff_mul_eq : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G a (times b (Inv__inv c))) (Eqt G (times a c) b)).
+eq_mul_inv_iff_mul_eq : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G a (times b (Inv__inv G c))) (Eqt G (times a c) b)).
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
-id : (a : Elem X) -> Elem X.
+id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:mul_comm ;)
 mul_comm : (G : Set) -> (_ : Proof (CommMagma G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (times a b) (times b a)).

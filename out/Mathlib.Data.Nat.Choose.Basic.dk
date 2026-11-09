@@ -29,7 +29,7 @@ Nat__choose_eq_choose_pred_add : (n : Elem Nat) -> (k : Elem Nat) -> (hn : Proof
 
 (; //LEAN:Nat.choose_eq_zero_of_lt ;)
 def Nat__choose_eq_zero_of_lt : (n : Elem Nat) -> (k : Elem Nat) -> (h : Proof (Lt n k)) -> Proof (Eq (Nat__choose n k) 0) :=
-  n => k => h => Nat__brecOn n Nat__choose_eq_zero_of_lt___f k h.
+  n => k => h => Nat__brecOn (x => forall Nat (x1 => if (Lt x x1) (Eq (Nat__choose x x1) 0))) n Nat__choose_eq_zero_of_lt___f k h.
 
 (; //LEAN:Nat.choose_self ;)
 Nat__choose_self : (n : Elem Nat) -> Proof (Eq (Nat__choose n n) 1).
@@ -165,7 +165,7 @@ Nat__choose_le_add : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> Proof
 Nat__choose_le_choose : (a : Elem Nat) -> (b : Elem Nat) -> (c : Elem Nat) -> (h : Proof (Leq a b)) -> Proof (Leq (Nat__choose a c) (Nat__choose b c)).
 
 (; //LEAN:Nat.choose_mono ;)
-def Nat__choose_mono : (b : Elem Nat) -> Proof (Monotone (a => Nat__choose a b)) :=
+def Nat__choose_mono : (b : Elem Nat) -> Proof (Monotone Nat Nat (a => Nat__choose a b)) :=
   b => forallI Nat (x => forall Nat (x2 => if (Leq x x2) (Leq (Nat__choose x b) (Nat__choose x2 b)))) (x => forallI Nat (x1 => if (Leq x x1) (Leq (Nat__choose x b) (Nat__choose x1 b))) (x1 => Nat__choose_le_choose x x1 b)).
 
 (; //LEAN:Nat.choose_eq_one_iff ;)
@@ -194,5 +194,5 @@ Nat__multichoose_one_right : (n : Elem Nat) -> Proof (Eq (Nat__multichoose n 1) 
 
 (; //LEAN:Nat.multichoose_eq ;)
 def Nat__multichoose_eq : (n : Elem Nat) -> (k : Elem Nat) -> Proof (Eq (Nat__multichoose n k) (Nat__choose (minus (plus n k) 1) k)) :=
-  n => k => Nat__multichoose_eq___unary (PSigma__mk n k).
+  n => k => Nat__multichoose_eq___unary (PSigma__mk Nat (n1 => Nat) n k).
 

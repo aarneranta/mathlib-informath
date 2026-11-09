@@ -13,17 +13,17 @@ LT__lt__ne' : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem
 
 (; doc: A function `f` is monotone if `a ≤ b` implies `f a ≤ f b`. ;)
 (; //LEAN:Monotone ;)
-Monotone : (f : (Elem X -> Y)) -> Prop.
+Monotone : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: `n.ascFactorial k = n (n + 1) ⋯ (n + k - 1)`. This is closely related to `ascPochhammer`, but much less general. ;)
 (; //LEAN:Nat.ascFactorial ;)
 Nat__ascFactorial : (n : Elem Nat) -> (x : Elem Nat) -> Elem Nat.
 
 (; //LEAN:Nat.brecOn ;)
-Nat__brecOn : (t : Elem Nat) -> (F_1 : ((t1 : Elem Nat) -> Elem (Nat__below t1) -> motive t1)) -> Elem (motive t).
+Nat__brecOn : (motive : (Elem Nat -> Set)) -> (t : Elem Nat) -> (F_1 : ((t1 : Elem Nat) -> Elem (Nat__below motive t1) -> motive t1)) -> Elem (motive t).
 
 (; //LEAN:Nat.choose_eq_zero_of_lt._f ;)
-Nat__choose_eq_zero_of_lt___f : (x : Elem Nat) -> (f : Elem (Nat__below x)) -> (x1 : Elem Nat) -> (h : Proof (Lt x x1)) -> Proof (Eq (Nat__choose x x1) 0).
+Nat__choose_eq_zero_of_lt___f : (x : Elem Nat) -> (f : Elem (Nat__below (x2 => forall Nat (x3 => if (Lt x2 x3) (Eq (Nat__choose x2 x3) 0))) x)) -> (x1 : Elem Nat) -> (h : Proof (Lt x x1)) -> Proof (Eq (Nat__choose x x1) 0).
 
 (; doc: `n.descFactorial k = n! / (n - k)!` (as seen in `Nat.descFactorial_eq_div`), but implemented recursively to allow for "quick" computation when using `norm_num`. This is closely related to `descPochhammer`, but much less general. ;)
 (; //LEAN:Nat.descFactorial ;)
@@ -39,11 +39,11 @@ Nat__factorial_ne_zero : (n : Elem Nat) -> Proof (Neq (factorial n) 0).
 Nat__lt_succ_self : (n : Elem Nat) -> Proof (Lt n (succ n)).
 
 (; //LEAN:Nat.multichoose_eq._unary ;)
-Nat__multichoose_eq___unary : (_x : Elem (PSigma (n => Nat))) -> Proof (Eq (Nat__multichoose (PSigma__proj0 _x) (PSigma__proj1 _x)) (Nat__choose (minus (plus (PSigma__proj0 _x) (PSigma__proj1 _x)) 1) (PSigma__proj1 _x))).
+Nat__multichoose_eq___unary : (_x : Elem (PSigma Nat (n => Nat))) -> Proof (Eq (Nat__multichoose (PSigma__proj0 _x) (PSigma__proj1 _x)) (Nat__choose (minus (plus (PSigma__proj0 _x) (PSigma__proj1 _x)) 1) (PSigma__proj1 _x))).
 
 (; doc: Constructs a fully universe-polymorphic dependent pair. ;)
 (; //LEAN:PSigma.mk ;)
-PSigma__mk : (fst : Elem X) -> (snd : Elem (x fst)) -> Elem (PSigma x).
+PSigma__mk : (X : Set) -> (x : (Elem X -> Set)) -> (fst : Elem X) -> (snd : Elem (x fst)) -> Elem (PSigma X x).
 
 (; doc: **Function extensionality.** If two functions return equal results for all possible arguments, then they are equal.  It is called “extensionality” because it provides a way to prove two objects equal based on the properties of the underlying mathematical functions, rather than based on the syntax used to denote them. Function extensionality is a theorem that can be [proved using quotient types](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=quotient-funext). ;)
 (; //LEAN:funext ;)

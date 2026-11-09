@@ -66,11 +66,11 @@ DivisionMonoid : (G : Set) -> Prop.
 
 (; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
 (; //LEAN:Eq ;)
-Eq : (x : Elem X) -> (x1 : Elem X) -> Prop.
+Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
 (; //LEAN:Eq.mpr ;)
-Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
 
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
@@ -86,53 +86,53 @@ Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Pr
 
 (; doc: A function is called bijective if it is both injective and surjective. ;)
 (; //LEAN:Function.Bijective ;)
-Function__Bijective : (f : (Elem X -> Y)) -> Prop.
+Function__Bijective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Function.Injective.eq_iff ;)
-Function__Injective__eq_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (I : Proof (Function__Injective f)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt Y (f a) (f b)) (Eqt X a b)).
+Function__Injective__eq_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (I : Proof (Function__Injective X Y f)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt Y (f a) (f b)) (Eqt X a b)).
 
 (; //LEAN:Function.Injective.eq_iff' ;)
-Function__Injective__eq_iff' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (I : Proof (Function__Injective f)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem Y) -> (h : Proof (Eqt Y (f b) c)) -> Proof (iff (Eqt Y (f a) c) (Eqt X a b)).
+Function__Injective__eq_iff' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (I : Proof (Function__Injective X Y f)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem Y) -> (h : Proof (Eqt Y (f b) c)) -> Proof (iff (Eqt Y (f a) c) (Eqt X a b)).
 
 (; doc: A function is involutive, if `f ∘ f = id`. ;)
 (; //LEAN:Function.Involutive ;)
-Function__Involutive : (f : (Elem X -> X)) -> Prop.
+Function__Involutive : (X : Set) -> (f : (Elem X -> X)) -> Prop.
 
 (; //LEAN:Function.Involutive.bijective ;)
-Function__Involutive__bijective : (X : Set) -> (f : (Elem X -> X)) -> (h : Proof (Function__Involutive f)) -> Proof (Function__Bijective f).
+Function__Involutive__bijective : (X : Set) -> (f : (Elem X -> X)) -> (h : Proof (Function__Involutive X f)) -> Proof (Function__Bijective X X f).
 
 (; //LEAN:Function.Involutive.comp_self ;)
-Function__Involutive__comp_self : (X : Set) -> (f : (Elem X -> X)) -> (h : Proof (Function__Involutive f)) -> Proof (Eqt (Elem X -> X) (Function__comp f f) id).
+Function__Involutive__comp_self : (X : Set) -> (f : (Elem X -> X)) -> (h : Proof (Function__Involutive X f)) -> Proof (Eqt (Elem X -> X) (Function__comp X X X f f) (id X)).
 
 (; doc: An involution commutes across an equality. Compare to `Function.Injective.eq_iff`. ;)
 (; //LEAN:Function.Involutive.eq_iff ;)
-Function__Involutive__eq_iff : (X : Set) -> (f : (Elem X -> X)) -> (h : Proof (Function__Involutive f)) -> (x : Elem X) -> (y : Elem X) -> Proof (iff (Eqt X (f x) y) (Eqt X x (f y))).
+Function__Involutive__eq_iff : (X : Set) -> (f : (Elem X -> X)) -> (h : Proof (Function__Involutive X f)) -> (x : Elem X) -> (y : Elem X) -> Proof (iff (Eqt X (f x) y) (Eqt X x (f y))).
 
 (; //LEAN:Function.Involutive.injective ;)
-Function__Involutive__injective : (X : Set) -> (f : (Elem X -> X)) -> (h : Proof (Function__Involutive f)) -> Proof (Function__Injective f).
+Function__Involutive__injective : (X : Set) -> (f : (Elem X -> X)) -> (h : Proof (Function__Involutive X f)) -> Proof (Function__Injective X X f).
 
 (; //LEAN:Function.Involutive.surjective ;)
-Function__Involutive__surjective : (X : Set) -> (f : (Elem X -> X)) -> (h : Proof (Function__Involutive f)) -> Proof (Function__Surjective f).
+Function__Involutive__surjective : (X : Set) -> (f : (Elem X -> X)) -> (h : Proof (Function__Involutive X f)) -> Proof (Function__Surjective X X f).
 
 (; doc: `LeftInverse g f` means that `g` is a left inverse to `f`. That is, `g ∘ f = id`. ;)
 (; //LEAN:Function.LeftInverse ;)
-Function__LeftInverse : (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> Prop.
+Function__LeftInverse : (X : Set) -> (Y : Set) -> (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: `RightInverse g f` means that `g` is a right inverse to `f`. That is, `f ∘ g = id`. ;)
 (; //LEAN:Function.RightInverse ;)
-Function__RightInverse : (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> Prop.
+Function__RightInverse : (X : Set) -> (Y : Set) -> (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: A function `f : α → β` is called surjective if every `b : β` is equal to `f a` for some `a : α`. ;)
 (; //LEAN:Function.Surjective ;)
-Function__Surjective : (f : (Elem X -> Y)) -> Prop.
+Function__Surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: Function composition, usually written with the infix operator `∘`. A new function is created from two existing functions, where one function's output is used as input to the other.  Examples:  * `Function.comp List.reverse (List.drop 2) [3, 2, 4, 1] = [1, 4]`  * `(List.reverse ∘ List.drop 2) [3, 2, 4, 1] = [1, 4]`  Conventions for notations in identifiers:   * The recommended spelling of `∘` in identifiers is `comp`. ;)
 (; //LEAN:Function.comp ;)
-Function__comp : (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
+Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
 
 (; doc: A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.  There is also a division operation `/` such that `a / b = a * b⁻¹`, with a default so that `a / b = a * b⁻¹` holds by definition.  Use `Group.ofLeftAxioms` or `Group.ofRightAxioms` to define a group structure on a type with the minimum proof obligations.  [Wikidata Q83478](https://www.wikidata.org/wiki/Q83478) ;)
 (; //LEAN:Group ;)
@@ -140,15 +140,15 @@ Group : (G : Set) -> Prop.
 
 (; doc: `a % b` computes the remainder upon dividing `a` by `b`. The meaning of this notation is type-dependent. * For `Nat` and `Int` it satisfies `a % b + b * (a / b) = a`,   and `a % 0` is defined to be `a`.  Conventions for notations in identifiers:   * The recommended spelling of `%` in identifiers is `mod`. ;)
 (; //LEAN:HMod.hMod ;)
-HMod__hMod : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+HMod__hMod : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Y) -> Elem Z.
 
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
-HSMul__hSMul : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+HSMul__hSMul : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Y) -> Elem Z.
 
 (; doc: `a +ᵥ b` computes the sum of `a` and `b`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `+ᵥ` in identifiers is `vadd`. ;)
 (; //LEAN:HVAdd.hVAdd ;)
-HVAdd__hVAdd : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+HVAdd__hVAdd : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Y) -> Elem Z.
 
 (; doc: **Alias** of `not_congr`. ;)
 (; //LEAN:Iff.not ;)
@@ -164,7 +164,7 @@ Iff__symm : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff b a)
 Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
 
 (; //LEAN:Int.emod_add_mul_ediv ;)
-Int__emod_add_mul_ediv : (a : Elem Int) -> (b : Elem Int) -> Proof (Eq (plus (HMod__hMod a b) (times b (div a b))) a).
+Int__emod_add_mul_ediv : (a : Elem Int) -> (b : Elem Int) -> Proof (Eq (plus (HMod__hMod Int Int Int a b) (times b (div a b))) a).
 
 (; doc: The absolute value of an integer is its distance from `0`.  This function is overridden by the compiler with an efficient implementation. This definition is the logical model.  Examples:  * `(7 : Int).natAbs = 7`  * `(0 : Int).natAbs = 0`  * `(-11 : Int).natAbs = 11` ;)
 (; //LEAN:Int.natAbs ;)
@@ -175,7 +175,7 @@ Int__sub_add_cancel : (a : Elem Int) -> (b : Elem Int) -> Proof (Eq (plus (minus
 
 (; doc: `a⁻¹` computes the inverse of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `⁻¹` in identifiers is `inv`. ;)
 (; //LEAN:Inv.inv ;)
-Inv__inv : (x : Elem X) -> Elem X.
+Inv__inv : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: Auxiliary typeclass for types with an involutive `Inv`. ;)
 (; //LEAN:InvolutiveInv ;)
@@ -209,16 +209,20 @@ Monoid : (M : Set) -> Prop.
 (; //LEAN:MulOneClass ;)
 MulOneClass : (M : Set) -> Prop.
 
+(; doc: The canonical homomorphism `Nat → R`. In most use cases, the target type will have a (semi)ring structure, and this homomorphism should be a (semi)ring homomorphism.  `NatCast` and `IntCast` exist to allow different libraries with their own types that can be notated as natural numbers to have consistent `simp` normal forms without needing to create coercion simplification sets that are aware of all combinations. Libraries should make it easy to work with `NatCast` where possible. For instance, in Mathlib there will be such a homomorphism (and thus a `NatCast R` instance) whenever `R` is an additive monoid with a `1`.  The prototypical example is `Int.ofNat`. ;)
+(; //LEAN:Nat.cast ;)
+Nat__cast : (R : Set) -> (x1 : Elem Nat) -> Elem R.
+
 (; doc: Iterate a function. ;)
 (; //LEAN:Nat.iterate ;)
-Nat__iterate : (op : (Elem X -> X)) -> (x : Elem Nat) -> (x1 : Elem X) -> Elem X.
+Nat__iterate : (X : Set) -> (op : (Elem X -> X)) -> (x : Elem Nat) -> (x1 : Elem X) -> Elem X.
 
 (; //LEAN:Nat.sub_add_cancel ;)
 Nat__sub_add_cancel : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Leq m n)) -> Proof (Eq (plus (minus n m) m) n).
 
 (; doc: `-a` computes the negative or opposite of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `-` in identifiers is `neg` (when used as a unary operator). ;)
 (; //LEAN:Neg.neg ;)
-Neg__neg : (x : Elem X) -> Elem X.
+Neg__neg : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: A semigroup is a type with an associative `(*)`. ;)
 (; //LEAN:Semigroup ;)
@@ -226,11 +230,11 @@ Semigroup : (G : Set) -> Prop.
 
 (; doc: `Symm r` means that the binary relation `r` is symmetric, that is, `r a b → r b a`. ;)
 (; //LEAN:Std.Symm ;)
-Std__Symm : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Std__Symm : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; doc: `Total X r` means that the binary relation `r` on `X` is total, that is, `r a b` or `r b a`. ;)
 (; //LEAN:Std.Total ;)
-Std__Total : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Std__Total : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; doc: A `SubNegMonoid` is an `AddMonoid` with unary `-` and binary `-` operations satisfying `sub_eq_add_neg : ∀ a b, a - b = a + -b`.  The default for `sub` is such that `a - b = a + -b` holds by definition.  Adding `sub` as a field rather than defining `a - b := a + -b` allows us to avoid certain classes of unification failures, for example: Let `foo X` be a type with a `∀ X, Sub (Foo X)` instance but no `∀ X, Neg (Foo X)`. Suppose we also have an instance `∀ X [Cromulent X], AddGroup (Foo X)`. Then the `(-)` coming from `AddGroup.sub` cannot be definitionally equal to the `(-)` coming from `Foo.Sub`.  In the same way, adding a `zsmul` field makes it possible to avoid definitional failures in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] for more explanations on this. ;)
 (; //LEAN:SubNegMonoid ;)
@@ -250,7 +254,7 @@ SubtractionMonoid : (G : Set) -> Prop.
 
 (; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
 (; //LEAN:Trans.trans ;)
-Trans__trans : (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
+Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> Elem Y -> Set)) -> (s : (Elem Y -> Elem Z -> Set)) -> (t : (Elem X -> Elem Z -> Set)) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Z) -> (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
 
 (; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:True ;)
@@ -263,13 +267,13 @@ add_comm : (G : Set) -> (_ : Proof (AddCommMagma G)) -> (a : Elem G) -> (b : Ele
 add_left_cancel_iff : (G : Set) -> (_ : Proof (IsLeftCancelAdd G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (plus a b) (plus a c)) (Eqt G b c)).
 
 (; //LEAN:add_neg_cancel_left ;)
-add_neg_cancel_left : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus a (plus (Neg__neg a) b)) b).
+add_neg_cancel_left : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus a (plus (Neg__neg G a) b)) b).
 
 (; //LEAN:add_neg_cancel_right ;)
-add_neg_cancel_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus (plus a b) (Neg__neg b)) a).
+add_neg_cancel_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus (plus a b) (Neg__neg G b)) a).
 
 (; //LEAN:add_nsmul ;)
-add_nsmul : (M : Set) -> (_ : Proof (AddMonoid M)) -> (a : Elem M) -> (m : Elem Nat) -> (n : Elem Nat) -> Proof (Eqt M (HSMul__hSMul (plus m n) a) (plus (HSMul__hSMul m a) (HSMul__hSMul n a))).
+add_nsmul : (M : Set) -> (_ : Proof (AddMonoid M)) -> (a : Elem M) -> (m : Elem Nat) -> (n : Elem Nat) -> Proof (Eqt M (HSMul__hSMul Nat M M (plus m n) a) (plus (HSMul__hSMul Nat M M m a) (HSMul__hSMul Nat M M n a))).
 
 (; //LEAN:add_right_cancel_iff ;)
 add_right_cancel_iff : (G : Set) -> (_ : Proof (IsRightCancelAdd G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (plus b a) (plus c a)) (Eqt G b c)).
@@ -297,11 +301,11 @@ congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y))
 
 (; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:dite ;)
-dite : (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
+dite : (X : Set) -> (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
 
 (; doc: Dividing by an element is the same as multiplying by its inverse.  This is a duplicate of `DivInvMonoid.div_eq_mul_inv` ensuring that the types unfold better. ;)
 (; //LEAN:div_eq_mul_inv ;)
-div_eq_mul_inv : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (div a b) (times a (Inv__inv b))).
+div_eq_mul_inv : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (div a b) (times a (Inv__inv G b))).
 
 (; //LEAN:div_mul_cancel ;)
 div_mul_cancel : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (times (div a b) b) a).
@@ -313,10 +317,10 @@ div_self' : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> Proof (Eqt G (
 eq_comm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X a b) (Eqt X b a)).
 
 (; //LEAN:eq_inv_of_mul_eq_one_left ;)
-eq_inv_of_mul_eq_one_left : (G : Set) -> (_ : Proof (DivisionMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G (times a b) 1)) -> Proof (Eqt G a (Inv__inv b)).
+eq_inv_of_mul_eq_one_left : (G : Set) -> (_ : Proof (DivisionMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G (times a b) 1)) -> Proof (Eqt G a (Inv__inv G b)).
 
 (; //LEAN:eq_neg_of_add_eq_zero_left ;)
-eq_neg_of_add_eq_zero_left : (G : Set) -> (_ : Proof (SubtractionMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G (plus a b) 0)) -> Proof (Eqt G a (Neg__neg b)).
+eq_neg_of_add_eq_zero_left : (G : Set) -> (_ : Proof (SubtractionMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G (plus a b) 0)) -> Proof (Eqt G a (Neg__neg G b)).
 
 (; //LEAN:eq_self ;)
 eq_self : (X : Set) -> (a : Elem X) -> Proof (Eqt Prop (Eqt X a a) True).
@@ -327,32 +331,32 @@ funext : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> 
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
-id : (a : Elem X) -> Elem X.
+id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:iff_self ;)
 iff_self : (p : Prop) -> Proof (Eqt Prop (iff p p) True).
 
 (; //LEAN:inv_eq_of_mul_eq_one_right ;)
-inv_eq_of_mul_eq_one_right : (G : Set) -> (_ : Proof (DivisionMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G (times a b) 1)) -> Proof (Eqt G (Inv__inv a) b).
+inv_eq_of_mul_eq_one_right : (G : Set) -> (_ : Proof (DivisionMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G (times a b) 1)) -> Proof (Eqt G (Inv__inv G a) b).
 
 (; //LEAN:inv_inv ;)
-inv_inv : (G : Set) -> (_ : Proof (InvolutiveInv G)) -> (a : Elem G) -> Proof (Eqt G (Inv__inv (Inv__inv a)) a).
+inv_inv : (G : Set) -> (_ : Proof (InvolutiveInv G)) -> (a : Elem G) -> Proof (Eqt G (Inv__inv G (Inv__inv G a)) a).
 
 (; //LEAN:inv_mul_cancel ;)
-inv_mul_cancel : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> Proof (Eqt G (times (Inv__inv a) a) 1).
+inv_mul_cancel : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> Proof (Eqt G (times (Inv__inv G a) a) 1).
 
 (; //LEAN:inv_mul_cancel_left ;)
-inv_mul_cancel_left : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (times (Inv__inv a) (times a b)) b).
+inv_mul_cancel_left : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (times (Inv__inv G a) (times a b)) b).
 
 (; //LEAN:inv_mul_cancel_right ;)
-inv_mul_cancel_right : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (times (times a (Inv__inv b)) b) a).
+inv_mul_cancel_right : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (times (times a (Inv__inv G b)) b) a).
 
 (; //LEAN:inv_one ;)
-inv_one : (G : Set) -> (_ : Proof (InvOneClass G)) -> Proof (Eqt G (Inv__inv 1) 1).
+inv_one : (G : Set) -> (_ : Proof (InvOneClass G)) -> Proof (Eqt G (Inv__inv G 1) 1).
 
 (; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:ite ;)
-ite : (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
+ite : (X : Set) -> (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
 
 (; //LEAN:left_inv_eq_right_inv ;)
 left_inv_eq_right_inv : (M : Set) -> (_ : Proof (Monoid M)) -> (a : Elem M) -> (b : Elem M) -> (c : Elem M) -> (hba : Proof (Eqt M (times b a) 1)) -> (hac : Proof (Eqt M (times a c) 1)) -> Proof (Eqt M b c).
@@ -373,10 +377,10 @@ mul_div_assoc : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (a : Elem G) -> (b 
 mul_div_cancel_right : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (div (times a b) b) a).
 
 (; //LEAN:mul_inv_cancel_left ;)
-mul_inv_cancel_left : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (times a (times (Inv__inv a) b)) b).
+mul_inv_cancel_left : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (times a (times (Inv__inv G a) b)) b).
 
 (; //LEAN:mul_inv_cancel_right ;)
-mul_inv_cancel_right : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (times (times a b) (Inv__inv b)) a).
+mul_inv_cancel_right : (G : Set) -> (_ : Proof (Group G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (times (times a b) (Inv__inv G b)) a).
 
 (; //LEAN:mul_left_cancel_iff ;)
 mul_left_cancel_iff : (G : Set) -> (_ : Proof (IsLeftCancelMul G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (times a b) (times a c)) (Eqt G b c)).
@@ -388,22 +392,22 @@ mul_one : (M : Set) -> (_ : Proof (MulOneClass M)) -> (a : Elem M) -> Proof (Eqt
 mul_right_cancel_iff : (G : Set) -> (_ : Proof (IsRightCancelMul G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (times b a) (times c a)) (Eqt G b c)).
 
 (; //LEAN:neg_add_cancel ;)
-neg_add_cancel : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (Eqt G (plus (Neg__neg a) a) 0).
+neg_add_cancel : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (Eqt G (plus (Neg__neg G a) a) 0).
 
 (; //LEAN:neg_add_cancel_left ;)
-neg_add_cancel_left : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus (Neg__neg a) (plus a b)) b).
+neg_add_cancel_left : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus (Neg__neg G a) (plus a b)) b).
 
 (; //LEAN:neg_add_cancel_right ;)
-neg_add_cancel_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus (plus a (Neg__neg b)) b) a).
+neg_add_cancel_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus (plus a (Neg__neg G b)) b) a).
 
 (; //LEAN:neg_eq_of_add_eq_zero_right ;)
-neg_eq_of_add_eq_zero_right : (G : Set) -> (_ : Proof (SubtractionMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G (plus a b) 0)) -> Proof (Eqt G (Neg__neg a) b).
+neg_eq_of_add_eq_zero_right : (G : Set) -> (_ : Proof (SubtractionMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G (plus a b) 0)) -> Proof (Eqt G (Neg__neg G a) b).
 
 (; //LEAN:neg_neg ;)
-neg_neg : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> (a : Elem G) -> Proof (Eqt G (Neg__neg (Neg__neg a)) a).
+neg_neg : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> (a : Elem G) -> Proof (Eqt G (Neg__neg G (Neg__neg G a)) a).
 
 (; //LEAN:neg_zero ;)
-neg_zero : (G : Set) -> (_ : Proof (NegZeroClass G)) -> Proof (Eqt G (Neg__neg 0) 0).
+neg_zero : (G : Set) -> (_ : Proof (NegZeroClass G)) -> Proof (Eqt G (Neg__neg G 0) 0).
 
 (; //LEAN:not_congr ;)
 not_congr : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff (not a) (not b)).
@@ -422,7 +426,7 @@ sub_add_cancel : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : E
 
 (; doc: Subtracting an element is the same as adding by its negative. This is a duplicate of `SubNegMonoid.sub_eq_add_neg` ensuring that the types unfold better. ;)
 (; //LEAN:sub_eq_add_neg ;)
-sub_eq_add_neg : (G : Set) -> (_ : Proof (SubNegMonoid G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (minus a b) (plus a (Neg__neg b))).
+sub_eq_add_neg : (G : Set) -> (_ : Proof (SubNegMonoid G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (minus a b) (plus a (Neg__neg G b))).
 
 (; //LEAN:sub_self ;)
 sub_self : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (Eqt G (minus a a) 0).
@@ -431,5 +435,5 @@ sub_self : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> Proof (Eqt G
 zero_add : (M : Set) -> (_ : Proof (AddZeroClass M)) -> (a : Elem M) -> Proof (Eqt M (plus 0 a) a).
 
 (; //LEAN:zpow_natCast ;)
-zpow_natCast : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (a : Elem G) -> (n : Elem Nat) -> Proof (Eqt G (pow a n) (pow a n)).
+zpow_natCast : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (a : Elem G) -> (n : Elem Nat) -> Proof (Eqt G (pow a (Nat__cast Int n)) (pow a n)).
 

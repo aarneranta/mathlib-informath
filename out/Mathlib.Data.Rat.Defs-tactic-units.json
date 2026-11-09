@@ -91,7 +91,7 @@
    },
    {
     "unit": "conclusion",
-    "prop": "(Eq (Rat__divInt a b) (Rat__divInt n1 d1))",
+    "prop": "(Eq (Rat__divInt a b) (Rat__divInt n1 (Nat__cast Int d1)))",
     "by": "rw [mk_eq_divInt] at ha",
     "method": "rewriting",
     "depth": 0
@@ -152,32 +152,32 @@
    },
    {
     "unit": "conclusion",
-    "prop": "(Eq (Rat__divInt c d) (Rat__divInt n2 d2))",
+    "prop": "(Eq (Rat__divInt c d) (Rat__divInt n2 (Nat__cast Int d2)))",
     "by": "rw [mk_eq_divInt] at hc",
     "method": "rewriting",
     "depth": 0
    },
    {
     "unit": "enough",
-    "prop": "Eq (Rat__divInt (f1 n1 d1 n2 d2) (f2 n1 d1 n2 d2)) (Rat__divInt (f1 a b c d) (f2 a b c d))",
+    "prop": "Eq (Rat__divInt (f1 n1 (Nat__cast Int d1) n2 (Nat__cast Int d2)) (f2 n1 (Nat__cast Int d1) n2 (Nat__cast Int d2))) (Rat__divInt (f1 a b c d) (f2 a b c d))",
     "by": "rw [fv]",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "(Neq d1 0)",
+    "prop": "(Neq (Nat__cast Int d1) 0)",
     "by": "have d₁0 := Int.ofNat_ne_zero.2 h₁",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "(Neq d2 0)",
+    "prop": "(Neq (Nat__cast Int d2) 0)",
     "by": "have d₂0 := Int.ofNat_ne_zero.2 h₂",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "Eq (Rat__divInt (f1 n1 d1 n2 d2) (f2 n1 d1 n2 d2)) (Rat__divInt (f1 a b c d) (f2 a b c d))",
+    "prop": "Eq (Rat__divInt (f1 n1 (Nat__cast Int d1) n2 (Nat__cast Int d2)) (f2 n1 (Nat__cast Int d1) n2 (Nat__cast Int d2))) (Rat__divInt (f1 a b c d) (f2 a b c d))",
     "by": "exact (divInt_eq_divInt_iff (f0 d₁0 d₂0) (f0 b0 d0)).2",
     "depth": 0
    }
@@ -189,7 +189,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eq (Neg__neg q) (Rat__divInt (Neg__neg (Rat__num q)) (Rat__den q))",
+    "prop": "Eq (Neg__neg Rat q) (Rat__divInt (Neg__neg Int (Rat__num q)) (Nat__cast Int (Rat__den q)))",
     "by": "rw [← neg_divInt, num_divInt_den]",
     "method": "rewriting",
     "depth": 0
@@ -259,7 +259,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eq (pow q n) (Rat__divInt (pow (Rat__num q) n) (pow (Rat__den q) n))",
+    "prop": "Eq (pow q n) (Rat__divInt (pow (Rat__num q) n) (pow (Nat__cast Int (Rat__den q)) n))",
     "by": "rw [pow_def, mk_eq_divInt, Int.natCast_pow]",
     "method": "rewriting",
     "depth": 0
@@ -272,7 +272,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eq (Inv__inv (mkRat a b)) (Rat__divInt b a)",
+    "prop": "Eq (Inv__inv Rat (mkRat a b)) (Rat__divInt (Nat__cast Int b) a)",
     "by": "rw [mkRat_eq_divInt, inv_divInt]",
     "method": "rewriting",
     "depth": 0
@@ -298,7 +298,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eq (div q r) (Rat__divInt (times (Rat__num q) (Rat__den r)) (times (Rat__den q) (Rat__num r)))",
+    "prop": "Eq (div q r) (Rat__divInt (times (Rat__num q) (Nat__cast Int (Rat__den r))) (times (Nat__cast Int (Rat__den q)) (Rat__num r)))",
     "by": "rw [← divInt_div_divInt, num_divInt_den, num_divInt_den]",
     "method": "rewriting",
     "depth": 0
@@ -311,7 +311,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eq (Rat__divInt n 1) n",
+    "prop": "Eq (Rat__divInt n 1) (Int__cast Rat n)",
     "by": "simp [divInt, mkRat, normalize]",
     "method": "simplification",
     "depth": 0
@@ -358,49 +358,12 @@
   ]
  },
  {
-  "name": "Rat__add_divInt",
-  "lean": "Rat.add_divInt",
-  "steps": [
-   {
-    "unit": "conclusion",
-    "prop": "Eq (Rat__divInt (plus a b) c) (plus (Rat__divInt a c) (Rat__divInt b c))",
-    "by": "simp [h]",
-    "method": "simplification",
-    "depth": 0
-   },
-   {
-    "unit": "hypos",
-    "hypos": [
-     [
-      "h",
-      "Proof (not (Eq c 0))"
-     ]
-    ],
-    "by": "",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
-    "prop": "Eq (times (plus a b) (times c c)) (times (plus (times a c) (times b c)) c)",
-    "by": "rw [divInt_add_divInt _ _ h h, divInt_eq_divInt_iff h (Int.mul_ne_zero h h)]",
-    "depth": 1
-   },
-   {
-    "unit": "conclusion",
-    "prop": "Eq (times (plus a b) (times c c)) (times (plus (times a c) (times b c)) c)",
-    "by": "simp [Int.add_mul, Int.mul_assoc]",
-    "method": "simplification",
-    "depth": 1
-   }
-  ]
- },
- {
   "name": "Rat__intCast_div_eq_divInt",
   "lean": "Rat.intCast_div_eq_divInt",
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eq (div n d) (Rat__divInt n d)",
+    "prop": "Eq (div (Int__cast Rat n) (Int__cast Rat d)) (Rat__divInt n d)",
     "by": "rw [divInt_eq_div]",
     "method": "rewriting",
     "depth": 0
@@ -466,19 +429,19 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "Eq (Rat__num q) (Rat__divInt (Rat__num q) 1)",
+    "prop": "Eq (Int__cast Rat (Rat__num q)) (Rat__divInt (Rat__num q) (Nat__cast Int 1))",
     "by": "conv_rhs => rw [← num_divInt_den q, hq]",
     "depth": 0
    },
    {
     "unit": "enough",
-    "prop": "Eq (Rat__divInt (Rat__num q) 1) (Rat__divInt (Rat__num q) 1)",
+    "prop": "Eq (Rat__divInt (Rat__num q) 1) (Rat__divInt (Rat__num q) (Nat__cast Int 1))",
     "by": "rw [intCast_eq_divInt]",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "Eq (Rat__divInt (Rat__num q) 1) (Rat__divInt (Rat__num q) 1)",
+    "prop": "Eq (Rat__divInt (Rat__num q) 1) (Rat__divInt (Rat__num q) (Nat__cast Int 1))",
     "by": "rfl",
     "method": "definition",
     "depth": 0
@@ -498,7 +461,7 @@
    },
    {
     "unit": "conclusion",
-    "prop": "Eq q (Rat__num q)",
+    "prop": "Eq q (Int__cast Rat (Rat__num q))",
     "by": "exact (Rat.coe_int_num_of_den_eq_one h).symm",
     "depth": 0
    }

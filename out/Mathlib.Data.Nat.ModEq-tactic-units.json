@@ -5,13 +5,13 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "and (if (AddCommGroup__ModEq n a b) (Nat__ModEq n a b)) (if (Nat__ModEq n a b) (AddCommGroup__ModEq n a b))",
+    "prop": "and (if (AddCommGroup__ModEq Nat n a b) (Nat__ModEq n a b)) (if (Nat__ModEq n a b) (AddCommGroup__ModEq Nat n a b))",
     "by": "constructor",
     "depth": 0
    },
    {
     "unit": "enough",
-    "prop": "if (exists Nat (m => exists Nat (n => Eq (plus (HSMul__hSMul m n) a) (plus (HSMul__hSMul n n) b)))) (Eq (HMod__hMod a n) (HMod__hMod b n))",
+    "prop": "if (exists Nat (m => exists Nat (n => Eq (plus (HSMul__hSMul Nat Nat Nat m n) a) (plus (HSMul__hSMul Nat Nat Nat n n) b)))) (Eq (HMod__hMod Nat Nat Nat a n) (HMod__hMod Nat Nat Nat b n))",
     "by": "rw [modEq_iff_nsmul, Nat.ModEq]",
     "depth": 0
    },
@@ -28,7 +28,7 @@
      ],
      [
       "h",
-      "Proof (Eq (plus (HSMul__hSMul k n) a) (plus (HSMul__hSMul l n) b))"
+      "Proof (Eq (plus (HSMul__hSMul Nat Nat Nat k n) a) (plus (HSMul__hSMul Nat Nat Nat l n) b))"
      ]
     ],
     "by": "rintro ⟨k, l, h⟩",
@@ -36,14 +36,14 @@
    },
    {
     "unit": "conclusion",
-    "prop": "Eq (HMod__hMod a n) (HMod__hMod b n)",
+    "prop": "Eq (HMod__hMod Nat Nat Nat a n) (HMod__hMod Nat Nat Nat b n)",
     "by": "simpa using congr($h % n)",
     "method": "simplification",
     "depth": 1
    },
    {
     "unit": "enough",
-    "prop": "if (Eq (HMod__hMod a n) (HMod__hMod b n)) (AddCommGroup__ModEq n a b)",
+    "prop": "if (Eq (HMod__hMod Nat Nat Nat a n) (HMod__hMod Nat Nat Nat b n)) (AddCommGroup__ModEq Nat n a b)",
     "by": "rw [Nat.ModEq]",
     "depth": 0
    },
@@ -52,22 +52,22 @@
     "hypos": [
      [
       "h",
-      "Proof (Eq (HMod__hMod a n) (HMod__hMod b n))"
+      "Proof (Eq (HMod__hMod Nat Nat Nat a n) (HMod__hMod Nat Nat Nat b n))"
      ]
     ],
     "by": "intro h",
-    "goal": "AddCommGroup__ModEq n a b",
+    "goal": "AddCommGroup__ModEq Nat n a b",
     "depth": 1
    },
    {
     "unit": "enough",
-    "prop": "AddCommGroup__ModEq n (plus (HSMul__hSMul (div a n) n) (HMod__hMod b n)) (plus (HSMul__hSMul (div b n) n) (HMod__hMod b n))",
+    "prop": "AddCommGroup__ModEq Nat n (plus (HSMul__hSMul Nat Nat Nat (div a n) n) (HMod__hMod Nat Nat Nat b n)) (plus (HSMul__hSMul Nat Nat Nat (div b n) n) (HMod__hMod Nat Nat Nat b n))",
     "by": "rw [← Nat.div_add_mod' a n, ← Nat.div_add_mod' b n, ← Nat.nsmul_eq_mul, ← Nat.nsmul_eq_mul, h]",
     "depth": 1
    },
    {
     "unit": "conclusion",
-    "prop": "AddCommGroup__ModEq n (plus (HSMul__hSMul (div a n) n) (HMod__hMod b n)) (plus (HSMul__hSMul (div b n) n) (HMod__hMod b n))",
+    "prop": "AddCommGroup__ModEq Nat n (plus (HSMul__hSMul Nat Nat Nat (div a n) n) (HMod__hMod Nat Nat Nat b n)) (plus (HSMul__hSMul Nat Nat Nat (div b n) n) (HMod__hMod Nat Nat Nat b n))",
     "by": "exact nsmul_add_modEq _ |>.trans (nsmul_add_modEq _).symm",
     "depth": 1
    }
@@ -79,14 +79,14 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "(AddCommGroup__ModEq n a b)",
+    "prop": "(AddCommGroup__ModEq Nat n a b)",
     "by": "rw [← modEq_iff_natModEq] at h",
     "method": "rewriting",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "AddCommGroup__ModEq n a b",
+    "prop": "AddCommGroup__ModEq M (Nat__cast M n) (Nat__cast M a) (Nat__cast M b)",
     "by": "exact h.map (Nat.castAddMonoidHom M)",
     "depth": 0
    }
@@ -98,7 +98,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "iff (AddCommGroup__ModEq n a b) (Nat__ModEq n a b)",
+    "prop": "iff (AddCommGroup__ModEq M (Nat__cast M n) (Nat__cast M a) (Nat__cast M b)) (Nat__ModEq n a b)",
     "by": "simpa using map_modEq_iff (Nat.castAddMonoidHom M) Nat.cast_injective",
     "method": "simplification",
     "depth": 0
@@ -124,7 +124,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "iff (Nat__ModEq n a b) (divide n (minus b a))",
+    "prop": "iff (Nat__ModEq n a b) (divide (Nat__cast Int n) (minus (Nat__cast Int b) (Nat__cast Int a)))",
     "by": "rw [ModEq, eq_comm, ← Int.natCast_inj, Int.natCast_mod, Int.natCast_mod,",
     "method": "rewriting",
     "depth": 0
@@ -214,20 +214,20 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "(Eq (HMod__hMod a n) (HMod__hMod b n))",
+    "prop": "(Eq (HMod__hMod Nat Nat Nat a n) (HMod__hMod Nat Nat Nat b n))",
     "by": "unfold ModEq at *",
     "method": "definition",
     "depth": 0
    },
    {
     "unit": "enough",
-    "prop": "Eq (HMod__hMod (times c a) (times c n)) (HMod__hMod (times c b) (times c n))",
+    "prop": "Eq (HMod__hMod Nat Nat Nat (times c a) (times c n)) (HMod__hMod Nat Nat Nat (times c b) (times c n))",
     "by": "unfold ModEq at *",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "Eq (HMod__hMod (times c a) (times c n)) (HMod__hMod (times c b) (times c n))",
+    "prop": "Eq (HMod__hMod Nat Nat Nat (times c a) (times c n)) (HMod__hMod Nat Nat Nat (times c b) (times c n))",
     "by": "rw [mul_mod_mul_left, mul_mod_mul_left, h]",
     "method": "rewriting",
     "depth": 0
@@ -321,13 +321,13 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "divide n (plus (minus b a) (minus d c))",
+    "prop": "divide (Nat__cast Int n) (plus (minus (Nat__cast Int b) (Nat__cast Int a)) (minus (Nat__cast Int d) (Nat__cast Int c)))",
     "by": "rw [modEq_iff_dvd, Int.natCast_add, Int.natCast_add, add_sub_add_comm]",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "divide n (plus (minus b a) (minus d c))",
+    "prop": "divide (Nat__cast Int n) (plus (minus (Nat__cast Int b) (Nat__cast Int a)) (minus (Nat__cast Int d) (Nat__cast Int c)))",
     "by": "exact Int.dvd_add h₁.dvd h₂.dvd",
     "depth": 0
    }
@@ -339,33 +339,33 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "and ((divide n (minus b a))) ((divide n (minus (plus b d) (plus a c))))",
+    "prop": "and ((divide (Nat__cast Int n) (minus (Nat__cast Int b) (Nat__cast Int a)))) ((divide (Nat__cast Int n) (minus (plus (Nat__cast Int b) (Nat__cast Int d)) (plus (Nat__cast Int a) (Nat__cast Int c)))))",
     "by": "simp only [modEq_iff_dvd, Int.natCast_add] at *",
     "method": "simplification",
     "depth": 0
    },
    {
     "unit": "enough",
-    "prop": "divide n (minus d c)",
+    "prop": "divide (Nat__cast Int n) (minus (Nat__cast Int d) (Nat__cast Int c))",
     "by": "simp only [modEq_iff_dvd, Int.natCast_add] at *",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "(divide n (plus (minus b a) (minus d c)))",
+    "prop": "(divide (Nat__cast Int n) (plus (minus (Nat__cast Int b) (Nat__cast Int a)) (minus (Nat__cast Int d) (Nat__cast Int c))))",
     "by": "rw [add_sub_add_comm] at h₂",
     "method": "rewriting",
     "depth": 0
    },
    {
     "unit": "enough",
-    "prop": "Eq (minus d c) (minus (plus (minus b a) (minus d c)) (minus b a))",
+    "prop": "Eq (minus (Nat__cast Int d) (Nat__cast Int c)) (minus (plus (minus (Nat__cast Int b) (Nat__cast Int a)) (minus (Nat__cast Int d) (Nat__cast Int c))) (minus (Nat__cast Int b) (Nat__cast Int a)))",
     "by": "convert Int.dvd_sub h₂ h₁ using 1",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "Eq (minus d c) (minus (plus (minus b a) (minus d c)) (minus b a))",
+    "prop": "Eq (minus (Nat__cast Int d) (Nat__cast Int c)) (minus (plus (minus (Nat__cast Int b) (Nat__cast Int a)) (minus (Nat__cast Int d) (Nat__cast Int c))) (minus (Nat__cast Int b) (Nat__cast Int a)))",
     "by": "rw [add_sub_cancel_left]",
     "method": "rewriting",
     "depth": 0
@@ -431,13 +431,13 @@
    },
    {
     "unit": "enough",
-    "prop": "divide n (minus (minus b a) (minus d c))",
+    "prop": "divide (Nat__cast Int n) (minus (minus (Nat__cast Int b) (Nat__cast Int a)) (minus (Nat__cast Int d) (Nat__cast Int c)))",
     "by": "rw [modEq_iff_dvd, Int.natCast_sub hca, Int.natCast_sub <| h.1 hca, sub_sub_sub_comm]",
     "depth": 1
    },
    {
     "unit": "conclusion",
-    "prop": "divide n (minus (minus b a) (minus d c))",
+    "prop": "divide (Nat__cast Int n) (minus (minus (Nat__cast Int b) (Nat__cast Int a)) (minus (Nat__cast Int d) (Nat__cast Int c)))",
     "by": "exact Int.dvd_sub hab.dvd hcd.dvd",
     "depth": 1
    }
@@ -449,13 +449,13 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "if (divide (times c m) (times c (minus b a))) (divide m (minus b a))",
+    "prop": "if (divide (times (Nat__cast Int c) (Nat__cast Int m)) (times (Nat__cast Int c) (minus (Nat__cast Int b) (Nat__cast Int a)))) (divide (Nat__cast Int m) (minus (Nat__cast Int b) (Nat__cast Int a)))",
     "by": "simp only [modEq_iff_dvd, Int.natCast_mul, ← Int.mul_sub]",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "if (divide (times c m) (times c (minus b a))) (divide m (minus b a))",
+    "prop": "if (divide (times (Nat__cast Int c) (Nat__cast Int m)) (times (Nat__cast Int c) (minus (Nat__cast Int b) (Nat__cast Int a)))) (divide (Nat__cast Int m) (minus (Nat__cast Int b) (Nat__cast Int a)))",
     "by": "exact fun h => (Int.dvd_of_mul_dvd_mul_left (Int.ofNat_ne_zero.mpr hc) h)",
     "depth": 0
    }
@@ -467,13 +467,13 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "if (divide (times m c) (times (minus b a) c)) (divide m (minus b a))",
+    "prop": "if (divide (times (Nat__cast Int m) (Nat__cast Int c)) (times (minus (Nat__cast Int b) (Nat__cast Int a)) (Nat__cast Int c))) (divide (Nat__cast Int m) (minus (Nat__cast Int b) (Nat__cast Int a)))",
     "by": "simp only [modEq_iff_dvd, Int.natCast_mul, ← Int.sub_mul]",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "if (divide (times m c) (times (minus b a) c)) (divide m (minus b a))",
+    "prop": "if (divide (times (Nat__cast Int m) (Nat__cast Int c)) (times (minus (Nat__cast Int b) (Nat__cast Int a)) (Nat__cast Int c))) (divide (Nat__cast Int m) (minus (Nat__cast Int b) (Nat__cast Int a)))",
     "by": "exact fun h => (Int.dvd_of_mul_dvd_mul_right (Int.ofNat_ne_zero.mpr hc) h)",
     "depth": 0
    }
@@ -485,20 +485,20 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "(divide (times m n) (minus b a))",
+    "prop": "(divide (Nat__cast Int (times m n)) (minus (Nat__cast Int b) (Nat__cast Int a)))",
     "by": "rw [modEq_iff_dvd] at *",
     "method": "rewriting",
     "depth": 0
    },
    {
     "unit": "enough",
-    "prop": "divide n (minus b a)",
+    "prop": "divide (Nat__cast Int n) (minus (Nat__cast Int b) (Nat__cast Int a))",
     "by": "rw [modEq_iff_dvd] at *",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "divide n (minus b a)",
+    "prop": "divide (Nat__cast Int n) (minus (Nat__cast Int b) (Nat__cast Int a))",
     "by": "exact (dvd_mul_left (n : ℤ) (m : ℤ)).trans h",
     "depth": 0
    }
@@ -945,43 +945,43 @@
    },
    {
     "unit": "enough",
-    "prop": "divide (div m (gcd m c)) (minus b a)",
+    "prop": "divide (Nat__cast Int (div m (gcd m c))) (minus (Nat__cast Int b) (Nat__cast Int a))",
     "by": "rw [modEq_iff_dvd]",
     "depth": 1
    },
    {
     "unit": "enough",
-    "prop": "and (divide (div m d) (times (div c d) (minus b a))) (Eq (Int__gcd (div m d) (div c d)) 1)",
+    "prop": "and (divide (div (Nat__cast Int m) (Nat__cast Int d)) (times (div (Nat__cast Int c) (Nat__cast Int d)) (minus (Nat__cast Int b) (Nat__cast Int a)))) (Eq (Int__gcd (div (Nat__cast Int m) (Nat__cast Int d)) (div (Nat__cast Int c) (Nat__cast Int d))) 1)",
     "by": "refine @Int.dvd_of_dvd_mul_right_of_gcd_one (m / d) (c / d) (b - a) ?_ ?_",
     "depth": 1
    },
    {
     "unit": "enough",
-    "prop": "divide (div m d) (div (times c (minus b a)) (gcd m c))",
+    "prop": "divide (div (Nat__cast Int m) (Nat__cast Int d)) (div (times (Nat__cast Int c) (minus (Nat__cast Int b) (Nat__cast Int a))) (Nat__cast Int (gcd m c)))",
     "by": "rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (Int.natCast_dvd_natCast.mpr hcd), mul_comm]",
     "depth": 1
    },
    {
     "unit": "enough",
-    "prop": "divide m (times c (minus b a))",
+    "prop": "divide (Nat__cast Int m) (times (Nat__cast Int c) (minus (Nat__cast Int b) (Nat__cast Int a)))",
     "by": "apply Int.ediv_dvd_ediv (Int.natCast_dvd_natCast.mpr hmd)",
     "depth": 1
    },
    {
     "unit": "enough",
-    "prop": "divide m (minus (times c b) (times c a))",
+    "prop": "divide (Nat__cast Int m) (minus (times (Nat__cast Int c) (Nat__cast Int b)) (times (Nat__cast Int c) (Nat__cast Int a)))",
     "by": "rw [Int.mul_sub]",
     "depth": 1
    },
    {
     "unit": "conclusion",
-    "prop": "divide m (minus (times c b) (times c a))",
+    "prop": "divide (Nat__cast Int m) (minus (times (Nat__cast Int c) (Nat__cast Int b)) (times (Nat__cast Int c) (Nat__cast Int a)))",
     "by": "exact modEq_iff_dvd.mp h",
     "depth": 1
    },
    {
     "unit": "conclusion",
-    "prop": "Eq (Int__gcd (div m d) (div c d)) 1",
+    "prop": "Eq (Int__gcd (div (Nat__cast Int m) (Nat__cast Int d)) (div (Nat__cast Int c) (Nat__cast Int d))) 1",
     "by": "simp only [d, ← Int.natCast_div, Int.gcd_natCast_natCast (m / d) (c / d),",
     "method": "simplification",
     "depth": 1
@@ -1084,25 +1084,25 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "Lt (dite (Eq n 0) (hn => a) (hn1 => dite (Eq m 0) (hm => b) (hm1 => Int__toNat (HMod__hMod (div (plus (times (times n (Prod__fst (Nat__xgcd n m))) b) (times (times m (Prod__snd (Nat__xgcd n m))) a)) (gcd n m)) (Nat__lcm n m))))) (Nat__lcm n m)",
+    "prop": "Lt (Subtype__val Nat (k => and (Nat__ModEq n k a) (Nat__ModEq m k b)) (dite (Subtype Nat (k1 => and (Nat__ModEq n k1 a) (Nat__ModEq m k1 b))) (Eq n 0) (hn => Subtype__mk Nat (k2 => and (Nat__ModEq n k2 a) (Nat__ModEq m k2 b)) a (Nat__chineseRemainder'___proof_1 m n a b h hn)) (hn1 => dite (Subtype Nat (k3 => and (Nat__ModEq n k3 a) (Nat__ModEq m k3 b))) (Eq m 0) (hm => Subtype__mk Nat (k4 => and (Nat__ModEq n k4 a) (Nat__ModEq m k4 b)) b (Nat__chineseRemainder'___proof_2 m n a b h hm)) (hm1 => Subtype__mk Nat (k5 => and (Nat__ModEq n k5 a) (Nat__ModEq m k5 b)) (Int__toNat (HMod__hMod Int Int Int (div (plus (times (times (Nat__cast Int n) (Prod__fst Int Int (Nat__xgcd n m))) (Nat__cast Int b)) (times (times (Nat__cast Int m) (Prod__snd Int Int (Nat__xgcd n m))) (Nat__cast Int a))) (Nat__cast Int (gcd n m))) (Nat__cast Int (Nat__lcm n m)))) (Nat__chineseRemainder'___proof_3 m n a b h hn1 hm1))))) (Nat__lcm n m)",
     "by": "dsimp only [chineseRemainder']",
     "depth": 0
    },
    {
     "unit": "enough",
-    "prop": "Lt (Int__toNat (HMod__hMod (div (plus (times (times n (Prod__fst (Prod__mk (Nat__gcdA n m) (Nat__gcdB n m)))) b) (times (times m (Prod__snd (Prod__mk (Nat__gcdA n m) (Nat__gcdB n m)))) a)) (gcd n m)) (Int__toNat (Nat__lcm n m)))) (Int__toNat (Nat__lcm n m))",
+    "prop": "Lt (Int__toNat (HMod__hMod Int Int Int (div (plus (times (times (Nat__cast Int n) (Prod__fst Int Int (Prod__mk Int Int (Nat__gcdA n m) (Nat__gcdB n m)))) (Nat__cast Int b)) (times (times (Nat__cast Int m) (Prod__snd Int Int (Prod__mk Int Int (Nat__gcdA n m) (Nat__gcdB n m)))) (Nat__cast Int a))) (Nat__cast Int (gcd n m))) (Nat__cast Int (Int__toNat (Nat__cast Int (Nat__lcm n m)))))) (Int__toNat (Nat__cast Int (Nat__lcm n m)))",
     "by": "rw [dite_eq_right hn, dite_eq_right hm, Subtype.coe_mk, xgcd_val, ← Int.toNat_natCast (lcm n m)]",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "(Lt 0 (Nat__lcm n m))",
+    "prop": "(Lt 0 (Nat__cast Int (Nat__lcm n m)))",
     "by": "have lcm_pos := Int.natCast_pos.mpr (Nat.pos_of_ne_zero (lcm_ne_zero hn hm))",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "Lt (Int__toNat (HMod__hMod (div (plus (times (times n (Prod__fst (Prod__mk (Nat__gcdA n m) (Nat__gcdB n m)))) b) (times (times m (Prod__snd (Prod__mk (Nat__gcdA n m) (Nat__gcdB n m)))) a)) (gcd n m)) (Int__toNat (Nat__lcm n m)))) (Int__toNat (Nat__lcm n m))",
+    "prop": "Lt (Int__toNat (HMod__hMod Int Int Int (div (plus (times (times (Nat__cast Int n) (Prod__fst Int Int (Prod__mk Int Int (Nat__gcdA n m) (Nat__gcdB n m)))) (Nat__cast Int b)) (times (times (Nat__cast Int m) (Prod__snd Int Int (Prod__mk Int Int (Nat__gcdA n m) (Nat__gcdB n m)))) (Nat__cast Int a))) (Nat__cast Int (gcd n m))) (Nat__cast Int (Int__toNat (Nat__cast Int (Nat__lcm n m)))))) (Int__toNat (Nat__cast Int (Nat__lcm n m)))",
     "by": "exact (Int.toNat_lt_toNat lcm_pos).mpr (Int.emod_lt_of_pos _ lcm_pos)",
     "depth": 0
    }
@@ -1114,7 +1114,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Nat__ModEq (times n m) z (Nat__chineseRemainder co a b)",
+    "prop": "Nat__ModEq (times n m) z (Subtype__val Nat (k => and (Nat__ModEq n k a) (Nat__ModEq m k b)) (Nat__chineseRemainder m n co a b))",
     "by": "simpa [Nat.Coprime.lcm_eq_mul co] using",
     "method": "simplification",
     "depth": 0
@@ -1180,7 +1180,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eq (plus (HMod__hMod (plus a b) c) (ite (Leq c (plus (HMod__hMod a c) (HMod__hMod b c))) c 0)) (plus (HMod__hMod a c) (HMod__hMod b c))",
+    "prop": "Eq (plus (HMod__hMod Nat Nat Nat (plus a b) c) (ite Nat (Leq c (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c))) c 0)) (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c))",
     "by": "simp [hc0, Nat.mod_zero]",
     "method": "simplification",
     "depth": 0
@@ -1198,7 +1198,7 @@
    },
    {
     "unit": "enough",
-    "prop": "Eq (plus (HMod__hMod (plus (HMod__hMod a c) (HMod__hMod b c)) c) (ite (Leq c (plus (HMod__hMod a c) (HMod__hMod b c))) c 0)) (plus (HMod__hMod a c) (HMod__hMod b c))",
+    "prop": "Eq (plus (HMod__hMod Nat Nat Nat (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c)) c) (ite Nat (Leq c (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c))) c 0)) (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c))",
     "by": "rw [this]",
     "depth": 1
    },
@@ -1207,7 +1207,7 @@
     "hypos": [
      [
       "h",
-      "Proof (Leq c (plus (HMod__hMod a c) (HMod__hMod b c)))"
+      "Proof (Leq c (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c)))"
      ]
     ],
     "by": "split_ifs with h",
@@ -1215,7 +1215,7 @@
    },
    {
     "unit": "enough",
-    "prop": "and (Eq (plus (HMod__hMod (plus (HMod__hMod a c) (HMod__hMod b c)) c) c) (plus (HMod__hMod a c) (HMod__hMod b c))) (Eq (plus (HMod__hMod (plus (HMod__hMod a c) (HMod__hMod b c)) c) 0) (plus (HMod__hMod a c) (HMod__hMod b c)))",
+    "prop": "and (Eq (plus (HMod__hMod Nat Nat Nat (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c)) c) c) (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c))) (Eq (plus (HMod__hMod Nat Nat Nat (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c)) c) 0) (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c)))",
     "by": "split_ifs with h",
     "depth": 1
    },
@@ -1224,7 +1224,7 @@
     "hypos": [
      [
       "h",
-      "Proof (Leq c (plus (HMod__hMod a c) (HMod__hMod b c)))"
+      "Proof (Leq c (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c)))"
      ]
     ],
     "by": "",
@@ -1232,31 +1232,31 @@
    },
    {
     "unit": "conclusion",
-    "prop": "(Lt (div (plus (HMod__hMod a c) (HMod__hMod b c)) c) 2)",
+    "prop": "(Lt (div (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c)) c) 2)",
     "by": "have h2 : (a % c + b % c) / c < 2 :=",
     "depth": 3
    },
    {
     "unit": "enough",
-    "prop": "Lt (plus (HMod__hMod a c) (HMod__hMod b c)) (plus c c)",
+    "prop": "Lt (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c)) (plus c c)",
     "by": "rw [mul_two]",
     "depth": 3
    },
    {
     "unit": "conclusion",
-    "prop": "Lt (plus (HMod__hMod a c) (HMod__hMod b c)) (plus c c)",
+    "prop": "Lt (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c)) (plus c c)",
     "by": "exact",
     "depth": 3
    },
    {
     "unit": "conclusion",
-    "prop": "(Lt 0 (div (plus (HMod__hMod a c) (HMod__hMod b c)) c))",
+    "prop": "(Lt 0 (div (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c)) c))",
     "by": "have h0 : 0 < (a % c + b % c) / c := Nat.div_pos h (Nat.pos_of_ne_zero hc0)",
     "depth": 3
    },
    {
     "unit": "conclusion",
-    "prop": "Eq (plus (HMod__hMod (plus (HMod__hMod a c) (HMod__hMod b c)) c) c) (plus (HMod__hMod a c) (HMod__hMod b c))",
+    "prop": "Eq (plus (HMod__hMod Nat Nat Nat (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c)) c) c) (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c))",
     "by": "rw [← @add_right_cancel_iff _ _ _ (c * ((a % c + b % c) / c)), add_comm _ c, add_assoc,",
     "method": "rewriting",
     "depth": 3
@@ -1266,7 +1266,7 @@
     "hypos": [
      [
       "h",
-      "Proof (not (Leq c (plus (HMod__hMod a c) (HMod__hMod b c))))"
+      "Proof (not (Leq c (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c))))"
      ]
     ],
     "by": "",
@@ -1274,7 +1274,7 @@
    },
    {
     "unit": "conclusion",
-    "prop": "Eq (plus (HMod__hMod (plus (HMod__hMod a c) (HMod__hMod b c)) c) 0) (plus (HMod__hMod a c) (HMod__hMod b c))",
+    "prop": "Eq (plus (HMod__hMod Nat Nat Nat (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c)) c) 0) (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c))",
     "by": "rw [Nat.mod_eq_of_lt (lt_of_not_ge h), add_zero]",
     "method": "rewriting",
     "depth": 2
@@ -1287,7 +1287,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eq (HMod__hMod (plus a b) c) (plus (HMod__hMod a c) (HMod__hMod b c))",
+    "prop": "Eq (HMod__hMod Nat Nat Nat (plus a b) c) (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c))",
     "by": "rw [← add_mod_add_ite, ite_eq_right (not_le_of_gt hc), add_zero]",
     "method": "rewriting",
     "depth": 0
@@ -1300,7 +1300,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eq (plus (HMod__hMod (plus a b) c) c) (plus (HMod__hMod a c) (HMod__hMod b c))",
+    "prop": "Eq (plus (HMod__hMod Nat Nat Nat (plus a b) c) c) (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c))",
     "by": "rw [← add_mod_add_ite, ite_eq_left hc]",
     "method": "rewriting",
     "depth": 0
@@ -1373,13 +1373,13 @@
    },
    {
     "unit": "enough",
-    "prop": "Leq (ite (Leq c (plus (HMod__hMod a c) (HMod__hMod b c))) 1 0) 1",
+    "prop": "Leq (ite Nat (Leq c (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c))) 1 0) 1",
     "by": "rw [Nat.add_div (Nat.pos_of_ne_zero h), Nat.add_le_add_iff_left]",
     "depth": 1
    },
    {
     "unit": "conclusion",
-    "prop": "Leq (ite (Leq c (plus (HMod__hMod a c) (HMod__hMod b c))) 1 0) 1",
+    "prop": "Leq (ite Nat (Leq c (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c))) 1 0) 1",
     "by": "split <;> decide",
     "depth": 1
    }
@@ -1391,7 +1391,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "(Eq (HMod__hMod (plus a b) c) (plus (HMod__hMod a c) (HMod__hMod b c)))",
+    "prop": "(Eq (HMod__hMod Nat Nat Nat (plus a b) c) (plus (HMod__hMod Nat Nat Nat a c) (HMod__hMod Nat Nat Nat b c)))",
     "by": "have : (a + b) % c = a % c + b % c := add_mod_of_add_mod_lt (lt_of_not_ge hc)",
     "depth": 0
    },
@@ -1418,7 +1418,7 @@
     "hypos": [
      [
       "h",
-      "Proof (Leq b (HMod__hMod a 0))"
+      "Proof (Leq b (HMod__hMod Nat Nat Nat a 0))"
      ]
     ],
     "by": "",
@@ -1426,7 +1426,7 @@
    },
    {
     "unit": "conclusion",
-    "prop": "Eq (minus (HMod__hMod a 0) b) (HMod__hMod (minus a b) 0)",
+    "prop": "Eq (minus (HMod__hMod Nat Nat Nat a 0) b) (HMod__hMod Nat Nat Nat (minus a b) 0)",
     "by": "simp only [mod_zero]",
     "method": "simplification",
     "depth": 1
@@ -1444,19 +1444,19 @@
    },
    {
     "unit": "enough",
-    "prop": "Eq (minus (HMod__hMod a n) b) (HMod__hMod (minus (plus (times n (div a n)) (HMod__hMod a n)) b) n)",
+    "prop": "Eq (minus (HMod__hMod Nat Nat Nat a n) b) (HMod__hMod Nat Nat Nat (minus (plus (times n (div a n)) (HMod__hMod Nat Nat Nat a n)) b) n)",
     "by": "nth_rw 2 [← div_add_mod a n]",
     "depth": 1
    },
    {
     "unit": "enough",
-    "prop": "Eq (minus (HMod__hMod a n) b) (HMod__hMod (minus (HMod__hMod a n) b) n)",
+    "prop": "Eq (minus (HMod__hMod Nat Nat Nat a n) b) (HMod__hMod Nat Nat Nat (minus (HMod__hMod Nat Nat Nat a n) b) n)",
     "by": "rw [Nat.add_sub_assoc h, mul_add_mod]",
     "depth": 1
    },
    {
     "unit": "conclusion",
-    "prop": "Eq (minus (HMod__hMod a n) b) (HMod__hMod (minus (HMod__hMod a n) b) n)",
+    "prop": "Eq (minus (HMod__hMod Nat Nat Nat a n) b) (HMod__hMod Nat Nat Nat (minus (HMod__hMod Nat Nat Nat a n) b) n)",
     "by": "exact (mod_eq_of_lt <| (sub_le ..).trans_lt (mod_lt a hn)).symm",
     "depth": 1
    }
@@ -1468,7 +1468,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "if (Eq (HMod__hMod n 2) 1) (if (Eq (HMod__hMod m 2) 1) (Eq (HMod__hMod (times n m) 2) 1))",
+    "prop": "if (Eq (HMod__hMod Nat Nat Nat n 2) 1) (if (Eq (HMod__hMod Nat Nat Nat m 2) 1) (Eq (HMod__hMod Nat Nat Nat (times n m) 2) 1))",
     "by": "simpa [Nat.ModEq] using @ModEq.mul 2 n 1 m 1",
     "method": "simplification",
     "depth": 0
@@ -1518,7 +1518,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "if (Eq (HMod__hMod n 4) 1) (Eq (HMod__hMod n 2) 1)",
+    "prop": "if (Eq (HMod__hMod Nat Nat Nat n 4) 1) (Eq (HMod__hMod Nat Nat Nat n 2) 1)",
     "by": "simpa [ModEq] using @ModEq.of_mul_left 2 n 1 2",
     "method": "simplification",
     "depth": 0
@@ -1531,7 +1531,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "if (Eq (HMod__hMod n 4) 3) (Eq (HMod__hMod n 2) 1)",
+    "prop": "if (Eq (HMod__hMod Nat Nat Nat n 4) 3) (Eq (HMod__hMod Nat Nat Nat n 2) 1)",
     "by": "simpa [ModEq] using @ModEq.of_mul_left 2 n 3 2",
     "method": "simplification",
     "depth": 0
@@ -1544,7 +1544,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "forall Nat (m => if (Lt m 4) (if (Eq (HMod__hMod m 2) 1) (or (Eq m 1) (Eq m 3))))",
+    "prop": "forall Nat (m => if (Lt m 4) (if (Eq (HMod__hMod Nat Nat Nat m 2) 1) (or (Eq m 1) (Eq m 3))))",
     "by": "decide",
     "method": "computation",
     "depth": 0
@@ -1554,11 +1554,11 @@
     "hypos": [
      [
       "help",
-      "Proof (forall Nat (m => if (Lt m 4) (if (Eq (HMod__hMod m 2) 1) (or (Eq m 1) (Eq m 3)))))"
+      "Proof (forall Nat (m => if (Lt m 4) (if (Eq (HMod__hMod Nat Nat Nat m 2) 1) (or (Eq m 1) (Eq m 3)))))"
      ],
      [
       "hn",
-      "Proof (Eq (HMod__hMod n 2) 1)"
+      "Proof (Eq (HMod__hMod Nat Nat Nat n 2) 1)"
      ]
     ],
     "by": "",

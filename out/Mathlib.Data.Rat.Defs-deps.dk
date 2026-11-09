@@ -10,11 +10,15 @@ Bool__true : Elem Bool.
 
 (; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
 (; //LEAN:Eq ;)
-Eq : (x : Elem X) -> (x1 : Elem X) -> Prop.
+Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
 (; //LEAN:Eq.mp ;)
-Eq__mp : (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
+Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
+
+(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
+(; //LEAN:Eq.mpr ;)
+Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
@@ -22,25 +26,38 @@ Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Pr
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Function.Injective.comp ;)
-Function__Injective__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (g : (Elem Y -> Z)) -> (f : (Elem X -> Y)) -> (hg : Proof (Function__Injective g)) -> (hf : Proof (Function__Injective f)) -> Proof (Function__Injective (Function__comp g f)).
+Function__Injective__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (g : (Elem Y -> Z)) -> (f : (Elem X -> Y)) -> (hg : Proof (Function__Injective Y Z g)) -> (hf : Proof (Function__Injective X Y f)) -> Proof (Function__Injective X Z (Function__comp X Y Z g f)).
 
 (; doc: **Alias** of `not_congr`. ;)
 (; //LEAN:Iff.not ;)
 Iff__not : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff (not a) (not b)).
+
+(; //LEAN:Int.add_mul ;)
+Int__add_mul : (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> Proof (Eq (times (plus a b) c) (plus (times a c) (times b c))).
+
+(; doc: The canonical homomorphism `Int → R`. In most use cases, the target type will have a ring structure, and this homomorphism should be a ring homomorphism.  `IntCast` and `NatCast` exist to allow different libraries with their own types that can be notated as natural numbers to have consistent `simp` normal forms without needing to create coercion simplification sets that are aware of all combinations. Libraries should make it easy to work with `IntCast` where possible. For instance, in Mathlib there will be such a homomorphism (and thus an `IntCast R` instance) whenever `R` is an additive group with a `1`. ;)
+(; //LEAN:Int.cast ;)
+Int__cast : (R : Set) -> (x1 : Elem Int) -> Elem R.
+
+(; //LEAN:Int.mul_assoc ;)
+Int__mul_assoc : (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> Proof (Eq (times (times a b) c) (times a (times b c))).
+
+(; //LEAN:Int.mul_ne_zero ;)
+Int__mul_ne_zero : (a : Elem Int) -> (b : Elem Int) -> (a0 : Proof (Neq a 0)) -> (b0 : Proof (Neq b 0)) -> Proof (Neq (times a b) 0).
 
 (; doc: The absolute value of an integer is its distance from `0`.  This function is overridden by the compiler with an efficient implementation. This definition is the logical model.  Examples:  * `(7 : Int).natAbs = 7`  * `(0 : Int).natAbs = 0`  * `(-11 : Int).natAbs = 11` ;)
 (; //LEAN:Int.natAbs ;)
 Int__natAbs : (m : Elem Int) -> Elem Nat.
 
 (; //LEAN:Int.natCast_inj ;)
-Int__natCast_inj : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Eq m n) (Eq m n)).
+Int__natCast_inj : (m : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Eq (Nat__cast Int m) (Nat__cast Int n)) (Eq m n)).
 
 (; doc: `a⁻¹` computes the inverse of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `⁻¹` in identifiers is `inv`. ;)
 (; //LEAN:Inv.inv ;)
-Inv__inv : (x : Elem X) -> Elem X.
+Inv__inv : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: **Alias** of `ne_of_gt`. ;)
 (; //LEAN:LT.lt.ne' ;)
@@ -50,6 +67,10 @@ LT__lt__ne' : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem
 (; //LEAN:Nat.Coprime ;)
 Nat__Coprime : (m : Elem Nat) -> (n : Elem Nat) -> Prop.
 
+(; doc: The canonical homomorphism `Nat → R`. In most use cases, the target type will have a (semi)ring structure, and this homomorphism should be a (semi)ring homomorphism.  `NatCast` and `IntCast` exist to allow different libraries with their own types that can be notated as natural numbers to have consistent `simp` normal forms without needing to create coercion simplification sets that are aware of all combinations. Libraries should make it easy to work with `NatCast` where possible. For instance, in Mathlib there will be such a homomorphism (and thus a `NatCast R` instance) whenever `R` is an additive monoid with a `1`.  The prototypical example is `Int.ofNat`. ;)
+(; //LEAN:Nat.cast ;)
+Nat__cast : (R : Set) -> (x1 : Elem Nat) -> Elem R.
+
 (; //LEAN:Nat.mul_ne_zero ;)
 Nat__mul_ne_zero : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Neq n 0)) -> (h1 : Proof (Neq m 0)) -> Proof (Neq (times n m) 0).
 
@@ -58,7 +79,7 @@ Nat__pos_of_ne_zero : (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Lt 0 n).
 
 (; doc: `-a` computes the negative or opposite of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `-` in identifiers is `neg` (when used as a unary operator). ;)
 (; //LEAN:Neg.neg ;)
-Neg__neg : (x : Elem X) -> Elem X.
+Neg__neg : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: The denominator of the rational number is a natural number. ;)
 (; //LEAN:Rat.den ;)
@@ -75,20 +96,20 @@ Rat__den_pos : (self : Elem Rat) -> Proof (Lt 0 (Rat__den self)).
 (; //LEAN:Rat.divInt ;)
 Rat__divInt : (x : Elem Int) -> (x1 : Elem Int) -> Elem Rat.
 
+(; //LEAN:Rat.divInt_add_divInt ;)
+Rat__divInt_add_divInt : (x : Elem Int) -> (x1 : Elem Int) -> (x2 : Elem Int) -> (x3 : Elem Int) -> (h : Proof (Neq x2 0)) -> (h1 : Proof (Neq x3 0)) -> Proof (Eq (plus (Rat__divInt x x2) (Rat__divInt x1 x3)) (Rat__divInt (plus (times x x3) (times x1 x2)) (times x2 x3))).
+
+(; //LEAN:Rat.divInt_eq_divInt_iff ;)
+Rat__divInt_eq_divInt_iff : (x : Elem Int) -> (x1 : Elem Int) -> (x2 : Elem Int) -> (x3 : Elem Int) -> (h : Proof (Neq x 0)) -> (h1 : Proof (Neq x1 0)) -> Proof (iff (Eq (Rat__divInt x2 x) (Rat__divInt x3 x1)) (Eq (times x2 x1) (times x3 x))).
+
 (; //LEAN:Rat.divInt_neg' ;)
-Rat__divInt_neg' : (num : Elem Int) -> (den : Elem Int) -> Proof (Eq (Rat__divInt num (Neg__neg den)) (Rat__divInt (Neg__neg num) den)).
+Rat__divInt_neg' : (num : Elem Int) -> (den : Elem Int) -> Proof (Eq (Rat__divInt num (Neg__neg Int den)) (Rat__divInt (Neg__neg Int num) den)).
 
 (; //LEAN:Rat.divInt_zero ;)
 Rat__divInt_zero : (n : Elem Int) -> Proof (Eq (Rat__divInt n 0) 0).
 
-(; //LEAN:Rat.instIntCast ;)
-Rat__instIntCast : Proof (IntCast Rat).
-
-(; //LEAN:Rat.instNatCast ;)
-Rat__instNatCast : Proof (NatCast Rat).
-
 (; //LEAN:Rat.intCast_inj ;)
-Rat__intCast_inj : (a : Elem Int) -> (b : Elem Int) -> Proof (iff (Eq a b) (Eq a b)).
+Rat__intCast_inj : (a : Elem Int) -> (b : Elem Int) -> Proof (iff (Eq (Int__cast Rat a) (Int__cast Rat b)) (Eq a b)).
 
 (; doc: Is this rational number integral? ;)
 (; //LEAN:Rat.isInt ;)
@@ -111,10 +132,10 @@ Rat__mk'_pow___proof_3 : (num : Elem Int) -> (den : Elem Nat) -> (hdn : Proof (N
 Rat__mkRat_self : (a : Elem Rat) -> Proof (Eq (mkRat (Rat__num a) (Rat__den a)) a).
 
 (; //LEAN:Rat.mk_eq_divInt ;)
-Rat__mk_eq_divInt : (num : Elem Int) -> (den : Elem Nat) -> (nz : Proof (Neq den 0)) -> (c : Proof (Nat__Coprime (Int__natAbs num) den)) -> Proof (Eq (Rat__mk' num den nz c) (Rat__divInt num den)).
+Rat__mk_eq_divInt : (num : Elem Int) -> (den : Elem Nat) -> (nz : Proof (Neq den 0)) -> (c : Proof (Nat__Coprime (Int__natAbs num) den)) -> Proof (Eq (Rat__mk' num den nz c) (Rat__divInt num (Nat__cast Int den))).
 
 (; //LEAN:Rat.natCast_inj ;)
-Rat__natCast_inj : (a : Elem Nat) -> (b : Elem Nat) -> Proof (iff (Eq a b) (Eq a b)).
+Rat__natCast_inj : (a : Elem Nat) -> (b : Elem Nat) -> Proof (iff (Eq (Nat__cast Rat a) (Nat__cast Rat b)) (Eq a b)).
 
 (; doc: The numerator of the rational number is an integer. ;)
 (; //LEAN:Rat.num ;)
@@ -141,6 +162,13 @@ Rat__zero_divInt : (n : Elem Int) -> Proof (Eq (Rat__divInt 0 n) 0).
 (; //LEAN:True ;)
 True : Prop.
 
+(; //LEAN:add_zero ;)
+add_zero : (M : Set) -> (_ : Proof (AddZeroClass M)) -> (a : Elem M) -> Proof (Eqt M (plus a 0) a).
+
+(; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:congr ;)
+congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
+
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
 congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
@@ -153,14 +181,19 @@ congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y))
 (; //LEAN:congr_arg ;)
 congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
 
+(; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
+(; //LEAN:dite ;)
+dite : (X : Set) -> (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
+
 (; //LEAN:eq_self ;)
 eq_self : (X : Set) -> (a : Elem X) -> Proof (Eqt Prop (Eqt X a a) True).
 
+(; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
+(; //LEAN:id ;)
+id : (X : Set) -> (a : Elem X) -> Elem X.
+
 (; //LEAN:instInhabitedRat._proof_1 ;)
 instInhabitedRat___proof_1 : Proof (Neq 1 0).
-
-(; //LEAN:instNatCastInt ;)
-instNatCastInt : Proof (NatCast Int).
 
 (; doc: Construct a rational number from a numerator and denominator. This is a "smart constructor" that divides the numerator and denominator by the gcd to ensure that the resulting rational number is normalized, and returns zero if `den` is zero. ;)
 (; //LEAN:mkRat ;)
@@ -168,6 +201,10 @@ mkRat : (num : Elem Int) -> (den : Elem Nat) -> Elem Rat.
 
 (; //LEAN:of_eq_true ;)
 of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
+
+(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
+(; //LEAN:propext ;)
+propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a b).
 
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)

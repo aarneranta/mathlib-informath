@@ -14,23 +14,23 @@ toLex__app : (a1 : Elem K) -> Elem (Lex K).
 
 (; doc: `a / b := a * b⁻¹` ;)
 (; //LEAN:CommGroupWithZero.div_eq_mul_inv ;)
-CommGroupWithZero__div_eq_mul_inv : (X : Set) -> (_ : Proof (CommGroupWithZero X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (div a b) (times a (Inv__inv b))).
+CommGroupWithZero__div_eq_mul_inv : (X : Set) -> (_ : Proof (CommGroupWithZero X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (div a b) (times a (Inv__inv X b))).
 
 (; doc: The inverse of `0` in a group with zero is `0`. ;)
 (; //LEAN:CommGroupWithZero.inv_zero ;)
-CommGroupWithZero__inv_zero : (X : Set) -> (_ : Proof (CommGroupWithZero X)) -> Proof (Eqt X (Inv__inv 0) 0).
+CommGroupWithZero__inv_zero : (X : Set) -> (_ : Proof (CommGroupWithZero X)) -> Proof (Eqt X (Inv__inv X 0) 0).
 
 (; doc: Every nonzero element of a group with zero is invertible. ;)
 (; //LEAN:CommGroupWithZero.mul_inv_cancel ;)
-CommGroupWithZero__mul_inv_cancel : (X : Set) -> (_ : Proof (CommGroupWithZero X)) -> (a : Elem X) -> (h : Proof (Neq a 0)) -> Proof (Eqt X (times a (Inv__inv a)) 1).
+CommGroupWithZero__mul_inv_cancel : (X : Set) -> (_ : Proof (CommGroupWithZero X)) -> (a : Elem X) -> (h : Proof (Neq a 0)) -> Proof (Eqt X (times a (Inv__inv X a)) 1).
 
 (; doc: `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` ;)
 (; //LEAN:CommGroupWithZero.zpow_neg' ;)
-CommGroupWithZero__zpow_neg' : (X : Set) -> (_ : Proof (CommGroupWithZero X)) -> (n : Elem Nat) -> (a : Elem X) -> Proof (Eqt X (pow a (Int__negSucc n)) (Inv__inv (pow a (succ n)))).
+CommGroupWithZero__zpow_neg' : (X : Set) -> (_ : Proof (CommGroupWithZero X)) -> (n : Elem Nat) -> (a : Elem X) -> Proof (Eqt X (pow a (Int__negSucc n)) (Inv__inv X (pow a (Nat__cast Int (succ n))))).
 
 (; doc: `a ^ (n + 1) = a ^ n * a` ;)
 (; //LEAN:CommGroupWithZero.zpow_succ' ;)
-CommGroupWithZero__zpow_succ' : (X : Set) -> (_ : Proof (CommGroupWithZero X)) -> (n : Elem Nat) -> (a : Elem X) -> Proof (Eqt X (pow a (succ n)) (times (pow a n) a)).
+CommGroupWithZero__zpow_succ' : (X : Set) -> (_ : Proof (CommGroupWithZero X)) -> (n : Elem Nat) -> (a : Elem X) -> Proof (Eqt X (pow a (Nat__cast Int (succ n))) (times (pow a (Nat__cast Int n)) a)).
 
 (; doc: `a ^ 0 = 1` ;)
 (; //LEAN:CommGroupWithZero.zpow_zero' ;)
@@ -38,10 +38,10 @@ CommGroupWithZero__zpow_zero' : (X : Set) -> (_ : Proof (CommGroupWithZero X)) -
 
 (; doc: Two elements commute if `a * b = b * a`. ;)
 (; //LEAN:Commute ;)
-Commute : (a : Elem M) -> (b : Elem M) -> Prop.
+Commute : (M : Set) -> (a : Elem M) -> (b : Elem M) -> Prop.
 
 (; //LEAN:Commute.all ;)
-Commute__all : (S : Set) -> (_ : Proof (CommMagma S)) -> (a : Elem S) -> (b : Elem S) -> Proof (Commute a b).
+Commute__all : (S : Set) -> (_ : Proof (CommMagma S)) -> (a : Elem S) -> (b : Elem S) -> Proof (Commute S a b).
 
 (; doc: A `DivisionRing` is a `Ring` with multiplicative inverses for nonzero elements.  An instance of `DivisionRing K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`. Those two fields are needed to implement the `DivisionRing K → Algebra ℚ K` instance since we need to control the specific definitions for some special cases of `K` (in particular `K = ℚ` itself). See also note [forgetful inheritance]. Similarly, there are maps `nnratCast ℚ≥0 → K` and `nnqsmul : ℚ≥0 → K → K` to implement the `DivisionSemiring K → Algebra ℚ≥0 K` instance.  If the division ring has positive characteristic `p`, our division by zero convention forces `ratCast (1 / p) = 1 / 0 = 0`. ;)
 (; //LEAN:DivisionRing ;)
@@ -49,62 +49,62 @@ DivisionRing : (K : Set) -> Prop.
 
 (; doc: `a / b := a * b⁻¹` ;)
 (; //LEAN:DivisionRing.div_eq_mul_inv ;)
-DivisionRing__div_eq_mul_inv : (K : Set) -> (_ : Proof (DivisionRing K)) -> (a : Elem K) -> (b : Elem K) -> Proof (Eqt K (div a b) (times a (Inv__inv b))).
+DivisionRing__div_eq_mul_inv : (K : Set) -> (_ : Proof (DivisionRing K)) -> (a : Elem K) -> (b : Elem K) -> Proof (Eqt K (div a b) (times a (Inv__inv K b))).
 
 (; doc: The inverse of `0` is `0` by convention. ;)
 (; //LEAN:DivisionRing.inv_zero ;)
-DivisionRing__inv_zero : (K : Set) -> (_ : Proof (DivisionRing K)) -> Proof (Eqt K (Inv__inv 0) 0).
+DivisionRing__inv_zero : (K : Set) -> (_ : Proof (DivisionRing K)) -> Proof (Eqt K (Inv__inv K 0) 0).
 
 (; //LEAN:DivisionRing.mk ;)
-DivisionRing__mk : (div_eq_mul_inv : Proof (autoParam (forall K (a6 => forall K (b => Eqt K (div a6 b) (times a6 (Inv__inv b))))) DivInvMonoid__div_eq_mul_inv___autoParam)) -> (zpow_zero' : Proof (autoParam (forall K (a5 => Eqt K (pow a5 0) 1)) DivInvMonoid__zpow_zero'___autoParam)) -> (zpow_succ' : Proof (autoParam (forall Nat (n1 => forall K (a4 => Eqt K (pow a4 (succ n1)) (times (pow a4 n1) a4)))) DivInvMonoid__zpow_succ'___autoParam)) -> (zpow_neg' : Proof (autoParam (forall Nat (n => forall K (a3 => Eqt K (pow a3 (Int__negSucc n)) (Inv__inv (pow a3 (succ n)))))) DivInvMonoid__zpow_neg'___autoParam)) -> (mul_inv_cancel : Proof (forall K (a2 => if (Neq a2 0) (Eqt K (times a2 (Inv__inv a2)) 1)))) -> (inv_zero : Proof (Eqt K (Inv__inv 0) 0)) -> (nnratCast_def : Proof (autoParam (forall NNRat (q2 => Eqt K (NNRat__cast q2) (div (NNRat__num q2) (NNRat__den q2)))) DivisionRing__nnratCast_def___autoParam)) -> (nnqsmul : (Elem NNRat -> Elem K -> K)) -> (nnqsmul_def : Proof (autoParam (forall NNRat (q1 => forall K (a1 => Eqt K (nnqsmul q1 a1) (times (NNRat__cast q1) a1)))) DivisionRing__nnqsmul_def___autoParam)) -> (ratCast_def : Proof (autoParam (forall Rat (q => Eqt K (Rat__cast q) (div (Rat__num q) (Rat__den q)))) DivisionRing__ratCast_def___autoParam)) -> (qsmul : (Elem Rat -> Elem K -> K)) -> (qsmul_def : Proof (autoParam (forall Rat (a => forall K (x => Eqt K (qsmul a x) (times (Rat__cast a) x)))) DivisionRing__qsmul_def___autoParam)) -> Proof (DivisionRing K).
+DivisionRing__mk : (K : Set) -> (div_eq_mul_inv : Proof (autoParam (forall K (a6 => forall K (b => Eqt K (div a6 b) (times a6 (Inv__inv K b))))) DivInvMonoid__div_eq_mul_inv___autoParam)) -> (zpow_zero' : Proof (autoParam (forall K (a5 => Eqt K (pow a5 0) 1)) DivInvMonoid__zpow_zero'___autoParam)) -> (zpow_succ' : Proof (autoParam (forall Nat (n1 => forall K (a4 => Eqt K (pow a4 (Nat__cast Int (succ n1))) (times (pow a4 (Nat__cast Int n1)) a4)))) DivInvMonoid__zpow_succ'___autoParam)) -> (zpow_neg' : Proof (autoParam (forall Nat (n => forall K (a3 => Eqt K (pow a3 (Int__negSucc n)) (Inv__inv K (pow a3 (Nat__cast Int (succ n))))))) DivInvMonoid__zpow_neg'___autoParam)) -> (mul_inv_cancel : Proof (forall K (a2 => if (Neq a2 0) (Eqt K (times a2 (Inv__inv K a2)) 1)))) -> (inv_zero : Proof (Eqt K (Inv__inv K 0) 0)) -> (nnratCast_def : Proof (autoParam (forall NNRat (q2 => Eqt K (NNRat__cast K q2) (div (Nat__cast K (NNRat__num q2)) (Nat__cast K (NNRat__den q2))))) DivisionRing__nnratCast_def___autoParam)) -> (nnqsmul : (Elem NNRat -> Elem K -> K)) -> (nnqsmul_def : Proof (autoParam (forall NNRat (q1 => forall K (a1 => Eqt K (nnqsmul q1 a1) (times (NNRat__cast K q1) a1)))) DivisionRing__nnqsmul_def___autoParam)) -> (ratCast_def : Proof (autoParam (forall Rat (q => Eqt K (Rat__cast K q) (div (Int__cast K (Rat__num q)) (Nat__cast K (Rat__den q))))) DivisionRing__ratCast_def___autoParam)) -> (qsmul : (Elem Rat -> Elem K -> K)) -> (qsmul_def : Proof (autoParam (forall Rat (a => forall K (x => Eqt K (qsmul a x) (times (Rat__cast K a) x)))) DivisionRing__qsmul_def___autoParam)) -> Proof (DivisionRing K).
 
 (; doc: For a nonzero `a`, `a⁻¹` is a right multiplicative inverse. ;)
 (; //LEAN:DivisionRing.mul_inv_cancel ;)
-DivisionRing__mul_inv_cancel : (K : Set) -> (_ : Proof (DivisionRing K)) -> (a : Elem K) -> (h : Proof (Neq a 0)) -> Proof (Eqt K (times a (Inv__inv a)) 1).
+DivisionRing__mul_inv_cancel : (K : Set) -> (_ : Proof (DivisionRing K)) -> (a : Elem K) -> (h : Proof (Neq a 0)) -> Proof (Eqt K (times a (Inv__inv K a)) 1).
 
 (; doc: Scalar multiplication by a nonnegative rational number.  Unless there is a risk of a `Module ℚ≥0 _` instance diamond, write `nnqsmul := _`. This will set `nnqsmul` to `(NNRat.cast · * ·)` thanks to unification in the default proof of `nnqsmul_def`.  Do not use directly. Instead use the `•` notation. ;)
 (; //LEAN:DivisionRing.nnqsmul ;)
-DivisionRing__nnqsmul : (x : Elem NNRat) -> (x1 : Elem K) -> Elem K.
+DivisionRing__nnqsmul : (K : Set) -> (x : Elem NNRat) -> (x1 : Elem K) -> Elem K.
 
 (; doc: However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.  Do not use this lemma directly. Use `NNRat.smul_def` instead. ;)
 (; //LEAN:DivisionRing.nnqsmul_def ;)
-DivisionRing__nnqsmul_def : (K : Set) -> (_ : Proof (DivisionRing K)) -> (q : Elem NNRat) -> (a : Elem K) -> Proof (Eqt K (DivisionRing__nnqsmul q a) (times (NNRat__cast q) a)).
+DivisionRing__nnqsmul_def : (K : Set) -> (_ : Proof (DivisionRing K)) -> (q : Elem NNRat) -> (a : Elem K) -> Proof (Eqt K (DivisionRing__nnqsmul K q a) (times (NNRat__cast K q) a)).
 
 (; doc: However `NNRat.cast` is defined, it must be equal to `a / b`.  Do not use this lemma directly. Use `NNRat.cast_def` instead. ;)
 (; //LEAN:DivisionRing.nnratCast_def ;)
-DivisionRing__nnratCast_def : (K : Set) -> (_ : Proof (DivisionRing K)) -> (q : Elem NNRat) -> Proof (Eqt K (NNRat__cast q) (div (NNRat__num q) (NNRat__den q))).
+DivisionRing__nnratCast_def : (K : Set) -> (_ : Proof (DivisionRing K)) -> (q : Elem NNRat) -> Proof (Eqt K (NNRat__cast K q) (div (Nat__cast K (NNRat__num q)) (Nat__cast K (NNRat__den q)))).
 
 (; //LEAN:DivisionRing.ofIsUnitOrEqZero._proof_1 ;)
-DivisionRing__ofIsUnitOrEqZero___proof_1 : (R : Set) -> (_ : Proof (Ring R)) -> (h1 : Proof (forall R (a => or (IsUnit a) (Eqt R a 0)))) -> (q : Elem NNRat) -> Proof (Eqt R (NNRat__cast q) (div (NNRat__num q) (NNRat__den q))).
+DivisionRing__ofIsUnitOrEqZero___proof_1 : (R : Set) -> (_ : Proof (Ring R)) -> (h1 : Proof (forall R (a => or (IsUnit R a) (Eqt R a 0)))) -> (q : Elem NNRat) -> Proof (Eqt R (NNRat__cast R q) (div (Nat__cast R (NNRat__num q)) (Nat__cast R (NNRat__den q)))).
 
 (; //LEAN:DivisionRing.ofIsUnitOrEqZero._proof_2 ;)
-DivisionRing__ofIsUnitOrEqZero___proof_2 : (R : Set) -> (_ : Proof (Ring R)) -> (h1 : Proof (forall R (a => or (IsUnit a) (Eqt R a 0)))) -> (q : Elem Rat) -> Proof (Eqt R (Rat__cast q) (div (Rat__num q) (Rat__den q))).
+DivisionRing__ofIsUnitOrEqZero___proof_2 : (R : Set) -> (_ : Proof (Ring R)) -> (h1 : Proof (forall R (a => or (IsUnit R a) (Eqt R a 0)))) -> (q : Elem Rat) -> Proof (Eqt R (Rat__cast R q) (div (Int__cast R (Rat__num q)) (Nat__cast R (Rat__den q)))).
 
 (; //LEAN:DivisionRing.ofIsUnitOrEqZero._proof_3 ;)
-DivisionRing__ofIsUnitOrEqZero___proof_3 : (R : Set) -> (_ : Proof (Ring R)) -> (h1 : Proof (forall R (a => or (IsUnit a) (Eqt R a 0)))) -> (x1 : Elem NNRat) -> (x2 : Elem R) -> Proof (Eqt R (times (NNRat__cast x1) x2) (times (NNRat__cast x1) x2)).
+DivisionRing__ofIsUnitOrEqZero___proof_3 : (R : Set) -> (_ : Proof (Ring R)) -> (h1 : Proof (forall R (a => or (IsUnit R a) (Eqt R a 0)))) -> (x1 : Elem NNRat) -> (x2 : Elem R) -> Proof (Eqt R (times (NNRat__cast R x1) x2) (times (NNRat__cast R x1) x2)).
 
 (; //LEAN:DivisionRing.ofIsUnitOrEqZero._proof_4 ;)
-DivisionRing__ofIsUnitOrEqZero___proof_4 : (R : Set) -> (_ : Proof (Ring R)) -> (h1 : Proof (forall R (a => or (IsUnit a) (Eqt R a 0)))) -> (x1 : Elem Rat) -> (x2 : Elem R) -> Proof (Eqt R (times (Rat__cast x1) x2) (times (Rat__cast x1) x2)).
+DivisionRing__ofIsUnitOrEqZero___proof_4 : (R : Set) -> (_ : Proof (Ring R)) -> (h1 : Proof (forall R (a => or (IsUnit R a) (Eqt R a 0)))) -> (x1 : Elem Rat) -> (x2 : Elem R) -> Proof (Eqt R (times (Rat__cast R x1) x2) (times (Rat__cast R x1) x2)).
 
 (; doc: Scalar multiplication by a rational number.  Unless there is a risk of a `Module ℚ _` instance diamond, write `qsmul := _`. This will set `qsmul` to `(Rat.cast · * ·)` thanks to unification in the default proof of `qsmul_def`.  Do not use directly. Instead use the `•` notation. ;)
 (; //LEAN:DivisionRing.qsmul ;)
-DivisionRing__qsmul : (x : Elem Rat) -> (x1 : Elem K) -> Elem K.
+DivisionRing__qsmul : (K : Set) -> (x : Elem Rat) -> (x1 : Elem K) -> Elem K.
 
 (; doc: However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.  Do not use this lemma directly. Use `Rat.cast_def` instead. ;)
 (; //LEAN:DivisionRing.qsmul_def ;)
-DivisionRing__qsmul_def : (K : Set) -> (_ : Proof (DivisionRing K)) -> (a : Elem Rat) -> (x : Elem K) -> Proof (Eqt K (DivisionRing__qsmul a x) (times (Rat__cast a) x)).
+DivisionRing__qsmul_def : (K : Set) -> (_ : Proof (DivisionRing K)) -> (a : Elem Rat) -> (x : Elem K) -> Proof (Eqt K (DivisionRing__qsmul K a x) (times (Rat__cast K a) x)).
 
 (; doc: However `Rat.cast q` is defined, it must be propositionally equal to `q.num / q.den`.  Do not use this lemma directly. Use `Rat.cast_def` instead. ;)
 (; //LEAN:DivisionRing.ratCast_def ;)
-DivisionRing__ratCast_def : (K : Set) -> (_ : Proof (DivisionRing K)) -> (q : Elem Rat) -> Proof (Eqt K (Rat__cast q) (div (Rat__num q) (Rat__den q))).
+DivisionRing__ratCast_def : (K : Set) -> (_ : Proof (DivisionRing K)) -> (q : Elem Rat) -> Proof (Eqt K (Rat__cast K q) (div (Int__cast K (Rat__num q)) (Nat__cast K (Rat__den q)))).
 
 (; doc: `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` ;)
 (; //LEAN:DivisionRing.zpow_neg' ;)
-DivisionRing__zpow_neg' : (K : Set) -> (_ : Proof (DivisionRing K)) -> (n : Elem Nat) -> (a : Elem K) -> Proof (Eqt K (pow a (Int__negSucc n)) (Inv__inv (pow a (succ n)))).
+DivisionRing__zpow_neg' : (K : Set) -> (_ : Proof (DivisionRing K)) -> (n : Elem Nat) -> (a : Elem K) -> Proof (Eqt K (pow a (Int__negSucc n)) (Inv__inv K (pow a (Nat__cast Int (succ n))))).
 
 (; doc: `a ^ (n + 1) = a ^ n * a` ;)
 (; //LEAN:DivisionRing.zpow_succ' ;)
-DivisionRing__zpow_succ' : (K : Set) -> (_ : Proof (DivisionRing K)) -> (n : Elem Nat) -> (a : Elem K) -> Proof (Eqt K (pow a (succ n)) (times (pow a n) a)).
+DivisionRing__zpow_succ' : (K : Set) -> (_ : Proof (DivisionRing K)) -> (n : Elem Nat) -> (a : Elem K) -> Proof (Eqt K (pow a (Nat__cast Int (succ n))) (times (pow a (Nat__cast Int n)) a)).
 
 (; doc: `a ^ 0 = 1` ;)
 (; //LEAN:DivisionRing.zpow_zero' ;)
@@ -115,23 +115,23 @@ DivisionRing__zpow_zero' : (K : Set) -> (_ : Proof (DivisionRing K)) -> (a : Ele
 DivisionSemiring : (K : Set) -> Prop.
 
 (; //LEAN:DivisionSemiring.mk ;)
-DivisionSemiring__mk : (div_eq_mul_inv : Proof (autoParam (forall K (a5 => forall K (b => Eqt K (div a5 b) (times a5 (Inv__inv b))))) DivInvMonoid__div_eq_mul_inv___autoParam)) -> (zpow_zero' : Proof (autoParam (forall K (a4 => Eqt K (pow a4 0) 1)) DivInvMonoid__zpow_zero'___autoParam)) -> (zpow_succ' : Proof (autoParam (forall Nat (n1 => forall K (a3 => Eqt K (pow a3 (succ n1)) (times (pow a3 n1) a3)))) DivInvMonoid__zpow_succ'___autoParam)) -> (zpow_neg' : Proof (autoParam (forall Nat (n => forall K (a2 => Eqt K (pow a2 (Int__negSucc n)) (Inv__inv (pow a2 (succ n)))))) DivInvMonoid__zpow_neg'___autoParam)) -> (inv_zero : Proof (Eqt K (Inv__inv 0) 0)) -> (mul_inv_cancel : Proof (forall K (a1 => if (Neq a1 0) (Eqt K (times a1 (Inv__inv a1)) 1)))) -> (nnratCast_def : Proof (autoParam (forall NNRat (q1 => Eqt K (NNRat__cast q1) (div (NNRat__num q1) (NNRat__den q1)))) DivisionSemiring__nnratCast_def___autoParam)) -> (nnqsmul : (Elem NNRat -> Elem K -> K)) -> (nnqsmul_def : Proof (autoParam (forall NNRat (q => forall K (a => Eqt K (nnqsmul q a) (times (NNRat__cast q) a)))) DivisionSemiring__nnqsmul_def___autoParam)) -> Proof (DivisionSemiring K).
+DivisionSemiring__mk : (K : Set) -> (div_eq_mul_inv : Proof (autoParam (forall K (a5 => forall K (b => Eqt K (div a5 b) (times a5 (Inv__inv K b))))) DivInvMonoid__div_eq_mul_inv___autoParam)) -> (zpow_zero' : Proof (autoParam (forall K (a4 => Eqt K (pow a4 0) 1)) DivInvMonoid__zpow_zero'___autoParam)) -> (zpow_succ' : Proof (autoParam (forall Nat (n1 => forall K (a3 => Eqt K (pow a3 (Nat__cast Int (succ n1))) (times (pow a3 (Nat__cast Int n1)) a3)))) DivInvMonoid__zpow_succ'___autoParam)) -> (zpow_neg' : Proof (autoParam (forall Nat (n => forall K (a2 => Eqt K (pow a2 (Int__negSucc n)) (Inv__inv K (pow a2 (Nat__cast Int (succ n))))))) DivInvMonoid__zpow_neg'___autoParam)) -> (inv_zero : Proof (Eqt K (Inv__inv K 0) 0)) -> (mul_inv_cancel : Proof (forall K (a1 => if (Neq a1 0) (Eqt K (times a1 (Inv__inv K a1)) 1)))) -> (nnratCast_def : Proof (autoParam (forall NNRat (q1 => Eqt K (NNRat__cast K q1) (div (Nat__cast K (NNRat__num q1)) (Nat__cast K (NNRat__den q1))))) DivisionSemiring__nnratCast_def___autoParam)) -> (nnqsmul : (Elem NNRat -> Elem K -> K)) -> (nnqsmul_def : Proof (autoParam (forall NNRat (q => forall K (a => Eqt K (nnqsmul q a) (times (NNRat__cast K q) a)))) DivisionSemiring__nnqsmul_def___autoParam)) -> Proof (DivisionSemiring K).
 
 (; doc: Scalar multiplication by a nonnegative rational number.  Unless there is a risk of a `Module ℚ≥0 _` instance diamond, write `nnqsmul := _`. This will set `nnqsmul` to `(NNRat.cast · * ·)` thanks to unification in the default proof of `nnqsmul_def`.  Do not use directly. Instead use the `•` notation. ;)
 (; //LEAN:DivisionSemiring.nnqsmul ;)
-DivisionSemiring__nnqsmul : (x : Elem NNRat) -> (x1 : Elem K) -> Elem K.
+DivisionSemiring__nnqsmul : (K : Set) -> (x : Elem NNRat) -> (x1 : Elem K) -> Elem K.
 
 (; doc: However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.  Do not use this lemma directly. Use `NNRat.smul_def` instead. ;)
 (; //LEAN:DivisionSemiring.nnqsmul_def ;)
-DivisionSemiring__nnqsmul_def : (K : Set) -> (_ : Proof (DivisionSemiring K)) -> (q : Elem NNRat) -> (a : Elem K) -> Proof (Eqt K (DivisionSemiring__nnqsmul q a) (times (NNRat__cast q) a)).
+DivisionSemiring__nnqsmul_def : (K : Set) -> (_ : Proof (DivisionSemiring K)) -> (q : Elem NNRat) -> (a : Elem K) -> Proof (Eqt K (DivisionSemiring__nnqsmul K q a) (times (NNRat__cast K q) a)).
 
 (; doc: However `NNRat.cast` is defined, it must be propositionally equal to `a / b`.  Do not use this lemma directly. Use `NNRat.cast_def` instead. ;)
 (; //LEAN:DivisionSemiring.nnratCast_def ;)
-DivisionSemiring__nnratCast_def : (K : Set) -> (_ : Proof (DivisionSemiring K)) -> (q : Elem NNRat) -> Proof (Eqt K (NNRat__cast q) (div (NNRat__num q) (NNRat__den q))).
+DivisionSemiring__nnratCast_def : (K : Set) -> (_ : Proof (DivisionSemiring K)) -> (q : Elem NNRat) -> Proof (Eqt K (NNRat__cast K q) (div (Nat__cast K (NNRat__num q)) (Nat__cast K (NNRat__den q)))).
 
 (; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
 (; //LEAN:Eq.mpr ;)
-Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
 
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
@@ -146,43 +146,43 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 Field : (K : Set) -> Prop.
 
 (; //LEAN:Field.mk ;)
-Field__mk : (div_eq_mul_inv : Proof (autoParam (forall K (a6 => forall K (b => Eqt K (div a6 b) (times a6 (Inv__inv b))))) DivInvMonoid__div_eq_mul_inv___autoParam)) -> (zpow_zero' : Proof (autoParam (forall K (a5 => Eqt K (pow a5 0) 1)) DivInvMonoid__zpow_zero'___autoParam)) -> (zpow_succ' : Proof (autoParam (forall Nat (n1 => forall K (a4 => Eqt K (pow a4 (succ n1)) (times (pow a4 n1) a4)))) DivInvMonoid__zpow_succ'___autoParam)) -> (zpow_neg' : Proof (autoParam (forall Nat (n => forall K (a3 => Eqt K (pow a3 (Int__negSucc n)) (Inv__inv (pow a3 (succ n)))))) DivInvMonoid__zpow_neg'___autoParam)) -> (mul_inv_cancel : Proof (forall K (a2 => if (Neq a2 0) (Eqt K (times a2 (Inv__inv a2)) 1)))) -> (inv_zero : Proof (Eqt K (Inv__inv 0) 0)) -> (nnratCast_def : Proof (autoParam (forall NNRat (q2 => Eqt K (NNRat__cast q2) (div (NNRat__num q2) (NNRat__den q2)))) DivisionRing__nnratCast_def___autoParam)) -> (nnqsmul : (Elem NNRat -> Elem K -> K)) -> (nnqsmul_def : Proof (autoParam (forall NNRat (q1 => forall K (a1 => Eqt K (nnqsmul q1 a1) (times (NNRat__cast q1) a1)))) DivisionRing__nnqsmul_def___autoParam)) -> (ratCast_def : Proof (autoParam (forall Rat (q => Eqt K (Rat__cast q) (div (Rat__num q) (Rat__den q)))) DivisionRing__ratCast_def___autoParam)) -> (qsmul : (Elem Rat -> Elem K -> K)) -> (qsmul_def : Proof (autoParam (forall Rat (a => forall K (x => Eqt K (qsmul a x) (times (Rat__cast a) x)))) DivisionRing__qsmul_def___autoParam)) -> Proof (Field K).
+Field__mk : (K : Set) -> (div_eq_mul_inv : Proof (autoParam (forall K (a6 => forall K (b => Eqt K (div a6 b) (times a6 (Inv__inv K b))))) DivInvMonoid__div_eq_mul_inv___autoParam)) -> (zpow_zero' : Proof (autoParam (forall K (a5 => Eqt K (pow a5 0) 1)) DivInvMonoid__zpow_zero'___autoParam)) -> (zpow_succ' : Proof (autoParam (forall Nat (n1 => forall K (a4 => Eqt K (pow a4 (Nat__cast Int (succ n1))) (times (pow a4 (Nat__cast Int n1)) a4)))) DivInvMonoid__zpow_succ'___autoParam)) -> (zpow_neg' : Proof (autoParam (forall Nat (n => forall K (a3 => Eqt K (pow a3 (Int__negSucc n)) (Inv__inv K (pow a3 (Nat__cast Int (succ n))))))) DivInvMonoid__zpow_neg'___autoParam)) -> (mul_inv_cancel : Proof (forall K (a2 => if (Neq a2 0) (Eqt K (times a2 (Inv__inv K a2)) 1)))) -> (inv_zero : Proof (Eqt K (Inv__inv K 0) 0)) -> (nnratCast_def : Proof (autoParam (forall NNRat (q2 => Eqt K (NNRat__cast K q2) (div (Nat__cast K (NNRat__num q2)) (Nat__cast K (NNRat__den q2))))) DivisionRing__nnratCast_def___autoParam)) -> (nnqsmul : (Elem NNRat -> Elem K -> K)) -> (nnqsmul_def : Proof (autoParam (forall NNRat (q1 => forall K (a1 => Eqt K (nnqsmul q1 a1) (times (NNRat__cast K q1) a1)))) DivisionRing__nnqsmul_def___autoParam)) -> (ratCast_def : Proof (autoParam (forall Rat (q => Eqt K (Rat__cast K q) (div (Int__cast K (Rat__num q)) (Nat__cast K (Rat__den q))))) DivisionRing__ratCast_def___autoParam)) -> (qsmul : (Elem Rat -> Elem K -> K)) -> (qsmul_def : Proof (autoParam (forall Rat (a => forall K (x => Eqt K (qsmul a x) (times (Rat__cast K a) x)))) DivisionRing__qsmul_def___autoParam)) -> Proof (Field K).
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Function.Injective.divisionRing._proof_3 ;)
-Function__Injective__divisionRing___proof_3 : (K : Set) -> (L : Set) -> (_ : Proof (RatCast K)) -> (f : (Elem K -> L)) -> (hf : Proof (Function__Injective f)) -> (_ : Proof (DivisionRing L)) -> (zero : Proof (Eqt L (f 0) 0)) -> (one : Proof (Eqt L (f 1) 1)) -> (add : Proof (forall K (x25 => forall K (y3 => Eqt L (f (plus x25 y3)) (plus (f x25) (f y3)))))) -> (mul : Proof (forall K (x24 => forall K (y2 => Eqt L (f (times x24 y2)) (times (f x24) (f y2)))))) -> (neg : Proof (forall K (x23 => Eqt L (f (Neg__neg x23)) (Neg__neg (f x23))))) -> (sub : Proof (forall K (x22 => forall K (y1 => Eqt L (f (minus x22 y1)) (minus (f x22) (f y1)))))) -> (inv : Proof (forall K (x21 => Eqt L (f (Inv__inv x21)) (Inv__inv (f x21))))) -> (div : Proof (forall K (x20 => forall K (y => Eqt L (f (div x20 y)) (div (f x20) (f y)))))) -> (nsmul : Proof (forall Nat (n5 => forall K (x19 => Eqt L (f (HSMul__hSMul n5 x19)) (HSMul__hSMul n5 (f x19)))))) -> (zsmul : Proof (forall Int (n4 => forall K (x18 => Eqt L (f (HSMul__hSMul n4 x18)) (HSMul__hSMul n4 (f x18)))))) -> (npow : Proof (forall K (x17 => forall Nat (n3 => Eqt L (f (pow x17 n3)) (pow (f x17) n3))))) -> (zpow : Proof (forall K (x16 => forall Int (n2 => Eqt L (f (pow x16 n2)) (pow (f x16) n2))))) -> (natCast : Proof (forall Nat (n1 => Eqt L (f n1) n1))) -> (intCast : Proof (forall Int (n => Eqt L (f n) n))) -> (ratCast : Proof (forall Rat (q1 => Eqt L (f (Rat__cast q1)) (Rat__cast q1)))) -> (q : Elem Rat) -> Proof (Eqt K (Rat__cast q) (div (Rat__num q) (Rat__den q))).
+Function__Injective__divisionRing___proof_3 : (K : Set) -> (L : Set) -> (_ : Proof (RatCast K)) -> (f : (Elem K -> L)) -> (hf : Proof (Function__Injective K L f)) -> (_ : Proof (DivisionRing L)) -> (zero : Proof (Eqt L (f 0) 0)) -> (one : Proof (Eqt L (f 1) 1)) -> (add : Proof (forall K (x25 => forall K (y3 => Eqt L (f (plus x25 y3)) (plus (f x25) (f y3)))))) -> (mul : Proof (forall K (x24 => forall K (y2 => Eqt L (f (times x24 y2)) (times (f x24) (f y2)))))) -> (neg : Proof (forall K (x23 => Eqt L (f (Neg__neg K x23)) (Neg__neg L (f x23))))) -> (sub : Proof (forall K (x22 => forall K (y1 => Eqt L (f (minus x22 y1)) (minus (f x22) (f y1)))))) -> (inv : Proof (forall K (x21 => Eqt L (f (Inv__inv K x21)) (Inv__inv L (f x21))))) -> (div : Proof (forall K (x20 => forall K (y => Eqt L (f (div x20 y)) (div (f x20) (f y)))))) -> (nsmul : Proof (forall Nat (n5 => forall K (x19 => Eqt L (f (HSMul__hSMul Nat K K n5 x19)) (HSMul__hSMul Nat L L n5 (f x19)))))) -> (zsmul : Proof (forall Int (n4 => forall K (x18 => Eqt L (f (HSMul__hSMul Int K K n4 x18)) (HSMul__hSMul Int L L n4 (f x18)))))) -> (npow : Proof (forall K (x17 => forall Nat (n3 => Eqt L (f (pow x17 n3)) (pow (f x17) n3))))) -> (zpow : Proof (forall K (x16 => forall Int (n2 => Eqt L (f (pow x16 n2)) (pow (f x16) n2))))) -> (natCast : Proof (forall Nat (n1 => Eqt L (f (Nat__cast K n1)) (Nat__cast L n1)))) -> (intCast : Proof (forall Int (n => Eqt L (f (Int__cast K n)) (Int__cast L n)))) -> (ratCast : Proof (forall Rat (q1 => Eqt L (f (Rat__cast K q1)) (Rat__cast L q1)))) -> (q : Elem Rat) -> Proof (Eqt K (Rat__cast K q) (div (Int__cast K (Rat__num q)) (Nat__cast K (Rat__den q)))).
 
 (; //LEAN:Function.Injective.divisionRing._proof_4 ;)
-Function__Injective__divisionRing___proof_4 : (K : Set) -> (L : Set) -> (_ : Proof (RatCast K)) -> (f : (Elem K -> L)) -> (hf : Proof (Function__Injective f)) -> (_ : Proof (DivisionRing L)) -> (zero : Proof (Eqt L (f 0) 0)) -> (one : Proof (Eqt L (f 1) 1)) -> (add : Proof (forall K (x21 => forall K (y2 => Eqt L (f (plus x21 y2)) (plus (f x21) (f y2)))))) -> (mul : Proof (forall K (x20 => forall K (y1 => Eqt L (f (times x20 y1)) (times (f x20) (f y1)))))) -> (neg : Proof (forall K (x19 => Eqt L (f (Neg__neg x19)) (Neg__neg (f x19))))) -> (sub : Proof (forall K (x18 => forall K (y => Eqt L (f (minus x18 y)) (minus (f x18) (f y)))))) -> (nsmul : Proof (forall Nat (n4 => forall K (x17 => Eqt L (f (HSMul__hSMul n4 x17)) (HSMul__hSMul n4 (f x17)))))) -> (zsmul : Proof (forall Int (n3 => forall K (x16 => Eqt L (f (HSMul__hSMul n3 x16)) (HSMul__hSMul n3 (f x16)))))) -> (qsmul : Proof (forall Rat (q2 => forall K (x15 => Eqt L (f (HSMul__hSMul q2 x15)) (HSMul__hSMul q2 (f x15)))))) -> (npow : Proof (forall K (x14 => forall Nat (n2 => Eqt L (f (pow x14 n2)) (pow (f x14) n2))))) -> (natCast : Proof (forall Nat (n1 => Eqt L (f n1) n1))) -> (intCast : Proof (forall Int (n => Eqt L (f n) n))) -> (ratCast : Proof (forall Rat (q1 => Eqt L (f (Rat__cast q1)) (Rat__cast q1)))) -> (q : Elem Rat) -> (a : Elem K) -> Proof (Eqt K (HSMul__hSMul q a) (times (Rat__cast q) a)).
+Function__Injective__divisionRing___proof_4 : (K : Set) -> (L : Set) -> (_ : Proof (RatCast K)) -> (f : (Elem K -> L)) -> (hf : Proof (Function__Injective K L f)) -> (_ : Proof (DivisionRing L)) -> (zero : Proof (Eqt L (f 0) 0)) -> (one : Proof (Eqt L (f 1) 1)) -> (add : Proof (forall K (x21 => forall K (y2 => Eqt L (f (plus x21 y2)) (plus (f x21) (f y2)))))) -> (mul : Proof (forall K (x20 => forall K (y1 => Eqt L (f (times x20 y1)) (times (f x20) (f y1)))))) -> (neg : Proof (forall K (x19 => Eqt L (f (Neg__neg K x19)) (Neg__neg L (f x19))))) -> (sub : Proof (forall K (x18 => forall K (y => Eqt L (f (minus x18 y)) (minus (f x18) (f y)))))) -> (nsmul : Proof (forall Nat (n4 => forall K (x17 => Eqt L (f (HSMul__hSMul Nat K K n4 x17)) (HSMul__hSMul Nat L L n4 (f x17)))))) -> (zsmul : Proof (forall Int (n3 => forall K (x16 => Eqt L (f (HSMul__hSMul Int K K n3 x16)) (HSMul__hSMul Int L L n3 (f x16)))))) -> (qsmul : Proof (forall Rat (q2 => forall K (x15 => Eqt L (f (HSMul__hSMul Rat K K q2 x15)) (HSMul__hSMul Rat L L q2 (f x15)))))) -> (npow : Proof (forall K (x14 => forall Nat (n2 => Eqt L (f (pow x14 n2)) (pow (f x14) n2))))) -> (natCast : Proof (forall Nat (n1 => Eqt L (f (Nat__cast K n1)) (Nat__cast L n1)))) -> (intCast : Proof (forall Int (n => Eqt L (f (Int__cast K n)) (Int__cast L n)))) -> (ratCast : Proof (forall Rat (q1 => Eqt L (f (Rat__cast K q1)) (Rat__cast L q1)))) -> (q : Elem Rat) -> (a : Elem K) -> Proof (Eqt K (HSMul__hSMul Rat K K q a) (times (Rat__cast K q) a)).
 
 (; //LEAN:Function.Injective.divisionSemiring._proof_3 ;)
-Function__Injective__divisionSemiring___proof_3 : (K : Set) -> (L : Set) -> (_ : Proof (NNRatCast K)) -> (f : (Elem K -> L)) -> (hf : Proof (Function__Injective f)) -> (_ : Proof (DivisionSemiring L)) -> (zero : Proof (Eqt L (f 0) 0)) -> (one : Proof (Eqt L (f 1) 1)) -> (add : Proof (forall K (x18 => forall K (y2 => Eqt L (f (plus x18 y2)) (plus (f x18) (f y2)))))) -> (mul : Proof (forall K (x17 => forall K (y1 => Eqt L (f (times x17 y1)) (times (f x17) (f y1)))))) -> (inv : Proof (forall K (x16 => Eqt L (f (Inv__inv x16)) (Inv__inv (f x16))))) -> (div : Proof (forall K (x15 => forall K (y => Eqt L (f (div x15 y)) (div (f x15) (f y)))))) -> (nsmul : Proof (forall Nat (n3 => forall K (x14 => Eqt L (f (HSMul__hSMul n3 x14)) (HSMul__hSMul n3 (f x14)))))) -> (npow : Proof (forall K (x13 => forall Nat (n2 => Eqt L (f (pow x13 n2)) (pow (f x13) n2))))) -> (zpow : Proof (forall K (x12 => forall Int (n1 => Eqt L (f (pow x12 n1)) (pow (f x12) n1))))) -> (natCast : Proof (forall Nat (n => Eqt L (f n) n))) -> (nnratCast : Proof (forall NNRat (q1 => Eqt L (f (NNRat__cast q1)) (NNRat__cast q1)))) -> (q : Elem NNRat) -> Proof (Eqt K (NNRat__cast q) (div (NNRat__num q) (NNRat__den q))).
+Function__Injective__divisionSemiring___proof_3 : (K : Set) -> (L : Set) -> (_ : Proof (NNRatCast K)) -> (f : (Elem K -> L)) -> (hf : Proof (Function__Injective K L f)) -> (_ : Proof (DivisionSemiring L)) -> (zero : Proof (Eqt L (f 0) 0)) -> (one : Proof (Eqt L (f 1) 1)) -> (add : Proof (forall K (x18 => forall K (y2 => Eqt L (f (plus x18 y2)) (plus (f x18) (f y2)))))) -> (mul : Proof (forall K (x17 => forall K (y1 => Eqt L (f (times x17 y1)) (times (f x17) (f y1)))))) -> (inv : Proof (forall K (x16 => Eqt L (f (Inv__inv K x16)) (Inv__inv L (f x16))))) -> (div : Proof (forall K (x15 => forall K (y => Eqt L (f (div x15 y)) (div (f x15) (f y)))))) -> (nsmul : Proof (forall Nat (n3 => forall K (x14 => Eqt L (f (HSMul__hSMul Nat K K n3 x14)) (HSMul__hSMul Nat L L n3 (f x14)))))) -> (npow : Proof (forall K (x13 => forall Nat (n2 => Eqt L (f (pow x13 n2)) (pow (f x13) n2))))) -> (zpow : Proof (forall K (x12 => forall Int (n1 => Eqt L (f (pow x12 n1)) (pow (f x12) n1))))) -> (natCast : Proof (forall Nat (n => Eqt L (f (Nat__cast K n)) (Nat__cast L n)))) -> (nnratCast : Proof (forall NNRat (q1 => Eqt L (f (NNRat__cast K q1)) (NNRat__cast L q1)))) -> (q : Elem NNRat) -> Proof (Eqt K (NNRat__cast K q) (div (Nat__cast K (NNRat__num q)) (Nat__cast K (NNRat__den q)))).
 
 (; //LEAN:Function.Injective.divisionSemiring._proof_4 ;)
-Function__Injective__divisionSemiring___proof_4 : (K : Set) -> (L : Set) -> (_ : Proof (NNRatCast K)) -> (f : (Elem K -> L)) -> (hf : Proof (Function__Injective f)) -> (_ : Proof (DivisionSemiring L)) -> (zero : Proof (Eqt L (f 0) 0)) -> (one : Proof (Eqt L (f 1) 1)) -> (add : Proof (forall K (x14 => forall K (y1 => Eqt L (f (plus x14 y1)) (plus (f x14) (f y1)))))) -> (mul : Proof (forall K (x13 => forall K (y => Eqt L (f (times x13 y)) (times (f x13) (f y)))))) -> (nsmul : Proof (forall Nat (n2 => forall K (x12 => Eqt L (f (HSMul__hSMul n2 x12)) (HSMul__hSMul n2 (f x12)))))) -> (nnqsmul : Proof (forall NNRat (q2 => forall K (x11 => Eqt L (f (HSMul__hSMul q2 x11)) (HSMul__hSMul q2 (f x11)))))) -> (npow : Proof (forall K (x10 => forall Nat (n1 => Eqt L (f (pow x10 n1)) (pow (f x10) n1))))) -> (natCast : Proof (forall Nat (n => Eqt L (f n) n))) -> (nnratCast : Proof (forall NNRat (q1 => Eqt L (f (NNRat__cast q1)) (NNRat__cast q1)))) -> (q : Elem NNRat) -> (a : Elem K) -> Proof (Eqt K (HSMul__hSMul q a) (times (NNRat__cast q) a)).
+Function__Injective__divisionSemiring___proof_4 : (K : Set) -> (L : Set) -> (_ : Proof (NNRatCast K)) -> (f : (Elem K -> L)) -> (hf : Proof (Function__Injective K L f)) -> (_ : Proof (DivisionSemiring L)) -> (zero : Proof (Eqt L (f 0) 0)) -> (one : Proof (Eqt L (f 1) 1)) -> (add : Proof (forall K (x14 => forall K (y1 => Eqt L (f (plus x14 y1)) (plus (f x14) (f y1)))))) -> (mul : Proof (forall K (x13 => forall K (y => Eqt L (f (times x13 y)) (times (f x13) (f y)))))) -> (nsmul : Proof (forall Nat (n2 => forall K (x12 => Eqt L (f (HSMul__hSMul Nat K K n2 x12)) (HSMul__hSMul Nat L L n2 (f x12)))))) -> (nnqsmul : Proof (forall NNRat (q2 => forall K (x11 => Eqt L (f (HSMul__hSMul NNRat K K q2 x11)) (HSMul__hSMul NNRat L L q2 (f x11)))))) -> (npow : Proof (forall K (x10 => forall Nat (n1 => Eqt L (f (pow x10 n1)) (pow (f x10) n1))))) -> (natCast : Proof (forall Nat (n => Eqt L (f (Nat__cast K n)) (Nat__cast L n)))) -> (nnratCast : Proof (forall NNRat (q1 => Eqt L (f (NNRat__cast K q1)) (NNRat__cast L q1)))) -> (q : Elem NNRat) -> (a : Elem K) -> Proof (Eqt K (HSMul__hSMul NNRat K K q a) (times (NNRat__cast K q) a)).
 
 (; doc: `a / b := a * b⁻¹` ;)
 (; //LEAN:GroupWithZero.div_eq_mul_inv ;)
-GroupWithZero__div_eq_mul_inv : (X : Set) -> (_ : Proof (GroupWithZero X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (div a b) (times a (Inv__inv b))).
+GroupWithZero__div_eq_mul_inv : (X : Set) -> (_ : Proof (GroupWithZero X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (div a b) (times a (Inv__inv X b))).
 
 (; doc: The inverse of `0` in a group with zero is `0`. ;)
 (; //LEAN:GroupWithZero.inv_zero ;)
-GroupWithZero__inv_zero : (X : Set) -> (_ : Proof (GroupWithZero X)) -> Proof (Eqt X (Inv__inv 0) 0).
+GroupWithZero__inv_zero : (X : Set) -> (_ : Proof (GroupWithZero X)) -> Proof (Eqt X (Inv__inv X 0) 0).
 
 (; doc: Every nonzero element of a group with zero is invertible. ;)
 (; //LEAN:GroupWithZero.mul_inv_cancel ;)
-GroupWithZero__mul_inv_cancel : (X : Set) -> (_ : Proof (GroupWithZero X)) -> (a : Elem X) -> (h : Proof (Neq a 0)) -> Proof (Eqt X (times a (Inv__inv a)) 1).
+GroupWithZero__mul_inv_cancel : (X : Set) -> (_ : Proof (GroupWithZero X)) -> (a : Elem X) -> (h : Proof (Neq a 0)) -> Proof (Eqt X (times a (Inv__inv X a)) 1).
 
 (; doc: `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` ;)
 (; //LEAN:GroupWithZero.zpow_neg' ;)
-GroupWithZero__zpow_neg' : (X : Set) -> (_ : Proof (GroupWithZero X)) -> (n : Elem Nat) -> (a : Elem X) -> Proof (Eqt X (pow a (Int__negSucc n)) (Inv__inv (pow a (succ n)))).
+GroupWithZero__zpow_neg' : (X : Set) -> (_ : Proof (GroupWithZero X)) -> (n : Elem Nat) -> (a : Elem X) -> Proof (Eqt X (pow a (Int__negSucc n)) (Inv__inv X (pow a (Nat__cast Int (succ n))))).
 
 (; doc: `a ^ (n + 1) = a ^ n * a` ;)
 (; //LEAN:GroupWithZero.zpow_succ' ;)
-GroupWithZero__zpow_succ' : (X : Set) -> (_ : Proof (GroupWithZero X)) -> (n : Elem Nat) -> (a : Elem X) -> Proof (Eqt X (pow a (succ n)) (times (pow a n) a)).
+GroupWithZero__zpow_succ' : (X : Set) -> (_ : Proof (GroupWithZero X)) -> (n : Elem Nat) -> (a : Elem X) -> Proof (Eqt X (pow a (Nat__cast Int (succ n))) (times (pow a (Nat__cast Int n)) a)).
 
 (; doc: `a ^ 0 = 1` ;)
 (; //LEAN:GroupWithZero.zpow_zero' ;)
@@ -190,19 +190,23 @@ GroupWithZero__zpow_zero' : (X : Set) -> (_ : Proof (GroupWithZero X)) -> (a : E
 
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
-HSMul__hSMul : (x1 : Elem X) -> (x2 : Elem Y) -> Elem x.
+HSMul__hSMul : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Y) -> Elem Z.
+
+(; doc: The canonical homomorphism `Int → R`. In most use cases, the target type will have a ring structure, and this homomorphism should be a ring homomorphism.  `IntCast` and `NatCast` exist to allow different libraries with their own types that can be notated as natural numbers to have consistent `simp` normal forms without needing to create coercion simplification sets that are aware of all combinations. Libraries should make it easy to work with `IntCast` where possible. For instance, in Mathlib there will be such a homomorphism (and thus an `IntCast R` instance) whenever `R` is an additive group with a `1`. ;)
+(; //LEAN:Int.cast ;)
+Int__cast : (R : Set) -> (x1 : Elem Int) -> Elem R.
 
 (; doc: `a⁻¹` computes the inverse of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `⁻¹` in identifiers is `inv`. ;)
 (; //LEAN:Inv.inv ;)
-Inv__inv : (x : Elem X) -> Elem X.
+Inv__inv : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: An element `a` is *self-inverse* if `a⁻¹ = a`. ;)
 (; //LEAN:IsSelfInv ;)
-IsSelfInv : (a : Elem X) -> Prop.
+IsSelfInv : (X : Set) -> (a : Elem X) -> Prop.
 
 (; doc: An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse. The actual definition says that `a` is equal to some `u : Mˣ`, where `Mˣ` is a bundled version of `IsUnit`. ;)
 (; //LEAN:IsUnit ;)
-IsUnit : (a : Elem M) -> Prop.
+IsUnit : (M : Set) -> (a : Elem M) -> Prop.
 
 (; doc: A type synonym to equip a type with its lexicographic order. ;)
 (; //LEAN:Lex ;)
@@ -214,15 +218,19 @@ NNRat : Set.
 
 (; doc: Canonical homomorphism from `ℚ≥0` to a division semiring `K`.  This is just the bare function in order to aid in creating instances of `DivisionSemiring`. ;)
 (; //LEAN:NNRat.cast ;)
-NNRat__cast : (x1 : Elem NNRat) -> Elem K.
+NNRat__cast : (K : Set) -> (x1 : Elem NNRat) -> Elem K.
+
+(; doc: The canonical homomorphism `Nat → R`. In most use cases, the target type will have a (semi)ring structure, and this homomorphism should be a (semi)ring homomorphism.  `NatCast` and `IntCast` exist to allow different libraries with their own types that can be notated as natural numbers to have consistent `simp` normal forms without needing to create coercion simplification sets that are aware of all combinations. Libraries should make it easy to work with `NatCast` where possible. For instance, in Mathlib there will be such a homomorphism (and thus a `NatCast R` instance) whenever `R` is an additive monoid with a `1`.  The prototypical example is `Int.ofNat`. ;)
+(; //LEAN:Nat.cast ;)
+Nat__cast : (R : Set) -> (x1 : Elem Nat) -> Elem R.
 
 (; doc: A type-class version of `n ≠ 0`. ;)
 (; //LEAN:NeZero ;)
-NeZero : (n : Elem R) -> Prop.
+NeZero : (R : Set) -> (n : Elem R) -> Prop.
 
 (; doc: `-a` computes the negative or opposite of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `-` in identifiers is `neg` (when used as a unary operator). ;)
 (; //LEAN:Neg.neg ;)
-Neg__neg : (x : Elem X) -> Elem X.
+Neg__neg : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is notation for `OrderDual α`. ;)
 (; //LEAN:OrderDual ;)
@@ -230,7 +238,7 @@ OrderDual : (X : Set) -> Set.
 
 (; doc: Canonical homomorphism from `Rat` to a division ring `K`. This is just the bare function in order to aid in creating instances of `DivisionRing`. ;)
 (; //LEAN:Rat.cast ;)
-Rat__cast : (x1 : Elem Rat) -> Elem K.
+Rat__cast : (K : Set) -> (x1 : Elem Rat) -> Elem K.
 
 (; doc: Type class for the canonical homomorphism `Rat → K`. ;)
 (; //LEAN:RatCast ;)
@@ -241,7 +249,7 @@ RatCast : (K : Set) -> Prop.
 Semifield : (K : Set) -> Prop.
 
 (; //LEAN:Semifield.mk ;)
-Semifield__mk : (div_eq_mul_inv : Proof (autoParam (forall K (a5 => forall K (b => Eqt K (div a5 b) (times a5 (Inv__inv b))))) DivInvMonoid__div_eq_mul_inv___autoParam)) -> (zpow_zero' : Proof (autoParam (forall K (a4 => Eqt K (pow a4 0) 1)) DivInvMonoid__zpow_zero'___autoParam)) -> (zpow_succ' : Proof (autoParam (forall Nat (n1 => forall K (a3 => Eqt K (pow a3 (succ n1)) (times (pow a3 n1) a3)))) DivInvMonoid__zpow_succ'___autoParam)) -> (zpow_neg' : Proof (autoParam (forall Nat (n => forall K (a2 => Eqt K (pow a2 (Int__negSucc n)) (Inv__inv (pow a2 (succ n)))))) DivInvMonoid__zpow_neg'___autoParam)) -> (inv_zero : Proof (Eqt K (Inv__inv 0) 0)) -> (mul_inv_cancel : Proof (forall K (a1 => if (Neq a1 0) (Eqt K (times a1 (Inv__inv a1)) 1)))) -> (nnratCast_def : Proof (autoParam (forall NNRat (q1 => Eqt K (NNRat__cast q1) (div (NNRat__num q1) (NNRat__den q1)))) DivisionSemiring__nnratCast_def___autoParam)) -> (nnqsmul : (Elem NNRat -> Elem K -> K)) -> (nnqsmul_def : Proof (autoParam (forall NNRat (q => forall K (a => Eqt K (nnqsmul q a) (times (NNRat__cast q) a)))) DivisionSemiring__nnqsmul_def___autoParam)) -> Proof (Semifield K).
+Semifield__mk : (K : Set) -> (div_eq_mul_inv : Proof (autoParam (forall K (a5 => forall K (b => Eqt K (div a5 b) (times a5 (Inv__inv K b))))) DivInvMonoid__div_eq_mul_inv___autoParam)) -> (zpow_zero' : Proof (autoParam (forall K (a4 => Eqt K (pow a4 0) 1)) DivInvMonoid__zpow_zero'___autoParam)) -> (zpow_succ' : Proof (autoParam (forall Nat (n1 => forall K (a3 => Eqt K (pow a3 (Nat__cast Int (succ n1))) (times (pow a3 (Nat__cast Int n1)) a3)))) DivInvMonoid__zpow_succ'___autoParam)) -> (zpow_neg' : Proof (autoParam (forall Nat (n => forall K (a2 => Eqt K (pow a2 (Int__negSucc n)) (Inv__inv K (pow a2 (Nat__cast Int (succ n))))))) DivInvMonoid__zpow_neg'___autoParam)) -> (inv_zero : Proof (Eqt K (Inv__inv K 0) 0)) -> (mul_inv_cancel : Proof (forall K (a1 => if (Neq a1 0) (Eqt K (times a1 (Inv__inv K a1)) 1)))) -> (nnratCast_def : Proof (autoParam (forall NNRat (q1 => Eqt K (NNRat__cast K q1) (div (Nat__cast K (NNRat__num q1)) (Nat__cast K (NNRat__den q1))))) DivisionSemiring__nnratCast_def___autoParam)) -> (nnqsmul : (Elem NNRat -> Elem K -> K)) -> (nnqsmul_def : Proof (autoParam (forall NNRat (q => forall K (a => Eqt K (nnqsmul q a) (times (NNRat__cast K q) a)))) DivisionSemiring__nnqsmul_def___autoParam)) -> Proof (Semifield K).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
@@ -255,14 +263,14 @@ eq_div_iff_mul_eq : (X : Set) -> (_ : Proof (GroupWithZero X)) -> (a : Elem X) -
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
-id : (a : Elem X) -> Elem X.
+id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:invOf_add_invOf ;)
-invOf_add_invOf : (R : Set) -> (_ : Proof (Semiring R)) -> (a : Elem R) -> (b : Elem R) -> (_ : Proof (Invertible a)) -> (_ : Proof (Invertible b)) -> Proof (Eqt R (plus (Invertible__invOf a) (Invertible__invOf b)) (times (times (Invertible__invOf a) (plus a b)) (Invertible__invOf b))).
+invOf_add_invOf : (R : Set) -> (_ : Proof (Semiring R)) -> (a : Elem R) -> (b : Elem R) -> (_ : Proof (Invertible R a)) -> (_ : Proof (Invertible R b)) -> Proof (Eqt R (plus (Invertible__invOf R (Distrib__toMul R) (AddMonoidWithOne__toOne R) a) (Invertible__invOf R (Distrib__toMul R) (AddMonoidWithOne__toOne R) b)) (times (times (Invertible__invOf R (Distrib__toMul R) (AddMonoidWithOne__toOne R) a) (plus a b)) (Invertible__invOf R (Distrib__toMul R) (AddMonoidWithOne__toOne R) b))).
 
 (; doc: A version of `inv_sub_inv'` for `invOf`. ;)
 (; //LEAN:invOf_sub_invOf ;)
-invOf_sub_invOf : (R : Set) -> (_ : Proof (Ring R)) -> (a : Elem R) -> (b : Elem R) -> (_ : Proof (Invertible a)) -> (_ : Proof (Invertible b)) -> Proof (Eqt R (minus (Invertible__invOf a) (Invertible__invOf b)) (times (times (Invertible__invOf a) (minus b a)) (Invertible__invOf b))).
+invOf_sub_invOf : (R : Set) -> (_ : Proof (Ring R)) -> (a : Elem R) -> (b : Elem R) -> (_ : Proof (Invertible R a)) -> (_ : Proof (Invertible R b)) -> Proof (Eqt R (minus (Invertible__invOf R (Distrib__toMul R) (AddMonoidWithOne__toOne R) a) (Invertible__invOf R (Distrib__toMul R) (AddMonoidWithOne__toOne R) b)) (times (times (Invertible__invOf R (Distrib__toMul R) (AddMonoidWithOne__toOne R) a) (minus b a)) (Invertible__invOf R (Distrib__toMul R) (AddMonoidWithOne__toOne R) b))).
 
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)

@@ -2,432 +2,432 @@
 
 (; //LEAN:Nat.divisors ;)
 def Nat__divisors : (n : Elem Nat) -> Elem (Finset Nat) :=
-  n => Finset__filter (d => divide d n) (Finset__Ico 1 (plus n 1)).
+  n => Finset__filter Nat (d => divide d n) (Finset__Ico Nat 1 (plus n 1)).
 
 (; //LEAN:Nat.properDivisors ;)
 def Nat__properDivisors : (n : Elem Nat) -> Elem (Finset Nat) :=
-  n => Finset__filter (d => divide d n) (Finset__Ico 1 n).
+  n => Finset__filter Nat (d => divide d n) (Finset__Ico Nat 1 n).
 
 (; //LEAN:Nat.divisorsAntidiagonal ;)
 def Nat__divisorsAntidiagonal : (n : Elem Nat) -> Elem (Finset (Prod Nat Nat)) :=
-  n => Finset__filterMap (x => ite (Eq (times x (div n x)) n) (Option__some (Prod__mk x (div n x))) Option__none) (Finset__Icc 1 n) (Nat__divisorsAntidiagonal___proof_1 n).
+  n => Finset__filterMap Nat (Prod Nat Nat) (x => ite (Option (Prod Nat Nat)) (Eq (times x (div n x)) n) (Option__some (Prod Nat Nat) (Prod__mk Nat Nat x (div n x))) (Option__none (Prod Nat Nat))) (Finset__Icc Nat 1 n) (Nat__divisorsAntidiagonal___proof_1 n).
 
 (; //LEAN:Nat.divisorsAntidiagonalList ;)
 def Nat__divisorsAntidiagonalList : (n : Elem Nat) -> Elem (List (Prod Nat Nat)) :=
-  n => List__filterMap (x => ite (Eq (times x (div n x)) n) (Option__some (Prod__mk x (div n x))) Option__none) (List__range' 1 n 1).
+  n => List__filterMap Nat (Prod Nat Nat) (x => ite (Option (Prod Nat Nat)) (Eq (times x (div n x)) n) (Option__some (Prod Nat Nat) (Prod__mk Nat Nat x (div n x))) (Option__none (Prod Nat Nat))) (List__range' 1 n 1).
 
 (; //LEAN:Nat.filter_dvd_eq_divisors ;)
-Nat__filter_dvd_eq_divisors : (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Eqt (Finset Nat) (Finset__filter (d => divide d n) (Finset__range (succ n))) (Nat__divisors n)).
+Nat__filter_dvd_eq_divisors : (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Eqt (Finset Nat) (Finset__filter Nat (d => divide d n) (Finset__range (succ n))) (Nat__divisors n)).
 
 (; //LEAN:Nat.filter_dvd_eq_properDivisors ;)
-Nat__filter_dvd_eq_properDivisors : (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Eqt (Finset Nat) (Finset__filter (d => divide d n) (Finset__range n)) (Nat__properDivisors n)).
+Nat__filter_dvd_eq_properDivisors : (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Eqt (Finset Nat) (Finset__filter Nat (d => divide d n) (Finset__range n)) (Nat__properDivisors n)).
 
 (; //LEAN:Nat.self_notMem_properDivisors ;)
-Nat__self_notMem_properDivisors : (n : Elem Nat) -> Proof (not (Membership__mem (Nat__properDivisors n) n)).
+Nat__self_notMem_properDivisors : (n : Elem Nat) -> Proof (not (Membership__mem Nat (Finset Nat) (Nat__properDivisors n) n)).
 
 (; //LEAN:Nat.mem_properDivisors ;)
-Nat__mem_properDivisors : (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Membership__mem (Nat__properDivisors m) n) (and (divide n m) (Lt n m))).
+Nat__mem_properDivisors : (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Membership__mem Nat (Finset Nat) (Nat__properDivisors m) n) (and (divide n m) (Lt n m))).
 
 (; //LEAN:Nat.insert_self_properDivisors ;)
-Nat__insert_self_properDivisors : (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Eqt (Finset Nat) (Insert__insert n (Nat__properDivisors n)) (Nat__divisors n)).
+Nat__insert_self_properDivisors : (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Eqt (Finset Nat) (Insert__insert Nat (Finset Nat) n (Nat__properDivisors n)) (Nat__divisors n)).
 
 (; //LEAN:Nat.cons_self_properDivisors ;)
-Nat__cons_self_properDivisors : (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Eqt (Finset Nat) (Finset__cons n (Nat__properDivisors n) Nat__self_notMem_properDivisors) (Nat__divisors n)).
+Nat__cons_self_properDivisors : (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Eqt (Finset Nat) (Finset__cons Nat n (Nat__properDivisors n) (Nat__self_notMem_properDivisors n)) (Nat__divisors n)).
 
 (; //LEAN:Nat.mem_divisors ;)
-Nat__mem_divisors : (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Membership__mem (Nat__divisors m) n) (and (divide n m) (Neq m 0))).
+Nat__mem_divisors : (n : Elem Nat) -> (m : Elem Nat) -> Proof (iff (Membership__mem Nat (Finset Nat) (Nat__divisors m) n) (and (divide n m) (Neq m 0))).
 
 (; //LEAN:Nat.dvd_of_mem_divisors ;)
-def Nat__dvd_of_mem_divisors : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Membership__mem (Nat__divisors m) n)) -> Proof (divide n m) :=
-  n => m => h => andEl (divide n m) (Neq m 0) (iffEl (Membership__mem (Nat__divisors m) n) (and (divide n m) (Neq m 0)) (Nat__mem_divisors n m) h).
+def Nat__dvd_of_mem_divisors : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Membership__mem Nat (Finset Nat) (Nat__divisors m) n)) -> Proof (divide n m) :=
+  n => m => h => andEl (divide n m) (Neq m 0) (iffEl (Membership__mem Nat (Finset Nat) (Nat__divisors m) n) (and (divide n m) (Neq m 0)) (Nat__mem_divisors n m) h).
 
 (; //LEAN:Nat.ne_zero_of_mem_divisors ;)
-def Nat__ne_zero_of_mem_divisors : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Membership__mem (Nat__divisors m) n)) -> Proof (Neq m 0) :=
-  n => m => h => andEr (divide n m) (Neq m 0) (iffEl (Membership__mem (Nat__divisors m) n) (and (divide n m) (Neq m 0)) (Nat__mem_divisors n m) h).
+def Nat__ne_zero_of_mem_divisors : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Membership__mem Nat (Finset Nat) (Nat__divisors m) n)) -> Proof (Neq m 0) :=
+  n => m => h => andEr (divide n m) (Neq m 0) (iffEl (Membership__mem Nat (Finset Nat) (Nat__divisors m) n) (and (divide n m) (Neq m 0)) (Nat__mem_divisors n m) h).
 
 (; //LEAN:Nat.one_mem_divisors ;)
-Nat__one_mem_divisors : (n : Elem Nat) -> Proof (iff (Membership__mem (Nat__divisors n) 1) (Neq n 0)).
+Nat__one_mem_divisors : (n : Elem Nat) -> Proof (iff (Membership__mem Nat (Finset Nat) (Nat__divisors n) 1) (Neq n 0)).
 
 (; //LEAN:Nat.mem_divisors_self ;)
-def Nat__mem_divisors_self : (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Membership__mem (Nat__divisors n) n) :=
-  n => h => iffEr (Membership__mem (Nat__divisors n) n) (and (divide n n) (Neq n 0)) (Nat__mem_divisors n n) (andI (divide n n) (Neq n 0) (dvd_rfl Nat n) h).
+def Nat__mem_divisors_self : (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Membership__mem Nat (Finset Nat) (Nat__divisors n) n) :=
+  n => h => iffEr (Membership__mem Nat (Finset Nat) (Nat__divisors n) n) (and (divide n n) (Neq n 0)) (Nat__mem_divisors n n) (andI (divide n n) (Neq n 0) (dvd_rfl Nat n) h).
 
 (; //LEAN:Nat.mem_divisorsAntidiagonal ;)
-Nat__mem_divisorsAntidiagonal : (n : Elem Nat) -> (x : Elem (Prod Nat Nat)) -> Proof (iff (Membership__mem (Nat__divisorsAntidiagonal n) x) (and (Eq (times (Prod__fst x) (Prod__snd x)) n) (Neq n 0))).
+Nat__mem_divisorsAntidiagonal : (n : Elem Nat) -> (x : Elem (Prod Nat Nat)) -> Proof (iff (Membership__mem (Prod Nat Nat) (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal n) x) (and (Eq (times (Prod__fst Nat Nat x) (Prod__snd Nat Nat x)) n) (Neq n 0))).
 
 (; //LEAN:Nat.divisorsAntidiagonalList_zero ;)
-def Nat__divisorsAntidiagonalList_zero : Proof (Eqt (List (Prod Nat Nat)) (Nat__divisorsAntidiagonalList 0) List__nil) :=
+def Nat__divisorsAntidiagonalList_zero : Proof (Eqt (List (Prod Nat Nat)) (Nat__divisorsAntidiagonalList 0) (List__nil (Prod Nat Nat))) :=
   rfl (List (Prod Nat Nat)) (Nat__divisorsAntidiagonalList 0).
 
 (; //LEAN:Nat.divisorsAntidiagonalList_one ;)
-def Nat__divisorsAntidiagonalList_one : Proof (Eqt (List (Prod Nat Nat)) (Nat__divisorsAntidiagonalList 1) (List__cons (Prod__mk 1 1) List__nil)) :=
+def Nat__divisorsAntidiagonalList_one : Proof (Eqt (List (Prod Nat Nat)) (Nat__divisorsAntidiagonalList 1) (List__cons (Prod Nat Nat) (Prod__mk Nat Nat 1 1) (List__nil (Prod Nat Nat)))) :=
   rfl (List (Prod Nat Nat)) (Nat__divisorsAntidiagonalList 1).
 
 (; //LEAN:Nat.toFinset_divisorsAntidiagonalList ;)
-Nat__toFinset_divisorsAntidiagonalList : (n : Elem Nat) -> Proof (Eqt (Finset (Prod Nat Nat)) (List__toFinset (Nat__divisorsAntidiagonalList n)) (Nat__divisorsAntidiagonal n)).
+Nat__toFinset_divisorsAntidiagonalList : (n : Elem Nat) -> Proof (Eqt (Finset (Prod Nat Nat)) (List__toFinset (Prod Nat Nat) (Nat__divisorsAntidiagonalList n)) (Nat__divisorsAntidiagonal n)).
 
 (; //LEAN:Nat.pairwise_divisorsAntidiagonalList_fst ;)
-Nat__pairwise_divisorsAntidiagonalList_fst : (n : Elem Nat) -> Proof (List__Pairwise (x => x1 => Lt (Prod__fst x) (Prod__fst x1)) (Nat__divisorsAntidiagonalList n)).
+Nat__pairwise_divisorsAntidiagonalList_fst : (n : Elem Nat) -> Proof (List__Pairwise (Prod Nat Nat) (x => x1 => Lt (Prod__fst Nat Nat x) (Prod__fst Nat Nat x1)) (Nat__divisorsAntidiagonalList n)).
 
 (; //LEAN:Nat.pairwise_divisorsAntidiagonalList_snd ;)
-Nat__pairwise_divisorsAntidiagonalList_snd : (n : Elem Nat) -> Proof (List__Pairwise (x => x1 => Gt (Prod__snd x) (Prod__snd x1)) (Nat__divisorsAntidiagonalList n)).
+Nat__pairwise_divisorsAntidiagonalList_snd : (n : Elem Nat) -> Proof (List__Pairwise (Prod Nat Nat) (x => x1 => Gt (Prod__snd Nat Nat x) (Prod__snd Nat Nat x1)) (Nat__divisorsAntidiagonalList n)).
 
 (; //LEAN:Nat.sortedLT_map_fst_divisorsAntidiagonalList ;)
-def Nat__sortedLT_map_fst_divisorsAntidiagonalList : (n : Elem Nat) -> Proof (List__SortedLT (List__map Prod__fst (Nat__divisorsAntidiagonalList n))) :=
-  n => List__Pairwise__sortedLT Nat (List__map Prod__fst (Nat__divisorsAntidiagonalList n)) (iffEr (List__Pairwise Lt (List__map Prod__fst (Nat__divisorsAntidiagonalList n))) (List__Pairwise (a => b => Lt (Prod__fst a) (Prod__fst b)) (Nat__divisorsAntidiagonalList n)) (List__pairwise_map (Prod Nat Nat) Nat Prod__fst Lt (Nat__divisorsAntidiagonalList n)) (Nat__pairwise_divisorsAntidiagonalList_fst n)).
+def Nat__sortedLT_map_fst_divisorsAntidiagonalList : (n : Elem Nat) -> Proof (List__SortedLT Nat (List__map (Prod Nat Nat) Nat (Prod__fst Nat Nat) (Nat__divisorsAntidiagonalList n))) :=
+  n => List__Pairwise__sortedLT Nat (List__map (Prod Nat Nat) Nat (Prod__fst Nat Nat) (Nat__divisorsAntidiagonalList n)) (iffEr (List__Pairwise Nat Lt (List__map (Prod Nat Nat) Nat (Prod__fst Nat Nat) (Nat__divisorsAntidiagonalList n))) (List__Pairwise (Prod Nat Nat) (a => b => Lt (Prod__fst Nat Nat a) (Prod__fst Nat Nat b)) (Nat__divisorsAntidiagonalList n)) (List__pairwise_map (Prod Nat Nat) Nat (Prod__fst Nat Nat) Lt (Nat__divisorsAntidiagonalList n)) (Nat__pairwise_divisorsAntidiagonalList_fst n)).
 
 (; //LEAN:Nat.sortedGT_map_snd_divisorsAntidiagonalList ;)
-def Nat__sortedGT_map_snd_divisorsAntidiagonalList : (n : Elem Nat) -> Proof (List__SortedGT (List__map Prod__snd (Nat__divisorsAntidiagonalList n))) :=
-  n => List__Pairwise__sortedGT Nat (List__map Prod__snd (Nat__divisorsAntidiagonalList n)) (iffEr (List__Pairwise Gt (List__map Prod__snd (Nat__divisorsAntidiagonalList n))) (List__Pairwise (a => b => Gt (Prod__snd a) (Prod__snd b)) (Nat__divisorsAntidiagonalList n)) (List__pairwise_map (Prod Nat Nat) Nat Prod__snd Gt (Nat__divisorsAntidiagonalList n)) (Nat__pairwise_divisorsAntidiagonalList_snd n)).
+def Nat__sortedGT_map_snd_divisorsAntidiagonalList : (n : Elem Nat) -> Proof (List__SortedGT Nat (List__map (Prod Nat Nat) Nat (Prod__snd Nat Nat) (Nat__divisorsAntidiagonalList n))) :=
+  n => List__Pairwise__sortedGT Nat (List__map (Prod Nat Nat) Nat (Prod__snd Nat Nat) (Nat__divisorsAntidiagonalList n)) (iffEr (List__Pairwise Nat Gt (List__map (Prod Nat Nat) Nat (Prod__snd Nat Nat) (Nat__divisorsAntidiagonalList n))) (List__Pairwise (Prod Nat Nat) (a => b => Gt (Prod__snd Nat Nat a) (Prod__snd Nat Nat b)) (Nat__divisorsAntidiagonalList n)) (List__pairwise_map (Prod Nat Nat) Nat (Prod__snd Nat Nat) Gt (Nat__divisorsAntidiagonalList n)) (Nat__pairwise_divisorsAntidiagonalList_snd n)).
 
 (; //LEAN:Nat.nodup_divisorsAntidiagonalList ;)
-def Nat__nodup_divisorsAntidiagonalList : (n : Elem Nat) -> Proof (List__Nodup (Nat__divisorsAntidiagonalList n)) :=
-  n => List__Pairwise__nodup (Prod Nat Nat) (Nat__divisorsAntidiagonalList n) (x => x1 => Lt (Prod__fst x) (Prod__fst x1)) (Nat__pairwise_divisorsAntidiagonalList_fst n).
+def Nat__nodup_divisorsAntidiagonalList : (n : Elem Nat) -> Proof (List__Nodup (Prod Nat Nat) (Nat__divisorsAntidiagonalList n)) :=
+  n => List__Pairwise__nodup (Prod Nat Nat) (Nat__divisorsAntidiagonalList n) (x => x1 => Lt (Prod__fst Nat Nat x) (Prod__fst Nat Nat x1)) (Nat__pairwise_divisorsAntidiagonalList_fst n).
 
 (; //LEAN:Nat.val_divisorsAntidiagonal ;)
-def Nat__val_divisorsAntidiagonal : (n : Elem Nat) -> Proof (Eqt (Multiset (Prod Nat Nat)) (Finset__val (Nat__divisorsAntidiagonal n)) (Multiset__ofList (Nat__divisorsAntidiagonalList n))) :=
-  n => rfl (Multiset (Prod Nat Nat)) (Finset__val (Nat__divisorsAntidiagonal n)).
+def Nat__val_divisorsAntidiagonal : (n : Elem Nat) -> Proof (Eqt (Multiset (Prod Nat Nat)) (Finset__val (Prod Nat Nat) (Nat__divisorsAntidiagonal n)) (Multiset__ofList (Prod Nat Nat) (Nat__divisorsAntidiagonalList n))) :=
+  n => rfl (Multiset (Prod Nat Nat)) (Finset__val (Prod Nat Nat) (Nat__divisorsAntidiagonal n)).
 
 (; //LEAN:Nat.mem_divisorsAntidiagonalList ;)
-Nat__mem_divisorsAntidiagonalList : (n : Elem Nat) -> (a : Elem (Prod Nat Nat)) -> Proof (iff (Membership__mem (Nat__divisorsAntidiagonalList n) a) (and (Eq (times (Prod__fst a) (Prod__snd a)) n) (Neq n 0))).
+Nat__mem_divisorsAntidiagonalList : (n : Elem Nat) -> (a : Elem (Prod Nat Nat)) -> Proof (iff (Membership__mem (Prod Nat Nat) (List (Prod Nat Nat)) (Nat__divisorsAntidiagonalList n) a) (and (Eq (times (Prod__fst Nat Nat a) (Prod__snd Nat Nat a)) n) (Neq n 0))).
 
 (; //LEAN:Nat.swap_mem_divisorsAntidiagonalList ;)
-Nat__swap_mem_divisorsAntidiagonalList : (n : Elem Nat) -> (a : Elem (Prod Nat Nat)) -> Proof (iff (Membership__mem (Nat__divisorsAntidiagonalList n) (Prod__swap a)) (Membership__mem (Nat__divisorsAntidiagonalList n) a)).
+Nat__swap_mem_divisorsAntidiagonalList : (n : Elem Nat) -> (a : Elem (Prod Nat Nat)) -> Proof (iff (Membership__mem (Prod Nat Nat) (List (Prod Nat Nat)) (Nat__divisorsAntidiagonalList n) (Prod__swap Nat Nat a)) (Membership__mem (Prod Nat Nat) (List (Prod Nat Nat)) (Nat__divisorsAntidiagonalList n) a)).
 
 (; //LEAN:Nat.reverse_divisorsAntidiagonalList ;)
-Nat__reverse_divisorsAntidiagonalList : (n : Elem Nat) -> Proof (Eqt (List (Prod Nat Nat)) (List__reverse (Nat__divisorsAntidiagonalList n)) (List__map Prod__swap (Nat__divisorsAntidiagonalList n))).
+Nat__reverse_divisorsAntidiagonalList : (n : Elem Nat) -> Proof (Eqt (List (Prod Nat Nat)) (List__reverse (Prod Nat Nat) (Nat__divisorsAntidiagonalList n)) (List__map (Prod Nat Nat) (Prod Nat Nat) (Prod__swap Nat Nat) (Nat__divisorsAntidiagonalList n))).
 
 (; //LEAN:Nat.ne_zero_of_mem_divisorsAntidiagonal ;)
-Nat__ne_zero_of_mem_divisorsAntidiagonal : (n : Elem Nat) -> (p : Elem (Prod Nat Nat)) -> (hp : Proof (Membership__mem (Nat__divisorsAntidiagonal n) p)) -> Proof (and (Neq (Prod__fst p) 0) (Neq (Prod__snd p) 0)).
+Nat__ne_zero_of_mem_divisorsAntidiagonal : (n : Elem Nat) -> (p : Elem (Prod Nat Nat)) -> (hp : Proof (Membership__mem (Prod Nat Nat) (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal n) p)) -> Proof (and (Neq (Prod__fst Nat Nat p) 0) (Neq (Prod__snd Nat Nat p) 0)).
 
 (; //LEAN:Nat.left_ne_zero_of_mem_divisorsAntidiagonal ;)
-def Nat__left_ne_zero_of_mem_divisorsAntidiagonal : (n : Elem Nat) -> (p : Elem (Prod Nat Nat)) -> (hp : Proof (Membership__mem (Nat__divisorsAntidiagonal n) p)) -> Proof (Neq (Prod__fst p) 0) :=
-  n => p => hp => andEl (Neq (Prod__fst p) 0) (Neq (Prod__snd p) 0) (Nat__ne_zero_of_mem_divisorsAntidiagonal n p hp).
+def Nat__left_ne_zero_of_mem_divisorsAntidiagonal : (n : Elem Nat) -> (p : Elem (Prod Nat Nat)) -> (hp : Proof (Membership__mem (Prod Nat Nat) (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal n) p)) -> Proof (Neq (Prod__fst Nat Nat p) 0) :=
+  n => p => hp => andEl (Neq (Prod__fst Nat Nat p) 0) (Neq (Prod__snd Nat Nat p) 0) (Nat__ne_zero_of_mem_divisorsAntidiagonal n p hp).
 
 (; //LEAN:Nat.right_ne_zero_of_mem_divisorsAntidiagonal ;)
-def Nat__right_ne_zero_of_mem_divisorsAntidiagonal : (n : Elem Nat) -> (p : Elem (Prod Nat Nat)) -> (hp : Proof (Membership__mem (Nat__divisorsAntidiagonal n) p)) -> Proof (Neq (Prod__snd p) 0) :=
-  n => p => hp => andEr (Neq (Prod__fst p) 0) (Neq (Prod__snd p) 0) (Nat__ne_zero_of_mem_divisorsAntidiagonal n p hp).
+def Nat__right_ne_zero_of_mem_divisorsAntidiagonal : (n : Elem Nat) -> (p : Elem (Prod Nat Nat)) -> (hp : Proof (Membership__mem (Prod Nat Nat) (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal n) p)) -> Proof (Neq (Prod__snd Nat Nat p) 0) :=
+  n => p => hp => andEr (Neq (Prod__fst Nat Nat p) 0) (Neq (Prod__snd Nat Nat p) 0) (Nat__ne_zero_of_mem_divisorsAntidiagonal n p hp).
 
 (; //LEAN:Nat.divisor_le ;)
-Nat__divisor_le : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Membership__mem (Nat__divisors m) n)) -> Proof (Leq n m).
+Nat__divisor_le : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Membership__mem Nat (Finset Nat) (Nat__divisors m) n)) -> Proof (Leq n m).
 
 (; //LEAN:Nat.divisors_subset_of_dvd ;)
-def Nat__divisors_subset_of_dvd : (n : Elem Nat) -> (m : Elem Nat) -> (hzero : Proof (Neq n 0)) -> (h : Proof (divide m n)) -> Proof (Set__Subset (Nat__divisors m) (Nat__divisors n)) :=
-  n => m => hzero => h => iffEr (Set__Subset (Nat__divisors m) (Nat__divisors n)) (forall Nat (x => if (Membership__mem (Nat__divisors m) x) (Membership__mem (Nat__divisors n) x))) (Finset__subset_iff Nat (Nat__divisors m) (Nat__divisors n)) (_x => ifI (Membership__mem (Nat__divisors m) _x) (Membership__mem (Nat__divisors n) _x) (hx => iffEr (Membership__mem (Nat__divisors n) _x) (and (divide _x n) (Neq n 0)) (Nat__mem_divisors _x n) (andI (divide _x n) (Neq n 0) (Dvd__dvd__trans Nat _x m n (andEl (divide _x m) (Neq m 0) (iffEl (Membership__mem (Nat__divisors m) _x) (and (divide _x m) (Neq m 0)) (Nat__mem_divisors _x m) hx)) h) hzero))).
+def Nat__divisors_subset_of_dvd : (n : Elem Nat) -> (m : Elem Nat) -> (hzero : Proof (Neq n 0)) -> (h : Proof (divide m n)) -> Proof (Set__Subset Nat (Nat__divisors m) (Nat__divisors n)) :=
+  n => m => hzero => h => iffEr (Set__Subset Nat (Nat__divisors m) (Nat__divisors n)) (forall Nat (x => if (Membership__mem Nat (Finset Nat) (Nat__divisors m) x) (Membership__mem Nat (Finset Nat) (Nat__divisors n) x))) (Finset__subset_iff Nat (Nat__divisors m) (Nat__divisors n)) (_x => ifI (Membership__mem Nat (Finset Nat) (Nat__divisors m) _x) (Membership__mem Nat (Finset Nat) (Nat__divisors n) _x) (hx => iffEr (Membership__mem Nat (Finset Nat) (Nat__divisors n) _x) (and (divide _x n) (Neq n 0)) (Nat__mem_divisors _x n) (andI (divide _x n) (Neq n 0) (Dvd__dvd__trans Nat _x m n (andEl (divide _x m) (Neq m 0) (iffEl (Membership__mem Nat (Finset Nat) (Nat__divisors m) _x) (and (divide _x m) (Neq m 0)) (Nat__mem_divisors _x m) hx)) h) hzero))).
 
 (; //LEAN:Nat.card_divisors_le_self ;)
-Nat__card_divisors_le_self : (n : Elem Nat) -> Proof (Leq (Finset__card (Nat__divisors n)) n).
+Nat__card_divisors_le_self : (n : Elem Nat) -> Proof (Leq (Finset__card Nat (Nat__divisors n)) n).
 
 (; //LEAN:Nat.divisors_subset_properDivisors ;)
-Nat__divisors_subset_properDivisors : (n : Elem Nat) -> (m : Elem Nat) -> (hzero : Proof (Neq n 0)) -> (h : Proof (divide m n)) -> (hdiff : Proof (Neq m n)) -> Proof (Set__Subset (Nat__divisors m) (Nat__properDivisors n)).
+Nat__divisors_subset_properDivisors : (n : Elem Nat) -> (m : Elem Nat) -> (hzero : Proof (Neq n 0)) -> (h : Proof (divide m n)) -> (hdiff : Proof (Neq m n)) -> Proof (Set__Subset Nat (Nat__divisors m) (Nat__properDivisors n)).
 
 (; //LEAN:Nat.divisors_filter_dvd_of_dvd ;)
-Nat__divisors_filter_dvd_of_dvd : (n : Elem Nat) -> (m : Elem Nat) -> (hn : Proof (Neq n 0)) -> (hm : Proof (divide m n)) -> Proof (Eqt (Finset Nat) (Finset__filter (d => divide d m) (Nat__divisors n)) (Nat__divisors m)).
+Nat__divisors_filter_dvd_of_dvd : (n : Elem Nat) -> (m : Elem Nat) -> (hn : Proof (Neq n 0)) -> (hm : Proof (divide m n)) -> Proof (Eqt (Finset Nat) (Finset__filter Nat (d => divide d m) (Nat__divisors n)) (Nat__divisors m)).
 
 (; //LEAN:Nat.divisors_zero ;)
-Nat__divisors_zero : Proof (Eqt (Finset Nat) (Nat__divisors 0) EmptyCollection__emptyCollection).
+Nat__divisors_zero : Proof (Eqt (Finset Nat) (Nat__divisors 0) (EmptyCollection__emptyCollection (Finset Nat))).
 
 (; //LEAN:Nat.properDivisors_zero ;)
-Nat__properDivisors_zero : Proof (Eqt (Finset Nat) (Nat__properDivisors 0) EmptyCollection__emptyCollection).
+Nat__properDivisors_zero : Proof (Eqt (Finset Nat) (Nat__properDivisors 0) (EmptyCollection__emptyCollection (Finset Nat))).
 
 (; //LEAN:Nat.nonempty_divisors ;)
-Nat__nonempty_divisors : (n : Elem Nat) -> Proof (iff (Finset__Nonempty (Nat__divisors n)) (Neq n 0)).
+Nat__nonempty_divisors : (n : Elem Nat) -> Proof (iff (Finset__Nonempty Nat (Nat__divisors n)) (Neq n 0)).
 
 (; //LEAN:Nat.divisors_eq_empty ;)
-Nat__divisors_eq_empty : (n : Elem Nat) -> Proof (iff (Eqt (Finset Nat) (Nat__divisors n) EmptyCollection__emptyCollection) (Eq n 0)).
+Nat__divisors_eq_empty : (n : Elem Nat) -> Proof (iff (Eqt (Finset Nat) (Nat__divisors n) (EmptyCollection__emptyCollection (Finset Nat))) (Eq n 0)).
 
 (; //LEAN:Nat.properDivisors_subset_divisors ;)
-def Nat__properDivisors_subset_divisors : (n : Elem Nat) -> Proof (Set__Subset (Nat__properDivisors n) (Nat__divisors n)) :=
-  n => Finset__filter_subset_filter Nat (d => divide d n) (Finset__Ico 1 n) (Finset__Ico 1 (plus n 1)) (Finset__Ico_subset_Ico_right Nat 1 n (plus n 1) (Nat__le_succ n)).
+def Nat__properDivisors_subset_divisors : (n : Elem Nat) -> Proof (Set__Subset Nat (Nat__properDivisors n) (Nat__divisors n)) :=
+  n => Finset__filter_subset_filter Nat (d => divide d n) (Finset__Ico Nat 1 n) (Finset__Ico Nat 1 (plus n 1)) (Finset__Ico_subset_Ico_right Nat 1 n (plus n 1) (Nat__le_succ n)).
 
 (; //LEAN:Nat.divisors_one ;)
-Nat__divisors_one : Proof (Eqt (Finset Nat) (Nat__divisors 1) (Singleton__singleton 1)).
+Nat__divisors_one : Proof (Eqt (Finset Nat) (Nat__divisors 1) (Singleton__singleton Nat (Finset Nat) 1)).
 
 (; //LEAN:Nat.properDivisors_one ;)
-Nat__properDivisors_one : Proof (Eqt (Finset Nat) (Nat__properDivisors 1) EmptyCollection__emptyCollection).
+Nat__properDivisors_one : Proof (Eqt (Finset Nat) (Nat__properDivisors 1) (EmptyCollection__emptyCollection (Finset Nat))).
 
 (; //LEAN:Nat.pos_of_mem_divisors ;)
-Nat__pos_of_mem_divisors : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Membership__mem (Nat__divisors n) m)) -> Proof (Lt 0 m).
+Nat__pos_of_mem_divisors : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Membership__mem Nat (Finset Nat) (Nat__divisors n) m)) -> Proof (Lt 0 m).
 
 (; //LEAN:Nat.pos_of_mem_properDivisors ;)
-def Nat__pos_of_mem_properDivisors : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Membership__mem (Nat__properDivisors n) m)) -> Proof (Lt 0 m) :=
+def Nat__pos_of_mem_properDivisors : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Membership__mem Nat (Finset Nat) (Nat__properDivisors n) m)) -> Proof (Lt 0 m) :=
   n => m => h => Nat__pos_of_mem_divisors n m (Nat__properDivisors_subset_divisors n m h).
 
 (; //LEAN:Nat.one_mem_properDivisors_iff_one_lt ;)
-Nat__one_mem_properDivisors_iff_one_lt : (n : Elem Nat) -> Proof (iff (Membership__mem (Nat__properDivisors n) 1) (Lt 1 n)).
+Nat__one_mem_properDivisors_iff_one_lt : (n : Elem Nat) -> Proof (iff (Membership__mem Nat (Finset Nat) (Nat__properDivisors n) 1) (Lt 1 n)).
 
 (; //LEAN:Nat.sup_divisors_id ;)
-Nat__sup_divisors_id : (n : Elem Nat) -> Proof (Eq (Finset__sup (Nat__divisors n) id) n).
+Nat__sup_divisors_id : (n : Elem Nat) -> Proof (Eq (Finset__sup Nat Nat (Nat__divisors n) (id Nat)) n).
 
 (; //LEAN:Nat.one_lt_of_mem_properDivisors ;)
-def Nat__one_lt_of_mem_properDivisors : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Membership__mem (Nat__properDivisors n) m)) -> Proof (Lt 1 n) :=
-  m => n => h => lt_of_le_of_lt Nat 1 m n (Nat__pos_of_mem_properDivisors n m h) (andEr (divide m n) (Lt m n) (iffEl (Membership__mem (Nat__properDivisors n) m) (and (divide m n) (Lt m n)) (Nat__mem_properDivisors m n) h)).
+def Nat__one_lt_of_mem_properDivisors : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Membership__mem Nat (Finset Nat) (Nat__properDivisors n) m)) -> Proof (Lt 1 n) :=
+  m => n => h => lt_of_le_of_lt Nat 1 m n (Nat__pos_of_mem_properDivisors n m h) (andEr (divide m n) (Lt m n) (iffEl (Membership__mem Nat (Finset Nat) (Nat__properDivisors n) m) (and (divide m n) (Lt m n)) (Nat__mem_properDivisors m n) h)).
 
 (; //LEAN:Nat.one_lt_div_of_mem_properDivisors ;)
-Nat__one_lt_div_of_mem_properDivisors : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Membership__mem (Nat__properDivisors n) m)) -> Proof (Lt 1 (div n m)).
+Nat__one_lt_div_of_mem_properDivisors : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Membership__mem Nat (Finset Nat) (Nat__properDivisors n) m)) -> Proof (Lt 1 (div n m)).
 
 (; //LEAN:Nat.mem_properDivisors_iff_exists ;)
-Nat__mem_properDivisors_iff_exists : (m : Elem Nat) -> (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (iff (Membership__mem (Nat__properDivisors n) m) (exists Nat (k => and (Gt k 1) (Eq n (times m k))))).
+Nat__mem_properDivisors_iff_exists : (m : Elem Nat) -> (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (iff (Membership__mem Nat (Finset Nat) (Nat__properDivisors n) m) (exists Nat (k => and (Gt k 1) (Eq n (times m k))))).
 
 (; //LEAN:Nat.nonempty_properDivisors ;)
-Nat__nonempty_properDivisors : (n : Elem Nat) -> Proof (iff (Finset__Nonempty (Nat__properDivisors n)) (Lt 1 n)).
+Nat__nonempty_properDivisors : (n : Elem Nat) -> Proof (iff (Finset__Nonempty Nat (Nat__properDivisors n)) (Lt 1 n)).
 
 (; //LEAN:Nat.properDivisors_eq_empty ;)
-Nat__properDivisors_eq_empty : (n : Elem Nat) -> Proof (iff (Eqt (Finset Nat) (Nat__properDivisors n) EmptyCollection__emptyCollection) (Leq n 1)).
+Nat__properDivisors_eq_empty : (n : Elem Nat) -> Proof (iff (Eqt (Finset Nat) (Nat__properDivisors n) (EmptyCollection__emptyCollection (Finset Nat))) (Leq n 1)).
 
 (; //LEAN:Nat.divisorsAntidiagonal_zero ;)
-Nat__divisorsAntidiagonal_zero : Proof (Eqt (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal 0) EmptyCollection__emptyCollection).
+Nat__divisorsAntidiagonal_zero : Proof (Eqt (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal 0) (EmptyCollection__emptyCollection (Finset (Prod Nat Nat)))).
 
 (; //LEAN:Nat.divisorsAntidiagonal_one ;)
-Nat__divisorsAntidiagonal_one : Proof (Eqt (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal 1) (Singleton__singleton (Prod__mk 1 1))).
+Nat__divisorsAntidiagonal_one : Proof (Eqt (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal 1) (Singleton__singleton (Prod Nat Nat) (Finset (Prod Nat Nat)) (Prod__mk Nat Nat 1 1))).
 
 (; //LEAN:Nat.swap_mem_divisorsAntidiagonal ;)
-Nat__swap_mem_divisorsAntidiagonal : (n : Elem Nat) -> (x : Elem (Prod Nat Nat)) -> Proof (iff (Membership__mem (Nat__divisorsAntidiagonal n) (Prod__swap x)) (Membership__mem (Nat__divisorsAntidiagonal n) x)).
+Nat__swap_mem_divisorsAntidiagonal : (n : Elem Nat) -> (x : Elem (Prod Nat Nat)) -> Proof (iff (Membership__mem (Prod Nat Nat) (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal n) (Prod__swap Nat Nat x)) (Membership__mem (Prod Nat Nat) (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal n) x)).
 
 (; //LEAN:Nat.prodMk_mem_divisorsAntidiag ;)
-Nat__prodMk_mem_divisorsAntidiag : (n : Elem Nat) -> (x : Elem Nat) -> (y : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (iff (Membership__mem (Nat__divisorsAntidiagonal n) (Prod__mk x y)) (Eq (times x y) n)).
+Nat__prodMk_mem_divisorsAntidiag : (n : Elem Nat) -> (x : Elem Nat) -> (y : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (iff (Membership__mem (Prod Nat Nat) (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal n) (Prod__mk Nat Nat x y)) (Eq (times x y) n)).
 
 (; //LEAN:Nat.fst_mem_divisors_of_mem_antidiagonal ;)
-Nat__fst_mem_divisors_of_mem_antidiagonal : (n : Elem Nat) -> (x : Elem (Prod Nat Nat)) -> (h : Proof (Membership__mem (Nat__divisorsAntidiagonal n) x)) -> Proof (Membership__mem (Nat__divisors n) (Prod__fst x)).
+Nat__fst_mem_divisors_of_mem_antidiagonal : (n : Elem Nat) -> (x : Elem (Prod Nat Nat)) -> (h : Proof (Membership__mem (Prod Nat Nat) (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal n) x)) -> Proof (Membership__mem Nat (Finset Nat) (Nat__divisors n) (Prod__fst Nat Nat x)).
 
 (; //LEAN:Nat.snd_mem_divisors_of_mem_antidiagonal ;)
-Nat__snd_mem_divisors_of_mem_antidiagonal : (n : Elem Nat) -> (x : Elem (Prod Nat Nat)) -> (h : Proof (Membership__mem (Nat__divisorsAntidiagonal n) x)) -> Proof (Membership__mem (Nat__divisors n) (Prod__snd x)).
+Nat__snd_mem_divisors_of_mem_antidiagonal : (n : Elem Nat) -> (x : Elem (Prod Nat Nat)) -> (h : Proof (Membership__mem (Prod Nat Nat) (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal n) x)) -> Proof (Membership__mem Nat (Finset Nat) (Nat__divisors n) (Prod__snd Nat Nat x)).
 
 (; //LEAN:Nat.map_swap_divisorsAntidiagonal ;)
-Nat__map_swap_divisorsAntidiagonal : (n : Elem Nat) -> Proof (Eqt (Finset (Prod Nat Nat)) (Finset__map (Equiv__toEmbedding (Equiv__prodComm Nat Nat)) (Nat__divisorsAntidiagonal n)) (Nat__divisorsAntidiagonal n)).
+Nat__map_swap_divisorsAntidiagonal : (n : Elem Nat) -> Proof (Eqt (Finset (Prod Nat Nat)) (Finset__map (Prod Nat Nat) (Prod Nat Nat) (Equiv__toEmbedding (Prod Nat Nat) (Prod Nat Nat) (Equiv__prodComm Nat Nat)) (Nat__divisorsAntidiagonal n)) (Nat__divisorsAntidiagonal n)).
 
 (; //LEAN:Nat.image_fst_divisorsAntidiagonal ;)
-Nat__image_fst_divisorsAntidiagonal : (n : Elem Nat) -> Proof (Eqt (Finset Nat) (Finset__image Prod__fst (Nat__divisorsAntidiagonal n)) (Nat__divisors n)).
+Nat__image_fst_divisorsAntidiagonal : (n : Elem Nat) -> Proof (Eqt (Finset Nat) (Finset__image (Prod Nat Nat) Nat (Prod__fst Nat Nat) (Nat__divisorsAntidiagonal n)) (Nat__divisors n)).
 
 (; //LEAN:Nat.image_snd_divisorsAntidiagonal ;)
-Nat__image_snd_divisorsAntidiagonal : (n : Elem Nat) -> Proof (Eqt (Finset Nat) (Finset__image Prod__snd (Nat__divisorsAntidiagonal n)) (Nat__divisors n)).
+Nat__image_snd_divisorsAntidiagonal : (n : Elem Nat) -> Proof (Eqt (Finset Nat) (Finset__image (Prod Nat Nat) Nat (Prod__snd Nat Nat) (Nat__divisorsAntidiagonal n)) (Nat__divisors n)).
 
 (; //LEAN:Nat.map_div_right_divisors ;)
-Nat__map_div_right_divisors : (n : Elem Nat) -> Proof (Eqt (Finset (Prod Nat Nat)) (Finset__map (Function__Embedding__mk (d => Prod__mk d (div n d)) (x => x1 => congr_arg Prod__fst)) (Nat__divisors n)) (Nat__divisorsAntidiagonal n)).
+Nat__map_div_right_divisors : (n : Elem Nat) -> Proof (Eqt (Finset (Prod Nat Nat)) (Finset__map Nat (Prod Nat Nat) (Function__Embedding__mk Nat (Prod Nat Nat) (d => Prod__mk Nat Nat d (div n d)) (x => x1 => congr_arg (Prod Nat Nat) Nat ((d1 => Prod__mk Nat Nat d1 (div n d1)) x) ((d2 => Prod__mk Nat Nat d2 (div n d2)) x1) (Prod__fst Nat Nat))) (Nat__divisors n)) (Nat__divisorsAntidiagonal n)).
 
 (; //LEAN:Nat.map_div_left_divisors ;)
-Nat__map_div_left_divisors : (n : Elem Nat) -> Proof (Eqt (Finset (Prod Nat Nat)) (Finset__map (Function__Embedding__mk (d => Prod__mk (div n d) d) (x => x1 => congr_arg Prod__snd)) (Nat__divisors n)) (Nat__divisorsAntidiagonal n)).
+Nat__map_div_left_divisors : (n : Elem Nat) -> Proof (Eqt (Finset (Prod Nat Nat)) (Finset__map Nat (Prod Nat Nat) (Function__Embedding__mk Nat (Prod Nat Nat) (d => Prod__mk Nat Nat (div n d) d) (x => x1 => congr_arg (Prod Nat Nat) Nat ((d1 => Prod__mk Nat Nat (div n d1) d1) x) ((d2 => Prod__mk Nat Nat (div n d2) d2) x1) (Prod__snd Nat Nat))) (Nat__divisors n)) (Nat__divisorsAntidiagonal n)).
 
 (; //LEAN:Nat.sum_divisors_eq_sum_properDivisors_add_self ;)
-Nat__sum_divisors_eq_sum_properDivisors_add_self : (n : Elem Nat) -> Proof (Eq (Finset__sum (Nat__divisors n) (i => i)) (plus (Finset__sum (Nat__properDivisors n) (i1 => i1)) n)).
+Nat__sum_divisors_eq_sum_properDivisors_add_self : (n : Elem Nat) -> Proof (Eq (Finset__sum Nat Nat (Nat__divisors n) (i => i)) (plus (Finset__sum Nat Nat (Nat__properDivisors n) (i1 => i1)) n)).
 
 (; //LEAN:Nat.Perfect ;)
 def Nat__Perfect : (n : Elem Nat) -> Prop :=
-  n => and (Eq (Finset__sum (Nat__properDivisors n) (i => i)) n) (Lt 0 n).
+  n => and (Eq (Finset__sum Nat Nat (Nat__properDivisors n) (i => i)) n) (Lt 0 n).
 
 (; //LEAN:Nat.perfect_iff_sum_properDivisors ;)
-def Nat__perfect_iff_sum_properDivisors : (n : Elem Nat) -> (h : Proof (Lt 0 n)) -> Proof (iff (Nat__Perfect n) (Eq (Finset__sum (Nat__properDivisors n) (i => i)) n)) :=
-  n => h => and_iff_left (Lt 0 n) (Eq (Finset__sum (Nat__properDivisors n) (i => i)) n) h.
+def Nat__perfect_iff_sum_properDivisors : (n : Elem Nat) -> (h : Proof (Lt 0 n)) -> Proof (iff (Nat__Perfect n) (Eq (Finset__sum Nat Nat (Nat__properDivisors n) (i => i)) n)) :=
+  n => h => and_iff_left (Lt 0 n) (Eq (Finset__sum Nat Nat (Nat__properDivisors n) (i => i)) n) h.
 
 (; //LEAN:Nat.perfect_iff_sum_divisors_eq_two_mul ;)
-Nat__perfect_iff_sum_divisors_eq_two_mul : (n : Elem Nat) -> (h : Proof (Lt 0 n)) -> Proof (iff (Nat__Perfect n) (Eq (Finset__sum (Nat__divisors n) (i => i)) (times 2 n))).
+Nat__perfect_iff_sum_divisors_eq_two_mul : (n : Elem Nat) -> (h : Proof (Lt 0 n)) -> Proof (iff (Nat__Perfect n) (Eq (Finset__sum Nat Nat (Nat__divisors n) (i => i)) (times 2 n))).
 
 (; //LEAN:Nat.mem_divisors_prime_pow ;)
-Nat__mem_divisors_prime_pow : (p : Elem Nat) -> (pp : Proof (prime p)) -> (k : Elem Nat) -> (x : Elem Nat) -> Proof (iff (Membership__mem (Nat__divisors (pow p k)) x) (exists Nat (j => and (Leq j k) (Eq x (pow p j))))).
+Nat__mem_divisors_prime_pow : (p : Elem Nat) -> (pp : Proof (prime p)) -> (k : Elem Nat) -> (x : Elem Nat) -> Proof (iff (Membership__mem Nat (Finset Nat) (Nat__divisors (pow p k)) x) (exists Nat (j => and (Leq j k) (Eq x (pow p j))))).
 
 (; //LEAN:Nat.Prime.divisors ;)
-Nat__Prime__divisors : (p : Elem Nat) -> (pp : Proof (prime p)) -> Proof (Eqt (Finset Nat) (Nat__divisors p) (Insert__insert 1 (Singleton__singleton p))).
+Nat__Prime__divisors : (p : Elem Nat) -> (pp : Proof (prime p)) -> Proof (Eqt (Finset Nat) (Nat__divisors p) (Insert__insert Nat (Finset Nat) 1 (Singleton__singleton Nat (Finset Nat) p))).
 
 (; //LEAN:Nat.Prime.properDivisors ;)
-Nat__Prime__properDivisors : (p : Elem Nat) -> (pp : Proof (prime p)) -> Proof (Eqt (Finset Nat) (Nat__properDivisors p) (Singleton__singleton 1)).
+Nat__Prime__properDivisors : (p : Elem Nat) -> (pp : Proof (prime p)) -> Proof (Eqt (Finset Nat) (Nat__properDivisors p) (Singleton__singleton Nat (Finset Nat) 1)).
 
 (; //LEAN:Nat.divisors_prime_pow ;)
-Nat__divisors_prime_pow : (p : Elem Nat) -> (pp : Proof (prime p)) -> (k : Elem Nat) -> Proof (Eqt (Finset Nat) (Nat__divisors (pow p k)) (Finset__map (Function__Embedding__mk (x => pow p x) (Nat__pow_right_injective (Nat__Prime__two_le pp))) (Finset__range (plus k 1)))).
+Nat__divisors_prime_pow : (p : Elem Nat) -> (pp : Proof (prime p)) -> (k : Elem Nat) -> Proof (Eqt (Finset Nat) (Nat__divisors (pow p k)) (Finset__map Nat Nat (Function__Embedding__mk Nat Nat (x => pow p x) (Nat__pow_right_injective p (Nat__Prime__two_le p pp))) (Finset__range (plus k 1)))).
 
 (; //LEAN:Nat.divisors_injective ;)
-def Nat__divisors_injective : Proof (Function__Injective Nat__divisors) :=
-  Function__LeftInverse__injective Nat (Finset Nat) (Finset__fold (x => x1 => Max__max x x1) Bot__bot id) Nat__divisors Nat__sup_divisors_id.
+def Nat__divisors_injective : Proof (Function__Injective Nat (Finset Nat) Nat__divisors) :=
+  Function__LeftInverse__injective Nat (Finset Nat) (Finset__fold Nat Nat (x => x1 => Max__max Nat x x1) (Bot__bot Nat) (id Nat)) Nat__divisors Nat__sup_divisors_id.
 
 (; //LEAN:Nat.divisors_inj ;)
 def Nat__divisors_inj : (a : Elem Nat) -> (b : Elem Nat) -> Proof (iff (Eqt (Finset Nat) (Nat__divisors a) (Nat__divisors b)) (Eq a b)) :=
   a => b => Function__Injective__eq_iff Nat (Finset Nat) Nat__divisors Nat__divisors_injective a b.
 
 (; //LEAN:Nat.eq_properDivisors_of_subset_of_sum_eq_sum ;)
-Nat__eq_properDivisors_of_subset_of_sum_eq_sum : (n : Elem Nat) -> (s : Elem (Finset Nat)) -> (hsub : Proof (Set__Subset s (Nat__properDivisors n))) -> (h : Proof (Eq (Finset__sum s (x => x)) (Finset__sum (Nat__properDivisors n) (x1 => x1)))) -> Proof (Eqt (Finset Nat) s (Nat__properDivisors n)).
+Nat__eq_properDivisors_of_subset_of_sum_eq_sum : (n : Elem Nat) -> (s : Elem (Finset Nat)) -> (hsub : Proof (Set__Subset Nat s (Nat__properDivisors n))) -> (h : Proof (Eq (Finset__sum Nat Nat s (x => x)) (Finset__sum Nat Nat (Nat__properDivisors n) (x1 => x1)))) -> Proof (Eqt (Finset Nat) s (Nat__properDivisors n)).
 
 (; //LEAN:Nat.sum_properDivisors_dvd ;)
-Nat__sum_properDivisors_dvd : (n : Elem Nat) -> (h : Proof (divide (Finset__sum (Nat__properDivisors n) (x2 => x2)) n)) -> Proof (or (Eq (Finset__sum (Nat__properDivisors n) (x => x)) 1) (Eq (Finset__sum (Nat__properDivisors n) (x1 => x1)) n)).
+Nat__sum_properDivisors_dvd : (n : Elem Nat) -> (h : Proof (divide (Finset__sum Nat Nat (Nat__properDivisors n) (x2 => x2)) n)) -> Proof (or (Eq (Finset__sum Nat Nat (Nat__properDivisors n) (x => x)) 1) (Eq (Finset__sum Nat Nat (Nat__properDivisors n) (x1 => x1)) n)).
 
 (; //LEAN:Nat.Prime.sum_properDivisors ;)
-Nat__Prime__sum_properDivisors : (X : Set) -> (_ : Proof (AddCommMonoid X)) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__sum (Nat__properDivisors p) (x1 => f x1)) (f 1)).
+Nat__Prime__sum_properDivisors : (X : Set) -> (_ : Proof (AddCommMonoid X)) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__sum Nat X (Nat__properDivisors p) (x1 => f x1)) (f 1)).
 
 (; //LEAN:Nat.Prime.prod_properDivisors ;)
-Nat__Prime__prod_properDivisors : (X : Set) -> (_ : Proof (CommMonoid X)) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__prod (Nat__properDivisors p) (x1 => f x1)) (f 1)).
+Nat__Prime__prod_properDivisors : (X : Set) -> (_ : Proof (CommMonoid X)) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__prod Nat X (Nat__properDivisors p) (x1 => f x1)) (f 1)).
 
 (; //LEAN:Nat.Prime.prod_divisors ;)
-Nat__Prime__prod_divisors : (X : Set) -> (_ : Proof (CommMonoid X)) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__prod (Nat__divisors p) (x1 => f x1)) (times (f p) (f 1))).
+Nat__Prime__prod_divisors : (X : Set) -> (_ : Proof (CommMonoid X)) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__prod Nat X (Nat__divisors p) (x1 => f x1)) (times (f p) (f 1))).
 
 (; //LEAN:Nat.Prime.sum_divisors ;)
-Nat__Prime__sum_divisors : (X : Set) -> (_ : Proof (AddCommMonoid X)) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__sum (Nat__divisors p) (x1 => f x1)) (plus (f p) (f 1))).
+Nat__Prime__sum_divisors : (X : Set) -> (_ : Proof (AddCommMonoid X)) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__sum Nat X (Nat__divisors p) (x1 => f x1)) (plus (f p) (f 1))).
 
 (; //LEAN:Nat.properDivisors_eq_singleton_one_iff_prime ;)
-Nat__properDivisors_eq_singleton_one_iff_prime : (n : Elem Nat) -> Proof (iff (Eqt (Finset Nat) (Nat__properDivisors n) (Singleton__singleton 1)) (prime n)).
+Nat__properDivisors_eq_singleton_one_iff_prime : (n : Elem Nat) -> Proof (iff (Eqt (Finset Nat) (Nat__properDivisors n) (Singleton__singleton Nat (Finset Nat) 1)) (prime n)).
 
 (; //LEAN:Nat.sum_properDivisors_eq_one_iff_prime ;)
-Nat__sum_properDivisors_eq_one_iff_prime : (n : Elem Nat) -> Proof (iff (Eq (Finset__sum (Nat__properDivisors n) (x => x)) 1) (prime n)).
+Nat__sum_properDivisors_eq_one_iff_prime : (n : Elem Nat) -> Proof (iff (Eq (Finset__sum Nat Nat (Nat__properDivisors n) (x => x)) 1) (prime n)).
 
 (; //LEAN:Nat.mem_properDivisors_prime_pow ;)
-Nat__mem_properDivisors_prime_pow : (p : Elem Nat) -> (pp : Proof (prime p)) -> (k : Elem Nat) -> (x : Elem Nat) -> Proof (iff (Membership__mem (Nat__properDivisors (pow p k)) x) (exists Nat (j => exists (Lt j k) (h => Eq x (pow p j))))).
+Nat__mem_properDivisors_prime_pow : (p : Elem Nat) -> (pp : Proof (prime p)) -> (k : Elem Nat) -> (x : Elem Nat) -> Proof (iff (Membership__mem Nat (Finset Nat) (Nat__properDivisors (pow p k)) x) (exists Nat (j => exists (Lt j k) (h => Eq x (pow p j))))).
 
 (; //LEAN:Nat.properDivisors_prime_pow ;)
-Nat__properDivisors_prime_pow : (p : Elem Nat) -> (pp : Proof (prime p)) -> (k : Elem Nat) -> Proof (Eqt (Finset Nat) (Nat__properDivisors (pow p k)) (Finset__map (Function__Embedding__mk (x => pow p x) (Nat__pow_right_injective (Nat__Prime__two_le pp))) (Finset__range k))).
+Nat__properDivisors_prime_pow : (p : Elem Nat) -> (pp : Proof (prime p)) -> (k : Elem Nat) -> Proof (Eqt (Finset Nat) (Nat__properDivisors (pow p k)) (Finset__map Nat Nat (Function__Embedding__mk Nat Nat (x => pow p x) (Nat__pow_right_injective p (Nat__Prime__two_le p pp))) (Finset__range k))).
 
 (; //LEAN:Nat.prod_properDivisors_prime_pow ;)
-Nat__prod_properDivisors_prime_pow : (X : Set) -> (_ : Proof (CommMonoid X)) -> (k : Elem Nat) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__prod (Nat__properDivisors (pow p k)) (x1 => f x1)) (Finset__prod (Finset__range k) (x2 => f (pow p x2)))).
+Nat__prod_properDivisors_prime_pow : (X : Set) -> (_ : Proof (CommMonoid X)) -> (k : Elem Nat) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__prod Nat X (Nat__properDivisors (pow p k)) (x1 => f x1)) (Finset__prod Nat X (Finset__range k) (x2 => f (pow p x2)))).
 
 (; //LEAN:Nat.sum_properDivisors_prime_nsmul ;)
-Nat__sum_properDivisors_prime_nsmul : (X : Set) -> (_ : Proof (AddCommMonoid X)) -> (k : Elem Nat) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__sum (Nat__properDivisors (pow p k)) (x1 => f x1)) (Finset__sum (Finset__range k) (x2 => f (pow p x2)))).
+Nat__sum_properDivisors_prime_nsmul : (X : Set) -> (_ : Proof (AddCommMonoid X)) -> (k : Elem Nat) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__sum Nat X (Nat__properDivisors (pow p k)) (x1 => f x1)) (Finset__sum Nat X (Finset__range k) (x2 => f (pow p x2)))).
 
 (; //LEAN:Nat.sum_divisors_prime_pow ;)
-Nat__sum_divisors_prime_pow : (X : Set) -> (_ : Proof (AddCommMonoid X)) -> (k : Elem Nat) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__sum (Nat__divisors (pow p k)) (x1 => f x1)) (Finset__sum (Finset__range (plus k 1)) (x2 => f (pow p x2)))).
+Nat__sum_divisors_prime_pow : (X : Set) -> (_ : Proof (AddCommMonoid X)) -> (k : Elem Nat) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__sum Nat X (Nat__divisors (pow p k)) (x1 => f x1)) (Finset__sum Nat X (Finset__range (plus k 1)) (x2 => f (pow p x2)))).
 
 (; //LEAN:Nat.prod_divisors_prime_pow ;)
-Nat__prod_divisors_prime_pow : (X : Set) -> (_ : Proof (CommMonoid X)) -> (k : Elem Nat) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__prod (Nat__divisors (pow p k)) (x1 => f x1)) (Finset__prod (Finset__range (plus k 1)) (x2 => f (pow p x2)))).
+Nat__prod_divisors_prime_pow : (X : Set) -> (_ : Proof (CommMonoid X)) -> (k : Elem Nat) -> (p : Elem Nat) -> (f : (Elem Nat -> X)) -> (h : Proof (prime p)) -> Proof (Eqt X (Finset__prod Nat X (Nat__divisors (pow p k)) (x1 => f x1)) (Finset__prod Nat X (Finset__range (plus k 1)) (x2 => f (pow p x2)))).
 
 (; //LEAN:Nat.prod_divisorsAntidiagonal ;)
-Nat__prod_divisorsAntidiagonal : (M : Set) -> (_ : Proof (CommMonoid M)) -> (f : (Elem Nat -> Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__prod (Nat__divisorsAntidiagonal n) (i => f (Prod__fst i) (Prod__snd i))) (Finset__prod (Nat__divisors n) (i1 => f i1 (div n i1)))).
+Nat__prod_divisorsAntidiagonal : (M : Set) -> (_ : Proof (CommMonoid M)) -> (f : (Elem Nat -> Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__prod (Prod Nat Nat) M (Nat__divisorsAntidiagonal n) (i => f (Prod__fst Nat Nat i) (Prod__snd Nat Nat i))) (Finset__prod Nat M (Nat__divisors n) (i1 => f i1 (div n i1)))).
 
 (; //LEAN:Nat.sum_divisorsAntidiagonal ;)
-Nat__sum_divisorsAntidiagonal : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem Nat -> Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__sum (Nat__divisorsAntidiagonal n) (i => f (Prod__fst i) (Prod__snd i))) (Finset__sum (Nat__divisors n) (i1 => f i1 (div n i1)))).
+Nat__sum_divisorsAntidiagonal : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem Nat -> Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__sum (Prod Nat Nat) M (Nat__divisorsAntidiagonal n) (i => f (Prod__fst Nat Nat i) (Prod__snd Nat Nat i))) (Finset__sum Nat M (Nat__divisors n) (i1 => f i1 (div n i1)))).
 
 (; //LEAN:Nat.prod_divisorsAntidiagonal' ;)
-Nat__prod_divisorsAntidiagonal' : (M : Set) -> (_ : Proof (CommMonoid M)) -> (f : (Elem Nat -> Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__prod (Nat__divisorsAntidiagonal n) (i => f (Prod__fst i) (Prod__snd i))) (Finset__prod (Nat__divisors n) (i1 => f (div n i1) i1))).
+Nat__prod_divisorsAntidiagonal' : (M : Set) -> (_ : Proof (CommMonoid M)) -> (f : (Elem Nat -> Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__prod (Prod Nat Nat) M (Nat__divisorsAntidiagonal n) (i => f (Prod__fst Nat Nat i) (Prod__snd Nat Nat i))) (Finset__prod Nat M (Nat__divisors n) (i1 => f (div n i1) i1))).
 
 (; //LEAN:Nat.sum_divisorsAntidiagonal' ;)
-Nat__sum_divisorsAntidiagonal' : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem Nat -> Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__sum (Nat__divisorsAntidiagonal n) (i => f (Prod__fst i) (Prod__snd i))) (Finset__sum (Nat__divisors n) (i1 => f (div n i1) i1))).
+Nat__sum_divisorsAntidiagonal' : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem Nat -> Elem Nat -> M)) -> (n : Elem Nat) -> Proof (Eqt M (Finset__sum (Prod Nat Nat) M (Nat__divisorsAntidiagonal n) (i => f (Prod__fst Nat Nat i) (Prod__snd Nat Nat i))) (Finset__sum Nat M (Nat__divisors n) (i1 => f (div n i1) i1))).
 
 (; //LEAN:Nat.primeFactors_eq_to_filter_divisors_prime ;)
-Nat__primeFactors_eq_to_filter_divisors_prime : (n : Elem Nat) -> Proof (Eqt (Finset Nat) (Nat__primeFactors n) (Finset__filter (p => prime p) (Nat__divisors n))).
+Nat__primeFactors_eq_to_filter_divisors_prime : (n : Elem Nat) -> Proof (Eqt (Finset Nat) (Nat__primeFactors n) (Finset__filter Nat (p => prime p) (Nat__divisors n))).
 
 (; //LEAN:Nat.primeFactors_filter_dvd_of_dvd ;)
-Nat__primeFactors_filter_dvd_of_dvd : (m : Elem Nat) -> (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> (hmn : Proof (divide m n)) -> Proof (Eqt (Finset Nat) (Finset__filter (p => divide p m) (Nat__primeFactors n)) (Nat__primeFactors m)).
+Nat__primeFactors_filter_dvd_of_dvd : (m : Elem Nat) -> (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> (hmn : Proof (divide m n)) -> Proof (Eqt (Finset Nat) (Finset__filter Nat (p => divide p m) (Nat__primeFactors n)) (Nat__primeFactors m)).
 
 (; //LEAN:Nat.image_div_divisors_eq_divisors ;)
-Nat__image_div_divisors_eq_divisors : (n : Elem Nat) -> Proof (Eqt (Finset Nat) (Finset__image (x => div n x) (Nat__divisors n)) (Nat__divisors n)).
+Nat__image_div_divisors_eq_divisors : (n : Elem Nat) -> Proof (Eqt (Finset Nat) (Finset__image Nat Nat (x => div n x) (Nat__divisors n)) (Nat__divisors n)).
 
 (; //LEAN:Nat.sum_div_divisors ;)
-Nat__sum_div_divisors : (X : Set) -> (_ : Proof (AddCommMonoid X)) -> (n : Elem Nat) -> (f : (Elem Nat -> X)) -> Proof (Eqt X (Finset__sum (Nat__divisors n) (d => f (div n d))) (Finset__sum (Nat__divisors n) (x1 => f x1))).
+Nat__sum_div_divisors : (X : Set) -> (_ : Proof (AddCommMonoid X)) -> (n : Elem Nat) -> (f : (Elem Nat -> X)) -> Proof (Eqt X (Finset__sum Nat X (Nat__divisors n) (d => f (div n d))) (Finset__sum Nat X (Nat__divisors n) (x1 => f x1))).
 
 (; //LEAN:Nat.prod_div_divisors ;)
-Nat__prod_div_divisors : (X : Set) -> (_ : Proof (CommMonoid X)) -> (n : Elem Nat) -> (f : (Elem Nat -> X)) -> Proof (Eqt X (Finset__prod (Nat__divisors n) (d => f (div n d))) (Finset__prod (Nat__divisors n) (x1 => f x1))).
+Nat__prod_div_divisors : (X : Set) -> (_ : Proof (CommMonoid X)) -> (n : Elem Nat) -> (f : (Elem Nat -> X)) -> Proof (Eqt X (Finset__prod Nat X (Nat__divisors n) (d => f (div n d))) (Finset__prod Nat X (Nat__divisors n) (x1 => f x1))).
 
 (; //LEAN:Nat.disjoint_divisors_filter_isPrimePow ;)
-Nat__disjoint_divisors_filter_isPrimePow : (a : Elem Nat) -> (b : Elem Nat) -> (hab : Proof (Nat__Coprime a b)) -> Proof (Disjoint (Finset__filter (n => IsPrimePow n) (Nat__divisors a)) (Finset__filter (n1 => IsPrimePow n1) (Nat__divisors b))).
+Nat__disjoint_divisors_filter_isPrimePow : (a : Elem Nat) -> (b : Elem Nat) -> (hab : Proof (Nat__Coprime a b)) -> Proof (Disjoint (Finset Nat) (Finset__filter Nat (n => IsPrimePow Nat n) (Nat__divisors a)) (Finset__filter Nat (n1 => IsPrimePow Nat n1) (Nat__divisors b))).
 
 (; //LEAN:Nat.divisorsAntidiagonal_eq_prod_filter_of_le ;)
-Nat__divisorsAntidiagonal_eq_prod_filter_of_le : (n : Elem Nat) -> (N : Elem Nat) -> (n_ne_zero : Proof (Neq n 0)) -> (hn : Proof (Leq n N)) -> Proof (Eqt (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal n) (Finset__filter (x => Eq (times (Prod__fst x) (Prod__snd x)) n) (SProd__sprod (Finset__Ioc 0 N) (Finset__Ioc 0 N)))).
+Nat__divisorsAntidiagonal_eq_prod_filter_of_le : (n : Elem Nat) -> (N : Elem Nat) -> (n_ne_zero : Proof (Neq n 0)) -> (hn : Proof (Leq n N)) -> Proof (Eqt (Finset (Prod Nat Nat)) (Nat__divisorsAntidiagonal n) (Finset__filter (Prod Nat Nat) (x => Eq (times (Prod__fst Nat Nat x) (Prod__snd Nat Nat x)) n) (SProd__sprod (Finset Nat) (Finset Nat) (Finset (Prod Nat Nat)) (Finset__Ioc Nat 0 N) (Finset__Ioc Nat 0 N)))).
 
 (; //LEAN:Nat.antidiagonal_map_subset_divisorsAntidiagonal_pow ;)
-Nat__antidiagonal_map_subset_divisorsAntidiagonal_pow : (q : Elem Nat) -> (hq : Proof (Lt 1 q)) -> (k : Elem Nat) -> Proof (Set__Subset (Finset__map (Function__Embedding__prodMap (Function__Embedding__mk (k1 => pow q k1) (Nat__pow_right_injective hq)) (Function__Embedding__mk (k2 => pow q k2) (Nat__pow_right_injective hq))) (Finset__HasAntidiagonal__antidiagonal k)) (Nat__divisorsAntidiagonal (pow q k))).
+Nat__antidiagonal_map_subset_divisorsAntidiagonal_pow : (q : Elem Nat) -> (hq : Proof (Lt 1 q)) -> (k : Elem Nat) -> Proof (Set__Subset (Prod Nat Nat) (Finset__map (Prod Nat Nat) (Prod Nat Nat) (Function__Embedding__prodMap Nat Nat Nat Nat (Function__Embedding__mk Nat Nat (k1 => pow q k1) (Nat__pow_right_injective q hq)) (Function__Embedding__mk Nat Nat (k2 => pow q k2) (Nat__pow_right_injective q hq))) (Finset__HasAntidiagonal__antidiagonal Nat instAddNat k)) (Nat__divisorsAntidiagonal (pow q k))).
 
 (; //LEAN:Int.divisors ;)
 def Int__divisors : (z : Elem Int) -> Elem (Finset Int) :=
-  z => Finset__disjUnion (Finset__map Nat__castEmbedding (Nat__divisors (Int__natAbs z))) (Finset__map (Function__Embedding__trans Nat__castEmbedding (Equiv__toEmbedding (Equiv__neg Int))) (Nat__divisors (Int__natAbs z))) (Int__divisors___proof_4 z).
+  z => Finset__disjUnion Int (Finset__map Nat Int (Nat__castEmbedding Int) (Nat__divisors (Int__natAbs z))) (Finset__map Nat Int (Function__Embedding__trans Nat Int Int (Nat__castEmbedding Int) (Equiv__toEmbedding Int Int (Equiv__neg Int))) (Nat__divisors (Int__natAbs z))) (Int__divisors___proof_4 z).
 
 (; //LEAN:Int.divisorsAntidiag ;)
 Int__divisorsAntidiag : (z : Elem Int) -> Elem (Finset (Prod Int Int)).
 
 (; //LEAN:Int.mem_divisors_iff_natAbs_mem_divisors_natAbs ;)
-Int__mem_divisors_iff_natAbs_mem_divisors_natAbs : (x : Elem Int) -> (z : Elem Int) -> Proof (iff (Membership__mem (Int__divisors z) x) (Membership__mem (Nat__divisors (Int__natAbs z)) (Int__natAbs x))).
+Int__mem_divisors_iff_natAbs_mem_divisors_natAbs : (x : Elem Int) -> (z : Elem Int) -> Proof (iff (Membership__mem Int (Finset Int) (Int__divisors z) x) (Membership__mem Nat (Finset Nat) (Nat__divisors (Int__natAbs z)) (Int__natAbs x))).
 
 (; //LEAN:Int.mem_divisors ;)
-Int__mem_divisors : (x : Elem Int) -> (z : Elem Int) -> Proof (iff (Membership__mem (Int__divisors z) x) (and (divide x z) (Neq z 0))).
+Int__mem_divisors : (x : Elem Int) -> (z : Elem Int) -> Proof (iff (Membership__mem Int (Finset Int) (Int__divisors z) x) (and (divide x z) (Neq z 0))).
 
 (; //LEAN:Int.dvd_of_mem_divisors ;)
-def Int__dvd_of_mem_divisors : (x : Elem Int) -> (z : Elem Int) -> (h : Proof (Membership__mem (Int__divisors z) x)) -> Proof (divide x z) :=
-  x => z => h => andEl (divide x z) (Neq z 0) (iffEl (Membership__mem (Int__divisors z) x) (and (divide x z) (Neq z 0)) (Int__mem_divisors x z) h).
+def Int__dvd_of_mem_divisors : (x : Elem Int) -> (z : Elem Int) -> (h : Proof (Membership__mem Int (Finset Int) (Int__divisors z) x)) -> Proof (divide x z) :=
+  x => z => h => andEl (divide x z) (Neq z 0) (iffEl (Membership__mem Int (Finset Int) (Int__divisors z) x) (and (divide x z) (Neq z 0)) (Int__mem_divisors x z) h).
 
 (; //LEAN:Int.ne_zero_of_mem_divisors ;)
-def Int__ne_zero_of_mem_divisors : (x : Elem Int) -> (z : Elem Int) -> (h : Proof (Membership__mem (Int__divisors z) x)) -> Proof (Neq z 0) :=
-  x => z => h => andEr (divide x z) (Neq z 0) (iffEl (Membership__mem (Int__divisors z) x) (and (divide x z) (Neq z 0)) (Int__mem_divisors x z) h).
+def Int__ne_zero_of_mem_divisors : (x : Elem Int) -> (z : Elem Int) -> (h : Proof (Membership__mem Int (Finset Int) (Int__divisors z) x)) -> Proof (Neq z 0) :=
+  x => z => h => andEr (divide x z) (Neq z 0) (iffEl (Membership__mem Int (Finset Int) (Int__divisors z) x) (and (divide x z) (Neq z 0)) (Int__mem_divisors x z) h).
 
 (; //LEAN:Int.one_mem_divisors ;)
-Int__one_mem_divisors : (z : Elem Int) -> Proof (iff (Membership__mem (Int__divisors z) 1) (Neq z 0)).
+Int__one_mem_divisors : (z : Elem Int) -> Proof (iff (Membership__mem Int (Finset Int) (Int__divisors z) 1) (Neq z 0)).
 
 (; //LEAN:Int.neg_one_mem_divisors ;)
-Int__neg_one_mem_divisors : (z : Elem Int) -> Proof (iff (Membership__mem (Int__divisors z) (Neg__neg 1)) (Neq z 0)).
+Int__neg_one_mem_divisors : (z : Elem Int) -> Proof (iff (Membership__mem Int (Finset Int) (Int__divisors z) (Neg__neg Int 1)) (Neq z 0)).
 
 (; //LEAN:Int.divisors_zero ;)
-Int__divisors_zero : Proof (Eqt (Finset Int) (Int__divisors 0) EmptyCollection__emptyCollection).
+Int__divisors_zero : Proof (Eqt (Finset Int) (Int__divisors 0) (EmptyCollection__emptyCollection (Finset Int))).
 
 (; //LEAN:Int.nonempty_divisors ;)
-Int__nonempty_divisors : (z : Elem Int) -> Proof (iff (Finset__Nonempty (Int__divisors z)) (Neq z 0)).
+Int__nonempty_divisors : (z : Elem Int) -> Proof (iff (Finset__Nonempty Int (Int__divisors z)) (Neq z 0)).
 
 (; //LEAN:Int.divisors_eq_empty ;)
-Int__divisors_eq_empty : (z : Elem Int) -> Proof (iff (Eqt (Finset Int) (Int__divisors z) EmptyCollection__emptyCollection) (Eq z 0)).
+Int__divisors_eq_empty : (z : Elem Int) -> Proof (iff (Eqt (Finset Int) (Int__divisors z) (EmptyCollection__emptyCollection (Finset Int))) (Eq z 0)).
 
 (; //LEAN:Int.divisors_one ;)
-def Int__divisors_one : Proof (Eqt (Finset Int) (Int__divisors 1) (Insert__insert 1 (Singleton__singleton (Neg__neg 1)))) :=
+def Int__divisors_one : Proof (Eqt (Finset Int) (Int__divisors 1) (Insert__insert Int (Finset Int) 1 (Singleton__singleton Int (Finset Int) (Neg__neg Int 1)))) :=
   rfl (Finset Int) (Int__divisors 1).
 
 (; //LEAN:Int.mem_divisors_self ;)
-def Int__mem_divisors_self : (z : Elem Int) -> (hz : Proof (Neq z 0)) -> Proof (Membership__mem (Int__divisors z) z) :=
-  z => hz => iffEr (Membership__mem (Int__divisors z) z) (and (divide z z) (Neq z 0)) (Int__mem_divisors z z) (andI (divide z z) (Neq z 0) (dvd_rfl Int z) hz).
+def Int__mem_divisors_self : (z : Elem Int) -> (hz : Proof (Neq z 0)) -> Proof (Membership__mem Int (Finset Int) (Int__divisors z) z) :=
+  z => hz => iffEr (Membership__mem Int (Finset Int) (Int__divisors z) z) (and (divide z z) (Neq z 0)) (Int__mem_divisors z z) (andI (divide z z) (Neq z 0) (dvd_rfl Int z) hz).
 
 (; //LEAN:Int.divisors_neg ;)
-Int__divisors_neg : (z : Elem Int) -> Proof (Eqt (Finset Int) (Int__divisors (Neg__neg z)) (Int__divisors z)).
+Int__divisors_neg : (z : Elem Int) -> Proof (Eqt (Finset Int) (Int__divisors (Neg__neg Int z)) (Int__divisors z)).
 
 (; //LEAN:Int.mem_divisorsAntidiag ;)
-Int__mem_divisorsAntidiag : (xy : Elem (Prod Int Int)) -> (z : Elem Int) -> Proof (iff (Membership__mem (Int__divisorsAntidiag z) xy) (and (Eq (times (Prod__fst xy) (Prod__snd xy)) z) (Neq z 0))).
+Int__mem_divisorsAntidiag : (xy : Elem (Prod Int Int)) -> (z : Elem Int) -> Proof (iff (Membership__mem (Prod Int Int) (Finset (Prod Int Int)) (Int__divisorsAntidiag z) xy) (and (Eq (times (Prod__fst Int Int xy) (Prod__snd Int Int xy)) z) (Neq z 0))).
 
 (; //LEAN:Int.image_fst_divisorsAntidiag ;)
-Int__image_fst_divisorsAntidiag : (z : Elem Int) -> Proof (Eqt (Finset Int) (Finset__image Prod__fst (Int__divisorsAntidiag z)) (Int__divisors z)).
+Int__image_fst_divisorsAntidiag : (z : Elem Int) -> Proof (Eqt (Finset Int) (Finset__image (Prod Int Int) Int (Prod__fst Int Int) (Int__divisorsAntidiag z)) (Int__divisors z)).
 
 (; //LEAN:Int.image_snd_divisorsAntidiag ;)
-Int__image_snd_divisorsAntidiag : (z : Elem Int) -> Proof (Eqt (Finset Int) (Finset__image Prod__snd (Int__divisorsAntidiag z)) (Int__divisors z)).
+Int__image_snd_divisorsAntidiag : (z : Elem Int) -> Proof (Eqt (Finset Int) (Finset__image (Prod Int Int) Int (Prod__snd Int Int) (Int__divisorsAntidiag z)) (Int__divisors z)).
 
 (; //LEAN:Int.divisorsAntidiag_zero ;)
-def Int__divisorsAntidiag_zero : Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag 0) EmptyCollection__emptyCollection) :=
+def Int__divisorsAntidiag_zero : Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag 0) (EmptyCollection__emptyCollection (Finset (Prod Int Int)))) :=
   rfl (Finset (Prod Int Int)) (Int__divisorsAntidiag 0).
 
 (; //LEAN:Int.divisorsAntidiagonal_one ;)
-def Int__divisorsAntidiagonal_one : Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag 1) (Insert__insert (Prod__mk 1 1) (Singleton__singleton (Prod__mk (Neg__neg 1) (Neg__neg 1))))) :=
+def Int__divisorsAntidiagonal_one : Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag 1) (Insert__insert (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int 1 1) (Singleton__singleton (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 1) (Neg__neg Int 1))))) :=
   rfl (Finset (Prod Int Int)) (Int__divisorsAntidiag 1).
 
 (; //LEAN:Int.divisorsAntidiagonal_two ;)
-def Int__divisorsAntidiagonal_two : Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag 2) (Insert__insert (Prod__mk 1 2) (Insert__insert (Prod__mk 2 1) (Insert__insert (Prod__mk (Neg__neg 1) (Neg__neg 2)) (Singleton__singleton (Prod__mk (Neg__neg 2) (Neg__neg 1))))))) :=
+def Int__divisorsAntidiagonal_two : Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag 2) (Insert__insert (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int 1 2) (Insert__insert (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int 2 1) (Insert__insert (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 1) (Neg__neg Int 2)) (Singleton__singleton (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 2) (Neg__neg Int 1))))))) :=
   rfl (Finset (Prod Int Int)) (Int__divisorsAntidiag 2).
 
 (; //LEAN:Int.divisorsAntidiagonal_three ;)
-def Int__divisorsAntidiagonal_three : Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag 3) (Insert__insert (Prod__mk 1 3) (Insert__insert (Prod__mk 3 1) (Insert__insert (Prod__mk (Neg__neg 1) (Neg__neg 3)) (Singleton__singleton (Prod__mk (Neg__neg 3) (Neg__neg 1))))))) :=
+def Int__divisorsAntidiagonal_three : Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag 3) (Insert__insert (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int 1 3) (Insert__insert (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int 3 1) (Insert__insert (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 1) (Neg__neg Int 3)) (Singleton__singleton (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 3) (Neg__neg Int 1))))))) :=
   rfl (Finset (Prod Int Int)) (Int__divisorsAntidiag 3).
 
 (; //LEAN:Int.divisorsAntidiagonal_four ;)
-def Int__divisorsAntidiagonal_four : Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag 4) (Insert__insert (Prod__mk 1 4) (Insert__insert (Prod__mk 2 2) (Insert__insert (Prod__mk 4 1) (Insert__insert (Prod__mk (Neg__neg 1) (Neg__neg 4)) (Insert__insert (Prod__mk (Neg__neg 2) (Neg__neg 2)) (Singleton__singleton (Prod__mk (Neg__neg 4) (Neg__neg 1))))))))) :=
+def Int__divisorsAntidiagonal_four : Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag 4) (Insert__insert (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int 1 4) (Insert__insert (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int 2 2) (Insert__insert (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int 4 1) (Insert__insert (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 1) (Neg__neg Int 4)) (Insert__insert (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 2) (Neg__neg Int 2)) (Singleton__singleton (Prod Int Int) (Finset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 4) (Neg__neg Int 1))))))))) :=
   rfl (Finset (Prod Int Int)) (Int__divisorsAntidiag 4).
 
 (; //LEAN:Int.prodMk_mem_divisorsAntidiag ;)
-Int__prodMk_mem_divisorsAntidiag : (x : Elem Int) -> (y : Elem Int) -> (z : Elem Int) -> (hz : Proof (Neq z 0)) -> Proof (iff (Membership__mem (Int__divisorsAntidiag z) (Prod__mk x y)) (Eq (times x y) z)).
+Int__prodMk_mem_divisorsAntidiag : (x : Elem Int) -> (y : Elem Int) -> (z : Elem Int) -> (hz : Proof (Neq z 0)) -> Proof (iff (Membership__mem (Prod Int Int) (Finset (Prod Int Int)) (Int__divisorsAntidiag z) (Prod__mk Int Int x y)) (Eq (times x y) z)).
 
 (; //LEAN:Int.swap_mem_divisorsAntidiag ;)
-Int__swap_mem_divisorsAntidiag : (xy : Elem (Prod Int Int)) -> (z : Elem Int) -> Proof (iff (Membership__mem (Int__divisorsAntidiag z) (Prod__swap xy)) (Membership__mem (Int__divisorsAntidiag z) xy)).
+Int__swap_mem_divisorsAntidiag : (xy : Elem (Prod Int Int)) -> (z : Elem Int) -> Proof (iff (Membership__mem (Prod Int Int) (Finset (Prod Int Int)) (Int__divisorsAntidiag z) (Prod__swap Int Int xy)) (Membership__mem (Prod Int Int) (Finset (Prod Int Int)) (Int__divisorsAntidiag z) xy)).
 
 (; //LEAN:Int.neg_mem_divisorsAntidiag ;)
-Int__neg_mem_divisorsAntidiag : (xy : Elem (Prod Int Int)) -> (z : Elem Int) -> Proof (iff (Membership__mem (Int__divisorsAntidiag z) (Neg__neg xy)) (Membership__mem (Int__divisorsAntidiag z) xy)).
+Int__neg_mem_divisorsAntidiag : (xy : Elem (Prod Int Int)) -> (z : Elem Int) -> Proof (iff (Membership__mem (Prod Int Int) (Finset (Prod Int Int)) (Int__divisorsAntidiag z) (Neg__neg (Prod Int Int) xy)) (Membership__mem (Prod Int Int) (Finset (Prod Int Int)) (Int__divisorsAntidiag z) xy)).
 
 (; //LEAN:Int.map_prodComm_divisorsAntidiag ;)
-Int__map_prodComm_divisorsAntidiag : (z : Elem Int) -> Proof (Eqt (Finset (Prod Int Int)) (Finset__map (Equiv__toEmbedding (Equiv__prodComm Int Int)) (Int__divisorsAntidiag z)) (Int__divisorsAntidiag z)).
+Int__map_prodComm_divisorsAntidiag : (z : Elem Int) -> Proof (Eqt (Finset (Prod Int Int)) (Finset__map (Prod Int Int) (Prod Int Int) (Equiv__toEmbedding (Prod Int Int) (Prod Int Int) (Equiv__prodComm Int Int)) (Int__divisorsAntidiag z)) (Int__divisorsAntidiag z)).
 
 (; //LEAN:Int.map_neg_divisorsAntidiag ;)
-Int__map_neg_divisorsAntidiag : (z : Elem Int) -> Proof (Eqt (Finset (Prod Int Int)) (Finset__map (Equiv__toEmbedding (Equiv__neg (Prod Int Int))) (Int__divisorsAntidiag z)) (Int__divisorsAntidiag z)).
+Int__map_neg_divisorsAntidiag : (z : Elem Int) -> Proof (Eqt (Finset (Prod Int Int)) (Finset__map (Prod Int Int) (Prod Int Int) (Equiv__toEmbedding (Prod Int Int) (Prod Int Int) (Equiv__neg (Prod Int Int))) (Int__divisorsAntidiag z)) (Int__divisorsAntidiag z)).
 
 (; //LEAN:Int.divisorsAntidiag_neg ;)
-Int__divisorsAntidiag_neg : (z : Elem Int) -> Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag (Neg__neg z)) (Finset__map (Function__Embedding__prodMap (Function__Embedding__refl Int) (Equiv__toEmbedding (Equiv__neg Int))) (Int__divisorsAntidiag z))).
+Int__divisorsAntidiag_neg : (z : Elem Int) -> Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag (Neg__neg Int z)) (Finset__map (Prod Int Int) (Prod Int Int) (Function__Embedding__prodMap Int Int Int Int (Function__Embedding__refl Int) (Equiv__toEmbedding Int Int (Equiv__neg Int))) (Int__divisorsAntidiag z))).
 
 (; //LEAN:Int.divisorsAntidiag_natCast ;)
-def Int__divisorsAntidiag_natCast : (n : Elem Nat) -> Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag n) (Finset__disjUnion (Finset__map (Function__Embedding__prodMap Nat__castEmbedding Nat__castEmbedding) (Nat__divisorsAntidiagonal n)) (Finset__map (Function__Embedding__prodMap (Function__Embedding__trans Nat__castEmbedding (Equiv__toEmbedding (Equiv__neg Int))) (Function__Embedding__trans Nat__castEmbedding (Equiv__toEmbedding (Equiv__neg Int)))) (Nat__divisorsAntidiagonal n)) (Int__divisorsAntidiag___proof_3 n))) :=
-  n => rfl (Finset (Prod Int Int)) (Int__divisorsAntidiag n).
+def Int__divisorsAntidiag_natCast : (n : Elem Nat) -> Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag (Nat__cast Int n)) (Finset__disjUnion (Prod Int Int) (Finset__map (Prod Nat Nat) (Prod Int Int) (Function__Embedding__prodMap Nat Int Nat Int (Nat__castEmbedding Int) (Nat__castEmbedding Int)) (Nat__divisorsAntidiagonal n)) (Finset__map (Prod Nat Nat) (Prod Int Int) (Function__Embedding__prodMap Nat Int Nat Int (Function__Embedding__trans Nat Int Int (Nat__castEmbedding Int) (Equiv__toEmbedding Int Int (Equiv__neg Int))) (Function__Embedding__trans Nat Int Int (Nat__castEmbedding Int) (Equiv__toEmbedding Int Int (Equiv__neg Int)))) (Nat__divisorsAntidiagonal n)) (Int__divisorsAntidiag___proof_3 n))) :=
+  n => rfl (Finset (Prod Int Int)) (Int__divisorsAntidiag (Nat__cast Int n)).
 
 (; //LEAN:Int.divisorsAntidiag_neg_natCast ;)
-Int__divisorsAntidiag_neg_natCast : (n : Elem Nat) -> Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag (Neg__neg n)) (Finset__disjUnion (Finset__map (Function__Embedding__prodMap Nat__castEmbedding (Function__Embedding__trans Nat__castEmbedding (Equiv__toEmbedding (Equiv__neg Int)))) (Nat__divisorsAntidiagonal n)) (Finset__map (Function__Embedding__prodMap (Function__Embedding__trans Nat__castEmbedding (Equiv__toEmbedding (Equiv__neg Int))) Nat__castEmbedding) (Nat__divisorsAntidiagonal n)) (Int__divisorsAntidiag_neg_natCast___proof_1 n))).
+Int__divisorsAntidiag_neg_natCast : (n : Elem Nat) -> Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag (Neg__neg Int (Nat__cast Int n))) (Finset__disjUnion (Prod Int Int) (Finset__map (Prod Nat Nat) (Prod Int Int) (Function__Embedding__prodMap Nat Int Nat Int (Nat__castEmbedding Int) (Function__Embedding__trans Nat Int Int (Nat__castEmbedding Int) (Equiv__toEmbedding Int Int (Equiv__neg Int)))) (Nat__divisorsAntidiagonal n)) (Finset__map (Prod Nat Nat) (Prod Int Int) (Function__Embedding__prodMap Nat Int Nat Int (Function__Embedding__trans Nat Int Int (Nat__castEmbedding Int) (Equiv__toEmbedding Int Int (Equiv__neg Int))) (Nat__castEmbedding Int)) (Nat__divisorsAntidiagonal n)) (Int__divisorsAntidiag_neg_natCast___proof_1 n))).
 
 (; //LEAN:Int.divisorsAntidiag_ofNat ;)
-def Int__divisorsAntidiag_ofNat : (n : Elem Nat) -> Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag (OfNat__ofNat n)) (Finset__disjUnion (Finset__map (Function__Embedding__prodMap Nat__castEmbedding Nat__castEmbedding) (Nat__divisorsAntidiagonal n)) (Finset__map (Function__Embedding__prodMap (Function__Embedding__trans Nat__castEmbedding (Equiv__toEmbedding (Equiv__neg Int))) (Function__Embedding__trans Nat__castEmbedding (Equiv__toEmbedding (Equiv__neg Int)))) (Nat__divisorsAntidiagonal n)) (Int__divisorsAntidiag___proof_3 n))) :=
-  n => rfl (Finset (Prod Int Int)) (Int__divisorsAntidiag (OfNat__ofNat n)).
+def Int__divisorsAntidiag_ofNat : (n : Elem Nat) -> Proof (Eqt (Finset (Prod Int Int)) (Int__divisorsAntidiag (OfNat__ofNat Int n)) (Finset__disjUnion (Prod Int Int) (Finset__map (Prod Nat Nat) (Prod Int Int) (Function__Embedding__prodMap Nat Int Nat Int (Nat__castEmbedding Int) (Nat__castEmbedding Int)) (Nat__divisorsAntidiagonal n)) (Finset__map (Prod Nat Nat) (Prod Int Int) (Function__Embedding__prodMap Nat Int Nat Int (Function__Embedding__trans Nat Int Int (Nat__castEmbedding Int) (Equiv__toEmbedding Int Int (Equiv__neg Int))) (Function__Embedding__trans Nat Int Int (Nat__castEmbedding Int) (Equiv__toEmbedding Int Int (Equiv__neg Int)))) (Nat__divisorsAntidiagonal n)) (Int__divisorsAntidiag___proof_3 n))) :=
+  n => rfl (Finset (Prod Int Int)) (Int__divisorsAntidiag (OfNat__ofNat Int n)).
 
 (; //LEAN:Int.mul_mem_one_two_three_iff ;)
-Int__mul_mem_one_two_three_iff : (a : Elem Int) -> (b : Elem Int) -> Proof (iff (Membership__mem (Insert__insert 1 (Insert__insert 2 (Singleton__singleton 3))) (times a b)) (Membership__mem (Insert__insert (Prod__mk 1 1) (Insert__insert (Prod__mk (Neg__neg 1) (Neg__neg 1)) (Insert__insert (Prod__mk 1 2) (Insert__insert (Prod__mk 2 1) (Insert__insert (Prod__mk (Neg__neg 1) (Neg__neg 2)) (Insert__insert (Prod__mk (Neg__neg 2) (Neg__neg 1)) (Insert__insert (Prod__mk 1 3) (Insert__insert (Prod__mk 3 1) (Insert__insert (Prod__mk (Neg__neg 1) (Neg__neg 3)) (Singleton__singleton (Prod__mk (Neg__neg 3) (Neg__neg 1)))))))))))) (Prod__mk a b))).
+Int__mul_mem_one_two_three_iff : (a : Elem Int) -> (b : Elem Int) -> Proof (iff (Membership__mem Int (powerset Int) (Insert__insert Int (powerset Int) 1 (Insert__insert Int (powerset Int) 2 (Singleton__singleton Int (powerset Int) 3))) (times a b)) (Membership__mem (Prod Int Int) (powerset (Prod Int Int)) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int 1 1) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 1) (Neg__neg Int 1)) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int 1 2) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int 2 1) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 1) (Neg__neg Int 2)) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 2) (Neg__neg Int 1)) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int 1 3) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int 3 1) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 1) (Neg__neg Int 3)) (Singleton__singleton (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 3) (Neg__neg Int 1)))))))))))) (Prod__mk Int Int a b))).
 
 (; //LEAN:Int.mul_mem_zero_one_two_three_four_iff ;)
-Int__mul_mem_zero_one_two_three_four_iff : (a : Elem Int) -> (b : Elem Int) -> (h : Proof (iff (Eq a 0) (Eq b 0))) -> Proof (iff (Membership__mem (Insert__insert 0 (Insert__insert 1 (Insert__insert 2 (Insert__insert 3 (Singleton__singleton 4))))) (times a b)) (Membership__mem (Insert__insert (Prod__mk 0 0) (Insert__insert (Prod__mk 1 1) (Insert__insert (Prod__mk (Neg__neg 1) (Neg__neg 1)) (Insert__insert (Prod__mk 1 2) (Insert__insert (Prod__mk 2 1) (Insert__insert (Prod__mk (Neg__neg 1) (Neg__neg 2)) (Insert__insert (Prod__mk (Neg__neg 2) (Neg__neg 1)) (Insert__insert (Prod__mk 1 3) (Insert__insert (Prod__mk 3 1) (Insert__insert (Prod__mk (Neg__neg 1) (Neg__neg 3)) (Insert__insert (Prod__mk (Neg__neg 3) (Neg__neg 1)) (Insert__insert (Prod__mk 4 1) (Insert__insert (Prod__mk 1 4) (Insert__insert (Prod__mk (Neg__neg 4) (Neg__neg 1)) (Insert__insert (Prod__mk (Neg__neg 1) (Neg__neg 4)) (Insert__insert (Prod__mk 2 2) (Singleton__singleton (Prod__mk (Neg__neg 2) (Neg__neg 2))))))))))))))))))) (Prod__mk a b))).
+Int__mul_mem_zero_one_two_three_four_iff : (a : Elem Int) -> (b : Elem Int) -> (h : Proof (iff (Eq a 0) (Eq b 0))) -> Proof (iff (Membership__mem Int (powerset Int) (Insert__insert Int (powerset Int) 0 (Insert__insert Int (powerset Int) 1 (Insert__insert Int (powerset Int) 2 (Insert__insert Int (powerset Int) 3 (Singleton__singleton Int (powerset Int) 4))))) (times a b)) (Membership__mem (Prod Int Int) (powerset (Prod Int Int)) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int 0 0) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int 1 1) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 1) (Neg__neg Int 1)) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int 1 2) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int 2 1) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 1) (Neg__neg Int 2)) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 2) (Neg__neg Int 1)) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int 1 3) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int 3 1) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 1) (Neg__neg Int 3)) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 3) (Neg__neg Int 1)) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int 4 1) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int 1 4) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 4) (Neg__neg Int 1)) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 1) (Neg__neg Int 4)) (Insert__insert (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int 2 2) (Singleton__singleton (Prod Int Int) (powerset (Prod Int Int)) (Prod__mk Int Int (Neg__neg Int 2) (Neg__neg Int 2))))))))))))))))))) (Prod__mk Int Int a b))).
 

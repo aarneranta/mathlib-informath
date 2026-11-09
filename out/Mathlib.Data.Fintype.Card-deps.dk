@@ -9,37 +9,41 @@ Classical__not_forall : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (iff (not (
 
 (; doc: Set / lattice complement  Conventions for notations in identifiers:   * The recommended spelling of `ᶜ` in identifiers is `compl`. ;)
 (; //LEAN:Compl.compl ;)
-Compl__compl : (x : Elem X) -> Elem X.
+Compl__compl : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: Two elements of a lattice are disjoint if their inf is the bottom element.   (This generalizes disjoint sets, viewed as members of the subset lattice.)  Note that we define this without reference to `⊓`, as this allows us to talk about orders where the infimum is not unique, or where implementing `Inf` would require additional `Decidable` arguments. ;)
 (; //LEAN:Disjoint ;)
-Disjoint : (a : Elem X) -> (b : Elem X) -> Prop.
+Disjoint : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Prop.
 
 (; doc: The class `EmbeddingLike F α β` expresses that terms of type `F` have an injective coercion to injective functions `α ↪ β`. ;)
 (; //LEAN:EmbeddingLike ;)
-EmbeddingLike : (F : Set) -> (x : Elem (outParam Set)) -> (x1 : Elem (outParam Set)) -> Prop.
+EmbeddingLike : (F : Set) -> (X : Set) -> (Y : Set) -> Prop.
 
 (; //LEAN:EmbeddingLike.comp_injective._simp_1 ;)
-EmbeddingLike__comp_injective___simp_1 : (X : Set) -> (Y : Set) -> (Z : Set) -> (F : Set) -> (_ : Proof (EmbeddingLike F Y Z)) -> (f : (Elem X -> Y)) -> (e : Elem F) -> Proof (Eqt Prop (Function__Injective (Function__comp e f)) (Function__Injective f)).
+EmbeddingLike__comp_injective___simp_1 : (X : Set) -> (Y : Set) -> (Z : Set) -> (F : Set) -> (_ : Proof (EmbeddingLike F Y Z)) -> (f : (Elem X -> Y)) -> (e : Elem F) -> Proof (Eqt Prop (Function__Injective X Z (Function__comp X Y Z e f)) (Function__Injective X Y f)).
 
 (; //LEAN:EmbeddingLike.injective ;)
-EmbeddingLike__injective : (F : Set) -> (X : Set) -> (Y : Set) -> (_ : Proof (EmbeddingLike F X Y)) -> (f : Elem F) -> Proof (Function__Injective f).
+EmbeddingLike__injective : (F : Set) -> (X : Set) -> (Y : Set) -> (_ : Proof (EmbeddingLike F X Y)) -> (f : Elem F) -> Proof (Function__Injective X Y f).
 
 (; doc: The empty type. It has no constructors.  Use `Empty.elim` in contexts where a value of type `Empty` is in scope. ;)
 (; //LEAN:Empty ;)
 Empty : Set.
 
+(; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
+(; //LEAN:Eq ;)
+Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
+
 (; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
 (; //LEAN:Eq.mp ;)
-Eq__mp : (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
+Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
 
 (; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
 (; //LEAN:Eq.mpr ;)
-Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
 
 (; doc: Non-dependent recursor for the equality type. ;)
 (; //LEAN:Eq.ndrec ;)
-Eq__ndrec : (m : Elem (motive a)) -> (h : Proof (Eqt X a b)) -> Elem (motive b).
+Eq__ndrec : (X : Set) -> (a : Elem X) -> (motive : (Elem X -> Set)) -> (m : Elem (motive a)) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Elem (motive b).
 
 (; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.symm ;)
@@ -54,60 +58,60 @@ Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Pr
 Equiv : (X : Set) -> (Y : Set) -> Set.
 
 (; //LEAN:Equiv.bijective ;)
-Equiv__bijective : (X : Set) -> (Y : Set) -> (e : Elem (Equiv X Y)) -> Proof (Function__Bijective e).
+Equiv__bijective : (X : Set) -> (Y : Set) -> (e : Elem (Equiv X Y)) -> Proof (Function__Bijective X Y e).
 
 (; doc: Equivalence between equal types. ;)
 (; //LEAN:Equiv.cast ;)
-Equiv__cast : (h : Proof (Eqt Set X Y)) -> Elem (Equiv X Y).
+Equiv__cast : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> Elem (Equiv X Y).
 
 (; doc: `α` is equivalent to an empty type iff `α` is empty. ;)
 (; //LEAN:Equiv.equivEmptyEquiv ;)
 Equiv__equivEmptyEquiv : (X : Set) -> Elem (Equiv (Equiv X Empty) (IsEmpty X)).
 
 (; //LEAN:Equiv.injective ;)
-Equiv__injective : (X : Set) -> (Y : Set) -> (e : Elem (Equiv X Y)) -> Proof (Function__Injective e).
+Equiv__injective : (X : Set) -> (Y : Set) -> (e : Elem (Equiv X Y)) -> Proof (Function__Injective X Y e).
 
 (; doc: If `f` is a bijective function, then its domain is equivalent to its codomain. ;)
 (; //LEAN:Equiv.ofBijective ;)
-Equiv__ofBijective : (f : (Elem X -> Y)) -> (hf : Proof (Function__Bijective f)) -> Elem (Equiv X Y).
+Equiv__ofBijective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Bijective X Y f)) -> Elem (Equiv X Y).
 
 (; doc: equivalence of propositions is the same as iff ;)
 (; //LEAN:Equiv.ofIff ;)
-Equiv__ofIff : (h : Proof (iff P Q)) -> Elem (Equiv P Q).
+Equiv__ofIff : (P : Prop) -> (Q : Prop) -> (h : Proof (iff P Q)) -> Elem (Equiv P Q).
 
 (; doc: If `f : α → β` is an injective function, then domain `α` is equivalent to the range of `f`. ;)
 (; //LEAN:Equiv.ofInjective ;)
-Equiv__ofInjective : (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective f)) -> Elem (Equiv X (Set__Elem (Set__range f))).
+Equiv__ofInjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective X Y f)) -> Elem (Equiv X (Set__Elem Y (Set__range Y X f))).
 
 (; doc: `PLift α` is equivalent to `α`. ;)
 (; //LEAN:Equiv.plift ;)
-Equiv__plift : Elem (Equiv (PLift X) X).
+Equiv__plift : (X : Set) -> Elem (Equiv (PLift X) X).
 
 (; doc: Any type is equivalent to itself. ;)
 (; //LEAN:Equiv.refl ;)
 Equiv__refl : (X : Set) -> Elem (Equiv X X).
 
 (; //LEAN:Equiv.surjective ;)
-Equiv__surjective : (X : Set) -> (Y : Set) -> (e : Elem (Equiv X Y)) -> Proof (Function__Surjective e).
+Equiv__surjective : (X : Set) -> (Y : Set) -> (e : Elem (Equiv X Y)) -> Proof (Function__Surjective X Y e).
 
 (; doc: Inverse of an equivalence `e : α ≃ β`. ;)
 (; //LEAN:Equiv.symm ;)
-Equiv__symm : (e : Elem (Equiv X Y)) -> Elem (Equiv Y X).
+Equiv__symm : (X : Set) -> (Y : Set) -> (e : Elem (Equiv X Y)) -> Elem (Equiv Y X).
 
 (; doc: Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. ;)
 (; //LEAN:Equiv.trans ;)
-Equiv__trans : (x : Elem (Equiv X Y)) -> (x1 : Elem (Equiv Y Z)) -> Elem (Equiv X Z).
+Equiv__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem (Equiv X Y)) -> (x1 : Elem (Equiv Y Z)) -> Elem (Equiv X Z).
 
 (; doc: `ULift α` is equivalent to `α`. ;)
 (; //LEAN:Equiv.ulift ;)
-Equiv__ulift : Elem (Equiv (ULift X) X).
+Equiv__ulift : (X : Set) -> Elem (Equiv (ULift X) X).
 
 (; //LEAN:EquivLike.comp_surjective._simp_1 ;)
-EquivLike__comp_surjective___simp_1 : (F : Set) -> (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (e : Elem F) -> Proof (Eqt Prop (Function__Surjective (Function__comp e f)) (Function__Surjective f)).
+EquivLike__comp_surjective___simp_1 : (F : Set) -> (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (e : Elem F) -> Proof (Eqt Prop (Function__Surjective X Z (Function__comp X Y Z e f)) (Function__Surjective X Y f)).
 
 (; doc: For `p : α → Prop`, `ExistsUnique p` means that there exists a unique `x : α` with `p x`. ;)
 (; //LEAN:ExistsUnique ;)
-ExistsUnique : (p : (Elem X -> Prop)) -> Prop.
+ExistsUnique : (X : Set) -> (p : (Elem X -> Prop)) -> Prop.
 
 (; doc: Natural numbers less than some upper bound.  In particular, a `Fin n` is a natural number `i` with the constraint that `i < n`. It is the canonical type with `n` elements. ;)
 (; //LEAN:Fin ;)
@@ -115,11 +119,15 @@ Fin : (n : Elem Nat) -> Set.
 
 (; doc: Uses a proof that two bounds are equal to allow a value bounded by one to be used with the other.  In other words, when `eq : n = m`, `Fin.cast eq i` converts `i : Fin n` into a `Fin m`. ;)
 (; //LEAN:Fin.cast ;)
-Fin__cast : (eq : Proof (Eq n m)) -> (i : Elem (Fin n)) -> Elem (Fin m).
+Fin__cast : (n : Elem Nat) -> (m : Elem Nat) -> (eq : Proof (Eq n m)) -> (i : Elem (Fin n)) -> Elem (Fin m).
 
 (; doc: Two elements of `Fin k` and `Fin l` are heq iff their values in `ℕ` coincide. This requires `k = l`. For the left implication without this assumption, see `val_eq_val_of_heq`. ;)
 (; //LEAN:Fin.heq_ext_iff ;)
-Fin__heq_ext_iff : (k : Elem Nat) -> (l : Elem Nat) -> (h : Proof (Eq k l)) -> (i : Elem (Fin k)) -> (j : Elem (Fin l)) -> Proof (iff (HEq i j) (Eq i j)).
+Fin__heq_ext_iff : (k : Elem Nat) -> (l : Elem Nat) -> (h : Proof (Eq k l)) -> (i : Elem (Fin k)) -> (j : Elem (Fin l)) -> Proof (iff (HEq (Fin k) i (Fin l) j) (Eq (Fin__val k i) (Fin__val l j))).
+
+(; doc: The number that is strictly less than `n`.  `Fin.val` is a coercion, so any `Fin n` can be used in a position where a `Nat` is expected. ;)
+(; //LEAN:Fin.val ;)
+Fin__val : (n : Elem Nat) -> (self : Elem (Fin n)) -> Elem Nat.
 
 (; doc: A type is `Finite` if it is in bijective correspondence to some `Fin n`.  This is similar to `Fintype`, but `Finite` is a proposition rather than data. A particular benefit to this is that `Finite` instances are definitionally equal to one another (due to proof irrelevance) rather than being merely propositionally equal, and, furthermore, `Finite` instances generally avoid the need for `Decidable` instances. One other notable difference is that `Finite` allows there to be `Finite p` instances for all `p : Prop`, which is not allowed by `Fintype` due to universe constraints. An application of this is that `Finite (x ∈ s → β x)` follows from the general instance for pi types, assuming `[∀ x, Finite (β x)]`. Implementation note: this is a reason `Finite α` is not defined as `Nonempty (Fintype α)`.  Every `Fintype` instance provides a `Finite` instance via `Finite.of_fintype`. Conversely, one can noncomputably create a `Fintype` instance from a `Finite` instance via `Fintype.ofFinite`. In a proof one might write ```lean   have := Fintype.ofFinite α ``` to obtain such an instance.  Do not write noncomputable `Fintype` instances; instead write `Finite` instances and use this `Fintype.ofFinite` interface. The `Fintype` instances should be relied upon to be computable for evaluation purposes.  Theorems should use `Finite` instead of `Fintype`, unless definitions in the theorem statement require `Fintype`. Definitions should prefer `Finite` as well, unless it is important that the definitions are meant to be computable in the reduction or `#eval` sense. ;)
 (; //LEAN:Finite ;)
@@ -131,85 +139,85 @@ Finset : (X : Set) -> Set.
 
 (; doc: The property `s.Nonempty` expresses the fact that the finset `s` is not empty. It should be used in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks to the dot notation. ;)
 (; //LEAN:Finset.Nonempty ;)
-Finset__Nonempty : (s : Elem (Finset X)) -> Prop.
+Finset__Nonempty : (X : Set) -> (s : Elem (Finset X)) -> Prop.
 
 (; doc: `s.card` is the number of elements of `s`, aka its cardinality.  The notation `#s` can be accessed in the `Finset` locale. ;)
 (; //LEAN:Finset.card ;)
-Finset__card : (s : Elem (Finset X)) -> Elem Nat.
+Finset__card : (X : Set) -> (s : Elem (Finset X)) -> Elem Nat.
 
 (; //LEAN:Finset.card_le_card ;)
-Finset__card_le_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Set__Subset s t)) -> Proof (Leq (Finset__card s) (Finset__card t)).
+Finset__card_le_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Set__Subset X s t)) -> Proof (Leq (Finset__card X s) (Finset__card X t)).
 
 (; //LEAN:Finset.card_le_card_of_injOn ;)
-Finset__card_le_card_of_injOn : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Set__MapsTo f s t)) -> (f_inj : Proof (Set__InjOn f s)) -> Proof (Leq (Finset__card s) (Finset__card t)).
+Finset__card_le_card_of_injOn : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Set__MapsTo X Y f (SetLike__coe (Finset X) X s) (SetLike__coe (Finset Y) Y t))) -> (f_inj : Proof (Set__InjOn X Y f (SetLike__coe (Finset X) X s))) -> Proof (Leq (Finset__card X s) (Finset__card Y t)).
 
 (; //LEAN:Finset.card_lt_card ;)
-Finset__card_lt_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (HasSSubset__SSubset s t)) -> Proof (Lt (Finset__card s) (Finset__card t)).
+Finset__card_lt_card : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (HasSSubset__SSubset (Finset X) s t)) -> Proof (Lt (Finset__card X s) (Finset__card X t)).
 
 (; //LEAN:Finset.card_map ;)
-Finset__card_map : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : Elem (Function__Embedding X Y)) -> Proof (Eq (Finset__card (Finset__map f s)) (Finset__card s)).
+Finset__card_map : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : Elem (Function__Embedding X Y)) -> Proof (Eq (Finset__card Y (Finset__map X Y f s)) (Finset__card X s)).
 
 (; //LEAN:Finset.coe_map ;)
-Finset__coe_map : (X : Set) -> (Y : Set) -> (f : Elem (Function__Embedding X Y)) -> (s : Elem (Finset X)) -> Proof (Eqt (powerset Y) (Finset__map f s) (Set__image f s)).
+Finset__coe_map : (X : Set) -> (Y : Set) -> (f : Elem (Function__Embedding X Y)) -> (s : Elem (Finset X)) -> Proof (Eqt (powerset Y) (SetLike__coe (Finset Y) Y (Finset__map X Y f s)) (Set__image X Y f (SetLike__coe (Finset X) X s))).
 
 (; //LEAN:Finset.coe_univ ;)
-Finset__coe_univ : (X : Set) -> (_ : Proof (Fintype X)) -> Proof (Eqt (powerset X) Finset__univ Set__univ).
+Finset__coe_univ : (X : Set) -> (_ : Proof (Fintype X)) -> Proof (Eqt (powerset X) (SetLike__coe (Finset X) X (Finset__univ X)) (Set__univ X)).
 
 (; //LEAN:Finset.compl_ne_univ_iff_nonempty ;)
-Finset__compl_ne_univ_iff_nonempty : (X : Set) -> (_ : Proof (Fintype X)) -> (s : Elem (Finset X)) -> Proof (iff (Neq (Compl__compl s) Finset__univ) (Finset__Nonempty s)).
+Finset__compl_ne_univ_iff_nonempty : (X : Set) -> (_ : Proof (Fintype X)) -> (s : Elem (Finset X)) -> Proof (iff (Neq (Compl__compl (Finset X) s) (Finset__univ X)) (Finset__Nonempty X s)).
 
 (; //LEAN:Finset.eq_of_subset_of_card_le ;)
-Finset__eq_of_subset_of_card_le : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Set__Subset s t)) -> (h1 : Proof (Leq (Finset__card t) (Finset__card s))) -> Proof (Eqt (Finset X) s t).
+Finset__eq_of_subset_of_card_le : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Set__Subset X s t)) -> (h1 : Proof (Leq (Finset__card X t) (Finset__card X s))) -> Proof (Eqt (Finset X) s t).
 
 (; doc: `Finset.filter p s` is the set of elements of `s` that satisfy `p`.  For example, one can use `s.filter (· ∈ t)` to get the intersection of `s` with `t : Set α` as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available). ;)
 (; //LEAN:Finset.filter ;)
-Finset__filter : (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Elem (Finset X).
+Finset__filter : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> Elem (Finset X).
 
 (; doc: `image f s` is the forward image of `s` under `f`. ;)
 (; //LEAN:Finset.image ;)
-Finset__image : (f : (Elem X -> Y)) -> (s : Elem (Finset X)) -> Elem (Finset Y).
+Finset__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (Finset X)) -> Elem (Finset Y).
 
 (; doc: When `f` is an embedding of `α` in `β` and `s` is a finset in `α`, then `s.map f` is the image finset in `β`. The embedding condition guarantees that there are no duplicates in the image. ;)
 (; //LEAN:Finset.map ;)
-Finset__map : (f : Elem (Function__Embedding X Y)) -> (s : Elem (Finset X)) -> Elem (Finset Y).
+Finset__map : (X : Set) -> (Y : Set) -> (f : Elem (Function__Embedding X Y)) -> (s : Elem (Finset X)) -> Elem (Finset Y).
 
 (; //LEAN:Finset.mem_coe ;)
-Finset__mem_coe : (X : Set) -> (a : Elem X) -> (s : Elem (Finset X)) -> Proof (iff (Membership__mem s a) (Membership__mem s a)).
+Finset__mem_coe : (X : Set) -> (a : Elem X) -> (s : Elem (Finset X)) -> Proof (iff (Membership__mem X (powerset X) (SetLike__coe (Finset X) X s) a) (Membership__mem X (Finset X) s a)).
 
 (; //LEAN:Finset.mem_univ ;)
-Finset__mem_univ : (X : Set) -> (_ : Proof (Fintype X)) -> (x1 : Elem X) -> Proof (Membership__mem Finset__univ x1).
+Finset__mem_univ : (X : Set) -> (_ : Proof (Fintype X)) -> (x1 : Elem X) -> Proof (Membership__mem X (Finset X) (Finset__univ X) x1).
 
 (; //LEAN:Finset.subset_compl_iff_disjoint_left ;)
-Finset__subset_compl_iff_disjoint_left : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (_ : Proof (Fintype X)) -> Proof (iff (Set__Subset s (Compl__compl t)) (Disjoint t s)).
+Finset__subset_compl_iff_disjoint_left : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (_ : Proof (Fintype X)) -> Proof (iff (Set__Subset X s (Compl__compl (Finset X) t)) (Disjoint (Finset X) t s)).
 
 (; //LEAN:Finset.subset_univ ;)
-Finset__subset_univ : (X : Set) -> (_ : Proof (Fintype X)) -> (s : Elem (Finset X)) -> Proof (Set__Subset s Finset__univ).
+Finset__subset_univ : (X : Set) -> (_ : Proof (Fintype X)) -> (s : Elem (Finset X)) -> Proof (Set__Subset X s (Finset__univ X)).
 
 (; doc: `univ` is the universal finite set of type `Finset α` implied from the assumption `Fintype α`. ;)
 (; //LEAN:Finset.univ ;)
-Finset__univ : Elem (Finset X).
+Finset__univ : (X : Set) -> Elem (Finset X).
 
 (; doc: The underlying multiset ;)
 (; //LEAN:Finset.val ;)
-Finset__val : (self : Elem (Finset X)) -> Elem (Multiset X).
+Finset__val : (X : Set) -> (self : Elem (Finset X)) -> Elem (Multiset X).
 
 (; doc: `Fintype α` means that `α` is finite, i.e. there are only finitely many distinct elements of type `α`. The evidence of this is a finset `elems` (a list up to permutation without duplicates), together with a proof that everything of type `α` is in the list. ;)
 (; //LEAN:Fintype ;)
 Fintype : (X : Set) -> Prop.
 
 (; //LEAN:Fintype.ofBijective._proof_1 ;)
-Fintype__ofBijective___proof_1 : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (H : Proof (Function__Bijective f)) -> Proof (Function__Injective f).
+Fintype__ofBijective___proof_1 : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (H : Proof (Function__Bijective X Y f)) -> Proof (Function__Injective X Y f).
 
 (; doc: Given an injective function to a fintype, the domain is also a fintype. This is noncomputable because injectivity alone cannot be used to construct preimages. ;)
 (; //LEAN:Fintype.ofInjective ;)
-Fintype__ofInjective : (f : (Elem X -> Y)) -> (H : Proof (Function__Injective f)) -> Proof (Fintype X).
+Fintype__ofInjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (H : Proof (Function__Injective X Y f)) -> Proof (Fintype X).
 
 (; //LEAN:Fintype.subtype._proof_1 ;)
-Fintype__subtype___proof_1 : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> (H : Proof (forall X (x1 => iff (Membership__mem s x1) (p x1)))) -> (x : Elem X) -> (h : Proof (Membership__mem s x)) -> Proof (p x).
+Fintype__subtype___proof_1 : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> (H : Proof (forall X (x1 => iff (Membership__mem X (Finset X) s x1) (p x1)))) -> (x : Elem X) -> (h : Proof (Membership__mem X (Finset X) s x)) -> Proof (p x).
 
 (; doc: A function is called bijective if it is both injective and surjective. ;)
 (; //LEAN:Function.Bijective ;)
-Function__Bijective : (f : (Elem X -> Y)) -> Prop.
+Function__Bijective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: `α ↪ β` is a bundled injective function. ;)
 (; //LEAN:Function.Embedding ;)
@@ -217,56 +225,56 @@ Function__Embedding : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: An embedding is an injective function. Use `Function.Embedding.injective` instead. ;)
 (; //LEAN:Function.Embedding.inj' ;)
-Function__Embedding__inj' : (X : Set) -> (Y : Set) -> (self : Elem (Function__Embedding X Y)) -> Proof (Function__Injective (Function__Embedding__toFun self)).
+Function__Embedding__inj' : (X : Set) -> (Y : Set) -> (self : Elem (Function__Embedding X Y)) -> Proof (Function__Injective X Y (Function__Embedding__toFun X Y self)).
 
 (; //LEAN:Function.Embedding.mk ;)
-Function__Embedding__mk : (toFun : (Elem X -> Y)) -> (inj' : Proof (Function__Injective toFun)) -> Elem (Function__Embedding X Y).
+Function__Embedding__mk : (X : Set) -> (Y : Set) -> (toFun : (Elem X -> Y)) -> (inj' : Proof (Function__Injective X Y toFun)) -> Elem (Function__Embedding X Y).
 
 (; doc: Embedding of a `Subtype`. ;)
 (; //LEAN:Function.Embedding.subtype ;)
-Function__Embedding__subtype : (p : (Elem X -> Prop)) -> Elem (Function__Embedding (Subtype (x => p x)) X).
+Function__Embedding__subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Elem (Function__Embedding (Subtype X (x => p x)) X).
 
 (; //LEAN:Function.HasLeftInverse.injective ;)
-Function__HasLeftInverse__injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (h : Proof (Function__HasLeftInverse f)) -> Proof (Function__Injective f).
+Function__HasLeftInverse__injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (h : Proof (Function__HasLeftInverse X Y f)) -> Proof (Function__Injective X Y f).
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Function.Injective.comp ;)
-Function__Injective__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (g : (Elem Y -> Z)) -> (f : (Elem X -> Y)) -> (hg : Proof (Function__Injective g)) -> (hf : Proof (Function__Injective f)) -> Proof (Function__Injective (Function__comp g f)).
+Function__Injective__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (g : (Elem Y -> Z)) -> (f : (Elem X -> Y)) -> (hg : Proof (Function__Injective Y Z g)) -> (hf : Proof (Function__Injective X Y f)) -> Proof (Function__Injective X Z (Function__comp X Y Z g f)).
 
 (; doc: `LeftInverse g f` means that `g` is a left inverse to `f`. That is, `g ∘ f = id`. ;)
 (; //LEAN:Function.LeftInverse ;)
-Function__LeftInverse : (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> Prop.
+Function__LeftInverse : (X : Set) -> (Y : Set) -> (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> Prop.
 
 (; doc: A function `f : α → β` is called surjective if every `b : β` is equal to `f a` for some `a : α`. ;)
 (; //LEAN:Function.Surjective ;)
-Function__Surjective : (f : (Elem X -> Y)) -> Prop.
+Function__Surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Function.Surjective.comp ;)
-Function__Surjective__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (g : (Elem Y -> Z)) -> (f : (Elem X -> Y)) -> (hg : Proof (Function__Surjective g)) -> (hf : Proof (Function__Surjective f)) -> Proof (Function__Surjective (Function__comp g f)).
+Function__Surjective__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (g : (Elem Y -> Z)) -> (f : (Elem X -> Y)) -> (hg : Proof (Function__Surjective Y Z g)) -> (hf : Proof (Function__Surjective X Y f)) -> Proof (Function__Surjective X Z (Function__comp X Y Z g f)).
 
 (; doc: Function composition, usually written with the infix operator `∘`. A new function is created from two existing functions, where one function's output is used as input to the other.  Examples:  * `Function.comp List.reverse (List.drop 2) [3, 2, 4, 1] = [1, 4]`  * `(List.reverse ∘ List.drop 2) [3, 2, 4, 1] = [1, 4]`  Conventions for notations in identifiers:   * The recommended spelling of `∘` in identifiers is `comp`. ;)
 (; //LEAN:Function.comp ;)
-Function__comp : (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
+Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
 
 (; //LEAN:Function.injective_surjInv ;)
-Function__injective_surjInv : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (h : Proof (Function__Surjective f)) -> Proof (Function__Injective (Function__surjInv h)).
+Function__injective_surjInv : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (h : Proof (Function__Surjective X Y f)) -> Proof (Function__Injective Y X (Function__surjInv X Y f h)).
 
 (; //LEAN:Function.leftInverse_of_surjective_of_rightInverse ;)
-Function__leftInverse_of_surjective_of_rightInverse : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> X)) -> (surjf : Proof (Function__Surjective f)) -> (rfg : Proof (Function__RightInverse f g)) -> Proof (Function__LeftInverse f g).
+Function__leftInverse_of_surjective_of_rightInverse : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> X)) -> (surjf : Proof (Function__Surjective X Y f)) -> (rfg : Proof (Function__RightInverse Y X f g)) -> Proof (Function__LeftInverse Y X f g).
 
 (; //LEAN:Function.rightInverse_surjInv ;)
-Function__rightInverse_surjInv : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Surjective f)) -> Proof (Function__RightInverse (Function__surjInv hf) f).
+Function__rightInverse_surjInv : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Surjective X Y f)) -> Proof (Function__RightInverse X Y (Function__surjInv X Y f hf) f).
 
 (; doc: The inverse of a surjective function. (Unlike `invFun`, this does not require `α` to be inhabited.) ;)
 (; //LEAN:Function.surjInv ;)
-Function__surjInv : (h : Proof (Function__Surjective f)) -> (b : Elem Y) -> Elem X.
+Function__surjInv : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (h : Proof (Function__Surjective X Y f)) -> (b : Elem Y) -> Elem X.
 
 (; doc: Heterogeneous equality. `a ≍ b` asserts that `a` and `b` have the same type, and casting `a` across the equality yields `b`, and vice versa.  You should avoid using this type if you can. Heterogeneous equality does not have all the same properties as `Eq`, because the assumption that the types of `a` and `b` are equal is often too weak to prove theorems of interest. One public important non-theorem is the analogue of `congr`: If `f ≍ g` and `x ≍ y` and `f x` and `g y` are well typed it does not follow that `f x ≍ g y`. (This does follow if you have `f = g` instead.) However if `a` and `b` have the same type then `a = b` and `a ≍ b` are equivalent.  Conventions for notations in identifiers:   * The recommended spelling of `≍` in identifiers is `heq`. ;)
 (; //LEAN:HEq ;)
-HEq : (x : Elem X) -> (x1 : Elem Y) -> Prop.
+HEq : (X : Set) -> (x : Elem X) -> (Y : Set) -> (x1 : Elem Y) -> Prop.
 
 (; //LEAN:Iff.rfl ;)
 Iff__rfl : (a : Prop) -> Proof (iff a a).
@@ -298,24 +306,24 @@ List : (X : Set) -> Set.
 
 (; doc: The list has no duplicates: it contains every element at most once.  It is defined as `Pairwise (· ≠ ·)`: each element is unequal to all other elements. ;)
 (; //LEAN:List.Nodup ;)
-List__Nodup : (x : Elem (List X)) -> Prop.
+List__Nodup : (X : Set) -> (x : Elem (List X)) -> Prop.
 
 (; doc: The length of a list.  This function is overridden in the compiler to `lengthTR`, which uses constant stack space.  Examples: * `([] : List String).length = 0` * `["green", "brown"].length = 2` ;)
 (; //LEAN:List.length ;)
-List__length : (x : Elem (List X)) -> Elem Nat.
+List__length : (X : Set) -> (x : Elem (List X)) -> Elem Nat.
 
 (; //LEAN:List.length_finRange ;)
-List__length_finRange : (n : Elem Nat) -> Proof (Eq (List__length (List__finRange n)) n).
+List__length_finRange : (n : Elem Nat) -> Proof (Eq (List__length (Fin n) (List__finRange n)) n).
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
-Membership__mem : (x1 : Elem Z) -> (x2 : Elem x) -> Prop.
+Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
 
 (; //LEAN:Multiset.card_map ;)
-Multiset__card_map : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (Multiset X)) -> Proof (Eq (Multiset__card (Multiset__map f s)) (Multiset__card s)).
+Multiset__card_map : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (Multiset X)) -> Proof (Eq (Multiset__card Y (Multiset__map X Y f s)) (Multiset__card X s)).
 
 (; //LEAN:Multiset.card_pmap ;)
-Multiset__card_pmap : (X : Set) -> (Y : Set) -> (p : (Elem X -> Prop)) -> (f : ((a1 : Elem X) -> Proof (p a1) -> Y)) -> (s : Elem (Multiset X)) -> (H : Proof (forall X (a => if (Membership__mem s a) (p a)))) -> Proof (Eq (Multiset__card (Multiset__pmap f s H)) (Multiset__card s)).
+Multiset__card_pmap : (X : Set) -> (Y : Set) -> (p : (Elem X -> Prop)) -> (f : ((a1 : Elem X) -> Proof (p a1) -> Y)) -> (s : Elem (Multiset X)) -> (H : Proof (forall X (a => if (Membership__mem X (Multiset X) s a) (p a)))) -> Proof (Eq (Multiset__card Y (Multiset__pmap X Y p f s H)) (Multiset__card X s)).
 
 (; //LEAN:Nat.add_le_add_iff_left ;)
 Nat__add_le_add_iff_left : (m : Elem Nat) -> (k : Elem Nat) -> (n : Elem Nat) -> Proof (iff (Leq (plus n m) (plus n k)) (Leq m k)).
@@ -352,50 +360,54 @@ PUnit : Set.
 
 (; doc: Quotient types coarsen the propositional equality for a type so that terms related by some equivalence relation are considered equal. The equivalence relation is given by an instance of `Setoid`.  Set-theoretically, `Quotient s` can seen as the set of equivalence classes of `α` modulo the `Setoid` instance's relation `s.r`. Functions from `Quotient s` must prove that they respect `s.r`: to define a function `f : Quotient s → β`, it is necessary to provide `f' : α → β` and prove that for all `x : α` and `y : α`, `s.r x y → f' x = f' y`. `Quotient.lift` implements this operation.  The key quotient operators are:  * `Quotient.mk` places elements of the underlying type `α` into the quotient.  * `Quotient.lift` allows the definition of functions from the quotient to some other type.  * `Quotient.sound` asserts the equality of elements related by `r`  * `Quotient.ind` is used to write proofs about quotients by assuming that all elements are    constructed with `Quotient.mk`.  `Quotient` is built on top of the primitive quotient type `Quot`, which does not require a proof that the relation is an equivalence relation. `Quotient` should be used instead of `Quot` for relations that actually are equivalence relations. ;)
 (; //LEAN:Quotient ;)
-Quotient : (s : Proof (Setoid X)) -> Set.
+Quotient : (X : Set) -> (s : Proof (Setoid X)) -> Set.
 
 (; doc: Places an element of a type into the quotient that equates terms according to an equivalence relation.  The equivalence relation is found by synthesizing a `Setoid` instance. `Quotient.mk` instead expects the instance to be provided explicitly.  Given `v : α`, `Quotient.mk' v : Quotient s` is like `v`, except all observations of `v`'s value must respect `s.r`. `Quotient.lift` allows values in a quotient to be mapped to other types, so long as the mapping respects `s.r`. ;)
 (; //LEAN:Quotient.mk' ;)
-Quotient__mk' : (a : Elem X) -> Elem (Quotient s).
+Quotient__mk' : (X : Set) -> (a : Elem X) -> Elem (Quotient X s).
 
 (; doc: `Quotient.mk'` is a surjective function. ;)
 (; //LEAN:Quotient.mk'_surjective ;)
-Quotient__mk'_surjective : (X : Set) -> (_ : Proof (Setoid X)) -> Proof (Function__Surjective Quotient__mk').
+Quotient__mk'_surjective : (X : Set) -> (_ : Proof (Setoid X)) -> Proof (Function__Surjective X (Quotient X s) (Quotient__mk' X)).
 
 (; doc: `a \ b` is the set difference of `a` and `b`, consisting of all elements in `a` that are not in `b`.  Conventions for notations in identifiers:   * The recommended spelling of `\` in identifiers is `sdiff`. ;)
 (; //LEAN:SDiff.sdiff ;)
-SDiff__sdiff : (x : Elem X) -> (x1 : Elem X) -> Elem X.
+SDiff__sdiff : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: Given the set `s`, `Elem s` is the `Type` of element of `s`.  It is currently an abbreviation so that instance coming from `Subtype` are available. If you're interested in making it a `def`, as it probably should be, you'll then need to create additional instances (and possibly prove lemmas about them). See e.g. `Mathlib/Data/Set/Order.lean`. ;)
 (; //LEAN:Set.Elem ;)
-Set__Elem : (s : Elem (powerset X)) -> Set.
+Set__Elem : (X : Set) -> (s : Elem (powerset X)) -> Set.
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
 
 (; doc: The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that `f a = b` for some `a ∈ s`. ;)
 (; //LEAN:Set.image ;)
-Set__image : (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
+Set__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
 
 (; //LEAN:Set.image_univ ;)
-Set__image_univ : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Proof (Eqt (powerset Y) (Set__image f Set__univ) (Set__range f)).
+Set__image_univ : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Proof (Eqt (powerset Y) (Set__image X Y f (Set__univ X)) (Set__range Y X f)).
 
 (; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
 (; //LEAN:Set.ofPred ;)
-Set__ofPred : (Mem : (Elem X -> Prop)) -> Elem (powerset X).
+Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
 
 (; doc: Range of a function.  This function is more flexible than `f '' univ`, as the image requires that the domain is in Type and not an arbitrary Sort. ;)
 (; //LEAN:Set.range ;)
-Set__range : (f : (Elem I -> X)) -> Elem (powerset X).
+Set__range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> Elem (powerset X).
 
 (; doc: Construct a finset enumerating a set `s`, given a `Fintype` instance. ;)
 (; //LEAN:Set.toFinset ;)
-Set__toFinset : (s : Elem (powerset X)) -> Elem (Finset X).
+Set__toFinset : (X : Set) -> (s : Elem (powerset X)) -> Elem (Finset X).
 
 (; doc: The universal set on a type `α` is the set containing all elements of `α`.  This is conceptually the "same as" `α` (in set theory, it is actually the same), but type theory makes the distinction that `α` is a type while `Set.univ` is a term of type `Set α`. `Set.univ` can itself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`. ;)
 (; //LEAN:Set.univ ;)
-Set__univ : Elem (powerset X).
+Set__univ : (X : Set) -> Elem (powerset X).
+
+(; doc: The coercion from a term of a `SetLike` to its corresponding `Set`. ;)
+(; //LEAN:SetLike.coe ;)
+SetLike__coe : (A : Set) -> (B : Set) -> (x : Elem A) -> Elem (powerset B).
 
 (; doc: A setoid is a type with a distinguished equivalence relation, denoted `≈`.  The `Quotient` type constructor requires a `Setoid` instance. ;)
 (; //LEAN:Setoid ;)
@@ -403,14 +415,14 @@ Setoid : (X : Set) -> Prop.
 
 (; doc: `singleton x` is a collection with the single element `x` (notation: `{x}`).  Conventions for notations in identifiers:   * The recommended spelling of `{x}` in identifiers is `singleton`. ;)
 (; //LEAN:Singleton.singleton ;)
-Singleton__singleton : (x1 : Elem x) -> Elem Y.
+Singleton__singleton : (X : Set) -> (Y : Set) -> (x : Elem X) -> Elem Y.
 
 (; doc: `Irrefl r` means the binary relation `r` is irreflexive, that is, `r x x` never holds. ;)
 (; //LEAN:Std.Irrefl ;)
-Std__Irrefl : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Std__Irrefl : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; //LEAN:Std.le_refl._simp_1 ;)
-Std__le_refl___simp_1 : (X : Set) -> (_ : Proof (LE X)) -> (_ : Proof (Std__Refl (x1 => x2 => Leq x1 x2))) -> (a : Elem X) -> Proof (Eqt Prop (Leq a a) True).
+Std__le_refl___simp_1 : (X : Set) -> (_ : Proof (LE X)) -> (_ : Proof (Std__Refl X (x1 => x2 => Leq x1 x2))) -> (a : Elem X) -> Proof (Eqt Prop (Leq a a) True).
 
 (; doc: A _subsingleton_ is a type with at most one element. It is either empty or has a unique element.  All propositions are subsingletons because of proof irrelevance: false propositions are empty, and all proofs of a true proposition are equal to one another. Some non-propositional types are also subsingletons. ;)
 (; //LEAN:Subsingleton ;)
@@ -418,39 +430,47 @@ Subsingleton : (X : Set) -> Prop.
 
 (; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
 (; //LEAN:Subtype ;)
-Subtype : (p : (Elem X -> Prop)) -> Set.
+Subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Set.
 
 (; //LEAN:Subtype.coe_injective ;)
-Subtype__coe_injective : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Function__Injective (a => a)).
+Subtype__coe_injective : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Function__Injective (Subtype X (x => p x)) X (a => Subtype__val X p a)).
 
 (; doc: A subtype `{x // p x}` can be injectively sent to into a subtype `{x // q x}`, if `p x → q x` for all `x : α`. ;)
 (; //LEAN:Subtype.impEmbedding ;)
-Subtype__impEmbedding : (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h : Proof (forall X (x2 => if (p x2) (q x2)))) -> Elem (Function__Embedding (Subtype (x => p x)) (Subtype (x1 => q x1))).
+Subtype__impEmbedding : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h : Proof (forall X (x2 => if (p x2) (q x2)))) -> Elem (Function__Embedding (Subtype X (x => p x)) (Subtype X (x1 => q x1))).
 
 (; //LEAN:Subtype.mk ;)
-Subtype__mk : (val : Elem X) -> (property : Proof (p val)) -> Elem (Subtype (x => p x)).
+Subtype__mk : (X : Set) -> (p : (Elem X -> Prop)) -> (val : Elem X) -> (property : Proof (p val)) -> Elem (Subtype X (x => p x)).
 
 (; doc: We make this the simp lemma instead of `range_coe`. The reason is that if we write for `s : Set α` the function `(↑) : s → α`, then the inferred implicit arguments of `(↑)` are `↑α (fun x ↦ x ∈ s)`. ;)
 (; //LEAN:Subtype.range_coe_subtype ;)
-Subtype__range_coe_subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Eqt (powerset X) (Set__range p) (Set__ofPred (x => p x))).
+Subtype__range_coe_subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Eqt (powerset X) (Set__range X (Subtype X (x => p x)) (Subtype__val X p)) (Set__ofPred X (x1 => p x1))).
+
+(; doc: The value in the underlying type that satisfies the predicate. ;)
+(; //LEAN:Subtype.val ;)
+Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x => p x))) -> Elem X.
+
+(; doc: The disjoint union of types `α` and `β`, ordinarily written `α ⊕ β`.  An element of `α ⊕ β` is either an `a : α` wrapped in `Sum.inl` or a `b : β` wrapped in `Sum.inr`. `α ⊕ β` is not equivalent to the set-theoretic union of `α` and `β` because its values include an indication of which of the two types was chosen. The union of a singleton set with itself contains one element, while `Unit ⊕ Unit` contains distinct values `inl ()` and `inr ()`. ;)
+(; //LEAN:Sum ;)
+Sum : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: Left injection into the sum type `α ⊕ β`. ;)
 (; //LEAN:Sum.inl ;)
-Sum__inl : (val : Elem X) -> Elem (Sum X Y).
+Sum__inl : (X : Set) -> (Y : Set) -> (val : Elem X) -> Elem (Sum X Y).
 
 (; //LEAN:Sum.inl_injective ;)
-Sum__inl_injective : (X : Set) -> (Y : Set) -> Proof (Function__Injective Sum__inl).
+Sum__inl_injective : (X : Set) -> (Y : Set) -> Proof (Function__Injective X (Sum X Y) (Sum__inl X Y)).
 
 (; doc: Right injection into the sum type `α ⊕ β`. ;)
 (; //LEAN:Sum.inr ;)
-Sum__inr : (val : Elem Y) -> Elem (Sum X Y).
+Sum__inr : (X : Set) -> (Y : Set) -> (val : Elem Y) -> Elem (Sum X Y).
 
 (; //LEAN:Sum.inr_injective ;)
-Sum__inr_injective : (X : Set) -> (Y : Set) -> Proof (Function__Injective Sum__inr).
+Sum__inr_injective : (X : Set) -> (Y : Set) -> Proof (Function__Injective Y (Sum X Y) (Sum__inr X Y)).
 
 (; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
 (; //LEAN:Trans.trans ;)
-Trans__trans : (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
+Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> Elem Y -> Set)) -> (s : (Elem Y -> Elem Z -> Set)) -> (t : (Elem X -> Elem Z -> Set)) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Z) -> (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
 
 (; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:True ;)
@@ -474,11 +494,11 @@ Unit : Set.
 
 (; doc: A relation `r` is `WellFounded` if all elements of `α` are accessible within `r`. If a relation is `WellFounded`, it does not allow for an infinite descent along the relation.  If the arguments of the recursive calls in a function definition decrease according to a well founded relation, then the function terminates. Well-founded relations are sometimes called _Artinian_ or said to satisfy the “descending chain condition”. ;)
 (; //LEAN:WellFounded ;)
-WellFounded : (r : (Elem X -> Elem X -> Prop)) -> Prop.
+WellFounded : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
 
 (; doc: Cast across a type equality. If `h : α = β` is an equality of types, and `a : α`, then `a : β` will usually not typecheck directly, but this function will allow you to work around this and embed `a` in type `β` as `cast h a : β`.  It is best to avoid this function if you can, because it is more complicated to reason about terms containing casts, but if the types don't match up definitionally sometimes there isn't anything better you can do.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:cast ;)
-cast : (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
+cast : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
@@ -490,7 +510,7 @@ congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
-id : (a : Elem X) -> Elem X.
+id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; doc: The relation `≤` on a preorder is reflexive. ;)
 (; //LEAN:le_refl ;)
@@ -525,5 +545,5 @@ truncOfNonemptyFintype : (X : Set) -> Elem (Trunc X).
 
 (; doc: If two terms are heterogeneously equal then their types are propositionally equal. ;)
 (; //LEAN:type_eq_of_heq ;)
-type_eq_of_heq : (X : Set) -> (Y : Set) -> (a : Elem X) -> (b : Elem Y) -> (h : Proof (HEq a b)) -> Proof (Eqt Set X Y).
+type_eq_of_heq : (X : Set) -> (Y : Set) -> (a : Elem X) -> (b : Elem Y) -> (h : Proof (HEq X a Y b)) -> Proof (Eqt Set X Y).
 

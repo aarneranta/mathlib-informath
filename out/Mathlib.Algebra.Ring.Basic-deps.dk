@@ -17,7 +17,7 @@ DFunLike__coe__app : (a1 : Elem (AddMonoidHom R (AddMonoid__End R))) -> (a2 : El
 AddHom : (M : Set) -> (N : Set) -> Set.
 
 (; //LEAN:AddHom.mk ;)
-AddHom__mk : (toFun : (Elem M -> N)) -> (map_add' : Proof (forall M (x2 => forall M (y => Eqt N (toFun (plus x2 y)) (plus (toFun x2) (toFun y)))))) -> Elem (AddHom M N).
+AddHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> N)) -> (map_add' : Proof (forall M (x2 => forall M (y => Eqt N (toFun (plus x2 y)) (plus (toFun x2) (toFun y)))))) -> Elem (AddHom M N).
 
 (; //LEAN:AddHom.mulLeft._proof_1 ;)
 AddHom__mulLeft___proof_1 : (R : Set) -> (_ : Proof (Distrib R)) -> (r : Elem R) -> (b : Elem R) -> (c : Elem R) -> Proof (Eqt R (times r (plus b c)) (plus (times r b) (times r c))).
@@ -30,7 +30,7 @@ AddHom__mulRight___proof_1 : (R : Set) -> (_ : Proof (Distrib R)) -> (r : Elem R
 AddMonoid__End : (M : Set) -> Set.
 
 (; //LEAN:AddMonoid.toAddZeroClass ;)
-AddMonoid__toAddZeroClass : Proof (AddZeroClass M).
+AddMonoid__toAddZeroClass : (M : Set) -> Proof (AddZeroClass M).
 
 (; doc: `M →+ N` is the type of functions `M → N` that preserve the `AddZero` structure.  `AddMonoidHom` is also used for group homomorphisms.  When possible, instead of parametrizing results over `(f : M →+ N)`, you should parametrize over `(F : Type*) [AddMonoidHomClass F M N] (f : F)`.  When you extend this structure, make sure to extend `AddMonoidHomClass`.  [Wikidata Q868169](https://www.wikidata.org/wiki/Q868169) ;)
 (; //LEAN:AddMonoidHom ;)
@@ -38,15 +38,15 @@ AddMonoidHom : (M : Set) -> (N : Set) -> Set.
 
 (; doc: Composition of additive monoid morphisms as an additive monoid morphism. ;)
 (; //LEAN:AddMonoidHom.comp ;)
-AddMonoidHom__comp : (hnp : Elem (AddMonoidHom N P)) -> (hmn : Elem (AddMonoidHom M N)) -> Elem (AddMonoidHom M P).
+AddMonoidHom__comp : (M : Set) -> (N : Set) -> (P : Set) -> (hnp : Elem (AddMonoidHom N P)) -> (hmn : Elem (AddMonoidHom M N)) -> Elem (AddMonoidHom M P).
 
 (; doc: The expression `fun m q ↦ f m (g q)` as an `AddMonoidHom`.  Note that the expression `fun q n ↦ f (g q) n` is simply `AddMonoidHom.comp`.  This also exists as a `LinearMap` version, `LinearMap.compl₂` ;)
 (; //LEAN:AddMonoidHom.compl₂ ;)
-AddMonoidHom__compl_u2082_ : (f : Elem (AddMonoidHom M (AddMonoidHom N P))) -> (g : Elem (AddMonoidHom Q N)) -> Elem (AddMonoidHom M (AddMonoidHom Q P)).
+AddMonoidHom__compl_u2082_ : (M : Set) -> (N : Set) -> (P : Set) -> (Q : Set) -> (f : Elem (AddMonoidHom M (AddMonoidHom N P))) -> (g : Elem (AddMonoidHom Q N)) -> Elem (AddMonoidHom M (AddMonoidHom Q P)).
 
 (; doc: The expression `fun m n ↦ g (f m n)` as an `AddMonoidHom`.  This also exists as a `LinearMap` version, `LinearMap.compr₂` ;)
 (; //LEAN:AddMonoidHom.compr₂ ;)
-AddMonoidHom__compr_u2082_ : (f : Elem (AddMonoidHom M (AddMonoidHom N P))) -> (g : Elem (AddMonoidHom P Q)) -> Elem (AddMonoidHom M (AddMonoidHom N Q)).
+AddMonoidHom__compr_u2082_ : (M : Set) -> (N : Set) -> (P : Set) -> (Q : Set) -> (f : Elem (AddMonoidHom M (AddMonoidHom N P))) -> (g : Elem (AddMonoidHom P Q)) -> Elem (AddMonoidHom M (AddMonoidHom N Q)).
 
 (; //LEAN:AddMonoidHom.ext ;)
 AddMonoidHom__ext : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> (g : Elem (AddMonoidHom M N)) -> (h : Proof (forall M (x2 => Eqt N (f x2) (g x2)))) -> Proof (Eqt (AddMonoidHom M N) f g).
@@ -56,16 +56,16 @@ AddMonoidHom__ext_iff_u2082_ : (M : Set) -> (N : Set) -> (P : Set) -> (x : Proof
 
 (; doc: `flip` arguments of `f : M →+ N →+ P` ;)
 (; //LEAN:AddMonoidHom.flip ;)
-AddMonoidHom__flip : (f : Elem (AddMonoidHom M (AddMonoidHom N P))) -> Elem (AddMonoidHom N (AddMonoidHom M P)).
+AddMonoidHom__flip : (M : Set) -> (N : Set) -> (P : Set) -> (mM : Proof (AddZeroClass M)) -> (mN : Proof (AddZeroClass N)) -> (mP : Proof (AddCommMonoid P)) -> (f : Elem (AddMonoidHom M (AddMonoidHom N P))) -> Elem (AddMonoidHom N (AddMonoidHom M P)).
 
 (; //LEAN:AddMonoidHom.mk ;)
-AddMonoidHom__mk : (toZeroHom : Elem (ZeroHom M N)) -> (map_add' : Proof (forall M (x2 => forall M (y => Eqt N (ZeroHom__toFun toZeroHom (plus x2 y)) (plus (ZeroHom__toFun toZeroHom x2) (ZeroHom__toFun toZeroHom y)))))) -> Elem (AddMonoidHom M N).
+AddMonoidHom__mk : (M : Set) -> (N : Set) -> (toZeroHom : Elem (ZeroHom M N)) -> (map_add' : Proof (forall M (x2 => forall M (y => Eqt N (ZeroHom__toFun M N toZeroHom (plus x2 y)) (plus (ZeroHom__toFun M N toZeroHom x2) (ZeroHom__toFun M N toZeroHom y)))))) -> Elem (AddMonoidHom M N).
 
 (; //LEAN:AddMonoidHom.mul._proof_1 ;)
-AddMonoidHom__mul___proof_1 : (R : Set) -> (_ : Proof (NonUnitalNonAssocSemiring R)) -> Proof (Eqt (AddMonoidHom R R) (AddMonoidHom__mulLeft 0) 0).
+AddMonoidHom__mul___proof_1 : (R : Set) -> (_ : Proof (NonUnitalNonAssocSemiring R)) -> Proof (Eqt (AddMonoidHom R R) (AddMonoidHom__mulLeft R 0) 0).
 
 (; //LEAN:AddMonoidHom.mul._proof_2 ;)
-AddMonoidHom__mul___proof_2 : (R : Set) -> (_ : Proof (NonUnitalNonAssocSemiring R)) -> (a : Elem R) -> (b : Elem R) -> Proof (Eqt (AddMonoidHom R R) (AddMonoidHom__mulLeft (plus a b)) (plus (AddMonoidHom__mulLeft a) (AddMonoidHom__mulLeft b))).
+AddMonoidHom__mul___proof_2 : (R : Set) -> (_ : Proof (NonUnitalNonAssocSemiring R)) -> (a : Elem R) -> (b : Elem R) -> Proof (Eqt (AddMonoidHom R R) (AddMonoidHom__mulLeft R (plus a b)) (plus (AddMonoidHom__mulLeft R a) (AddMonoidHom__mulLeft R b))).
 
 (; //LEAN:AddMonoidHom.mulLeft._proof_1 ;)
 AddMonoidHom__mulLeft___proof_1 : (R : Set) -> (_ : Proof (NonUnitalNonAssocSemiring R)) -> (r : Elem R) -> Proof (Eqt R (times r 0) 0).
@@ -81,10 +81,10 @@ AddMonoidHom__mulRight___proof_2 : (R : Set) -> (_ : Proof (NonUnitalNonAssocSem
 
 (; doc: Two elements commute if `a * b = b * a`. ;)
 (; //LEAN:Commute ;)
-Commute : (a : Elem M) -> (b : Elem M) -> Prop.
+Commute : (M : Set) -> (a : Elem M) -> (b : Elem M) -> Prop.
 
 (; //LEAN:Commute.all ;)
-Commute__all : (S : Set) -> (_ : Proof (CommMagma S)) -> (a : Elem S) -> (b : Elem S) -> Proof (Commute a b).
+Commute__all : (S : Set) -> (_ : Proof (CommMagma S)) -> (a : Elem S) -> (b : Elem S) -> Proof (Commute S a b).
 
 (; //LEAN:DFunLike.ext_iff ;)
 DFunLike__ext_iff : (F : Set) -> (X : Set) -> (x : (Elem X -> Set)) -> (f : Elem F) -> (g : Elem F) -> Proof (iff (Eqt F f g) (forall X (x1 => Eqt (x x1) (f x1) (g x1)))).
@@ -99,11 +99,11 @@ DivisionMonoid : (G : Set) -> Prop.
 
 (; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
 (; //LEAN:Eq ;)
-Eq : (x : Elem X) -> (x1 : Elem X) -> Prop.
+Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
 (; //LEAN:Eq.mpr ;)
-Eq__mpr : (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
+Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
 
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
@@ -126,7 +126,7 @@ Iff__symm : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff b a)
 
 (; doc: `a⁻¹` computes the inverse of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `⁻¹` in identifiers is `inv`. ;)
 (; //LEAN:Inv.inv ;)
-Inv__inv : (x : Elem X) -> Elem X.
+Inv__inv : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: A mixin for cancellative multiplication by nonzero elements. ;)
 (; //LEAN:IsCancelMulZero ;)
@@ -145,11 +145,11 @@ IsLeftCancelMulZero : (X : Set) -> Prop.
 
 (; doc: A left-regular element is an element `c` such that multiplication on the left by `c` is injective. ;)
 (; //LEAN:IsLeftRegular ;)
-IsLeftRegular : (c : Elem R) -> Prop.
+IsLeftRegular : (R : Set) -> (c : Elem R) -> Prop.
 
 (; doc: A regular element is an element `c` such that multiplication by `c` both on the left and on the right is injective. ;)
 (; //LEAN:IsRegular ;)
-IsRegular : (c : Elem R) -> Prop.
+IsRegular : (R : Set) -> (c : Elem R) -> Prop.
 
 (; doc: A mixin for right cancellative multiplication by nonzero elements. ;)
 (; //LEAN:IsRightCancelMulZero ;)
@@ -157,15 +157,15 @@ IsRightCancelMulZero : (X : Set) -> Prop.
 
 (; doc: A right-regular element is an element `c` such that multiplication on the right by `c` is injective. ;)
 (; //LEAN:IsRightRegular ;)
-IsRightRegular : (c : Elem R) -> Prop.
+IsRightRegular : (R : Set) -> (c : Elem R) -> Prop.
 
 (; doc: An element `a` is *self-inverse* if `a⁻¹ = a`. ;)
 (; //LEAN:IsSelfInv ;)
-IsSelfInv : (a : Elem X) -> Prop.
+IsSelfInv : (X : Set) -> (a : Elem X) -> Prop.
 
 (; doc: An element `a` is *self-negative* if `-a = a`. ;)
 (; //LEAN:IsSelfNeg ;)
-IsSelfNeg : (a : Elem X) -> Prop.
+IsSelfNeg : (X : Set) -> (a : Elem X) -> Prop.
 
 (; doc: TFAE: The Following (propositions) Are Equivalent.  The `tfae_have` and `tfae_finish` tactics can be useful in proofs with `TFAE` goals. ;)
 (; //LEAN:List.TFAE ;)
@@ -173,11 +173,11 @@ List__TFAE : (l : Elem (List Prop)) -> Prop.
 
 (; doc: The list whose first element is `head`, where `tail` is the rest of the list. Usually written `head :: tail`.  Conventions for notations in identifiers:   * The recommended spelling of `::` in identifiers is `cons`.   * The recommended spelling of `[a]` in identifiers is `singleton`. ;)
 (; //LEAN:List.cons ;)
-List__cons : (head : Elem X) -> (tail : Elem (List X)) -> Elem (List X).
+List__cons : (X : Set) -> (head : Elem X) -> (tail : Elem (List X)) -> Elem (List X).
 
 (; doc: The empty list, usually written `[]`.  Conventions for notations in identifiers:   * The recommended spelling of `[]` in identifiers is `nil`. ;)
 (; //LEAN:List.nil ;)
-List__nil : Elem (List X).
+List__nil : (X : Set) -> Elem (List X).
 
 (; doc: Zero is a right absorbing element for multiplication ;)
 (; //LEAN:MulZeroClass.mul_zero ;)
@@ -189,7 +189,7 @@ MulZeroClass__zero_mul : (X : Set) -> (_ : Proof (MulZeroClass X)) -> (a : Elem 
 
 (; doc: `-a` computes the negative or opposite of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `-` in identifiers is `neg` (when used as a unary operator). ;)
 (; //LEAN:Neg.neg ;)
-Neg__neg : (x : Elem X) -> Elem X.
+Neg__neg : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: Predicate typeclass for expressing that `a * b = 0` implies `a = 0` or `b = 0` for all `a` and `b` of type `M₀`. It is weaker than `IsCancelMulZero` in general, but equivalent to it if `M₀` is a (not necessarily unital or associative) ring. ;)
 (; //LEAN:NoZeroDivisors ;)
@@ -219,7 +219,7 @@ NonUnitalNonAssocRing : (X : Set) -> Prop.
 NonUnitalNonAssocSemiring : (X : Set) -> Prop.
 
 (; //LEAN:NonUnitalNonAssocSemiring.toAddCommMonoid ;)
-NonUnitalNonAssocSemiring__toAddCommMonoid : Proof (AddCommMonoid X).
+NonUnitalNonAssocSemiring__toAddCommMonoid : (X : Set) -> Proof (AddCommMonoid X).
 
 (; doc: Predicate typeclass for expressing that a type is not reduced to a single element. In rings, this is equivalent to `0 ≠ 1`. In vector spaces, this is equivalent to positive dimension. ;)
 (; //LEAN:Nontrivial ;)
@@ -242,14 +242,14 @@ Subsingleton__eq_zero : (X : Set) -> (_ : Proof (Subsingleton X)) -> (a : Elem X
 
 (; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
 (; //LEAN:Trans.trans ;)
-Trans__trans : (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
+Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> Elem Y -> Set)) -> (s : (Elem Y -> Elem Z -> Set)) -> (t : (Elem X -> Elem Z -> Set)) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Z) -> (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
 
 (; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:True ;)
 True : Prop.
 
 (; //LEAN:ZeroHom.mk ;)
-ZeroHom__mk : (toFun : (Elem M -> N)) -> (map_zero' : Proof (Eqt N (toFun 0) 0)) -> Elem (ZeroHom M N).
+ZeroHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> N)) -> (map_zero' : Proof (Eqt N (toFun 0) 0)) -> Elem (ZeroHom M N).
 
 (; //LEAN:add_right_inj ;)
 add_right_inj : (G : Set) -> (_ : Proof (IsLeftCancelAdd G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (plus a b) (plus a c)) (Eqt G b c)).
@@ -271,7 +271,7 @@ congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y))
 
 (; doc: **Alias** of `div_eq_mul_inv`.  ---  Dividing by an element is the same as multiplying by its inverse.  This is a duplicate of `DivInvMonoid.div_eq_mul_inv` ensuring that the types unfold better. ;)
 (; //LEAN:division_def ;)
-division_def : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (div a b) (times a (Inv__inv b))).
+division_def : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (div a b) (times a (Inv__inv G b))).
 
 (; //LEAN:eq_one_div_of_mul_eq_one_right ;)
 eq_one_div_of_mul_eq_one_right : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X (times a b) 1)) -> Proof (Eqt X b (div 1 a)).
@@ -281,13 +281,13 @@ eq_self : (X : Set) -> (a : Elem X) -> Proof (Eqt Prop (Eqt X a a) True).
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
-id : (a : Elem X) -> Elem X.
+id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:inv_eq_one_div ;)
-inv_eq_one_div : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (x1 : Elem G) -> Proof (Eqt G (Inv__inv x1) (div 1 x1)).
+inv_eq_one_div : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (x1 : Elem G) -> Proof (Eqt G (Inv__inv G x1) (div 1 x1)).
 
 (; //LEAN:mul_neg ;)
-mul_neg : (X : Set) -> (_ : Proof (HasDistribNeg X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (times a (Neg__neg b)) (Neg__neg (times a b))).
+mul_neg : (X : Set) -> (_ : Proof (HasDistribNeg X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (times a (Neg__neg X b)) (Neg__neg X (times a b))).
 
 (; //LEAN:mul_one ;)
 mul_one : (M : Set) -> (_ : Proof (MulOneClass M)) -> (a : Elem M) -> Proof (Eqt M (times a 1) a).
@@ -300,13 +300,13 @@ mul_one_div : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (x1 : Elem G) -> (y :
 mul_sub : (X : Set) -> (_ : Proof (NonUnitalNonAssocRing X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Eqt X (times a (minus b c)) (minus (times a b) (times a c))).
 
 (; //LEAN:neg_eq_neg_one_mul ;)
-neg_eq_neg_one_mul : (X : Set) -> (_ : Proof (MulOneClass X)) -> (_ : Proof (HasDistribNeg X)) -> (a : Elem X) -> Proof (Eqt X (Neg__neg a) (times (Neg__neg 1) a)).
+neg_eq_neg_one_mul : (X : Set) -> (_ : Proof (MulOneClass X)) -> (_ : Proof (HasDistribNeg X)) -> (a : Elem X) -> Proof (Eqt X (Neg__neg X a) (times (Neg__neg X 1) a)).
 
 (; //LEAN:neg_mul_eq_mul_neg ;)
-neg_mul_eq_mul_neg : (X : Set) -> (_ : Proof (HasDistribNeg X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Neg__neg (times a b)) (times a (Neg__neg b))).
+neg_mul_eq_mul_neg : (X : Set) -> (_ : Proof (HasDistribNeg X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Neg__neg X (times a b)) (times a (Neg__neg X b))).
 
 (; //LEAN:neg_mul_neg ;)
-neg_mul_neg : (X : Set) -> (_ : Proof (HasDistribNeg X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (times (Neg__neg a) (Neg__neg b)) (times a b)).
+neg_mul_neg : (X : Set) -> (_ : Proof (HasDistribNeg X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (times (Neg__neg X a) (Neg__neg X b)) (times a b)).
 
 (; //LEAN:of_eq_true ;)
 of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
@@ -318,7 +318,7 @@ one_div_mul_one_div_rev : (X : Set) -> (_ : Proof (DivisionMonoid X)) -> (a : El
 one_mul : (M : Set) -> (_ : Proof (MulOneClass M)) -> (a : Elem M) -> Proof (Eqt M (times 1 a) a).
 
 (; //LEAN:one_ne_zero ;)
-one_ne_zero : (X : Set) -> (_ : Proof (NeZero 1)) -> Proof (Neq 1 0).
+one_ne_zero : (X : Set) -> (_ : Proof (NeZero X 1)) -> Proof (Neq 1 0).
 
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)

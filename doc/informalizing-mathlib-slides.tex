@@ -44,7 +44,7 @@
 \title{Informalizing Lean Mathlib}
 \subtitle{Mathlib in English, French, Czech, German and Swedish with Informath, built with Claude Code}
 \author{Aarne Ranta}
-\date{23 October 2026}
+\date{9 November 2026}
 
 \begin{document}
 
@@ -957,34 +957,227 @@ ExtensionHyposJmt : Label -> [Hypo] -> Kind -> Kind -> Ident -> [ArgKind] -> Pro
   \end{itemize}
 \end{frame}
 
+\begin{frame}{30. Six tiers of Mathlib, English first}
+  \footnotesize
+  \prompt{Start with English only, then tier A. But also continue with B to F; I will have to
+  leave you alone for a few hours and will be excited to see what you achieve in the meantime :-)}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \scriptsize
+      \begin{tabular}{@{}l>{\raggedright\arraybackslash}p{0.55\linewidth}r@{}}
+        \toprule
+        & tier & decls \\
+        \midrule
+        A & logic, sets, orders & 1,940 \\
+        B & groups, rings, cosets, quotients & 2,276 \\
+        C & gcd, factorials, binomials, ZMod, divisors & 892 \\
+        D & finite sets, sums, pigeonhole & 767 \\
+        E & span, bases, determinants, ideals, polynomials & 1,091 \\
+        F & topology, filters, metric spaces, derivatives, exp & 1,405 \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item 69 modules more, with their tactic proofs: \textbf{82 modules, 9,126 declarations}.
+        \item Exporter: Greek type variables as $X, Y$; $\leq$ on sets as $\subseteq$; technical
+              instances (decidability, coercion classes) dropped, in proofs too.
+        \item Informath: a failed proof marked, the others still written; ``Let $G$ be a
+              monoid''; $M'$ as a letter.
+        \item By morning: \ok{77\%} fully worded, \ok{6,445 proof texts}, 134 failures.
+        \item \texttt{coverage.md}: per module, what reads well.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \vspace{1mm}
+  mathlib-informath \commit{5e64179} \commit{a5d67de} \commit{06d556d} \commit{cf6f79a};
+  informath \commit{da2c7c4} \commit{04f6df7} \commit{3a71cbd}.
+\end{frame}
+
+\begin{frame}{31. Reading a hundred proofs}
+  \footnotesize
+  \prompt{what next?} Claude proposed to read 100 sample proofs and fix what recurs, then give
+  the additive twins proofs. \prompt{yes, do that}
+  \begin{itemize}
+    \item \texttt{rfl} states what it proves where it is used (its implicit arguments dropped).
+    \item The rewriting that \texttt{simp} leaves in a term (\texttt{congrArg}, \texttt{Eq.mpr},
+          \texttt{of\_eq\_true}) is one step, \ok{``By rewriting, $P$''}, its margin naming the
+          simp lemmas.
+    \item \texttt{-proof-no-cite}: the text names no lemma, the margin does, linked.
+    \item Tactic steps say their method: ``By simplification'' (1,405), ``By rewriting''
+          (1,335), ``By a routine argument'' (290), ``By definition'' (74), ``By computation'' (33).
+    \item ``It is enough to show that $P$'' dropped when $P$ is the goal as it was.
+    \item \textbf{Additive twins}: \texttt{to\_additive} theorems have no source of their own;
+          they get the original's proof, its goals translated by \texttt{to\_additive}'s table:
+          927 of 1,116.
+    \item 7,586 of 8,472 theorems with a proof text; 169 failures.
+          informath \commit{204b99c}, mathlib-informath \commit{4c9c231}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{32. Verbose proofs: three causes}
+  \footnotesize
+  \prompt{some proofs look quite verbose to me. Take, for example, leftAddCosetEquivalence\_rel
+  \ldots\ ``the sum of x5 and s is equal to the sum of x6 and s'' instead of ``x5 + s = x6 + s'' \ldots\
+  Step 8 says ``forallI applied to \ldots''. Is there a systematic reason for this?}
+  \begin{enumerate}
+    \item \textbf{``forallI applied to''}: \texttt{Equivalence.mk} is not a theorem but a
+          constructor, applied \bad{without} its implicit $X$ and $r$, while its type had them:
+          the proofs of reflexivity and symmetry were read as the relation. Now every constant
+          whose type is a proposition keeps them: \ok{16 lines}, reflexivity, symmetry,
+          transitivity, ``\ldots\ is an equivalence relation [\texttt{Equivalence.mk} 3, 8, 15]''.
+    \item \textbf{``the sum of''}: \texttt{+}$_v$ had no \LaTeX, so \texttt{HVAdd.hVAdd} had no
+          notation, and an equation is a formula only if all its constants are. Logging the tokens
+          without \LaTeX\ over all of Mathlib: 60 added, \ok{115 notations} (was 42), $x +_v s$.
+    \item \textbf{``Eqt holds for $M$, \ldots\ applied to''}: a verbal-only constant inside a
+          symbolic one (\texttt{disjUnion} in \texttt{\textbackslash FinsetProd}) left the whole
+          goal \bad{unannotated}; now only that constant is $\mathrm{c}(x)$.
+  \end{enumerate}
+  ``applied to'' \textbf{12,520 $\to$ 5,651}, raw goals 296 $\to$ 0, failed proofs 169 $\to$ 41.
+  mathlib-informath \commit{5189615}, informath \commit{acf3326}.
+\end{frame}
+
+\begin{frame}{33. French and Czech for the new work}
+  \footnotesize
+  \prompt{Could you now add French and Czech to the new work? You can use the same Informath
+  ASTs, hence just add their linearizations.}
+  \begin{itemize}
+    \item \textbf{French} had all of it; only ``une relation \bad{d'équivalences}'': the
+          compound rule puts the modifier in the plural (``ensemble de nombres''). Fixed by a
+          word \texttt{equivalence\_relation\_Noun}, given as a \emph{tree} in the table, since
+          a string takes the parser's first parse.
+    \item \textbf{Czech} lacked most proof units: ``abychom dokázali, že \ldots'', ``z definice,
+          \ldots'', ``podle \ldots'', ``máme dva případy'', ``v druhém případě''.
+    \item Czech had \bad{no Mizar module}: ``left inverse'' came out as an \bad{empty string},
+          453 statements without Czech. Now \texttt{MizarCze}: ``$g$ je levá inverze $f$''.
+    \item 56 Mathlib words, 20 common ones (\emph{neprázdný}, \emph{potenční množina}); compounds
+          with the genitive: ``relace ekvivalence'' (was \bad{``ekvivalencerelace''}); ``prvky
+          $x$ \ok{z} $X$''; \emph{meze} (the RGL gave \bad{mezě}); ``průnik $A$ a $B$'' with $B$
+          in the genitive.
+    \item Fully worded: English 6,606, French 6,605, Czech 5,914 $\to$ \ok{6,519}.
+          mathlib-informath \commit{b208950}, informath \commit{4fbfd58}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{34. ``je rovná do'' and ``applied to''}
+  \footnotesize
+  \prompt{fix the Czech ``je rovná do'' equations} \prompt{Can you do something with the
+  ``applied to'' phrases?} \prompt{One possibility is to -force-symbolic instead}
+  \begin{itemize}
+    \item \texttt{Eqt : "\#2 is equal to \#3"} was parsed as \emph{equal} + \emph{to}, and Czech
+          \emph{to} is \emph{do} + genitive. The grammar had a lexical \texttt{equalset\_Adj2}
+          (\emph{rovný} + dative): the entry is now that tree. \texttt{Set.EqOn} got
+          \texttt{equal\_on\_Adj3}: ``$f$ je rovné $g$ na $s$''.
+    \item \texttt{-force-symbolic} everywhere changes good verbal readings, and misses the main
+          case: \bad{constants without entries}, which Informath's converter words as ``c applied
+          to $x$'', ``c holds for $x$''. Claude narrowed the idea: such a constant applied to
+          formulas is itself a formula.
+    \item ``\ok{$\mathrm{Min}(X)$}'' for ``Min holds for $X$''; ``$p(\mathrm{choose}(p, l, h))$''
+          for ``$p$ holds for choose applied to $p$, $l$ and $h$''; ``elements of $x(a_2)$''.
+    \item ``applied to'' \textbf{about 5,400 $\to$ 1,500}; Czech ``rovn\ldots\ do'' \textbf{3,750
+          $\to$ 0}. mathlib-informath \commit{4371bc2}, informath \commit{0d144b0}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{35. Reading versus checking: lean2dk}
+  \scriptsize
+  \prompt{I'm interested in the difference between your conversion from Lean to Dedukti and that in
+  lean2dk \ldots\ Their conversion looks much more complicated to me}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.47\linewidth}>{\raggedright\arraybackslash}p{0.47\linewidth}@{}}
+        \toprule
+        lean2dk (Vaishnav, PhD 2026) & ours \\
+        \midrule
+        for \textbf{checking} & for \textbf{reading} \\
+        Lean as a PTS: \texttt{Univ l}, \texttt{El}, \texttt{Pi s1 s2 s3} & \texttt{Set},
+          \texttt{Elem}, \texttt{Prop}, \texttt{Proof} \\
+        universe levels with \texttt{imax}, normal forms & \texttt{Set} \\
+        definitional equality as rewrite rules; Lean4Less for proof irrelevance, K & none \\
+        all arguments, all names & instances dropped; Informath's words \\
+        any kernel term & source terms; tactics by goals \\
+        patched Dedukti, stubs & not checked \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \texttt{Int.ofNat\_sub}: $m \leq n \Rightarrow {\uparrow}(n - m) = {\uparrow}n - {\uparrow}m$
+      \begin{itemize}
+        \item lean2dk: statement 1,307 characters, proof 14,631; 430 constants, 700 KB in
+              nine files, 14 stubbed.
+        \item ours, then: \bad{\texttt{Eq (minus n m) (minus n m)}}, a tautology: the
+              casts were erased. 49 statements like this in our Mathlib.
+        \item and our signatures had \bad{free variables}:
+              \texttt{HVAdd\_\_hVAdd : (x1 : Elem X) -> \ldots}
+      \end{itemize}
+      lean2dk's complexity is what checking needs; ours left out too much where a statement
+      depends on what a reader does not see.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{36. Coercions and implicit arguments: kept, and hidden}
+  \footnotesize
+  \prompt{coercions like N to Z are formalization artefacts not necessarily interesting in
+  informal math. Could one have a coercion operator such that (co x) translates to x in the symbol
+  table? \ldots\ For signatures, would it help to have \#IMPLICIT directives for certain types?}
+  \prompt{The effect of \#DROP can be achieved in a more general way by using symbol table
+  entries that drop the undesired arguments.}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item The exporter keeps implicit arguments and coercions; generated lines say what
+              readings hide. Entries alone would not do: \bad{most constants have none}, and
+              hand-written ones would depend on Lean's implicit arguments.
+        \item A coercion reads as its argument \emph{unless} the sides of an equation then
+              coincide: ``\ok{$\uparrow(x_1 - y)$ is equal to $\uparrow x_1 - \uparrow y$}''.
+        \item Tautologies \textbf{45 $\to$ 11}; fully worded 7,024 $\to$ 7,023.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+\begin{lstlisting}
+HVAdd__hVAdd : (X : Set) -> (Y : Set) ->
+  (Z : Set) -> Elem X -> Elem Y -> Elem Z.
+#HIDE HVAdd__hVAdd 1 2 3
+#COERCION Subtype__val 3
+\end{lstlisting}
+      \scriptsize Found by the rebuilds: Lean's \texttt{Eq} got a \texttt{\#HIDE} that
+      \bad{hid Informath's \texttt{Eq}}; finite-set $\subseteq$ lost its type; proofs over
+      3,000 characters (now 6,000) were dropped.
+      mathlib-informath \commit{1e60df2}, informath \commit{64c2bf9}.
+    \end{column}
+  \end{columns}
+\end{frame}
+
 \begin{frame}{The result}
   \centering\footnotesize
-  Fully worded statements:
+  Fully worded statements (no constant or name shown as $\mathrm{c}$):
 
-  \begin{tabular}{@{}lrrrrrr@{}}
+  \scriptsize\begin{tabular}{@{}lrrrr@{}}
     \toprule
-    page & statements & English & French & Czech & German & Swedish \\
+    pages & statements & English & French & Czech \\
     \midrule
-    Mathlib.Order.Defs & 354 & 291 & 291 & 289 & 247 & 289 \\
-    Mathlib.Algebra & 29 & 29 & 29 & 29 & 28 & 28 \\
-    Structures.Algebra, .Order & 50 & 50 & 50 & 50 & 47 & 47 \\
-    Mathlib.Data.Nat.Prime & 128 & 125 & 125 & 125 & 125 & 125 \\
-    Mathlib.Data.Nat.Factorization & 194 & 144 & 144 & 144 & 135 & 142 \\
+    Order.Defs, Algebra, Structures, Nat primes & 755 & 641 & 641 & 641 \\
+    A.\ logic, sets, orders & 1,940 & 1,553 & 1,553 & 1,554 \\
+    B.\ groups and rings & 2,276 & 1,618 & 1,618 & 1,548 \\
+    C.\ elementary number theory & 892 & 718 & 718 & 706 \\
+    D.\ finite sets and sums & 767 & 547 & 547 & 544 \\
+    E.\ linear algebra, ideals, polynomials & 1,091 & 666 & 666 & 664 \\
+    F.\ topology and analysis & 1,405 & 862 & 862 & 861 \\
     \midrule
-    all & \textbf{755} & \textbf{639} & \textbf{639} & \textbf{637} & \textbf{582} & \textbf{631} \\
+    all & \textbf{9,126} & \textbf{6,605} & \textbf{6,605} & \textbf{6,518} \\
     \bottomrule
   \end{tabular}
 
-  \vspace{3mm}
-  \raggedright
+  \vspace{1mm}
+  \raggedright\scriptsize
   \begin{itemize}
-    \item 264 declarations with their definiens; 240 proof texts in each
-          language, out of 242 term proofs; 51 statements without German (time limit).
-    \item 25 tactic proofs in all five languages (\texttt{Nat.Prime.Defs}), out of 242.
-    \item 26,741 of Mathlib's 38,667 definitions worded, 42 with Mathlib's notation; 38,517
-          read in English, 38,546 as formulas, 38,306 in French (\texttt{definitions.html});
-          869 classes read as structures or predicates.
-    \item Every statement has a formula; 31 need \texttt{-force-symbolic}.
+    \item \textbf{7,594 of 8,472 theorems with a proof text} in all three languages: 3,653 from
+          terms, 3,941 from tactics; 26,350 lines, 166 ``obvious''; 42 failures.
+    \item German and Swedish: the grammar has them, the present index does not.
+    \item 26,741 of Mathlib's 38,667 definitions worded; 38,517 read in English, 38,546 as
+          formulas, 38,306 in French (\texttt{definitions.html}); 869 classes as structures or
+          predicates; 115 with Mathlib's notation.
     \item \url{https://aarneranta.github.io/mathlib-informath/mathlib-informath.html}
   \end{itemize}
 \end{frame}
@@ -999,22 +1192,21 @@ ExtensionHyposJmt : Label -> [Hypo] -> Kind -> Kind -> Ident -> [ArgKind] -> Pro
     \item \textbf{Structures.} One parent only: the other parents should be clauses (877
           classes); adjective parents, two-argument parents; D' (``every $a$ has an inverse'');
           $a \times b$ for $ab$; RGL's \bad{``an unary''}.
-    \item \textbf{Scale.} 755 of Mathlib's 240,000 declarations on the pages; 26,747
+    \item \textbf{Scale.} 9,126 of Mathlib's 240,000 declarations on the pages; 26,741
           generated entries for its definitions, unreviewed: composite names
           (\texttt{XEquivY}), bundled maps without arguments (\bad{``the dual''}), verbs
           (\texttt{PreservesX}), 2,000 unknown abbreviations; the words of the other
           languages in \texttt{translations.tsv} to be reviewed.
-    \item \textbf{Tactic proofs.} 242 of the 620 theorems here, and most of
-          Mathlib's, are proved \texttt{by} tactics: 25 have proof texts so far, in
-          English; the others, the other languages, and the term and tactic proofs to be
-          told apart on the page. Long \texttt{simp\_rw} goals, \texttt{by\_contra} as
-          ``it is enough to show that we have a contradiction''.
-    \item \textbf{Unworded statements} (116 of 755):
+    \item \textbf{Proofs.} 42 fail: a $\lambda$ proving what is a $\forall$ only after unfolding
+          (\texttt{upperBounds}); lean2dk's rewrite rules would unfold it. Long \texttt{simp}
+          goals; limits and filters only as formulas ($\mathrm{Tendsto}(f, l_1, l_2)$).
+    \item \textbf{Unworded statements} (2,521 of 9,126 in English):
       \begin{itemize}
-        \item multi-letter variables (\texttt{lt}, \texttt{self},
-              \texttt{motive}) are shown as $\mathrm{lt}$ and counted as constants;
-        \item function arguments: \texttt{Set.ofPred}, the motives of induction;
-        \item \texttt{Leq} used unapplied: $\mathrm{Leq}(x_2, x_3)$.
+        \item about 1,500 ``applied to'' left, where an argument is itself in words;
+        \item binders over proofs: ``for all elements $h$ of \bad{$\mathrm{Proof}$ applied to}
+              \ldots'' for ``if \ldots''; induction motives; structure constructors
+              (\texttt{OneHom.mk}) for $\langle f, h\rangle$;
+        \item 11 tautologies left; an unapplied coercion ($\uparrow$ alone).
       \end{itemize}
     \item Decidability instances defined as declarations are still exported;
           two \texttt{Decidable} proofs (with \texttt{dite}) have no proof text.
@@ -1034,9 +1226,10 @@ ExtensionHyposJmt : Label -> [Hypo] -> Kind -> Kind -> Ident -> [ArgKind] -> Pro
           ``less than or equal to'', where Mathlib means ``subset of''.
     \item \textbf{French}: ``pour tous \bad{des} nombres naturels'', ``il
           n'est pas le cas que'' (a calque of ``it is not the case that''),
-          ``une relation \bad{d'équivalences}''; three French modules are partial.
-    \item \textbf{Czech}: unreviewed words; ``existuje přirozené číslo $p$,
-          \bad{takový}, že'' (\emph{takové}): ``such that'' agrees only after a CN.
+          three French modules are partial.
+    \item \textbf{Czech}: unreviewed words (\emph{kosvaz}, \emph{bezčtvercovost}); ``existuje
+          přirozené číslo $p$, \bad{takový}, že'' (\emph{takové}): ``such that'' agrees only
+          after a CN; GodementSyntax not yet in Czech.
     \item \textbf{Informath}:
       \begin{itemize}
         \item \texttt{\$} in a quoted verbal form splits a table entry
@@ -1048,8 +1241,8 @@ ExtensionHyposJmt : Label -> [Hypo] -> Kind -> Kind -> Ident -> [ArgKind] -> Pro
       \end{itemize}
     \item \textbf{German}: GF's linearization is exponential in nested noun phrases
           (48 statements over the limit); ``elemente''; ``Dann $2 \leq p$''.
-    \item \textbf{Swedish}: ``lika \bad{till}'' (\emph{lika med}) and Czech ``rovná
-          \bad{do}'': \texttt{Eqt}'s ``is equal to'' parses word by word.
+    \item \textbf{Tables}: a string entry takes the parser's first parse, which can be a
+          compound or a word-by-word reading; trees in the table avoid it.
   \end{itemize}
 \end{frame}
 
@@ -1059,7 +1252,7 @@ ExtensionHyposJmt : Label -> [Hypo] -> Kind -> Kind -> Ident -> [ArgKind] -> Pro
 
 \begin{frame}{Who did what}
   \tiny
-  \renewcommand{\arraystretch}{1.0}\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+  \renewcommand{\arraystretch}{0.92}\setlength{\tabcolsep}{3pt}\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
     \toprule
     \textbf{Already in Informath} & \textbf{From my prompts} & \textbf{Added by Claude} \\
     \midrule
@@ -1113,12 +1306,17 @@ ExtensionHyposJmt : Label -> [Hypo] -> Kind -> Kind -> Ident -> [ArgKind] -> Pro
     their translations; \texttt{mathlib-informath}; \texttt{definitions.html}; the structure
     options (the design note) and the choice among them, parents from docstrings, \texttt{ExtensionJmt}; notation by the
     delaborator \\
+    &
+    Tiers A--F; French, Czech; verbose proofs; \texttt{-force-symbolic}; lean2dk; a hidden
+    coercion operator
+    &
+    Proof rounds; implicit-argument diagnosis; unworded constants as formulas;
+    \texttt{MizarCze}; \texttt{\#HIDE}, \texttt{\#COERCION} \\
     \bottomrule
   \end{tabularx}
 
-  \vspace{1mm}
-  Claude also found and reported the bugs along the way, its own among them
-  (the red macros, the misaligned readings), and asked before committing; I pushed.
+  Claude also found and reported the bugs along the way, its own among them, and asked before
+  committing; I pushed.
 \end{frame}
 
 \begin{frame}[standout]
@@ -1126,9 +1324,9 @@ ExtensionHyposJmt : Label -> [Hypo] -> Kind -> Kind -> Ident -> [ArgKind] -> Pro
 
   \vspace{3mm}
   \normalsize
-  755 Mathlib statements and structures, 265 proofs, in English, French, Czech, German, Swedish
-  and LaTeX; all of Mathlib's 38,667 definitions read in English, French and as formulas, its
-  classes as structures
+  9,126 Mathlib statements and structures from 82 modules, 7,594 proofs, in English, French,
+  Czech and LaTeX; all of Mathlib's 38,667 definitions read in English, French and as formulas,
+  its classes as structures
 \end{frame}
 
 \end{document}

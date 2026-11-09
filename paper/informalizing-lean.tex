@@ -59,7 +59,7 @@ Lean and its library Mathlib contain a large and growing part of mathematics in 
 form, but the formal code is hard to read for anyone who is not a Lean expert, and the code
 produced by autoformalization is read by even fewer. We describe a system that translates Lean
 declarations, with their statements, definitions and proofs, into ordinary mathematical
-language in five natural languages. The translation goes through the logical framework
+language in several natural languages. The translation goes through the logical framework
 Dedukti and the Informath grammar, written in Grammatical Framework (GF), and is symbolic: it is
 compositional and does not invent content. The main bottleneck is the symbol table, which tells
 how each Lean constant is to be worded. We infer it for all of Mathlib's definitions from
@@ -71,9 +71,12 @@ monoid $G$ with an operation ${}^{-1}$ on $G$ such that \ldots''), and as predic
 carriers. All definitions are then read in English, as formulas and in French, with their
 definientia: over 99\% get a reading in English and in French, with the same symbol table,
 almost a third of them with no constant left symbolic. Theorems and proofs are read for
-755 statements of Mathlib's prime numbers, orders, lattices and algebraic structures, in all
-five languages: 85\% are fully worded in English, and 265 proofs, by terms or by tactics, are
-rendered as texts.
+9,126 declarations of 82 modules, the undergraduate core of Mathlib from logic and orders to
+algebra, number theory, linear algebra, topology and analysis, in English, French and Czech:
+72\% are fully worded, and 7,594 of the 8,472 theorems get a proof text, by terms or by
+tactics. We compare the translation with lean2dk, which translates Lean to Dedukti for checking
+rather than for reading, and show how the comparison led us to keep implicit arguments and
+coercions in Dedukti and hide them only in the readings.
 The system was built in a collaboration between a human researcher and an AI coding agent, which
 is also a coauthor of this paper; we report what came from where.
 \end{abstract}
@@ -115,6 +118,9 @@ This paper applies Informath to Lean and Mathlib. Our contributions are:
 \item a treatment of Mathlib's classes as algebraic structures defined by extension of a
   parent, and as defined predicates, with the GF judgements that read them
   (Section~\ref{sec:structures});
+\item a comparison with lean2dk, a translation of Lean to Dedukti for checking, and the
+  consequences we drew from it: implicit arguments and coercions kept in Dedukti and hidden
+  by the symbol table (Section~\ref{sec:lean2dk});
 \item an account of how much comes from the existing grammar, from Mathlib's own text, from
   general lexical resources, from the human author and from the AI agent (Section~\ref{sec:who});
 \item results on all of Mathlib's definitions and on the theorems of a part of Mathlib, examples
@@ -122,9 +128,9 @@ This paper applies Informath to Lean and Mathlib. Our contributions are:
   (Sections~\ref{sec:examples}--\ref{sec:problems}).
 \end{itemize}
 The system is open source \cite{mathlib-informath}, with web pages showing all 38,667
-definitions with their readings in English, as formulas and in French, the 755 statements and
-structures with their proofs in five languages, and a stand-alone program that informalizes any
-Lean file.
+definitions with their readings in English, as formulas and in French, the 9,126 statements and
+structures with their proofs in English, French and Czech, and a stand-alone program that
+informalizes any Lean file.
 
 \paragraph{Authorship.} The software described here and this paper were written by Claude, an
 AI model by Anthropic, working as a coding agent (Claude Code \cite{claude-code}) in the first
@@ -202,6 +208,8 @@ al.\ \cite{coscoy-al-1995} extracted texts from Coq (now Rocq) proof terms, whic
 what we do for Lean's term proofs. Isabelle/Isar \cite{wenzel-1999} is a readable proof
 language; Verbose Lean \cite{massot-2024} gives Lean a controlled natural language for
 teaching, in which tactic proofs read like texts, and inspired our treatment of tactic proofs.
+On the formal side, lean2dk \cite{lean2dk,vaishnav-2026} translates Lean to Dedukti for
+checking; Section~\ref{sec:lean2dk} compares it with our translation.
 In the other direction, controlled natural languages such as Naproche \cite{cramer-al-2009,
 koepke-2025}, ForTheL \cite{paskevich-2007} and MathNat \cite{humayoun-raffalli-2010} are
 parsed into formal languages. GF has been used for mathematical language from the start
@@ -223,15 +231,16 @@ The pipeline has four steps.
 translates each declaration's elaborated type, and the definiens of definitions and term proofs,
 to Informath's Dedukti. A binder $(x : \alpha)$ with $\alpha : \ttt{Type}$ becomes
 $(x : \ttt{Elem}\ \alpha)$, one with $\alpha : \ttt{Prop}$ a hypothesis, and
-$(\alpha : \ttt{Type}\ u)$ becomes $(\alpha : \ttt{Set})$. Implicit arguments are dropped
-in applications, so that only the arguments a reader sees in Mathlib remain. An instance
+$(\alpha : \ttt{Type}\ u)$ becomes $(\alpha : \ttt{Set})$. Implicit arguments are kept,
+and the symbol table hides them in the readings (see below). An instance
 binder \ttt{[CommMonoid M]} becomes a hypothesis \ttt{Proof (CommMonoid M)}, a class is
 declared as a predicate (and defined as one, with its structure, in
 Section~\ref{sec:structures}), and a bundled function applied by coercion (\ttt{DFunLike.coe f x})
 becomes a constant \ttt{f\_\_app} with its own type. A table of 39 mappings sends Lean's logic
 and arithmetic (\ttt{Dvd.dvd}, \ttt{Nat.Prime}, \ttt{HAdd.hAdd}, \ttt{Iff}) to Informath's base
 constants, whose wordings are part of Informath. The output is meant to be read, not checked:
-dropping implicit arguments loses information a type checker would need.
+it has no universe levels, instance arguments or computation rules, which a type checker would
+need (Section~\ref{sec:lean2dk}).
 For example, the Lean theorem
 \begin{lstlisting}
 theorem Irreducible.not_dvd_isUnit {M : Type*} [CommMonoid M] {p u : M}
@@ -255,17 +264,49 @@ $M \in \mathrm{Set}, \mathrm{CommMonoid}(M), p, u \in M, \mathrm{Irreducible}(p)
 \mathrm{IsUnit}(u) \vdash \neg (p \mid u)$; its verbal reading is shown in
 Section~\ref{sec:examples}.
 
+\paragraph{Hidden arguments and coercions.} The first version of the exporter dropped implicit
+arguments and erased coercions (casts between number types, the values of subtypes and of
+bundled sets), as a reader does not see them in Mathlib. Both were mistakes, which the
+comparison with lean2dk (Section~\ref{sec:lean2dk}) made clear. Dropping implicit arguments left
+the types of the constants open, as \ttt{HVAdd\_\_hVAdd : (x1 : Elem X) -> (x2 : Elem Y) ->
+Elem Z} with free $X$, $Y$, $Z$, and made declarations and uses disagree: \ttt{Equivalence.mk},
+a constant whose type is a proposition and is therefore stated with its implicit arguments, was
+applied without them, and the proof text read its arguments off the wrong positions, showing the
+proofs of reflexivity and symmetry as the relation. Erasing coercions turned 45 statements into
+tautologies: \ttt{AddSubgroup.coe\_sub}, $\uparrow(x - y) = \uparrow x - \uparrow y$ (subtraction
+in a subgroup agrees with subtraction in the group), read ``$x - y$ is equal to $x - y$''.
+Now the exporter keeps both, and writes what the readings hide as lines of a generated symbol
+table:
+\begin{lstlisting}
+HVAdd__hVAdd : (X : Set) -> (Y : Set) -> (Z : Set) -> Elem X -> Elem Y -> Elem Z.
+#HIDE HVAdd__hVAdd 1 2 3         -- the three types are implicit
+#COERCION Subtype__val 3         -- the coercion reads as its third argument
+\end{lstlisting}
+Informath removes the hidden arguments before it looks up the entries, so that the hand-written
+and generated entries count the explicit arguments as before, and a Mathlib update that moves an
+implicit argument changes only the generated lines. A coercion is read as its argument, unless
+that makes the two sides of an equation or an equivalence the same, and then it is shown:
+``$\uparrow(x_1 - y)$ is equal to $\uparrow x_1 - \uparrow y$''. This leaves 11 tautological
+readings (of 45) and the number of fully worded readings as it was.
+
 \paragraph{2. Readings.} RunInformath translates the Dedukti declarations with the base table,
 Mathlib's table (Section~\ref{sec:tables}) and the grammar, and gives a reading in each language
-and a formula in \LaTeX. The index of all 755 statements is built in one call per mode, so that
-the grammar of five languages (8 MB) is loaded once. German linearization turned out to be
-exponential in nested noun phrases (three levels of ``the maximum of'' took 35 seconds), so
-German is read apart, with a time limit of one second per statement.
+and a formula in \LaTeX. The index of all 9,126 statements is built in one call per mode, so
+that the grammar (8 MB) is loaded once; in English, French and Czech this takes about eleven
+minutes. German linearization turned out to be exponential in nested noun phrases (three levels
+of ``the maximum of'' took 35 seconds), so German is read apart, with a time limit of one second
+per statement, and it is not in the present index. A constant without an entry is shown as a
+formula, $\mathrm{c}(x, y)$, when its arguments are formulas, rather than as ``$\mathrm{c}$
+applied to $x$ and $y$''; this took the phrase ``applied to'' from about 5,400 to about 1,500
+occurrences in the readings and proof texts.
 
 \paragraph{3. Term proofs.} A definiens that is a proof term is translated to a sequence of
 proof units: each $\lambda$ becomes an assumption (``Let $n$ be an element of $\mathbb{N}$'',
 ``Assume that $p$ is prime''), each application of a lemma a conclusion, justified by the lemma.
-Lean's logical constructors are mapped to natural deduction rules in Dedukti.
+Lean's logical constructors are mapped to natural deduction rules in Dedukti. The rewriting that
+\ttt{simp} and \ttt{rw} leave in a proof term (\ttt{congrArg}, \ttt{Eq.mpr}, \ttt{of\_eq\_true})
+is one step, ``By rewriting, \ldots'', whose margin names the simp lemmas used; the text itself
+names no lemma, and the margin links each rule to its entry.
 
 \paragraph{4. Tactic proofs.} Most of Mathlib's proofs are tactic scripts, whose text says
 little: \ttt{rw [hn, mul\_one]}. Following the idea of Verbose Lean \cite{massot-2024}, we use
@@ -295,7 +336,14 @@ theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m �
 \end{tabular}
 \end{center}
 The same units are read in the other languages: ``Stačí ukázat, že jestliže $n = 1$, pak
-$m = p$'', ``Es genügt zu zeigen, dass \ldots''.
+$m = p$'', ``Il suffit de montrer que \ldots''. A step that closes a goal or derives a fact says
+how, where its tactic tells: ``By simplification'' (\ttt{simp}, 1,405 lines), ``By rewriting''
+(\ttt{rw}, 1,335), ``By a routine argument'' (\ttt{grind}, \ttt{aesop}, 290), ``By definition''
+(\ttt{rfl}, 74), ``By computation'' (\ttt{ring}, \ttt{omega}, 33); a step that applies a lemma
+(\ttt{exact}, \ttt{apply}) is left as it is, as its tactic names the lemma. An additive theorem
+that \ttt{to\_additive} makes from a multiplicative one has no source of its own, so it gets the
+proof of its original, with each goal translated by \ttt{to\_additive}'s own table: 927 of the
+1,116 such twins have a proof text.
 
 \paragraph{Outputs.} The results are shown on web pages, one per part of Mathlib, where each
 declaration has its Lean source, its Dedukti translation (folded), its readings and formula,
@@ -317,6 +365,58 @@ t (theorem)
 \end{lstlisting}
 A user's own symbol table can be added on top of Mathlib's, for the concepts that the code
 defines itself.
+
+\section{Reading versus checking: lean2dk}
+\label{sec:lean2dk}
+
+Our exporter is not the only translation of Lean to Dedukti. lean2dk
+\cite{lean2dk}, described in Vaishnav's PhD thesis \cite{vaishnav-2026}, translates Lean so
+that Dedukti can \emph{check} its proofs and pass them on to other systems. The two have
+different purposes, and almost every difference follows from that.
+
+lean2dk reads Lean as a functional pure type system and uses the encoding of Cousineau and
+Dowek \cite{cousineau-dowek-2007}: a type is a code \ttt{t : Univ l} decoded by \ttt{El l t},
+and a dependent function type is \ttt{Pi s1 s2 s3 A (x => B)}, with the universe of the
+function type the \ttt{imax} of the others. Universe levels, with Lean's universe polymorphism
+and its impredicative \ttt{Prop}, have an encoding of their own, a rewrite system that computes
+normal forms of level expressions. Lean's definitional equalities become rewrite rules: the
+unfolding of definitions, the reduction of recursors on constructors for every inductive type,
+projections, structure eta, \ttt{Quot.lift}. Three of them, proof irrelevance, unit eta and
+K-like reduction, cannot be rewrite rules, and are removed beforehand by Lean4Less, a modified
+Lean kernel that translates a Lean environment into a smaller theory without them, inserting
+casts where the original used them. Checking the result needs a patched Dedukti, and constants
+whose checking would need infeasible computation (large \ttt{Nat} literals in unary form, the
+exponential normal forms of \ttt{omega}'s machinery) are stubbed, that is, postulated.
+
+Our exporter keeps none of this: types are \ttt{Set}, \ttt{Elem}, \ttt{Prop} and \ttt{Proof},
+universes are collapsed, instance arguments are dropped, there are no recursors or rewrite
+rules, and constants are mapped to Informath's vocabulary where it has a word for them
+(\ttt{HAdd.hAdd} to \ttt{plus}). Only proofs written as terms in the source are translated, and
+tactic proofs are read from their goals. The difference shows on one theorem of Lean's library,
+\ttt{Int.ofNat\_sub}: for natural numbers $m \leq n$, $\uparrow(n - m) = \uparrow n - \uparrow m$
+in the integers. Our export is
+\begin{lstlisting}
+Int__ofNat_sub : (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Leq m n)) ->
+  Proof (Eq (Nat__cast Int (minus n m)) (minus (Nat__cast Int n) (Nat__cast Int m))).
+\end{lstlisting}
+and it has no proof, as the proof is a tactic. lean2dk's statement alone is about 1,300
+characters, as it keeps \ttt{Nat.cast} with the instance \ttt{instNatCastInt}, \ttt{HSub.hSub}
+with its three types, levels and instance, and \ttt{El} and \ttt{Pi} at every binder; the proof is
+another 14,600 characters, and translating this one theorem brings in 430 constants, 700 KB
+of Dedukti in nine files, with 14 constants stubbed. The thesis reports output two to three
+orders of magnitude larger than Lean's own \ttt{.olean} files, and the translation of only
+lower-level parts of the standard library to the end \cite[Section~7.1]{vaishnav-2026}.
+
+Comparing the two showed two flaws of ours, which Section~\ref{sec:pipeline} describes as fixed:
+before, our export of \ttt{Int.ofNat\_sub} was \ttt{Eq (minus n m) (minus n m)}, a tautology,
+since the casts were erased; and our signatures had free type variables where implicit
+arguments had been dropped. lean2dk never identifies two things, so it cannot lose a statement
+this way. What we still leave out is what a checker needs and a reader does not: universes,
+instances and computation. The last of these has a cost for us too: most of the 42 proofs that
+get no text are ones where Lean accepts a $\lambda$ as the proof of a proposition that is a
+$\forall$ only after a definition, such as \ttt{upperBounds}, is unfolded, which lean2dk's
+rewrite rules would do. The two translations are complementary: one gives a reading, the other a
+check, of the same declaration.
 
 \section{Inferring the symbol tables}
 \label{sec:tables}
@@ -410,10 +510,16 @@ A run of symbols is one token, so that Lean's \ttt{M $\simeq$+* N} and \ttt{$\ma
 get their own \LaTeX, and a token without one rules the notation out, as do binders
 (\ttt{$\sum$ x $\in$ s, f x}) and Lean's bracketed subscripts (\ttt{M $\otimes$[R] N},
 \ttt{f\^{}[n]}), which \LaTeX\ writes otherwise. This
-gives 42 definitions a symbolic variant, among them $\bot$, $\top$, $s^c$, $|x|$, $\|x\|$,
-$\lceil x \rceil$, $s \mathbin{\Delta} t$, $\sqrt{x}$, $A^T$ and $\# s$. The number is small
-because the most common notations ($+$, $\mid$, $\leq$, $n!$) belong to constants
-that are mapped to Informath's own, and many others are binders.
+first gave 42 definitions a symbolic variant, among them $\bot$, $\top$, $s^c$, $|x|$, $\|x\|$,
+$\lceil x \rceil$, $s \mathbin{\Delta} t$, $\sqrt{x}$, $A^T$ and $\# s$. Logging the tokens that
+had no \LaTeX\ showed what was missing: with some sixty more (Lean's $+_v$, $\to_{*}$,
+${}^{\times}$, $\bigcup_0$, Greek letters), 115 definitions have one, among them $x +_v s$, $M^{\times}$,
+$M \to_{*} N$, $R \to_{+*} S$, $\bigcup S$ and $\pi$. The variant matters beyond the
+definitions: an equation is written as a formula only if all its constants have a symbolic form,
+so that the cosets $x +_v s$ of a subgroup were read ``the sum of $x$ and $s$'' before. The
+number is still small because the most common notations ($+$, $\mid$, $\leq$, $n!$) belong to
+constants that are mapped to Informath's own, and many others are binders. (The definition
+pages of Section~\ref{sec:allread} were read with the 42.)
 
 \section{Structures and inheritance}
 \label{sec:structures}
@@ -577,7 +683,7 @@ predicates: 869} \\
 
 \begin{table}[t]
 \centering\footnotesize
-\begin{tabular}{p{0.3\textwidth}p{0.3\textwidth}p{0.32\textwidth}}
+\begin{tabular}{p{0.29\textwidth}p{0.29\textwidth}p{0.32\textwidth}}
 \toprule
 \textbf{Already in Informath} & \textbf{From the first author} & \textbf{By Claude} \\
 \midrule
@@ -586,11 +692,17 @@ verbal, symbolic and macro forms; NLG with variants and ranking; proof texts fro
 The goal; the choice of Mathlib's prime numbers as the first case; the contents of the pages;
 loading the grammar once; the idea of tactic proofs as proof units; the time limit for German;
 WordNet as a resource; a reviewable table rather than generated code; the stand-alone program;
-structures as in textbooks, over the hierarchy and then all classes; symbolic variants &
+structures as in textbooks, over the hierarchy and then all classes; symbolic variants; the six
+tiers of modules with their proofs, English first; French and Czech for them; the verbose proofs
+to be explained; \ttt{-force-symbolic} for unworded constants; the comparison with lean2dk; a
+coercion operator hidden by the table, and hiding by the table rather than by the exporter &
 \ttt{Export.lean} with its translation rules; the index and the pages; the table inference, the lexicon generation and the second round with the lexicon; the translations table; the Informath extensions this needed
 (multilingual proof texts, \ttt{-tactic-proof}, aggregated hypotheses, Czech and Swedish
 modules, the extension judgements); the choice among the structure options, the parent from
-the docstring; notation from the delaborator \\
+the docstring; notation from the delaborator; the proof rounds (rewriting as one step, the
+methods of tactic steps, the proofs of additive twins); the diagnosis of the implicit-argument
+mismatch; formulas for unworded constants; the Czech proof units and grammar fixes; the lean2dk
+analysis; \ttt{\#HIDE} and \ttt{\#COERCION} with the tautology guard \\
 \bottomrule
 \end{tabular}
 \caption{The division of labour.}
@@ -606,7 +718,15 @@ compiler (a list category whose concrete functions grew to $5 \times 10^{13}$), 
 size-optimized grammars broke all proof texts (the proof units were not reachable from the start
 category), and the decision to keep the translations reviewable. Others were the agent's:
 the iteration over hundreds of failing cases, measuring each change on the whole of Mathlib, and
-testing a resource (WordNet) before relying on it. All the words written by Claude, in all
+testing a resource (WordNet) before relying on it. The last rounds show the pattern on a small
+scale. The first author noticed that a proof read ``\ttt{forallI} applied to \ldots'' and ``the
+sum of $x_5$ and $s$''; Claude traced the first to the implicit arguments of
+\ttt{Equivalence.mk} and the second to a missing notation token. The first author suggested
+\ttt{-force-symbolic} for the remaining ``applied to''; Claude found that it missed the main case,
+constants without entries, and made those formulas instead. Asked to compare the exporter with
+lean2dk, Claude found the tautologies of erased coercions; the first author proposed a coercion
+operator that the symbol table hides, and asked whether entries could hide implicit arguments
+too, which led to the generated \ttt{\#HIDE} lines. All the words written by Claude, in all
 languages, are to be reviewed by native speakers.
 
 \section{Examples}
@@ -652,7 +772,18 @@ definitions and \ttt{have}s, becomes a proof text of twelve lines, which starts:
 $0$ is less than the successor of $n!$.\quad 4. $n! + 1 \neq 1$.\quad 5.
 $\mathrm{minFac}(n! + 1)$ is prime.\quad \ldots}
 \noindent Each line is justified by the lemma it applies (\ttt{Nat.factorial\_pos},
-\ttt{Nat.succ\_lt\_succ}, \ldots), linked to its own entry.
+\ttt{Nat.succ\_lt\_succ}, \ldots), linked to its own entry. The proof that the relation of
+having the same left coset, $x +_v s = y +_v s$, is an equivalence,
+\begin{lstlisting}
+@Equivalence.mk _ (LeftCosetEquivalence s) (fun _ => rfl) Eq.symm Eq.trans
+\end{lstlisting}
+becomes sixteen lines, in three parts for reflexivity, symmetry and transitivity, of which the
+first is
+\reading{1. To prove that for all elements $x_1$ of $X$, $x_1 +_v s = x_1 +_v s$, let
+$x_1 \in X$.\quad 2. $x_1 +_v s = x_1 +_v s$. \ttt{[rfl]}\quad 3. For all elements $x_1$ of $X$,
+$x_1 +_v s = x_1 +_v s$. \ttt{[forallI 1, 2]}}
+\noindent and the last ``$\mathrm{LeftAddCosetEquivalence}(s)$ is an equivalence relation''
+\ttt{[Equivalence.mk 3, 8, 15]}, in Czech ``je relace ekvivalence''.
 
 \paragraph{Bad cases.} Not everything reads well:
 \begin{itemize}
@@ -660,8 +791,9 @@ $\mathrm{minFac}(n! + 1)$ is prime.\quad \ldots}
   $\mathrm{Coprime}(2, n)$'' in French, where the English has ``$2$ and $n$ are coprime'';
 \item mismatched agreement: Czech \emph{takový} above, which should be \emph{takové}; ``Let
   $s$ be \textcolor{red}{a} upper set'';
-\item literal wordings: Swedish ``lika \textcolor{red}{till}'' for ``equal to'' (\emph{lika
-  med}), as the table's ``is equal to'' is parsed word by word;
+\item literal wordings: a table entry given as a string is parsed word by word, so that ``is
+  equal to'' became Czech ``je rovná \textcolor{red}{do}'' (\emph{rovná} takes the dative) until
+  the entry was written as the grammar's lexical \ttt{equalset\_Adj2};
 \item generated wordings that say little: \ttt{BoundedOrderHom.dual}, a bundled map without
   explicit arguments, is ``the dual'';
 \item German: ``Dann $2 \leq p$'' without a verb, and 51 statements over the time limit.
@@ -669,33 +801,48 @@ $\mathrm{minFac}(n! + 1)$ is prime.\quad \ldots}
 
 \section{Results}
 
-Table~\ref{tab:results} shows the readings of 755 statements from 23 modules: Mathlib's order
-and lattice definitions, the algebra that the prime numbers import, the algebraic and order
-structures of Section~\ref{sec:structures}, the prime numbers, and prime factorizations. A statement is \emph{fully worded} if no Lean constant in it is shown
-symbolically. Every statement has a formula, and 264 declarations come with their definiens.
-Of the 242 term proofs, 240 have a proof text in each language; of the 242 tactic proofs, the 25
-of \ttt{Nat.Prime.Defs} have one so far, in five languages. In 29 statements a language keeps
-the older, more symbolic reading because it lacks a generated word. The whole index takes about
-ten minutes on a laptop, most of it for German.
+Table~\ref{tab:results} shows the readings of 9,126 statements from 82 modules. The first 755,
+from 23 modules, are Mathlib's order and lattice definitions, the algebra that the prime numbers
+import, the algebraic and order structures of Section~\ref{sec:structures}, the prime numbers
+and prime factorizations. The other 8,371 are the undergraduate core that much of Mathlib
+imports, in six tiers: (A) logic, sets and orders, (B) groups and rings, (C) elementary number
+theory, (D) finite sets and sums, (E) linear algebra, ideals and polynomials, (F) topology and
+analysis. A statement is \emph{fully worded} if no Lean constant or other name is shown as
+$\mathrm{c}$. Every statement has a formula. The French readings are fully worded where the
+English ones are, as they use the same trees; Czech falls short by 87, mostly in group theory,
+where some words have no Czech form yet. In 144 statements a language keeps an older, more
+symbolic reading, made without the generated table, because the table's reading needs a word
+that the language lacks.
 
 \begin{table}[t]
 \centering\small
-\begin{tabular}{lrrrrrr}
+\begin{tabular}{lrrrr}
 \toprule
-& statements & English & French & Czech & German & Swedish \\
+& statements & English & French & Czech \\
 \midrule
-Order, lattices & 354 & 291 & 291 & 289 & 247 & 289 \\
-Algebra & 29 & 29 & 29 & 29 & 28 & 28 \\
-Structures & 50 & 50 & 50 & 50 & 47 & 47 \\
-Prime numbers & 128 & 125 & 125 & 125 & 125 & 125 \\
-Factorizations & 194 & 144 & 144 & 144 & 135 & 142 \\
+Order, algebra, structures, primes & 755 & 641 & 641 & 641 \\
+A.\ Logic, sets, orders & 1,940 & 1,553 & 1,553 & 1,554 \\
+B.\ Groups and rings & 2,276 & 1,618 & 1,618 & 1,548 \\
+C.\ Elementary number theory & 892 & 718 & 718 & 706 \\
+D.\ Finite sets and sums & 767 & 547 & 547 & 544 \\
+E.\ Linear algebra, ideals, polynomials & 1,091 & 666 & 666 & 664 \\
+F.\ Topology and analysis & 1,405 & 862 & 862 & 861 \\
 \midrule
-all & 755 & \textbf{639} & \textbf{639} & \textbf{637} & \textbf{582} & \textbf{631} \\
+all & 9,126 & \textbf{6,605} & \textbf{6,605} & \textbf{6,518} \\
 \bottomrule
 \end{tabular}
 \caption{Fully worded statements, by language.}
 \label{tab:results}
 \end{table}
+
+\paragraph{Proofs.} Of the 8,472 theorems, 7,594 (90\%) have a proof text in each of the three
+languages: 3,653 from proof terms and 3,941 from tactic proofs, in 26,350 lines, of which 166
+(0.6\%) say no more than ``it is obvious'', for a step whose goal could not be read. Of the
+878 theorems without a text, 42 fail in Informath, mostly where a $\lambda$ proves a proposition
+that is a $\forall$ only after a definition is unfolded (Section~\ref{sec:lean2dk}); the others
+have proofs that the exporter does not translate, such as compiled pattern matching or terms
+too long to read. The export of the 82 modules, with their tactic
+proofs, takes about ten minutes, and the index about eleven.
 
 For all of Mathlib, the generated table gives 69\% of the definitions a wording
 (Table~\ref{tab:sources}), checked by the grammar for category and arity but not reviewed by
@@ -780,16 +927,17 @@ other three languages can be read in the same way.
 
 \paragraph{Coverage.} All of Mathlib's definitions are read, but only in English, as formulas
 and in French, and its
-theorems only in part: the 755 statements of the pages are a small part of its 194,000 theorems,
-which the same pipeline could read, with their proofs, but which we have not run on. Of the
+theorems only in part: the 9,126 statements of the pages are a small part of its 194,000
+theorems, which the same pipeline could read, with their proofs, but which we have not run on;
+German and Swedish are not in the present index. Of the
 definitions, 119 go over the time limit in English and 243 in French, and two thirds of the readings still show some constant
 symbolically, mostly constants of the definientia that have no wording. The generated table is
 unreviewed, and in our samples 18 of 60 of its first wordings (30\%) and 6 of 60 of those made with
 the lexicon (10\%) are wrong: composite names
 (\ttt{quotientIdealMapEquivTensorQuot}) become nonsense when read word by word; bundled maps
 without arguments get bare readings; about 2,500 unknown words are abbreviations of jargon that
-we do not spell out. Most tactic proofs have no text yet, and long \ttt{simp} goals make poor
-reading.
+we do not spell out. Long \ttt{simp} goals make poor reading, and limits and filters are read
+only as formulas (``$\mathrm{Tendsto}(f, l_1, l_2)$'' for ``$f$ tends to \ldots'').
 
 \paragraph{Structures.} Multiple inheritance is reduced to one parent: the other parents of a
 class (\ttt{IsLeftCancelMul} of \ttt{LeftCancelSemigroup}) should be clauses, ``a left
@@ -802,17 +950,23 @@ where a textbook writes $ab$.
 
 \paragraph{Language.} Agreement of ``such that'' with an existential's kind fails in Czech and
 French; multi-letter variables (\ttt{self}, \ttt{motive}) are shown as constants; a lemma used
-unapplied in a proof term gives garbled text; the meaning of $\leq$ on finite sets is
-``subset'', which the reading does not know. The French words added for the definitions and the
-French readings themselves are not checked. ``An unary operation'': the RGL's English
+unapplied in a proof term gives garbled text, as does a coercion used unapplied
+($\uparrow$ alone); a binder over a proof (``for all elements $h$ of $\mathrm{Proof}$ applied to
+\ldots'') should read ``if \ldots''. About 1,500 occurrences of ``applied to'' remain where an
+argument is itself in words, and 11 readings are still tautologies. The French and Czech words
+added for the definitions and the theorems, and the readings themselves, are not checked. ``An unary operation'': the RGL's English
 article takes \emph{an} before every word beginning with \emph{un}. The words of four languages need native review,
 and German linearization needs a fix in the RGL.
 
-\paragraph{Correctness.} The translation is compositional, but the exporter drops implicit
-arguments, so the Dedukti code is not type-checked; a reading is as correct as the table entries
-it uses, and the generated entries are checked only by the grammar. A back-translation from the
-readings to Dedukti and a type check would close this loop, as Informath supports in the other
-direction.
+\paragraph{Correctness.} The translation is compositional, and the exporter now keeps implicit
+arguments and coercions, so that its declarations are closed and its applications match them.
+But it leaves out universes, instances and computation rules, so the Dedukti code is not
+type-checked (Section~\ref{sec:lean2dk}); a reading is as correct as the table entries it uses,
+and the generated entries are checked only by the grammar. A check of the exported Dedukti
+against its own signatures would catch errors like the shifted arguments of
+\ttt{Equivalence.mk} automatically, and lean2dk's check of the same declarations would
+guarantee what the readings say; a back-translation from the readings to Dedukti would close the
+loop, as Informath supports in the other direction.
 
 \section{Conclusion}
 
@@ -820,7 +974,11 @@ Symbolic informalization of Lean is feasible at the scale of Mathlib if the lexi
 inferred: Mathlib's naming conventions and docstrings, with the grammar's own lexicon, give wordings to 69\% of its
 definitions, and a grammar can check them. With them, all of Mathlib's definitions have been
 read in English, as formulas and in French, almost a third of them with no symbolic residue in
-English, in an hour on a laptop. Mathlib's own structure helps too: its docstrings name the
+English, in an hour on a laptop; and 9,126 statements of its undergraduate core, with 7,594
+proofs, in English, French and Czech, 72\% of them fully worded. A translation for reading is
+not a translation for checking: lean2dk keeps everything a checker needs and is unreadable,
+ours keeps what a reader needs, and the comparison showed where we had kept too little, the
+coercions and implicit arguments that a reader does not see but a statement may depend on. Mathlib's own structure helps too: its docstrings name the
 parent a textbook would, its \ttt{to\_additive} table gives the additive structures, and its
 delaborator the notation, so that its classes read as definitions by extension. The readings are faithful by construction, and they
 come in five languages at once. What the method does not give is judgement: which wording is

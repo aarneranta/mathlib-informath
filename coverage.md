@@ -183,8 +183,8 @@ The constants without a wording, by the number of readings they occur in.
 | `Sum__elim` | 8 | 3 |
 | `IsCompl` | 8 | 4 |
 | `MulHom__mk` | 8 | 1 |
-| `Submonoid__mk` | 8 | 3 |
 | `Subsemigroup__mk` | 8 | 3 |
+| `Submonoid__mk` | 8 | 3 |
 | `AddCommute` | 8 | 2 |
 | `Quotient__map'` | 8 | 1 |
 | `MonoidHom__range` | 8 | 1 |

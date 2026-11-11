@@ -33,7 +33,17 @@
     {≠}{{$\neq$}}1 {≤}{{$\leq$}}1 {⟨}{{$\langle$}}1 {⟩}{{$\rangle$}}1
     {↔}{{$\leftrightarrow$}}1 {λ}{{$\lambda$}}1
     {⁻¹}{{$^{-1}$}}2 {•}{{$\bullet$}}1 {⊔}{{$\sqcup$}}1 {⊓}{{$\sqcap$}}1
+    {ε}{{$\varepsilon$}}1 {δ}{{$\delta$}}1 {⇒}{{$\Rightarrow$}}1 {≥}{{$\geq$}}1
+    {ℝ}{{$\mathbb{R}$}}1 {₀}{{$_0$}}1 {←}{{$\leftarrow$}}1
 }
+% the same characters in text (\texttt{ε\_pos})
+\DeclareUnicodeCharacter{03B5}{\ensuremath{\varepsilon}}
+\DeclareUnicodeCharacter{03B4}{\ensuremath{\delta}}
+\DeclareUnicodeCharacter{2190}{\ensuremath{\leftarrow}}
+\DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}
+\DeclareUnicodeCharacter{2022}{\ensuremath{\bullet}}
+\DeclareUnicodeCharacter{27E8}{\ensuremath{\langle}}
+\DeclareUnicodeCharacter{27E9}{\ensuremath{\rangle}}
 
 \newcommand{\bad}[1]{\textcolor{warn}{#1}}
 \newcommand{\ok}[1]{\textcolor{good}{#1}}
@@ -44,7 +54,7 @@
 \title{Informalizing Lean Mathlib}
 \subtitle{Mathlib in English, French, Czech, German and Swedish with Informath, built with Claude Code}
 \author{Aarne Ranta}
-\date{9 November 2026}
+\date{11 November 2026}
 
 \begin{document}
 
@@ -1149,32 +1159,169 @@ HVAdd__hVAdd : (X : Set) -> (Y : Set) ->
   \end{columns}
 \end{frame}
 
+\begin{frame}[fragile]{37. Two structures on one set}
+  \footnotesize
+  \prompt{I noticed a strange thing repeated in Mathlib.Topology.html: Let X be a topological
+  space such that X is a topological space.}
+  \prompt{I would like B to get it right.}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item \texttt{TopologicalSpace.ext}: \texttt{IsOpen[f] = IsOpen[g] → f = g}. With the
+              instances dropped, \bad{\texttt{IsOpen X = IsOpen X}}, a hypothesis that says
+              nothing. 20 statements like it.
+        \item Two passes: Lean's instance resolution is asked for each instance argument; the
+              types of those it would not find are kept everywhere, as \texttt{c\_\_in}, and
+              their variables become structures, \texttt{Elem (C\_\_on X)}.
+        \item 132 statements change; words for 40 sets of structures and 25 operations.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \ok{Let $X$ be a set. Let $f$ and $g$ be topologies on $X$ such that for all elements $x$
+      of $\wp X$, $x$ is open in $f$, if and only if $x$ is open in $g$. Then $f$ is equal to
+      $g$.}
+
+      \vspace{1mm}
+      \scriptsize Found on the way: \texttt{cond \&\& (← act)} runs \texttt{act} first;
+      \bad{6,037 changes} until fixed. Pointwise and scoped instances (\texttt{a • s}) are not
+      named. mathlib-informath \commit{e19499a}.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{38. Verbose Lean: writing versus reading}
+  \scriptsize
+  \prompt{I'm interested in the relation between mathlib-informath and Verbose Lean \ldots\ if
+  adding the Informath grammar to Verbose Lean would result in a nicer output}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+\begin{lstlisting}
+Fix ε > 0
+By hf applied to ε using that ε > 0
+  we get δ such that δ_pos : δ > 0 and
+  Hf : ∀ x, |x - x₀| ≤ δ ⇒ |f x - f x₀| ≤ ε
+...
+Let's prove that N works
+\end{lstlisting}
+      \begin{itemize}
+        \item Verbose: input, checked by Lean, for teaching; 56 templates; formulas stay
+              symbols on purpose; English and French by copying.
+        \item Massot: readers are better served by translation \emph{a posteriori}, which is
+              ours.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      Our reading of the same tactic proof, then:
+      \begin{enumerate}\setlength{\itemsep}{0pt}
+        \item Let $\varepsilon \in \mathbb{R}$ such that $\varepsilon > 0$.
+        \item Let \bad{$W$} $\in \mathbb{R}$ such that $W > 0$ and for all elements $x_2$ of
+              $\mathbb{R}$, \ldots
+        \item[6.] \bad{$|f \circ u - f(x_0)|$} $\leq \varepsilon$.
+      \end{enumerate}
+      and \bad{``for all real numbers $x$, if $x > 0$, then''}; a term proof with
+      \texttt{⟨δ\_pos, Hf⟩} gave \bad{no proof text}.
+
+      \vspace{1mm}
+      The same structure: our tactic reading is the inverse of Verbose. Putting our formulas into
+      Verbose would make it worse; the other way round helps.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{39. Verbose as an output: a round trip}
+  \scriptsize
+  \prompt{Save the findings you stated, and try 1 and 5.}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \texttt{\#verbalize} before an ordinary theorem writes its tactic proof in Verbose Lean;
+      Lean with Verbose checks it again:
+\begin{lstlisting}
+Fix ε > 0
+By hf applied to ε using ε_pos we get δ
+  such that (δ_pos : δ > 0) and
+  (Hf : ∀ (x : ℝ), |x - x₀| ≤ δ ⇒ |f x - f x₀| ≤ ε)
+By hu applied to δ using δ_pos we get N
+  such that (Hu : ∀ n ≥ N, |u n - x₀| ≤ δ)
+Let's prove that N works
+Fix n ≥ N
+We conclude by Hf applied to u n using Hu n n_ge
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{itemize}
+        \item From the info trees: the goals before and after each tactic; \texttt{Fix} where
+              the hypothesis has Verbose's own name (\texttt{ε\_pos}); objects ``applied to'',
+              proofs ``using''; other tactics as they are.
+        \item Three examples, all checked: \ok{the only text here that is checked}.
+        \item Lean surprises: theorem bodies elaborated asynchronously (no info trees);
+              Verbose makes \texttt{a}, \texttt{applied}, \texttt{get}, \texttt{using} keywords.
+        \item Not yet: \texttt{apply}, \texttt{constructor}, \texttt{calc}, French.
+      \end{itemize}
+      \texttt{doc/verbose-lean/}, mathlib-informath \commit{3417fe7}.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{40. What the comparison fixed}
+  \scriptsize
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item Names: \ok{$\varepsilon$, $\delta$, $x_0$} kept (Greek letters spelled out for
+              Informath); $(f \circ u)\,n$ as \ok{$f(u(n))$}.
+        \item Bounded quantifiers, \emph{with the kind}: \ok{``for all real numbers $\varepsilon
+              > 0$, there exists a real number $\delta > 0$ such that \ldots''}. My first version
+              dropped it; the regression suite showed \bad{``there exists $q \neq 0$''} in the
+              definition of rational numbers.
+        \item Pattern matching on $\wedge$, $\exists$ in term proofs: 65 more proof texts.
+        \item ``By rewriting, $|u(n_1) - l| \leq \varepsilon$'', not \bad{``there is an element of
+              $\mathrm{Leq}(\ldots)$''}; then 36 \texttt{Totient} proofs \bad{lost}: an
+              \texttt{Eq.mpr} inside a goal, its propositions no longer hidden, 4 GB.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \prompt{Look at all those cases where FunKind is used \ldots\ I would like to have a
+      variant \ldots\ giving ``function from A to B''}
+      \prompt{Simply implement ``fonction dans'' with a function exception}
+      \begin{itemize}
+        \item \ok{``Let $f$ be a function from $I$ to $\wp X$''}, ``soit $f$ une fonction de $I$
+              dans $\wp X$'', with ``$f \in I \rightarrow \wp X$'' as a variant: 1,726
+              statements.
+        \item Still clumsy: \bad{``for all elements $\varepsilon > 0$ of $\mathbb{R}$''} where
+              the kind is a symbol (64).
+      \end{itemize}
+      informath \commit{6a81736}, \commit{0359e14}.
+    \end{column}
+  \end{columns}
+\end{frame}
+
 \begin{frame}{The result}
   \centering\footnotesize
   Fully worded statements (no constant or name shown as $\mathrm{c}$):
 
-  \scriptsize\begin{tabular}{@{}lrrrr@{}}
+  \scriptsize\begin{tabular}{@{}lrrr@{}}
     \toprule
-    pages & statements & English & French & Czech \\
+    pages & statements & English & French \\
     \midrule
-    Order.Defs, Algebra, Structures, Nat primes & 755 & 641 & 641 & 641 \\
-    A.\ logic, sets, orders & 1,940 & 1,553 & 1,553 & 1,554 \\
-    B.\ groups and rings & 2,276 & 1,618 & 1,618 & 1,548 \\
-    C.\ elementary number theory & 892 & 718 & 718 & 706 \\
-    D.\ finite sets and sums & 767 & 547 & 547 & 544 \\
-    E.\ linear algebra, ideals, polynomials & 1,091 & 666 & 666 & 664 \\
-    F.\ topology and analysis & 1,405 & 862 & 862 & 861 \\
+    Order.Defs, Algebra, Structures, Nat primes & 755 & 638 & 638 \\
+    A.\ logic, sets, orders & 1,940 & 1,537 & 1,537 \\
+    B.\ groups and rings & 2,276 & 1,612 & 1,612 \\
+    C.\ elementary number theory & 892 & 718 & 718 \\
+    D.\ finite sets and sums & 767 & 547 & 547 \\
+    E.\ linear algebra, ideals, polynomials & 1,091 & 665 & 665 \\
+    F.\ topology and analysis & 1,405 & 859 & 859 \\
     \midrule
-    all & \textbf{9,126} & \textbf{6,605} & \textbf{6,605} & \textbf{6,518} \\
+    all & \textbf{9,126} & \textbf{6,576} & \textbf{6,576} \\
     \bottomrule
   \end{tabular}
 
   \vspace{1mm}
   \raggedright\scriptsize
   \begin{itemize}
-    \item \textbf{7,594 of 8,472 theorems with a proof text} in all three languages: 3,653 from
-          terms, 3,941 from tactics; 26,350 lines, 166 ``obvious''; 42 failures.
-    \item German and Swedish: the grammar has them, the present index does not.
+    \item \textbf{7,658 of 8,472 theorems with a proof text} in both languages: 3,738 from
+          terms, 3,920 from tactics; 27,691 lines, 166 ``obvious''; 45 failures.
+    \item English and French for now; Czech (6,518 on 9 November), German and Swedish: the
+          grammar has them, the present index does not.
     \item 26,741 of Mathlib's 38,667 definitions worded; 38,517 read in English, 38,546 as
           formulas, 38,306 in French (\texttt{definitions.html}); 869 classes as structures or
           predicates; 115 with Mathlib's notation.
@@ -1197,7 +1344,7 @@ HVAdd__hVAdd : (X : Set) -> (Y : Set) ->
           (\texttt{XEquivY}), bundled maps without arguments (\bad{``the dual''}), verbs
           (\texttt{PreservesX}), 2,000 unknown abbreviations; the words of the other
           languages in \texttt{translations.tsv} to be reviewed.
-    \item \textbf{Proofs.} 42 fail: a $\lambda$ proving what is a $\forall$ only after unfolding
+    \item \textbf{Proofs.} 45 fail: a $\lambda$ proving what is a $\forall$ only after unfolding
           (\texttt{upperBounds}); lean2dk's rewrite rules would unfold it. Long \texttt{simp}
           goals; limits and filters only as formulas ($\mathrm{Tendsto}(f, l_1, l_2)$).
     \item \textbf{Unworded statements} (2,521 of 9,126 in English):
@@ -1222,6 +1369,8 @@ HVAdd__hVAdd : (X : Set) -> (Y : Set) ->
           $\mathrm{irrefl}$ of $\mathrm{Proof}$ applied to the proposition
           that \ldots, $r$ is irreflexive.'' Bound variables are renumbered
           ($x_4$, $x_5$) where the source reuses names.
+    \item \textbf{Bounded quantifiers} over a symbol: ``for all elements $\varepsilon > 0$ of
+          $\mathbb{R}$''; proof lines not yet Verbose's ``Fix $\varepsilon > 0$''.
     \item \textbf{Meaning that depends on the type}: $\leq$ on finite sets reads
           ``less than or equal to'', where Mathlib means ``subset of''.
     \item \textbf{French}: ``pour tous \bad{des} nombres naturels'', ``il
@@ -1252,7 +1401,7 @@ HVAdd__hVAdd : (X : Set) -> (Y : Set) ->
 
 \begin{frame}{Who did what}
   \tiny
-  \renewcommand{\arraystretch}{0.92}\setlength{\tabcolsep}{3pt}\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+  \renewcommand{\arraystretch}{0.84}\setlength{\tabcolsep}{3pt}\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
     \toprule
     \textbf{Already in Informath} & \textbf{From my prompts} & \textbf{Added by Claude} \\
     \midrule
@@ -1308,10 +1457,11 @@ HVAdd__hVAdd : (X : Set) -> (Y : Set) ->
     delaborator \\
     &
     Tiers A--F; French, Czech; verbose proofs; \texttt{-force-symbolic}; lean2dk; a hidden
-    coercion operator
+    coercion operator; structures on one set; Verbose; ``function from $A$ to $B$''
     &
     Proof rounds; implicit-argument diagnosis; unworded constants as formulas;
-    \texttt{MizarCze}; \texttt{\#HIDE}, \texttt{\#COERCION} \\
+    \texttt{MizarCze}; \texttt{\#HIDE}, \texttt{\#COERCION}; given instances;
+    \texttt{\#verbalize}; bounded quantifiers \\
     \bottomrule
   \end{tabularx}
 
@@ -1324,8 +1474,8 @@ HVAdd__hVAdd : (X : Set) -> (Y : Set) ->
 
   \vspace{3mm}
   \normalsize
-  9,126 Mathlib statements and structures from 82 modules, 7,594 proofs, in English, French,
-  Czech and LaTeX; all of Mathlib's 38,667 definitions read in English, French and as formulas,
+  9,126 Mathlib statements and structures from 82 modules, 7,658 proofs, in English, French
+  and LaTeX; all of Mathlib's 38,667 definitions read in English, French and as formulas,
   its classes as structures
 \end{frame}
 

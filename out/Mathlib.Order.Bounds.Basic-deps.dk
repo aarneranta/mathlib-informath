@@ -1,7 +1,28 @@
 (; constants used by Mathlib.Order.Bounds.Basic, declared with their translated types ;)
 
+(; the structures of a class on its parameters ;)
+Lattice__on : (X : Set) -> Set.
+
+(; the structures of a class on its parameters ;)
+OrderBot__on : (X : Set) -> Set.
+
 (; a constant applied as a function: DFunLike.coe ;)
 OrderDual__toDual__app : (a1 : Elem Z) -> Elem (OrderDual Z).
+
+(; the structures of a class on its parameters ;)
+OrderInfSet__on : (X : Set) -> Set.
+
+(; the structures of a class on its parameters ;)
+OrderSupSet__on : (X : Set) -> Set.
+
+(; the structures of a class on its parameters ;)
+OrderTop__on : (X : Set) -> Set.
+
+(; the structures of a class on its parameters ;)
+SemilatticeInf__on : (X : Set) -> Set.
+
+(; the structures of a class on its parameters ;)
+SemilatticeSup__on : (X : Set) -> Set.
 
 (; doc: The antisymmetrization relation `AntisymmRel r` is defined so that `AntisymmRel r a b ↔ r a b ∧ r b a`. ;)
 (; //LEAN:AntisymmRel ;)
@@ -164,12 +185,8 @@ LE__le__trans_lt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b :
 (; //LEAN:LT.lt.le ;)
 LT__lt__le : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Lt a b)) -> Proof (Leq a b).
 
-(; doc: A lattice is a join-semilattice which is also a meet-semilattice. ;)
-(; //LEAN:Lattice ;)
-Lattice : (X : Set) -> Prop.
-
 (; //LEAN:Lattice.mk ;)
-Lattice__mk : (X : Set) -> (inf : (Elem X -> Elem X -> X)) -> (inf_le_left : Proof (forall X (a2 => forall X (b2 => Leq (inf a2 b2) a2)))) -> (inf_le_right : Proof (forall X (a1 => forall X (b1 => Leq (inf a1 b1) b1)))) -> (le_inf : Proof (forall X (a => forall X (b => forall X (c => if (Leq a b) (if (Leq a c) (Leq a (inf b c)))))))) -> Proof (Lattice X).
+Lattice__mk : (X : Set) -> (inf : (Elem X -> Elem X -> X)) -> (inf_le_left : Proof (forall X (a2 => forall X (b2 => Leq (inf a2 b2) a2)))) -> (inf_le_right : Proof (forall X (a1 => forall X (b1 => Leq (inf a1 b1) b1)))) -> (le_inf : Proof (forall X (a => forall X (b => forall X (c => if (Leq a b) (if (Leq a c) (Leq a (inf b c)))))))) -> Elem (Lattice__on X).
 
 (; doc: A `ParserDescr` is a grammar for parsers. This is used by the `syntax` command to produce parsers without having to `import Lean`. ;)
 (; //LEAN:Lean.ParserDescr ;)
@@ -216,7 +233,7 @@ Nonempty__elim : (X : Set) -> (p : Prop) -> (h : Proof (Nonempty X)) -> (h1 : Pr
 OrderBot : (X : Set) -> Prop.
 
 (; //LEAN:OrderBot.mk ;)
-OrderBot__mk : (X : Set) -> (bot_le : Proof (forall X (a => Leq (Bot__bot X) a))) -> Proof (OrderBot X).
+OrderBot__mk : (X : Set) -> (bot_le : Proof (forall X (a => Leq (Bot__bot X) a))) -> Elem (OrderBot__on X).
 
 (; doc: Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is notation for `OrderDual α`. ;)
 (; //LEAN:OrderDual ;)
@@ -235,7 +252,7 @@ OrderDual__toDual : (X : Set) -> Elem (Equiv X (OrderDual X)).
 OrderInfSet : (X : Set) -> Prop.
 
 (; //LEAN:OrderInfSet.mk ;)
-OrderInfSet__mk : (X : Set) -> (isGLB_sInf_of_isGLB : Proof (forall (powerset X) (s => forall X (a => if (IsGLB X s a) (IsGLB X s (InfSet__sInf X s)))))) -> Proof (OrderInfSet X).
+OrderInfSet__mk : (X : Set) -> (isGLB_sInf_of_isGLB : Proof (forall (powerset X) (s => forall X (a => if (IsGLB X s a) (IsGLB X s (InfSet__sInf X s)))))) -> Elem (OrderInfSet__on X).
 
 (; //LEAN:OrderInfSet.ofOrderSupSet._proof_1 ;)
 OrderInfSet__ofOrderSupSet___proof_1 : (X : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (OrderSupSet X)) -> (x2 : Elem (powerset X)) -> (x3 : Elem X) -> (h : Proof (IsGLB X x2 x3)) -> Proof (IsGLB X x2 (SupSet__sSup X (lowerBounds X x2))).
@@ -251,7 +268,7 @@ OrderSupSet__choose___proof_1 : (X : Set) -> (_ : Proof (Preorder X)) -> (d : El
 OrderSupSet__isLUB_sSup_of_isLUB : (X : Set) -> (x : Proof (LE X)) -> (_ : Proof (OrderSupSet X)) -> (s : Elem (powerset X)) -> (a : Elem X) -> (h : Proof (IsLUB X s a)) -> Proof (IsLUB X s (SupSet__sSup X s)).
 
 (; //LEAN:OrderSupSet.mk ;)
-OrderSupSet__mk : (X : Set) -> (isLUB_sSup_of_isLUB : Proof (forall (powerset X) (s => forall X (a => if (IsLUB X s a) (IsLUB X s (SupSet__sSup X s)))))) -> Proof (OrderSupSet X).
+OrderSupSet__mk : (X : Set) -> (isLUB_sSup_of_isLUB : Proof (forall (powerset X) (s => forall X (a => if (IsLUB X s a) (IsLUB X s (SupSet__sSup X s)))))) -> Elem (OrderSupSet__on X).
 
 (; doc: An order is an `OrderTop` if it has a greatest element. We state this using a data mixin, holding the value of `⊤` and the greatest element constraint. ;)
 (; //LEAN:OrderTop ;)
@@ -270,7 +287,7 @@ PartialOrder : (X : Set) -> Prop.
 Preorder : (X : Set) -> Prop.
 
 (; //LEAN:Preorder.toLE ;)
-Preorder__toLE : (X : Set) -> Proof (LE X).
+Preorder__toLE : (X : Set) -> Elem (LE__on X).
 
 (; doc: The product type, usually written `α × β`. Product types are also called pair or tuple types. Elements of this type are pairs in which the first element is an `α` and the second element is a `β`.  Products nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.  Conventions for notations in identifiers:   * The recommended spelling of `×` in identifiers is `Prod`. ;)
 (; //LEAN:Prod ;)
@@ -321,7 +338,7 @@ SemilatticeInf__le_inf : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Ele
 SemilatticeSup : (X : Set) -> Prop.
 
 (; //LEAN:SemilatticeSup.mk ;)
-SemilatticeSup__mk : (X : Set) -> (sup : (Elem X -> Elem X -> X)) -> (le_sup_left : Proof (forall X (a2 => forall X (b2 => Leq a2 (sup a2 b2))))) -> (le_sup_right : Proof (forall X (a1 => forall X (b1 => Leq b1 (sup a1 b1))))) -> (sup_le : Proof (forall X (a => forall X (b => forall X (c => if (Leq a c) (if (Leq b c) (Leq (sup a b) c))))))) -> Proof (SemilatticeSup X).
+SemilatticeSup__mk : (X : Set) -> (sup : (Elem X -> Elem X -> X)) -> (le_sup_left : Proof (forall X (a2 => forall X (b2 => Leq a2 (sup a2 b2))))) -> (le_sup_right : Proof (forall X (a1 => forall X (b1 => Leq b1 (sup a1 b1))))) -> (sup_le : Proof (forall X (a => forall X (b => forall X (c => if (Leq a c) (if (Leq b c) (Leq (sup a b) c))))))) -> Elem (SemilatticeSup__on X).
 
 (; //LEAN:SemilatticeSup.ofIsLUB._proof_1 ;)
 SemilatticeSup__ofIsLUB___proof_1 : (X : Set) -> (_ : Proof (PartialOrder X)) -> (sup : (Elem X -> Elem X -> X)) -> (isLUB_pair : Proof (forall X (a1 => forall X (b1 => IsLUB X (Insert__insert X (powerset X) a1 (Singleton__singleton X (powerset X) b1)) (sup a1 b1))))) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq a (sup a b)).

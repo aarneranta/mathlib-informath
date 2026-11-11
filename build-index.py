@@ -7,6 +7,7 @@ build-html.py makes the pages from it.
     lake exe export $(grep -v '^#' modules.txt)   # -> out/<Module>.dk, .json, -deps.dk
     python3 build-index.py                        # -> index.json
     python3 build-index.py --reuse-slow           # the same, German taken from index.json
+                                                  # where the declaration's Dedukti is unchanged
     python3 build-html.py                         # -> mathlib-informath.html, pages/*.html
 
 RunInformath loads its grammar of English and French (share/InformathFull.pgf)
@@ -402,9 +403,15 @@ def main():
     # are in the existing index, which saves their many calls
     reuse = '--reuse-slow' in sys.argv[1:] and os.path.exists(INDEX)
     old = {d['lean']: d for d in json.load(open(INDEX))['declarations']} if reuse else {}
-    timed_out, loads = {}, {lang: (0 if reuse else load_time(lang)) for lang in SLOW_LANGUAGES}
-    for lang in ([] if reuse else SLOW_LANGUAGES):
-        got, given_up = slow_readings(sblocks, list(sblocks), verbal, lang, loads[lang])
+    # except those whose Dedukti has changed since, which are read again
+    changed = set(sblocks) if not reuse else \
+        {n for n in sblocks if n not in old or old[n].get('dedukti') != blocks.get(n)}
+    if reuse:
+        print('--reuse-slow: %d declarations changed, read again in %s'
+              % (len(changed), ', '.join(SLOW_LANGUAGES)))
+    timed_out, loads = {}, {lang: (load_time(lang) if changed else 0) for lang in SLOW_LANGUAGES}
+    for lang in (SLOW_LANGUAGES if changed else []):
+        got, given_up = slow_readings(sblocks, [n for n in sblocks if n in changed], verbal, lang, loads[lang])
         for n, t in got.items():
             texts[n][lang] = t
         for n in given_up:
@@ -444,7 +451,7 @@ def main():
     # \mathrm{c}(...) where a constant has no form that fits
     forced = {}
     for n, d in old.items():
-        if n in texts:
+        if n in texts and n not in changed:
             for lang in SLOW_LANGUAGES:
                 if d['readings'].get(lang):
                     texts[n][lang] = d['readings'][lang]
@@ -497,10 +504,11 @@ def main():
                     older.setdefault(n, []).append(lang + ' proof')
     for n, p in proofs.items():
         for lang in SLOW_LANGUAGES:
-            if reuse and (old.get(n, {}).get('proof') or {}).get(lang):
+            if reuse and n not in changed and (old.get(n, {}).get('proof') or {}).get(lang):
                 p[lang] = old[n]['proof'][lang]
-    for lang in ([] if reuse else SLOW_LANGUAGES):
-        got, given_up = slow_proofs(proof_base, {n: blocks[n] for n in proofs}, list(proofs), lang, loads[lang])
+    redo = [n for n in proofs if n in changed]
+    for lang in (SLOW_LANGUAGES if redo else []):
+        got, given_up = slow_proofs(proof_base, {n: blocks[n] for n in proofs}, redo, lang, loads[lang])
         for n, rows_ in got.items():
             proofs[n][lang] = rows_
         for n in given_up:

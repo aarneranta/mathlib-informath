@@ -13,6 +13,12 @@ structures and classes with their fields), the type is translated:
 * in applications, instance arguments are dropped; the implicit ones are kept,
   and out/<Module>-hide.dkgf has the #HIDE lines that hide them in the readings
   (and #COERCION lines for the coercions, which are kept too);
+* but where a statement gives an instance that instance resolution would not
+  find (`IsOpen[f] = IsOpen[g]` with `{f g : TopologicalSpace X}`, `IsOpen[t.induced f]`),
+  it is kept: the constant becomes its variant `IsOpen__in X f s` ("s is open
+  in f"), the structure is a named element of the set of the class's
+  structures, `(f : Elem (TopologicalSpace__on X))` ("let f be a topology on
+  X"), and an equality of such operations is stated pointwise (see givenInstance);
 * the constants of `mapping.tsv` become Informath's own (`Dvd.dvd` is `divide`,
   `Nat.Prime` is `prime`, ...), so that Informath's base readings apply, and the
   logical constants become `and`, `or`, `if`, `not`, `iff`, `forall`, `exists`;
@@ -47,7 +53,11 @@ def mangle (n : Name) : String :=
 structure St where
   mapping : Std.HashMap Name String := {}
   used : Std.HashSet Name := {}      -- unmapped constants referred to
-  derived : Std.HashMap String String := {}  -- c__app constants and their types
+  derived : Std.HashMap String String := {}  -- c__app, c__in, C__on constants and their types
+  derivedHide : Std.HashMap String (Array Nat) := {}  -- the hidden arguments of c__in
+  collecting : Bool := false         -- the first pass of a statement (see givenInstance)
+  givenKeys : Std.HashSet String := {}  -- the instance types whose arguments are kept
+  namedLocals : Std.HashSet FVarId := {}  -- the locals that are named structures
   binders : Std.HashSet Name := {}   -- constants of binders.txt
   names : Std.HashSet String := {}   -- variable names in use
   proofMode : Bool := false          -- in a proof term, theorems keep all their arguments
@@ -118,6 +128,105 @@ def numeral (n : Nat) : String :=
     go ds
 
 def paren (s : String) : String := if s.contains ' ' then s!"({s})" else s
+
+/-- A class whose instances a statement never names: decidability, which is
+computational, and the technical classes that a textbook never states (the
+coercion classes FunLike and SetLike, the compatibility of an order or an
+action with the operations, the bare notation classes Zero, Add, ...). -/
+def technicalClass (ty : Expr) : Bool :=
+  match ty.getAppFn.constName? with
+  | some c =>
+    let s := c.toString
+    s.startsWith "Decidable" || technicalClasses.contains s ||
+    ["PosMul", "MulPos", "Covariant", "Contravariant"].any (s.startsWith ·) ||
+    ["LeftMono", "RightMono", "LeftStrictMono", "RightStrictMono", "LeftReflectLT",
+     "RightReflectLT", "LeftReflectLE", "RightReflectLE", "HomClass"].any (s.endsWith ·)
+  | none => false
+where
+  technicalClasses : List String :=
+    ["FunLike", "DFunLike", "EquivLike", "SetLike", "SMulCommClass", "IsScalarTower",
+     "ContinuousSMul", "ContinuousConstSMul", "RingHomSurjective", "IsRCLikeNormedField",
+     "Zero", "One", "Add", "Mul", "Neg", "Inv", "Sub", "Div", "SMul", "VAdd", "Pow",
+     "Nontrivial", "Inhabited", "Nonempty", "NatCast", "IntCast", "CharZero",
+     "SummationFilter.NeBot", "SummationFilter.IsCountablyGenerated"]
+
+/-- A class whose instances are never named structures (see givenInstance),
+though statements assume them: the technical ones, the heterogeneous
+notation classes, whose instances on sets are the scoped pointwise ones
+(a • s), the casts, and the classes whose instances are all the same as far
+as a statement goes (the cardinality of a Fintype). -/
+def unnamedClass (ty : Expr) : Bool :=
+  technicalClass ty ||
+  match ty.getAppFn.constName? with
+  | some c => ["HSMul", "HVAdd", "HMul", "HAdd", "HSub", "HDiv", "HPow", "HMod", "HAnd", "HOr",
+               "RatCast", "NNRatCast", "Fintype", "Finite", "Encodable", "Countable",
+               "Unique", "Membership", "Function.HasUncurry"].contains c.toString
+  | none => false
+
+/-- A given instance without the parent projections around it: the `LE` of a
+preorder `A`, `Preorder.toLE A`, is `A`, as a textbook says "≤ in A". -/
+partial def stripParents (e : Expr) : MetaM Expr := do
+  let e ← instantiateMVars e
+  match e.getAppFn with
+  | .const (.str cls field) _ =>
+    if e.getAppNumArgs > 0 && field.startsWith "to" && isClass (← getEnv) cls then
+      let a := e.appArg!
+      if (← whnfR (← inferType a)).getAppFn.constName? == some cls then
+        return ← stripParents a
+    return e
+  | _ => return e
+
+/-- The positions of the instance arguments of a constant. -/
+def instanceArgs (c : Name) : MetaM (Array Bool) := do
+  let info ← getConstInfo c
+  forallTelescope info.type fun xs _ => do
+    xs.mapM fun x => return (← x.fvarId!.getBinderInfo) == .instImplicit
+
+/-- Whether an instance argument is given by the statement rather than found
+by instance resolution, so that it has to be kept: `IsOpen[f]` beside
+`IsOpen[g]`, `IsOpen[t.induced f]`, `𝓤[U]` beside `m.toUniformSpace`.  A
+statement is translated twice (see statement).  The first pass (collecting)
+asks instance resolution, in the statement's context, for each instance
+argument, and notes the type of any argument it would not find; the second
+keeps every instance argument of a type so noted, on both sides of
+`IsOpen[f] = IsOpen[g]`, and notes the locals in it as named structures
+(`namedLocals`), which become elements of the set of the class's structures.
+Decidability and the technical classes are never kept. -/
+def givenInstance (a : Expr) : M Bool := do
+  let ty ← instantiateMVars (← inferType a)
+  if unnamedClass ty || (← isProp ty) then return false
+  let key := toString (← ppExpr ty)
+  if (← get).collecting then
+    let found ← try synthInstance? ty catch _ => pure none
+    let same ← match found with
+      | some i => (try isDefEq i a catch _ => pure false)
+      | none => pure false
+    if !same then
+      if (← IO.getEnv "EXPORT_DEBUG_GIVEN").isSome then
+        let fs ← match found with
+          | some i => do pure (toString (← ppExpr i))
+          | none => pure "none"
+        IO.eprintln s!"GIVEN {key} | {← ppExpr a} | {fs}"
+      modify fun st => { st with givenKeys := st.givenKeys.insert key }
+    return false
+  if !(← get).givenKeys.contains key then return false
+  let lctx ← getLCtx
+  for id in (collectFVars {} (← stripParents a)).fvarIds do
+    if let some d := lctx.find? id then
+      if (← isClass? d.type).isSome && !(← isProp d.type) then
+        modify fun st => { st with namedLocals := st.namedLocals.insert id }
+  return true
+
+/-- Whether an expression has a given instance argument (see givenInstance). -/
+partial def hasGivenInstance (e : Expr) : M Bool := do
+  let .const c _ := e.getAppFn | return false
+  let inst ← try instanceArgs c catch _ => pure #[]
+  let args := e.getAppArgs
+  for i in [0:args.size] do
+    if inst.getD i false then
+      if ← givenInstance args[i]! then return true
+    else if ← hasGivenInstance args[i]! then return true
+  return false
 
 mutual
 
@@ -211,19 +320,90 @@ partial def binder (n : Name) (t b : Expr) (bi : BinderInfo) (isLam : Bool)
           return s!"if {paren (← tr t)} {paren bs}"
         if prop then
           return s!"forall (Proof {paren (← tr t)}) ({nm} => {bs})"
-        return s!"forall {paren (← typeOf t)} ({nm} => {bs})"
+        -- a named structure (see givenInstance) ranges over the set of the structures
+        let named := (← get).namedLocals.contains y.fvarId!
+        let dom ← if named then typeOf t else tr t
+        return s!"forall {paren dom} ({nm} => {bs})"
       if !b.hasLooseBVars then
         return s!"{← hypoType t} -> {bs}"
-      return s!"({nm} : {← hypoType t}) -> {bs}"
+      return s!"({nm} : {← hypoType t !((← get).namedLocals.contains y.fvarId!)}) -> {bs}"
 
-/-- The Set an object of type t belongs to: Nat for ℕ. -/
-partial def typeOf (t : Expr) : M String := tr t
+/-- The Set an object of type t belongs to: Nat for ℕ, and for a class, the
+set of its structures (TopologicalSpace X: TopologicalSpace__on X). -/
+partial def typeOf (t : Expr) : M String := do
+  if let some s ← structureSet t then return s
+  tr t
 
-/-- The type of a hypothesis: Elem α, Proof P, or Set. -/
-partial def hypoType (t : Expr) : M String := do
+/-- For a class C applied to its parameters, the set of its structures on
+them, C__on (the topologies on X), declared in the deps with the class's
+parameters but its instances: none if t is not a class. -/
+partial def structureSet (t : Expr) : M (Option String) := do
+  let t ← instantiateMVars t
+  let some n := t.getAppFn.constName? | return none
+  unless isClass (← getEnv) n do return none
+  -- a Prop-valued class (Nontrivial, DenselyOrdered) is a predicate, and the
+  -- instances of the technical classes are never named (Decidable p); and
+  -- only a class applied to all its parameters is a type
+  if (← isProp t) || unnamedClass t then return none
+  unless (← whnf (← inferType t)).isSort do return none
+  let nm := mangle n ++ "__on"
+  let inst ← try instanceArgs n catch _ => pure #[]
+  let params := (t.getAppArgs.toList.zip (inst.toList ++ List.replicate t.getAppNumArgs false)).filter (!·.2)
+                  |>.map (·.1)
+  if !((← get).derived.contains nm) then
+    let (ty, _) ← derivedDecl (← getConstInfo n).type (!inst.getD · false) (fun _ => false) true
+    modify fun st => { st with derived := st.derived.insert nm ty }
+  let as ← params.mapM tr
+  return some (" ".intercalate (nm :: as.map paren))
+
+/-- The binders of a derived constant (c__in, C__on) from the type of c: those
+at the kept positions, the given instances as elements of the sets of the
+structures; the positions of the implicit ones among them (for #HIDE); and
+the result, Set for C__on. -/
+partial def derivedType (t : Expr) (keptAt givenAt : Nat → Bool) (setResult : Bool) (i k : Nat) :
+    M (List String × List Nat × String) := do
+  match t with
+  | .forallE n ty b bi =>
+    let nm ← freshName n (← isProp ty) (sortish ty)
+    withLocalDecl (Name.mkSimple nm) bi ty fun y => do
+      let k' := if keptAt i then k + 1 else k
+      let (hs, hid, res) ← derivedType (b.instantiate1 y) keptAt givenAt setResult (i + 1) k'
+      if !keptAt i then return (hs, hid, res)
+      let named := givenAt i || (← get).namedLocals.contains y.fvarId!
+      let h := s!"({nm} : {← hypoType ty (!named)})"
+      return (h :: hs, if bi == .implicit || bi == .strictImplicit then k' :: hid else hid, res)
+  | body =>
+    if setResult then return ([], [], "Set")
+    let res ← if (← isProp body) then pure s!"Proof {paren (← tr body)}" else hypoType body false
+    return ([], [], res)
+
+/-- The declared type of a derived constant and its hidden arguments, its
+variables named afresh as in a declaration of its own. -/
+partial def derivedDecl (t : Expr) (keptAt givenAt : Nat → Bool) (setResult : Bool) :
+    M (String × Array Nat) := do
+  -- in two passes, as a statement (see givenInstance), in a state of its own
+  let s0 ← get
+  set { s0 with names := {}, collecting := true, givenKeys := {}, namedLocals := {} }
+  discard <| derivedType t keptAt givenAt setResult 0 0
+  let keys := (← get).givenKeys
+  modify fun st => { st with names := {}, collecting := false, givenKeys := keys, namedLocals := {} }
+  let (hs, hid, res) ← derivedType t keptAt givenAt setResult 0 0
+  let derived := (← get).derived
+  let derivedHide := (← get).derivedHide
+  let used := (← get).used
+  set { s0 with derived, derivedHide, used }
+  return (" -> ".intercalate (hs ++ [res]), hid.toArray)
+
+/-- The type of a hypothesis: Elem α, Proof P, or Set.  An instance of a
+class is a proof of it, as classes are predicates here; a variable of a class
+type that is not an instance (inst false), a named structure, is an element
+of the set of its structures. -/
+partial def hypoType (t : Expr) (inst : Bool := true) : M String := do
   if (← isProp t) then return s!"Proof {paren (← tr t)}"
-  -- an instance of a class is a proof of it, as classes are predicates here
-  if (← isClass? t).isSome then return s!"Proof {paren (← tr t)}"
+  if (← isClass? t).isSome then
+    if !inst then
+      if let some s ← structureSet t then return s!"Elem {paren s}"
+    return s!"Proof {paren (← tr t)}"
   if t.isProp then return "Prop"
   if sortish t then return "Set"
   if (← isType t) then
@@ -321,15 +501,58 @@ partial def app (c : Name) (args : Array Expr) (whole : Expr) : M String := do
     match p with
     | .lam n t b bi => do
       let s ← binder n t b bi true
-      return s!"exists {paren (← tr t)} ({s})"
-    | _ => return s!"exists {paren (← tr args[0]!)} (x => {paren (← tr p)} x)"
+      return s!"exists {paren (← typeOf t)} ({s})"
+    | _ => return s!"exists {paren (← typeOf args[0]!)} (x => {paren (← tr p)} x)"
   -- equality: Eq on numbers, Eqt elsewhere
   if c == ``Eq && args.size == 3 then
-    let ty ← tr args[0]!
+    -- an equality of functions that differ in a given instance (IsOpen[f] =
+    -- IsOpen[g], dist[x] = dist[y]): pointwise, as the functions are the
+    -- operations of the structures, read as applied ("for all s, s is open in
+    -- f iff s is open in g"); equivalent by funext and propext
+    let fty ← whnf args[0]!
+    let pointwise ← if !fty.isForall then pure false
+      else if ← hasGivenInstance args[1]! then pure true
+      else hasGivenInstance args[2]!
+    if pointwise then
+      let e ← forallTelescope fty fun xs cod => do
+        let l := (mkAppN args[1]! xs).headBeta
+        let r := (mkAppN args[2]! xs).headBeta
+        let body ← if cod.isProp then pure (mkIff l r) else mkEq l r
+        mkForallFVars xs body
+      return ← tr e
+    let ty ← typeOf args[0]!
     let a ← tr args[1]!; let b ← tr args[2]!
     if ty == "Nat" || ty == "Int" || ty == "Real" || ty == "Rat" then
       return s!"Eq {paren a} {paren b}"
     return s!"Eqt {paren ty} {paren a} {paren b}"
+  -- an instance argument that the statement gives (IsOpen[f] s, x ≤ y in a
+  -- preorder A) is kept: the constant is its variant c__in (IsOpen__in X f s),
+  -- declared in the deps with the instance as an element of the set of the
+  -- structures, and its implicit arguments hidden by #HIDE as the others'
+  let isThmConst := match (← getEnv).find? c with
+    | some (.thmInfo _) => true
+    | _ => false
+  if !isThmConst && !(← get).keepAll.contains c then
+    let inst ← try instanceArgs c catch _ => pure #[]
+    let mut given : Array Nat := #[]
+    for i in [0:args.size] do
+      if inst.getD i false then
+        if ← givenInstance args[i]! then given := given.push i
+    if !given.isEmpty then
+      let present := (List.range args.size).filter (inst.getD · false)
+      let nm := mangle c ++ "__in" ++
+        (if given.toList == present then "" else "_" ++ "_".intercalate (given.toList.map (toString ·.succ)))
+      let kept (i : Nat) : Bool := !(inst.getD i false) || given.contains i
+      if !((← get).derived.contains nm) then
+        let (ty, hidden) ← derivedDecl (← getConstInfo c).type kept given.contains false
+        modify fun st => { st with derived := st.derived.insert nm ty,
+                                   derivedHide := st.derivedHide.insert nm hidden }
+      let mut as := #[]
+      for i in [0:args.size] do
+        if !kept i then continue
+        let a ← if given.contains i then stripParents args[i]! else pure args[i]!
+        as := as.push (paren (← tr a))
+      return " ".intercalate (nm :: as.toList)
   let target := (← get).mapping.get? c
   let expl ← try explicitArgs c catch _ => pure (args.map fun _ => true)
   -- in a proof, a theorem is a rule whose premisses -proof-text reads off its
@@ -366,6 +589,9 @@ partial def app (c : Name) (args : Array Expr) (whole : Expr) : M String := do
       let ty ← whnf (← inferType a)
       if ty.isForall then
         return ← tr (← Core.betaReduce (← etaExpand a))
+    -- a class as a type argument (⊥ of TopologicalSpace X): the set of its structures
+    if (← isClass? a).isSome then
+      if let some s ← structureSet a then return s
     tr a
   return " ".intercalate (head :: as.map paren)
 
@@ -377,22 +603,7 @@ is computational, and the technical classes that a textbook never states
 an action with the operations, the bare notation classes Zero, Add, ...).
 Its λ in the definiens is left out too, so that the proof still fits. -/
 def droppedInstance (ty : Expr) (bi : BinderInfo) : Bool :=
-  bi == .instImplicit &&
-  match ty.getAppFn.constName? with
-  | some c =>
-    let s := c.toString
-    s.startsWith "Decidable" || technicalClasses.contains s ||
-    ["PosMul", "MulPos", "Covariant", "Contravariant"].any (s.startsWith ·) ||
-    ["LeftMono", "RightMono", "LeftStrictMono", "RightStrictMono", "LeftReflectLT",
-     "RightReflectLT", "LeftReflectLE", "RightReflectLE", "HomClass"].any (s.endsWith ·)
-  | none => false
-where
-  technicalClasses : List String :=
-    ["FunLike", "DFunLike", "EquivLike", "SetLike", "SMulCommClass", "IsScalarTower",
-     "ContinuousSMul", "ContinuousConstSMul", "RingHomSurjective", "IsRCLikeNormedField",
-     "Zero", "One", "Add", "Mul", "Neg", "Inv", "Sub", "Div", "SMul", "VAdd", "Pow",
-     "Nontrivial", "Inhabited", "Nonempty", "NatCast", "IntCast", "CharZero",
-     "SummationFilter.NeBot", "SummationFilter.IsCountablyGenerated"]
+  bi == .instImplicit && technicalClass ty
 
 /-- The statement of a declaration as a Dedukti type: its binders as
 hypotheses, its conclusion as Proof P (a theorem) or as the type of the
@@ -408,18 +619,28 @@ partial def statementGo (explicitOnly : Bool) (t : Expr) : M String := do
         -- decidability and technical instances are not hypotheses of the statement
         if droppedInstance ty bi then
           return rest
-        let h ← if bi == .instImplicit then do pure s!"(_ : Proof {paren (← tr ty)})"
+        -- a named structure (see givenInstance) is an element of the set of the
+        -- structures, with its name also when it was an instance (𝓤[U])
+        let h ← if (← get).namedLocals.contains y.fvarId! then do pure s!"({nm} : {← hypoType ty false})"
+                 else if bi == .instImplicit then do pure s!"(_ : Proof {paren (← tr ty)})"
                  else do pure s!"({nm} : {← hypoType ty})"
         return s!"{h} -> {rest}"
     | _ => do
       if (← isProp t) then return s!"Proof {paren (← tr t)}"
-      hypoType t
+      -- a definition of a structure (TopologicalSpace.induced): an element of the set of them
+      hypoType t false
 
 /-- A theorem is stated with all its hypotheses, implicit ones included, as
 they are its statement; any other constant (a definition, a structure, a
 primitive) with its explicit arguments only, the ones its applications show,
 so that the #k of its symbol table entry count the same arguments. -/
 def statement (type : Expr) : M String := do
+  -- twice: the first pass notes the instance arguments to keep (see givenInstance)
+  let s0 ← get
+  set { s0 with collecting := true }
+  discard <| statementGo (!(← isProp type)) type
+  let keys := (← get).givenKeys
+  set { s0 with givenKeys := keys }
   statementGo (!(← isProp type)) type
 
 /-- The definiens of a declaration, its λs matching the binders of its type:
@@ -438,6 +659,13 @@ partial def valueGo (explicitOnly : Bool) (t v : Expr) : M String := do
   | _, _ => tr v
 
 def value (type v : Expr) : M String := do
+  -- twice, as statement, noting the instance arguments of the statement too
+  let s0 ← get
+  set { s0 with collecting := true }
+  discard <| statementGo (!(← isProp type)) type
+  discard <| valueGo (!(← isProp type)) type v
+  let keys := (← get).givenKeys
+  set { s0 with givenKeys := keys }
   valueGo (!(← isProp type)) type v
 
 /-- The text after the top-level := of a declaration, from its name on (so
@@ -551,6 +779,7 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
   let mut json := #[]
   let mut used : Std.HashSet Name := {}
   let mut derived : Std.HashMap String String := {}
+  let mut derivedHide : Std.HashMap String (Array Nat) := {}
   for (n, ci) in decls do
     let act : M String := statement ci.type
     let res ← ((act.run {mapping, binders, keepAll, keepImplicit := true}).run' {} {}).toIO ctx st |>.toBaseIO
@@ -561,6 +790,7 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
     | .ok ((s, stt), _) =>
       used := stt.used.fold (fun acc c => acc.insert c) used
       derived := stt.derived.fold (fun acc k v => acc.insert k v) derived
+      derivedHide := stt.derivedHide.fold (fun acc k v => acc.insert k v) derivedHide
       let r := lineOf.get! n
       let orig := original 3 n
       -- the definiens too, where the source has a term and it translates
@@ -585,6 +815,7 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
               defn := vs
               used := vst.used.fold (fun acc c => acc.insert c) used
               derived := vst.derived.fold (fun acc k v => acc.insert k v) derived
+              derivedHide := vst.derivedHide.fold (fun acc k v => acc.insert k v) derivedHide
       dk := dk ++ (if defn.isEmpty then s!"(; //LEAN:{n} ;)\n{mangle n} : {asPredicate env n s}.\n\n"
                    else s!"(; //LEAN:{n} ;)\ndef {mangle n} : {asPredicate env n s} :=\n  {defn}.\n\n")
       json := json.push s!"\{\"lean\": {jsonStr n.toString}, \"dk\": {jsonStr (mangle n)}, \"kind\": {jsonStr (kindOf ci)}, \"doc\": {jsonStr (doc.getD "")}, \"statement\": {jsonStr ppStr}, \"line\": {r.range.pos.line}, \"nameLine\": {r.selectionRange.pos.line}, \"endLine\": {r.range.endPos.line}, \"definiens\": {if defn.isEmpty then "false" else "true"}{if orig != n then s!", \"additiveOf\": {jsonStr orig.toString}" else ""}}"
@@ -594,7 +825,10 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
   let exported : Std.HashSet Name := decls.foldl (fun acc (n, _) => acc.insert n) {}
   let mut deps := s!"(; constants used by {mod}, declared with their translated types ;)\n\n"
   for (nm, ty) in derived.toList.toArray.qsort (·.1 < ·.1) do
-    deps := deps ++ s!"(; a constant applied as a function: DFunLike.coe ;)\n{nm} : {ty}.\n\n"
+    let why := if nm.endsWith "__on" then "the structures of a class on its parameters"
+      else if nm.endsWith "__app" then "a constant applied as a function: DFunLike.coe"
+      else "a constant with an instance argument that the statement gives"
+    deps := deps ++ s!"(; {why} ;)\n{nm} : {ty}.\n\n"
   for c in used.toList.toArray.qsort (·.toString < ·.toString) do
     if exported.contains c then continue
     let some ci := env.find? c | continue
@@ -641,6 +875,9 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
     | .error _ => pure ()
   IO.FS.createDirAll outDir
   IO.FS.writeFile s!"{outDir}/{mod}.dk" dk
+  for (nm, hidden) in derivedHide.toList.toArray.qsort (·.1 < ·.1) do
+    if !hidden.isEmpty then
+      hide := hide ++ s!"#HIDE {nm} {" ".intercalate (hidden.toList.map toString)}\n"
   IO.FS.writeFile s!"{outDir}/{mod}-hide.dkgf" hide
   IO.FS.writeFile s!"{outDir}/{mod}-deps.dk" deps
   IO.FS.writeFile s!"{outDir}/{mod}.json" ("[\n" ++ ",\n".intercalate json.toList ++ "\n]\n")

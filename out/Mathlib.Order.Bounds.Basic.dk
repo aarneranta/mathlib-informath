@@ -90,11 +90,11 @@ def IsLUB__dual : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X
 IsGLB__dual : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X)) -> (a : Elem X) -> (h : Proof (IsGLB X s a)) -> Proof (IsLUB (OrderDual X) (Set__preimage (OrderDual X) X (OrderDual__ofDual X) s) (OrderDual__toDual__app a)).
 
 (; //LEAN:IsLeast.orderBot ;)
-def IsLeast__orderBot : (X : Set) -> (s : Elem (powerset X)) -> (a : Elem X) -> (h : Proof (IsLeast X s a)) -> Proof (OrderBot (Set__Elem X s)) :=
+def IsLeast__orderBot : (X : Set) -> (s : Elem (powerset X)) -> (a : Elem X) -> (h : Proof (IsLeast X s a)) -> Elem (OrderBot__on (Set__Elem X s)) :=
   X => s => a => h => OrderBot__mk (Set__Elem X s) (IsLeast__orderBot___proof_2 X s a h).
 
 (; //LEAN:IsGreatest.orderTop ;)
-IsGreatest__orderTop : (X : Set) -> (s : Elem (powerset X)) -> (a : Elem X) -> (h : Proof (IsGreatest X s a)) -> Proof (OrderTop (Set__Elem X s)).
+IsGreatest__orderTop : (X : Set) -> (s : Elem (powerset X)) -> (a : Elem X) -> (h : Proof (IsGreatest X s a)) -> Elem (OrderTop__on (Set__Elem X s)).
 
 (; //LEAN:isLUB_congr ;)
 isLUB_congr : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (a : Elem X) -> (h : Proof (Eqt (powerset X) (upperBounds X s) (upperBounds X t))) -> Proof (iff (IsLUB X s a) (IsLUB X t a)).
@@ -811,18 +811,18 @@ exists_isLUB_iff_isLUB_sSup : (X : Set) -> (_ : Proof (Preorder X)) -> (_ : Proo
 exists_isGLB_iff_isGLB_sInf : (X : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (OrderInfSet X)) -> (s : Elem (powerset X)) -> Proof (iff (exists X (a => IsGLB X s a)) (IsGLB X s (InfSet__sInf X s))).
 
 (; //LEAN:OrderInfSet.ofOrderSupSet ;)
-def OrderInfSet__ofOrderSupSet : (X : Set) -> Proof (OrderInfSet X) :=
+def OrderInfSet__ofOrderSupSet : (X : Set) -> Elem (OrderInfSet__on X) :=
   X => OrderInfSet__mk X (OrderInfSet__ofOrderSupSet___proof_1 X).
 
 (; //LEAN:OrderSupSet.ofOrderInfSet ;)
-OrderSupSet__ofOrderInfSet : (X : Set) -> Proof (OrderSupSet X).
+OrderSupSet__ofOrderInfSet : (X : Set) -> Elem (OrderSupSet__on X).
 
 (; //LEAN:OrderSupSet.choose ;)
-def OrderSupSet__choose : (X : Set) -> (d : Elem X) -> Proof (OrderSupSet X) :=
+def OrderSupSet__choose : (X : Set) -> (d : Elem X) -> Elem (OrderSupSet__on X) :=
   X => d => OrderSupSet__mk X (OrderSupSet__choose___proof_1 X d).
 
 (; //LEAN:OrderInfSet.choose ;)
-OrderInfSet__choose : (X : Set) -> (d : Elem X) -> Proof (OrderInfSet X).
+OrderInfSet__choose : (X : Set) -> (d : Elem X) -> Elem (OrderInfSet__on X).
 
 (; //LEAN:DirectedOn.le_of_maximal ;)
 DirectedOn__le_of_maximal : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (DirectedOn X (x2 => y => Leq x2 y) s)) -> (hMax : Proof (Maximal X (x1 => Membership__mem X (powerset X) s x1) a)) -> (hb : Proof (Membership__mem X (powerset X) s b)) -> Proof (Leq b a).
@@ -1026,13 +1026,13 @@ isGreatest_compl : (X : Set) -> (_ : Proof (HeytingAlgebra X)) -> (a : Elem X) -
 isLeast_hnot : (X : Set) -> (_ : Proof (CoheytingAlgebra X)) -> (a : Elem X) -> Proof (IsLeast X (Set__ofPred X (w => Codisjoint X a w)) (HNot__hnot X a)).
 
 (; //LEAN:SemilatticeSup.ofIsLUB ;)
-def SemilatticeSup__ofIsLUB : (X : Set) -> (sup : (Elem X -> Elem X -> X)) -> (isLUB_pair : Proof (forall X (a => forall X (b => IsLUB X (Insert__insert X (powerset X) a (Singleton__singleton X (powerset X) b)) (sup a b))))) -> Proof (SemilatticeSup X) :=
+def SemilatticeSup__ofIsLUB : (X : Set) -> (sup : (Elem X -> Elem X -> X)) -> (isLUB_pair : Proof (forall X (a => forall X (b => IsLUB X (Insert__insert X (powerset X) a (Singleton__singleton X (powerset X) b)) (sup a b))))) -> Elem (SemilatticeSup__on X) :=
   X => sup => isLUB_pair => SemilatticeSup__mk X sup (SemilatticeSup__ofIsLUB___proof_1 X sup isLUB_pair) (SemilatticeSup__ofIsLUB___proof_2 X sup isLUB_pair) (SemilatticeSup__ofIsLUB___proof_3 X sup isLUB_pair).
 
 (; //LEAN:SemilatticeInf.ofIsGLB ;)
-SemilatticeInf__ofIsGLB : (X : Set) -> (inf : (Elem X -> Elem X -> X)) -> (isGLB_pair : Proof (forall X (a => forall X (b => IsGLB X (Insert__insert X (powerset X) a (Singleton__singleton X (powerset X) b)) (inf a b))))) -> Proof (SemilatticeInf X).
+SemilatticeInf__ofIsGLB : (X : Set) -> (inf : (Elem X -> Elem X -> X)) -> (isGLB_pair : Proof (forall X (a => forall X (b => IsGLB X (Insert__insert X (powerset X) a (Singleton__singleton X (powerset X) b)) (inf a b))))) -> Elem (SemilatticeInf__on X).
 
 (; //LEAN:Lattice.ofIsLUBofIsGLB ;)
-def Lattice__ofIsLUBofIsGLB : (X : Set) -> (sup : (Elem X -> Elem X -> X)) -> (inf : (Elem X -> Elem X -> X)) -> (isLUB_pair : Proof (forall X (a1 => forall X (b1 => IsLUB X (Insert__insert X (powerset X) a1 (Singleton__singleton X (powerset X) b1)) (sup a1 b1))))) -> (isGLB_pair : Proof (forall X (a => forall X (b => IsGLB X (Insert__insert X (powerset X) a (Singleton__singleton X (powerset X) b)) (inf a b))))) -> Proof (Lattice X) :=
+def Lattice__ofIsLUBofIsGLB : (X : Set) -> (sup : (Elem X -> Elem X -> X)) -> (inf : (Elem X -> Elem X -> X)) -> (isLUB_pair : Proof (forall X (a1 => forall X (b1 => IsLUB X (Insert__insert X (powerset X) a1 (Singleton__singleton X (powerset X) b1)) (sup a1 b1))))) -> (isGLB_pair : Proof (forall X (a => forall X (b => IsGLB X (Insert__insert X (powerset X) a (Singleton__singleton X (powerset X) b)) (inf a b))))) -> Elem (Lattice__on X) :=
   X => sup => inf => isLUB_pair => isGLB_pair => Lattice__mk X (SemilatticeInf__inf X) (SemilatticeInf__inf_le_left X) (SemilatticeInf__inf_le_right X) (SemilatticeInf__le_inf X).
 

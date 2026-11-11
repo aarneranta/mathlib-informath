@@ -4,24 +4,24 @@
 UniformSpace__ofDist_aux : (x : Elem Real) -> (h : Proof (Lt 0 x)) -> Proof (exists Real (x1 => and (Gt x1 0) (forall Real (x2 => if (Lt x2 x1) (forall Real (y => if (Lt y x1) (Lt (plus x2 y) x))))))).
 
 (; //LEAN:UniformSpace.ofDist ;)
-def UniformSpace__ofDist : (X : Set) -> (dist : (Elem X -> Elem X -> Real)) -> (dist_self : Proof (forall X (x2 => Eq (dist x2 x2) 0))) -> (dist_comm : Proof (forall X (x1 => forall X (y1 => Eq (dist x1 y1) (dist y1 x1))))) -> (dist_triangle : Proof (forall X (x => forall X (y => forall X (z => Leq (dist x z) (plus (dist x y) (dist y z))))))) -> Proof (UniformSpace X) :=
+def UniformSpace__ofDist : (X : Set) -> (dist : (Elem X -> Elem X -> Real)) -> (dist_self : Proof (forall X (x2 => Eq (dist x2 x2) 0))) -> (dist_comm : Proof (forall X (x1 => forall X (y1 => Eq (dist x1 y1) (dist y1 x1))))) -> (dist_triangle : Proof (forall X (x => forall X (y => forall X (z => Leq (dist x z) (plus (dist x y) (dist y z))))))) -> Elem (UniformSpace__on X) :=
   X => dist => dist_self => dist_comm => dist_triangle => UniformSpace__ofFun X Real dist dist_self dist_comm dist_triangle UniformSpace__ofDist_aux.
 
 (; //LEAN:Bornology.ofDist ;)
-def Bornology__ofDist : (X : Set) -> (dist : (Elem X -> Elem X -> Real)) -> (dist_comm : Proof (forall X (x1 => forall X (y1 => Eq (dist x1 y1) (dist y1 x1))))) -> (dist_triangle : Proof (forall X (x => forall X (y => forall X (z => Leq (dist x z) (plus (dist x y) (dist y z))))))) -> Proof (Bornology X) :=
+def Bornology__ofDist : (X : Set) -> (dist : (Elem X -> Elem X -> Real)) -> (dist_comm : Proof (forall X (x1 => forall X (y1 => Eq (dist x1 y1) (dist y1 x1))))) -> (dist_triangle : Proof (forall X (x => forall X (y => forall X (z => Leq (dist x z) (plus (dist x y) (dist y z))))))) -> Elem (Bornology__on X) :=
   X => dist => dist_comm => dist_triangle => Bornology__ofBounded X (Set__ofPred (powerset X) (s => exists Real (C => forall X (x => if (Membership__mem X (powerset X) s x) (forall X (y => if (Membership__mem X (powerset X) s y) (Leq (dist x y) C))))))) (Bornology__ofDist___proof_1 X dist) (Bornology__ofDist___proof_2 X dist) (s1 => hs => t => ht => Bornology__ofDist___proof_3 X dist dist_comm dist_triangle s1 hs t ht) (Bornology__ofDist___proof_4 X dist).
 
 (; //LEAN:Dist ;)
 Dist : (X : Set) -> Prop.
 
 (; //LEAN:Dist.ext_iff ;)
-Dist__ext_iff : (X : Set) -> (x : Proof (Dist X)) -> (y : Proof (Dist X)) -> Proof (iff (Eqt (Dist X) x y) (Eqt (Elem X -> Elem X -> Real) (Dist__dist X) (Dist__dist X))).
+Dist__ext_iff : (X : Set) -> (x : Elem (Dist__on X)) -> (y : Elem (Dist__on X)) -> Proof (iff (Eqt (Dist__on X) x y) (forall X (x1 => forall X (x2 => Eq (Dist__dist__in X x x1 x2) (Dist__dist__in X y x1 x2))))).
 
 (; //LEAN:Dist.ext ;)
-Dist__ext : (X : Set) -> (x : Proof (Dist X)) -> (y : Proof (Dist X)) -> (dist : Proof (Eqt (Elem X -> Elem X -> Real) (Dist__dist X) (Dist__dist X))) -> Proof (Eqt (Dist X) x y).
+Dist__ext : (X : Set) -> (x : Elem (Dist__on X)) -> (y : Elem (Dist__on X)) -> (dist : Proof (forall X (x1 => forall X (x2 => Eq (Dist__dist__in X x x1 x2) (Dist__dist__in X y x1 x2))))) -> Proof (Eqt (Dist__on X) x y).
 
 (; //LEAN:Dist.mk ;)
-Dist__mk : (X : Set) -> (dist : (Elem X -> Elem X -> Real)) -> Proof (Dist X).
+Dist__mk : (X : Set) -> (dist : (Elem X -> Elem X -> Real)) -> Elem (Dist__on X).
 
 (; //LEAN:Dist.dist ;)
 Dist__dist : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem Real.
@@ -30,7 +30,7 @@ Dist__dist : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem Real.
 PseudoMetricSpace : (X : Set) -> Prop.
 
 (; //LEAN:PseudoMetricSpace.mk ;)
-PseudoMetricSpace__mk : (X : Set) -> (dist_self : Proof (forall X (x7 => Eq (Dist__dist X x7 x7) 0))) -> (dist_comm : Proof (forall X (x6 => forall X (y3 => Eq (Dist__dist X x6 y3) (Dist__dist X y3 x6))))) -> (dist_triangle : Proof (forall X (x5 => forall X (y2 => forall X (z => Leq (Dist__dist X x5 z) (plus (Dist__dist X x5 y2) (Dist__dist X y2 z))))))) -> (edist : (Elem X -> Elem X -> ENNReal)) -> (edist_dist : Proof (autoParam (forall X (x2 => forall X (y1 => Eqt ENNReal (edist x2 y1) (ENNReal__ofReal (Dist__dist X x2 y1))))) PseudoMetricSpace__edist_dist___autoParam)) -> (toUniformSpace : Proof (UniformSpace X)) -> (uniformity_dist : Proof (autoParam (Eqt (Filter (Prod X X)) (uniformity X) (iInf (Filter (Prod X X)) Real (x1 => iInf (Filter (Prod X X)) (Gt x1 0) (h2 => Filter__principal (Prod X X) (Set__ofPred (Prod X X) (p => Lt (Dist__dist X (Prod__fst X X p) (Prod__snd X X p)) x1)))))) PseudoMetricSpace__uniformity_dist___autoParam)) -> (toBornology : Proof (Bornology X)) -> (cobounded_sets : Proof (autoParam (Eqt (powerset (powerset X)) (Filter__sets X (Bornology__cobounded X)) (Set__ofPred (powerset X) (s => exists Real (C => forall X (x => if (Membership__mem X (powerset X) (Compl__compl (powerset X) s) x) (forall X (y => if (Membership__mem X (powerset X) (Compl__compl (powerset X) s) y) (Leq (Dist__dist X x y) C)))))))) PseudoMetricSpace__cobounded_sets___autoParam)) -> Proof (PseudoMetricSpace X).
+PseudoMetricSpace__mk : (X : Set) -> (dist_self : Proof (forall X (x7 => Eq (Dist__dist X x7 x7) 0))) -> (dist_comm : Proof (forall X (x6 => forall X (y3 => Eq (Dist__dist X x6 y3) (Dist__dist X y3 x6))))) -> (dist_triangle : Proof (forall X (x5 => forall X (y2 => forall X (z => Leq (Dist__dist X x5 z) (plus (Dist__dist X x5 y2) (Dist__dist X y2 z))))))) -> (edist : (Elem X -> Elem X -> ENNReal)) -> (edist_dist : Proof (autoParam (forall X (x2 => forall X (y1 => Eqt ENNReal (edist x2 y1) (ENNReal__ofReal (Dist__dist X x2 y1))))) PseudoMetricSpace__edist_dist___autoParam)) -> (toUniformSpace : Proof (UniformSpace X)) -> (uniformity_dist : Proof (autoParam (Eqt (Filter (Prod X X)) (uniformity X) (iInf (Filter (Prod X X)) Real (x1 => iInf (Filter (Prod X X)) (Gt x1 0) (h2 => Filter__principal (Prod X X) (Set__ofPred (Prod X X) (p => Lt (Dist__dist X (Prod__fst X X p) (Prod__snd X X p)) x1)))))) PseudoMetricSpace__uniformity_dist___autoParam)) -> (toBornology : Proof (Bornology X)) -> (cobounded_sets : Proof (autoParam (Eqt (powerset (powerset X)) (Filter__sets X (Bornology__cobounded X)) (Set__ofPred (powerset X) (s => exists Real (C => forall X (x => if (Membership__mem X (powerset X) (Compl__compl (powerset X) s) x) (forall X (y => if (Membership__mem X (powerset X) (Compl__compl (powerset X) s) y) (Leq (Dist__dist X x y) C)))))))) PseudoMetricSpace__cobounded_sets___autoParam)) -> Elem (PseudoMetricSpace__on X).
 
 (; //LEAN:PseudoMetricSpace.dist_self ;)
 PseudoMetricSpace__dist_self : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (x : Elem X) -> Proof (Eq (Dist__dist X x x) 0).
@@ -55,13 +55,13 @@ PseudoMetricSpace__uniformity_dist : (X : Set) -> (_ : Proof (PseudoMetricSpace 
 PseudoMetricSpace__cobounded_sets : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> Proof (Eqt (powerset (powerset X)) (Filter__sets X (Bornology__cobounded X)) (Set__ofPred (powerset X) (s => exists Real (C => forall X (x => if (Membership__mem X (powerset X) (Compl__compl (powerset X) s) x) (forall X (y => if (Membership__mem X (powerset X) (Compl__compl (powerset X) s) y) (Leq (Dist__dist X x y) C)))))))).
 
 (; //LEAN:PseudoMetricSpace.ext ;)
-PseudoMetricSpace__ext : (X : Set) -> (m : Proof (PseudoMetricSpace X)) -> (m' : Proof (PseudoMetricSpace X)) -> (h : Proof (Eqt (Dist X) (PseudoMetricSpace__toDist X) (PseudoMetricSpace__toDist X))) -> Proof (Eqt (PseudoMetricSpace X) m m').
+PseudoMetricSpace__ext : (X : Set) -> (m : Elem (PseudoMetricSpace__on X)) -> (m' : Elem (PseudoMetricSpace__on X)) -> (h : Proof (Eqt (Dist__on X) (PseudoMetricSpace__toDist__in X m) (PseudoMetricSpace__toDist__in X m'))) -> Proof (Eqt (PseudoMetricSpace__on X) m m').
 
 (; //LEAN:PseudoMetricSpace.ext_iff ;)
-PseudoMetricSpace__ext_iff : (X : Set) -> (m : Proof (PseudoMetricSpace X)) -> (m' : Proof (PseudoMetricSpace X)) -> Proof (iff (Eqt (PseudoMetricSpace X) m m') (Eqt (Dist X) (PseudoMetricSpace__toDist X) (PseudoMetricSpace__toDist X))).
+PseudoMetricSpace__ext_iff : (X : Set) -> (m : Elem (PseudoMetricSpace__on X)) -> (m' : Elem (PseudoMetricSpace__on X)) -> Proof (iff (Eqt (PseudoMetricSpace__on X) m m') (Eqt (Dist__on X) (PseudoMetricSpace__toDist__in X m) (PseudoMetricSpace__toDist__in X m'))).
 
 (; //LEAN:PseudoMetricSpace.ofDistTopology ;)
-PseudoMetricSpace__ofDistTopology : (X : Set) -> (dist : (Elem X -> Elem X -> Real)) -> (dist_self : Proof (forall X (x5 => Eq (dist x5 x5) 0))) -> (dist_comm : Proof (forall X (x4 => forall X (y2 => Eq (dist x4 y2) (dist y2 x4))))) -> (dist_triangle : Proof (forall X (x3 => forall X (y1 => forall X (z => Leq (dist x3 z) (plus (dist x3 y1) (dist y1 z))))))) -> (H : Proof (forall (powerset X) (s => iff (IsOpen X s) (forall X (x1 => if (Membership__mem X (powerset X) s x1) (exists Real (x2 => and (Gt x2 0) (forall X (y => if (Lt (dist x1 y) x2) (Membership__mem X (powerset X) s y)))))))))) -> Proof (PseudoMetricSpace X).
+PseudoMetricSpace__ofDistTopology : (X : Set) -> (dist : (Elem X -> Elem X -> Real)) -> (dist_self : Proof (forall X (x5 => Eq (dist x5 x5) 0))) -> (dist_comm : Proof (forall X (x4 => forall X (y2 => Eq (dist x4 y2) (dist y2 x4))))) -> (dist_triangle : Proof (forall X (x3 => forall X (y1 => forall X (z => Leq (dist x3 z) (plus (dist x3 y1) (dist y1 z))))))) -> (H : Proof (forall (powerset X) (s => iff (IsOpen X s) (forall X (x1 => if (Membership__mem X (powerset X) s x1) (exists Real (x2 => and (Gt x2 0) (forall X (y => if (Lt (dist x1 y) x2) (Membership__mem X (powerset X) s y)))))))))) -> Elem (PseudoMetricSpace__on X).
 
 (; //LEAN:dist_self ;)
 def dist_self : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (x1 : Elem X) -> Proof (Eq (Dist__dist X x1 x1) 0) :=
@@ -119,7 +119,7 @@ def abs_dist : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (a : Elem X) ->
 NNDist : (X : Set) -> Prop.
 
 (; //LEAN:NNDist.mk ;)
-NNDist__mk : (X : Set) -> (nndist : (Elem X -> Elem X -> NNReal)) -> Proof (NNDist X).
+NNDist__mk : (X : Set) -> (nndist : (Elem X -> Elem X -> NNReal)) -> Elem (NNDist__on X).
 
 (; //LEAN:NNDist.nndist ;)
 NNDist__nndist : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem NNReal.
@@ -447,7 +447,7 @@ Metric__boundedSpace_iff_nndist : (X : Set) -> (_ : Proof (PseudoMetricSpace X))
 Metric__boundedSpace_iff_edist : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> Proof (iff (BoundedSpace X) (exists NNReal (C => forall X (a => forall X (b => Leq (EDist__edist X a b) (ENNReal__ofNNReal C)))))).
 
 (; //LEAN:Metric.toUniformSpace_eq ;)
-def Metric__toUniformSpace_eq : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> Proof (Eqt (UniformSpace X) (PseudoMetricSpace__toUniformSpace X) (UniformSpace__ofDist X (Dist__dist X) (dist_self X) (dist_comm X) (dist_triangle X))) :=
+def Metric__toUniformSpace_eq : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> Proof (Eqt (UniformSpace__on X) (PseudoMetricSpace__toUniformSpace X) (UniformSpace__ofDist X (Dist__dist X) (dist_self X) (dist_comm X) (dist_triangle X))) :=
   X => x => UniformSpace__ext X (PseudoMetricSpace__toUniformSpace X) (UniformSpace__ofDist X (Dist__dist X) (dist_self X) (dist_comm X) (dist_triangle X)) (PseudoMetricSpace__uniformity_dist X).
 
 (; //LEAN:Metric.uniformity_basis_dist ;)
@@ -648,11 +648,11 @@ def DenseRange__exists_dist_lt : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) 
   X => x => Y => f => hf => x1 => x2 => h => iffEl (exists X (a => and (Membership__mem X (powerset X) (Set__range X Y f) a) (Lt (Dist__dist X x1 a) x2))) (exists Y (i => Lt (Dist__dist X x1 (f i)) x2)) (Set__exists_range_iff X Y f (a1 => Lt (Dist__dist X x1 a1) x2)) (Dense__exists_dist_lt X (Set__range X Y f) hf x1 x2 h).
 
 (; //LEAN:Metric.uniformSpace_eq_bot ;)
-Metric__uniformSpace_eq_bot : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> Proof (iff (Eqt (UniformSpace X) (PseudoMetricSpace__toUniformSpace X) (Bot__bot (UniformSpace X))) (exists Real (r => and (Lt 0 r) (Pairwise X (x1 => x2 => Leq r (Dist__dist X x1 x2)))))).
+Metric__uniformSpace_eq_bot : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> Proof (iff (Eqt (UniformSpace__on X) (PseudoMetricSpace__toUniformSpace X) (Bot__bot (UniformSpace__on X))) (exists Real (r => and (Lt 0 r) (Pairwise X (x1 => x2 => Leq r (Dist__dist X x1 x2)))))).
 
 (; //LEAN:DiscreteTopology.of_forall_le_dist ;)
 def DiscreteTopology__of_forall_le_dist : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (r : Elem Real) -> (hpos : Proof (Lt 0 r)) -> (hr : Proof (Pairwise X (x1 => x2 => Leq r (Dist__dist X x1 x2)))) -> Proof (DiscreteTopology X) :=
-  X => x => r => hpos => hr => DiscreteTopology__mk X (Eq__mpr (Eqt (TopologicalSpace X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace X))) (Eqt (TopologicalSpace X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace X))) (id (Eqt Prop (Eqt (TopologicalSpace X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace X))) (Eqt (TopologicalSpace X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace X)))) (congrArg (UniformSpace X) Prop (PseudoMetricSpace__toUniformSpace X) (Bot__bot (UniformSpace X)) (_a => Eqt (TopologicalSpace X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace X))) (iffEr (Eqt (UniformSpace X) (PseudoMetricSpace__toUniformSpace X) (Bot__bot (UniformSpace X))) (exists Real (r1 => and (Lt 0 r1) (Pairwise X (x1 => x2 => Leq r1 (Dist__dist X x1 x2))))) (Metric__uniformSpace_eq_bot X) (existsI Real (r2 => and (Lt 0 r2) (Pairwise X (x3 => x4 => Leq r2 (Dist__dist X x3 x4)))) r (andI (Lt 0 r) (Pairwise X (x5 => x6 => Leq r (Dist__dist X x5 x6))) hpos hr))))) (Eq__mpr (Eqt (TopologicalSpace X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace X))) (Eqt (TopologicalSpace X) (Bot__bot (TopologicalSpace X)) (Bot__bot (TopologicalSpace X))) (id (Eqt Prop (Eqt (TopologicalSpace X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace X))) (Eqt (TopologicalSpace X) (Bot__bot (TopologicalSpace X)) (Bot__bot (TopologicalSpace X)))) (congrArg (TopologicalSpace X) Prop (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace X)) (_a1 => Eqt (TopologicalSpace X) _a1 (Bot__bot (TopologicalSpace X))) (UniformSpace__toTopologicalSpace_bot X))) (Eq__refl (TopologicalSpace X) (Bot__bot (TopologicalSpace X))))).
+  X => x => r => hpos => hr => DiscreteTopology__mk X (Eq__mpr (Eqt (TopologicalSpace__on X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace__on X))) (Eqt (TopologicalSpace__on X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace__on X))) (id (Eqt Prop (Eqt (TopologicalSpace__on X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace__on X))) (Eqt (TopologicalSpace__on X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace__on X)))) (congrArg (UniformSpace__on X) Prop (PseudoMetricSpace__toUniformSpace X) (Bot__bot (UniformSpace__on X)) (_a => Eqt (TopologicalSpace__on X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace__on X))) (iffEr (Eqt (UniformSpace__on X) (PseudoMetricSpace__toUniformSpace X) (Bot__bot (UniformSpace__on X))) (exists Real (r1 => and (Lt 0 r1) (Pairwise X (x1 => x2 => Leq r1 (Dist__dist X x1 x2))))) (Metric__uniformSpace_eq_bot X) (existsI Real (r2 => and (Lt 0 r2) (Pairwise X (x3 => x4 => Leq r2 (Dist__dist X x3 x4)))) r (andI (Lt 0 r) (Pairwise X (x5 => x6 => Leq r (Dist__dist X x5 x6))) hpos hr))))) (Eq__mpr (Eqt (TopologicalSpace__on X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace__on X))) (Eqt (TopologicalSpace__on X) (Bot__bot (TopologicalSpace__on X)) (Bot__bot (TopologicalSpace__on X))) (id (Eqt Prop (Eqt (TopologicalSpace__on X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace__on X))) (Eqt (TopologicalSpace__on X) (Bot__bot (TopologicalSpace__on X)) (Bot__bot (TopologicalSpace__on X)))) (congrArg (TopologicalSpace__on X) Prop (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace__on X)) (_a1 => Eqt (TopologicalSpace__on X) _a1 (Bot__bot (TopologicalSpace__on X))) (UniformSpace__toTopologicalSpace_bot X))) (Eq__refl (TopologicalSpace__on X) (Bot__bot (TopologicalSpace__on X))))).
 
 (; //LEAN:Metric.uniformity_edist_aux ;)
 Metric__uniformity_edist_aux : (X : Set) -> (d : (Elem X -> Elem X -> NNReal)) -> Proof (Eqt (Filter (Prod X X)) (iInf (Filter (Prod X X)) Real (x => iInf (Filter (Prod X X)) (Gt x 0) (h => Filter__principal (Prod X X) (Set__ofPred (Prod X X) (p => Lt (NNReal__toReal (d (Prod__fst X X p) (Prod__snd X X p))) x))))) (iInf (Filter (Prod X X)) ENNReal (x1 => iInf (Filter (Prod X X)) (Gt x1 0) (h1 => Filter__principal (Prod X X) (Set__ofPred (Prod X X) (p1 => Lt (ENNReal__ofNNReal (d (Prod__fst X X p1) (Prod__snd X X p1))) x1)))))).
@@ -681,33 +681,33 @@ def Metric__eball_top : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (x1 : 
   X => x => x1 => Set__eq_univ_of_forall X (Metric__eball X x1 (Top__top ENNReal)) (forallI X (x2 => Lt (EDist__edist X x2 x1) (Top__top ENNReal)) (x2 => edist_lt_top X x2 x1)).
 
 (; //LEAN:PseudoMetricSpace.replaceUniformity ;)
-def PseudoMetricSpace__replaceUniformity : (X : Set) -> (m : Proof (PseudoMetricSpace X)) -> (H : Proof (Eqt (Filter (Prod X X)) (uniformity X) (uniformity X))) -> Proof (PseudoMetricSpace X) :=
+def PseudoMetricSpace__replaceUniformity : (X : Set) -> (m : Elem (PseudoMetricSpace__on X)) -> (H : Proof (Eqt (Filter (Prod X X)) (uniformity__in X U) (uniformity__in X m))) -> Elem (PseudoMetricSpace__on X) :=
   X => m => H => PseudoMetricSpace__mk X (PseudoMetricSpace__dist_self X) (PseudoMetricSpace__dist_comm X) (PseudoMetricSpace__dist_triangle X) (PseudoMetricSpace__edist X) (PseudoMetricSpace__edist_dist X) U (PseudoMetricSpace__replaceUniformity___proof_1 X m H) (PseudoMetricSpace__toBornology X) (PseudoMetricSpace__cobounded_sets X).
 
 (; //LEAN:PseudoMetricSpace.replaceUniformity_eq ;)
-PseudoMetricSpace__replaceUniformity_eq : (X : Set) -> (_ : Proof (UniformSpace X)) -> (m : Proof (PseudoMetricSpace X)) -> (H : Proof (Eqt (Filter (Prod X X)) (uniformity X) (uniformity X))) -> Proof (Eqt (PseudoMetricSpace X) (PseudoMetricSpace__replaceUniformity X m H) m).
+PseudoMetricSpace__replaceUniformity_eq : (X : Set) -> (U : Elem (UniformSpace__on X)) -> (m : Elem (PseudoMetricSpace__on X)) -> (H : Proof (Eqt (Filter (Prod X X)) (uniformity__in X U) (uniformity__in X m))) -> Proof (Eqt (PseudoMetricSpace__on X) (PseudoMetricSpace__replaceUniformity__in X U m H) m).
 
 (; //LEAN:PseudoMetricSpace.replaceTopology ;)
-def PseudoMetricSpace__replaceTopology : (Z : Set) -> (m : Proof (PseudoMetricSpace Z)) -> (H : Proof (Eqt (TopologicalSpace Z) U (UniformSpace__toTopologicalSpace Z))) -> Proof (PseudoMetricSpace Z) :=
+def PseudoMetricSpace__replaceTopology : (Z : Set) -> (m : Proof (PseudoMetricSpace Z)) -> (H : Proof (Eqt (TopologicalSpace__on Z) U (UniformSpace__toTopologicalSpace Z))) -> Elem (PseudoMetricSpace__on Z) :=
   Z => m => H => PseudoMetricSpace__replaceUniformity Z m (PseudoMetricSpace__replaceTopology___proof_1 Z m H).
 
 (; //LEAN:PseudoMetricSpace.replaceTopology_eq ;)
-PseudoMetricSpace__replaceTopology_eq : (Z : Set) -> (_ : Proof (TopologicalSpace Z)) -> (m : Proof (PseudoMetricSpace Z)) -> (H : Proof (Eqt (TopologicalSpace Z) U (UniformSpace__toTopologicalSpace Z))) -> Proof (Eqt (PseudoMetricSpace Z) (PseudoMetricSpace__replaceTopology Z m H) m).
+PseudoMetricSpace__replaceTopology_eq : (Z : Set) -> (_ : Proof (TopologicalSpace Z)) -> (m : Proof (PseudoMetricSpace Z)) -> (H : Proof (Eqt (TopologicalSpace__on Z) U (UniformSpace__toTopologicalSpace Z))) -> Proof (Eqt (PseudoMetricSpace__on Z) (PseudoMetricSpace__replaceTopology Z m H) m).
 
 (; //LEAN:PseudoEMetricSpace.toPseudoMetricSpaceOfDist ;)
-def PseudoEMetricSpace__toPseudoMetricSpaceOfDist : (X : Set) -> (dist : (Elem X -> Elem X -> Real)) -> (dist_nonneg : Proof (forall X (x1 => forall X (y1 => Leq 0 (dist x1 y1))))) -> (h : Proof (forall X (x => forall X (y => Eqt ENNReal (EDist__edist X x y) (ENNReal__ofReal (dist x y)))))) -> Proof (PseudoMetricSpace X) :=
+def PseudoEMetricSpace__toPseudoMetricSpaceOfDist : (X : Set) -> (dist : (Elem X -> Elem X -> Real)) -> (dist_nonneg : Proof (forall X (x1 => forall X (y1 => Leq 0 (dist x1 y1))))) -> (h : Proof (forall X (x => forall X (y => Eqt ENNReal (EDist__edist X x y) (ENNReal__ofReal (dist x y)))))) -> Elem (PseudoMetricSpace__on X) :=
   X => dist => dist_nonneg => h => PseudoMetricSpace__mk X (x => PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_1 X dist dist_nonneg h x) (x1 => y => PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_2 X dist dist_nonneg h x1 y) (x2 => y1 => z => PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_4 X dist dist_nonneg h x2 y1 z) (EDist__edist X) (x3 => x4 => PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_5 X dist h x3 x4) (PseudoEMetricSpace__toUniformSpace X) (PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_3 X dist dist_nonneg h) (Bornology__ofDist X dist (x5 => y2 => PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_2 X dist dist_nonneg h x5 y2) (x6 => y3 => z1 => PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_4 X dist dist_nonneg h x6 y3 z1)) (PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_7 X dist dist_nonneg h).
 
 (; //LEAN:PseudoEMetricSpace.toPseudoMetricSpace ;)
-def PseudoEMetricSpace__toPseudoMetricSpace : (X : Set) -> (h : Proof (forall X (x1 => forall X (y => Neq (EDist__edist X x1 y) (Top__top ENNReal))))) -> Proof (PseudoMetricSpace X) :=
+def PseudoEMetricSpace__toPseudoMetricSpace : (X : Set) -> (h : Proof (forall X (x1 => forall X (y => Neq (EDist__edist X x1 y) (Top__top ENNReal))))) -> Elem (PseudoMetricSpace__on X) :=
   X => h => PseudoEMetricSpace__toPseudoMetricSpaceOfDist X (x1 => x2 => ENNReal__toReal (EDist__edist X x1 x2)) (PseudoEMetricSpace__toPseudoMetricSpace___proof_1 X) (PseudoEMetricSpace__toPseudoMetricSpace___proof_2 X h).
 
 (; //LEAN:PseudoMetricSpace.replaceBornology ;)
-def PseudoMetricSpace__replaceBornology : (X : Set) -> (m : Proof (PseudoMetricSpace X)) -> (H : Proof (forall (powerset X) (s => iff (Bornology__IsBounded X s) (Bornology__IsBounded X s)))) -> Proof (PseudoMetricSpace X) :=
+def PseudoMetricSpace__replaceBornology : (X : Set) -> (m : Elem (PseudoMetricSpace__on X)) -> (H : Proof (forall (powerset X) (s => iff (Bornology__IsBounded__in X B s) (Bornology__IsBounded__in X m s)))) -> Elem (PseudoMetricSpace__on X) :=
   X => m => H => PseudoMetricSpace__mk X (PseudoMetricSpace__dist_self X) (PseudoMetricSpace__dist_comm X) (PseudoMetricSpace__dist_triangle X) (PseudoMetricSpace__edist X) (PseudoMetricSpace__edist_dist X) (PseudoMetricSpace__toUniformSpace X) (PseudoMetricSpace__uniformity_dist X) B (PseudoMetricSpace__replaceBornology___proof_2 X m H).
 
 (; //LEAN:PseudoMetricSpace.replaceBornology_eq ;)
-PseudoMetricSpace__replaceBornology_eq : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (_ : Proof (Bornology X)) -> (H : Proof (forall (powerset X) (s => iff (Bornology__IsBounded X s) (Bornology__IsBounded X s)))) -> Proof (Eqt (PseudoMetricSpace X) (PseudoMetricSpace__replaceBornology X m H) m).
+PseudoMetricSpace__replaceBornology_eq : (X : Set) -> (m : Elem (PseudoMetricSpace__on X)) -> (B : Elem (Bornology__on X)) -> (H : Proof (forall (powerset X) (s => iff (Bornology__IsBounded__in X B s) (Bornology__IsBounded__in X m s)))) -> Proof (Eqt (PseudoMetricSpace__on X) (PseudoMetricSpace__replaceBornology__in X B m H) m).
 
 (; //LEAN:Real.dist_eq ;)
 def Real__dist_eq : (x : Elem Real) -> (y : Elem Real) -> Proof (Eq (Dist__dist Real x y) (abs Real (minus x y))) :=

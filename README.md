@@ -79,6 +79,35 @@ $M$ be a set. Then $M$ is a monoid, if ...". Any other class is read as its
 predicate ("$G$ is unique, if ..."). A class whose fields are all technical
 (`TopologicalSpace`, its `IsOpen`) keeps its plain declaration.
 
+An instance is a hypothesis, "Let $X$ be a topological space", and the
+instance arguments of the operations are dropped, as instance resolution
+finds them. Where a statement gives one that instance resolution would not
+find, it names a structure: `TopologicalSpace.ext {f g : TopologicalSpace X}
+: IsOpen[f] = IsOpen[g] → f = g` is about two topologies on one set, and
+dropping the instances would make it "Let $X$ be a topological space such
+that $X$ is a topological space", with a hypothesis that says nothing. Such a
+statement is translated with the structures as elements of the set of the
+class's structures, `(f : Elem (TopologicalSpace__on X))`, the operations
+applied to them, `IsOpen__in X f s`, and the equality of operations stated
+pointwise:
+
+> Let $X$ be a set. Let $f$ and $g$ be topologies on $X$ such that for all
+> elements $x$ of $\wp X$, $x$ is open in $f$, if and only if $x$ is open in
+> $g$. Then $f$ is equal to $g$.
+
+Export.lean decides this in two passes over a statement (`givenInstance`):
+the first asks Lean's instance resolution, in the statement's context, for
+each instance argument, and notes the types of those it would not find; the
+second keeps every instance argument of those types, on both sides of an
+equation, and makes the variables in them named structures. This covers the
+extensionality lemmas of orders, lattices, topologies and distances, the
+structures built by a definition (`t.induced f`, `Preorder.lift f`), and
+uniformities and bornologies replaced in a metric space (`𝓤[U] = 𝓤[m]`).
+Decidability, the technical classes and the notation classes (`a • s`
+pointwise) are never named. The wordings of the sets of structures ("topology
+on #1", "preorder on #1") and of the operations (`IsOpen__in`: "#2 is open in
+#1", `LE__le__in`: $#2 \leq_{#1} #3$) are in `mathlib.dkgf`.
+
 `definitions.html` searches all 38,690 definitions by name and wording and
 links to their entries on static pages, `definitions/<Part>-<k>.html` (111
 pages of at most 400 definitions), where each has its wording and its reading

@@ -6,11 +6,26 @@ Additive__ofMul__app : (a1 : Elem X) -> Elem (Additive X).
 (; a constant applied as a function: DFunLike.coe ;)
 Additive__toMul__app : (a1 : Elem (Additive X)) -> Elem X.
 
+(; a constant with an instance argument that the statement gives ;)
+Bornology__IsBounded__in : (X : Set) -> (x : Elem (Bornology__on X)) -> (s : Elem (powerset X)) -> Prop.
+
+(; the structures of a class on its parameters ;)
+Bornology__on : (X : Set) -> Set.
+
+(; a constant with an instance argument that the statement gives ;)
+Dist__dist__in : (X : Set) -> (self : Elem (Dist__on X)) -> (x : Elem X) -> (x1 : Elem X) -> Elem Real.
+
+(; the structures of a class on its parameters ;)
+Dist__on : (X : Set) -> Set.
+
 (; a constant applied as a function: DFunLike.coe ;)
 Multiplicative__ofAdd__app : (a1 : Elem X) -> Elem (Multiplicative X).
 
 (; a constant applied as a function: DFunLike.coe ;)
 Multiplicative__toAdd__app : (a1 : Elem (Multiplicative X)) -> Elem X.
+
+(; the structures of a class on its parameters ;)
+NNDist__on : (X : Set) -> Set.
 
 (; a constant applied as a function: DFunLike.coe ;)
 OrderDual__ofDual__app : (a1 : Elem (OrderDual X)) -> Elem X.
@@ -18,8 +33,29 @@ OrderDual__ofDual__app : (a1 : Elem (OrderDual X)) -> Elem X.
 (; a constant applied as a function: DFunLike.coe ;)
 OrderDual__toDual__app : (a1 : Elem X) -> Elem (OrderDual X).
 
+(; the structures of a class on its parameters ;)
+PseudoMetricSpace__on : (X : Set) -> Set.
+
+(; a constant with an instance argument that the statement gives ;)
+PseudoMetricSpace__replaceBornology__in : (X : Set) -> (B : Elem (Bornology__on X)) -> (m : Elem (PseudoMetricSpace__on X)) -> (H : Proof (forall (powerset X) (s => iff (Bornology__IsBounded__in X B s) (Bornology__IsBounded__in X m s)))) -> Elem (PseudoMetricSpace__on X).
+
+(; a constant with an instance argument that the statement gives ;)
+PseudoMetricSpace__replaceUniformity__in : (X : Set) -> (U : Elem (UniformSpace__on X)) -> (m : Elem (PseudoMetricSpace__on X)) -> (H : Proof (Eqt (Filter (Prod X X)) (uniformity__in X U) (uniformity__in X m))) -> Elem (PseudoMetricSpace__on X).
+
+(; a constant with an instance argument that the statement gives ;)
+PseudoMetricSpace__toDist__in : (X : Set) -> (self : Elem (PseudoMetricSpace__on X)) -> Elem (Dist__on X).
+
 (; a constant applied as a function: DFunLike.coe ;)
 Real__nnabs__app : (a1 : Elem Real) -> Elem NNReal.
+
+(; the structures of a class on its parameters ;)
+TopologicalSpace__on : (X : Set) -> Set.
+
+(; the structures of a class on its parameters ;)
+UniformSpace__on : (X : Set) -> Set.
+
+(; a constant with an instance argument that the statement gives ;)
+uniformity__in : (X : Set) -> (x : Elem (UniformSpace__on X)) -> Elem (Filter (Prod X X)).
 
 (; doc: If `α` carries some multiplicative structure, then `Additive α` carries the corresponding additive structure. ;)
 (; //LEAN:Additive ;)
@@ -39,7 +75,7 @@ Bornology__cobounded : (X : Set) -> Elem (Filter X).
 
 (; doc: A constructor for bornologies by specifying the bounded sets, and showing that they satisfy the appropriate conditions. ;)
 (; //LEAN:Bornology.ofBounded ;)
-Bornology__ofBounded : (X : Set) -> (B : Elem (powerset (powerset X))) -> (empty_mem : Proof (Membership__mem (powerset X) (powerset (powerset X)) B (EmptyCollection__emptyCollection (powerset X)))) -> (subset_mem : Proof (forall (powerset X) (x3 => if (Membership__mem (powerset X) (powerset (powerset X)) B x3) (forall (powerset X) (x4 => if (Set__Subset X x4 x3) (Membership__mem (powerset X) (powerset (powerset X)) B x4)))))) -> (union_mem : Proof (forall (powerset X) (x1 => if (Membership__mem (powerset X) (powerset (powerset X)) B x1) (forall (powerset X) (x2 => if (Membership__mem (powerset X) (powerset (powerset X)) B x2) (Membership__mem (powerset X) (powerset (powerset X)) B (Union__union (powerset X) x1 x2))))))) -> (singleton_mem : Proof (forall X (x => Membership__mem (powerset X) (powerset (powerset X)) B (Singleton__singleton X (powerset X) x)))) -> Proof (Bornology X).
+Bornology__ofBounded : (X : Set) -> (B : Elem (powerset (powerset X))) -> (empty_mem : Proof (Membership__mem (powerset X) (powerset (powerset X)) B (EmptyCollection__emptyCollection (powerset X)))) -> (subset_mem : Proof (forall (powerset X) (x3 => if (Membership__mem (powerset X) (powerset (powerset X)) B x3) (forall (powerset X) (x4 => if (Set__Subset X x4 x3) (Membership__mem (powerset X) (powerset (powerset X)) B x4)))))) -> (union_mem : Proof (forall (powerset X) (x1 => if (Membership__mem (powerset X) (powerset (powerset X)) B x1) (forall (powerset X) (x2 => if (Membership__mem (powerset X) (powerset (powerset X)) B x2) (Membership__mem (powerset X) (powerset (powerset X)) B (Union__union (powerset X) x1 x2))))))) -> (singleton_mem : Proof (forall X (x => Membership__mem (powerset X) (powerset (powerset X)) B (Singleton__singleton X (powerset X) x)))) -> Elem (Bornology__on X).
 
 (; //LEAN:Bornology.ofDist._proof_1 ;)
 Bornology__ofDist___proof_1 : (X : Set) -> (dist : (Elem X -> Elem X -> Real)) -> Proof (exists Real (C => forall X (x => if (Membership__mem X (powerset X) (EmptyCollection__emptyCollection (powerset X)) x) (forall X (y => if (Membership__mem X (powerset X) (EmptyCollection__emptyCollection (powerset X)) y) (Leq (dist x y) C)))))).
@@ -94,7 +130,7 @@ DenseRange : (X : Set) -> (X1 : Set) -> (f : (Elem X1 -> X)) -> Prop.
 DiscreteTopology : (X : Set) -> Prop.
 
 (; //LEAN:DiscreteTopology.mk ;)
-DiscreteTopology__mk : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (eq_bot : Proof (Eqt (TopologicalSpace X) t (Bot__bot (TopologicalSpace X)))) -> Proof (DiscreteTopology X).
+DiscreteTopology__mk : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (eq_bot : Proof (Eqt (TopologicalSpace__on X) t (Bot__bot (TopologicalSpace__on X)))) -> Proof (DiscreteTopology X).
 
 (; doc: Two elements of a lattice are disjoint if their inf is the bottom element.   (This generalizes disjoint sets, viewed as members of the subset lattice.)  Note that we define this without reference to `⊓`, as this allows us to talk about orders where the infimum is not unique, or where implementing `Inf` would require additional `Decidable` arguments. ;)
 (; //LEAN:Disjoint ;)
@@ -414,10 +450,10 @@ PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_4 : (X : Set) -> (_ : Proo
 PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_5 : (X : Set) -> (_ : Proof (PseudoEMetricSpace X)) -> (dist : (Elem X -> Elem X -> Real)) -> (h : Proof (forall X (x2 => forall X (y => Eqt ENNReal (EDist__edist X x2 y) (ENNReal__ofReal (dist x2 y)))))) -> (x : Elem X) -> (x1 : Elem X) -> Proof (Eqt ENNReal (EDist__edist X x x1) (ENNReal__ofReal (dist x x1))).
 
 (; //LEAN:PseudoEMetricSpace.toPseudoMetricSpaceOfDist._proof_7 ;)
-PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_7 : (X : Set) -> (_ : Proof (PseudoEMetricSpace X)) -> (dist : (Elem X -> Elem X -> Real)) -> (dist_nonneg : Proof (forall X (x2 => forall X (y2 => Leq 0 (dist x2 y2))))) -> (h : Proof (forall X (x1 => forall X (y1 => Eqt ENNReal (EDist__edist X x1 y1) (ENNReal__ofReal (dist x1 y1)))))) -> Proof (Eqt (powerset (powerset X)) (Filter__sets X (Bornology__cobounded X)) (Set__ofPred (powerset X) (s => exists Real (C => forall X (x => if (Membership__mem X (powerset X) (Compl__compl (powerset X) s) x) (forall X (y => if (Membership__mem X (powerset X) (Compl__compl (powerset X) s) y) (Leq (dist x y) C)))))))).
+PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_7 : (X : Set) -> (e : Elem (PseudoEMetricSpace__on X)) -> (dist : (Elem X -> Elem X -> Real)) -> (dist_nonneg : Proof (forall X (x4 => forall X (y4 => Leq 0 (dist x4 y4))))) -> (h : Proof (forall X (x3 => forall X (y3 => Eqt ENNReal (EDist__edist X x3 y3) (ENNReal__ofReal (dist x3 y3)))))) -> Proof (Eqt (powerset (powerset X)) (Filter__sets X (Bornology__cobounded__in X (Bornology__ofDist X dist (x => y => PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_2 X dist dist_nonneg h x y) (x1 => y1 => z => PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_4 X dist dist_nonneg h x1 y1 z)))) (Set__ofPred (powerset X) (s => exists Real (C => forall X (x2 => if (Membership__mem X (powerset X) (Compl__compl (powerset X) s) x2) (forall X (y2 => if (Membership__mem X (powerset X) (Compl__compl (powerset X) s) y2) (Leq (dist x2 y2) C)))))))).
 
 (; //LEAN:PseudoEMetricSpace.toUniformSpace ;)
-PseudoEMetricSpace__toUniformSpace : (X : Set) -> Proof (UniformSpace X).
+PseudoEMetricSpace__toUniformSpace : (X : Set) -> Elem (UniformSpace__on X).
 
 (; //LEAN:PseudoMetricSpace.cobounded_sets._autoParam ;)
 PseudoMetricSpace__cobounded_sets___autoParam : Elem Lean__Syntax.
@@ -426,22 +462,19 @@ PseudoMetricSpace__cobounded_sets___autoParam : Elem Lean__Syntax.
 PseudoMetricSpace__edist_dist___autoParam : Elem Lean__Syntax.
 
 (; //LEAN:PseudoMetricSpace.replaceBornology._proof_2 ;)
-PseudoMetricSpace__replaceBornology___proof_2 : (X : Set) -> (_ : Proof (Bornology X)) -> (m : Proof (PseudoMetricSpace X)) -> (H : Proof (forall (powerset X) (s1 => iff (Bornology__IsBounded X s1) (Bornology__IsBounded X s1)))) -> Proof (Eqt (powerset (powerset X)) (Filter__sets X (Bornology__cobounded X)) (Set__ofPred (powerset X) (s => exists Real (C => forall X (x => if (Membership__mem X (powerset X) (Compl__compl (powerset X) s) x) (forall X (y => if (Membership__mem X (powerset X) (Compl__compl (powerset X) s) y) (Leq (Dist__dist X x y) C)))))))).
+PseudoMetricSpace__replaceBornology___proof_2 : (X : Set) -> (B : Elem (Bornology__on X)) -> (m : Elem (PseudoMetricSpace__on X)) -> (H : Proof (forall (powerset X) (s1 => iff (Bornology__IsBounded__in X B s1) (Bornology__IsBounded__in X m s1)))) -> Proof (Eqt (powerset (powerset X)) (Filter__sets X (Bornology__cobounded__in X B)) (Set__ofPred (powerset X) (s => exists Real (C => forall X (x => if (Membership__mem X (powerset X) (Compl__compl (powerset X) s) x) (forall X (y => if (Membership__mem X (powerset X) (Compl__compl (powerset X) s) y) (Leq (Dist__dist X x y) C)))))))).
 
 (; //LEAN:PseudoMetricSpace.replaceTopology._proof_1 ;)
-PseudoMetricSpace__replaceTopology___proof_1 : (Z : Set) -> (_ : Proof (TopologicalSpace Z)) -> (m : Proof (PseudoMetricSpace Z)) -> (H : Proof (Eqt (TopologicalSpace Z) U (UniformSpace__toTopologicalSpace Z))) -> Proof (Eqt (Filter (Prod Z Z)) (uniformity Z) (uniformity Z)).
+PseudoMetricSpace__replaceTopology___proof_1 : (Z : Set) -> (U : Elem (TopologicalSpace__on Z)) -> (m : Elem (PseudoMetricSpace__on Z)) -> (H : Proof (Eqt (TopologicalSpace__on Z) U (UniformSpace__toTopologicalSpace__in Z m))) -> Proof (Eqt (Filter (Prod Z Z)) (uniformity__in Z (UniformSpace__replaceTopology Z (PseudoMetricSpace__toUniformSpace Z) H)) (uniformity__in Z (UniformSpace__replaceTopology Z (PseudoMetricSpace__toUniformSpace Z) H))).
 
 (; //LEAN:PseudoMetricSpace.replaceUniformity._proof_1 ;)
-PseudoMetricSpace__replaceUniformity___proof_1 : (X : Set) -> (_ : Proof (UniformSpace X)) -> (m : Proof (PseudoMetricSpace X)) -> (H : Proof (Eqt (Filter (Prod X X)) (uniformity X) (uniformity X))) -> Proof (Eqt (Filter (Prod X X)) (uniformity X) (iInf (Filter (Prod X X)) Real (x => iInf (Filter (Prod X X)) (Gt x 0) (h => Filter__principal (Prod X X) (Set__ofPred (Prod X X) (p => Lt (Dist__dist X (Prod__fst X X p) (Prod__snd X X p)) x)))))).
+PseudoMetricSpace__replaceUniformity___proof_1 : (X : Set) -> (U : Elem (UniformSpace__on X)) -> (m : Elem (PseudoMetricSpace__on X)) -> (H : Proof (Eqt (Filter (Prod X X)) (uniformity__in X U) (uniformity__in X m))) -> Proof (Eqt (Filter (Prod X X)) (uniformity__in X U) (iInf (Filter (Prod X X)) Real (x => iInf (Filter (Prod X X)) (Gt x 0) (h => Filter__principal (Prod X X) (Set__ofPred (Prod X X) (p => Lt (Dist__dist X (Prod__fst X X p) (Prod__snd X X p)) x)))))).
 
 (; //LEAN:PseudoMetricSpace.toBornology ;)
-PseudoMetricSpace__toBornology : (X : Set) -> Proof (Bornology X).
-
-(; //LEAN:PseudoMetricSpace.toDist ;)
-PseudoMetricSpace__toDist : (X : Set) -> Proof (Dist X).
+PseudoMetricSpace__toBornology : (X : Set) -> Elem (Bornology__on X).
 
 (; //LEAN:PseudoMetricSpace.toUniformSpace ;)
-PseudoMetricSpace__toUniformSpace : (X : Set) -> Proof (UniformSpace X).
+PseudoMetricSpace__toUniformSpace : (X : Set) -> Elem (UniformSpace__on X).
 
 (; //LEAN:PseudoMetricSpace.uniformity_dist._autoParam ;)
 PseudoMetricSpace__uniformity_dist___autoParam : Elem Lean__Syntax.
@@ -583,17 +616,17 @@ UniformSpace : (X : Set) -> Prop.
 UniformSpace__ball : (Y : Set) -> (x : Elem Y) -> (V : Elem (powerset (Prod Y Y))) -> Elem (powerset Y).
 
 (; //LEAN:UniformSpace.ext ;)
-UniformSpace__ext : (X : Set) -> (x : Proof (UniformSpace X)) -> (x1 : Proof (UniformSpace X)) -> (h : Proof (Eqt (Filter (Prod X X)) (uniformity X) (uniformity X))) -> Proof (Eqt (UniformSpace X) x x1).
+UniformSpace__ext : (X : Set) -> (x : Elem (UniformSpace__on X)) -> (x1 : Elem (UniformSpace__on X)) -> (h : Proof (Eqt (Filter (Prod X X)) (uniformity__in X x) (uniformity__in X x1))) -> Proof (Eqt (UniformSpace__on X) x x1).
 
 (; doc: Define a `UniformSpace` using a "distance" function. The function can be, e.g., the distance in a (usual or extended) metric space or an absolute value on a ring. ;)
 (; //LEAN:UniformSpace.ofFun ;)
-UniformSpace__ofFun : (X : Set) -> (M : Set) -> (d : (Elem X -> Elem X -> M)) -> (refl : Proof (forall X (x7 => Eqt M (d x7 x7) 0))) -> (symm : Proof (forall X (x6 => forall X (y2 => Eqt M (d x6 y2) (d y2 x6))))) -> (triangle : Proof (forall X (x5 => forall X (y1 => forall X (z => Leq (d x5 z) (plus (d x5 y1) (d y1 z))))))) -> (half : Proof (forall M (x2 => if (Gt x2 0) (exists M (x3 => and (Gt x3 0) (forall M (x4 => if (Lt x4 x3) (forall M (y => if (Lt y x3) (Lt (plus x4 y) x2)))))))))) -> Proof (UniformSpace X).
+UniformSpace__ofFun : (X : Set) -> (M : Set) -> (d : (Elem X -> Elem X -> M)) -> (refl : Proof (forall X (x7 => Eqt M (d x7 x7) 0))) -> (symm : Proof (forall X (x6 => forall X (y2 => Eqt M (d x6 y2) (d y2 x6))))) -> (triangle : Proof (forall X (x5 => forall X (y1 => forall X (z => Leq (d x5 z) (plus (d x5 y1) (d y1 z))))))) -> (half : Proof (forall M (x2 => if (Gt x2 0) (exists M (x3 => and (Gt x3 0) (forall M (x4 => if (Lt x4 x3) (forall M (y => if (Lt y x3) (Lt (plus x4 y) x2)))))))))) -> Elem (UniformSpace__on X).
 
 (; //LEAN:UniformSpace.toTopologicalSpace ;)
-UniformSpace__toTopologicalSpace : (X : Set) -> Proof (TopologicalSpace X).
+UniformSpace__toTopologicalSpace : (X : Set) -> Elem (TopologicalSpace__on X).
 
 (; //LEAN:UniformSpace.toTopologicalSpace_bot ;)
-UniformSpace__toTopologicalSpace_bot : (X : Set) -> Proof (Eqt (TopologicalSpace X) (UniformSpace__toTopologicalSpace X) (Bot__bot (TopologicalSpace X))).
+UniformSpace__toTopologicalSpace_bot : (X : Set) -> Proof (Eqt (TopologicalSpace__on X) (UniformSpace__toTopologicalSpace__in X (Bot__bot (UniformSpace__on X))) (Bot__bot (TopologicalSpace__on X))).
 
 (; doc: `a ∪ b` is the union of `a` and `b`.  Conventions for notations in identifiers:   * The recommended spelling of `∪` in identifiers is `union`. ;)
 (; //LEAN:Union.union ;)

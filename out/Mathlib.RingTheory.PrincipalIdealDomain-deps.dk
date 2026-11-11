@@ -1,5 +1,8 @@
 (; constants used by Mathlib.RingTheory.PrincipalIdealDomain, declared with their translated types ;)
 
+(; the structures of a class on its parameters ;)
+GCDMonoid__on : (X : Set) -> Set.
+
 (; doc: An additive commutative monoid is an additive monoid with commutative `(+)`. ;)
 (; //LEAN:AddCommMonoid ;)
 AddCommMonoid : (M : Set) -> Prop.
@@ -28,10 +31,10 @@ CommRing : (X : Set) -> Prop.
 CommSemiring : (R : Set) -> Prop.
 
 (; //LEAN:CommSemiring.toCommMonoidWithZero ;)
-CommSemiring__toCommMonoidWithZero : (X : Set) -> Proof (CommMonoidWithZero X).
+CommSemiring__toCommMonoidWithZero : (X : Set) -> Elem (CommMonoidWithZero__on X).
 
 (; //LEAN:CommSemiring.toSemiring ;)
-CommSemiring__toSemiring : (R : Set) -> Proof (Semiring R).
+CommSemiring__toSemiring : (R : Set) -> Elem (Semiring__on R).
 
 (; doc: **Alias** of `dvd_mul_of_dvd_right`. ;)
 (; //LEAN:Dvd.dvd.mul_left ;)
@@ -327,10 +330,10 @@ RingHom__toMonoidHom : (X : Set) -> (Y : Set) -> (self : Elem (RingHom X Y)) -> 
 Semiring : (X : Set) -> Prop.
 
 (; //LEAN:Semiring.toAddCommMonoid ;)
-Semiring__toAddCommMonoid : (X : Set) -> Proof (AddCommMonoid X).
+Semiring__toAddCommMonoid : (X : Set) -> Elem (AddCommMonoid__on X).
 
 (; //LEAN:Semiring.toModule ;)
-Semiring__toModule : (R : Set) -> Proof (Module R R).
+Semiring__toModule : (R : Set) -> Elem (Module__on R R).
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
@@ -469,7 +472,7 @@ exists_congr : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> 
 
 (; doc: Define `GCDMonoid` on a structure just from the `gcd` and its properties. ;)
 (; //LEAN:gcdMonoidOfGCD ;)
-gcdMonoidOfGCD : (X : Set) -> (gcd : (Elem X -> Elem X -> X)) -> (gcd_dvd_left : Proof (forall X (a2 => forall X (b2 => divide (gcd a2 b2) a2)))) -> (gcd_dvd_right : Proof (forall X (a1 => forall X (b1 => divide (gcd a1 b1) b1)))) -> (dvd_gcd : Proof (forall X (a => forall X (b => forall X (c => if (divide a c) (if (divide a b) (divide a (gcd c b)))))))) -> Proof (GCDMonoid X).
+gcdMonoidOfGCD : (X : Set) -> (gcd : (Elem X -> Elem X -> X)) -> (gcd_dvd_left : Proof (forall X (a2 => forall X (b2 => divide (gcd a2 b2) a2)))) -> (gcd_dvd_right : Proof (forall X (a1 => forall X (b1 => divide (gcd a1 b1) b1)))) -> (dvd_gcd : Proof (forall X (a => forall X (b => forall X (c => if (divide a c) (if (divide a b) (divide a (gcd c b)))))))) -> Elem (GCDMonoid__on X).
 
 (; //LEAN:gcd_greatest_associated ;)
 gcd_greatest_associated : (X : Set) -> (_ : Proof (CommMonoidWithZero X)) -> (_ : Proof (GCDMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (d : Elem X) -> (hda : Proof (divide d a)) -> (hdb : Proof (divide d b)) -> (hd : Proof (forall X (e => if (divide e a) (if (divide e b) (divide e d))))) -> Proof (Associated X d (GCDMonoid__gcd X x a b)).

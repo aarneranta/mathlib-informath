@@ -1,5 +1,14 @@
 (; constants used by Mathlib.Topology.Basic, declared with their translated types ;)
 
+(; a constant with an instance argument that the statement gives ;)
+IsClosed__in : (X : Set) -> (x : Elem (TopologicalSpace__on X)) -> (s : Elem (powerset X)) -> Prop.
+
+(; a constant with an instance argument that the statement gives ;)
+IsOpen__in : (X : Set) -> (x : Elem (TopologicalSpace__on X)) -> (x1 : Elem (powerset X)) -> Prop.
+
+(; the structures of a class on its parameters ;)
+TopologicalSpace__on : (X : Set) -> Set.
+
 (; doc: **The axiom of choice**. `Nonempty α` is a proof that `α` has an element, but the element itself is erased. The axiom `choice` supplies a particular element of `α` given only this proof.  The textbook axiom of choice normally makes a family of choices all at once, but that is implied from this formulation, because if `α : ι → Type` is a family of types and `h : ∀ i, Nonempty (α i)` is a proof that they are all nonempty, then `fun i => Classical.choice (h i) : ∀ i, α i` is a family of chosen elements. This is actually a bit stronger than the ZFC choice axiom; this is sometimes called "[global choice](https://en.wikipedia.org/wiki/Axiom_of_global_choice)".  In Lean, we use the axiom of choice to derive the law of excluded middle (see `Classical.em`), so it will often show up in axiom listings where you may not expect. You can use `#print axioms my_thm` to find out if a given theorem depends on this or other axioms.  This axiom can be used to construct "data", but obviously there is no algorithm to compute it, so Lean will require you to mark any definition that would involve executing `Classical.choice` or other axioms as `noncomputable`, and will not produce any executable code for such definitions. ;)
 (; //LEAN:Classical.choice ;)
 Classical__choice : (X : Set) -> (h : Proof (Nonempty X)) -> Elem X.
@@ -153,7 +162,7 @@ TopologicalSpace : (X : Set) -> Prop.
 TopologicalSpace__IsOpen : (X : Set) -> (x : Elem (powerset X)) -> Prop.
 
 (; //LEAN:TopologicalSpace.mk ;)
-TopologicalSpace__mk : (X : Set) -> (IsOpen : (Elem (powerset X) -> Prop)) -> (isOpen_univ : Proof (IsOpen (Set__univ X))) -> (isOpen_inter : Proof (forall (powerset X) (s1 => forall (powerset X) (t1 => if (IsOpen s1) (if (IsOpen t1) (IsOpen (Inter__inter (powerset X) s1 t1))))))) -> (isOpen_sUnion : Proof (forall (powerset (powerset X)) (s => if (forall (powerset X) (t => if (Membership__mem (powerset X) (powerset (powerset X)) s t) (IsOpen t))) (IsOpen (Set__sUnion X s))))) -> Proof (TopologicalSpace X).
+TopologicalSpace__mk : (X : Set) -> (IsOpen : (Elem (powerset X) -> Prop)) -> (isOpen_univ : Proof (IsOpen (Set__univ X))) -> (isOpen_inter : Proof (forall (powerset X) (s1 => forall (powerset X) (t1 => if (IsOpen s1) (if (IsOpen t1) (IsOpen (Inter__inter (powerset X) s1 t1))))))) -> (isOpen_sUnion : Proof (forall (powerset (powerset X)) (s => if (forall (powerset X) (t => if (Membership__mem (powerset X) (powerset (powerset X)) s t) (IsOpen t))) (IsOpen (Set__sUnion X s))))) -> Elem (TopologicalSpace__on X).
 
 (; //LEAN:TopologicalSpace.ofClosed._proof_1 ;)
 TopologicalSpace__ofClosed___proof_1 : (X : Set) -> (T : Elem (powerset (powerset X))) -> (empty_mem : Proof (Membership__mem (powerset X) (powerset (powerset X)) T (EmptyCollection__emptyCollection (powerset X)))) -> Proof (Membership__mem (powerset X) (powerset (powerset X)) T (Compl__compl (powerset X) (Set__univ X))).

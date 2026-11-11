@@ -36,9 +36,11 @@ Code without an import line gets `import Mathlib`. Lean elaborates it
 and RunInformath reads its declarations with the symbol tables
 `definitions.dkgf` and `mathlib.dkgf`. `./mathlib-informath -check` tells which of the
 parts it needs are missing (Lean, Mathlib built in `../mathlib4`, the
-exporter built here, Informath in `../informath` or `$INFORMATH_ROOT` with
-RunInformath and its grammar), `-install` builds those it can, and `-help`
-shows the options.
+exporter built here, Informath in `$INFORMATH_ROOT` or `../informath` with
+RunInformath and its grammar) or older than their sources (a grammar not
+rebuilt after an update of Informath reads its new functions as
+`[Function]`), `-install` builds those it can, every run warns of an
+outdated part, and `-help` shows the options.
 
 ## The symbol table of all Mathlib definitions
 

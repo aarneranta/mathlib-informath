@@ -19,7 +19,8 @@ Options:
   -o=<file>               the output file (default: standard output for text,
                           <File>.html or <File>.pdf otherwise)
   -keep                   keep the working directory, and say where it is
-  -check                  check that the parts needed are there, and stop
+  -check                  check that the parts needed are there and not older than
+                          their sources, and stop
   -install                build the parts that are missing, as far as possible
   -help                   this message
 
@@ -99,6 +100,31 @@ def parts():
     ]
 
 
+def newest(paths):
+    """The time of the newest of the files, 0 if there are none."""
+    return max((os.path.getmtime(p) for p in paths if os.path.exists(p)), default=0)
+
+
+def outdated():
+    """(part, how to rebuild it) for each built part that is older than its
+    sources: a grammar or RunInformath not rebuilt after an update of
+    Informath reads the new grammar functions as [Function]."""
+    root = informath_root()
+    grammar = os.path.join(root, 'share', 'InformathFull.pgf')
+    runinf = run_informath(root)
+    exporter = os.path.join(HERE, '.lake', 'build', 'bin', 'export')
+    out = []
+    sources = glob.glob(os.path.join(root, 'grammars', '*.gf')) + glob.glob(os.path.join(root, 'grammars', 'next', '*.gf'))
+    if os.path.exists(grammar) and newest(sources) > os.path.getmtime(grammar):
+        out.append(('the grammar', 'cd %s; make english_grammar && make full_grammar && stack build' % root))
+    elif runinf and os.path.exists(runinf) and root in os.path.abspath(runinf) and \
+         newest(glob.glob(os.path.join(root, 'src', '*.hs'))) > os.path.getmtime(runinf):
+        out.append(('RunInformath', 'cd %s; stack build' % root))
+    if os.path.exists(exporter) and newest([os.path.join(HERE, 'Export.lean')]) > os.path.getmtime(exporter):
+        out.append(('the exporter', 'cd %s; lake build' % HERE))
+    return out
+
+
 def check(verbose):
     missing = []
     for name, found, how in parts():
@@ -106,6 +132,9 @@ def check(verbose):
             print('%-18s %s' % (name, found or 'MISSING: ' + how))
         if not found:
             missing.append((name, how))
+    for name, how in outdated():
+        if verbose:
+            print('%-18s OUT OF DATE (older than its sources): %s' % (name, how))
     return missing
 
 
@@ -119,6 +148,11 @@ def install():
             print('%s is missing; to get it: %s' % (name, how))
             continue
         print('%s: %s' % (name, how))
+        d, cmd = how[3:].split('; ', 1)
+        if subprocess.run(cmd, shell=True, cwd=d).returncode:
+            fail('%s failed' % how)
+    for name, how in outdated():
+        print('%s is out of date: %s' % (name, how))
         d, cmd = how[3:].split('; ', 1)
         if subprocess.run(cmd, shell=True, cwd=d).returncode:
             fail('%s failed' % how)
@@ -265,6 +299,10 @@ def main():
     if missing:
         fail('missing: %s\n%s\n(mathlib-informath -install builds what it can)' % (
             ', '.join(n for n, _ in missing), '\n'.join('  %s: %s' % m for m in missing)))
+    for name, how in outdated():
+        print('warning: %s (in %s) is older than its sources, and may not read what they have;'
+              ' to rebuild it: %s' % (name, informath_root() if name != 'the exporter' else HERE, how),
+              file=sys.stderr)
     langs = opts['languages'].split(',') if isinstance(opts.get('languages'), str) else ['Eng']
     for l in langs:
         if l not in LANGUAGES:

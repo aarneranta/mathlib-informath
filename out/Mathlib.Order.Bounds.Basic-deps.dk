@@ -68,13 +68,9 @@ Disjoint : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Prop.
 (; //LEAN:EmptyCollection.emptyCollection ;)
 EmptyCollection__emptyCollection : (X : Set) -> Elem X.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; //LEAN:Exists.imp ;)
 Exists__imp : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h : Proof (forall X (a2 => if (p a2) (q a2)))) -> (h1 : Proof (exists X (a1 => p a1))) -> Proof (exists X (a => q a)).
@@ -226,7 +222,7 @@ NoTopOrder : (X : Set) -> Prop.
 
 (; doc: The elimination principle for `Nonempty α`. If `Nonempty α`, and we can prove `p` given any element `x : α`, then `p` holds. Note that it is essential that `p` is a `Prop` here; the version with `p` being a `Sort u` is equivalent to `Classical.choice`. ;)
 (; //LEAN:Nonempty.elim ;)
-Nonempty__elim : (X : Set) -> (p : Prop) -> (h : Proof (Nonempty X)) -> (h1 : Proof (forall X (x => p))) -> Proof p.
+Nonempty__elim : (X : Set) -> (p : Prop) -> (h1 : Proof (Nonempty X)) -> (h2 : Proof (forall X (x => p))) -> Proof p.
 
 (; doc: An order is an `OrderBot` if it has a least element. We state this using a data mixin, holding the value of `⊥` and the least element constraint. ;)
 (; //LEAN:OrderBot ;)
@@ -410,10 +406,10 @@ Set__Nonempty__mono : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerse
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Set.Subset.antisymm ;)
-Set__Subset__antisymm : (X : Set) -> (a : Elem (powerset X)) -> (b : Elem (powerset X)) -> (h : Proof (Set__Subset X a b)) -> (h1 : Proof (Set__Subset X b a)) -> Proof (Eqt (powerset X) a b).
+Set__Subset__antisymm : (X : Set) -> (a : Elem (powerset X)) -> (b : Elem (powerset X)) -> (h1 : Proof (Set__Subset X a b)) -> (h2 : Proof (Set__Subset X b a)) -> Proof (Eqt (powerset X) a b).
 
 (; //LEAN:Set.Subset.rfl ;)
 Set__Subset__rfl : (X : Set) -> (s : Elem (powerset X)) -> Proof (Set__Subset X s s).
@@ -530,11 +526,11 @@ bot_unique : (X : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (OrderBot X
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: **Alias** of `congrArg`. ;)
 (; //LEAN:congr_arg ;)
-congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Indexed infimum ;)
 (; //LEAN:iInf ;)
@@ -558,7 +554,7 @@ le_antisymm : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : 
 le_of_eq : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Eqt X a b)) -> Proof (Leq a b).
 
 (; //LEAN:le_of_forall_lt_imp_le_of_dense ;)
-le_of_forall_lt_imp_le_of_dense : (X : Set) -> (_ : Proof (LinearOrder X)) -> (_ : Proof (DenselyOrdered X)) -> (x1 : Elem X) -> (x2 : Elem X) -> (h1 : Proof (forall X (a => if (Lt a x2) (Leq a x1)))) -> Proof (Leq x2 x1).
+le_of_forall_lt_imp_le_of_dense : (X : Set) -> (_ : Proof (LinearOrder X)) -> (_ : Proof (DenselyOrdered X)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (forall X (a => if (Lt a a2) (Leq a a1)))) -> Proof (Leq a2 a1).
 
 (; //LEAN:le_of_lt ;)
 le_of_lt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Lt a b)) -> Proof (Leq a b).
@@ -583,6 +579,9 @@ lowerBounds : (X : Set) -> (s : Elem (powerset X)) -> Elem (powerset X).
 
 (; //LEAN:lt_iff_le_not_ge ;)
 lt_iff_le_not_ge : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Lt a b) (and (Leq a b) (not (Leq b a)))).
+
+(; //LEAN:lt_of_le_of_lt ;)
+lt_of_le_of_lt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (hab : Proof (Leq a b)) -> (hbc : Proof (Lt b c)) -> Proof (Lt a c).
 
 (; //LEAN:not_isBot ;)
 not_isBot : (X : Set) -> (_ : Proof (LE X)) -> (_ : Proof (NoBotOrder X)) -> (a : Elem X) -> Proof (not (IsBot X a)).

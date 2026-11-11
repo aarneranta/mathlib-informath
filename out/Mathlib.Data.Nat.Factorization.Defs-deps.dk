@@ -14,7 +14,7 @@ Nat__factorization__app : (a1 : Elem Nat) -> (a2 : Elem Nat) -> Elem Nat.
 
 (; doc: The coercion from `F` to a function. ;)
 (; //LEAN:DFunLike.coe ;)
-DFunLike__coe : (F : Set) -> (X : Set) -> (x : (Elem X -> Set)) -> (x1 : Elem F) -> (a : Elem X) -> Elem (x a).
+DFunLike__coe : (F : Set) -> (X : Set) -> (beta : (Elem X -> Set)) -> (x : Elem F) -> (a : Elem X) -> Elem (beta a).
 
 (; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
 (; //LEAN:Eq ;)
@@ -22,7 +22,7 @@ Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. ;)
 (; //LEAN:Equiv ;)
@@ -152,11 +152,11 @@ True : Prop.
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Congruence in the function part of an application: If `f = g` then `f a = g a`. ;)
 (; //LEAN:congrFun ;)
-congrFun : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> x x3)) -> (g : ((x2 : Elem X) -> x x2)) -> (h : Proof (Eqt ((x1 : Elem X) -> x x1) f g)) -> (a : Elem X) -> Proof (Eqt (x a) (f a) (g a)).
+congrFun : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x2 : Elem X) -> beta x2)) -> (g : ((x1 : Elem X) -> beta x1)) -> (h : Proof (Eqt ((x : Elem X) -> beta x) f g)) -> (a : Elem X) -> Proof (Eqt (beta a) (f a) (g a)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)

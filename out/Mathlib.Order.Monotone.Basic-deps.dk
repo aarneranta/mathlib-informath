@@ -1,6 +1,9 @@
 (; constants used by Mathlib.Order.Monotone.Basic, declared with their translated types ;)
 
 (; a constant applied as a function: DFunLike.coe ;)
+OrderDual__ofDual__app : (a1 : Elem (OrderDual X)) -> Elem X.
+
+(; a constant applied as a function: DFunLike.coe ;)
 OrderDual__toDual__app : (a1 : Elem X) -> Elem (OrderDual X).
 
 (; doc: A function `f` is antitone if `a ≤ b` implies `f b ≤ f a`. ;)
@@ -8,7 +11,7 @@ OrderDual__toDual__app : (a1 : Elem X) -> Elem (OrderDual X).
 Antitone : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Antitone.strictAnti_of_injective ;)
-Antitone__strictAnti_of_injective : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (PartialOrder Y)) -> (f : (Elem X -> Y)) -> (h : Proof (Antitone X Y f)) -> (h1 : Proof (Function__Injective X Y f)) -> Proof (StrictAnti X Y f).
+Antitone__strictAnti_of_injective : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (PartialOrder Y)) -> (f : (Elem X -> Y)) -> (h1 : Proof (Antitone X Y f)) -> (h2 : Proof (Function__Injective X Y f)) -> Proof (StrictAnti X Y f).
 
 (; doc: A function `f` is antitone on `s` if, for all `a, b ∈ s`, `a ≤ b` implies `f b ≤ f a`. ;)
 (; //LEAN:AntitoneOn ;)
@@ -46,7 +49,7 @@ Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> W)) -> (
 Iff__rfl : (a : Prop) -> Proof (iff a a).
 
 (; //LEAN:Iff.trans ;)
-Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h1 : Proof (iff a b)) -> (h2 : Proof (iff b c)) -> Proof (iff a c).
 
 (; doc: The inverse image of `r : β → β → Prop` by a function `α → β` is the relation `s : α → α → Prop` defined by `s a b = r (f a) (f b)`. ;)
 (; //LEAN:InvImage ;)
@@ -62,7 +65,7 @@ IsMin : (X : Set) -> (a : Elem X) -> Prop.
 
 (; doc: `σ` is *stable* for `f` if it breaks ties by increasing index: among elements with equal `f`-value, `σ` preserves their order. This property does not use the order on the codomain of `f`, only its equality, so it is unchanged by reversing that order. ;)
 (; //LEAN:IsStable ;)
-IsStable : (X : Set) -> (Z : Set) -> (f : (Elem X -> Z)) -> (x1 : (Elem X -> X)) -> Prop.
+IsStable : (X : Set) -> (Z : Set) -> (f : (Elem X -> Z)) -> (sigma : (Elem X -> X)) -> Prop.
 
 (; doc: `IsTrans X r` means the binary relation `r` on `X` is transitive. ;)
 (; //LEAN:IsTrans ;)
@@ -91,6 +94,14 @@ LT__lt__le : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem 
 (; doc: **Alias** of `ne_of_lt`. ;)
 (; //LEAN:LT.lt.ne ;)
 LT__lt__ne : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt a b)) -> Proof (Neq a b).
+
+(; doc: **Alias** of `not_isMax_of_lt`. ;)
+(; //LEAN:LT.lt.not_isMax ;)
+LT__lt__not_isMax : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt a b)) -> Proof (not (IsMax X a)).
+
+(; doc: **Alias** of `not_isMin_of_lt`. ;)
+(; //LEAN:LT.lt.not_isMin ;)
+LT__lt__not_isMin : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Lt b a)) -> Proof (not (IsMin X a)).
 
 (; doc: **Alias** of `lt_of_lt_of_le`. ;)
 (; //LEAN:LT.lt.trans_le ;)
@@ -124,7 +135,7 @@ Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Pro
 Monotone : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Monotone.strictMono_of_injective ;)
-Monotone__strictMono_of_injective : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (PartialOrder Y)) -> (f : (Elem X -> Y)) -> (h : Proof (Monotone X Y f)) -> (h1 : Proof (Function__Injective X Y f)) -> Proof (StrictMono X Y f).
+Monotone__strictMono_of_injective : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (PartialOrder Y)) -> (f : (Elem X -> Y)) -> (h1 : Proof (Monotone X Y f)) -> (h2 : Proof (Function__Injective X Y f)) -> Proof (StrictMono X Y f).
 
 (; doc: A function `f` is monotone on `s` if, for all `a, b ∈ s`, `a ≤ b` implies `f a ≤ f b`. ;)
 (; //LEAN:MonotoneOn ;)
@@ -272,7 +283,7 @@ eq_comm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X a b) (E
 forall_comm : (X : Set) -> (Y : Set) -> (p : (Elem X -> Elem Y -> Prop)) -> Proof (iff (forall X (a => forall Y (b => p a b))) (forall Y (b1 => forall X (a1 => p a1 b1)))).
 
 (; //LEAN:forall₂_comm ;)
-forall_u2082__comm : (X : Set) -> (X1 : Set) -> (x : (Elem X -> Set)) -> (x1 : (Elem X1 -> Set)) -> (p : ((x10 : Elem X) -> Elem (x x10) -> (x12 : Elem X1) -> Elem (x1 x12) -> Prop)) -> Proof (iff (forall X (x2 => forall (x x2) (x3 => forall X1 (x4 => forall (x1 x4) (x5 => p x2 x3 x4 x5))))) (forall X1 (x6 => forall (x1 x6) (x7 => forall X (x8 => forall (x x8) (x9 => p x8 x9 x6 x7)))))).
+forall_u2082__comm : (X : Set) -> (X1 : Set) -> (kappa1 : (Elem X -> Set)) -> (kappa2 : (Elem X1 -> Set)) -> (p : ((i12 : Elem X) -> Elem (kappa1 i12) -> (i22 : Elem X1) -> Elem (kappa2 i22) -> Prop)) -> Proof (iff (forall X (i1 => forall (kappa1 i1) (j1 => forall X1 (i2 => forall (kappa2 i2) (j2 => p i1 j1 i2 j2))))) (forall X1 (i21 => forall (kappa2 i21) (j21 => forall X (i11 => forall (kappa1 i11) (j11 => p i11 j11 i21 j21)))))).
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
@@ -290,7 +301,13 @@ le_antisymm : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : 
 le_rfl : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> Proof (Leq a a).
 
 (; //LEAN:mt ;)
-mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
+mt : (a : Prop) -> (b : Prop) -> (h1 : Proof (if a b)) -> (h2 : Proof (not b)) -> Proof (not a).
+
+(; //LEAN:not_isMax_iff ;)
+not_isMax_iff : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> Proof (iff (not (IsMax X a)) (exists X (b => Lt a b))).
+
+(; //LEAN:of_not_not ;)
+of_not_not : (a : Prop) -> (h : Proof (not (not a))) -> Proof a.
 
 (; //LEAN:toDual_compares_toDual ;)
 toDual_compares_toDual : (X : Set) -> (_ : Proof (LT X)) -> (a : Elem X) -> (b : Elem X) -> (o : Elem Ordering) -> Proof (iff (Ordering__Compares (OrderDual X) o (OrderDual__toDual__app a) (OrderDual__toDual__app b)) (Ordering__Compares X o b a)).

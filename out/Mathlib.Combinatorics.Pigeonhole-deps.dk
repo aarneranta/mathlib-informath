@@ -8,10 +8,6 @@ AddCommMonoid : (M : Set) -> Prop.
 (; //LEAN:CommSemiring ;)
 CommSemiring : (R : Set) -> Prop.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
 (; //LEAN:Finset ;)
 Finset : (X : Set) -> Set.
@@ -42,6 +38,9 @@ Finset__filter : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) ->
 (; //LEAN:Finset.inf' ;)
 Finset__inf' : (X : Set) -> (Y : Set) -> (s : Elem (Finset Y)) -> (H : Proof (Finset__Nonempty Y s)) -> (f : (Elem Y -> X)) -> Elem X.
 
+(; //LEAN:Finset.mem_univ ;)
+Finset__mem_univ : (X : Set) -> (_ : Proof (Fintype X)) -> (x1 : Elem X) -> Proof (Membership__mem X (Finset X) (Finset__univ X) x1).
+
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
 Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
@@ -58,6 +57,9 @@ Finset__sum_le_sum_fiberwise_of_sum_fiber_nonpos : (I : Set) -> (N : Set) -> (_ 
 (; doc: `univ` is the universal finite set of type `Finset α` implied from the assumption `Fintype α`. ;)
 (; //LEAN:Finset.univ ;)
 Finset__univ : (X : Set) -> Elem (Finset X).
+
+(; //LEAN:Finset.univ_nonempty ;)
+Finset__univ_nonempty : (X : Set) -> (_ : Proof (Fintype X)) -> Proof (Finset__Nonempty X (Finset__univ X)).
 
 (; doc: `Fintype α` means that `α` is finite, i.e. there are only finitely many distinct elements of type `α`. The evidence of this is a finset `elems` (a list up to permutation without duplicates), together with a proof that everything of type `α` is in the list. ;)
 (; //LEAN:Fintype ;)
@@ -126,11 +128,11 @@ Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> Elem Y -> 
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)

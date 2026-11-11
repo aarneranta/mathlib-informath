@@ -1,5 +1,8 @@
 (; constants used by Mathlib.Topology.Connected.Basic, declared with their translated types ;)
 
+(; //LEAN:Classical.byContradiction ;)
+Classical__byContradiction : (p : Prop) -> (h : Proof (if (not p) false)) -> Proof p.
+
 (; doc: All propositions are `Decidable`. ;)
 (; //LEAN:Classical.propDecidable ;)
 Classical__propDecidable : (a : Prop) -> Proof (Decidable a).
@@ -37,13 +40,12 @@ DirectedOn : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (s : Elem (powerse
 (; //LEAN:Disjoint ;)
 Disjoint : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Prop.
 
+(; //LEAN:Disjoint.subset_left_of_subset_union ;)
+Disjoint__subset_left_of_subset_union : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> (h : Proof (Set__Subset X s (Union__union (powerset X) t u))) -> (hac : Proof (Disjoint (powerset X) s u)) -> Proof (Set__Subset X s t).
+
 (; doc: `∅` or `{}` is the empty set or empty collection. It is supported by the `EmptyCollection` typeclass.  Conventions for notations in identifiers:   * The recommended spelling of `{}` in identifiers is `empty`.   * The recommended spelling of `∅` in identifiers is `empty`. ;)
 (; //LEAN:EmptyCollection.emptyCollection ;)
 EmptyCollection__emptyCollection : (X : Set) -> Elem X.
-
-(; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
-(; //LEAN:Eq.mp ;)
-Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
 
 (; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.symm ;)
@@ -51,7 +53,7 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
@@ -131,7 +133,7 @@ Nonempty : (X : Set) -> Prop.
 
 (; doc: The elimination principle for `Nonempty α`. If `Nonempty α`, and we can prove `p` given any element `x : α`, then `p` holds. Note that it is essential that `p` is a `Prop` here; the version with `p` being a `Sort u` is equivalent to `Classical.choice`. ;)
 (; //LEAN:Nonempty.elim ;)
-Nonempty__elim : (X : Set) -> (p : Prop) -> (h : Proof (Nonempty X)) -> (h1 : Proof (forall X (x => p))) -> Proof p.
+Nonempty__elim : (X : Set) -> (p : Prop) -> (h1 : Proof (Nonempty X)) -> (h2 : Proof (forall X (x => p))) -> Proof p.
 
 (; doc: If `val : α`, then `α` is nonempty. ;)
 (; //LEAN:Nonempty.intro ;)
@@ -218,7 +220,7 @@ Set__OrdConnected : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Set.Subset.rfl ;)
 Set__Subset__rfl : (X : Set) -> (s : Elem (powerset X)) -> Proof (Set__Subset X s s).
@@ -228,7 +230,10 @@ Set__Subset__rfl : (X : Set) -> (s : Elem (powerset X)) -> Proof (Set__Subset X 
 Set__Subsingleton : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Set.Subsingleton.induction_on ;)
-Set__Subsingleton__induction_on : (X : Set) -> (s : Elem (powerset X)) -> (p : (Elem (powerset X) -> Prop)) -> (hs : Proof (Set__Subsingleton X s)) -> (he : Proof (p (EmptyCollection__emptyCollection (powerset X)))) -> (h : Proof (forall X (x => p (Singleton__singleton X (powerset X) x)))) -> Proof (p s).
+Set__Subsingleton__induction_on : (X : Set) -> (s : Elem (powerset X)) -> (p : (Elem (powerset X) -> Prop)) -> (hs : Proof (Set__Subsingleton X s)) -> (he : Proof (p (EmptyCollection__emptyCollection (powerset X)))) -> (h1 : Proof (forall X (x => p (Singleton__singleton X (powerset X) x)))) -> Proof (p s).
+
+(; //LEAN:Set.disjoint_iff ;)
+Set__disjoint_iff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Disjoint (powerset X) s t) (Set__Subset X (Inter__inter (powerset X) s t) (EmptyCollection__emptyCollection (powerset X)))).
 
 (; //LEAN:Set.disjoint_left ;)
 Set__disjoint_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Disjoint (powerset X) s t) (forall X (a => if (Membership__mem X (powerset X) s a) (not (Membership__mem X (powerset X) t a))))).
@@ -284,13 +289,16 @@ Set__nonempty_biUnion : (X : Set) -> (Y : Set) -> (t : Elem (powerset X)) -> (s 
 (; //LEAN:Set.nonempty_iUnion ;)
 Set__nonempty_iUnion : (X : Set) -> (I : Set) -> (s : (Elem I -> powerset X)) -> Proof (iff (Set__Nonempty X (Set__iUnion X I (i => s i))) (exists I (i1 => Set__Nonempty X (s i1)))).
 
+(; //LEAN:Set.not_disjoint_iff_nonempty_inter ;)
+Set__not_disjoint_iff_nonempty_inter : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (not (Disjoint (powerset X) s t)) (Set__Nonempty X (Inter__inter (powerset X) s t))).
+
 (; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
 (; //LEAN:Set.ofPred ;)
 Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
 
 (; doc: Given an index set `ι` and a family of sets `t : Π i, Set (α i)`, `pi s t` is the set of dependent functions `f : Πa, π a` such that `f i` belongs to `t i` whenever `i ∈ s`. ;)
 (; //LEAN:Set.pi ;)
-Set__pi : (I : Set) -> (x : (Elem I -> Set)) -> (s : Elem (powerset I)) -> (t : ((i1 : Elem I) -> powerset (x i1))) -> Elem (powerset ((i : Elem I) -> x i)).
+Set__pi : (I : Set) -> (alpha : (Elem I -> Set)) -> (s : Elem (powerset I)) -> (t : ((i1 : Elem I) -> powerset (alpha i1))) -> Elem (powerset ((i : Elem I) -> alpha i)).
 
 (; doc: The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`, is the set of `x : α` such that `f x ∈ s`. ;)
 (; //LEAN:Set.preimage ;)
@@ -361,7 +369,7 @@ closure_subset_iff_isClosed : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: The projection maps out of the product topology are continuous. ;)
 (; //LEAN:continuous_apply ;)
@@ -409,6 +417,10 @@ mem_irreducibleComponent : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (x1 
 
 (; //LEAN:nonempty_subtype ;)
 nonempty_subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (iff (Nonempty (Subtype X (x => p x))) (exists X (a => p a))).
+
+(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
+(; //LEAN:propext ;)
+propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a b).
 
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)

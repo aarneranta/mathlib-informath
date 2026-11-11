@@ -65,7 +65,7 @@ AlternatingMap__map_eq_zero_of_eq : (R : Set) -> (_ : Proof (Semiring R)) -> (M 
 AlternatingMap__map_linearDependent : (I : Set) -> (K : Set) -> (M : Set) -> (N : Set) -> (_ : Proof (Ring K)) -> (_ : Proof (IsDomain K)) -> (_ : Proof (AddCommGroup M)) -> (_ : Proof (Module K M)) -> (_ : Proof (AddCommGroup N)) -> (_ : Proof (Module K N)) -> (_ : Proof (Module__IsTorsionFree K N)) -> (f : Elem (AlternatingMap K M N I)) -> (v : (Elem I -> M)) -> (h2 : Proof (not (LinearIndependent I K M v))) -> Proof (Eqt N (f v) 0).
 
 (; //LEAN:AlternatingMap.map_perm ;)
-AlternatingMap__map_perm : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (N' : Set) -> (_ : Proof (AddCommGroup N')) -> (_ : Proof (Module R N')) -> (I : Set) -> (g : Elem (AlternatingMap R M N' I)) -> (_ : Proof (Fintype I)) -> (v : (Elem I -> M)) -> (x7 : Elem (Equiv__Perm I)) -> Proof (Eqt N' (g (Function__comp I I M v x7)) (HSMul__hSMul (Units Int) N' N' (Equiv__Perm__sign__app x7) (g v))).
+AlternatingMap__map_perm : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (N' : Set) -> (_ : Proof (AddCommGroup N')) -> (_ : Proof (Module R N')) -> (I : Set) -> (g : Elem (AlternatingMap R M N' I)) -> (_ : Proof (Fintype I)) -> (v : (Elem I -> M)) -> (sigma : Elem (Equiv__Perm I)) -> Proof (Eqt N' (g (Function__comp I I M v sigma)) (HSMul__hSMul (Units Int) N' N' (Equiv__Perm__sign__app sigma) (g v))).
 
 (; //LEAN:AlternatingMap.map_update_add ;)
 AlternatingMap__map_update_add : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (N : Set) -> (_ : Proof (AddCommMonoid N)) -> (_ : Proof (Module R N)) -> (I : Set) -> (f : Elem (AlternatingMap R M N I)) -> (v : (Elem I -> M)) -> (i : Elem I) -> (x6 : Elem M) -> (y : Elem M) -> Proof (Eqt N (f (Function__update I (x7 => M) v i (plus x6 y))) (plus (f (Function__update I (x8 => M) v i x6)) (f (Function__update I (x9 => M) v i y)))).
@@ -88,10 +88,6 @@ CommRing : (X : Set) -> Prop.
 (; //LEAN:Eq ;)
 Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
 Eq__refl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
@@ -102,7 +98,7 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. ;)
 (; //LEAN:Equiv ;)
@@ -118,7 +114,7 @@ Equiv__symm : (X : Set) -> (Y : Set) -> (e : Elem (Equiv X Y)) -> Elem (Equiv Y 
 
 (; doc: Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. ;)
 (; //LEAN:Equiv.trans ;)
-Equiv__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem (Equiv X Y)) -> (x1 : Elem (Equiv Y Z)) -> Elem (Equiv X Z).
+Equiv__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (e1 : Elem (Equiv X Y)) -> (e2 : Elem (Equiv Y Z)) -> Elem (Equiv X Z).
 
 (; doc: A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.  An instance of `Field K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`. Those two fields are needed to implement the `DivisionRing K → Algebra ℚ K` instance since we need to control the specific definitions for some special cases of `K` (in particular `K = ℚ` itself). See also note [forgetful inheritance].  If the field has positive characteristic `p`, our division by zero convention forces `ratCast (1 / p) = 1 / 0 = 0`. ;)
 (; //LEAN:Field ;)
@@ -232,7 +228,7 @@ LinearIndependent : (I : Set) -> (R : Set) -> (M : Set) -> (v : (Elem I -> M)) -
 
 (; doc: The projections from a family of modules are linear maps.  Note: this definition would be called `Pi.evalLinearMap` if we followed the pattern established by `Pi.evalAddHom`, `Pi.evalMonoidHom`, `Pi.evalRingHom`, ... ;)
 (; //LEAN:LinearMap.proj ;)
-LinearMap__proj : (R : Set) -> (I : Set) -> (x1 : (Elem I -> Set)) -> (i : Elem I) -> Elem (LinearMap R R (RingHom__id R) ((i1 : Elem I) -> x1 i1) (x1 i)).
+LinearMap__proj : (R : Set) -> (I : Set) -> (phi : (Elem I -> Set)) -> (i : Elem I) -> Elem (LinearMap R R (RingHom__id R) ((i1 : Elem I) -> phi i1) (phi i)).
 
 (; doc: A linear order is reflexive, transitive, antisymmetric and total relation `≤`. We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. ;)
 (; //LEAN:LinearOrder ;)
@@ -343,21 +339,21 @@ MulAction : (X : Set) -> (Y : Set) -> Prop.
 
 (; doc: Multilinear maps over the ring `R`, from `∀ i, M₁ i` to `M₂` where `M₁ i` and `M₂` are modules over `R`. ;)
 (; //LEAN:MultilinearMap ;)
-MultilinearMap : (R : Set) -> (I : Set) -> (x : (Elem I -> Set)) -> (X : Set) -> Set.
+MultilinearMap : (R : Set) -> (I : Set) -> (M1 : (Elem I -> Set)) -> (X : Set) -> Set.
 
 (; //LEAN:MultilinearMap.alternatization_apply ;)
-MultilinearMap__alternatization_apply : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (N' : Set) -> (_ : Proof (AddCommGroup N')) -> (_ : Proof (Module R N')) -> (I : Set) -> (_ : Proof (Fintype I)) -> (m : Elem (MultilinearMap R I (x14 => M) N')) -> (v : (Elem I -> M)) -> Proof (Eqt N' (DFunLike__coe__app (MultilinearMap__alternatization R M N' I) m v) (Finset__sum (Equiv__Perm I) N' (Finset__univ (Equiv__Perm I)) (x10 => HSMul__hSMul (Units Int) N' N' (Equiv__Perm__sign__app x10) (MultilinearMap__domDomCongr__app x10 m v)))).
+MultilinearMap__alternatization_apply : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (N' : Set) -> (_ : Proof (AddCommGroup N')) -> (_ : Proof (Module R N')) -> (I : Set) -> (_ : Proof (Fintype I)) -> (m : Elem (MultilinearMap R I (x13 => M) N')) -> (v : (Elem I -> M)) -> Proof (Eqt N' (DFunLike__coe__app (MultilinearMap__alternatization R M N' I) m v) (Finset__sum (Equiv__Perm I) N' (Finset__univ (Equiv__Perm I)) (sigma => HSMul__hSMul (Units Int) N' N' (Equiv__Perm__sign__app sigma) (MultilinearMap__domDomCongr__app sigma m v)))).
 
 (; doc: If `g` is a multilinear map and `f` is a collection of linear maps, then `g (f₁ m₁, ..., fₙ mₙ)` is again a multilinear map, that we call `g.compLinearMap f`. ;)
 (; //LEAN:MultilinearMap.compLinearMap ;)
-MultilinearMap__compLinearMap : (R : Set) -> (I : Set) -> (x : (Elem I -> Set)) -> (x1 : (Elem I -> Set)) -> (X : Set) -> (g : Elem (MultilinearMap R I x1 X)) -> (f : ((i : Elem I) -> LinearMap R R (RingHom__id R) (x i) (x1 i))) -> Elem (MultilinearMap R I x X).
+MultilinearMap__compLinearMap : (R : Set) -> (I : Set) -> (M1 : (Elem I -> Set)) -> (M1' : (Elem I -> Set)) -> (X : Set) -> (g : Elem (MultilinearMap R I M1' X)) -> (f : ((i : Elem I) -> LinearMap R R (RingHom__id R) (M1 i) (M1' i))) -> Elem (MultilinearMap R I M1 X).
 
 (; doc: Multiplicativity of a multilinear map along all coordinates at the same time, writing `f (fun i => c i • m i)` as `(∏ i, c i) • f m`. ;)
 (; //LEAN:MultilinearMap.map_smul_univ ;)
-MultilinearMap__map_smul_univ : (R : Set) -> (I : Set) -> (x : (Elem I -> Set)) -> (X : Set) -> (_ : Proof (CommSemiring R)) -> (_ : Proof ((i4 : Elem I) -> AddCommMonoid (x i4))) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof ((i3 : Elem I) -> Module R (x i3))) -> (_ : Proof (Module R X)) -> (f : Elem (MultilinearMap R I x X)) -> (_ : Proof (Fintype I)) -> (c : (Elem I -> R)) -> (m : ((i2 : Elem I) -> x i2)) -> Proof (Eqt X (f (i => HSMul__hSMul R (x i) (x i) (c i) (m i))) (HSMul__hSMul R X X (Finset__prod I R (Finset__univ I) (i1 => c i1)) (f m))).
+MultilinearMap__map_smul_univ : (R : Set) -> (I : Set) -> (M1 : (Elem I -> Set)) -> (X : Set) -> (_ : Proof (CommSemiring R)) -> (_ : Proof ((i4 : Elem I) -> AddCommMonoid (M1 i4))) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof ((i3 : Elem I) -> Module R (M1 i3))) -> (_ : Proof (Module R X)) -> (f : Elem (MultilinearMap R I M1 X)) -> (_ : Proof (Fintype I)) -> (c : (Elem I -> R)) -> (m : ((i2 : Elem I) -> M1 i2)) -> Proof (Eqt X (f (i => HSMul__hSMul R (M1 i) (M1 i) (c i) (m i))) (HSMul__hSMul R X X (Finset__prod I R (Finset__univ I) (i1 => c i1)) (f m))).
 
 (; //LEAN:MultilinearMap.map_update_smul_left ;)
-MultilinearMap__map_update_smul_left : (R : Set) -> (I : Set) -> (x : (Elem I -> Set)) -> (X : Set) -> (_ : Proof (CommSemiring R)) -> (_ : Proof ((i5 : Elem I) -> AddCommMonoid (x i5))) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof ((i4 : Elem I) -> Module R (x i4))) -> (_ : Proof (Module R X)) -> (f : Elem (MultilinearMap R I x X)) -> (_ : Proof (Fintype I)) -> (m : ((i3 : Elem I) -> x i3)) -> (i : Elem I) -> (c : Elem R) -> (x8 : Elem (x i)) -> Proof (Eqt X (f (Function__update I x (HSMul__hSMul R ((i1 : Elem I) -> x i1) ((i2 : Elem I) -> x i2) c m) i x8)) (HSMul__hSMul R X X (pow c (minus (Fintype__card I) 1)) (f (Function__update I x m i x8)))).
+MultilinearMap__map_update_smul_left : (R : Set) -> (I : Set) -> (M1 : (Elem I -> Set)) -> (X : Set) -> (_ : Proof (CommSemiring R)) -> (_ : Proof ((i5 : Elem I) -> AddCommMonoid (M1 i5))) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof ((i4 : Elem I) -> Module R (M1 i4))) -> (_ : Proof (Module R X)) -> (f : Elem (MultilinearMap R I M1 X)) -> (_ : Proof (Fintype I)) -> (m : ((i3 : Elem I) -> M1 i3)) -> (i : Elem I) -> (c : Elem R) -> (x7 : Elem (M1 i)) -> Proof (Eqt X (f (Function__update I M1 (HSMul__hSMul R ((i1 : Elem I) -> M1 i1) ((i2 : Elem I) -> M1 i2) c m) i x7)) (HSMul__hSMul R X X (pow c (minus (Fintype__card I) 1)) (f (Function__update I M1 m i x7)))).
 
 (; doc: Given an `R`-algebra `A`, `mkPiAlgebra` is the multilinear map on `A^ι` associating to `m` the product of all the `m i`.  See also `MultilinearMap.mkPiAlgebraFin` for a version that works with a non-commutative algebra `A` but requires `ι = Fin n`. ;)
 (; //LEAN:MultilinearMap.mkPiAlgebra ;)
@@ -436,15 +432,15 @@ abs : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; doc: Anything follows from two contradictory hypotheses. Example: ``` example (hp : p) (hnp : ¬p) : q := absurd hp hnp ``` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:absurd ;)
-absurd : (a : Prop) -> (b : Set) -> (h : Proof a) -> (h1 : Proof (not a)) -> Elem b.
+absurd : (a : Prop) -> (b : Set) -> (h1 : Proof a) -> (h2 : Proof (not a)) -> Elem b.
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
@@ -452,7 +448,7 @@ congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y))
 
 (; doc: **Alias** of `congrArg`. ;)
 (; //LEAN:congr_arg ;)
-congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; //LEAN:eq_false ;)
 eq_false : (p : Prop) -> (h : Proof (not p)) -> Proof (Eqt Prop p false).
@@ -465,7 +461,7 @@ forall_congr : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> 
 
 (; doc: **Function extensionality.** If two functions return equal results for all possible arguments, then they are equal.  It is called “extensionality” because it provides a way to prove two objects equal based on the properties of the underlying mathematical functions, rather than based on the syntax used to denote them. Function extensionality is a theorem that can be [proved using quotient types](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=quotient-funext). ;)
 (; //LEAN:funext ;)
-funext : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> (g : ((x3 : Elem X) -> x x3)) -> (h : Proof (forall X (x2 => Eqt (x x2) (f x2) (g x2)))) -> Proof (Eqt ((x1 : Elem X) -> x x1) f g).
+funext : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> beta x3)) -> (g : ((x2 : Elem X) -> beta x2)) -> (h : Proof (forall X (x1 => Eqt (beta x1) (f x1) (g x1)))) -> Proof (Eqt ((x : Elem X) -> beta x) f g).
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)

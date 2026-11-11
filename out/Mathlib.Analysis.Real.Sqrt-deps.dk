@@ -38,10 +38,6 @@ ContinuousWithinAt : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem 
 (; //LEAN:Eq.le ;)
 Eq__le : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Eqt X a b)) -> Proof (Leq a b).
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
 Eq__refl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
@@ -66,7 +62,7 @@ Filter : (X : Set) -> Set.
 
 (; doc: `Filter.Tendsto` is the generic "limit of a function" predicate. `Tendsto f l₁ l₂` asserts that for every `l₂` neighborhood `a`, the `f`-preimage of `a` is an `l₁` neighborhood. ;)
 (; //LEAN:Filter.Tendsto ;)
-Filter__Tendsto : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x : Elem (Filter X)) -> (x1 : Elem (Filter Y)) -> Prop.
+Filter__Tendsto : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> Prop.
 
 (; //LEAN:Filter.Tendsto.comp ;)
 Filter__Tendsto__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> Z)) -> (x : Elem (Filter X)) -> (y : Elem (Filter Y)) -> (z : Elem (Filter Z)) -> (hg : Proof (Filter__Tendsto Y Z g y z)) -> (hf : Proof (Filter__Tendsto X Y f x y)) -> Proof (Filter__Tendsto X Z (Function__comp X Y Z g f) x z).
@@ -129,7 +125,7 @@ LE__le__trans : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : El
 
 (; doc: **Alias** of `le_of_le_of_eq`. ;)
 (; //LEAN:LE.le.trans_eq ;)
-LE__le__trans_eq : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LE X)) -> (h : Proof (Leq a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Leq a c).
+LE__le__trans_eq : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LE X)) -> (h1 : Proof (Leq a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Leq a c).
 
 (; doc: **Alias** of `le_of_lt`. ;)
 (; //LEAN:LT.lt.le ;)
@@ -252,7 +248,7 @@ abs : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; //LEAN:eq_comm ;)
 eq_comm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X a b) (Eqt X b a)).

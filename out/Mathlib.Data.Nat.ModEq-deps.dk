@@ -16,10 +16,6 @@ Dvd__dvd__trans : (X : Set) -> (_ : Proof (Semigroup X)) -> (a : Elem X) -> (b :
 (; //LEAN:Eq ;)
 Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
 Eq__refl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
@@ -30,7 +26,7 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: `a % b` computes the remainder upon dividing `a` by `b`. The meaning of this notation is type-dependent. * For `Nat` and `Int` it satisfies `a % b + b * (a / b) = a`,   and `a % 0` is defined to be `a`.  Conventions for notations in identifiers:   * The recommended spelling of `%` in identifiers is `mod`. ;)
 (; //LEAN:HMod.hMod ;)
@@ -75,6 +71,12 @@ Nat__decLe : (n : Elem Nat) -> (m : Elem Nat) -> Proof (Decidable (Leq n m)).
 
 (; //LEAN:Nat.div_zero ;)
 Nat__div_zero : (n : Elem Nat) -> Proof (Eq (div n 0) 0).
+
+(; //LEAN:Nat.dvd_lcm_left ;)
+Nat__dvd_lcm_left : (m : Elem Nat) -> (n : Elem Nat) -> Proof (divide m (Nat__lcm m n)).
+
+(; //LEAN:Nat.dvd_lcm_right ;)
+Nat__dvd_lcm_right : (m : Elem Nat) -> (n : Elem Nat) -> Proof (divide n (Nat__lcm m n)).
 
 (; //LEAN:Nat.ext_div_mod ;)
 Nat__ext_div_mod : (n : Elem Nat) -> (a : Elem Nat) -> (b : Elem Nat) -> (h0 : Proof (Eq (div a n) (div b n))) -> (h1 : Proof (Eq (HMod__hMod Nat Nat Nat a n) (HMod__hMod Nat Nat Nat b n))) -> Proof (Eq a b).
@@ -125,11 +127,11 @@ add_zero : (M : Set) -> (_ : Proof (AddZeroClass M)) -> (a : Elem M) -> Proof (E
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:dite ;)

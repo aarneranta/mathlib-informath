@@ -26,10 +26,10 @@ ContinuousAt__continuousWithinAt : (X : Set) -> (Y : Set) -> (_ : Proof (Topolog
 
 (; doc: Continuous linear maps between modules. We only put the type classes that are necessary for the definition, although in applications `M` and `M₂` will be topological modules over the topological ring `R`. ;)
 (; //LEAN:ContinuousLinearMap ;)
-ContinuousLinearMap : (R : Set) -> (S : Set) -> (x2 : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> Set.
+ContinuousLinearMap : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> Set.
 
 (; //LEAN:ContinuousLinearMap.continuous ;)
-ContinuousLinearMap__continuous : (X : Set) -> (X1 : Set) -> (_ : Proof (Semiring X)) -> (_ : Proof (Semiring X1)) -> (x2 : Elem (RingHom X X1)) -> (X2 : Set) -> (_ : Proof (TopologicalSpace X2)) -> (_ : Proof (AddCommMonoid X2)) -> (X3 : Set) -> (_ : Proof (TopologicalSpace X3)) -> (_ : Proof (AddCommMonoid X3)) -> (_ : Proof (Module X X2)) -> (_ : Proof (Module X1 X3)) -> (f : Elem (ContinuousLinearMap X X1 x2 X2 X3)) -> Proof (Continuous X2 X3 f).
+ContinuousLinearMap__continuous : (X : Set) -> (X1 : Set) -> (_ : Proof (Semiring X)) -> (_ : Proof (Semiring X1)) -> (sigma12 : Elem (RingHom X X1)) -> (X2 : Set) -> (_ : Proof (TopologicalSpace X2)) -> (_ : Proof (AddCommMonoid X2)) -> (X3 : Set) -> (_ : Proof (TopologicalSpace X3)) -> (_ : Proof (AddCommMonoid X3)) -> (_ : Proof (Module X X2)) -> (_ : Proof (Module X1 X3)) -> (f : Elem (ContinuousLinearMap X X1 sigma12 X2 X3)) -> Proof (Continuous X2 X3 f).
 
 (; //LEAN:ContinuousLinearMap.ext_ring ;)
 ContinuousLinearMap__ext_ring : (X : Set) -> (_ : Proof (Semiring X)) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X1)) -> (_ : Proof (AddCommMonoid X1)) -> (_ : Proof (Module X X1)) -> (_ : Proof (TopologicalSpace X)) -> (f : Elem (ContinuousLinearMap X X (RingHom__id X) X X1)) -> (g : Elem (ContinuousLinearMap X X (RingHom__id X) X X1)) -> (h : Proof (Eqt X1 (f 1) (g 1))) -> Proof (Eqt (ContinuousLinearMap X X (RingHom__id X) X X1) f g).
@@ -87,21 +87,13 @@ DifferentiableWithinAt__hasDerivWithinAt : (X : Set) -> (_ : Proof (Nontrivially
 (; //LEAN:DifferentiableWithinAt.hasFDerivWithinAt ;)
 DifferentiableWithinAt__hasFDerivWithinAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> F)) -> (x7 : Elem E) -> (s : Elem (powerset E)) -> (h : Proof (DifferentiableWithinAt X E F f s x7)) -> Proof (HasFDerivWithinAt X E F f (fderivWithin X E F f s x7) s x7).
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
-(; //LEAN:Eq.mp ;)
-Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
-
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
 Eq__refl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; //LEAN:Exists.imp ;)
 Exists__imp : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h : Proof (forall X (a2 => if (p a2) (q a2)))) -> (h1 : Proof (exists X (a1 => p a1))) -> Proof (exists X (a => q a)).
@@ -250,7 +242,7 @@ RingHom__id : (X : Set) -> Elem (RingHom X X).
 
 (; doc: Two functions `f₁ f₂ : α → β` are equal on `s` if `f₁ x = f₂ x` for all `x ∈ s`. ;)
 (; //LEAN:Set.EqOn ;)
-Set__EqOn : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+Set__EqOn : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: `Icc a b` is the left-closed right-closed interval $[a, b]$. ;)
 (; //LEAN:Set.Icc ;)
@@ -297,7 +289,7 @@ UniqueDiffWithinAt : (R : Set) -> (E : Set) -> (s : Elem (powerset E)) -> (x4 : 
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)

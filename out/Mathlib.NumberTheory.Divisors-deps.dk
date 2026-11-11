@@ -53,7 +53,7 @@ Finset__Icc : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
 Finset__Ico : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
 
 (; //LEAN:Finset.Ico_subset_Ico_right ;)
-Finset__Ico_subset_Ico_right : (X : Set) -> (a : Elem X) -> (x : Elem X) -> (x1 : Elem X) -> (_ : Proof (Preorder X)) -> (_ : Proof (LocallyFiniteOrder X)) -> (h : Proof (Leq x x1)) -> Proof (Set__Subset X (Finset__Ico X a x) (Finset__Ico X a x1)).
+Finset__Ico_subset_Ico_right : (X : Set) -> (a : Elem X) -> (b1 : Elem X) -> (b2 : Elem X) -> (_ : Proof (Preorder X)) -> (_ : Proof (LocallyFiniteOrder X)) -> (h : Proof (Leq b1 b2)) -> Proof (Set__Subset X (Finset__Ico X a b1) (Finset__Ico X a b2)).
 
 (; doc: The finset $(a, b]$ of elements `x` such that `a < x` and `x ≤ b`. Basically `Set.Ioc a b` as a finset. ;)
 (; //LEAN:Finset.Ioc ;)
@@ -107,7 +107,7 @@ Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -
 Finset__range : (n : Elem Nat) -> Elem (Finset Nat).
 
 (; //LEAN:Finset.subset_iff ;)
-Finset__subset_iff : (X : Set) -> (x : Elem (Finset X)) -> (x1 : Elem (Finset X)) -> Proof (iff (Set__Subset X x x1) (forall X (x2 => if (Membership__mem X (Finset X) x x2) (Membership__mem X (Finset X) x1 x2)))).
+Finset__subset_iff : (X : Set) -> (s1 : Elem (Finset X)) -> (s2 : Elem (Finset X)) -> Proof (iff (Set__Subset X s1 s2) (forall X (x => if (Membership__mem X (Finset X) s1 x) (Membership__mem X (Finset X) s2 x)))).
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
@@ -126,7 +126,7 @@ Function__Embedding__mk : (X : Set) -> (Y : Set) -> (toFun : (Elem X -> Y)) -> (
 
 (; doc: If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. ;)
 (; //LEAN:Function.Embedding.prodMap ;)
-Function__Embedding__prodMap : (X : Set) -> (Y : Set) -> (Z : Set) -> (W : Set) -> (x : Elem (Function__Embedding X Y)) -> (x1 : Elem (Function__Embedding Z W)) -> Elem (Function__Embedding (Prod X Z) (Prod Y W)).
+Function__Embedding__prodMap : (X : Set) -> (Y : Set) -> (Z : Set) -> (W : Set) -> (e1 : Elem (Function__Embedding X Y)) -> (e2 : Elem (Function__Embedding Z W)) -> Elem (Function__Embedding (Prod X Z) (Prod Y W)).
 
 (; doc: The identity map as a `Function.Embedding`. ;)
 (; //LEAN:Function.Embedding.refl ;)
@@ -261,7 +261,7 @@ Nat__cast : (R : Set) -> (x1 : Elem Nat) -> Elem R.
 Nat__castEmbedding : (R : Set) -> Elem (Function__Embedding Nat R).
 
 (; //LEAN:Nat.divisorsAntidiagonal._proof_1 ;)
-Nat__divisorsAntidiagonal___proof_1 : (n : Elem Nat) -> (x : Elem Nat) -> (x1 : Elem Nat) -> (x2 : Elem (Prod Nat Nat)) -> (h : Proof (Membership__mem (Prod Nat Nat) (Option (Prod Nat Nat)) (ite (Option (Prod Nat Nat)) (Eq (times x (div n x)) n) (Option__some (Prod Nat Nat) (Prod__mk Nat Nat x (div n x))) (Option__none (Prod Nat Nat))) x2)) -> (h1 : Proof (Membership__mem (Prod Nat Nat) (Option (Prod Nat Nat)) (ite (Option (Prod Nat Nat)) (Eq (times x1 (div n x1)) n) (Option__some (Prod Nat Nat) (Prod__mk Nat Nat x1 (div n x1))) (Option__none (Prod Nat Nat))) x2)) -> Proof (Eq x x1).
+Nat__divisorsAntidiagonal___proof_1 : (n : Elem Nat) -> (x1 : Elem Nat) -> (x2 : Elem Nat) -> (x : Elem (Prod Nat Nat)) -> (hx1 : Proof (Membership__mem (Prod Nat Nat) (Option (Prod Nat Nat)) (ite (Option (Prod Nat Nat)) (Eq (times x1 (div n x1)) n) (Option__some (Prod Nat Nat) (Prod__mk Nat Nat x1 (div n x1))) (Option__none (Prod Nat Nat))) x)) -> (hx2 : Proof (Membership__mem (Prod Nat Nat) (Option (Prod Nat Nat)) (ite (Option (Prod Nat Nat)) (Eq (times x2 (div n x2)) n) (Option__some (Prod Nat Nat) (Prod__mk Nat Nat x2 (div n x2))) (Option__none (Prod Nat Nat))) x)) -> Proof (Eq x1 x2).
 
 (; //LEAN:Nat.le_succ ;)
 Nat__le_succ : (n : Elem Nat) -> Proof (Leq n (succ n)).
@@ -319,7 +319,7 @@ SProd__sprod : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; doc: `singleton x` is a collection with the single element `x` (notation: `{x}`).  Conventions for notations in identifiers:   * The recommended spelling of `{x}` in identifiers is `singleton`. ;)
 (; //LEAN:Singleton.singleton ;)
@@ -330,7 +330,7 @@ and_iff_left : (b : Prop) -> (a : Prop) -> (hb : Proof b) -> Proof (iff (and a b
 
 (; doc: **Alias** of `congrArg`. ;)
 (; //LEAN:congr_arg ;)
-congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; //LEAN:dvd_rfl ;)
 dvd_rfl : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) -> Proof (divide a a).

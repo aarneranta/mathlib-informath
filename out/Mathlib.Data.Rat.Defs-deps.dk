@@ -12,17 +12,9 @@ Bool__true : Elem Bool.
 (; //LEAN:Eq ;)
 Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
-(; //LEAN:Eq.mp ;)
-Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
-
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
@@ -97,10 +89,10 @@ Rat__den_pos : (self : Elem Rat) -> Proof (Lt 0 (Rat__den self)).
 Rat__divInt : (x : Elem Int) -> (x1 : Elem Int) -> Elem Rat.
 
 (; //LEAN:Rat.divInt_add_divInt ;)
-Rat__divInt_add_divInt : (x : Elem Int) -> (x1 : Elem Int) -> (x2 : Elem Int) -> (x3 : Elem Int) -> (h : Proof (Neq x2 0)) -> (h1 : Proof (Neq x3 0)) -> Proof (Eq (plus (Rat__divInt x x2) (Rat__divInt x1 x3)) (Rat__divInt (plus (times x x3) (times x1 x2)) (times x2 x3))).
+Rat__divInt_add_divInt : (n1 : Elem Int) -> (n2 : Elem Int) -> (d1 : Elem Int) -> (d2 : Elem Int) -> (z1 : Proof (Neq d1 0)) -> (z2 : Proof (Neq d2 0)) -> Proof (Eq (plus (Rat__divInt n1 d1) (Rat__divInt n2 d2)) (Rat__divInt (plus (times n1 d2) (times n2 d1)) (times d1 d2))).
 
 (; //LEAN:Rat.divInt_eq_divInt_iff ;)
-Rat__divInt_eq_divInt_iff : (x : Elem Int) -> (x1 : Elem Int) -> (x2 : Elem Int) -> (x3 : Elem Int) -> (h : Proof (Neq x 0)) -> (h1 : Proof (Neq x1 0)) -> Proof (iff (Eq (Rat__divInt x2 x) (Rat__divInt x3 x1)) (Eq (times x2 x1) (times x3 x))).
+Rat__divInt_eq_divInt_iff : (d1 : Elem Int) -> (d2 : Elem Int) -> (n1 : Elem Int) -> (n2 : Elem Int) -> (z1 : Proof (Neq d1 0)) -> (z2 : Proof (Neq d2 0)) -> Proof (iff (Eq (Rat__divInt n1 d1) (Rat__divInt n2 d2)) (Eq (times n1 d2) (times n2 d1))).
 
 (; //LEAN:Rat.divInt_neg' ;)
 Rat__divInt_neg' : (num : Elem Int) -> (den : Elem Int) -> Proof (Eq (Rat__divInt num (Neg__neg Int den)) (Rat__divInt (Neg__neg Int num) den)).
@@ -120,7 +112,7 @@ Rat__isInt : (a : Elem Rat) -> Elem Bool.
 Rat__mk' : (num : Elem Int) -> (den : Elem Nat) -> (den_nz : Proof (autoParam (Neq den 0) Rat__den_nz___autoParam)) -> (reduced : Proof (autoParam (Nat__Coprime (Int__natAbs num) den) Rat__reduced___autoParam)) -> Elem Rat.
 
 (; //LEAN:Rat.mk'_mul_mk'._proof_1 ;)
-Rat__mk'_mul_mk'___proof_1 : (x : Elem Int) -> (x1 : Elem Int) -> (x2 : Elem Nat) -> (x3 : Elem Nat) -> (h : Proof (Nat__Coprime (Int__natAbs x) x2)) -> (h1 : Proof (Nat__Coprime (Int__natAbs x1) x3)) -> (h2 : Proof (Nat__Coprime (Int__natAbs x) x3)) -> (h3 : Proof (Nat__Coprime (Int__natAbs x1) x2)) -> Proof (Nat__Coprime (Int__natAbs (times x x1)) (times x2 x3)).
+Rat__mk'_mul_mk'___proof_1 : (n1 : Elem Int) -> (n2 : Elem Int) -> (d1 : Elem Nat) -> (d2 : Elem Nat) -> (hnd1 : Proof (Nat__Coprime (Int__natAbs n1) d1)) -> (hnd2 : Proof (Nat__Coprime (Int__natAbs n2) d2)) -> (h12 : Proof (Nat__Coprime (Int__natAbs n1) d2)) -> (h21 : Proof (Nat__Coprime (Int__natAbs n2) d1)) -> Proof (Nat__Coprime (Int__natAbs (times n1 n2)) (times d1 d2)).
 
 (; //LEAN:Rat.mk'_pow._proof_2 ;)
 Rat__mk'_pow___proof_2 : (den : Elem Nat) -> (hd : Proof (Neq den 0)) -> (n : Elem Nat) -> Proof (Neq (pow den n) 0).
@@ -167,11 +159,11 @@ add_zero : (M : Set) -> (_ : Proof (AddZeroClass M)) -> (a : Elem M) -> Proof (E
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
@@ -179,7 +171,7 @@ congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y))
 
 (; doc: **Alias** of `congrArg`. ;)
 (; //LEAN:congr_arg ;)
-congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:dite ;)

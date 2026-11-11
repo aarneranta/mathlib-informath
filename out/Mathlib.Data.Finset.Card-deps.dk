@@ -28,10 +28,6 @@ Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 (; //LEAN:Eq.ge ;)
 Eq__ge : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Eqt X a b)) -> Proof (Leq b a).
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
 Eq__refl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
@@ -46,7 +42,7 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. ;)
 (; //LEAN:Equiv ;)
@@ -74,7 +70,7 @@ Finset__Nonempty : (X : Set) -> (s : Elem (Finset X)) -> Prop.
 
 (; doc: Suppose that, given objects defined on all nonempty strict subsets of any nontrivial finset `s`, one knows how to define an object on `s`. Then one can inductively define an object on all finsets, starting from singletons and iterating.  TODO: Currently this can only be used to prove properties. Replace `Finset.Nonempty.exists_eq_singleton_or_nontrivial` with computational content in order to let `p` be `Sort`-valued. ;)
 (; //LEAN:Finset.Nonempty.strong_induction._unary ;)
-Finset__Nonempty__strong_induction___unary : (X : Set) -> (p : ((s2 : Elem (Finset X)) -> Proof (Finset__Nonempty X s2) -> Prop)) -> (h : Proof (forall X (a => p (Singleton__singleton X (Finset X) a) (Finset__singleton_nonempty X a)))) -> (h1 : Proof (forall (Finset X) (s1 => forall (Proof (Finset__Nontrivial X s1)) (hs => if (forall (Finset X) (t => forall (Proof (Finset__Nonempty X t)) (ht => if (HasSSubset__SSubset (Finset X) t s1) (p t ht)))) (p s1 (Finset__Nontrivial__nonempty X s1 hs)))))) -> (_x : Elem (PSigma (Finset X) (s => Finset__Nonempty X s))) -> Proof (p (PSigma__proj0 _x) (PSigma__proj1 _x)).
+Finset__Nonempty__strong_induction___unary : (X : Set) -> (p : ((s2 : Elem (Finset X)) -> Proof (Finset__Nonempty X s2) -> Prop)) -> (h0 : Proof (forall X (a => p (Singleton__singleton X (Finset X) a) (Finset__singleton_nonempty X a)))) -> (h1 : Proof (forall (Finset X) (s1 => forall (Proof (Finset__Nontrivial X s1)) (hs => if (forall (Finset X) (t => forall (Proof (Finset__Nonempty X t)) (ht => if (HasSSubset__SSubset (Finset X) t s1) (p t ht)))) (p s1 (Finset__Nontrivial__nonempty X s1 hs)))))) -> (_x : Elem (PSigma (Finset X) (s => Finset__Nonempty X s))) -> Proof (p (PSigma__proj0 _x) (PSigma__proj1 _x)).
 
 (; doc: A finset is nontrivial if it has at least two elements. ;)
 (; //LEAN:Finset.Nontrivial ;)
@@ -175,13 +171,13 @@ Finset__val : (X : Set) -> (self : Elem (Finset X)) -> Elem (Multiset X).
 Finset__val_eq_zero : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Eqt (Multiset X) (Finset__val X s) 0) (Eqt (Finset X) s (EmptyCollection__emptyCollection (Finset X)))).
 
 (; //LEAN:Finset.val_le_iff ;)
-Finset__val_le_iff : (X : Set) -> (x : Elem (Finset X)) -> (x1 : Elem (Finset X)) -> Proof (iff (Leq (Finset__val X x) (Finset__val X x1)) (Set__Subset X x x1)).
+Finset__val_le_iff : (X : Set) -> (s1 : Elem (Finset X)) -> (s2 : Elem (Finset X)) -> Proof (iff (Leq (Finset__val X s1) (Finset__val X s2)) (Set__Subset X s1 s2)).
 
 (; //LEAN:Finset.val_le_iff._simp_1 ;)
-Finset__val_le_iff___simp_1 : (X : Set) -> (x : Elem (Finset X)) -> (x1 : Elem (Finset X)) -> Proof (Eqt Prop (Leq (Finset__val X x) (Finset__val X x1)) (Set__Subset X x x1)).
+Finset__val_le_iff___simp_1 : (X : Set) -> (s1 : Elem (Finset X)) -> (s2 : Elem (Finset X)) -> Proof (Eqt Prop (Leq (Finset__val X s1) (Finset__val X s2)) (Set__Subset X s1 s2)).
 
 (; //LEAN:Finset.val_lt_iff ;)
-Finset__val_lt_iff : (X : Set) -> (x : Elem (Finset X)) -> (x1 : Elem (Finset X)) -> Proof (iff (Lt (Finset__val X x) (Finset__val X x1)) (HasSSubset__SSubset (Finset X) x x1)).
+Finset__val_lt_iff : (X : Set) -> (s1 : Elem (Finset X)) -> (s2 : Elem (Finset X)) -> Proof (iff (Lt (Finset__val X s1) (Finset__val X s2)) (HasSSubset__SSubset (Finset X) s1 s2)).
 
 (; doc: A function is called bijective if it is both injective and surjective. ;)
 (; //LEAN:Function.Bijective ;)
@@ -214,7 +210,7 @@ Iff__ne : (X : Set) -> (Y : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem Y)
 Iff__symm : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff b a).
 
 (; //LEAN:Iff.trans ;)
-Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h1 : Proof (iff a b)) -> (h2 : Proof (iff b c)) -> Proof (iff a c).
 
 (; doc: `insert x xs` inserts the element `x` into the collection `xs`. ;)
 (; //LEAN:Insert.insert ;)
@@ -378,7 +374,7 @@ Nat__succ_le_succ : (n : Elem Nat) -> (m : Elem Nat) -> (h : Proof (Leq n m)) ->
 
 (; doc: Constructs a fully universe-polymorphic dependent pair. ;)
 (; //LEAN:PSigma.mk ;)
-PSigma__mk : (X : Set) -> (x : (Elem X -> Set)) -> (fst : Elem X) -> (snd : Elem (x fst)) -> Elem (PSigma X x).
+PSigma__mk : (X : Set) -> (beta : (Elem X -> Set)) -> (fst : Elem X) -> (snd : Elem (beta fst)) -> Elem (PSigma X beta).
 
 (; doc: Places an element of a type into the quotient that equates terms according to an equivalence relation.  The setoid instance is provided explicitly. `Quotient.mk'` uses instance synthesis instead.  Given `v : α`, `Quotient.mk s v : Quotient s` is like `v`, except all observations of `v`'s value must respect `s.r`. `Quotient.lift` allows values in a quotient to be mapped to other types, so long as the mapping respects `s.r`. ;)
 (; //LEAN:Quotient.mk ;)
@@ -427,7 +423,7 @@ Set__RightInvOn : (X : Set) -> (Y : Set) -> (g : (Elem Y -> X)) -> (f : (Elem X 
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; doc: A set `s` is a `Subsingleton` if it has at most one element. ;)
 (; //LEAN:Set.Subsingleton ;)
@@ -460,7 +456,7 @@ Singleton__singleton : (X : Set) -> (Y : Set) -> (x : Elem X) -> Elem Y.
 StrictMono : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Subrelation.wf ;)
-Subrelation__wf : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (q : (Elem X -> Elem X -> Prop)) -> (h : Proof (Subrelation X q r)) -> (h1 : Proof (WellFounded X r)) -> Proof (WellFounded X q).
+Subrelation__wf : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (q : (Elem X -> Elem X -> Prop)) -> (h1 : Proof (Subrelation X q r)) -> (h2 : Proof (WellFounded X r)) -> Proof (WellFounded X q).
 
 (; doc: A _subsingleton_ is a type with at most one element. It is either empty or has a unique element.  All propositions are subsingletons because of proof irrelevance: false propositions are empty, and all proofs of a true proposition are equal to one another. Some non-propositional types are also subsingletons. ;)
 (; //LEAN:Subsingleton ;)
@@ -500,7 +496,7 @@ WellFoundedRelation__wf : (X : Set) -> (_ : Proof (WellFoundedRelation X)) -> Pr
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
@@ -508,7 +504,7 @@ congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y))
 
 (; doc: **Alias** of `congrArg`. ;)
 (; //LEAN:congr_arg ;)
-congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; //LEAN:eq_comm ;)
 eq_comm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X a b) (Eqt X b a)).
@@ -524,7 +520,7 @@ forall_congr : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> 
 
 (; doc: **Function extensionality.** If two functions return equal results for all possible arguments, then they are equal.  It is called “extensionality” because it provides a way to prove two objects equal based on the properties of the underlying mathematical functions, rather than based on the syntax used to denote them. Function extensionality is a theorem that can be [proved using quotient types](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=quotient-funext). ;)
 (; //LEAN:funext ;)
-funext : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> (g : ((x3 : Elem X) -> x x3)) -> (h : Proof (forall X (x2 => Eqt (x x2) (f x2) (g x2)))) -> Proof (Eqt ((x1 : Elem X) -> x x1) f g).
+funext : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> beta x3)) -> (g : ((x2 : Elem X) -> beta x2)) -> (h : Proof (forall X (x1 => Eqt (beta x1) (f x1) (g x1)))) -> Proof (Eqt ((x : Elem X) -> beta x) f g).
 
 (; //LEAN:ge_of_eq ;)
 ge_of_eq : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Eqt X a b)) -> Proof (Leq b a).
@@ -534,7 +530,7 @@ ge_of_eq : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X)
 id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:implies_congr ;)
-implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h : Proof (Eqt Set X X1)) -> (h1 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> X2) (Elem X1 -> X3)).
+implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h1 : Proof (Eqt Set X X1)) -> (h2 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> X2) (Elem X1 -> X3)).
 
 (; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:ite ;)
@@ -544,7 +540,7 @@ ite : (X : Set) -> (c : Prop) -> (t : Elem X) -> (e : Elem X) -> Elem X.
 lt_of_le_of_lt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (hab : Proof (Leq a b)) -> (hbc : Proof (Lt b c)) -> Proof (Lt a c).
 
 (; //LEAN:mt ;)
-mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
+mt : (a : Prop) -> (b : Prop) -> (h1 : Proof (if a b)) -> (h2 : Proof (not b)) -> Proof (not a).
 
 (; //LEAN:not_congr ;)
 not_congr : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff (not a) (not b)).

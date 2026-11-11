@@ -97,7 +97,7 @@ AddHom__copy___proof_1 : (M : Set) -> (N : Set) -> (f : Elem (AddHom M N)) -> (f
 AddHom__id___proof_1 : (M : Set) -> (x1 : Elem M) -> (x2 : Elem M) -> Proof (Eqt M (plus x1 x2) (plus x1 x2)).
 
 (; //LEAN:AddHom.inverse._proof_3 ;)
-AddHom__inverse___proof_3 : (M : Set) -> (N : Set) -> (f : Elem (AddHom M N)) -> (g : (Elem N -> M)) -> (h : Proof (Function__LeftInverse M N g f)) -> (h1 : Proof (Function__RightInverse M N g f)) -> (x2 : Elem N) -> (y : Elem N) -> Proof (Eqt M (g (plus x2 y)) (plus (g x2) (g y))).
+AddHom__inverse___proof_3 : (M : Set) -> (N : Set) -> (f : Elem (AddHom M N)) -> (g : (Elem N -> M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> (h2 : Proof (Function__RightInverse M N g f)) -> (x2 : Elem N) -> (y : Elem N) -> Proof (Eqt M (g (plus x2 y)) (plus (g x2) (g y))).
 
 (; doc: An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. ;)
 (; //LEAN:AddMonoid ;)
@@ -119,10 +119,10 @@ AddMonoidHom__id___proof_1 : (M : Set) -> (_ : Proof (AddZero M)) -> Proof (Eqt 
 AddMonoidHom__id___proof_2 : (M : Set) -> (_ : Proof (AddZero M)) -> (x1 : Elem M) -> (x2 : Elem M) -> Proof (Eqt M (plus x1 x2) (plus x1 x2)).
 
 (; //LEAN:AddMonoidHom.inverse._proof_3 ;)
-AddMonoidHom__inverse___proof_3 : (A : Set) -> (B : Set) -> (_ : Proof (AddMonoid A)) -> (_ : Proof (AddMonoid B)) -> (f : Elem (AddMonoidHom A B)) -> (g : (Elem B -> A)) -> (h : Proof (Function__LeftInverse A B g f)) -> Proof (Eqt A (ZeroHom__toFun B A (ZeroHom__inverse A B (ZeroHomClass__toZeroHom A B (AddMonoidHom A B) f) g h) 0) 0).
+AddMonoidHom__inverse___proof_3 : (A : Set) -> (B : Set) -> (_ : Proof (AddMonoid A)) -> (_ : Proof (AddMonoid B)) -> (f : Elem (AddMonoidHom A B)) -> (g : (Elem B -> A)) -> (h1 : Proof (Function__LeftInverse A B g f)) -> Proof (Eqt A (ZeroHom__toFun B A (ZeroHom__inverse A B (ZeroHomClass__toZeroHom A B (AddMonoidHom A B) f) g h1) 0) 0).
 
 (; //LEAN:AddMonoidHom.inverse._proof_4 ;)
-AddMonoidHom__inverse___proof_4 : (A : Set) -> (B : Set) -> (_ : Proof (AddMonoid A)) -> (_ : Proof (AddMonoid B)) -> (f : Elem (AddMonoidHom A B)) -> (g : (Elem B -> A)) -> (h : Proof (Function__LeftInverse A B g f)) -> (h1 : Proof (Function__RightInverse A B g f)) -> (x2 : Elem B) -> (y : Elem B) -> Proof (Eqt A (AddHom__toFun B A (AddHom__inverse A B (AddHomClass__toAddHom A B (AddMonoidHom A B) f) g h h1) (plus x2 y)) (plus (AddHom__toFun B A (AddHom__inverse A B (AddHomClass__toAddHom A B (AddMonoidHom A B) f) g h h1) x2) (AddHom__toFun B A (AddHom__inverse A B (AddHomClass__toAddHom A B (AddMonoidHom A B) f) g h h1) y))).
+AddMonoidHom__inverse___proof_4 : (A : Set) -> (B : Set) -> (_ : Proof (AddMonoid A)) -> (_ : Proof (AddMonoid B)) -> (f : Elem (AddMonoidHom A B)) -> (g : (Elem B -> A)) -> (h1 : Proof (Function__LeftInverse A B g f)) -> (h2 : Proof (Function__RightInverse A B g f)) -> (x2 : Elem B) -> (y : Elem B) -> Proof (Eqt A (AddHom__toFun B A (AddHom__inverse A B (AddHomClass__toAddHom A B (AddMonoidHom A B) f) g h1 h2) (plus x2 y)) (plus (AddHom__toFun B A (AddHom__inverse A B (AddHomClass__toAddHom A B (AddMonoidHom A B) f) g h1 h2) x2) (AddHom__toFun B A (AddHom__inverse A B (AddHomClass__toAddHom A B (AddMonoidHom A B) f) g h1 h2) y))).
 
 (; //LEAN:AddMonoidHom.mk'._proof_1 ;)
 AddMonoidHom__mk'___proof_1 : (M : Set) -> (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (AddZeroClass M)) -> (f : (Elem M -> G)) -> (map_add : Proof (forall M (a => forall M (b => Eqt G (f (plus a b)) (plus (f a) (f b)))))) -> Proof (Eqt G (f 0) 0).
@@ -147,17 +147,17 @@ Batteries__Util__LibraryNote : Set.
 
 (; doc: The coercion from `F` to a function. ;)
 (; //LEAN:DFunLike.coe ;)
-DFunLike__coe : (F : Set) -> (X : Set) -> (x : (Elem X -> Set)) -> (x1 : Elem F) -> (a : Elem X) -> Elem (x a).
+DFunLike__coe : (F : Set) -> (X : Set) -> (beta : (Elem X -> Set)) -> (x : Elem F) -> (a : Elem X) -> Elem (beta a).
 
 (; doc: The coercion to functions must be injective. ;)
 (; //LEAN:DFunLike.coe_injective ;)
-DFunLike__coe_injective : (F : Set) -> (X : Set) -> (x : (Elem X -> Set)) -> Proof (Function__Injective F ((a : Elem X) -> x a) (DFunLike__coe F X x)).
+DFunLike__coe_injective : (F : Set) -> (X : Set) -> (beta : (Elem X -> Set)) -> Proof (Function__Injective F ((a : Elem X) -> beta a) (DFunLike__coe F X beta)).
 
 (; //LEAN:DFunLike.ext ;)
-DFunLike__ext : (F : Set) -> (X : Set) -> (x : (Elem X -> Set)) -> (f : Elem F) -> (g : Elem F) -> (h : Proof (forall X (x1 => Eqt (x x1) (f x1) (g x1)))) -> Proof (Eqt F f g).
+DFunLike__ext : (F : Set) -> (X : Set) -> (beta : (Elem X -> Set)) -> (f : Elem F) -> (g : Elem F) -> (h : Proof (forall X (x => Eqt (beta x) (f x) (g x)))) -> Proof (Eqt F f g).
 
 (; //LEAN:DFunLike.ext' ;)
-DFunLike__ext' : (F : Set) -> (X : Set) -> (x : (Elem X -> Set)) -> (f : Elem F) -> (g : Elem F) -> (h : Proof (Eqt ((a : Elem X) -> x a) f g)) -> Proof (Eqt F f g).
+DFunLike__ext' : (F : Set) -> (X : Set) -> (beta : (Elem X -> Set)) -> (f : Elem F) -> (g : Elem F) -> (h : Proof (Eqt ((a : Elem X) -> beta a) f g)) -> Proof (Eqt F f g).
 
 (; doc: A `DivInvMonoid` is a `Monoid` with operations `/` and `⁻¹` satisfying `div_eq_mul_inv : ∀ a b, a / b = a * b⁻¹`.  This deduplicates the name `div_eq_mul_inv`. The default for `div` is such that `a / b = a * b⁻¹` holds by definition.  Adding `div` as a field rather than defining `a / b := a * b⁻¹` allows us to avoid certain classes of unification failures, for example: Let `Foo X` be a type with a `∀ X, Div (Foo X)` instance but no `∀ X, Inv (Foo X)`, e.g. when `Foo X` is a `EuclideanDomain`. Suppose we also have an instance `∀ X [Cromulent X], GroupWithZero (Foo X)`. Then the `(/)` coming from `GroupWithZero.div` cannot be definitionally equal to the `(/)` coming from `Foo.Div`.  In the same way, adding a `zpow` field makes it possible to avoid definitional failures in diamonds. See the definition of `Monoid` and Note [forgetful inheritance] for more explanations on this. ;)
 (; //LEAN:DivInvMonoid ;)
@@ -171,17 +171,9 @@ DivisionMonoid : (G : Set) -> Prop.
 (; //LEAN:Eq ;)
 Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
-(; //LEAN:Eq.mp ;)
-Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
-
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: The class `FunLike F α β` (`Fun`ction-`Like`) expresses that terms of type `F` have an injective coercion to functions from `α` to `β`. `FunLike` is the non-dependent version of `DFunLike`. This typeclass is used in the definition of the homomorphism typeclasses, such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, .... ;)
 (; //LEAN:FunLike ;)
@@ -319,10 +311,10 @@ MonoidHom__id___proof_1 : (M : Set) -> (_ : Proof (MulOne M)) -> Proof (Eqt M 1 
 MonoidHom__id___proof_2 : (M : Set) -> (_ : Proof (MulOne M)) -> (x1 : Elem M) -> (x2 : Elem M) -> Proof (Eqt M (times x1 x2) (times x1 x2)).
 
 (; //LEAN:MonoidHom.inverse._proof_3 ;)
-MonoidHom__inverse___proof_3 : (A : Set) -> (B : Set) -> (_ : Proof (Monoid A)) -> (_ : Proof (Monoid B)) -> (f : Elem (MonoidHom A B)) -> (g : (Elem B -> A)) -> (h : Proof (Function__LeftInverse A B g f)) -> Proof (Eqt A (OneHom__toFun B A (OneHom__inverse A B (OneHomClass__toOneHom A B (MonoidHom A B) f) g h) 1) 1).
+MonoidHom__inverse___proof_3 : (A : Set) -> (B : Set) -> (_ : Proof (Monoid A)) -> (_ : Proof (Monoid B)) -> (f : Elem (MonoidHom A B)) -> (g : (Elem B -> A)) -> (h1 : Proof (Function__LeftInverse A B g f)) -> Proof (Eqt A (OneHom__toFun B A (OneHom__inverse A B (OneHomClass__toOneHom A B (MonoidHom A B) f) g h1) 1) 1).
 
 (; //LEAN:MonoidHom.inverse._proof_4 ;)
-MonoidHom__inverse___proof_4 : (A : Set) -> (B : Set) -> (_ : Proof (Monoid A)) -> (_ : Proof (Monoid B)) -> (f : Elem (MonoidHom A B)) -> (g : (Elem B -> A)) -> (h : Proof (Function__LeftInverse A B g f)) -> (h1 : Proof (Function__RightInverse A B g f)) -> (x2 : Elem B) -> (y : Elem B) -> Proof (Eqt A (MulHom__toFun B A (MulHom__inverse A B (MulHomClass__toMulHom A B (MonoidHom A B) f) g h h1) (times x2 y)) (times (MulHom__toFun B A (MulHom__inverse A B (MulHomClass__toMulHom A B (MonoidHom A B) f) g h h1) x2) (MulHom__toFun B A (MulHom__inverse A B (MulHomClass__toMulHom A B (MonoidHom A B) f) g h h1) y))).
+MonoidHom__inverse___proof_4 : (A : Set) -> (B : Set) -> (_ : Proof (Monoid A)) -> (_ : Proof (Monoid B)) -> (f : Elem (MonoidHom A B)) -> (g : (Elem B -> A)) -> (h1 : Proof (Function__LeftInverse A B g f)) -> (h2 : Proof (Function__RightInverse A B g f)) -> (x2 : Elem B) -> (y : Elem B) -> Proof (Eqt A (MulHom__toFun B A (MulHom__inverse A B (MulHomClass__toMulHom A B (MonoidHom A B) f) g h1 h2) (times x2 y)) (times (MulHom__toFun B A (MulHom__inverse A B (MulHomClass__toMulHom A B (MonoidHom A B) f) g h1 h2) x2) (MulHom__toFun B A (MulHom__inverse A B (MulHomClass__toMulHom A B (MonoidHom A B) f) g h1 h2) y))).
 
 (; //LEAN:MonoidHom.mk'._proof_1 ;)
 MonoidHom__mk'___proof_1 : (M : Set) -> (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (MulOneClass M)) -> (f : (Elem M -> G)) -> (map_mul : Proof (forall M (a => forall M (b => Eqt G (f (times a b)) (times (f a) (f b)))))) -> Proof (Eqt G (f 1) 1).
@@ -347,7 +339,7 @@ MulHom__copy___proof_1 : (M : Set) -> (N : Set) -> (f : Elem (MulHom M N)) -> (f
 MulHom__id___proof_1 : (M : Set) -> (x1 : Elem M) -> (x2 : Elem M) -> Proof (Eqt M (times x1 x2) (times x1 x2)).
 
 (; //LEAN:MulHom.inverse._proof_3 ;)
-MulHom__inverse___proof_3 : (M : Set) -> (N : Set) -> (f : Elem (MulHom M N)) -> (g : (Elem N -> M)) -> (h : Proof (Function__LeftInverse M N g f)) -> (h1 : Proof (Function__RightInverse M N g f)) -> (x2 : Elem N) -> (y : Elem N) -> Proof (Eqt M (g (times x2 y)) (times (g x2) (g y))).
+MulHom__inverse___proof_3 : (M : Set) -> (N : Set) -> (f : Elem (MulHom M N)) -> (g : (Elem N -> M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> (h2 : Proof (Function__RightInverse M N g f)) -> (x2 : Elem N) -> (y : Elem N) -> Proof (Eqt M (g (times x2 y)) (times (g x2) (g y))).
 
 (; doc: Bundling a `Mul` and `One` structure together without any axioms about their compatibility. See `MulOneClass` for the additional assumption that 1 is an identity. ;)
 (; //LEAN:MulOne ;)
@@ -379,7 +371,7 @@ OneHom__copy___proof_1 : (M : Set) -> (N : Set) -> (f : Elem (OneHom M N)) -> (f
 OneHom__id___proof_1 : (M : Set) -> Proof (Eqt M 1 1).
 
 (; //LEAN:OneHom.inverse._proof_1 ;)
-OneHom__inverse___proof_1 : (M : Set) -> (N : Set) -> (f : Elem (OneHom M N)) -> (g : (Elem N -> M)) -> (h : Proof (Function__LeftInverse M N g f)) -> Proof (Eqt M (g 1) 1).
+OneHom__inverse___proof_1 : (M : Set) -> (N : Set) -> (f : Elem (OneHom M N)) -> (g : (Elem N -> M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> Proof (Eqt M (g 1) 1).
 
 (; doc: A `SubNegMonoid` is an `AddMonoid` with unary `-` and binary `-` operations satisfying `sub_eq_add_neg : ∀ a b, a - b = a + -b`.  The default for `sub` is such that `a - b = a + -b` holds by definition.  Adding `sub` as a field rather than defining `a - b := a + -b` allows us to avoid certain classes of unification failures, for example: Let `foo X` be a type with a `∀ X, Sub (Foo X)` instance but no `∀ X, Neg (Foo X)`. Suppose we also have an instance `∀ X [Cromulent X], AddGroup (Foo X)`. Then the `(-)` coming from `AddGroup.sub` cannot be definitionally equal to the `(-)` coming from `Foo.Sub`.  In the same way, adding a `zsmul` field makes it possible to avoid definitional failures in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] for more explanations on this. ;)
 (; //LEAN:SubNegMonoid ;)
@@ -419,7 +411,7 @@ ZeroHom__copy___proof_1 : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> 
 ZeroHom__id___proof_1 : (M : Set) -> Proof (Eqt M 0 0).
 
 (; //LEAN:ZeroHom.inverse._proof_1 ;)
-ZeroHom__inverse___proof_1 : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> (g : (Elem N -> M)) -> (h : Proof (Function__LeftInverse M N g f)) -> Proof (Eqt M (g 0) 0).
+ZeroHom__inverse___proof_1 : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> (g : (Elem N -> M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> Proof (Eqt M (g 0) 0).
 
 (; doc: Two elements `a` and `b` additively commute if `a + b = b + a`. ;)
 (; //LEAN:addCommute_iff_eq ;)
@@ -430,15 +422,15 @@ add_eq_zero_comm : (M : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (IsDedekin
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: **Alias** of `congrArg`. ;)
 (; //LEAN:congr_arg ;)
-congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; //LEAN:eq_inv_of_mul_eq_one_left ;)
 eq_inv_of_mul_eq_one_left : (G : Set) -> (_ : Proof (DivisionMonoid G)) -> (a : Elem G) -> (b : Elem G) -> (h : Proof (Eqt G (times a b) 1)) -> Proof (Eqt G a (Inv__inv G b)).

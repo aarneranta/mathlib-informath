@@ -1,0 +1,58 @@
+continuous_function_at (def)
+  English: Let $f$ be a function from real numbers to real numbers. Let $x$ be a real number. Then $f$ is continuous at $x$, if for all real numbers $x_{1}$, if $x_{1} > 0$, then there exists a real number $x_{2}$, such that $x_{2} > 0$ and for all elements $x_{3}$ of $\Real$, if $\absMACRoP {(x_{3} - x)}$ is less than or equal to $x_{2}$, then $\absMACRoP {(f (x_{3})- f (x))}\leq x_{1}$.
+  French: Soit $f$ une fonction des nombres réels à des nombres réels. Soit $x$ un nombre réel. Alors $f$ est continu à $x$ si pour tous les nombres réels $x_{1}$, si $x_{1} > 0$, alors il existe un nombre réel $x_{2}$ tel que $x_{2} > 0$ et pour tous les éléments $x_{3}$ de $\Real$, si $\absMACRoP {(x_{3} - x)}$ est inférieur ou égal à $x_{2}$, alors $\absMACRoP {(f (x_{3})- f (x))}\leq x_{1}$.
+  Formula: $f \in \Real \rightarrow \Real , x \in \Real \vdash \mathrm{continuous\_function\_at} (f , x):\Leftrightarrow \forall x_{1} \in \Real . x_{1} > 0 \rightarrow (\exists x_{2} \in \Real . x_{2} > 0 \wedge (\forall x_{3} \in \Real . \absMACRoP {(x_{3} - x)}\leq x_{2} \rightarrow \absMACRoP {(f (x_{3})- f (x))}\leq x_{1}))$
+
+sequence_tendsto (def)
+  English: Let $u$ be a function from elements of $\Natural$ to real numbers. Let $l$ be a real number. Then $u$ converges to $l$, if for all real numbers $x$, if $x > 0$, then there exists a natural number $N$, such that for all natural numbers $n$, if $n \geq N$, then $\absMACRoP {(u (n)- l)}\leq x$.
+  French: Soit $u$ une fonction des éléments de $\Natural$ à des nombres réels. Soit $l$ un nombre réel. Alors $u$ converge à $l$ si pour tous les nombres réels $x$, si $x > 0$, alors il existe un nombre naturel $N$ tel que pour tous les nombres naturels $n$, si $n \geq N$, alors $\absMACRoP {(u (n)- l)}\leq x$.
+  Formula: $u \in \Natural \rightarrow \Real , l \in \Real \vdash \mathrm{sequence\_tendsto} (u , l):\Leftrightarrow \forall x \in \Real . x > 0 \rightarrow (\exists N \in \Natural . \forall n \in \Natural . n \geq N \rightarrow \absMACRoP {(u (n)- l)}\leq x)$
+
+seq_cont_tactic (theorem)
+  English: Let $f$ be a function from real numbers to real numbers. Let $u$ be a function from natural numbers to real numbers. Let $x$ be a real number such that $u$ converges to $x$ and $f$ is continuous at $x$. Then $\FunctioncompMACRoEM {f}{u}$ converges to $f (x)$.
+  French: Soit $f$ une fonction des nombres réels à des nombres réels. Soit $u$ une fonction des nombres naturels à des nombres réels. Soit $x$ un nombre réel tel que $u$ converge à $x$ et $f$ soit continu à $x$. Alors $\FunctioncompMACRoEM {f}{u}$ converge à $f (x)$.
+  Formula: $f \in \Real \rightarrow \Real , u \in \Natural \rightarrow \Real , x \in \Real , \mathrm{sequence\_tendsto} (u , x), \mathrm{continuous\_function\_at} (f , x)\vdash \mathrm{sequence\_tendsto} (\FunctioncompMACRoEV {f}{u}, f (x))$
+  Proof, English:
+    1. \hspace*{1.5em}Let $\epsilon \in \Real$ such that $\epsilon > 0$.   [intro ε ε_pos]
+    2. \hspace*{1.5em}Let $W \in \Real$ such that $W > 0$ and for all elements $x_{2}$ of $\Real$, if $\absMACRoP {(x_{2} - x_{0})}\leq W$, then $\absMACRoP {(f (x_{2})- f (x_{0}))}\leq \epsilon$.   [rcases hf ε ε_pos with ⟨δ, δ_pos, Hf⟩]
+    3. \hspace*{1.5em}Let $N \in \Natural$ such that for all elements $n$ of $\Natural$, if $n \geq N$, then $\absMACRoP {(u (n)- x_{0})}\leq W$.   [rcases hu δ δ_pos with ⟨N, Hu⟩]
+    4. \hspace*{1.5em}It is enough to show that for all elements $n_{1}$ of $\Natural$, if $n_{1} \geq N$, then $\absMACRoP {(\FunctioncompMACRoEV {f}{u}- f (x_{0}))}\leq \epsilon$.   [use N]
+    5. \hspace*{1.5em}\hspace*{1.5em}Let $n \in \Natural$ such that $n \geq N$.   [intro n n_ge]
+    6. \hspace*{1.5em}\hspace*{1.5em}$\absMACRoP {(\FunctioncompMACRoEV {f}{u}- f (x_{0}))}\leq \epsilon$.   [exact Hf (u n) (Hu n n_ge)]
+  Proof, French:
+    1. \hspace*{1.5em}Soit $\epsilon \in \Real$ tel que $\epsilon > 0$.   [intro ε ε_pos]
+    2. \hspace*{1.5em}Soit $W \in \Real$ tel que $W > 0$ et pour tous les éléments $x_{2}$ de $\Real$, si $\absMACRoP {(x_{2} - x_{0})}\leq W$, alors $\absMACRoP {(f (x_{2})- f (x_{0}))}\leq \epsilon$.   [rcases hf ε ε_pos with ⟨δ, δ_pos, Hf⟩]
+    3. \hspace*{1.5em}Soit $N \in \Natural$ tel que pour tous les éléments $n$ de $\Natural$, si $n \geq N$, alors $\absMACRoP {(u (n)- x_{0})}\leq W$.   [rcases hu δ δ_pos with ⟨N, Hu⟩]
+    4. \hspace*{1.5em}Il suffit de montrer que pour tous les éléments $n_{1}$ de $\Natural$, si $n_{1} \geq N$, alors $\absMACRoP {(\FunctioncompMACRoEV {f}{u}- f (x_{0}))}\leq \epsilon$.   [use N]
+    5. \hspace*{1.5em}\hspace*{1.5em}Soit $n \in \Natural$ tel que $n \geq N$.   [intro n n_ge]
+    6. \hspace*{1.5em}\hspace*{1.5em}$\absMACRoP {(\FunctioncompMACRoEV {f}{u}- f (x_{0}))}\leq \epsilon$.   [exact Hf (u n) (Hu n n_ge)]
+
+seq_cont_term (theorem)
+  English: Let $f$ be a function from real numbers to real numbers. Let $u$ be a function from natural numbers to real numbers. Let $x$ be a real number such that $u$ converges to $x$ and $f$ is continuous at $x$. Then $\FunctioncompMACRoEM {f}{u}$ converges to $f (x)$.
+  French: Soit $f$ une fonction des nombres réels à des nombres réels. Soit $u$ une fonction des nombres naturels à des nombres réels. Soit $x$ un nombre réel tel que $u$ converge à $x$ et $f$ soit continu à $x$. Alors $\FunctioncompMACRoEM {f}{u}$ converge à $f (x)$.
+  Formula: $f \in \Real \rightarrow \Real , u \in \Natural \rightarrow \Real , x \in \Real , \mathrm{sequence\_tendsto} (u , x), \mathrm{continuous\_function\_at} (f , x)\vdash \mathrm{sequence\_tendsto} (\FunctioncompMACRoEV {f}{u}, f (x))$
+
+const_converges (theorem)
+  English: Let $u$ be a function from natural numbers to real numbers. Let $l$ be a real number such that for all natural numbers $n$, $u (n)= l$. Then $u$ converges to $l$.
+  French: Soit $u$ une fonction des nombres naturels à des nombres réels. Soit $l$ un nombre réel tel que pour tous les nombres naturels $n$, $u (n)= l$. Alors $u$ converge à $l$.
+  Formula: $u \in \Natural \rightarrow \Real , l \in \Real , \forall n \in \Natural . u (n)= l \vdash \mathrm{sequence\_tendsto} (u , l)$
+  Proof, English:
+    1. \hspace*{1.5em}Let $x \in \Real$.
+    2. \hspace*{1.5em}\hspace*{1.5em}To prove that if $x > 0$, then there exists an element $N_{1}$ of $\Natural$, such that for all elements $n_{3}$ of $\Natural$, if $n_{3} \geq N_{1}$, then $\absMACRoP {(u (n_{3})- l)}\leq x$, assume that $x > 0$.
+    3. \hspace*{1.5em}\hspace*{1.5em}\hspace*{1.5em}To prove that there exists an element $N$ of $\Natural$, such that for all elements $n$ of $\Natural$, if $n \geq N$, then $\absMACRoP {(u (n)- l)}\leq x$, let $n_{1} \in \Natural$.
+    4. \hspace*{1.5em}\hspace*{1.5em}\hspace*{1.5em}\hspace*{1.5em}To prove that if $n_{1} \geq 0$, then $\absMACRoP {(u (n_{1})- l)}\leq x$, assume that $n_{1} \geq 0$.
+    5. \hspace*{1.5em}\hspace*{1.5em}\hspace*{1.5em}\hspace*{1.5em}By rewriting, there is an element of $\mathrm{Leq} (\absMACRoP {(u (n_{1})- l)}, x)$.   [rewriting]
+    6. \hspace*{1.5em}\hspace*{1.5em}\hspace*{1.5em}If $n_{1} \geq 0$, then $\absMACRoP {(u (n_{1})- l)}\leq x$.   [ifI 5 (4)]
+    7. \hspace*{1.5em}\hspace*{1.5em}There exists an element $N$ of $\Natural$, such that for all elements $n$ of $\Natural$, if $n \geq N$, then $\absMACRoP {(u (n)- l)}\leq x$.   [existsI 3, 6]
+    8. \hspace*{1.5em}If $x > 0$, then there exists an element $N_{1}$ of $\Natural$, such that for all elements $n_{3}$ of $\Natural$, if $n_{3} \geq N_{1}$, then $\absMACRoP {(u (n_{3})- l)}\leq x$.   [ifI 7 (2)]
+    9. For all elements $x$ of $\Real$, if $x > 0$, then there exists an element $N_{2}$ of $\Natural$, such that for all elements $n_{4}$ of $\Natural$, if $n_{4} \geq N_{2}$, then $\absMACRoP {(u (n_{4})- l)}\leq x$.   [forallI 1, 8]
+  Proof, French:
+    1. \hspace*{1.5em}Soit $x \in \Real$.
+    2. \hspace*{1.5em}\hspace*{1.5em}Pour démontrer que si $x > 0$, alors il existe un élément $N_{1}$ de $\Natural$ tel que pour tous les éléments $n_{3}$ de $\Natural$, si $n_{3} \geq N_{1}$, alors $\absMACRoP {(u (n_{3})- l)}\leq x$, supposons que $x > 0$.
+    3. \hspace*{1.5em}\hspace*{1.5em}\hspace*{1.5em}Pour démontrer qu'il existe un élément $N$ de $\Natural$ tel que pour tous les éléments $n$ de $\Natural$, si $n \geq N$, alors $\absMACRoP {(u (n)- l)}\leq x$, soit $n_{1} \in \Natural$.
+    4. \hspace*{1.5em}\hspace*{1.5em}\hspace*{1.5em}\hspace*{1.5em}Pour démontrer que si $n_{1} \geq 0$, alors $\absMACRoP {(u (n_{1})- l)}\leq x$, supposons que $n_{1} \geq 0$.
+    5. \hspace*{1.5em}\hspace*{1.5em}\hspace*{1.5em}\hspace*{1.5em}Par réécriture, il y a un élément de $\mathrm{Leq} (\absMACRoP {(u (n_{1})- l)}, x)$.   [rewriting]
+    6. \hspace*{1.5em}\hspace*{1.5em}\hspace*{1.5em}Si $n_{1} \geq 0$, alors $\absMACRoP {(u (n_{1})- l)}\leq x$.   [ifI 5 (4)]
+    7. \hspace*{1.5em}\hspace*{1.5em}Il existe un élément $N$ de $\Natural$ tel que pour tous les éléments $n$ de $\Natural$, si $n \geq N$, alors $\absMACRoP {(u (n)- l)}\leq x$.   [existsI 3, 6]
+    8. \hspace*{1.5em}Si $x > 0$, alors il existe un élément $N_{1}$ de $\Natural$ tel que pour tous les éléments $n_{3}$ de $\Natural$, si $n_{3} \geq N_{1}$, alors $\absMACRoP {(u (n_{3})- l)}\leq x$.   [ifI 7 (2)]
+    9. Pour tous les éléments $x$ de $\Real$, si $x > 0$, alors il existe un élément $N_{2}$ de $\Natural$ tel que pour tous les éléments $n_{4}$ de $\Natural$, si $n_{4} \geq N_{2}$, alors $\absMACRoP {(u (n_{4})- l)}\leq x$.   [forallI 1, 8]

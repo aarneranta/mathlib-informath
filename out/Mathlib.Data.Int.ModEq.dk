@@ -98,7 +98,7 @@ Int__ModEq__mul_left' : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c
 Int__ModEq__mul_right' : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (h : Proof (Int__ModEq n a b)) -> Proof (Int__ModEq (times n c) (times a c) (times b c)).
 
 (; //LEAN:Int.ModEq.add ;)
-Int__ModEq__add : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (d : Elem Int) -> (h : Proof (Int__ModEq n a b)) -> (h1 : Proof (Int__ModEq n c d)) -> Proof (Int__ModEq n (plus a c) (plus b d)).
+Int__ModEq__add : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (d : Elem Int) -> (h1 : Proof (Int__ModEq n a b)) -> (h2 : Proof (Int__ModEq n c d)) -> Proof (Int__ModEq n (plus a c) (plus b d)).
 
 (; //LEAN:Int.ModEq.add_left ;)
 def Int__ModEq__add_left : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (h : Proof (Int__ModEq n a b)) -> Proof (Int__ModEq n (plus c a) (plus c b)) :=
@@ -109,14 +109,14 @@ def Int__ModEq__add_right : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -
   n => a => b => c => h => Int__ModEq__add n a b c c h (Int__ModEq__rfl n c).
 
 (; //LEAN:Int.ModEq.add_left_cancel ;)
-Int__ModEq__add_left_cancel : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (d : Elem Int) -> (h : Proof (Int__ModEq n a b)) -> (h1 : Proof (Int__ModEq n (plus a c) (plus b d))) -> Proof (Int__ModEq n c d).
+Int__ModEq__add_left_cancel : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (d : Elem Int) -> (h1 : Proof (Int__ModEq n a b)) -> (h2 : Proof (Int__ModEq n (plus a c) (plus b d))) -> Proof (Int__ModEq n c d).
 
 (; //LEAN:Int.ModEq.add_left_cancel' ;)
 def Int__ModEq__add_left_cancel' : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (h : Proof (Int__ModEq n (plus c a) (plus c b))) -> Proof (Int__ModEq n a b) :=
   n => a => b => c => h => Int__ModEq__add_left_cancel n c c a b (Int__ModEq__rfl n c) h.
 
 (; //LEAN:Int.ModEq.add_right_cancel ;)
-Int__ModEq__add_right_cancel : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (d : Elem Int) -> (h : Proof (Int__ModEq n c d)) -> (h1 : Proof (Int__ModEq n (plus a c) (plus b d))) -> Proof (Int__ModEq n a b).
+Int__ModEq__add_right_cancel : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (d : Elem Int) -> (h1 : Proof (Int__ModEq n c d)) -> (h2 : Proof (Int__ModEq n (plus a c) (plus b d))) -> Proof (Int__ModEq n a b).
 
 (; //LEAN:Int.ModEq.add_right_cancel' ;)
 def Int__ModEq__add_right_cancel' : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (h : Proof (Int__ModEq n (plus a c) (plus b c))) -> Proof (Int__ModEq n a b) :=
@@ -126,7 +126,7 @@ def Int__ModEq__add_right_cancel' : (n : Elem Int) -> (a : Elem Int) -> (b : Ele
 Int__ModEq__neg : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (h : Proof (Int__ModEq n a b)) -> Proof (Int__ModEq n (Neg__neg Int a) (Neg__neg Int b)).
 
 (; //LEAN:Int.ModEq.sub ;)
-Int__ModEq__sub : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (d : Elem Int) -> (h : Proof (Int__ModEq n a b)) -> (h1 : Proof (Int__ModEq n c d)) -> Proof (Int__ModEq n (minus a c) (minus b d)).
+Int__ModEq__sub : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (d : Elem Int) -> (h1 : Proof (Int__ModEq n a b)) -> (h2 : Proof (Int__ModEq n c d)) -> Proof (Int__ModEq n (minus a c) (minus b d)).
 
 (; //LEAN:Int.ModEq.sub_left ;)
 def Int__ModEq__sub_left : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (h : Proof (Int__ModEq n a b)) -> Proof (Int__ModEq n (minus c a) (minus c b)) :=
@@ -145,8 +145,8 @@ def Int__ModEq__mul_right : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -
   n => a => b => c => h => Int__ModEq__of_dvd n (times n c) (times a c) (times b c) (dvd_mul_right Int n c) (Int__ModEq__mul_right' n a b c h).
 
 (; //LEAN:Int.ModEq.mul ;)
-def Int__ModEq__mul : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (d : Elem Int) -> (h : Proof (Int__ModEq n a b)) -> (h1 : Proof (Int__ModEq n c d)) -> Proof (Int__ModEq n (times a c) (times b d)) :=
-  n => a => b => c => d => h => h1 => Int__ModEq__trans n (times a c) (times a d) (times b d) (Int__ModEq__mul_left n c d a h1) (Int__ModEq__mul_right n a b d h).
+def Int__ModEq__mul : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> (d : Elem Int) -> (h1 : Proof (Int__ModEq n a b)) -> (h2 : Proof (Int__ModEq n c d)) -> Proof (Int__ModEq n (times a c) (times b d)) :=
+  n => a => b => c => d => h1 => h2 => Int__ModEq__trans n (times a c) (times a d) (times b d) (Int__ModEq__mul_left n c d a h2) (Int__ModEq__mul_right n a b d h1).
 
 (; //LEAN:Int.ModEq.pow ;)
 Int__ModEq__pow : (n : Elem Int) -> (a : Elem Int) -> (b : Elem Int) -> (m : Elem Nat) -> (h : Proof (Int__ModEq n a b)) -> Proof (Int__ModEq n (pow a m) (pow b m)).
@@ -294,7 +294,8 @@ def Int__existsUnique_equiv : (a : Elem Int) -> (b : Elem Int) -> (hb : Proof (L
   a => b => hb => existsI Int (z => and (Leq 0 z) (and (Lt z b) (Int__ModEq b z a))) (HMod__hMod Int Int Int a b) (andI (Leq 0 (HMod__hMod Int Int Int a b)) (and (Lt (HMod__hMod Int Int Int a b) b) (Int__ModEq b (HMod__hMod Int Int Int a b) a)) (Int__emod_nonneg a b (ne_of_gt Int b 0 hb)) (andI (Lt (HMod__hMod Int Int Int a b) b) (Int__ModEq b (HMod__hMod Int Int Int a b) a) (Eq__mp (Lt (HMod__hMod Int Int Int a b) (abs Int b)) (Lt (HMod__hMod Int Int Int a b) b) (congrArg Int Prop (abs Int b) b (_a => Lt (HMod__hMod Int Int Int a b) _a) (abs_of_pos Int b hb)) (Int__emod_lt_abs a b (ne_of_gt Int b 0 hb))) (of_eq_true (Eq (HMod__hMod Int Int Int (HMod__hMod Int Int Int a b) b) (HMod__hMod Int Int Int a b)) (Eq__trans Prop (Eq (HMod__hMod Int Int Int (HMod__hMod Int Int Int a b) b) (HMod__hMod Int Int Int a b)) (Eq (HMod__hMod Int Int Int a b) (HMod__hMod Int Int Int a b)) True (congrFun' Int Prop (Eq Int (HMod__hMod Int Int Int (HMod__hMod Int Int Int a b) b)) (Eq Int (HMod__hMod Int Int Int a b)) (congrArg Int (Elem Int -> Prop) (HMod__hMod Int Int Int (HMod__hMod Int Int Int a b) b) (HMod__hMod Int Int Int a b) (Eq Int) (Int__emod_emod_of_dvd a b b (of_eq_true (divide b b) (dvd_refl___simp_1 Int b)))) (HMod__hMod Int Int Int a b)) (eq_self Int (HMod__hMod Int Int Int a b)))))).
 
 (; //LEAN:Int.existsUnique_equiv_nat ;)
-Int__existsUnique_equiv_nat : (a : Elem Int) -> (b : Elem Int) -> (hb : Proof (Lt 0 b)) -> Proof (exists Nat (z => and (Lt (Nat__cast Int z) b) (Int__ModEq b (Nat__cast Int z) a))).
+def Int__existsUnique_equiv_nat : (a : Elem Int) -> (b : Elem Int) -> (hb : Proof (Lt 0 b)) -> Proof (exists Nat (z => and (Lt (Nat__cast Int z) b) (Int__ModEq b (Nat__cast Int z) a))) :=
+  a => b => hb => existsE Int (z => and (Leq 0 z) (and (Lt z b) (Int__ModEq b z a))) (exists Nat (z1 => and (Lt (Nat__cast Int z1) b) (Int__ModEq b (Nat__cast Int z1) a))) (Int__existsUnique_equiv a b hb) (z2 => hz1 => ifI (Lt z2 b) (if (Int__ModEq b z2 a) (exists Nat (z5 => and (Lt (Nat__cast Int z5) b) (Int__ModEq b (Nat__cast Int z5) a)))) (hz2 => ifI (Int__ModEq b z2 a) (exists Nat (z4 => and (Lt (Nat__cast Int z4) b) (Int__ModEq b (Nat__cast Int z4) a))) (hz3 => existsI Nat (z3 => and (Lt (Nat__cast Int z3) b) (Int__ModEq b (Nat__cast Int z3) a)) (Int__natAbs z2) (andI (Lt (Nat__cast Int (Int__natAbs z2)) b) (Int__ModEq b (Nat__cast Int (Int__natAbs z2)) a) (Eq__mpr (Lt (Nat__cast Int (Int__natAbs z2)) b) (Lt z2 b) (id (Eqt Prop (Lt (Nat__cast Int (Int__natAbs z2)) b) (Lt z2 b)) (congrArg Int Prop (Nat__cast Int (Int__natAbs z2)) z2 (_a => Lt _a b) (Int__natAbs_of_nonneg z2 hz1))) hz2) (Eq__mpr (Int__ModEq b (Nat__cast Int (Int__natAbs z2)) a) (Int__ModEq b z2 a) (id (Eqt Prop (Int__ModEq b (Nat__cast Int (Int__natAbs z2)) a) (Int__ModEq b z2 a)) (congrArg Int Prop (Nat__cast Int (Int__natAbs z2)) z2 (_a1 => Int__ModEq b _a1 a) (Int__natAbs_of_nonneg z2 hz1))) hz3))))).
 
 (; //LEAN:Int.mod_mul_right_mod ;)
 def Int__mod_mul_right_mod : (a : Elem Int) -> (b : Elem Int) -> (c : Elem Int) -> Proof (Eq (HMod__hMod Int Int Int (HMod__hMod Int Int Int a (times b c)) b) (HMod__hMod Int Int Int a b)) :=

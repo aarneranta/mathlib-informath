@@ -75,7 +75,7 @@ Bornology__cobounded : (X : Set) -> Elem (Filter X).
 
 (; doc: A constructor for bornologies by specifying the bounded sets, and showing that they satisfy the appropriate conditions. ;)
 (; //LEAN:Bornology.ofBounded ;)
-Bornology__ofBounded : (X : Set) -> (B : Elem (powerset (powerset X))) -> (empty_mem : Proof (Membership__mem (powerset X) (powerset (powerset X)) B (EmptyCollection__emptyCollection (powerset X)))) -> (subset_mem : Proof (forall (powerset X) (x3 => if (Membership__mem (powerset X) (powerset (powerset X)) B x3) (forall (powerset X) (x4 => if (Set__Subset X x4 x3) (Membership__mem (powerset X) (powerset (powerset X)) B x4)))))) -> (union_mem : Proof (forall (powerset X) (x1 => if (Membership__mem (powerset X) (powerset (powerset X)) B x1) (forall (powerset X) (x2 => if (Membership__mem (powerset X) (powerset (powerset X)) B x2) (Membership__mem (powerset X) (powerset (powerset X)) B (Union__union (powerset X) x1 x2))))))) -> (singleton_mem : Proof (forall X (x => Membership__mem (powerset X) (powerset (powerset X)) B (Singleton__singleton X (powerset X) x)))) -> Elem (Bornology__on X).
+Bornology__ofBounded : (X : Set) -> (B : Elem (powerset (powerset X))) -> (empty_mem : Proof (Membership__mem (powerset X) (powerset (powerset X)) B (EmptyCollection__emptyCollection (powerset X)))) -> (subset_mem : Proof (forall (powerset X) (s11 => if (Membership__mem (powerset X) (powerset (powerset X)) B s11) (forall (powerset X) (s21 => if (Set__Subset X s21 s11) (Membership__mem (powerset X) (powerset (powerset X)) B s21)))))) -> (union_mem : Proof (forall (powerset X) (s1 => if (Membership__mem (powerset X) (powerset (powerset X)) B s1) (forall (powerset X) (s2 => if (Membership__mem (powerset X) (powerset (powerset X)) B s2) (Membership__mem (powerset X) (powerset (powerset X)) B (Union__union (powerset X) s1 s2))))))) -> (singleton_mem : Proof (forall X (x => Membership__mem (powerset X) (powerset (powerset X)) B (Singleton__singleton X (powerset X) x)))) -> Elem (Bornology__on X).
 
 (; //LEAN:Bornology.ofDist._proof_1 ;)
 Bornology__ofDist___proof_1 : (X : Set) -> (dist : (Elem X -> Elem X -> Real)) -> Proof (exists Real (C => forall X (x => if (Membership__mem X (powerset X) (EmptyCollection__emptyCollection (powerset X)) x) (forall X (y => if (Membership__mem X (powerset X) (EmptyCollection__emptyCollection (powerset X)) y) (Leq (dist x y) C)))))).
@@ -174,10 +174,6 @@ EmptyCollection__emptyCollection : (X : Set) -> Elem X.
 (; //LEAN:Eq ;)
 Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
 Eq__refl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
@@ -188,11 +184,11 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: **Alias** of `lt_of_eq_of_lt`. ;)
 (; //LEAN:Eq.trans_lt ;)
-Eq__trans_lt : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LT X)) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Lt b c)) -> Proof (Lt a c).
+Eq__trans_lt : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LT X)) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Lt b c)) -> Proof (Lt a c).
 
 (; doc: Existential quantification. If `p : α → Prop` is a predicate, then `∃ x : α, p x` asserts that there is some `x` of type `α` such that `p x` holds. To create an existential proof, use the `exists` tactic, or the anonymous constructor notation `⟨x, h⟩`. To unpack an existential, use `cases h` where `h` is a proof of `∃ x : α, p x`, or `let ⟨x, hx⟩ := h`.  Because Lean has proof irrelevance, any two proofs of an existential are definitionally equal. One consequence of this is that it is impossible to recover the witness of an existential from the mere fact of its existence. For example, the following does not compile: ``` example (h : ∃ x : Nat, x = x) : Nat :=   let ⟨x, _⟩ := h  -- fail, because the goal is `Nat : Type`   x ``` The error message `recursor 'Exists.casesOn' can only eliminate into Prop` means that this only works when the current goal is another proposition: ``` example (h : ∃ x : Nat, x = x) : True :=   let ⟨x, _⟩ := h  -- ok, because the goal is `True : Prop`   trivial ``` ;)
 (; //LEAN:Exists ;)
@@ -248,7 +244,7 @@ Filter__NeBot : (X : Set) -> (f : Elem (Filter X)) -> Prop.
 
 (; doc: `Filter.Tendsto` is the generic "limit of a function" predicate. `Tendsto f l₁ l₂` asserts that for every `l₂` neighborhood `a`, the `f`-preimage of `a` is an `l₁` neighborhood. ;)
 (; //LEAN:Filter.Tendsto ;)
-Filter__Tendsto : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x : Elem (Filter X)) -> (x1 : Elem (Filter Y)) -> Prop.
+Filter__Tendsto : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> Prop.
 
 (; //LEAN:Filter.Tendsto.congr_uniformity ;)
 Filter__Tendsto__congr_uniformity : (X : Set) -> (Y : Set) -> (_ : Proof (UniformSpace Y)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (b : Elem Y) -> (hf : Proof (Filter__Tendsto X Y f l (nhds Y b))) -> (hg : Proof (Filter__Tendsto X (Prod Y Y) (x1 => Prod__mk Y Y (f x1) (g x1)) l (uniformity Y))) -> Proof (Filter__Tendsto X Y g l (nhds Y b)).
@@ -260,6 +256,9 @@ Filter__atTop : (X : Set) -> Elem (Filter X).
 (; doc: The inverse map of a filter. A set `s` belongs to `Filter.comap m f` if either of the following equivalent conditions hold.  1. There exists a set `t ∈ f` such that `m ⁻¹' t ⊆ s`. This is used as a definition. 2. The set `kernImage m s = {y | ∀ x, m x = y → x ∈ s}` belongs to `f`, see `Filter.mem_comap'`. 3. The set `(m '' sᶜ)ᶜ` belongs to `f`, see `Filter.mem_comap_iff_compl` and    `Filter.compl_mem_comap`. ;)
 (; //LEAN:Filter.comap ;)
 Filter__comap : (X : Set) -> (Y : Set) -> (m : (Elem X -> Y)) -> (f : Elem (Filter Y)) -> Elem (Filter X).
+
+(; //LEAN:Filter.eventually_atTop ;)
+Filter__eventually_atTop : (X : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (IsDirectedOrder X)) -> (p : (Elem X -> Prop)) -> Proof (iff (Filter__Eventually X (x1 => p x1) (Filter__atTop X)) (exists X (a => forall X (b => if (Leq a b) (p b))))).
 
 (; //LEAN:Filter.eventually_ge_atTop ;)
 Filter__eventually_ge_atTop : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> Proof (Filter__Eventually X (x1 => Leq a x1) (Filter__atTop X)).
@@ -277,7 +276,7 @@ Filter__sets : (X : Set) -> (self : Elem (Filter X)) -> Elem (powerset (powerset
 
 (; doc: For a two-argument function `f`, `swap f` is the same function but taking the arguments in the reverse order. `swap f y x = f x y`. ;)
 (; //LEAN:Function.swap ;)
-Function__swap : (X : Set) -> (Y : Set) -> (x : (Elem X -> Elem Y -> Set)) -> (f : ((x2 : Elem X) -> (y1 : Elem Y) -> x x2 y1)) -> (y : Elem Y) -> (x1 : Elem X) -> Elem (x x1 y).
+Function__swap : (X : Set) -> (Y : Set) -> (phi : (Elem X -> Elem Y -> Set)) -> (f : ((x1 : Elem X) -> (y1 : Elem Y) -> phi x1 y1)) -> (y : Elem Y) -> (x : Elem X) -> Elem (phi x y).
 
 (; //LEAN:Iff.rfl ;)
 Iff__rfl : (a : Prop) -> Proof (iff a a).
@@ -286,7 +285,7 @@ Iff__rfl : (a : Prop) -> Proof (iff a a).
 Iff__symm : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff b a).
 
 (; //LEAN:Iff.trans ;)
-Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h1 : Proof (iff a b)) -> (h2 : Proof (iff b c)) -> Proof (iff a c).
 
 (; doc: `insert x xs` inserts the element `x` into the collection `xs`. ;)
 (; //LEAN:Insert.insert ;)
@@ -295,6 +294,10 @@ Insert__insert : (X : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Z) -> Elem
 (; doc: `a ∩ b` is the intersection of `a` and `b`.  Conventions for notations in identifiers:   * The recommended spelling of `∩` in identifiers is `inter`. ;)
 (; //LEAN:Inter.inter ;)
 Inter__inter : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
+
+(; doc: `a⁻¹` computes the inverse of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `⁻¹` in identifiers is `inv`. ;)
+(; //LEAN:Inv.inv ;)
+Inv__inv : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: A set is closed if its complement is open ;)
 (; //LEAN:IsClosed ;)
@@ -320,7 +323,7 @@ LE__le__trans : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : El
 
 (; doc: **Alias** of `le_of_le_of_eq`. ;)
 (; //LEAN:LE.le.trans_eq ;)
-LE__le__trans_eq : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LE X)) -> (h : Proof (Leq a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Leq a c).
+LE__le__trans_eq : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LE X)) -> (h1 : Proof (Leq a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Leq a c).
 
 (; doc: **Alias** of `lt_of_le_of_lt`. ;)
 (; //LEAN:LE.le.trans_lt ;)
@@ -352,17 +355,17 @@ Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Pro
 
 (; doc: `Metric.closedEBall x ε` is the set of all points `y` with `edist y x ≤ ε` ;)
 (; //LEAN:Metric.closedEBall ;)
-Metric__closedEBall : (X : Set) -> (x : Elem X) -> (x1 : Elem ENNReal) -> Elem (powerset X).
+Metric__closedEBall : (X : Set) -> (x : Elem X) -> (epsilon : Elem ENNReal) -> Elem (powerset X).
 
 (; doc: `Metric.eball x ε` is the set of all points `y` with `edist y x < ε` ;)
 (; //LEAN:Metric.eball ;)
-Metric__eball : (X : Set) -> (x1 : Elem X) -> (x2 : Elem ENNReal) -> Elem (powerset X).
+Metric__eball : (X : Set) -> (x1 : Elem X) -> (epsilon : Elem ENNReal) -> Elem (powerset X).
 
 (; //LEAN:Metric.mem_ball._simp_1 ;)
-Metric__mem_ball___simp_1 : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (x1 : Elem X) -> (y : Elem X) -> (x2 : Elem Real) -> Proof (Eqt Prop (Membership__mem X (powerset X) (Metric__ball X x1 x2) y) (Lt (Dist__dist X y x1) x2)).
+Metric__mem_ball___simp_1 : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (x1 : Elem X) -> (y : Elem X) -> (epsilon : Elem Real) -> Proof (Eqt Prop (Membership__mem X (powerset X) (Metric__ball X x1 epsilon) y) (Lt (Dist__dist X y x1) epsilon)).
 
 (; //LEAN:Metric.mem_sphere._simp_1 ;)
-Metric__mem_sphere___simp_1 : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (x1 : Elem X) -> (y : Elem X) -> (x2 : Elem Real) -> Proof (Eqt Prop (Membership__mem X (powerset X) (Metric__sphere X x1 x2) y) (Eq (Dist__dist X y x1) x2)).
+Metric__mem_sphere___simp_1 : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (x1 : Elem X) -> (y : Elem X) -> (epsilon : Elem Real) -> Proof (Eqt Prop (Membership__mem X (powerset X) (Metric__sphere X x1 epsilon) y) (Eq (Dist__dist X y x1) epsilon)).
 
 (; doc: Returns the lesser of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `min` in identifiers is `min`.   * The recommended spelling of `⊓` in identifiers is `inf` (`⊓` is the preferred notation for `min` when the type is not linearly ordered.). ;)
 (; //LEAN:Min.min ;)
@@ -390,8 +393,24 @@ NNReal__toReal : (x : Elem NNReal) -> Elem Real.
 (; //LEAN:Nat.cast ;)
 Nat__cast : (R : Set) -> (x1 : Elem Nat) -> Elem R.
 
+(; //LEAN:Nat.cast_add ;)
+Nat__cast_add : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> (m : Elem Nat) -> (n : Elem Nat) -> Proof (Eqt R (Nat__cast R (plus m n)) (plus (Nat__cast R m) (Nat__cast R n))).
+
+(; //LEAN:Nat.cast_add._simp_1 ;)
+Nat__cast_add___simp_1 : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> (m : Elem Nat) -> (n : Elem Nat) -> Proof (Eqt R (plus (Nat__cast R m) (Nat__cast R n)) (Nat__cast R (plus m n))).
+
 (; //LEAN:Nat.cast_add_one_pos ;)
 Nat__cast_add_one_pos : (X : Set) -> (_ : Proof (AddMonoidWithOne X)) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (ZeroLEOneClass X)) -> (_ : Proof (NeZero X 1)) -> (n : Elem Nat) -> Proof (Lt 0 (plus (Nat__cast X n) 1)).
+
+(; //LEAN:Nat.cast_one ;)
+Nat__cast_one : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> Proof (Eqt R (Nat__cast R 1) 1).
+
+(; doc: Specialisation of `Nat.cast_pos'`, which seems to be easier for Lean to use. ;)
+(; //LEAN:Nat.cast_pos ;)
+Nat__cast_pos : (X : Set) -> (_ : Proof (Semiring X)) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (IsOrderedRing X)) -> (n : Elem Nat) -> Proof (iff (Lt 0 (Nat__cast X n)) (Lt 0 n)).
+
+(; //LEAN:Nat.succ_pos ;)
+Nat__succ_pos : (n : Elem Nat) -> Proof (Lt 0 (succ n)).
 
 (; //LEAN:Ne.symm ;)
 Ne__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Neq a b)) -> Proof (Neq b a).
@@ -441,7 +460,7 @@ PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_1 : (X : Set) -> (_ : Proo
 PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_2 : (X : Set) -> (_ : Proof (PseudoEMetricSpace X)) -> (dist : (Elem X -> Elem X -> Real)) -> (dist_nonneg : Proof (forall X (x2 => forall X (y2 => Leq 0 (dist x2 y2))))) -> (h : Proof (forall X (x1 => forall X (y1 => Eqt ENNReal (EDist__edist X x1 y1) (ENNReal__ofReal (dist x1 y1)))))) -> (x : Elem X) -> (y : Elem X) -> Proof (Eq (dist x y) (dist y x)).
 
 (; //LEAN:PseudoEMetricSpace.toPseudoMetricSpaceOfDist._proof_3 ;)
-PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_3 : (X : Set) -> (_ : Proof (PseudoEMetricSpace X)) -> (dist : (Elem X -> Elem X -> Real)) -> (dist_nonneg : Proof (forall X (x2 => forall X (y1 => Leq 0 (dist x2 y1))))) -> (h : Proof (forall X (x1 => forall X (y => Eqt ENNReal (EDist__edist X x1 y) (ENNReal__ofReal (dist x1 y)))))) -> Proof (Eqt (Filter (Prod X X)) (uniformity X) (iInf (Filter (Prod X X)) Real (x => iInf (Filter (Prod X X)) (Gt x 0) (h1 => Filter__principal (Prod X X) (Set__ofPred (Prod X X) (p => Lt (dist (Prod__fst X X p) (Prod__snd X X p)) x)))))).
+PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_3 : (X : Set) -> (_ : Proof (PseudoEMetricSpace X)) -> (dist : (Elem X -> Elem X -> Real)) -> (dist_nonneg : Proof (forall X (x1 => forall X (y1 => Leq 0 (dist x1 y1))))) -> (h : Proof (forall X (x => forall X (y => Eqt ENNReal (EDist__edist X x y) (ENNReal__ofReal (dist x y)))))) -> Proof (Eqt (Filter (Prod X X)) (uniformity X) (iInf (Filter (Prod X X)) Real (epsilon => iInf (Filter (Prod X X)) (Gt epsilon 0) (h1 => Filter__principal (Prod X X) (Set__ofPred (Prod X X) (p => Lt (dist (Prod__fst X X p) (Prod__snd X X p)) epsilon)))))).
 
 (; //LEAN:PseudoEMetricSpace.toPseudoMetricSpaceOfDist._proof_4 ;)
 PseudoEMetricSpace__toPseudoMetricSpaceOfDist___proof_4 : (X : Set) -> (_ : Proof (PseudoEMetricSpace X)) -> (dist : (Elem X -> Elem X -> Real)) -> (dist_nonneg : Proof (forall X (x2 => forall X (y2 => Leq 0 (dist x2 y2))))) -> (h : Proof (forall X (x1 => forall X (y1 => Eqt ENNReal (EDist__edist X x1 y1) (ENNReal__ofReal (dist x1 y1)))))) -> (x : Elem X) -> (y : Elem X) -> (z : Elem X) -> Proof (Leq (dist x z) (plus (dist x y) (dist y z))).
@@ -468,7 +487,7 @@ PseudoMetricSpace__replaceBornology___proof_2 : (X : Set) -> (B : Elem (Bornolog
 PseudoMetricSpace__replaceTopology___proof_1 : (Z : Set) -> (U : Elem (TopologicalSpace__on Z)) -> (m : Elem (PseudoMetricSpace__on Z)) -> (H : Proof (Eqt (TopologicalSpace__on Z) U (UniformSpace__toTopologicalSpace__in Z m))) -> Proof (Eqt (Filter (Prod Z Z)) (uniformity__in Z (UniformSpace__replaceTopology Z (PseudoMetricSpace__toUniformSpace Z) H)) (uniformity__in Z (UniformSpace__replaceTopology Z (PseudoMetricSpace__toUniformSpace Z) H))).
 
 (; //LEAN:PseudoMetricSpace.replaceUniformity._proof_1 ;)
-PseudoMetricSpace__replaceUniformity___proof_1 : (X : Set) -> (U : Elem (UniformSpace__on X)) -> (m : Elem (PseudoMetricSpace__on X)) -> (H : Proof (Eqt (Filter (Prod X X)) (uniformity__in X U) (uniformity__in X m))) -> Proof (Eqt (Filter (Prod X X)) (uniformity__in X U) (iInf (Filter (Prod X X)) Real (x => iInf (Filter (Prod X X)) (Gt x 0) (h => Filter__principal (Prod X X) (Set__ofPred (Prod X X) (p => Lt (Dist__dist X (Prod__fst X X p) (Prod__snd X X p)) x)))))).
+PseudoMetricSpace__replaceUniformity___proof_1 : (X : Set) -> (U : Elem (UniformSpace__on X)) -> (m : Elem (PseudoMetricSpace__on X)) -> (H : Proof (Eqt (Filter (Prod X X)) (uniformity__in X U) (uniformity__in X m))) -> Proof (Eqt (Filter (Prod X X)) (uniformity__in X U) (iInf (Filter (Prod X X)) Real (epsilon => iInf (Filter (Prod X X)) (Gt epsilon 0) (h => Filter__principal (Prod X X) (Set__ofPred (Prod X X) (p => Lt (Dist__dist X (Prod__fst X X p) (Prod__snd X X p)) epsilon)))))).
 
 (; //LEAN:PseudoMetricSpace.toBornology ;)
 PseudoMetricSpace__toBornology : (X : Set) -> Elem (Bornology__on X).
@@ -482,6 +501,9 @@ PseudoMetricSpace__uniformity_dist___autoParam : Elem Lean__Syntax.
 (; doc: Canonical homomorphism from `Rat` to a division ring `K`. This is just the bare function in order to aid in creating instances of `DivisionRing`. ;)
 (; //LEAN:Rat.cast ;)
 Rat__cast : (K : Set) -> (x1 : Elem Rat) -> Elem K.
+
+(; //LEAN:Rat.cast_pos ;)
+Rat__cast_pos : (q : Elem Rat) -> (K : Set) -> (_ : Proof (Field K)) -> (_ : Proof (LinearOrder K)) -> (_ : Proof (IsStrictOrderedRing K)) -> Proof (iff (Lt 0 (Rat__cast K q)) (Lt 0 q)).
 
 (; doc: Reinterpret a real number `r` as a non-negative real number. Returns `0` if `r < 0`. ;)
 (; //LEAN:Real.toNNReal ;)
@@ -516,7 +538,7 @@ Set__Nonempty__mono : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerse
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Set.Subset.rfl ;)
 Set__Subset__rfl : (X : Set) -> (s : Elem (powerset X)) -> Proof (Set__Subset X s s).
@@ -551,7 +573,7 @@ Set__iUnion : (X : Set) -> (I : Set) -> (s : (Elem I -> powerset X)) -> Elem (po
 Set__iUnion_eq_univ_iff : (X : Set) -> (I : Set) -> (f : (Elem I -> powerset X)) -> Proof (iff (Eqt (powerset X) (Set__iUnion X I (i => f i)) (Set__univ X)) (forall X (x => exists I (i1 => Membership__mem X (powerset X) (f i1) x)))).
 
 (; //LEAN:Set.inter_subset_inter ;)
-Set__inter_subset_inter : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> (x2 : Elem (powerset X)) -> (x3 : Elem (powerset X)) -> (h : Proof (Set__Subset X x x2)) -> (h1 : Proof (Set__Subset X x1 x3)) -> Proof (Set__Subset X (Inter__inter (powerset X) x x1) (Inter__inter (powerset X) x2 x3)).
+Set__inter_subset_inter : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (t1 : Elem (powerset X)) -> (t2 : Elem (powerset X)) -> (h1 : Proof (Set__Subset X s1 t1)) -> (h2 : Proof (Set__Subset X s2 t2)) -> Proof (Set__Subset X (Inter__inter (powerset X) s1 s2) (Inter__inter (powerset X) t1 t2)).
 
 (; //LEAN:Set.mem_Ioo ;)
 Set__mem_Ioo : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (x1 : Elem X) -> Proof (iff (Membership__mem X (powerset X) (Set__Ioo X a b) x1) (and (Lt a x1) (Lt x1 b))).
@@ -616,11 +638,11 @@ UniformSpace : (X : Set) -> Prop.
 UniformSpace__ball : (Y : Set) -> (x : Elem Y) -> (V : Elem (powerset (Prod Y Y))) -> Elem (powerset Y).
 
 (; //LEAN:UniformSpace.ext ;)
-UniformSpace__ext : (X : Set) -> (x : Elem (UniformSpace__on X)) -> (x1 : Elem (UniformSpace__on X)) -> (h : Proof (Eqt (Filter (Prod X X)) (uniformity__in X x) (uniformity__in X x1))) -> Proof (Eqt (UniformSpace__on X) x x1).
+UniformSpace__ext : (X : Set) -> (u1 : Elem (UniformSpace__on X)) -> (u2 : Elem (UniformSpace__on X)) -> (h : Proof (Eqt (Filter (Prod X X)) (uniformity__in X u1) (uniformity__in X u2))) -> Proof (Eqt (UniformSpace__on X) u1 u2).
 
 (; doc: Define a `UniformSpace` using a "distance" function. The function can be, e.g., the distance in a (usual or extended) metric space or an absolute value on a ring. ;)
 (; //LEAN:UniformSpace.ofFun ;)
-UniformSpace__ofFun : (X : Set) -> (M : Set) -> (d : (Elem X -> Elem X -> M)) -> (refl : Proof (forall X (x7 => Eqt M (d x7 x7) 0))) -> (symm : Proof (forall X (x6 => forall X (y2 => Eqt M (d x6 y2) (d y2 x6))))) -> (triangle : Proof (forall X (x5 => forall X (y1 => forall X (z => Leq (d x5 z) (plus (d x5 y1) (d y1 z))))))) -> (half : Proof (forall M (x2 => if (Gt x2 0) (exists M (x3 => and (Gt x3 0) (forall M (x4 => if (Lt x4 x3) (forall M (y => if (Lt y x3) (Lt (plus x4 y) x2)))))))))) -> Elem (UniformSpace__on X).
+UniformSpace__ofFun : (X : Set) -> (M : Set) -> (d : (Elem X -> Elem X -> M)) -> (refl : Proof (forall X (x5 => Eqt M (d x5 x5) 0))) -> (symm : Proof (forall X (x4 => forall X (y2 => Eqt M (d x4 y2) (d y2 x4))))) -> (triangle : Proof (forall X (x3 => forall X (y1 => forall X (z => Leq (d x3 z) (plus (d x3 y1) (d y1 z))))))) -> (half : Proof (forall M (epsilon => if (Gt epsilon 0) (exists M (delta => and (Gt delta 0) (forall M (x2 => if (Lt x2 delta) (forall M (y => if (Lt y delta) (Lt (plus x2 y) epsilon)))))))))) -> Elem (UniformSpace__on X).
 
 (; //LEAN:UniformSpace.toTopologicalSpace ;)
 UniformSpace__toTopologicalSpace : (X : Set) -> Elem (TopologicalSpace__on X).
@@ -647,22 +669,22 @@ abs_sub_lt_iff : (G : Set) -> (_ : Proof (AddCommGroup G)) -> (_ : Proof (Linear
 
 (; doc: Anything follows from two contradictory hypotheses. Example: ``` example (hp : p) (hnp : ¬p) : q := absurd hp hnp ``` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:absurd ;)
-absurd : (a : Prop) -> (b : Set) -> (h : Proof a) -> (h1 : Proof (not a)) -> Elem b.
+absurd : (a : Prop) -> (b : Set) -> (h1 : Proof a) -> (h2 : Proof (not a)) -> Elem b.
 
 (; //LEAN:add_comm ;)
 add_comm : (G : Set) -> (_ : Proof (AddCommMagma G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus a b) (plus b a)).
 
 (; //LEAN:add_le_add ;)
-add_le_add : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (_ : Proof (Preorder X)) -> (h2 : Proof (Leq a b)) -> (h3 : Proof (Leq c d)) -> Proof (Leq (plus a c) (plus b d)).
+add_le_add : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (_ : Proof (Preorder X)) -> (h11 : Proof (Leq a b)) -> (h2 : Proof (Leq c d)) -> Proof (Leq (plus a c) (plus b d)).
 
 (; //LEAN:add_lt_add_left ;)
 add_lt_add_left : (X : Set) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LT X)) -> (bc : Proof (Lt b c)) -> (a : Elem X) -> Proof (Lt (plus b a) (plus c a)).
 
 (; //LEAN:add_lt_add_of_le_of_lt ;)
-add_lt_add_of_le_of_lt : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (_ : Proof (Preorder X)) -> (h2 : Proof (Leq a b)) -> (h3 : Proof (Lt c d)) -> Proof (Lt (plus a c) (plus b d)).
+add_lt_add_of_le_of_lt : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (_ : Proof (Preorder X)) -> (h11 : Proof (Leq a b)) -> (h2 : Proof (Lt c d)) -> Proof (Lt (plus a c) (plus b d)).
 
 (; //LEAN:add_lt_add_of_lt_of_le ;)
-add_lt_add_of_lt_of_le : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (_ : Proof (Preorder X)) -> (h2 : Proof (Lt a b)) -> (h3 : Proof (Leq c d)) -> Proof (Lt (plus a c) (plus b d)).
+add_lt_add_of_lt_of_le : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (_ : Proof (Preorder X)) -> (h11 : Proof (Lt a b)) -> (h2 : Proof (Leq c d)) -> Proof (Lt (plus a c) (plus b d)).
 
 (; //LEAN:add_sub_cancel ;)
 add_sub_cancel : (G : Set) -> (_ : Proof (AddCommGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus a (minus b a)) b).
@@ -671,13 +693,21 @@ add_sub_cancel : (G : Set) -> (_ : Proof (AddCommGroup G)) -> (a : Elem G) -> (b
 (; //LEAN:autoParam ;)
 autoParam : (X : Set) -> (tactic : Elem Lean__Syntax) -> Set.
 
+(; doc: Cast across a type equality. If `h : α = β` is an equality of types, and `a : α`, then `a : β` will usually not typecheck directly, but this function will allow you to work around this and embed `a` in type `β` as `cast h a : β`.  It is best to avoid this function if you can, because it is more complicated to reason about terms containing casts, but if the types don't match up definitionally sometimes there isn't anything better you can do.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:cast ;)
+cast : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
+
 (; doc: The closure of `s` is the smallest closed set containing `s`. ;)
 (; //LEAN:closure ;)
 closure : (X : Set) -> (s : Elem (powerset X)) -> Elem (powerset X).
 
+(; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
+(; //LEAN:congr ;)
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
+
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
@@ -696,7 +726,14 @@ exists_nat_ge : (R : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (PartialOrde
 exists_nat_gt : (R : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (PartialOrder R)) -> (_ : Proof (IsStrictOrderedRing R)) -> (_ : Proof (Archimedean R)) -> (x2 : Elem R) -> Proof (exists Nat (n => Lt x2 (Nat__cast R n))).
 
 (; //LEAN:exists_nat_one_div_lt ;)
-exists_nat_one_div_lt : (K : Set) -> (_ : Proof (Semifield K)) -> (_ : Proof (LinearOrder K)) -> (_ : Proof (IsStrictOrderedRing K)) -> (_ : Proof (Archimedean K)) -> (x2 : Elem K) -> (h2 : Proof (Lt 0 x2)) -> Proof (exists Nat (n => Lt (div 1 (plus (Nat__cast K n) 1)) x2)).
+exists_nat_one_div_lt : (K : Set) -> (_ : Proof (Semifield K)) -> (_ : Proof (LinearOrder K)) -> (_ : Proof (IsStrictOrderedRing K)) -> (_ : Proof (Archimedean K)) -> (epsilon : Elem K) -> (hepsilon : Proof (Lt 0 epsilon)) -> Proof (exists Nat (n => Lt (div 1 (plus (Nat__cast K n) 1)) epsilon)).
+
+(; doc: For any `y < 1` and any positive `x`, there exists `n : ℕ` with `y ^ n < x`. ;)
+(; //LEAN:exists_pow_lt_of_lt_one ;)
+exists_pow_lt_of_lt_one : (K : Set) -> (_ : Proof (Semifield K)) -> (_ : Proof (LinearOrder K)) -> (_ : Proof (IsStrictOrderedRing K)) -> (_ : Proof (Archimedean K)) -> (x2 : Elem K) -> (y : Elem K) -> (_ : Proof (ExistsAddOfLE K)) -> (hx : Proof (Lt 0 x2)) -> (hy : Proof (Lt y 1)) -> Proof (exists Nat (n => Lt (pow y n) x2)).
+
+(; //LEAN:exists_rat_btwn ;)
+exists_rat_btwn : (K : Set) -> (_ : Proof (Field K)) -> (_ : Proof (LinearOrder K)) -> (_ : Proof (IsStrictOrderedRing K)) -> (_ : Proof (Archimedean K)) -> (x2 : Elem K) -> (y : Elem K) -> (h2 : Proof (Lt x2 y)) -> Proof (exists Rat (q => and (Lt x2 (Rat__cast K q)) (Lt (Rat__cast K q) y))).
 
 (; //LEAN:forall_congr ;)
 forall_congr : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h : Proof (forall X (a2 => Eqt Prop (p a2) (q a2)))) -> Proof (Eqt Prop (forall X (a => p a)) (forall X (a1 => q a1))).
@@ -706,7 +743,7 @@ forall_congr' : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) ->
 
 (; doc: **Function extensionality.** If two functions return equal results for all possible arguments, then they are equal.  It is called “extensionality” because it provides a way to prove two objects equal based on the properties of the underlying mathematical functions, rather than based on the syntax used to denote them. Function extensionality is a theorem that can be [proved using quotient types](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=quotient-funext). ;)
 (; //LEAN:funext ;)
-funext : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> (g : ((x3 : Elem X) -> x x3)) -> (h : Proof (forall X (x2 => Eqt (x x2) (f x2) (g x2)))) -> Proof (Eqt ((x1 : Elem X) -> x x1) f g).
+funext : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> beta x3)) -> (g : ((x2 : Elem X) -> beta x2)) -> (h : Proof (forall X (x1 => Eqt (beta x1) (f x1) (g x1)))) -> Proof (Eqt ((x : Elem X) -> beta x) f g).
 
 (; doc: **Alias** of the reverse direction of `half_lt_self_iff`. ;)
 (; //LEAN:half_lt_self ;)
@@ -727,14 +764,14 @@ id : (X : Set) -> (a : Elem X) -> Elem X.
 iff_self : (p : Prop) -> Proof (Eqt Prop (iff p p) True).
 
 (; //LEAN:implies_congr ;)
-implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h : Proof (Eqt Set X X1)) -> (h1 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> X2) (Elem X1 -> X3)).
+implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h1 : Proof (Eqt Set X X1)) -> (h2 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> X2) (Elem X1 -> X3)).
 
 (; doc: The interior of a set `s` is the largest open subset of `s`. ;)
 (; //LEAN:interior ;)
 interior : (X : Set) -> (s : Elem (powerset X)) -> Elem (powerset X).
 
 (; //LEAN:interior_maximal ;)
-interior_maximal : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X t s)) -> (h1 : Proof (IsOpen X t)) -> Proof (Set__Subset X t (interior X s)).
+interior_maximal : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h1 : Proof (Set__Subset X t s)) -> (h2 : Proof (IsOpen X t)) -> Proof (Set__Subset X t (interior X s)).
 
 (; //LEAN:le_iff_lt_or_eq ;)
 le_iff_lt_or_eq : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Leq a b) (or (Lt a b) (Eqt X a b))).
@@ -757,7 +794,7 @@ le_trans : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X)
 lt_add_one : (X : Set) -> (_ : Proof (AddZeroClass X)) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (ZeroLEOneClass X)) -> (_ : Proof (NeZero X 1)) -> (a : Elem X) -> Proof (Lt a (plus a 1)).
 
 (; //LEAN:lt_min ;)
-lt_min : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Lt a b)) -> (h1 : Proof (Lt a c)) -> Proof (Lt a (Min__min X b c)).
+lt_min : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Lt a b)) -> (h2 : Proof (Lt a c)) -> Proof (Lt a (Min__min X b c)).
 
 (; //LEAN:lt_of_le_of_lt ;)
 lt_of_le_of_lt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (hab : Proof (Leq a b)) -> (hbc : Proof (Lt b c)) -> Proof (Lt a c).
@@ -796,6 +833,12 @@ nhds_basis_uniformity : (X : Set) -> (I : Set) -> (_ : Proof (UniformSpace X)) -
 
 (; //LEAN:of_eq_true ;)
 of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
+
+(; //LEAN:one_div ;)
+one_div : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (a : Elem G) -> Proof (Eqt G (div 1 a) (Inv__inv G a)).
+
+(; //LEAN:pow_pos ;)
+pow_pos : (X : Set) -> (_ : Proof (MonoidWithZero X)) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (_ : Proof (ZeroLEOneClass X)) -> (ha : Proof (Lt 0 a)) -> (n : Elem Nat) -> Proof (Lt 0 (pow a n)).
 
 (; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
 (; //LEAN:propext ;)

@@ -17,7 +17,18 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+
+(; doc: **Alias** of the forward direction of `even_iff_two_dvd`. ;)
+(; //LEAN:Even.two_dvd ;)
+Even__two_dvd : (X : Set) -> (_ : Proof (Semiring X)) -> (a : Elem X) -> (h : Proof (even a)) -> Proof (divide 2 a).
+
+(; doc: `FiniteMultiplicity a b` indicates that the multiplicity of `a` in `b` is finite. ;)
+(; //LEAN:FiniteMultiplicity ;)
+FiniteMultiplicity : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Prop.
+
+(; //LEAN:FiniteMultiplicity.exists_eq_pow_mul_and_not_dvd ;)
+FiniteMultiplicity__exists_eq_pow_mul_and_not_dvd : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) -> (b : Elem X) -> (hfin : Proof (FiniteMultiplicity X a b)) -> Proof (exists X (c => and (Eqt X b (times (pow a (multiplicity X a b)) c)) (not (divide a c)))).
 
 (; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
 (; //LEAN:Finset ;)
@@ -90,7 +101,7 @@ Finsupp__support : (X : Set) -> (M : Set) -> (self : Elem (Finsupp X M)) -> Elem
 Function__onFun : (X : Set) -> (Y : Set) -> (X1 : Set) -> (f : (Elem Y -> Elem Y -> X1)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> (x1 : Elem X) -> Elem X1.
 
 (; //LEAN:Iff.trans ;)
-Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h1 : Proof (iff a b)) -> (h2 : Proof (iff b c)) -> Proof (iff a c).
 
 (; doc: **Alias** of `ne_of_gt`. ;)
 (; //LEAN:LT.lt.ne' ;)
@@ -135,6 +146,9 @@ Nat__dvd_of_mem_primeFactorsList : (n : Elem Nat) -> (p : Elem Nat) -> (h : Proo
 (; //LEAN:Nat.factorization ;)
 Nat__factorization : (n : Elem Nat) -> Elem (Finsupp Nat Nat).
 
+(; //LEAN:Nat.finiteMultiplicity_iff ;)
+Nat__finiteMultiplicity_iff : (a : Elem Nat) -> (b : Elem Nat) -> Proof (iff (FiniteMultiplicity Nat a b) (and (Neq a 1) (Lt 0 b))).
+
 (; doc: The least common multiple of `m` and `n` is the smallest natural number that's evenly divisible by both `m` and `n`. Returns `0` if either `m` or `n` is `0`.  Examples:  * `Nat.lcm 9 6 = 18`  * `Nat.lcm 9 3 = 9`  * `Nat.lcm 0 3 = 0`  * `Nat.lcm 3 0 = 0` ;)
 (; //LEAN:Nat.lcm ;)
 Nat__lcm : (m : Elem Nat) -> (n : Elem Nat) -> Elem Nat.
@@ -151,8 +165,14 @@ Nat__mem_primeFactors_iff_mem_primeFactorsList : (n : Elem Nat) -> (p : Elem Nat
 (; //LEAN:Nat.mul_div_cancel' ;)
 Nat__mul_div_cancel' : (n : Elem Nat) -> (m : Elem Nat) -> (H : Proof (divide n m)) -> Proof (Eq (times n (div m n)) m).
 
+(; //LEAN:Nat.not_even_iff_odd ;)
+Nat__not_even_iff_odd : (n : Elem Nat) -> Proof (iff (not (even n)) (odd n)).
+
 (; //LEAN:Nat.ordProj_dvd ;)
 Nat__ordProj_dvd : (n : Elem Nat) -> (p : Elem Nat) -> Proof (divide (pow p (Nat__factorization__app n p)) n).
+
+(; //LEAN:Nat.pos_of_ne_zero ;)
+Nat__pos_of_ne_zero : (n : Elem Nat) -> (h : Proof (Neq n 0)) -> Proof (Lt 0 n).
 
 (; doc: The prime factors of a natural number as a finset. ;)
 (; //LEAN:Nat.primeFactors ;)
@@ -164,6 +184,9 @@ Nat__primeFactorsList : (x : Elem Nat) -> Elem (List Nat).
 
 (; //LEAN:Nat.prod_factorization_pow_eq_self ;)
 Nat__prod_factorization_pow_eq_self : (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (Eq (Finsupp__prod Nat Nat Nat (Nat__factorization n) (x => x1 => pow x x1)) n).
+
+(; //LEAN:Nat.succ_ne_self ;)
+Nat__succ_ne_self : (n : Elem Nat) -> Proof (Neq (succ n) n).
 
 (; //LEAN:Ne.bot_lt ;)
 Ne__bot_lt : (X : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (OrderBot X)) -> (a : Elem X) -> (h : Proof (Neq a (Bot__bot X))) -> Proof (Lt (Bot__bot X) a).
@@ -178,7 +201,7 @@ Set__Icc : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (powerset X).
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
 (; //LEAN:Set.ofPred ;)
@@ -198,7 +221,7 @@ True : Prop.
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
@@ -211,7 +234,11 @@ dvd_pow_self : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) -> (n : Elem 
 iff_self : (p : Prop) -> Proof (Eqt Prop (iff p p) True).
 
 (; //LEAN:mt ;)
-mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
+mt : (a : Prop) -> (b : Prop) -> (h1 : Proof (if a b)) -> (h2 : Proof (not b)) -> Proof (not a).
+
+(; doc: A `ℕ`-valued version of `emultiplicity`, returning `0` instead of `⊤`. ;)
+(; //LEAN:multiplicity ;)
+multiplicity : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem Nat.
 
 (; //LEAN:not_le_of_gt ;)
 not_le_of_gt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Lt a b)) -> Proof (not (Leq b a)).

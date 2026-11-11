@@ -3,6 +3,10 @@
 (; a constant applied as a function: DFunLike.coe ;)
 Equiv__symm__app : (a1 : Elem (Equiv X Y)) -> (a2 : Elem Y) -> Elem X.
 
+(; doc: An element of `α` that satisfies `cond` belongs to the range of `coe`. ;)
+(; //LEAN:CanLift.prf ;)
+CanLift__prf : (X : Set) -> (Y : Set) -> (coe : (Elem Y -> X)) -> (cond : (Elem X -> Prop)) -> (_ : Proof (CanLift X Y coe cond)) -> (x : Elem X) -> (h : Proof (cond x)) -> Proof (exists Y (y => Eqt X (coe y) x)).
+
 (; doc: **The axiom of choice**. `Nonempty α` is a proof that `α` has an element, but the element itself is erased. The axiom `choice` supplies a particular element of `α` given only this proof.  The textbook axiom of choice normally makes a family of choices all at once, but that is implied from this formulation, because if `α : ι → Type` is a family of types and `h : ∀ i, Nonempty (α i)` is a proof that they are all nonempty, then `fun i => Classical.choice (h i) : ∀ i, α i` is a family of chosen elements. This is actually a bit stronger than the ZFC choice axiom; this is sometimes called "[global choice](https://en.wikipedia.org/wiki/Axiom_of_global_choice)".  In Lean, we use the axiom of choice to derive the law of excluded middle (see `Classical.em`), so it will often show up in axiom listings where you may not expect. You can use `#print axioms my_thm` to find out if a given theorem depends on this or other axioms.  This axiom can be used to construct "data", but obviously there is no algorithm to compute it, so Lean will require you to mark any definition that would involve executing `Classical.choice` or other axioms as `noncomputable`, and will not produce any executable code for such definitions. ;)
 (; //LEAN:Classical.choice ;)
 Classical__choice : (X : Set) -> (h : Proof (Nonempty X)) -> Elem X.
@@ -27,14 +31,6 @@ EmptyCollection__emptyCollection : (X : Set) -> Elem X.
 (; //LEAN:Eq ;)
 Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
-(; //LEAN:Eq.mp ;)
-Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
-
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: Non-dependent recursor for the equality type. ;)
 (; //LEAN:Eq.ndrec ;)
 Eq__ndrec : (X : Set) -> (a : Elem X) -> (motive : (Elem X -> Set)) -> (m : Elem (motive a)) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Elem (motive b).
@@ -53,7 +49,7 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. ;)
 (; //LEAN:Equiv ;)
@@ -139,10 +135,10 @@ Function__invFun : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x : Elem Y)
 
 (; doc: Replacing the value of a function at a given point by a given value. ;)
 (; //LEAN:Function.update ;)
-Function__update : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((a1 : Elem X) -> x a1)) -> (a' : Elem X) -> (v : Elem (x a')) -> (a : Elem X) -> Elem (x a).
+Function__update : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((a1 : Elem X) -> beta a1)) -> (a' : Elem X) -> (v : Elem (beta a')) -> (a : Elem X) -> Elem (beta a).
 
 (; //LEAN:Function.update_comp_eq_of_forall_ne' ;)
-Function__update_comp_eq_of_forall_ne' : (X : Set) -> (x : (Elem X -> Set)) -> (X1 : Set) -> (g : ((a1 : Elem X) -> x a1)) -> (f : (Elem X1 -> X)) -> (i : Elem X) -> (a : Elem (x i)) -> (h : Proof (forall X1 (x2 => Neq (f x2) i))) -> Proof (Eqt ((j : Elem X1) -> x (f j)) (j1 => Function__update X x g i a (f j1)) (j2 => g (f j2))).
+Function__update_comp_eq_of_forall_ne' : (X : Set) -> (beta : (Elem X -> Set)) -> (X1 : Set) -> (g : ((a1 : Elem X) -> beta a1)) -> (f : (Elem X1 -> X)) -> (i : Elem X) -> (a : Elem (beta i)) -> (h : Proof (forall X1 (x1 => Neq (f x1) i))) -> Proof (Eqt ((j : Elem X1) -> beta (f j)) (j1 => Function__update X beta g i a (f j1)) (j2 => g (f j2))).
 
 (; doc: Strict subset relation: `a ⊂ b`  Conventions for notations in identifiers:   * The recommended spelling of `⊂` in identifiers is `ssubset`. ;)
 (; //LEAN:HasSSubset.SSubset ;)
@@ -159,7 +155,7 @@ Iff__rfl : (a : Prop) -> Proof (iff a a).
 Iff__symm : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff b a).
 
 (; //LEAN:Iff.trans ;)
-Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h1 : Proof (iff a b)) -> (h2 : Proof (iff b c)) -> Proof (iff a c).
 
 (; doc: `insert x xs` inserts the element `x` into the collection `xs`. ;)
 (; //LEAN:Insert.insert ;)
@@ -221,11 +217,15 @@ Set__Elem : (X : Set) -> (s : Elem (powerset X)) -> Set.
 
 (; doc: Two functions `f₁ f₂ : α → β` are equal on `s` if `f₁ x = f₂ x` for all `x ∈ s`. ;)
 (; //LEAN:Set.EqOn ;)
-Set__EqOn : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+Set__EqOn : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: `f` is injective on `s` if the restriction of `f` to `s` is injective. ;)
 (; //LEAN:Set.InjOn ;)
 Set__InjOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+
+(; doc: **Alias** of the forward direction of `Set.injOn_iff_injective`. ;)
+(; //LEAN:Set.InjOn.injective ;)
+Set__InjOn__injective : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> (h : Proof (Set__InjOn X Y f s)) -> Proof (Function__Injective (Set__Elem X s) Y (Set__domRestrict X (a => Y) s f)).
 
 (; doc: `g` is an inverse to `f` viewed as a map from `s` to `t` ;)
 (; //LEAN:Set.InvOn ;)
@@ -262,7 +262,7 @@ Set__RightInvOn : (X : Set) -> (Y : Set) -> (g : (Elem Y -> X)) -> (f : (Elem X 
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Set.Subset.refl ;)
 Set__Subset__refl : (X : Set) -> (a : Elem (powerset X)) -> Proof (Set__Subset X a a).
@@ -287,6 +287,10 @@ Set__diagonal : (X : Set) -> Elem (powerset (Prod X X)).
 
 (; //LEAN:Set.diagonal_subset_iff ;)
 Set__diagonal_subset_iff : (X : Set) -> (s : Elem (powerset (Prod X X))) -> Proof (iff (Set__Subset (Prod X X) (Set__diagonal X) s) (forall X (x => Membership__mem (Prod X X) (powerset (Prod X X)) s (Prod__mk X X x x)))).
+
+(; doc: Restrict domain of a function `f` to a set `s`. Same as `Subtype.restrict` but this version takes an argument `↥s` instead of `Subtype s`. ;)
+(; //LEAN:Set.domRestrict ;)
+Set__domRestrict : (X : Set) -> (pi : (Elem X -> Set)) -> (s : Elem (powerset X)) -> (f : ((a1 : Elem X) -> pi a1)) -> (a : Elem (Set__Elem X s)) -> Elem (pi (Subtype__val X (x => Membership__mem X (powerset X) s x) a)).
 
 (; //LEAN:Set.empty_subset ;)
 Set__empty_subset : (X : Set) -> (s : Elem (powerset X)) -> Proof (Set__Subset X (EmptyCollection__emptyCollection (powerset X)) s).
@@ -315,6 +319,9 @@ Set__imageFactorization : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : 
 (; //LEAN:Set.imageFactorization._proof_1 ;)
 Set__imageFactorization___proof_1 : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (p : Elem (Set__Elem X s)) -> Proof (Membership__mem Y (powerset Y) (Set__image X Y f s) (f (Subtype__val X (x => Membership__mem X (powerset X) s x) p))).
 
+(; //LEAN:Set.image_fst_graphOn ;)
+Set__image_fst_graphOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__image (Prod X Y) X (Prod__fst X Y) (Set__graphOn X Y f s)) s).
+
 (; //LEAN:Set.image_mono ;)
 Set__image_mono : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X s t)) -> Proof (Set__Subset Y (Set__image X Y f s) (Set__image X Y f t)).
 
@@ -327,6 +334,9 @@ Set__image_subset_iff : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (t 
 
 (; //LEAN:Set.image_subset_range ;)
 Set__image_subset_range : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Proof (Set__Subset Y (Set__image X Y f s) (Set__range Y X f)).
+
+(; //LEAN:Set.injOn_iff_injective ;)
+Set__injOn_iff_injective : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (f : (Elem X -> Y)) -> Proof (iff (Set__InjOn X Y f s) (Function__Injective (Set__Elem X s) Y (Set__domRestrict X (a => Y) s f))).
 
 (; //LEAN:Set.insert_inj ;)
 Set__insert_inj : (X : Set) -> (s : Elem (powerset X)) -> (a : Elem X) -> (b : Elem X) -> (ha : Proof (not (Membership__mem X (powerset X) s a))) -> Proof (iff (Eqt (powerset X) (Insert__insert X (powerset X) a s) (Insert__insert X (powerset X) b s)) (Eqt X a b)).
@@ -454,7 +464,7 @@ by_contra : (p : Prop) -> (h : Proof (if (not p) false)) -> Proof p.
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
@@ -462,7 +472,7 @@ congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y))
 
 (; doc: **Alias** of `congrArg`. ;)
 (; //LEAN:congr_arg ;)
-congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: **Alias** of `congrArg₂`. ;)
 (; //LEAN:congr_arg₂ ;)
@@ -482,7 +492,7 @@ exists_apply_eq_apply___simp_1 : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -
 forall_u2082__or_left : (X : Set) -> (r : (Elem X -> Prop)) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> Proof (iff (forall X (x => if (or (p x) (q x)) (r x))) (and (forall X (x1 => if (p x1) (r x1))) (forall X (x2 => if (q x2) (r x2))))).
 
 (; //LEAN:funext_iff ;)
-funext_iff : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> (g : ((x3 : Elem X) -> x x3)) -> Proof (iff (Eqt ((x1 : Elem X) -> x x1) f g) (forall X (x2 => Eqt (x x2) (f x2) (g x2)))).
+funext_iff : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> beta x3)) -> (g : ((x2 : Elem X) -> beta x2)) -> Proof (iff (Eqt ((x : Elem X) -> beta x) f g) (forall X (x1 => Eqt (beta x1) (f x1) (g x1)))).
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)

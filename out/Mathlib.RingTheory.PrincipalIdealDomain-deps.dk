@@ -52,10 +52,6 @@ EmptyCollection__emptyCollection : (X : Set) -> Elem X.
 (; //LEAN:Eq ;)
 Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
 Eq__refl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
@@ -66,7 +62,7 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: A `EuclideanDomain` is a non-trivial commutative ring with a division and a remainder, satisfying `b * (a / b) + a % b = a`. The definition of a Euclidean domain usually includes a valuation function `R → ℕ`. This definition is slightly generalised to include a well-founded relation `r` with the property that `r (a % b) b`, instead of a valuation. ;)
 (; //LEAN:EuclideanDomain ;)
@@ -96,7 +92,7 @@ Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I ->
 Function__Surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
 
 (; //LEAN:Function.surjective_eval ;)
-Function__surjective_eval : (X : Set) -> (x : (Elem X -> Set)) -> (_ : Proof (forall X (a1 => Nonempty (x a1)))) -> (a : Elem X) -> Proof (Function__Surjective ((x1 : Elem X) -> x x1) (x a) (Function__eval X x a)).
+Function__surjective_eval : (X : Set) -> (beta : (Elem X -> Set)) -> (_ : Proof (forall X (a1 => Nonempty (beta a1)))) -> (a : Elem X) -> Proof (Function__Surjective ((x : Elem X) -> beta x) (beta a) (Function__eval X beta a)).
 
 (; doc: GCD monoid: a cancellative `CommMonoidWithZero` with `gcd` (greatest common divisor) and `lcm` (least common multiple) operations, determined up to a unit. The type class focuses on `gcd` and we derive the corresponding `lcm` facts from `gcd`. ;)
 (; //LEAN:GCDMonoid ;)
@@ -172,7 +168,7 @@ Ideal__submodule_span_eq : (X : Set) -> (_ : Proof (Semiring X)) -> (s : Elem (p
 Ideal__subset_span : (X : Set) -> (_ : Proof (Semiring X)) -> (s : Elem (powerset X)) -> Proof (Set__Subset X s (SetLike__coe (Ideal X) X (Ideal__span X s))).
 
 (; //LEAN:Iff.trans ;)
-Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h1 : Proof (iff a b)) -> (h2 : Proof (iff b c)) -> Proof (iff a c).
 
 (; doc: `insert x xs` inserts the element `x` into the collection `xs`. ;)
 (; //LEAN:Insert.insert ;)
@@ -242,7 +238,7 @@ IsUnit : (M : Set) -> (a : Elem M) -> Prop.
 
 (; doc: A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and `f (c • x) = (σ c) • f x`. Elements of `LinearMap σ M M₂` (available under the notation `M →ₛₗ[σ] M₂`) are bundled versions of such maps. For plain linear maps (i.e. for which `σ = RingHom.id R`), the notation `M →ₗ[R] M₂` is available. An unbundled version of plain linear maps is available with the predicate `IsLinearMap`, but it should be avoided most of the time. ;)
 (; //LEAN:LinearMap ;)
-LinearMap : (R : Set) -> (S : Set) -> (x2 : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> Set.
+LinearMap : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> Set.
 
 (; doc: If `O` is a submodule of `M`, and `Φ : O →ₗ M'` is a linear map, then `(ϕ : O →ₗ M').submoduleImage N` is `ϕ(N)` as a submodule of `M'` ;)
 (; //LEAN:LinearMap.submoduleImage ;)
@@ -309,6 +305,12 @@ PrincipalIdealRing__factors___proof_1 : (R : Set) -> (_ : Proof (CommRing R)) ->
 (; //LEAN:Prod ;)
 Prod : (X : Set) -> (Y : Set) -> Set.
 
+(; //LEAN:Prod.fst_surjective ;)
+Prod__fst_surjective : (X : Set) -> (Y : Set) -> Proof (Function__Surjective (Prod X Y) X (Prod__fst X Y)).
+
+(; //LEAN:Prod.snd_surjective ;)
+Prod__snd_surjective : (X : Set) -> (Y : Set) -> Proof (Function__Surjective (Prod X Y) Y (Prod__snd X Y)).
+
 (; doc: A `Ring` is a `Semiring` with negation making it an additive group. ;)
 (; //LEAN:Ring ;)
 Ring : (R : Set) -> Prop.
@@ -317,9 +319,17 @@ Ring : (R : Set) -> Prop.
 (; //LEAN:RingHom ;)
 RingHom : (X : Set) -> (Y : Set) -> Set.
 
+(; doc: Given semirings `R`, `S`, the natural projection homomorphism from `R × S` to `R`. ;)
+(; //LEAN:RingHom.fst ;)
+RingHom__fst : (R : Set) -> (S : Set) -> Elem (RingHom (Prod R S) R).
+
 (; doc: The identity ring homomorphism from a semiring to itself. ;)
 (; //LEAN:RingHom.id ;)
 RingHom__id : (X : Set) -> Elem (RingHom X X).
+
+(; doc: Given semirings `R`, `S`, the natural projection homomorphism from `R × S` to `S`. ;)
+(; //LEAN:RingHom.snd ;)
+RingHom__snd : (R : Set) -> (S : Set) -> Elem (RingHom (Prod R S) S).
 
 (; doc: Reinterpret a ring homomorphism `f : α →+* β` as a monoid homomorphism `α →* β`. The `simp`-normal form is `(f : α →* β)`. ;)
 (; //LEAN:RingHom.toMonoidHom ;)
@@ -337,7 +347,7 @@ Semiring__toModule : (R : Set) -> Elem (Module__on R R).
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; doc: The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that `f a = b` for some `a ∈ s`. ;)
 (; //LEAN:Set.image ;)
@@ -391,14 +401,14 @@ Submodule__IsPrincipal__span_singleton_generator : (R : Set) -> (M : Set) -> (_ 
 
 (; doc: The pullback of a submodule `p ⊆ M₂` along `f : M → M₂` ;)
 (; //LEAN:Submodule.comap ;)
-Submodule__comap : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (x6 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X x6 M X1)) -> (p : Elem (Submodule X X1)) -> Elem (Submodule R M).
+Submodule__comap : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (sigma12 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X sigma12 M X1)) -> (p : Elem (Submodule X X1)) -> Elem (Submodule R M).
 
 (; doc: The pushforward of a submodule `p ⊆ M` by `f : M → M₂` ;)
 (; //LEAN:Submodule.map ;)
-Submodule__map : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (x6 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X x6 M X1)) -> (p : Elem (Submodule R M)) -> Elem (Submodule X X1).
+Submodule__map : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (sigma12 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X sigma12 M X1)) -> (p : Elem (Submodule R M)) -> Elem (Submodule X X1).
 
 (; //LEAN:Submodule.map_span ;)
-Submodule__map_span : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (_ : Proof (Semiring X)) -> (x4 : Elem (RingHom R X)) -> (_ : Proof (AddCommMonoid X1)) -> (_ : Proof (Module X X1)) -> (f : Elem (LinearMap R X x4 M X1)) -> (s : Elem (powerset M)) -> Proof (Eqt (Submodule X X1) (Submodule__map R X M X1 x4 f (Submodule__span R M s)) (Submodule__span X X1 (Set__image M X1 f s))).
+Submodule__map_span : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (_ : Proof (Semiring X)) -> (sigma12 : Elem (RingHom R X)) -> (_ : Proof (AddCommMonoid X1)) -> (_ : Proof (Module X X1)) -> (f : Elem (LinearMap R X sigma12 M X1)) -> (s : Elem (powerset M)) -> Proof (Eqt (Submodule X X1) (Submodule__map R X M X1 sigma12 f (Submodule__span R M s)) (Submodule__span X X1 (Set__image M X1 f s))).
 
 (; doc: The span of a set `s ⊆ M` is the smallest submodule of M that contains `s`. ;)
 (; //LEAN:Submodule.span ;)
@@ -440,11 +450,11 @@ WfDvdMonoid__isRelPrime_of_no_irreducible_factors : (X : Set) -> (_ : Proof (Com
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
@@ -488,7 +498,7 @@ iff_not_comm : (a : Prop) -> (b : Prop) -> Proof (iff (iff a (not b)) (iff b (no
 iff_self : (p : Prop) -> Proof (Eqt Prop (iff p p) True).
 
 (; //LEAN:implies_congr ;)
-implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h : Proof (Eqt Set X X1)) -> (h1 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> X2) (Elem X1 -> X3)).
+implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h1 : Proof (Eqt Set X X1)) -> (h2 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> X2) (Elem X1 -> X3)).
 
 (; doc: `inferInstance` synthesizes a value of any target type by typeclass inference. This function has the same type signature as the identity function, but the square brackets on the `[i : α]` argument means that it will attempt to construct this argument by typeclass inference. (This will fail if `α` is not a `class`.) Example: ``` #check (inferInstance : Inhabited Nat) -- Inhabited Nat  def foo : Inhabited (Nat × Nat) :=   inferInstance  example : foo.default = (default, default) :=   rfl ``` ;)
 (; //LEAN:inferInstance ;)

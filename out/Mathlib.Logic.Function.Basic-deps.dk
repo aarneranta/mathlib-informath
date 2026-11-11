@@ -49,14 +49,6 @@ DecidableEq : (X : Set) -> Set.
 (; //LEAN:Eq ;)
 Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
-(; //LEAN:Eq.mp ;)
-Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
-
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: Non-dependent recursor for the equality type. ;)
 (; //LEAN:Eq.ndrec ;)
 Eq__ndrec : (X : Set) -> (a : Elem X) -> (motive : (Elem X -> Set)) -> (m : Elem (motive a)) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Elem (motive b).
@@ -77,7 +69,7 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: An equivalence relation `r : α → α → Prop` is a relation that is  * reflexive: `r x x`, * symmetric: `r x y` implies `r y x`, and * transitive: `r x y` and `r y z` implies `r x z`.  Equality is an equivalence relation, and equivalence relations share many of the properties of equality. ;)
 (; //LEAN:Equivalence ;)
@@ -110,7 +102,7 @@ ExistsUnique : (X : Set) -> (p : (Elem X -> Prop)) -> Prop.
 ExistsUnique__exists : (X : Set) -> (p : (Elem X -> Prop)) -> (h : Proof (ExistsUnique X (x1 => p x1))) -> Proof (exists X (x => p x)).
 
 (; //LEAN:ExistsUnique.unique ;)
-ExistsUnique__unique : (X : Set) -> (p : (Elem X -> Prop)) -> (h : Proof (ExistsUnique X (x2 => p x2))) -> (x : Elem X) -> (x1 : Elem X) -> (h1 : Proof (p x)) -> (h2 : Proof (p x1)) -> Proof (Eqt X x x1).
+ExistsUnique__unique : (X : Set) -> (p : (Elem X -> Prop)) -> (h : Proof (ExistsUnique X (x => p x))) -> (y1 : Elem X) -> (y2 : Elem X) -> (py1 : Proof (p y1)) -> (py2 : Proof (p y2)) -> Proof (Eqt X y1 y2).
 
 (; doc: A function is called bijective if it is both injective and surjective. ;)
 (; //LEAN:Function.Bijective ;)
@@ -144,7 +136,7 @@ Function__Injective__eq_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (
 Function__Injective__eq_iff' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (I : Proof (Function__Injective X Y f)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem Y) -> (h : Proof (Eqt Y (f b) c)) -> Proof (iff (Eqt Y (f a) c) (Eqt X a b)).
 
 (; //LEAN:Function.Injective.ne ;)
-Function__Injective__ne : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective X Y f)) -> (x : Elem X) -> (x1 : Elem X) -> (h : Proof (Neq x x1)) -> Proof (Neq (f x) (f x1)).
+Function__Injective__ne : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective X Y f)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h : Proof (Neq a1 a2)) -> Proof (Neq (f a1) (f a2)).
 
 (; doc: `LeftInverse g f` means that `g` is a left inverse to `f`. That is, `g ∘ f = id`. ;)
 (; //LEAN:Function.LeftInverse ;)
@@ -203,7 +195,7 @@ Function__rightInverse_of_injective_of_leftInverse : (X : Set) -> (Y : Set) -> (
 
 (; doc: For a two-argument function `f`, `swap f` is the same function but taking the arguments in the reverse order. `swap f y x = f x y`. ;)
 (; //LEAN:Function.swap ;)
-Function__swap : (X : Set) -> (Y : Set) -> (x : (Elem X -> Elem Y -> Set)) -> (f : ((x2 : Elem X) -> (y1 : Elem Y) -> x x2 y1)) -> (y : Elem Y) -> (x1 : Elem X) -> Elem (x x1 y).
+Function__swap : (X : Set) -> (Y : Set) -> (phi : (Elem X -> Elem Y -> Set)) -> (f : ((x1 : Elem X) -> (y1 : Elem Y) -> phi x1 y1)) -> (y : Elem Y) -> (x : Elem X) -> Elem (phi x y).
 
 (; doc: Transforms a two-parameter function into an equivalent function from pairs.  Examples: * `Function.uncurry List.drop (1, ["a", "b", "c"]) = ["b", "c"]` * `[("orange", 2), ("android", 3) ].map (Function.uncurry String.take) = ["or", "and"]` ;)
 (; //LEAN:Function.uncurry ;)
@@ -220,8 +212,11 @@ HEq : (X : Set) -> (x : Elem X) -> (Y : Set) -> (x1 : Elem Y) -> Prop.
 (; //LEAN:Iff.not ;)
 Iff__not : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff (not a) (not b)).
 
+(; //LEAN:Iff.of_eq ;)
+Iff__of_eq : (a : Prop) -> (b : Prop) -> (h : Proof (Eqt Prop a b)) -> Proof (iff a b).
+
 (; //LEAN:Iff.trans ;)
-Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h1 : Proof (iff a b)) -> (h2 : Proof (iff b c)) -> Proof (iff a c).
 
 (; doc: The inverse image of `r : β → β → Prop` by a function `α → β` is the relation `s : α → α → Prop` defined by `s a b = r (f a) (f b)`. ;)
 (; //LEAN:InvImage ;)
@@ -270,7 +265,7 @@ Nonempty : (X : Set) -> Prop.
 
 (; doc: The elimination principle for `Nonempty α`. If `Nonempty α`, and we can prove `p` given any element `x : α`, then `p` holds. Note that it is essential that `p` is a `Prop` here; the version with `p` being a `Sort u` is equivalent to `Classical.choice`. ;)
 (; //LEAN:Nonempty.elim ;)
-Nonempty__elim : (X : Set) -> (p : Prop) -> (h : Proof (Nonempty X)) -> (h1 : Proof (forall X (x => p))) -> Proof p.
+Nonempty__elim : (X : Set) -> (p : Prop) -> (h1 : Proof (Nonempty X)) -> (h2 : Proof (forall X (x => p))) -> Proof p.
 
 (; doc: If `val : α`, then `α` is nonempty. ;)
 (; //LEAN:Nonempty.intro ;)
@@ -319,7 +314,7 @@ Option__some__inj : (X : Set) -> (val : Elem X) -> (val1 : Elem X) -> (h : Proof
 
 (; doc: Sends a dependent function `a : ∀ i, α i` to a dependent function `Pi.map f a : ∀ i, β i` by applying `f i` to `i`-th component. ;)
 (; //LEAN:Pi.map ;)
-Pi__map : (I : Set) -> (x : (Elem I -> Set)) -> (x1 : (Elem I -> Set)) -> (f : ((i2 : Elem I) -> Elem (x i2) -> x1 i2)) -> (x2 : ((i1 : Elem I) -> x i1)) -> (i : Elem I) -> Elem (x1 i).
+Pi__map : (I : Set) -> (alpha : (Elem I -> Set)) -> (beta : (Elem I -> Set)) -> (f : ((i2 : Elem I) -> Elem (alpha i2) -> beta i2)) -> (x : ((i1 : Elem I) -> alpha i1)) -> (i : Elem I) -> Elem (beta i).
 
 (; doc: The product type, usually written `α × β`. Product types are also called pair or tuple types. Elements of this type are pairs in which the first element is an `α` and the second element is a `β`.  Products nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.  Conventions for notations in identifiers:   * The recommended spelling of `×` in identifiers is `Prod`. ;)
 (; //LEAN:Prod ;)
@@ -343,7 +338,11 @@ Prod__swap : (X : Set) -> (Y : Set) -> (x : Elem (Prod X Y)) -> Elem (Prod Y X).
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
+
+(; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
+(; //LEAN:Set.ofPred ;)
+Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
 
 (; doc: `Antisymm r` says that `r` is antisymmetric, that is, `r a b → r b a → a = b`. ;)
 (; //LEAN:Std.Antisymm ;)
@@ -391,7 +390,7 @@ Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> Elem Y -> 
 True : Prop.
 
 (; //LEAN:and_congr ;)
-and_congr : (a : Prop) -> (c : Prop) -> (b : Prop) -> (d : Prop) -> (h : Proof (iff a c)) -> (h1 : Proof (iff b d)) -> Proof (iff (and a b) (and c d)).
+and_congr : (a : Prop) -> (c : Prop) -> (b : Prop) -> (d : Prop) -> (h1 : Proof (iff a c)) -> (h2 : Proof (iff b d)) -> Proof (iff (and a b) (and c d)).
 
 (; doc: A version of `antisymm` with `r` explicit.  This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. ;)
 (; //LEAN:antisymm_of ;)
@@ -407,11 +406,11 @@ cast : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> El
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Congruence in the function part of an application: If `f = g` then `f a = g a`. ;)
 (; //LEAN:congrFun ;)
-congrFun : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> x x3)) -> (g : ((x2 : Elem X) -> x x2)) -> (h : Proof (Eqt ((x1 : Elem X) -> x x1) f g)) -> (a : Elem X) -> Proof (Eqt (x a) (f a) (g a)).
+congrFun : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x2 : Elem X) -> beta x2)) -> (g : ((x1 : Elem X) -> beta x1)) -> (h : Proof (Eqt ((x : Elem X) -> beta x) f g)) -> (a : Elem X) -> Proof (Eqt (beta a) (f a) (g a)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
@@ -419,11 +418,15 @@ congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y))
 
 (; doc: **Alias** of `congrArg`. ;)
 (; //LEAN:congr_arg ;)
-congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+
+(; doc: **Alias** of `congrArg₂`. ;)
+(; //LEAN:congr_arg₂ ;)
+congr_arg_u2082_ : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y -> Z)) -> (x : Elem X) -> (x' : Elem X) -> (y : Elem Y) -> (y' : Elem Y) -> (hx : Proof (Eqt X x x')) -> (hy : Proof (Eqt Y y y')) -> Proof (Eqt Z (f x y) (f x' y')).
 
 (; doc: **Alias** of `congrFun`. ;)
 (; //LEAN:congr_fun ;)
-congr_fun : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> x x3)) -> (g : ((x2 : Elem X) -> x x2)) -> (h : Proof (Eqt ((x1 : Elem X) -> x x1) f g)) -> (a : Elem X) -> Proof (Eqt (x a) (f a) (g a)).
+congr_fun : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x2 : Elem X) -> beta x2)) -> (g : ((x1 : Elem X) -> beta x1)) -> (h : Proof (Eqt ((x : Elem X) -> beta x) f g)) -> (a : Elem X) -> Proof (Eqt (beta a) (f a) (g a)).
 
 (; doc: Transfer decidability of `a` to decidability of `b`, if the propositions are equivalent. **Important**: this function should be used instead of `rw` on `Decidable b`, because the kernel will get stuck reducing the usage of `propext` otherwise, and `decide` will not work. ;)
 (; //LEAN:decidable_of_iff ;)
@@ -454,14 +457,17 @@ forall_congr' : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) ->
 
 (; doc: **Function extensionality.** If two functions return equal results for all possible arguments, then they are equal.  It is called “extensionality” because it provides a way to prove two objects equal based on the properties of the underlying mathematical functions, rather than based on the syntax used to denote them. Function extensionality is a theorem that can be [proved using quotient types](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=quotient-funext). ;)
 (; //LEAN:funext ;)
-funext : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> (g : ((x3 : Elem X) -> x x3)) -> (h : Proof (forall X (x2 => Eqt (x x2) (f x2) (g x2)))) -> Proof (Eqt ((x1 : Elem X) -> x x1) f g).
+funext : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> beta x3)) -> (g : ((x2 : Elem X) -> beta x2)) -> (h : Proof (forall X (x1 => Eqt (beta x1) (f x1) (g x1)))) -> Proof (Eqt ((x : Elem X) -> beta x) f g).
 
 (; //LEAN:funext_iff ;)
-funext_iff : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> (g : ((x3 : Elem X) -> x x3)) -> Proof (iff (Eqt ((x1 : Elem X) -> x x1) f g) (forall X (x2 => Eqt (x x2) (f x2) (g x2)))).
+funext_iff : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> beta x3)) -> (g : ((x2 : Elem X) -> beta x2)) -> Proof (iff (Eqt ((x : Elem X) -> beta x) f g) (forall X (x1 => Eqt (beta x1) (f x1) (g x1)))).
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
 id : (X : Set) -> (a : Elem X) -> Elem X.
+
+(; //LEAN:iff_not_self ;)
+iff_not_self : (a : Prop) -> Proof (not (iff a (not a))).
 
 (; doc: `if c then t else e` is notation for `ite c t e`, "if-then-else", which decides to return `t` or `e` depending on whether `c` is true or false. The explicit argument `c : Prop` does not have any actual computational content, but there is an additional `[Decidable c]` argument synthesized by typeclass inference which actually determines how to evaluate `c` to true or false. Write `if h : c then t else e` instead for a "dependent if-then-else" `dite`, which allows `t`/`e` to use the fact that `c` is true/false.  Conventions for notations in identifiers:   * The recommended spelling of `if c then t else e` in identifiers is `ite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:ite ;)

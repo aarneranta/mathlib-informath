@@ -1,5 +1,8 @@
 (; constants used by Mathlib.Algebra.BigOperators.Group.Finset.Basic, declared with their translated types ;)
 
+(; a constant applied as a function: DFunLike.coe ;)
+Equiv__symm__app : (a1 : Elem (Equiv I J)) -> (a2 : Elem J) -> Elem I.
+
 (; doc: Commutative version of `AddCancelMonoid`. ;)
 (; //LEAN:AddCancelCommMonoid ;)
 AddCancelCommMonoid : (M : Set) -> Prop.
@@ -52,14 +55,6 @@ EmptyCollection__emptyCollection : (X : Set) -> Elem X.
 (; //LEAN:Eq ;)
 Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
-(; //LEAN:Eq.mp ;)
-Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
-
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: Non-dependent recursor for the equality type. ;)
 (; //LEAN:Eq.ndrec ;)
 Eq__ndrec : (X : Set) -> (a : Elem X) -> (motive : (Elem X -> Set)) -> (m : Elem (motive a)) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Elem (motive b).
@@ -74,15 +69,11 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. ;)
 (; //LEAN:Equiv ;)
 Equiv : (X : Set) -> (Y : Set) -> Set.
-
-(; doc: Inverse of an equivalence `e : α ≃ β`. ;)
-(; //LEAN:Equiv.symm ;)
-Equiv__symm : (X : Set) -> (Y : Set) -> (e : Elem (Equiv X Y)) -> Elem (Equiv Y X).
 
 (; doc: Convert an `α ≃ β` to `α ↪ β`.  This is also available as a coercion `Equiv.coeEmbedding`. The explicit `Equiv.toEmbedding` version is preferred though, since the coercion can have issues inferring the type of the resulting embedding. For example:  ```lean -- Works: example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f.toEmbedding = s.map f := by simp -- Error, `f` has type `Fin 3 ≃ Fin 3` but is expected to have type `Fin 3 ↪ ?m_1 : Type ?` example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f = s.map f.toEmbedding := by simp ``` ;)
 (; //LEAN:Equiv.toEmbedding ;)
@@ -169,13 +160,13 @@ Finset__fold_image : (X : Set) -> (Y : Set) -> (Z : Set) -> (op : (Elem Y -> Ele
 Finset__fold_insert : (X : Set) -> (Y : Set) -> (op : (Elem Y -> Elem Y -> Y)) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (f : (Elem X -> Y)) -> (b : Elem Y) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (not (Membership__mem X (Finset X) s a))) -> Proof (Eqt Y (Finset__fold X Y op b f (Insert__insert X (Finset X) a s)) (op (f a) (Finset__fold X Y op b f s))).
 
 (; //LEAN:Finset.fold_op_distrib ;)
-Finset__fold_op_distrib : (X : Set) -> (Y : Set) -> (op : (Elem Y -> Elem Y -> Y)) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (x : Elem Y) -> (x1 : Elem Y) -> Proof (Eqt Y (Finset__fold X Y op (op x x1) (x2 => op (f x2) (g x2)) s) (op (Finset__fold X Y op x f s) (Finset__fold X Y op x1 g s))).
+Finset__fold_op_distrib : (X : Set) -> (Y : Set) -> (op : (Elem Y -> Elem Y -> Y)) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (b1 : Elem Y) -> (b2 : Elem Y) -> Proof (Eqt Y (Finset__fold X Y op (op b1 b2) (x => op (f x) (g x)) s) (op (Finset__fold X Y op b1 f s) (Finset__fold X Y op b2 g s))).
 
 (; //LEAN:Finset.fold_singleton ;)
 Finset__fold_singleton : (X : Set) -> (Y : Set) -> (op : (Elem Y -> Elem Y -> Y)) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (f : (Elem X -> Y)) -> (b : Elem Y) -> (a : Elem X) -> Proof (Eqt Y (Finset__fold X Y op b f (Singleton__singleton X (Finset X) a)) (op (f a) b)).
 
 (; //LEAN:Finset.fold_union_inter ;)
-Finset__fold_union_inter : (X : Set) -> (Y : Set) -> (op : (Elem Y -> Elem Y -> Y)) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (f : (Elem X -> Y)) -> (x1 : Elem (Finset X)) -> (x2 : Elem (Finset X)) -> (x3 : Elem Y) -> (x4 : Elem Y) -> Proof (Eqt Y (op (Finset__fold X Y op x3 f (Union__union (Finset X) x1 x2)) (Finset__fold X Y op x4 f (Inter__inter (Finset X) x1 x2))) (op (Finset__fold X Y op x4 f x1) (Finset__fold X Y op x3 f x2))).
+Finset__fold_union_inter : (X : Set) -> (Y : Set) -> (op : (Elem Y -> Elem Y -> Y)) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (f : (Elem X -> Y)) -> (s1 : Elem (Finset X)) -> (s2 : Elem (Finset X)) -> (b1 : Elem Y) -> (b2 : Elem Y) -> Proof (Eqt Y (op (Finset__fold X Y op b1 f (Union__union (Finset X) s1 s2)) (Finset__fold X Y op b2 f (Inter__inter (Finset X) s1 s2))) (op (Finset__fold X Y op b2 f s1) (Finset__fold X Y op b1 f s2))).
 
 (; doc: `image f s` is the forward image of `s` under `f`. ;)
 (; //LEAN:Finset.image ;)
@@ -218,7 +209,7 @@ Finset__prod_const_one : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (_ :
 Finset__range : (n : Elem Nat) -> Elem (Finset Nat).
 
 (; //LEAN:Finset.subset_union_left ;)
-Finset__subset_union_left : (X : Set) -> (x1 : Elem (Finset X)) -> (x2 : Elem (Finset X)) -> Proof (Set__Subset X x1 (Union__union (Finset X) x1 x2)).
+Finset__subset_union_left : (X : Set) -> (s1 : Elem (Finset X)) -> (s2 : Elem (Finset X)) -> Proof (Set__Subset X s1 (Union__union (Finset X) s1 s2)).
 
 (; //LEAN:Finset.subset_univ ;)
 Finset__subset_univ : (X : Set) -> (_ : Proof (Fintype X)) -> (s : Elem (Finset X)) -> Proof (Set__Subset X s (Finset__univ X)).
@@ -495,7 +486,7 @@ Set__PairwiseDisjoint : (X : Set) -> (I : Set) -> (s : Elem (powerset I)) -> (f 
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; doc: The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that `f a = b` for some `a ∈ s`. ;)
 (; //LEAN:Set.image ;)
@@ -620,11 +611,11 @@ by_cases : (p : Prop) -> (q : Prop) -> (hpq : Proof (if p q)) -> (hnpq : Proof (
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
@@ -632,7 +623,7 @@ congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y))
 
 (; doc: **Alias** of `congrArg`. ;)
 (; //LEAN:congr_arg ;)
-congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; //LEAN:div_eq_of_eq_mul' ;)
 div_eq_of_eq_mul' : (G : Set) -> (_ : Proof (CommGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> (h : Proof (Eqt G a (times b c))) -> Proof (Eqt G (div a b) c).
@@ -657,7 +648,7 @@ forall_const___simp_1 : (b : Prop) -> (X : Set) -> Proof (Eqt Prop (forall X (x 
 id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:implies_congr ;)
-implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h : Proof (Eqt Set X X1)) -> (h1 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> X2) (Elem X1 -> X3)).
+implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h1 : Proof (Eqt Set X X1)) -> (h2 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> X2) (Elem X1 -> X3)).
 
 (; //LEAN:isCompl_compl ;)
 isCompl_compl : (X : Set) -> (x : Elem X) -> (_ : Proof (BooleanAlgebra X)) -> Proof (IsCompl X x (Compl__compl X x)).

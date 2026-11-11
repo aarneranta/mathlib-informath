@@ -50,6 +50,14 @@ IsPrimal : (X : Set) -> (a : Elem X) -> Prop.
 (; //LEAN:IsUnit ;)
 IsUnit : (M : Set) -> (a : Elem M) -> Prop.
 
+(; doc: In a commutative monoid, an element `a` divides an element `b` iff all left associates of `a` divide `b`. ;)
+(; //LEAN:IsUnit.mul_left_dvd ;)
+IsUnit__mul_left_dvd : (X : Set) -> (_ : Proof (CommMonoid X)) -> (a : Elem X) -> (b : Elem X) -> (u : Elem X) -> (hu : Proof (IsUnit X u)) -> Proof (iff (divide (times u a) b) (divide a b)).
+
+(; doc: In a monoid, an element a divides an element b iff all associates of `a` divide `b`. ;)
+(; //LEAN:IsUnit.mul_right_dvd ;)
+IsUnit__mul_right_dvd : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) -> (b : Elem X) -> (u : Elem X) -> (hu : Proof (IsUnit X u)) -> Proof (iff (divide (times a u) b) (divide a b)).
+
 (; doc: A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. ;)
 (; //LEAN:Monoid ;)
 Monoid : (M : Set) -> Prop.
@@ -103,7 +111,7 @@ isUnit_one : (M : Set) -> (_ : Proof (Monoid M)) -> Proof (IsUnit M 1).
 left_ne_zero_of_mul : (X : Set) -> (_ : Proof (MulZeroClass X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Neq (times a b) 0)) -> Proof (Neq a 0).
 
 (; //LEAN:mt ;)
-mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
+mt : (a : Prop) -> (b : Prop) -> (h1 : Proof (if a b)) -> (h2 : Proof (not b)) -> Proof (not a).
 
 (; doc: Given two elements `b`, `c` of a cancellative `MonoidWithZero` and a nonzero element `a`, `a*b` divides `a*c` iff `b` divides `c`. ;)
 (; //LEAN:mul_dvd_mul_iff_left ;)
@@ -118,6 +126,9 @@ mul_one : (M : Set) -> (_ : Proof (MulOneClass M)) -> (a : Elem M) -> Proof (Eqt
 
 (; //LEAN:not_or ;)
 not_or : (p : Prop) -> (q : Prop) -> Proof (iff (not (or p q)) (and (not p) (not q))).
+
+(; //LEAN:of_irreducible_mul ;)
+of_irreducible_mul : (M : Set) -> (_ : Proof (Monoid M)) -> (a : Elem M) -> (b : Elem M) -> (h : Proof (Irreducible M (times a b))) -> Proof (or (IsUnit M a) (IsUnit M b)).
 
 (; //LEAN:one_dvd ;)
 one_dvd : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) -> Proof (divide 1 a).

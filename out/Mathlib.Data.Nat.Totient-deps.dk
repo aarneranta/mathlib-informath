@@ -2,7 +2,7 @@
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: **Alias** of the forward direction of `even_iff_two_dvd`. ;)
 (; //LEAN:Even.two_dvd ;)
@@ -73,7 +73,7 @@ Inv__inv : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: **Alias** of `le_of_le_of_eq`. ;)
 (; //LEAN:LE.le.trans_eq ;)
-LE__le__trans_eq : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LE X)) -> (h : Proof (Leq a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Leq a c).
+LE__le__trans_eq : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LE X)) -> (h1 : Proof (Leq a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Leq a c).
 
 (; doc: **Alias** of `ne_of_gt`. ;)
 (; //LEAN:LT.lt.ne' ;)
@@ -81,7 +81,7 @@ LT__lt__ne' : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem
 
 (; doc: **Alias** of `lt_of_lt_of_eq`. ;)
 (; //LEAN:LT.lt.trans_eq ;)
-LT__lt__trans_eq : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LT X)) -> (h : Proof (Lt a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Lt a c).
+LT__lt__trans_eq : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LT X)) -> (h1 : Proof (Lt a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Lt a c).
 
 (; doc: A `ParserDescr` is a grammar for parsers. This is used by the `syntax` command to produce parsers without having to `import Lean`. ;)
 (; //LEAN:Lean.ParserDescr ;)
@@ -154,11 +154,11 @@ and_self : (p : Prop) -> Proof (Eqt Prop (and p p) p).
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; //LEAN:eq_false ;)
 eq_false : (p : Prop) -> (h : Proof (not p)) -> Proof (Eqt Prop p false).

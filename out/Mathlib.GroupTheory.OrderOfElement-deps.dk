@@ -104,6 +104,13 @@ AddMonoid : (M : Set) -> Prop.
 (; //LEAN:AddMonoidHom ;)
 AddMonoidHom : (M : Set) -> (N : Set) -> Set.
 
+(; //LEAN:AddMonoidHom.map_nsmul ;)
+AddMonoidHom__map_nsmul : (M : Set) -> (N : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (AddMonoid N)) -> (f : Elem (AddMonoidHom M N)) -> (n : Elem Nat) -> (a : Elem M) -> Proof (Eqt N (f (HSMul__hSMul Nat M M n a)) (HSMul__hSMul Nat N N n (f a))).
+
+(; doc: If `f` is an additive monoid homomorphism then `f 0 = 0`. ;)
+(; //LEAN:AddMonoidHom.map_zero ;)
+AddMonoidHom__map_zero : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> Proof (Eqt N (f 0) 0).
+
 (; doc: An additive monoid in which addition is right-cancellative. Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is not enough. ;)
 (; //LEAN:AddRightCancelMonoid ;)
 AddRightCancelMonoid : (M : Set) -> Prop.
@@ -240,14 +247,6 @@ DivisionMonoid : (G : Set) -> Prop.
 (; //LEAN:Eq ;)
 Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
-(; //LEAN:Eq.mp ;)
-Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
-
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: Non-dependent recursor for the equality type. ;)
 (; //LEAN:Eq.ndrec ;)
 Eq__ndrec : (X : Set) -> (a : Elem X) -> (motive : (Elem X -> Set)) -> (m : Elem (motive a)) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Elem (motive b).
@@ -262,7 +261,7 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. ;)
 (; //LEAN:Equiv ;)
@@ -284,7 +283,7 @@ Equiv__symm : (X : Set) -> (Y : Set) -> (e : Elem (Equiv X Y)) -> Elem (Equiv Y 
 
 (; doc: Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. ;)
 (; //LEAN:Equiv.trans ;)
-Equiv__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem (Equiv X Y)) -> (x1 : Elem (Equiv Y Z)) -> Elem (Equiv X Z).
+Equiv__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (e1 : Elem (Equiv X Y)) -> (e2 : Elem (Equiv Y Z)) -> Elem (Equiv X Z).
 
 (; doc: Existential quantification. If `p : α → Prop` is a predicate, then `∃ x : α, p x` asserts that there is some `x` of type `α` such that `p x` holds. To create an existential proof, use the `exists` tactic, or the anonymous constructor notation `⟨x, h⟩`. To unpack an existential, use `cases h` where `h` is a proof of `∃ x : α, p x`, or `let ⟨x, hx⟩ := h`.  Because Lean has proof irrelevance, any two proofs of an existential are definitionally equal. One consequence of this is that it is impossible to recover the witness of an existential from the mere fact of its existence. For example, the following does not compile: ``` example (h : ∃ x : Nat, x = x) : Nat :=   let ⟨x, _⟩ := h  -- fail, because the goal is `Nat : Type`   x ``` The error message `recursor 'Exists.casesOn' can only eliminate into Prop` means that this only works when the current goal is another proposition: ``` example (h : ∃ x : Nat, x = x) : True :=   let ⟨x, _⟩ := h  -- ok, because the goal is `True : Prop`   trivial ``` ;)
 (; //LEAN:Exists ;)
@@ -293,6 +292,9 @@ Exists : (X : Set) -> (p : (Elem X -> Prop)) -> Prop.
 (; doc: Wrapper for adding elementary propositions to the type class systems. Warning: this can easily be abused. See the rest of this docstring for details.  Certain propositions should not be treated as a class globally, but sometimes it is very convenient to be able to use the type class system in specific circumstances.  For example, `ZMod p` is a field if and only if `p` is a prime number. In order to be able to find this field instance automatically by type class search, we have to turn `p.Prime` into an instance implicit assumption.  On the other hand, making `Nat.Prime` a class would require a major refactoring of the library, and it is questionable whether making `Nat.Prime` a class is desirable at all. The compromise is to add the assumption `[Fact p.Prime]` to `ZMod.instField`.  In particular, this class is not intended for turning the type class system into an automated theorem prover for first-order logic. ;)
 (; //LEAN:Fact ;)
 Fact : (p : Prop) -> Prop.
+
+(; //LEAN:Fact.elim ;)
+Fact__elim : (p : Prop) -> (h : Proof (Fact p)) -> Proof p.
 
 (; doc: Natural numbers less than some upper bound.  In particular, a `Fin n` is a natural number `i` with the constraint that `i < n`. It is the canonical type with `n` elements. ;)
 (; //LEAN:Fin ;)
@@ -319,7 +321,7 @@ Finset : (X : Set) -> Set.
 Finset__card : (X : Set) -> (s : Elem (Finset X)) -> Elem Nat.
 
 (; //LEAN:Finset.ext ;)
-Finset__ext : (X : Set) -> (x : Elem (Finset X)) -> (x1 : Elem (Finset X)) -> (h : Proof (forall X (a => iff (Membership__mem X (Finset X) x a) (Membership__mem X (Finset X) x1 a)))) -> Proof (Eqt (Finset X) x x1).
+Finset__ext : (X : Set) -> (s1 : Elem (Finset X)) -> (s2 : Elem (Finset X)) -> (h : Proof (forall X (a => iff (Membership__mem X (Finset X) s1 a) (Membership__mem X (Finset X) s2 a)))) -> Proof (Eqt (Finset X) s1 s2).
 
 (; doc: `Finset.filter p s` is the set of elements of `s` that satisfy `p`.  For example, one can use `s.filter (· ∈ t)` to get the intersection of `s` with `t : Set α` as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available). ;)
 (; //LEAN:Finset.filter ;)
@@ -396,10 +398,10 @@ Function__minimalPeriod_fst_dvd : (X : Set) -> (Y : Set) -> (f : (Elem X -> X)) 
 
 (; doc: This `sInf` can be regarded as a generalized version of LCM for possibly infinite sets and types. ;)
 (; //LEAN:Function.minimalPeriod_piMap ;)
-Function__minimalPeriod_piMap : (I : Set) -> (x : (Elem I -> Set)) -> (f : ((i3 : Elem I) -> Elem (x i3) -> x i3)) -> (x1 : ((i2 : Elem I) -> x i2)) -> Proof (Eq (Function__minimalPeriod ((i : Elem I) -> x i) (Pi__map I x x f) x1) (InfSet__sInf Nat (Set__ofPred Nat (n => and (Gt n 0) (forall I (i1 => divide (Function__minimalPeriod (x i1) (f i1) (x1 i1)) n)))))).
+Function__minimalPeriod_piMap : (I : Set) -> (alpha : (Elem I -> Set)) -> (f : ((i3 : Elem I) -> Elem (alpha i3) -> alpha i3)) -> (x : ((i2 : Elem I) -> alpha i2)) -> Proof (Eq (Function__minimalPeriod ((i : Elem I) -> alpha i) (Pi__map I alpha alpha f) x) (InfSet__sInf Nat (Set__ofPred Nat (n => and (Gt n 0) (forall I (i1 => divide (Function__minimalPeriod (alpha i1) (f i1) (x i1)) n)))))).
 
 (; //LEAN:Function.minimalPeriod_piMap_fintype ;)
-Function__minimalPeriod_piMap_fintype : (I : Set) -> (x : (Elem I -> Set)) -> (f : ((i3 : Elem I) -> Elem (x i3) -> x i3)) -> (x1 : ((i2 : Elem I) -> x i2)) -> (_ : Proof (Fintype I)) -> Proof (Eq (Function__minimalPeriod ((i : Elem I) -> x i) (Pi__map I x x f) x1) (Finset__lcm Nat I (Finset__univ I) (i1 => Function__minimalPeriod (x i1) (f i1) (x1 i1)))).
+Function__minimalPeriod_piMap_fintype : (I : Set) -> (alpha : (Elem I -> Set)) -> (f : ((i3 : Elem I) -> Elem (alpha i3) -> alpha i3)) -> (x : ((i2 : Elem I) -> alpha i2)) -> (_ : Proof (Fintype I)) -> Proof (Eq (Function__minimalPeriod ((i : Elem I) -> alpha i) (Pi__map I alpha alpha f) x) (Finset__lcm Nat I (Finset__univ I) (i1 => Function__minimalPeriod (alpha i1) (f i1) (x i1)))).
 
 (; //LEAN:Function.minimalPeriod_pos_of_mem_periodicPts ;)
 Function__minimalPeriod_pos_of_mem_periodicPts : (X : Set) -> (f : (Elem X -> X)) -> (x : Elem X) -> (hx : Proof (Membership__mem X (powerset X) (Function__periodicPts X f) x)) -> Proof (Lt 0 (Function__minimalPeriod X f x)).
@@ -408,7 +410,7 @@ Function__minimalPeriod_pos_of_mem_periodicPts : (X : Set) -> (f : (Elem X -> X)
 Function__minimalPeriod_prodMap : (X : Set) -> (Y : Set) -> (f : (Elem X -> X)) -> (g : (Elem Y -> Y)) -> (x : Elem (Prod X Y)) -> Proof (Eq (Function__minimalPeriod (Prod X Y) (Prod__map X X Y Y f g) x) (Nat__lcm (Function__minimalPeriod X f (Prod__fst X Y x)) (Function__minimalPeriod Y g (Prod__snd X Y x)))).
 
 (; //LEAN:Function.minimalPeriod_single_dvd_minimalPeriod_piMap ;)
-Function__minimalPeriod_single_dvd_minimalPeriod_piMap : (I : Set) -> (x : (Elem I -> Set)) -> (f : ((i3 : Elem I) -> Elem (x i3) -> x i3)) -> (x1 : ((i2 : Elem I) -> x i2)) -> (i : Elem I) -> Proof (divide (Function__minimalPeriod (x i) (f i) (x1 i)) (Function__minimalPeriod ((i1 : Elem I) -> x i1) (Pi__map I x x f) x1)).
+Function__minimalPeriod_single_dvd_minimalPeriod_piMap : (I : Set) -> (alpha : (Elem I -> Set)) -> (f : ((i3 : Elem I) -> Elem (alpha i3) -> alpha i3)) -> (x : ((i2 : Elem I) -> alpha i2)) -> (i : Elem I) -> Proof (divide (Function__minimalPeriod (alpha i) (f i) (x i)) (Function__minimalPeriod ((i1 : Elem I) -> alpha i1) (Pi__map I alpha alpha f) x)).
 
 (; //LEAN:Function.minimalPeriod_snd_dvd ;)
 Function__minimalPeriod_snd_dvd : (X : Set) -> (Y : Set) -> (f : (Elem X -> X)) -> (g : (Elem Y -> Y)) -> (x : Elem (Prod X Y)) -> Proof (divide (Function__minimalPeriod Y g (Prod__snd X Y x)) (Function__minimalPeriod (Prod X Y) (Prod__map X X Y Y f g) x)).
@@ -457,7 +459,7 @@ Iff__rfl : (a : Prop) -> Proof (iff a a).
 Iff__symm : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff b a).
 
 (; //LEAN:Iff.trans ;)
-Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h1 : Proof (iff a b)) -> (h2 : Proof (iff b c)) -> Proof (iff a c).
 
 (; doc: Infimum of a set ;)
 (; //LEAN:InfSet.sInf ;)
@@ -569,6 +571,13 @@ Monoid : (M : Set) -> Prop.
 (; //LEAN:MonoidHom ;)
 MonoidHom : (M : Set) -> (N : Set) -> Set.
 
+(; doc: If `f` is a monoid homomorphism then `f 1 = 1`. ;)
+(; //LEAN:MonoidHom.map_one ;)
+MonoidHom__map_one : (M : Set) -> (N : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> (f : Elem (MonoidHom M N)) -> Proof (Eqt N (f 1) 1).
+
+(; //LEAN:MonoidHom.map_pow ;)
+MonoidHom__map_pow : (M : Set) -> (N : Set) -> (_ : Proof (Monoid M)) -> (_ : Proof (Monoid N)) -> (f : Elem (MonoidHom M N)) -> (a : Elem M) -> (n : Elem Nat) -> Proof (Eqt N (f (pow a n)) (pow (f a) n)).
+
 (; doc: The monoid homomorphism including a single monoid into a dependent family of additive monoids, as functions supported at a point.  This is the `MonoidHom` version of `Pi.mulSingle`. ;)
 (; //LEAN:MonoidHom.mulSingle ;)
 MonoidHom__mulSingle : (I : Set) -> (f : (Elem I -> Set)) -> (i : Elem I) -> Elem (MonoidHom (f i) ((i1 : Elem I) -> f i1)).
@@ -618,6 +627,9 @@ Nat__cast : (R : Set) -> (x1 : Elem Nat) -> Elem R.
 (; doc: `divisors n` is the `Finset` of divisors of `n`. By convention, we set `divisors 0 = ∅`. ;)
 (; //LEAN:Nat.divisors ;)
 Nat__divisors : (n : Elem Nat) -> Elem (Finset Nat).
+
+(; //LEAN:Nat.dvd_prime_pow ;)
+Nat__dvd_prime_pow : (p : Elem Nat) -> (pp : Proof (prime p)) -> (m : Elem Nat) -> (i : Elem Nat) -> Proof (iff (divide i (pow p m)) (exists Nat (k => and (Leq k m) (Eq i (pow p k))))).
 
 (; doc: The extended GCD `b` value in the equation `gcd x y = x * a + y * b`. ;)
 (; //LEAN:Nat.gcdB ;)
@@ -937,7 +949,7 @@ add_zsmul : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (m : Elem I
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
@@ -982,14 +994,14 @@ forall_congr : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> 
 
 (; doc: **Function extensionality.** If two functions return equal results for all possible arguments, then they are equal.  It is called “extensionality” because it provides a way to prove two objects equal based on the properties of the underlying mathematical functions, rather than based on the syntax used to denote them. Function extensionality is a theorem that can be [proved using quotient types](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=quotient-funext). ;)
 (; //LEAN:funext ;)
-funext : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> (g : ((x3 : Elem X) -> x x3)) -> (h : Proof (forall X (x2 => Eqt (x x2) (f x2) (g x2)))) -> Proof (Eqt ((x1 : Elem X) -> x x1) f g).
+funext : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> beta x3)) -> (g : ((x2 : Elem X) -> beta x2)) -> (h : Proof (forall X (x1 => Eqt (beta x1) (f x1) (g x1)))) -> Proof (Eqt ((x : Elem X) -> beta x) f g).
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
 id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:implies_congr ;)
-implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h : Proof (Eqt Set X X1)) -> (h1 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> X2) (Elem X1 -> X3)).
+implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h1 : Proof (Eqt Set X X1)) -> (h2 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> X2) (Elem X1 -> X3)).
 
 (; //LEAN:implies_true ;)
 implies_true : (X : Set) -> Proof (Eqt Prop (forall X (x => True)) True).

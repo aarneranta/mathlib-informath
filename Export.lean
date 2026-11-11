@@ -81,15 +81,33 @@ def coercions : List Name :=
 def sortish (t : Expr) : Bool :=
   t.isSort || (t.isAppOfArity ``outParam 1 && t.appArg!.isSort)
 
+/-- A variable name in ASCII as Informath reads it: a Greek letter by its name
+(ε as epsilon, which Informath shows as \epsilon), a subscript digit as a digit
+(x₀ as x0, shown as x_{0}). -/
+def asciiName (s : String) : String :=
+  s.foldl (fun acc c => acc ++ match c with
+    | 'α' => "alpha" | 'β' => "beta" | 'γ' => "gamma" | 'δ' => "delta" | 'ε' => "epsilon"
+    | 'ζ' => "zeta" | 'η' => "eta" | 'θ' => "theta" | 'ι' => "iota" | 'κ' => "kappa"
+    | 'λ' => "lambda" | 'μ' => "mu" | 'ν' => "nu" | 'ξ' => "xi" | 'π' => "pi" | 'ρ' => "rho"
+    | 'σ' => "sigma" | 'τ' => "tau" | 'υ' => "upsilon" | 'φ' => "phi" | 'χ' => "chi"
+    | 'ψ' => "psi" | 'ω' => "omega" | 'Γ' => "Gamma" | 'Δ' => "Delta" | 'Θ' => "Theta"
+    | 'Λ' => "Lambda" | 'Ξ' => "Xi" | 'Π' => "Pi" | 'Σ' => "Sigma" | 'Φ' => "Phi"
+    | 'Ψ' => "Psi" | 'Ω' => "Omega"
+    | '₀' => "0" | '₁' => "1" | '₂' => "2" | '₃' => "3" | '₄' => "4" | '₅' => "5"
+    | '₆' => "6" | '₇' => "7" | '₈' => "8" | '₉' => "9"
+    | c => c.toString) ""
+
 /-- A variable name for a binder: the user's name if it is a plain identifier
 and free, else a fresh one. -/
 def freshName (n : Name) (prop : Bool) (sort : Bool := false) : M String := do
-  let base0 := (n.eraseMacroScopes.toString (escape := false))
+  let raw := (n.eraseMacroScopes.toString (escape := false))
+  -- the name the user gave, in ASCII, except a type's, which gets a Latin capital (below)
+  let base0 := if sort then raw else asciiName raw
   let ok := !base0.isEmpty && base0.all (fun c => c.isAlphanum || c == '_' || c == '\'') &&
     !(base0.toList.head?.map Char.isDigit |>.getD false) && !n.hasMacroScopes
   -- a Greek type variable (α : Type u) gets the Latin capital a textbook would
   -- use for a set: "Let X and Y be sets"
-  let latin := match base0 with
+  let latin := match raw with
     | "α" => "X" | "β" => "Y" | "γ" => "Z" | "δ" => "W" | "ι" => "I" | "κ" => "J"
     | "σ" => "S" | "τ" => "T" | "ω" => "U" | _ => "X"
   let base := if ok then base0 else if prop then "h" else if sort && !n.hasMacroScopes then latin else "x"
@@ -413,6 +431,33 @@ partial def hypoType (t : Expr) (inst : Bool := true) : M String := do
 
 /-- An application of a constant, with the special cases of the mapping. -/
 partial def app (c : Name) (args : Array Expr) (whole : Expr) : M String := do
+  -- pattern matching on a conjunction or an existential (fun δ ⟨δ_pos, Hf⟩ => t,
+  -- match h with | ⟨w, hw⟩ => t), which Lean compiles to a matcher: the matcher
+  -- unfolded to casesOn, and that to the elimination rules, And.left and
+  -- And.right in the body, or Exists.elim (existsE) with the body as its function
+  if ← Meta.isMatcher c then
+    if let some m ← Meta.matchMatcherApp? whole then
+      if m.discrs.size == 1 && m.alts.size == 1 && m.remaining.isEmpty then
+        let d := m.discrs[0]!
+        let dty ← whnfR (← inferType d)
+        let alt := m.alts[0]!
+        if dty.isAppOfArity ``And 2 then
+          let (a, b) := (dty.appFn!.appArg!, dty.appArg!)
+          let l := mkApp3 (.const ``And.left []) a b d
+          let r := mkApp3 (.const ``And.right []) a b d
+          return ← tr (← Core.betaReduce (mkApp2 alt l r))
+        if dty.isAppOfArity ``Exists 2 then
+          let (α, p) := (dty.appFn!.appArg!, dty.appArg!)
+          return ← tr (mkApp5 (.const ``Exists.elim [← getLevel α]) α p (← inferType whole) d alt)
+  if c == ``And.casesOn && args.size == 5 then
+    let (a, b, t, f) := (args[0]!, args[1]!, args[3]!, args[4]!)
+    let l := mkApp3 (.const ``And.left []) a b t
+    let r := mkApp3 (.const ``And.right []) a b t
+    return ← tr (← Core.betaReduce (mkApp2 f l r))
+  if c == ``Exists.casesOn && args.size == 5 then
+    let (α, p, t, f) := (args[0]!, args[1]!, args[3]!, args[4]!)
+    let u ← getLevel α
+    return ← tr (mkApp5 (.const ``Exists.elim [u]) α p (← inferType whole) t f)
   -- a coercion to a function, DFunLike.coe f x (n.factorization p): when f is
   -- an application of a constant, the constant applied to its explicit
   -- arguments and to x, as one constant c__app declared in the deps
@@ -481,6 +526,10 @@ partial def app (c : Name) (args : Array Expr) (whole : Expr) : M String := do
   -- f ∘ ⇑e) is the function itself
   if c == `DFunLike.coe && args.size == 5 then
     return ← tr args[4]!
+  -- a composition applied, (f ∘ g) x, is f (g x) by definition, and a textbook
+  -- writes it so (a symbol table entry words the composition itself, f ∘ g)
+  if c == ``Function.comp && args.size ≥ 6 then
+    return ← tr (mkAppN (.app args[3]! (.app args[4]! args[5]!)) (args.extract 6 args.size))
   -- outParam α is α, a hint to the elaborator
   if (c == ``outParam || c == ``semiOutParam) && args.size == 1 then
     return ← tr args[0]!
@@ -802,7 +851,7 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
                      |>.toBaseIO
           if (← IO.getEnv "EXPORT_DEBUG").isSome then
             match vres with
-            | .ok ((vs, _), _) => IO.eprintln s!"DEFN {n}: {vs.length} {(vs.take 300)}"
+            | .ok ((vs, _), _) => IO.eprintln s!"DEFN {n}: {vs.length} {vs}"
             | .error e => IO.eprintln s!"DEFN {n}: ERROR {e}"
           if let .ok ((vs, vst), _) := vres then
             -- compiled pattern matching (match_ functions, recursors) is not an

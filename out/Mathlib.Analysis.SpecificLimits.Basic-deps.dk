@@ -63,6 +63,9 @@ EDist__edist : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem ENNReal.
 (; //LEAN:ENNReal ;)
 ENNReal : Set.
 
+(; //LEAN:ENNReal.coe_pos ;)
+ENNReal__coe_pos : (r : Elem NNReal) -> Proof (iff (Lt 0 (ENNReal__ofNNReal r)) (Lt 0 r)).
+
 (; //LEAN:ENNReal.inv_lt_top._simp_1 ;)
 ENNReal__inv_lt_top___simp_1 : (x : Elem ENNReal) -> Proof (Eqt Prop (Lt (Inv__inv ENNReal x) (Top__top ENNReal)) (Lt 0 x)).
 
@@ -92,21 +95,13 @@ Encodable__encode_injective : (X : Set) -> (_ : Proof (Encodable X)) -> Proof (F
 (; //LEAN:Eq ;)
 Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
-(; //LEAN:Eq.mp ;)
-Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
-
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.symm ;)
 Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Proof (Eqt X b a).
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; //LEAN:Exists.imp ;)
 Exists__imp : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h : Proof (forall X (a2 => if (p a2) (q a2)))) -> (h1 : Proof (exists X (a1 => p a1))) -> Proof (exists X (a => q a)).
@@ -143,7 +138,7 @@ Filter__Ioi_mem_atTop : (X : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (NoT
 
 (; doc: `Filter.Tendsto` is the generic "limit of a function" predicate. `Tendsto f l₁ l₂` asserts that for every `l₂` neighborhood `a`, the `f`-preimage of `a` is an `l₁` neighborhood. ;)
 (; //LEAN:Filter.Tendsto ;)
-Filter__Tendsto : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x : Elem (Filter X)) -> (x1 : Elem (Filter Y)) -> Prop.
+Filter__Tendsto : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> Prop.
 
 (; doc: If a function `f` tends to infinity along a filter, then `f` multiplied by a positive constant (on the right) also tends to infinity. For a version working in `ℕ` or `ℤ`, use `Filter.Tendsto.atTop_mul_const'` instead. ;)
 (; //LEAN:Filter.Tendsto.atTop_mul_const ;)
@@ -153,10 +148,10 @@ Filter__Tendsto__atTop_mul_const : (X : Set) -> (Y : Set) -> (_ : Proof (Semifie
 Filter__Tendsto__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> Z)) -> (x : Elem (Filter X)) -> (y : Elem (Filter Y)) -> (z : Elem (Filter Z)) -> (hg : Proof (Filter__Tendsto Y Z g y z)) -> (hf : Proof (Filter__Tendsto X Y f x y)) -> Proof (Filter__Tendsto X Z (Function__comp X Y Z g f) x z).
 
 (; //LEAN:Filter.Tendsto.congr ;)
-Filter__Tendsto__congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem (Filter X)) -> (x3 : Elem (Filter Y)) -> (h : Proof (forall X (x4 => Eqt Y (x x4) (x1 x4)))) -> (h1 : Proof (Filter__Tendsto X Y x x2 x3)) -> Proof (Filter__Tendsto X Y x1 x2 x3).
+Filter__Tendsto__congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> (h : Proof (forall X (x => Eqt Y (f1 x) (f2 x)))) -> (h1 : Proof (Filter__Tendsto X Y f1 l1 l2)) -> Proof (Filter__Tendsto X Y f2 l1 l2).
 
 (; //LEAN:Filter.Tendsto.congr' ;)
-Filter__Tendsto__congr' : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem (Filter X)) -> (x3 : Elem (Filter Y)) -> (hl : Proof (Filter__EventuallyEq X Y x2 x x1)) -> (h : Proof (Filter__Tendsto X Y x x2 x3)) -> Proof (Filter__Tendsto X Y x1 x2 x3).
+Filter__Tendsto__congr' : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> (hl : Proof (Filter__EventuallyEq X Y l1 f1 f2)) -> (h : Proof (Filter__Tendsto X Y f1 l1 l2)) -> Proof (Filter__Tendsto X Y f2 l1 l2).
 
 (; doc: If `f` tends to infinity along a filter, then `f` multiplied by a positive constant (on the left) also tends to infinity. For a version working in `ℕ` or `ℤ`, use `Filter.Tendsto.const_mul_atTop'` instead. ;)
 (; //LEAN:Filter.Tendsto.const_mul_atTop ;)
@@ -207,7 +202,7 @@ Filter__tendsto_atTop_atTop_of_monotone' : (I : Set) -> (X : Set) -> (_ : Proof 
 Filter__tendsto_atTop_mono : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (forall X (n => Leq (f n) (g n)))) -> (h1 : Proof (Filter__Tendsto X Y f l (Filter__atTop Y))) -> Proof (Filter__Tendsto X Y g l (Filter__atTop Y)).
 
 (; //LEAN:Filter.tendsto_inf ;)
-Filter__tendsto_inf : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x : Elem (Filter X)) -> (x1 : Elem (Filter Y)) -> (x2 : Elem (Filter Y)) -> Proof (iff (Filter__Tendsto X Y f x (Min__min (Filter Y) x1 x2)) (and (Filter__Tendsto X Y f x x1) (Filter__Tendsto X Y f x x2))).
+Filter__tendsto_inf : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x : Elem (Filter X)) -> (y1 : Elem (Filter Y)) -> (y2 : Elem (Filter Y)) -> Proof (iff (Filter__Tendsto X Y f x (Min__min (Filter Y) y1 y2)) (and (Filter__Tendsto X Y f x y1) (Filter__Tendsto X Y f x y2))).
 
 (; //LEAN:Filter.tendsto_principal ;)
 Filter__tendsto_principal : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (s : Elem (powerset Y)) -> Proof (iff (Filter__Tendsto X Y f l (Filter__principal Y s)) (Filter__Eventually X (a => Membership__mem Y (powerset Y) s (f a)) l)).
@@ -277,7 +272,7 @@ LE__le__trans : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : El
 
 (; doc: **Alias** of `le_of_le_of_eq`. ;)
 (; //LEAN:LE.le.trans_eq ;)
-LE__le__trans_eq : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LE X)) -> (h : Proof (Leq a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Leq a c).
+LE__le__trans_eq : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LE X)) -> (h1 : Proof (Leq a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Leq a c).
 
 (; doc: **Alias** of `lt_of_le_of_lt`. ;)
 (; //LEAN:LE.le.trans_lt ;)
@@ -297,7 +292,7 @@ Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Pro
 
 (; doc: Given `f : β → ℝ`, if `f` sends `{i | p i}` to a set of positive numbers accumulating to zero, then `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.  For specific bases see `uniformity_basis_dist`, `uniformity_basis_dist_inv_nat_succ`, and `uniformity_basis_dist_inv_nat_pos`. ;)
 (; //LEAN:Metric.mk_uniformity_basis ;)
-Metric__mk_uniformity_basis : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (Y : Set) -> (p : (Elem Y -> Prop)) -> (f : (Elem Y -> Real)) -> (h : Proof (forall Y (i2 => if (p i2) (Lt 0 (f i2))))) -> (hf : Proof (forall Real (x1 => if (Lt 0 x1) (exists Y (i1 => and (p i1) (Leq (f i1) x1)))))) -> Proof (Filter__HasBasis (Prod X X) Y (uniformity X) p (i => Set__ofPred (Prod X X) (p1 => Lt (Dist__dist X (Prod__fst X X p1) (Prod__snd X X p1)) (f i)))).
+Metric__mk_uniformity_basis : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (Y : Set) -> (p : (Elem Y -> Prop)) -> (f : (Elem Y -> Real)) -> (hf0 : Proof (forall Y (i2 => if (p i2) (Lt 0 (f i2))))) -> (hf : Proof (forall Real (epsilon => if (Lt 0 epsilon) (exists Y (i1 => and (p i1) (Leq (f i1) epsilon)))))) -> Proof (Filter__HasBasis (Prod X X) Y (uniformity X) p (i => Set__ofPred (Prod X X) (p1 => Lt (Dist__dist X (Prod__fst X X p1) (Prod__snd X X p1)) (f i)))).
 
 (; doc: Returns the lesser of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `min` in identifiers is `min`.   * The recommended spelling of `⊓` in identifiers is `inf` (`⊓` is the preferred notation for `min` when the type is not linearly ordered.). ;)
 (; //LEAN:Min.min ;)
@@ -411,7 +406,7 @@ Set__Ioi : (X : Set) -> (b : Elem X) -> Elem (powerset X).
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Set.exists_range_iff ;)
 Set__exists_range_iff : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (p : (Elem X -> Prop)) -> Proof (iff (exists X (a => and (Membership__mem X (powerset X) (Set__range X I f) a) (p a))) (exists I (i => p (f i)))).
@@ -482,7 +477,7 @@ cauchySeq_of_dist_le_of_summable : (X : Set) -> (_ : Proof (PseudoMetricSpace X)
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
@@ -507,7 +502,7 @@ exists_pow_lt_of_lt_one : (K : Set) -> (_ : Proof (Semifield K)) -> (_ : Proof (
 
 (; doc: **Function extensionality.** If two functions return equal results for all possible arguments, then they are equal.  It is called “extensionality” because it provides a way to prove two objects equal based on the properties of the underlying mathematical functions, rather than based on the syntax used to denote them. Function extensionality is a theorem that can be [proved using quotient types](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=quotient-funext). ;)
 (; //LEAN:funext ;)
-funext : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> (g : ((x3 : Elem X) -> x x3)) -> (h : Proof (forall X (x2 => Eqt (x x2) (f x2) (g x2)))) -> Proof (Eqt ((x1 : Elem X) -> x x1) f g).
+funext : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> beta x3)) -> (g : ((x2 : Elem X) -> beta x2)) -> (h : Proof (forall X (x1 => Eqt (beta x1) (f x1) (g x1)))) -> Proof (Eqt ((x : Elem X) -> beta x) f g).
 
 (; //LEAN:geom_sum_eq ;)
 geom_sum_eq : (K : Set) -> (_ : Proof (DivisionRing K)) -> (x1 : Elem K) -> (h : Proof (Neq x1 1)) -> (n : Elem Nat) -> Proof (Eqt K (Finset__sum Nat K (Finset__range n) (i => pow x1 i)) (div (minus (pow x1 n) 1) (minus x1 1))).

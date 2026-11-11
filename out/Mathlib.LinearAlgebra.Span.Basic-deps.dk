@@ -109,7 +109,7 @@ CommSemiring : (R : Set) -> Prop.
 CovBy : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Prop.
 
 (; //LEAN:DFunLike.ext ;)
-DFunLike__ext : (F : Set) -> (X : Set) -> (x : (Elem X -> Set)) -> (f : Elem F) -> (g : Elem F) -> (h : Proof (forall X (x1 => Eqt (x x1) (f x1) (g x1)))) -> Proof (Eqt F f g).
+DFunLike__ext : (F : Set) -> (X : Set) -> (beta : (Elem X -> Set)) -> (f : Elem F) -> (g : Elem F) -> (h : Proof (forall X (x => Eqt (beta x) (f x) (g x)))) -> Proof (Eqt F f g).
 
 (; doc: Two elements of a lattice are disjoint if their inf is the bottom element.   (This generalizes disjoint sets, viewed as members of the subset lattice.)  Note that we define this without reference to `⊓`, as this allows us to talk about orders where the infimum is not unique, or where implementing `Inf` would require additional `Decidable` arguments. ;)
 (; //LEAN:Disjoint ;)
@@ -138,14 +138,6 @@ Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 (; //LEAN:Eq.ge ;)
 Eq__ge : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Eqt X a b)) -> Proof (Leq b a).
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
-(; //LEAN:Eq.mp ;)
-Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
-
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; //LEAN:Eq.not_lt ;)
 Eq__not_lt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Eqt X a b)) -> Proof (not (Lt a b)).
 
@@ -155,7 +147,7 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.  An instance of `Field K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`. Those two fields are needed to implement the `DivisionRing K → Algebra ℚ K` instance since we need to control the specific definitions for some special cases of `K` (in particular `K = ℚ` itself). See also note [forgetful inheritance].  If the field has positive characteristic `p`, our division by zero convention forces `ratCast (1 / p) = 1 / 0 = 0`. ;)
 (; //LEAN:Field ;)
@@ -181,7 +173,7 @@ HSMul__hSMul : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem
 Iff__symm : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff b a).
 
 (; //LEAN:Iff.trans ;)
-Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h1 : Proof (iff a b)) -> (h2 : Proof (iff b c)) -> Proof (iff a c).
 
 (; doc: A coatom of an `OrderTop` is an element with no other element between it and `⊤`, which is not `⊤`. ;)
 (; //LEAN:IsCoatom ;)
@@ -221,17 +213,17 @@ LE__le__trans : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : El
 
 (; doc: **Alias** of `le_of_le_of_eq`. ;)
 (; //LEAN:LE.le.trans_eq ;)
-LE__le__trans_eq : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LE X)) -> (h : Proof (Leq a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Leq a c).
+LE__le__trans_eq : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (_ : Proof (LE X)) -> (h1 : Proof (Leq a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Leq a c).
 
 (; doc: A linear equivalence is an invertible linear map. ;)
 (; //LEAN:LinearEquiv ;)
-LinearEquiv : (R : Set) -> (S : Set) -> (x2 : Elem (RingHom R S)) -> (x3 : Elem (RingHom S R)) -> (M : Set) -> (X : Set) -> Set.
+LinearEquiv : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (sigma' : Elem (RingHom S R)) -> (M : Set) -> (X : Set) -> Set.
 
 (; //LEAN:LinearEquiv.apply_symm_apply ;)
-LinearEquiv__apply_symm_apply : (R : Set) -> (S : Set) -> (M : Set) -> (X : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (AddCommMonoid X)) -> (module_M : Proof (Module R M)) -> (x4 : Proof (Module S X)) -> (x5 : Elem (RingHom R S)) -> (x6 : Elem (RingHom S R)) -> (h : Proof (RingHomInvPair R S x5 x6)) -> (h1 : Proof (RingHomInvPair S R x6 x5)) -> (e : Elem (LinearEquiv R S x5 x6 M X)) -> (c : Elem X) -> Proof (Eqt X (e (LinearEquiv__symm__app e c)) c).
+LinearEquiv__apply_symm_apply : (R : Set) -> (S : Set) -> (M : Set) -> (X : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (AddCommMonoid X)) -> (module_M : Proof (Module R M)) -> (module_S_M2 : Proof (Module S X)) -> (sigma : Elem (RingHom R S)) -> (sigma' : Elem (RingHom S R)) -> (re1 : Proof (RingHomInvPair R S sigma sigma')) -> (re2 : Proof (RingHomInvPair S R sigma' sigma)) -> (e : Elem (LinearEquiv R S sigma sigma' M X)) -> (c : Elem X) -> Proof (Eqt X (e (LinearEquiv__symm__app e c)) c).
 
 (; //LEAN:LinearEquiv.mk ;)
-LinearEquiv__mk : (R : Set) -> (S : Set) -> (x2 : Elem (RingHom R S)) -> (x3 : Elem (RingHom S R)) -> (M : Set) -> (X : Set) -> (toLinearMap : Elem (LinearMap R S x2 M X)) -> (invFun : (Elem X -> M)) -> (left_inv : Proof (autoParam (Function__LeftInverse M X invFun (AddHom__toFun M X (LinearMap__toAddHom R S x2 M X toLinearMap))) Equiv__left_inv___autoParam)) -> (right_inv : Proof (autoParam (Function__RightInverse M X invFun (AddHom__toFun M X (LinearMap__toAddHom R S x2 M X toLinearMap))) Equiv__right_inv___autoParam)) -> Elem (LinearEquiv R S x2 x3 M X).
+LinearEquiv__mk : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (sigma' : Elem (RingHom S R)) -> (M : Set) -> (X : Set) -> (toLinearMap : Elem (LinearMap R S sigma M X)) -> (invFun : (Elem X -> M)) -> (left_inv : Proof (autoParam (Function__LeftInverse M X invFun (AddHom__toFun M X (LinearMap__toAddHom R S sigma M X toLinearMap))) Equiv__left_inv___autoParam)) -> (right_inv : Proof (autoParam (Function__RightInverse M X invFun (AddHom__toFun M X (LinearMap__toAddHom R S sigma M X toLinearMap))) Equiv__right_inv___autoParam)) -> Elem (LinearEquiv R S sigma sigma' M X).
 
 (; doc: Linear equivalence between two equal submodules. ;)
 (; //LEAN:LinearEquiv.ofEq ;)
@@ -239,15 +231,15 @@ LinearEquiv__ofEq : (R : Set) -> (M : Set) -> (module_M : Proof (Module R M)) ->
 
 (; doc: An `Injective` linear map `f : M →ₗ[R] M₂` defines a linear equivalence between `M` and `f.range`. See also `LinearMap.ofLeftInverse`. ;)
 (; //LEAN:LinearEquiv.ofInjective ;)
-LinearEquiv__ofInjective : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (module_M : Proof (Module R M)) -> (x4 : Proof (Module X X1)) -> (x5 : Elem (RingHom R X)) -> (x6 : Elem (RingHom X R)) -> (f : Elem (LinearMap R X x5 M X1)) -> (h2 : Proof (Function__Injective M X1 f)) -> Elem (LinearEquiv R X x5 x6 M (Subtype X1 (x7 => Membership__mem X1 (Submodule X X1) (LinearMap__range R X M X1 x5 f) x7))).
+LinearEquiv__ofInjective : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (module_M : Proof (Module R M)) -> (module_M2 : Proof (Module X X1)) -> (sigma12 : Elem (RingHom R X)) -> (sigma21 : Elem (RingHom X R)) -> (f : Elem (LinearMap R X sigma12 M X1)) -> (h2 : Proof (Function__Injective M X1 f)) -> Elem (LinearEquiv R X sigma12 sigma21 M (Subtype X1 (x4 => Membership__mem X1 (Submodule X X1) (LinearMap__range R X M X1 sigma12 f) x4))).
 
 (; doc: Linear equivalences are symmetric. ;)
 (; //LEAN:LinearEquiv.symm ;)
-LinearEquiv__symm : (R : Set) -> (S : Set) -> (M : Set) -> (X : Set) -> (module_M : Proof (Module R M)) -> (x4 : Proof (Module S X)) -> (x5 : Elem (RingHom R S)) -> (x6 : Elem (RingHom S R)) -> (h : Proof (RingHomInvPair R S x5 x6)) -> (h1 : Proof (RingHomInvPair S R x6 x5)) -> (e : Elem (LinearEquiv R S x5 x6 M X)) -> Elem (LinearEquiv S R x6 x5 X M).
+LinearEquiv__symm : (R : Set) -> (S : Set) -> (M : Set) -> (X : Set) -> (module_M : Proof (Module R M)) -> (module_S_M2 : Proof (Module S X)) -> (sigma : Elem (RingHom R S)) -> (sigma' : Elem (RingHom S R)) -> (re1 : Proof (RingHomInvPair R S sigma sigma')) -> (re2 : Proof (RingHomInvPair S R sigma' sigma)) -> (e : Elem (LinearEquiv R S sigma sigma' M X)) -> Elem (LinearEquiv S R sigma' sigma X M).
 
 (; doc: The linear map underlying a linear equivalence. ;)
 (; //LEAN:LinearEquiv.toLinearMap ;)
-LinearEquiv__toLinearMap : (R : Set) -> (S : Set) -> (x2 : Elem (RingHom R S)) -> (x3 : Elem (RingHom S R)) -> (M : Set) -> (X : Set) -> (self : Elem (LinearEquiv R S x2 x3 M X)) -> Elem (LinearMap R S x2 M X).
+LinearEquiv__toLinearMap : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (sigma' : Elem (RingHom S R)) -> (M : Set) -> (X : Set) -> (self : Elem (LinearEquiv R S sigma sigma' M X)) -> Elem (LinearMap R S sigma M X).
 
 (; //LEAN:LinearEquiv.toSpanNonzeroSingleton._proof_3 ;)
 LinearEquiv__toSpanNonzeroSingleton___proof_3 : (R : Set) -> (_ : Proof (Ring R)) -> Proof (RingHomInvPair R R (RingHom__id R) (RingHom__id R)).
@@ -260,19 +252,19 @@ LinearEquiv__toSpanNonzeroSingleton___proof_5 : (R : Set) -> (M : Set) -> (_ : P
 
 (; doc: Linear equivalences are transitive. ;)
 (; //LEAN:LinearEquiv.trans ;)
-LinearEquiv__trans : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (X4 : Set) -> (X5 : Set) -> (x6 : Proof (Module X X3)) -> (x7 : Proof (Module X1 X4)) -> (x8 : Proof (Module X2 X5)) -> (x9 : Elem (RingHom X X1)) -> (x10 : Elem (RingHom X1 X)) -> (x11 : Elem (RingHom X X2)) -> (x12 : Elem (RingHom X2 X)) -> (x13 : Elem (RingHom X1 X2)) -> (x14 : Elem (RingHom X2 X1)) -> (h2 : Proof (RingHomInvPair X X1 x9 x10)) -> (h3 : Proof (RingHomInvPair X1 X2 x13 x14)) -> (h5 : Proof (RingHomInvPair X1 X x10 x9)) -> (h6 : Proof (RingHomInvPair X2 X1 x14 x13)) -> (x15 : Elem (LinearEquiv X X1 x9 x10 X3 X4)) -> (x16 : Elem (LinearEquiv X1 X2 x13 x14 X4 X5)) -> Elem (LinearEquiv X X2 x11 x12 X3 X5).
+LinearEquiv__trans : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (X4 : Set) -> (X5 : Set) -> (module_M1 : Proof (Module X X3)) -> (module_M2 : Proof (Module X1 X4)) -> (module_M3 : Proof (Module X2 X5)) -> (sigma12 : Elem (RingHom X X1)) -> (sigma21 : Elem (RingHom X1 X)) -> (sigma13 : Elem (RingHom X X2)) -> (sigma31 : Elem (RingHom X2 X)) -> (sigma23 : Elem (RingHom X1 X2)) -> (sigma32 : Elem (RingHom X2 X1)) -> (re12 : Proof (RingHomInvPair X X1 sigma12 sigma21)) -> (re23 : Proof (RingHomInvPair X1 X2 sigma23 sigma32)) -> (re21 : Proof (RingHomInvPair X1 X sigma21 sigma12)) -> (re32 : Proof (RingHomInvPair X2 X1 sigma32 sigma23)) -> (e12 : Elem (LinearEquiv X X1 sigma12 sigma21 X3 X4)) -> (e23 : Elem (LinearEquiv X1 X2 sigma23 sigma32 X4 X5)) -> Elem (LinearEquiv X X2 sigma13 sigma31 X3 X5).
 
 (; doc: A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and `f (c • x) = (σ c) • f x`. Elements of `LinearMap σ M M₂` (available under the notation `M →ₛₗ[σ] M₂`) are bundled versions of such maps. For plain linear maps (i.e. for which `σ = RingHom.id R`), the notation `M →ₗ[R] M₂` is available. An unbundled version of plain linear maps is available with the predicate `IsLinearMap`, but it should be avoided most of the time. ;)
 (; //LEAN:LinearMap ;)
-LinearMap : (R : Set) -> (S : Set) -> (x2 : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> Set.
+LinearMap : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> Set.
 
 (; doc: Composition of two linear maps is a linear map ;)
 (; //LEAN:LinearMap.comp ;)
-LinearMap__comp : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (X4 : Set) -> (X5 : Set) -> (x6 : Proof (Module X X3)) -> (x7 : Proof (Module X1 X4)) -> (x8 : Proof (Module X2 X5)) -> (x9 : Elem (RingHom X X1)) -> (x10 : Elem (RingHom X1 X2)) -> (x11 : Elem (RingHom X X2)) -> (f : Elem (LinearMap X1 X2 x10 X4 X5)) -> (g : Elem (LinearMap X X1 x9 X3 X4)) -> Elem (LinearMap X X2 x11 X3 X5).
+LinearMap__comp : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (X4 : Set) -> (X5 : Set) -> (module_M1 : Proof (Module X X3)) -> (module_M2 : Proof (Module X1 X4)) -> (module_M3 : Proof (Module X2 X5)) -> (sigma12 : Elem (RingHom X X1)) -> (sigma23 : Elem (RingHom X1 X2)) -> (sigma13 : Elem (RingHom X X2)) -> (f : Elem (LinearMap X1 X2 sigma23 X4 X5)) -> (g : Elem (LinearMap X X1 sigma12 X3 X4)) -> Elem (LinearMap X X2 sigma13 X3 X5).
 
 (; doc: The restriction of a linear map `f : M → M₂` to a submodule `p ⊆ M` gives a linear map `p → M₂`. ;)
 (; //LEAN:LinearMap.domRestrict ;)
-LinearMap__domRestrict : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (x6 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X x6 M X1)) -> (p : Elem (Submodule R M)) -> Elem (LinearMap R X x6 (Subtype M (x7 => Membership__mem M (Submodule R M) p x7)) X1).
+LinearMap__domRestrict : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (sigma12 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X sigma12 M X1)) -> (p : Elem (Submodule R M)) -> Elem (LinearMap R X sigma12 (Subtype M (x6 => Membership__mem M (Submodule R M) p x6)) X1).
 
 (; doc: Identity map as a `LinearMap` ;)
 (; //LEAN:LinearMap.id ;)
@@ -280,14 +272,14 @@ LinearMap__id : (R : Set) -> (M : Set) -> Elem (LinearMap R R (RingHom__id R) M 
 
 (; doc: The kernel of a linear map `f : M → M₂` is defined to be `comap f ⊥`. This is equivalent to the set of `x : M` such that `f x = 0`. The kernel is a submodule of `M`. ;)
 (; //LEAN:LinearMap.ker ;)
-LinearMap__ker : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (x6 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X x6 M X1)) -> Elem (Submodule R M).
+LinearMap__ker : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (tau12 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X tau12 M X1)) -> Elem (Submodule R M).
 
 (; //LEAN:LinearMap.mk ;)
-LinearMap__mk : (R : Set) -> (S : Set) -> (x2 : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> (toAddHom : Elem (AddHom M X)) -> (map_smul' : Proof (forall R (m => forall M (x7 => Eqt X (AddHom__toFun M X toAddHom (HSMul__hSMul R M M m x7)) (HSMul__hSMul S X X (x2 m) (AddHom__toFun M X toAddHom x7)))))) -> Elem (LinearMap R S x2 M X).
+LinearMap__mk : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> (toAddHom : Elem (AddHom M X)) -> (map_smul' : Proof (forall R (m => forall M (x6 => Eqt X (AddHom__toFun M X toAddHom (HSMul__hSMul R M M m x6)) (HSMul__hSMul S X X (sigma m) (AddHom__toFun M X toAddHom x6)))))) -> Elem (LinearMap R S sigma M X).
 
 (; doc: The range of a linear map `f : M → M₂` is a submodule of `M₂`. See Note [range copy pattern]. ;)
 (; //LEAN:LinearMap.range ;)
-LinearMap__range : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (x6 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X x6 M X1)) -> Elem (Submodule X X1).
+LinearMap__range : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (tau12 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X tau12 M X1)) -> Elem (Submodule X X1).
 
 (; doc: When `f` is an `R`-linear map taking values in `S`, then `fun b ↦ f b • x` is an `R`-linear map. ;)
 (; //LEAN:LinearMap.smulRight ;)
@@ -394,7 +386,7 @@ RingHom__id : (X : Set) -> Elem (RingHom X X).
 
 (; doc: Class that expresses the fact that two ring homomorphisms are inverses of each other. This is used to handle `symm` for semilinear equivalences. ;)
 (; //LEAN:RingHomInvPair ;)
-RingHomInvPair : (X : Set) -> (X1 : Set) -> (x2 : Elem (RingHom X X1)) -> (x3 : Elem (RingHom X1 X)) -> Prop.
+RingHomInvPair : (X : Set) -> (X1 : Set) -> (sigma : Elem (RingHom X X1)) -> (sigma' : Elem (RingHom X1 X)) -> Prop.
 
 (; //LEAN:RingHomInvPair.ids ;)
 RingHomInvPair__ids : (X : Set) -> (_ : Proof (Semiring X)) -> Proof (RingHomInvPair X X (RingHom__id X) (RingHom__id X)).
@@ -416,7 +408,7 @@ Set__Elem : (X : Set) -> (s : Elem (powerset X)) -> Set.
 
 (; doc: Two functions `f₁ f₂ : α → β` are equal on `s` if `f₁ x = f₂ x` for all `x ∈ s`. ;)
 (; //LEAN:Set.EqOn ;)
-Set__EqOn : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+Set__EqOn : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: A set is finite if the corresponding `Subtype` is finite, i.e., if there exists a natural `n : ℕ` and an equivalence `s ≃ Fin n`. ;)
 (; //LEAN:Set.Finite ;)
@@ -432,7 +424,7 @@ Set__Nonempty : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Set.forall_mem_range ;)
 Set__forall_mem_range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (p : (Elem X -> Prop)) -> Proof (iff (forall X (a => if (Membership__mem X (powerset X) (Set__range X I f) a) (p a))) (forall I (i => p (f i)))).
@@ -460,10 +452,10 @@ Set__mem_prod : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (t : Elem (
 Set__preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset Y)) -> Elem (powerset X).
 
 (; //LEAN:Set.prod_inter_prod ;)
-Set__prod_inter_prod : (X : Set) -> (Y : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> (x2 : Elem (powerset Y)) -> (x3 : Elem (powerset Y)) -> Proof (Eqt (powerset (Prod X Y)) (Inter__inter (powerset (Prod X Y)) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) x x2) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) x1 x3)) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) (Inter__inter (powerset X) x x1) (Inter__inter (powerset Y) x2 x3))).
+Set__prod_inter_prod : (X : Set) -> (Y : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (t1 : Elem (powerset Y)) -> (t2 : Elem (powerset Y)) -> Proof (Eqt (powerset (Prod X Y)) (Inter__inter (powerset (Prod X Y)) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) s1 t1) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) s2 t2)) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) (Inter__inter (powerset X) s1 s2) (Inter__inter (powerset Y) t1 t2))).
 
 (; //LEAN:Set.prod_mono ;)
-Set__prod_mono : (X : Set) -> (Y : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> (x2 : Elem (powerset Y)) -> (x3 : Elem (powerset Y)) -> (hs : Proof (Set__Subset X x x1)) -> (ht : Proof (Set__Subset Y x2 x3)) -> Proof (Set__Subset (Prod X Y) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) x x2) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) x1 x3)).
+Set__prod_mono : (X : Set) -> (Y : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (t1 : Elem (powerset Y)) -> (t2 : Elem (powerset Y)) -> (hs : Proof (Set__Subset X s1 s2)) -> (ht : Proof (Set__Subset Y t1 t2)) -> Proof (Set__Subset (Prod X Y) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) s1 t1) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) s2 t2)).
 
 (; doc: Range of a function.  This function is more flexible than `f '' univ`, as the image requires that the domain is in Type and not an arbitrary Sort. ;)
 (; //LEAN:Set.range ;)
@@ -500,7 +492,7 @@ Submodule__coe_iSup_of_chain : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)
 
 (; doc: The pullback of a submodule `p ⊆ M₂` along `f : M → M₂` ;)
 (; //LEAN:Submodule.comap ;)
-Submodule__comap : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (x6 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X x6 M X1)) -> (p : Elem (Submodule X X1)) -> Elem (Submodule R M).
+Submodule__comap : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (sigma12 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X sigma12 M X1)) -> (p : Elem (Submodule X X1)) -> Elem (Submodule R M).
 
 (; //LEAN:Submodule.eq_top_iff' ;)
 Submodule__eq_top_iff' : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (p : Elem (Submodule R M)) -> Proof (iff (Eqt (Submodule R M) p (Top__top (Submodule R M))) (forall M (x3 => Membership__mem M (Submodule R M) p x3))).
@@ -523,7 +515,7 @@ Submodule__linearMap_eq_iff_of_eq_span___proof_1 : (R : Set) -> (M : Set) -> (_ 
 
 (; doc: The pushforward of a submodule `p ⊆ M` by `f : M → M₂` ;)
 (; //LEAN:Submodule.map ;)
-Submodule__map : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (x6 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X x6 M X1)) -> (p : Elem (Submodule R M)) -> Elem (Submodule X X1).
+Submodule__map : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (sigma12 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X sigma12 M X1)) -> (p : Elem (Submodule R M)) -> Elem (Submodule X X1).
 
 (; //LEAN:Submodule.mem_iSup_of_mem ;)
 Submodule__mem_iSup_of_mem : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (I : Set) -> (b : Elem M) -> (p : (Elem I -> Submodule R M)) -> (i : Elem I) -> (h : Proof (Membership__mem M (Submodule R M) (p i) b)) -> Proof (Membership__mem M (Submodule R M) (iSup (Submodule R M) I (i1 => p i1)) b).
@@ -538,13 +530,13 @@ Submodule__mk : (R : Set) -> (M : Set) -> (toAddSubmonoid : Elem (AddSubmonoid M
 Submodule__module : (R : Set) -> (M : Set) -> (module_M : Proof (Module R M)) -> (p : Elem (Submodule R M)) -> Elem (Module__on R (Subtype M (x2 => Membership__mem M (Submodule R M) p x2))).
 
 (; //LEAN:Submodule.prod._proof_1 ;)
-Submodule__prod___proof_1 : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (p : Elem (Submodule R M)) -> (M' : Set) -> (_ : Proof (AddCommMonoid M')) -> (_ : Proof (Module R M')) -> (x5 : Elem (Submodule R M')) -> (c : Elem R) -> (x6 : Elem (Prod M M')) -> (h : Proof (Membership__mem (Prod M M') (powerset (Prod M M')) (SProd__sprod (powerset M) (powerset M') (powerset (Prod M M')) (SetLike__coe (Submodule R M) M p) (SetLike__coe (Submodule R M') M' x5)) x6)) -> Proof (Membership__mem (Prod M M') (powerset (Prod M M')) (SProd__sprod (powerset M) (powerset M') (powerset (Prod M M')) (SetLike__coe (Submodule R M) M p) (SetLike__coe (Submodule R M') M' x5)) (HSMul__hSMul R (Prod M M') (Prod M M') c x6)).
+Submodule__prod___proof_1 : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (p : Elem (Submodule R M)) -> (M' : Set) -> (_ : Proof (AddCommMonoid M')) -> (_ : Proof (Module R M')) -> (q1 : Elem (Submodule R M')) -> (c : Elem R) -> (x5 : Elem (Prod M M')) -> (h : Proof (Membership__mem (Prod M M') (powerset (Prod M M')) (SProd__sprod (powerset M) (powerset M') (powerset (Prod M M')) (SetLike__coe (Submodule R M) M p) (SetLike__coe (Submodule R M') M' q1)) x5)) -> Proof (Membership__mem (Prod M M') (powerset (Prod M M')) (SProd__sprod (powerset M) (powerset M') (powerset (Prod M M')) (SetLike__coe (Submodule R M) M p) (SetLike__coe (Submodule R M') M' q1)) (HSMul__hSMul R (Prod M M') (Prod M M') c x5)).
 
 (; //LEAN:Submodule.prod._proof_2 ;)
-Submodule__prod___proof_2 : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (p : Elem (Submodule R M)) -> (M' : Set) -> (_ : Proof (AddCommMonoid M')) -> (_ : Proof (Module R M')) -> (x5 : Elem (Submodule R M')) -> (a : Elem (Prod M M')) -> (b : Elem (Prod M M')) -> (h : Proof (Membership__mem (Prod M M') (powerset (Prod M M')) (AddSubsemigroup__carrier (Prod M M') (AddSubmonoid__toAddSubsemigroup (Prod M M') (AddSubmonoid__prod M' M (Submodule__toAddSubmonoid R M p) (Submodule__toAddSubmonoid R M' x5)))) a)) -> (h1 : Proof (Membership__mem (Prod M M') (powerset (Prod M M')) (AddSubsemigroup__carrier (Prod M M') (AddSubmonoid__toAddSubsemigroup (Prod M M') (AddSubmonoid__prod M' M (Submodule__toAddSubmonoid R M p) (Submodule__toAddSubmonoid R M' x5)))) b)) -> Proof (Membership__mem (Prod M M') (powerset (Prod M M')) (AddSubsemigroup__carrier (Prod M M') (AddSubmonoid__toAddSubsemigroup (Prod M M') (AddSubmonoid__prod M' M (Submodule__toAddSubmonoid R M p) (Submodule__toAddSubmonoid R M' x5)))) (plus a b)).
+Submodule__prod___proof_2 : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (p : Elem (Submodule R M)) -> (M' : Set) -> (_ : Proof (AddCommMonoid M')) -> (_ : Proof (Module R M')) -> (q1 : Elem (Submodule R M')) -> (a : Elem (Prod M M')) -> (b : Elem (Prod M M')) -> (h : Proof (Membership__mem (Prod M M') (powerset (Prod M M')) (AddSubsemigroup__carrier (Prod M M') (AddSubmonoid__toAddSubsemigroup (Prod M M') (AddSubmonoid__prod M' M (Submodule__toAddSubmonoid R M p) (Submodule__toAddSubmonoid R M' q1)))) a)) -> (h1 : Proof (Membership__mem (Prod M M') (powerset (Prod M M')) (AddSubsemigroup__carrier (Prod M M') (AddSubmonoid__toAddSubsemigroup (Prod M M') (AddSubmonoid__prod M' M (Submodule__toAddSubmonoid R M p) (Submodule__toAddSubmonoid R M' q1)))) b)) -> Proof (Membership__mem (Prod M M') (powerset (Prod M M')) (AddSubsemigroup__carrier (Prod M M') (AddSubmonoid__toAddSubsemigroup (Prod M M') (AddSubmonoid__prod M' M (Submodule__toAddSubmonoid R M p) (Submodule__toAddSubmonoid R M' q1)))) (plus a b)).
 
 (; //LEAN:Submodule.prod._proof_3 ;)
-Submodule__prod___proof_3 : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (p : Elem (Submodule R M)) -> (M' : Set) -> (_ : Proof (AddCommMonoid M')) -> (_ : Proof (Module R M')) -> (x5 : Elem (Submodule R M')) -> Proof (Membership__mem (Prod M M') (powerset (Prod M M')) (AddSubsemigroup__carrier (Prod M M') (AddSubmonoid__toAddSubsemigroup (Prod M M') (AddSubmonoid__prod M' M (Submodule__toAddSubmonoid R M p) (Submodule__toAddSubmonoid R M' x5)))) 0).
+Submodule__prod___proof_3 : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (p : Elem (Submodule R M)) -> (M' : Set) -> (_ : Proof (AddCommMonoid M')) -> (_ : Proof (Module R M')) -> (q1 : Elem (Submodule R M')) -> Proof (Membership__mem (Prod M M') (powerset (Prod M M')) (AddSubsemigroup__carrier (Prod M M') (AddSubmonoid__toAddSubsemigroup (Prod M M') (AddSubmonoid__prod M' M (Submodule__toAddSubmonoid R M p) (Submodule__toAddSubmonoid R M' q1)))) 0).
 
 (; //LEAN:Submodule.prodEquiv._proof_1 ;)
 Submodule__prodEquiv___proof_1 : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (M' : Set) -> (_ : Proof (AddCommMonoid M')) -> (_ : Proof (Module R M')) -> (p : Elem (Submodule R M)) -> (q : Elem (Submodule R M')) -> Proof (Function__LeftInverse (Subtype (Prod M M') (x5 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x5)) (Prod (Subtype M (x6 => Membership__mem M (Submodule R M) p x6)) (Subtype M' (x7 => Membership__mem M' (Submodule R M') q x7))) (y => Subtype__mk (Prod M M') (x8 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x8) (Prod__mk M M' (Subtype__val M (x9 => Membership__mem M (Submodule R M) p x9) (Prod__fst (Subtype M (x10 => Membership__mem M (Submodule R M) p x10)) (Subtype M' (x11 => Membership__mem M' (Submodule R M') q x11)) y)) (Subtype__val M' (x12 => Membership__mem M' (Submodule R M') q x12) (Prod__snd (Subtype M (x13 => Membership__mem M (Submodule R M) p x13)) (Subtype M' (x14 => Membership__mem M' (Submodule R M') q x14)) y))) (iffEr (Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) (Prod__mk M M' (Subtype__val M (x15 => Membership__mem M (Submodule R M) p x15) (Prod__fst (Subtype M (x16 => Membership__mem M (Submodule R M) p x16)) (Subtype M' (x17 => Membership__mem M' (Submodule R M') q x17)) y)) (Subtype__val M' (x18 => Membership__mem M' (Submodule R M') q x18) (Prod__snd (Subtype M (x19 => Membership__mem M (Submodule R M) p x19)) (Subtype M' (x20 => Membership__mem M' (Submodule R M') q x20)) y)))) (and (Membership__mem M (Submodule R M) p (Prod__fst M M' (Prod__mk M M' (Subtype__val M (x21 => Membership__mem M (Submodule R M) p x21) (Prod__fst (Subtype M (x22 => Membership__mem M (Submodule R M) p x22)) (Subtype M' (x23 => Membership__mem M' (Submodule R M') q x23)) y)) (Subtype__val M' (x24 => Membership__mem M' (Submodule R M') q x24) (Prod__snd (Subtype M (x25 => Membership__mem M (Submodule R M) p x25)) (Subtype M' (x26 => Membership__mem M' (Submodule R M') q x26)) y))))) (Membership__mem M' (Submodule R M') q (Prod__snd M M' (Prod__mk M M' (Subtype__val M (x27 => Membership__mem M (Submodule R M) p x27) (Prod__fst (Subtype M (x28 => Membership__mem M (Submodule R M) p x28)) (Subtype M' (x29 => Membership__mem M' (Submodule R M') q x29)) y)) (Subtype__val M' (x30 => Membership__mem M' (Submodule R M') q x30) (Prod__snd (Subtype M (x31 => Membership__mem M (Submodule R M) p x31)) (Subtype M' (x32 => Membership__mem M' (Submodule R M') q x32)) y)))))) (Submodule__mem_prod R M M' p q (Prod__mk M M' (Subtype__val M (x33 => Membership__mem M (Submodule R M) p x33) (Prod__fst (Subtype M (x34 => Membership__mem M (Submodule R M) p x34)) (Subtype M' (x35 => Membership__mem M' (Submodule R M') q x35)) y)) (Subtype__val M' (x36 => Membership__mem M' (Submodule R M') q x36) (Prod__snd (Subtype M (x37 => Membership__mem M (Submodule R M) p x37)) (Subtype M' (x38 => Membership__mem M' (Submodule R M') q x38)) y)))) (andI (Membership__mem M (Submodule R M) p (Prod__fst M M' (Prod__mk M M' (Subtype__val M (x39 => Membership__mem M (Submodule R M) p x39) (Prod__fst (Subtype M (x40 => Membership__mem M (Submodule R M) p x40)) (Subtype M' (x41 => Membership__mem M' (Submodule R M') q x41)) y)) (Subtype__val M' (x42 => Membership__mem M' (Submodule R M') q x42) (Prod__snd (Subtype M (x43 => Membership__mem M (Submodule R M) p x43)) (Subtype M' (x44 => Membership__mem M' (Submodule R M') q x44)) y))))) (Membership__mem M' (Submodule R M') q (Prod__snd M M' (Prod__mk M M' (Subtype__val M (x45 => Membership__mem M (Submodule R M) p x45) (Prod__fst (Subtype M (x46 => Membership__mem M (Submodule R M) p x46)) (Subtype M' (x47 => Membership__mem M' (Submodule R M') q x47)) y)) (Subtype__val M' (x48 => Membership__mem M' (Submodule R M') q x48) (Prod__snd (Subtype M (x49 => Membership__mem M (Submodule R M) p x49)) (Subtype M' (x50 => Membership__mem M' (Submodule R M') q x50)) y))))) (Subtype__property M (x51 => Membership__mem M (Submodule R M) p x51) (Prod__fst (Subtype M (x52 => Membership__mem M (Submodule R M) p x52)) (Subtype M' (x53 => Membership__mem M' (Submodule R M') q x53)) y)) (Subtype__property M' (x54 => Membership__mem M' (Submodule R M') q x54) (Prod__snd (Subtype M (x55 => Membership__mem M (Submodule R M) p x55)) (Subtype M' (x56 => Membership__mem M' (Submodule R M') q x56)) y))))) (x57 => Prod__mk (Subtype M (x58 => Membership__mem M (Submodule R M) p x58)) (Subtype M' (x59 => Membership__mem M' (Submodule R M') q x59)) (Subtype__mk M (x60 => Membership__mem M (Submodule R M) p x60) (Prod__fst M M' (Subtype__val (Prod M M') (x61 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x61) x57)) (andEl (Membership__mem M (Submodule R M) p (Prod__fst M M' (Subtype__val (Prod M M') (x62 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x62) x57))) (Membership__mem M' (Submodule R M') q (Prod__snd M M' (Subtype__val (Prod M M') (x63 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x63) x57))) (iffEl (Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) (Subtype__val (Prod M M') (x64 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x64) x57)) (and (Membership__mem M (Submodule R M) p (Prod__fst M M' (Subtype__val (Prod M M') (x65 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x65) x57))) (Membership__mem M' (Submodule R M') q (Prod__snd M M' (Subtype__val (Prod M M') (x66 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x66) x57)))) (Submodule__mem_prod R M M' p q (Subtype__val (Prod M M') (x67 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x67) x57)) (Subtype__property (Prod M M') (x68 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x68) x57)))) (Subtype__mk M' (x69 => Membership__mem M' (Submodule R M') q x69) (Prod__snd M M' (Subtype__val (Prod M M') (x70 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x70) x57)) (andEr (Membership__mem M (Submodule R M) p (Prod__fst M M' (Subtype__val (Prod M M') (x71 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x71) x57))) (Membership__mem M' (Submodule R M') q (Prod__snd M M' (Subtype__val (Prod M M') (x72 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x72) x57))) (iffEl (Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) (Subtype__val (Prod M M') (x73 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x73) x57)) (and (Membership__mem M (Submodule R M) p (Prod__fst M M' (Subtype__val (Prod M M') (x74 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x74) x57))) (Membership__mem M' (Submodule R M') q (Prod__snd M M' (Subtype__val (Prod M M') (x75 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x75) x57)))) (Submodule__mem_prod R M M' p q (Subtype__val (Prod M M') (x76 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x76) x57)) (Subtype__property (Prod M M') (x77 => Membership__mem (Prod M M') (Submodule R (Prod M M')) (Submodule__prod R M p M' q) x77) x57)))))).
@@ -585,7 +577,7 @@ Submodule__span : (R : Set) -> (M : Set) -> (s : Elem (powerset M)) -> Elem (Sub
 Submodule__span_eq : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (p : Elem (Submodule R M)) -> Proof (Eqt (Submodule R M) (Submodule__span R M (SetLike__coe (Submodule R M) M p)) p).
 
 (; //LEAN:Submodule.span_eq_of_le ;)
-Submodule__span_eq_of_le : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (p : Elem (Submodule R M)) -> (s : Elem (powerset M)) -> (h : Proof (Set__Subset M s (SetLike__coe (Submodule R M) M p))) -> (h1 : Proof (Leq p (Submodule__span R M s))) -> Proof (Eqt (Submodule R M) (Submodule__span R M s) p).
+Submodule__span_eq_of_le : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (p : Elem (Submodule R M)) -> (s : Elem (powerset M)) -> (h1 : Proof (Set__Subset M s (SetLike__coe (Submodule R M) M p))) -> (h2 : Proof (Leq p (Submodule__span R M s))) -> Proof (Eqt (Submodule R M) (Submodule__span R M s) p).
 
 (; //LEAN:Submodule.span_le ;)
 Submodule__span_le : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (s : Elem (powerset M)) -> (p : Elem (Submodule R M)) -> Proof (iff (Leq (Submodule__span R M s) p) (Set__Subset M s (SetLike__coe (Submodule R M) M p))).
@@ -662,11 +654,11 @@ ZeroMemClass__zero_mem : (S : Set) -> (M : Set) -> (x : Proof (Zero M)) -> (x1 :
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; //LEAN:ge_of_eq ;)
 ge_of_eq : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Eqt X a b)) -> Proof (Leq b a).

@@ -16,7 +16,8 @@ Polynomial__term__u5b_X_u5d_ : Elem Lean__TrailingParserDescr.
 Polynomial__forall_iff_forall_finsupp : (R : Set) -> (_ : Proof (Semiring R)) -> (P : (Elem (Polynomial R) -> Prop)) -> Proof (iff (forall (Polynomial R) (p => P p)) (forall (AddMonoidAlgebra R Nat) (q => P (Polynomial__ofFinsupp R q)))).
 
 (; //LEAN:Polynomial.exists_iff_exists_finsupp ;)
-Polynomial__exists_iff_exists_finsupp : (R : Set) -> (_ : Proof (Semiring R)) -> (P : (Elem (Polynomial R) -> Prop)) -> Proof (iff (exists (Polynomial R) (p => P p)) (exists (AddMonoidAlgebra R Nat) (q => P (Polynomial__ofFinsupp R q)))).
+def Polynomial__exists_iff_exists_finsupp : (R : Set) -> (_ : Proof (Semiring R)) -> (P : (Elem (Polynomial R) -> Prop)) -> Proof (iff (exists (Polynomial R) (p => P p)) (exists (AddMonoidAlgebra R Nat) (q => P (Polynomial__ofFinsupp R q)))) :=
+  R => x => P => iffI (exists (Polynomial R) (p => P p)) (exists (AddMonoidAlgebra R Nat) (q => P (Polynomial__ofFinsupp R q))) (h => existsE (Polynomial R) (p1 => P p1) (exists (AddMonoidAlgebra R Nat) (q1 => P (Polynomial__ofFinsupp R q1))) h (p2 => hp => existsI (AddMonoidAlgebra R Nat) (q2 => P (Polynomial__ofFinsupp R q2)) p2 hp)) (h1 => existsE (AddMonoidAlgebra R Nat) (q3 => P (Polynomial__ofFinsupp R q3)) (exists (Polynomial R) (p3 => P p3)) h1 (q4 => hq => existsI (Polynomial R) (p4 => P p4) (Polynomial__ofFinsupp R q4) hq)).
 
 (; //LEAN:Polynomial.eta ;)
 Polynomial__eta : (R : Set) -> (_ : Proof (Semiring R)) -> (f : Elem (Polynomial R)) -> Proof (Eqt (Polynomial R) (Polynomial__ofFinsupp R (Polynomial__toFinsupp R f)) f).
@@ -474,7 +475,8 @@ Polynomial__addSubmonoid_closure_setOfPred_eq_monomial : (R : Set) -> (_ : Proof
 Polynomial__addHom_ext_iff : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddZeroClass M)) -> (f : Elem (AddMonoidHom (Polynomial R) M)) -> (g : Elem (AddMonoidHom (Polynomial R) M)) -> Proof (iff (Eqt (AddMonoidHom (Polynomial R) M) f g) (forall Nat (n => forall R (a => Eqt M (f (Polynomial__monomial__app n a)) (g (Polynomial__monomial__app n a)))))).
 
 (; //LEAN:Polynomial.addHom_ext ;)
-Polynomial__addHom_ext : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddZeroClass M)) -> (f : Elem (AddMonoidHom (Polynomial R) M)) -> (g : Elem (AddMonoidHom (Polynomial R) M)) -> (h : Proof (forall Nat (n => forall R (a => Eqt M (f (Polynomial__monomial__app n a)) (g (Polynomial__monomial__app n a)))))) -> Proof (Eqt (AddMonoidHom (Polynomial R) M) f g).
+def Polynomial__addHom_ext : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddZeroClass M)) -> (f : Elem (AddMonoidHom (Polynomial R) M)) -> (g : Elem (AddMonoidHom (Polynomial R) M)) -> (h : Proof (forall Nat (n => forall R (a => Eqt M (f (Polynomial__monomial__app n a)) (g (Polynomial__monomial__app n a)))))) -> Proof (Eqt (AddMonoidHom (Polynomial R) M) f g) :=
+  R => x => M => x1 => f => g => h => AddMonoidHom__eq_of_eqOn_denseM (Polynomial R) M (Set__ofPred (Polynomial R) (p => exists Nat (n => exists R (a => Eqt (Polynomial R) p (Polynomial__monomial__app n a))))) (Polynomial__addSubmonoid_closure_setOfPred_eq_monomial R) f g (forallI (Polynomial R) (p1 => if (Membership__mem (Polynomial R) (powerset (Polynomial R)) (Set__ofPred (Polynomial R) (p4 => exists Nat (n5 => exists R (a7 => Eqt (Polynomial R) p4 (Polynomial__monomial__app n5 a7))))) p1) (Eqt M (f p1) (g p1))) (p1 => ifI (Membership__mem (Polynomial R) (powerset (Polynomial R)) (Set__ofPred (Polynomial R) (p3 => exists Nat (n4 => exists R (a6 => Eqt (Polynomial R) p3 (Polynomial__monomial__app n4 a6))))) p1) (Eqt M (f p1) (g p1)) (h1 => existsE Nat (n1 => exists R (a1 => Eqt (Polynomial R) p1 (Polynomial__monomial__app n1 a1))) (Eqt M (f p1) (g p1)) h1 (n2 => h2 => existsE R (a2 => Eqt (Polynomial R) p1 (Polynomial__monomial__app n2 a2)) (Eqt M (f p1) (g p1)) h2 (a3 => h3 => Eq__ndrec (Polynomial R) (Polynomial__monomial__app n2 a3) (p2 => Eqt M (f p2) (g p2)) (forallE R (a5 => Eqt M (f (Polynomial__monomial__app n2 a5)) (g (Polynomial__monomial__app n2 a5))) (forallE Nat (n3 => forall R (a4 => Eqt M (f (Polynomial__monomial__app n3 a4)) (g (Polynomial__monomial__app n3 a4)))) h n2) a3) p1 (Eq__symm (Polynomial R) p1 (Polynomial__monomial__app n2 a3) h3)))))).
 
 (; //LEAN:Polynomial.addHom_ext' ;)
 def Polynomial__addHom_ext' : (R : Set) -> (_ : Proof (Semiring R)) -> (M : Set) -> (_ : Proof (AddZeroClass M)) -> (f : Elem (AddMonoidHom (Polynomial R) M)) -> (g : Elem (AddMonoidHom (Polynomial R) M)) -> (h : Proof (forall Nat (n => Eqt (AddMonoidHom R M) (AddMonoidHom__comp R (Polynomial R) M f (LinearMap__toAddMonoidHom R R R (Polynomial R) (Semiring__toModule R) (Polynomial__module R R) (RingHom__id R) (Polynomial__monomial R n))) (AddMonoidHom__comp R (Polynomial R) M g (LinearMap__toAddMonoidHom R R R (Polynomial R) (Semiring__toModule R) (Polynomial__module R R) (RingHom__id R) (Polynomial__monomial R n)))))) -> Proof (Eqt (AddMonoidHom (Polynomial R) M) f g) :=
@@ -587,7 +589,7 @@ def Polynomial__sum_X_index : (R : Set) -> (_ : Proof (Semiring R)) -> (S : Set)
   R => x => S => x1 => f => hf => Polynomial__sum_monomial_index R S 1 1 f hf.
 
 (; //LEAN:Polynomial.sum_add_index ;)
-Polynomial__sum_add_index : (R : Set) -> (_ : Proof (Semiring R)) -> (S : Set) -> (_ : Proof (AddCommMonoid S)) -> (p : Elem (Polynomial R)) -> (q : Elem (Polynomial R)) -> (f : (Elem Nat -> Elem R -> S)) -> (hf : Proof (forall Nat (i => Eqt S (f i 0) 0))) -> (h_add : Proof (forall Nat (a => forall R (x2 => forall R (x3 => Eqt S (f a (plus x2 x3)) (plus (f a x2) (f a x3))))))) -> Proof (Eqt S (Polynomial__sum R S (plus p q) f) (plus (Polynomial__sum R S p f) (Polynomial__sum R S q f))).
+Polynomial__sum_add_index : (R : Set) -> (_ : Proof (Semiring R)) -> (S : Set) -> (_ : Proof (AddCommMonoid S)) -> (p : Elem (Polynomial R)) -> (q : Elem (Polynomial R)) -> (f : (Elem Nat -> Elem R -> S)) -> (hf : Proof (forall Nat (i => Eqt S (f i 0) 0))) -> (h_add : Proof (forall Nat (a => forall R (b1 => forall R (b2 => Eqt S (f a (plus b1 b2)) (plus (f a b1) (f a b2))))))) -> Proof (Eqt S (Polynomial__sum R S (plus p q) f) (plus (Polynomial__sum R S p f) (Polynomial__sum R S q f))).
 
 (; //LEAN:Polynomial.sum_add' ;)
 Polynomial__sum_add' : (R : Set) -> (_ : Proof (Semiring R)) -> (S : Set) -> (_ : Proof (AddCommMonoid S)) -> (p : Elem (Polynomial R)) -> (f : (Elem Nat -> Elem R -> S)) -> (g : (Elem Nat -> Elem R -> S)) -> Proof (Eqt S (Polynomial__sum R S p (plus f g)) (plus (Polynomial__sum R S p f) (Polynomial__sum R S p g))).
@@ -773,7 +775,8 @@ Polynomial__nnqsmul_eq_C_mul : (R : Set) -> (_ : Proof (DivisionSemiring R)) -> 
 Polynomial__qsmul_eq_C_mul : (R : Set) -> (_ : Proof (DivisionRing R)) -> (a : Elem Rat) -> (f : Elem (Polynomial R)) -> Proof (Eqt (Polynomial R) (HSMul__hSMul Rat (Polynomial R) (Polynomial R) a f) (times (Polynomial__C__app (Rat__cast R a)) f)).
 
 (; //LEAN:Polynomial.nontrivial_iff ;)
-Polynomial__nontrivial_iff : (R : Set) -> (_ : Proof (Semiring R)) -> Proof (iff (Nontrivial (Polynomial R)) (Nontrivial R)).
+def Polynomial__nontrivial_iff : (R : Set) -> (_ : Proof (Semiring R)) -> Proof (iff (Nontrivial (Polynomial R)) (Nontrivial R)) :=
+  R => x => iffI (Nontrivial (Polynomial R)) (Nontrivial R) (h => existsE (Polynomial R) (x1 => exists (Polynomial R) (y => Neq x1 y)) (Nontrivial R) (exists_pair_ne (Polynomial R)) (_r => _s => ifI (Neq _r _s) (Nontrivial R) (hrs => Polynomial__Nontrivial__of_polynomial_ne R _r _s hrs))) (h1 => Polynomial__nontrivial R).
 
 (; //LEAN:Polynomial.ofMultiset ;)
 def Polynomial__ofMultiset : (R : Set) -> Elem (AddChar (Multiset R) (Polynomial R)) :=

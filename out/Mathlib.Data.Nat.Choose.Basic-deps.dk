@@ -43,17 +43,17 @@ Nat__multichoose_eq___unary : (_x : Elem (PSigma Nat (n => Nat))) -> Proof (Eq (
 
 (; doc: Constructs a fully universe-polymorphic dependent pair. ;)
 (; //LEAN:PSigma.mk ;)
-PSigma__mk : (X : Set) -> (x : (Elem X -> Set)) -> (fst : Elem X) -> (snd : Elem (x fst)) -> Elem (PSigma X x).
+PSigma__mk : (X : Set) -> (beta : (Elem X -> Set)) -> (fst : Elem X) -> (snd : Elem (beta fst)) -> Elem (PSigma X beta).
 
 (; doc: **Function extensionality.** If two functions return equal results for all possible arguments, then they are equal.  It is called “extensionality” because it provides a way to prove two objects equal based on the properties of the underlying mathematical functions, rather than based on the syntax used to denote them. Function extensionality is a theorem that can be [proved using quotient types](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=quotient-funext). ;)
 (; //LEAN:funext ;)
-funext : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> (g : ((x3 : Elem X) -> x x3)) -> (h : Proof (forall X (x2 => Eqt (x x2) (f x2) (g x2)))) -> Proof (Eqt ((x1 : Elem X) -> x x1) f g).
+funext : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> beta x3)) -> (g : ((x2 : Elem X) -> beta x2)) -> (h : Proof (forall X (x1 => Eqt (beta x1) (f x1) (g x1)))) -> Proof (Eqt ((x : Elem X) -> beta x) f g).
 
 (; //LEAN:lt_of_not_ge ;)
 lt_of_not_ge : (X : Set) -> (_ : Proof (LinearOrder X)) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (not (Leq b a))) -> Proof (Lt a b).
 
 (; //LEAN:mt ;)
-mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
+mt : (a : Prop) -> (b : Prop) -> (h1 : Proof (if a b)) -> (h2 : Proof (not b)) -> Proof (not a).
 
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)

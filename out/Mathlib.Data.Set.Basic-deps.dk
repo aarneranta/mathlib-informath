@@ -35,12 +35,12 @@ Compl__compl : (X : Set) -> (x : Elem X) -> Elem X.
 (; //LEAN:EmptyCollection.emptyCollection ;)
 EmptyCollection__emptyCollection : (X : Set) -> Elem X.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; //LEAN:Eq.rec ;)
 Eq__rec : (X : Set) -> (x : Elem X) -> (motive : ((x2 : Elem X) -> Proof (Eqt X x x2) -> Set)) -> (refl : Elem (motive x (Eq__refl X x))) -> (x1 : Elem X) -> (t : Proof (Eqt X x x1)) -> Elem (motive x1 t).
+
+(; doc: Set notation form of `Eq.le` ;)
+(; //LEAN:Eq.subset ;)
+Eq__subset : (X : Set) -> (_ : Proof (UsesSetNotationForOrder X)) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Eqt X a b)) -> Proof (Leq a b).
 
 (; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.symm ;)
@@ -48,7 +48,7 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; doc: `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. ;)
 (; //LEAN:Equiv ;)
@@ -107,7 +107,7 @@ Iff__rfl : (a : Prop) -> Proof (iff a a).
 Iff__symm : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff b a).
 
 (; //LEAN:Iff.trans ;)
-Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h1 : Proof (iff a b)) -> (h2 : Proof (iff b c)) -> Proof (iff a c).
 
 (; doc: `default` is a function that produces a "default" element of any `Inhabited` type. This element does not have any particular specified properties, but it is often an all-zeroes value. ;)
 (; //LEAN:Inhabited.default ;)
@@ -130,6 +130,10 @@ IsEmpty__mk : (X : Set) -> (false : Proof (forall X (x => false))) -> Proof (IsE
 (; doc: **Alias** of `le_trans`. ;)
 (; //LEAN:LE.le.trans ;)
 LE__le__trans : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq b c)) -> Proof (Leq a c).
+
+(; doc: **Alias** of `le_of_lt`. ;)
+(; //LEAN:LT.lt.le ;)
+LT__lt__le : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Lt a b)) -> Proof (Leq a b).
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
@@ -161,7 +165,7 @@ Set__Nonempty : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Set.ext ;)
 Set__ext : (X : Set) -> (a : Elem (powerset X)) -> (b : Elem (powerset X)) -> (h : Proof (forall X (x => iff (Membership__mem X (powerset X) a x) (Membership__mem X (powerset X) b x)))) -> Proof (Eqt (powerset X) a b).
@@ -273,7 +277,7 @@ cast : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> El
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
@@ -366,7 +370,7 @@ inf_inf_distrib_right : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem
 inf_inf_inf_comm : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> Proof (Eqt X (Min__min X (Min__min X a b) (Min__min X c d)) (Min__min X (Min__min X a c) (Min__min X b d))).
 
 (; //LEAN:inf_le_inf ;)
-inf_le_inf : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (h : Proof (Leq b a)) -> (h1 : Proof (Leq d c)) -> Proof (Leq (Min__min X b d) (Min__min X a c)).
+inf_le_inf : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (h1 : Proof (Leq b a)) -> (h2 : Proof (Leq d c)) -> Proof (Leq (Min__min X b d) (Min__min X a c)).
 
 (; //LEAN:inf_lt_left ;)
 inf_lt_left : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Lt (Min__min X a b) a) (not (Leq a b))).
@@ -400,7 +404,7 @@ lt_iff_le_and_ne : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> 
 lt_top_iff_ne_top : (X : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (OrderTop X)) -> (a : Elem X) -> Proof (iff (Lt a (Top__top X)) (Neq a (Top__top X))).
 
 (; //LEAN:mt ;)
-mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
+mt : (a : Prop) -> (b : Prop) -> (h1 : Proof (if a b)) -> (h2 : Proof (not b)) -> Proof (not a).
 
 (; //LEAN:ne_comm ;)
 ne_comm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Neq a b) (Neq b a)).
@@ -485,7 +489,7 @@ sup_inf_left : (X : Set) -> (_ : Proof (DistribLattice X)) -> (a : Elem X) -> (b
 sup_inf_right : (X : Set) -> (_ : Proof (DistribLattice X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Eqt X (Max__max X (Min__min X a b) c) (Min__min X (Max__max X a c) (Max__max X b c))).
 
 (; //LEAN:sup_le_sup ;)
-sup_le_sup : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (h : Proof (Leq a b)) -> (h1 : Proof (Leq c d)) -> Proof (Leq (Max__max X a c) (Max__max X b d)).
+sup_le_sup : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (d : Elem X) -> (h1 : Proof (Leq a b)) -> (h2 : Proof (Leq c d)) -> Proof (Leq (Max__max X a c) (Max__max X b d)).
 
 (; //LEAN:sup_sup_distrib_left ;)
 sup_sup_distrib_left : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> Proof (Eqt X (Max__max X a (Max__max X b c)) (Max__max X (Max__max X a b) (Max__max X a c))).

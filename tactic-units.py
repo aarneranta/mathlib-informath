@@ -64,29 +64,44 @@ def tactic_name(step):
 HYGIENE = re.compile(r"([A-Za-z_][A-Za-z0-9_']*)\._@\.[A-Za-z0-9_.']*?_hyg\.\d+")
 
 
-# Greek type variables as Export.lean names them in statements (α : Type is
-# X), other Greek letters spelled out, subscript digits as digits: Informath
-# reads ASCII identifiers only
+# As Export.lean names variables (freshName, asciiName): a Greek type
+# variable by a Latin capital (α : Type is X), any other Greek letter by its
+# name (ε is epsilon, which Informath shows as \epsilon), subscript digits as
+# digits (x₀ is x0): Informath reads ASCII identifiers only
 LATIN = {'α': 'X', 'β': 'Y', 'γ': 'Z', 'δ': 'W', 'ι': 'I', 'κ': 'J', 'σ': 'S', 'τ': 'T', 'ω': 'U'}
-GREEK = {'ε': 'epsilon', 'φ': 'phi', 'ψ': 'psi', 'π': 'pi', 'μ': 'mu', 'ν': 'nu', 'λ': 'lambda', 'ρ': 'rho',
-         'χ': 'chi', 'θ': 'theta', 'η': 'eta', 'ζ': 'zeta', 'ξ': 'xi', 'ϕ': 'phi', 'Ω': 'Omega'}
+GREEK = dict(zip('αβγδεζηθικλμνξπρστυφχψωϕΓΔΘΛΞΠΣΦΨΩ',
+                 ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta', 'iota',
+                  'kappa', 'lambda', 'mu', 'nu', 'xi', 'pi', 'rho', 'sigma', 'tau', 'upsilon',
+                  'phi', 'chi', 'psi', 'omega', 'phi', 'Gamma', 'Delta', 'Theta', 'Lambda', 'Xi',
+                  'Pi', 'Sigma', 'Phi', 'Psi', 'Omega']))
 SUBSCRIPT = {chr(0x2080 + i): str(i) for i in range(10)}
+WORD = re.compile(r"[\w']+")
 
 
-def clean(s):
+def clean(s, sorts=()):
     """Names with Lean's macro scopes (m._@.M._hyg.42, shown as m✝) as m',
-    and non-ASCII letters in ASCII."""
+    and non-ASCII letters in ASCII; the names of types (sorts) as Latin capitals."""
     s = HYGIENE.sub(lambda m: m.group(1) + "'", s)
-    return ''.join(LATIN.get(c) or GREEK.get(c) or SUBSCRIPT.get(c, c) for c in s)
+    def word(m):
+        w = m.group(0)
+        table = LATIN if w in sorts else {}
+        return ''.join(table.get(c) or GREEK.get(c) or SUBSCRIPT.get(c, c) for c in w)
+    return WORD.sub(word, s)
+
+
+def sorts_of(goal):
+    """The names of the types among the hypotheses of a goal (α : Type, as Set)."""
+    return {h[0] for h in (goal or {}).get('hyps', []) if h[1].strip() == 'Set'}
 
 
 def hyps(goal):
     """The accessible hypotheses of a goal, as (name, type) pairs."""
-    return [(clean(h[0]), clean(h[1])) for h in (goal or {}).get('hyps', []) if not h[2]]
+    sorts = sorts_of(goal)
+    return [(clean(h[0], sorts), clean(h[1], sorts)) for h in (goal or {}).get('hyps', []) if not h[2]]
 
 
 def target(goal):
-    return clean(goal['target'])
+    return clean(goal['target'], sorts_of(goal))
 
 
 def method(st, name):

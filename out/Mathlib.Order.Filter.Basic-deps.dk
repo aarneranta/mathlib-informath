@@ -39,14 +39,6 @@ EmptyCollection__emptyCollection : (X : Set) -> Elem X.
 (; //LEAN:Eq ;)
 Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
-(; doc: If `h : α = β` is a proof of type equality, then `h.mp : α → β` is the induced "cast" operation, mapping elements of `α` to elements of `β`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mp` is definitionally the identity function. ;)
-(; //LEAN:Eq.mp ;)
-Eq__mp : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (a : Elem X) -> Elem Y.
-
-(; doc: If `h : α = β` is a proof of type equality, then `h.mpr : β → α` is the induced "cast" operation in the reverse direction, mapping elements of `β` to elements of `α`.  You can prove theorems about the resulting element by induction on `h`, since `rfl.mpr` is definitionally the identity function. ;)
-(; //LEAN:Eq.mpr ;)
-Eq__mpr : (X : Set) -> (Y : Set) -> (h : Proof (Eqt Set X Y)) -> (b : Elem Y) -> Elem X.
-
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
 Eq__refl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
@@ -57,7 +49,7 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: Equality is transitive: if `a = b` and `b = c` then `a = c`.  Because this is in the `Eq` namespace, if you have variables or expressions `h₁ : a = b` and `h₂ : b = c`, you can use `h₁.trans h₂ : a = c` as shorthand for `Eq.trans h₁ h₂`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.trans ;)
-Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Eqt X a b)) -> (h1 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
+Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
 (; //LEAN:Exists.nonempty ;)
 Exists__nonempty : (X : Set) -> (p : (Elem X -> Prop)) -> (h : Proof (exists X (x => p x))) -> Proof (Nonempty X).
@@ -206,13 +198,13 @@ GaloisConnection__l_bot : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder X))
 GaloisConnection__l_iSup : (X : Set) -> (Y : Set) -> (I : Set) -> (_ : Proof (CompleteLattice X)) -> (_ : Proof (CompleteLattice Y)) -> (l : (Elem X -> Y)) -> (u : (Elem Y -> X)) -> (gc : Proof (GaloisConnection X Y l u)) -> (f : (Elem I -> X)) -> Proof (Eqt Y (l (iSup X I f)) (iSup Y I (i => l (f i)))).
 
 (; //LEAN:GaloisConnection.l_sup ;)
-GaloisConnection__l_sup : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (_ : Proof (SemilatticeSup X)) -> (_ : Proof (SemilatticeSup Y)) -> (l : (Elem X -> Y)) -> (u : (Elem Y -> X)) -> (gc : Proof (GaloisConnection X Y l u)) -> Proof (Eqt Y (l (Max__max X x x1)) (Max__max Y (l x) (l x1))).
+GaloisConnection__l_sup : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (_ : Proof (SemilatticeSup X)) -> (_ : Proof (SemilatticeSup Y)) -> (l : (Elem X -> Y)) -> (u : (Elem Y -> X)) -> (gc : Proof (GaloisConnection X Y l u)) -> Proof (Eqt Y (l (Max__max X a1 a2)) (Max__max Y (l a1) (l a2))).
 
 (; //LEAN:GaloisConnection.u_iInf ;)
 GaloisConnection__u_iInf : (X : Set) -> (Y : Set) -> (I : Set) -> (_ : Proof (CompleteLattice X)) -> (_ : Proof (CompleteLattice Y)) -> (u : (Elem X -> Y)) -> (l : (Elem Y -> X)) -> (gc : Proof (GaloisConnection Y X l u)) -> (f : (Elem I -> X)) -> Proof (Eqt Y (u (iInf X I f)) (iInf Y I (i => u (f i)))).
 
 (; //LEAN:GaloisConnection.u_inf ;)
-GaloisConnection__u_inf : (Y : Set) -> (X : Set) -> (x : Elem Y) -> (x1 : Elem Y) -> (_ : Proof (SemilatticeInf Y)) -> (_ : Proof (SemilatticeInf X)) -> (u : (Elem Y -> X)) -> (l : (Elem X -> Y)) -> (gc : Proof (GaloisConnection X Y l u)) -> Proof (Eqt X (u (Min__min Y x x1)) (Min__min X (u x) (u x1))).
+GaloisConnection__u_inf : (Y : Set) -> (X : Set) -> (b1 : Elem Y) -> (b2 : Elem Y) -> (_ : Proof (SemilatticeInf Y)) -> (_ : Proof (SemilatticeInf X)) -> (u : (Elem Y -> X)) -> (l : (Elem X -> Y)) -> (gc : Proof (GaloisConnection X Y l u)) -> Proof (Eqt X (u (Min__min Y b1 b2)) (Min__min X (u b1) (u b2))).
 
 (; //LEAN:GaloisConnection.u_sInf ;)
 GaloisConnection__u_sInf : (X : Set) -> (Y : Set) -> (_ : Proof (CompleteLattice X)) -> (_ : Proof (CompleteLattice Y)) -> (u : (Elem X -> Y)) -> (l : (Elem Y -> X)) -> (gc : Proof (GaloisConnection Y X l u)) -> (s : Elem (powerset X)) -> Proof (Eqt Y (u (InfSet__sInf X s)) (iInf Y X (a => iInf Y (Membership__mem X (powerset X) s a) (h => u a)))).
@@ -254,7 +246,7 @@ Iff__rfl : (a : Prop) -> Proof (iff a a).
 Iff__symm : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (iff b a).
 
 (; //LEAN:Iff.trans ;)
-Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h : Proof (iff a b)) -> (h1 : Proof (iff b c)) -> Proof (iff a c).
+Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h1 : Proof (iff a b)) -> (h2 : Proof (iff b c)) -> Proof (iff a c).
 
 (; doc: Infimum of a set ;)
 (; //LEAN:InfSet.sInf ;)
@@ -273,7 +265,7 @@ Inv__inv : (X : Set) -> (x : Elem X) -> Elem X.
 IsCompl : (X : Set) -> (x2 : Elem X) -> (y : Elem X) -> Prop.
 
 (; //LEAN:IsCompl.of_eq ;)
-IsCompl__of_eq : (X : Set) -> (_ : Proof (Lattice X)) -> (_ : Proof (BoundedOrder X)) -> (x2 : Elem X) -> (y : Elem X) -> (h : Proof (Eqt X (Min__min X x2 y) (Bot__bot X))) -> (h1 : Proof (Eqt X (Max__max X x2 y) (Top__top X))) -> Proof (IsCompl X x2 y).
+IsCompl__of_eq : (X : Set) -> (_ : Proof (Lattice X)) -> (_ : Proof (BoundedOrder X)) -> (x2 : Elem X) -> (y : Elem X) -> (h1 : Proof (Eqt X (Min__min X x2 y) (Bot__bot X))) -> (h2 : Proof (Eqt X (Max__max X x2 y) (Top__top X))) -> Proof (IsCompl X x2 y).
 
 (; doc: `IsEmpty α` expresses that `α` is empty. ;)
 (; //LEAN:IsEmpty ;)
@@ -390,7 +382,7 @@ SemilatticeSup : (X : Set) -> Prop.
 
 (; doc: Two functions `f₁ f₂ : α → β` are equal on `s` if `f₁ x = f₂ x` for all `x ∈ s`. ;)
 (; //LEAN:Set.EqOn ;)
-Set__EqOn : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+Set__EqOn : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: `Iic b` is the left-infinite right-closed interval $(-∞, b]$. ;)
 (; //LEAN:Set.Iic ;)
@@ -406,7 +398,7 @@ Set__Nonempty__ne_empty : (X : Set) -> (s : Elem (powerset X)) -> (h : Proof (Se
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
-Set__Subset : (X : Set) -> (x : Elem (powerset X)) -> (x1 : Elem (powerset X)) -> Prop.
+Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Set.Subset.rfl ;)
 Set__Subset__rfl : (X : Set) -> (s : Elem (powerset X)) -> Proof (Set__Subset X s s).
@@ -549,11 +541,11 @@ compl_surjective : (X : Set) -> (_ : Proof (BooleanAlgebra X)) -> Proof (Functio
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (x : (Elem X -> Y)) -> (x1 : (Elem X -> Y)) -> (x2 : Elem X) -> (x3 : Elem X) -> (h : Proof (Eqt (Elem X -> Y) x x1)) -> (h1 : Proof (Eqt X x2 x3)) -> Proof (Eqt Y (x x2) (x1 x3)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
@@ -561,7 +553,7 @@ congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y))
 
 (; doc: **Alias** of `congrArg`. ;)
 (; //LEAN:congr_arg ;)
-congr_arg : (X : Set) -> (Y : Set) -> (x : Elem X) -> (x1 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X x x1)) -> Proof (Eqt Y (f x) (f x1)).
+congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; //LEAN:eq_false ;)
 eq_false : (p : Prop) -> (h : Proof (not p)) -> Proof (Eqt Prop p false).
@@ -583,7 +575,7 @@ false_or : (p : Prop) -> Proof (Eqt Prop (or false p) p).
 
 (; doc: **Function extensionality.** If two functions return equal results for all possible arguments, then they are equal.  It is called “extensionality” because it provides a way to prove two objects equal based on the properties of the underlying mathematical functions, rather than based on the syntax used to denote them. Function extensionality is a theorem that can be [proved using quotient types](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=quotient-funext). ;)
 (; //LEAN:funext ;)
-funext : (X : Set) -> (x : (Elem X -> Set)) -> (f : ((x4 : Elem X) -> x x4)) -> (g : ((x3 : Elem X) -> x x3)) -> (h : Proof (forall X (x2 => Eqt (x x2) (f x2) (g x2)))) -> Proof (Eqt ((x1 : Elem X) -> x x1) f g).
+funext : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> beta x3)) -> (g : ((x2 : Elem X) -> beta x2)) -> (h : Proof (forall X (x1 => Eqt (beta x1) (f x1) (g x1)))) -> Proof (Eqt ((x : Elem X) -> beta x) f g).
 
 (; //LEAN:ge_of_eq ;)
 ge_of_eq : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Eqt X a b)) -> Proof (Leq b a).
@@ -620,6 +612,9 @@ le_antisymm : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X) -> (b : 
 (; //LEAN:le_of_eq ;)
 le_of_eq : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Eqt X a b)) -> Proof (Leq a b).
 
+(; //LEAN:le_sInf ;)
+le_sInf : (X : Set) -> (_ : Proof (CompleteSemilatticeInf X)) -> (s : Elem (powerset X)) -> (a : Elem X) -> (h : Proof (forall X (b => if (Membership__mem X (powerset X) s b) (Leq a b)))) -> Proof (Leq a (InfSet__sInf X s)).
+
 (; //LEAN:le_sup_of_le_left ;)
 le_sup_of_le_left : (X : Set) -> (_ : Proof (SemilatticeSup X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h : Proof (Leq c a)) -> Proof (Leq c (Max__max X a b)).
 
@@ -635,7 +630,7 @@ le_trans : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X)
 lowerBounds : (X : Set) -> (s : Elem (powerset X)) -> Elem (powerset X).
 
 (; //LEAN:mt ;)
-mt : (a : Prop) -> (b : Prop) -> (h : Proof (if a b)) -> (h1 : Proof (not b)) -> Proof (not a).
+mt : (a : Prop) -> (b : Prop) -> (h1 : Proof (if a b)) -> (h2 : Proof (not b)) -> Proof (not a).
 
 (; //LEAN:ne_bot_of_le_ne_bot ;)
 ne_bot_of_le_ne_bot : (X : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (OrderBot X)) -> (a : Elem X) -> (b : Elem X) -> (hb : Proof (Neq b (Bot__bot X))) -> (hab : Proof (Leq b a)) -> Proof (Neq a (Bot__bot X)).
@@ -655,6 +650,9 @@ of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)
 rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
+
+(; //LEAN:sInf_le ;)
+sInf_le : (X : Set) -> (_ : Proof (CompleteSemilatticeInf X)) -> (s : Elem (powerset X)) -> (a : Elem X) -> (h : Proof (Membership__mem X (powerset X) s a)) -> Proof (Leq (InfSet__sInf X s) a).
 
 (; //LEAN:sub_add_cancel ;)
 sub_add_cancel : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt G (plus (minus a b) b) a).

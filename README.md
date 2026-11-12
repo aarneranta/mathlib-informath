@@ -138,6 +138,7 @@ RunInformath processes; the readings are cached in
 | `build-html.py` | builds `mathlib-informath.html` and `pages/*.html` from `index.json` |
 | `tactic-units.py` | the steps of a module's tactic proofs as proof units, for `RunInformath -tactic-proof` |
 | `coverage.py`, `coverage.md` | for each module, how many readings are fully worded and how many theorems have proof texts, and the constants most often left without a wording |
+| `concept-table.py`, `concepts.tsv` | the concepts of the informalized modules (the constants of their Dedukti), most frequent first: Lean name with a link to Mathlib's documentation, Dedukti name, kind, symbol table entry and where it comes from (hand-written, docstring, name, lexicon, notation, Informath's base), and the occurrences in statements, term proofs and tactic proof steps |
 
 A Greek type variable becomes the Latin capital a textbook would use for a
 set ("Let $X$ and $Y$ be sets" for `α` and `β`). The order on sets is

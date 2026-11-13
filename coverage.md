@@ -9,11 +9,11 @@ Made by `coverage.py` from `index.json`.
 | Mathlib.Order.Defs.PartialOrder | 65 | 58 (89%) | 0 | 55 | 28 | 4 | 82 | 0 (0%) |
 | Mathlib.Order.Defs.LinearOrder | 78 | 61 (78%) | 0 | 70 | 32 | 14 | 194 | 0 (0%) |
 | Mathlib.Order.Defs.Lattice | 106 | 101 (95%) | 0 | 94 | 30 | 18 | 112 | 0 (0%) |
-| Mathlib.Logic.Function.Basic | 232 | 149 (64%) | 0 | 214 | 144 | 53 | 861 | 0 (0%) |
+| Mathlib.Logic.Function.Basic | 232 | 149 (64%) | 0 | 214 | 144 | 53 | 860 | 0 (0%) |
 | Mathlib.Order.Basic | 255 | 206 (80%) | 0 | 239 | 137 | 33 | 513 | 0 (0%) |
 | Mathlib.Order.Lattice | 142 | 94 (66%) | 0 | 123 | 47 | 17 | 382 | 0 (0%) |
 | Mathlib.Order.Monotone.Basic | 139 | 115 (82%) | 0 | 139 | 99 | 29 | 562 | 0 (0%) |
-| Mathlib.Order.Bounds.Basic | 310 | 276 (89%) | 0 | 300 | 93 | 48 | 547 | 0 (0%) |
+| Mathlib.Order.Bounds.Basic | 310 | 276 (89%) | 0 | 300 | 93 | 48 | 546 | 0 (0%) |
 | Mathlib.Data.Set.Basic | 264 | 243 (92%) | 0 | 261 | 212 | 27 | 603 | 0 (0%) |
 | Mathlib.Data.Set.Image | 300 | 252 (84%) | 0 | 300 | 131 | 147 | 759 | 0 (0%) |
 | Mathlib.Data.Set.Function | 298 | 280 (93%) | 0 | 297 | 184 | 81 | 1512 | 0 (0%) |
@@ -79,14 +79,14 @@ Made by `coverage.py` from `index.json`.
 | Mathlib.Topology.Basic | 45 | 38 (84%) | 0 | 44 | 24 | 18 | 122 | 0 (0%) |
 | Mathlib.Order.Filter.Basic | 318 | 270 (84%) | 0 | 310 | 188 | 84 | 887 | 1 (0%) |
 | Mathlib.Topology.MetricSpace.Pseudo.Defs | 241 | 147 (60%) | 0 | 220 | 112 | 91 | 730 | 2 (0%) |
-| Mathlib.Topology.Compactness.Compact | 160 | 100 (62%) | 0 | 159 | 61 | 88 | 873 | 7 (0%) |
-| Mathlib.Topology.Connected.Basic | 104 | 94 (90%) | 0 | 96 | 49 | 40 | 624 | 0 (0%) |
+| Mathlib.Topology.Compactness.Compact | 160 | 100 (62%) | 0 | 159 | 61 | 88 | 872 | 7 (0%) |
+| Mathlib.Topology.Connected.Basic | 104 | 94 (90%) | 0 | 96 | 49 | 40 | 623 | 0 (0%) |
 | Mathlib.Analysis.Real.Sqrt | 114 | 106 (92%) | 0 | 108 | 36 | 72 | 246 | 0 (0%) |
 | Mathlib.Analysis.SpecificLimits.Basic | 88 | 43 (48%) | 0 | 87 | 30 | 54 | 498 | 55 (11%) |
 | Mathlib.Analysis.Calculus.Deriv.Basic | 196 | 125 (63%) | 0 | 190 | 149 | 39 | 457 | 62 (13%) |
 | Mathlib.Analysis.Calculus.MeanValue | 59 | 40 (67%) | 0 | 59 | 26 | 33 | 509 | 39 (7%) |
 | Mathlib.Analysis.SpecialFunctions.Exp | 80 | 41 (51%) | 0 | 79 | 35 | 41 | 315 | 0 (0%) |
-| **all** | 9126 | 6964 (76%) | 0 | 8472 | 3738 | 3920 | 27691 | 166 (0%) |
+| **all** | 9126 | 6964 (76%) | 0 | 8472 | 3738 | 3920 | 27687 | 166 (0%) |
 
 ## Constants shown symbolically
 
@@ -183,8 +183,8 @@ The constants without a wording, by the number of readings they occur in.
 | `Sum__elim` | 8 | 3 |
 | `IsCompl` | 8 | 4 |
 | `MulHom__mk` | 8 | 1 |
-| `Subsemigroup__mk` | 8 | 3 |
 | `Submonoid__mk` | 8 | 3 |
+| `Subsemigroup__mk` | 8 | 3 |
 | `AddCommute` | 8 | 2 |
 | `Quotient__map'` | 8 | 1 |
 | `MonoidHom__range` | 8 | 1 |

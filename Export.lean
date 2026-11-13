@@ -68,6 +68,7 @@ structure St where
   keepImplicit : Bool := false
   keepAll : Std.HashSet Name := {}   -- mapped to rules of nd.dk, which take all arguments
   opers : Std.HashMap FVarId (String × String) := {}  -- binary operations of a structure: name, carrier
+  usedInstances : Std.HashSet Name := {}  -- dropped instances that the proof uses (valueGo)
 
 abbrev M := StateRefT St MetaM
 
@@ -654,6 +655,17 @@ Its λ in the definiens is left out too, so that the proof still fits. -/
 def droppedInstance (ty : Expr) (bi : BinderInfo) : Bool :=
   bi == .instImplicit && technicalClass ty
 
+/-- The technical classes that are hypotheses a textbook states ("let ι be
+nonempty"): kept when a proof uses them (valueGo). -/
+def statedClass (ty : Expr) : Bool :=
+  match ty.getAppFn.constName? with
+  | some c => [`Nonempty, `Inhabited, `Nontrivial, `CharZero].contains c
+  | none => false
+
+/-- Whether a Dedukti text mentions a variable. -/
+def mentions (s nm : String) : Bool :=
+  ((s.splitToList fun c => !(c.isAlphanum || c == '_' || c == '\'')).contains nm)
+
 /-- The statement of a declaration as a Dedukti type: its binders as
 hypotheses, its conclusion as Proof P (a theorem) or as the type of the
 object it defines. -/
@@ -665,8 +677,9 @@ partial def statementGo (explicitOnly : Bool) (t : Expr) : M String := do
       withLocalDecl (Name.mkSimple nm) bi ty fun y => do
         let rest ← statementGo explicitOnly (b.instantiate1 y)
         if explicitOnly && bi != .default && (bi == .instImplicit || !(← get).keepImplicit) then return rest
-        -- decidability and technical instances are not hypotheses of the statement
-        if droppedInstance ty bi then
+        -- decidability and technical instances are not hypotheses of the statement,
+        -- unless the proof uses them
+        if droppedInstance ty bi && !(← get).usedInstances.contains n then
           return rest
         -- a named structure (see givenInstance) is an element of the set of the
         -- structures, with its name also when it was an instance (𝓤[U])
@@ -703,7 +716,11 @@ partial def valueGo (explicitOnly : Bool) (t v : Expr) : M String := do
       let rest ← valueGo explicitOnly (b.instantiate1 y) (vb.instantiate1 y)
       if explicitOnly && bi != .default && (bi == .instImplicit || !(← get).keepImplicit) then return rest
       -- the hypotheses that the statement leaves out have no λ either
-      if droppedInstance ty bi then return rest
+      if droppedInstance ty bi && !(← get).usedInstances.contains n then
+        -- unless the proof uses it explicitly (Nonempty.elim hι): then it is kept,
+        -- and the statement keeps it too (usedInstances, from a first translation)
+        if !(statedClass ty && mentions rest nm) then return rest
+        modify fun st => { st with usedInstances := st.usedInstances.insert n }
       return s!"{nm} => {rest}"
   | _, _ => tr v
 
@@ -830,8 +847,16 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
   let mut derived : Std.HashMap String String := {}
   let mut derivedHide : Std.HashMap String (Array Nat) := {}
   for (n, ci) in decls do
+    -- the instances that the statement would leave out but the proof uses (valueGo)
+    let isThm0 := ci matches .thmInfo _
+    let usedInstances ← match ci.value? (allowOpaque := true) with
+      | some v => do
+        if !(termDefiniens src (lineOf.getD (original 3 n) (lineOf.get! n)) && !isClass env n) then pure {} else
+        let r ← (((value ci.type v).run {mapping, binders, keepAll, proofMode := isThm0, keepImplicit := true}).run' {} {}).toIO ctx st |>.toBaseIO
+        pure (match r with | .ok ((_, stt), _) => stt.usedInstances | .error _ => {})
+      | none => pure {}
     let act : M String := statement ci.type
-    let res ← ((act.run {mapping, binders, keepAll, keepImplicit := true}).run' {} {}).toIO ctx st |>.toBaseIO
+    let res ← ((act.run {mapping, binders, keepAll, keepImplicit := true, usedInstances}).run' {} {}).toIO ctx st |>.toBaseIO
     let doc ← (Lean.findDocString? env n)
     let pp ← ((Meta.ppExpr ci.type).run' {} {}).toIO ctx st |>.toBaseIO
     let ppStr := match pp with | .ok (f, _) => toString f | .error _ => ""
@@ -847,7 +872,7 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
       let mut defn := ""
       if let some v := ci.value? (allowOpaque := true) then
         if termDefiniens src (lineOf.getD orig r) && !isClass env n then
-          let vres ← (((value ci.type v).run {mapping, binders, keepAll, proofMode := isThm, keepImplicit := true}).run' {} {}).toIO ctx st
+          let vres ← (((value ci.type v).run {mapping, binders, keepAll, proofMode := isThm, keepImplicit := true, usedInstances}).run' {} {}).toIO ctx st
                      |>.toBaseIO
           if (← IO.getEnv "EXPORT_DEBUG").isSome then
             match vres with

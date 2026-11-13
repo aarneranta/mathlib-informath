@@ -38,6 +38,7 @@
 }
 % the same characters in text (\texttt{ε\_pos})
 \DeclareUnicodeCharacter{03B5}{\ensuremath{\varepsilon}}
+\DeclareUnicodeCharacter{03B9}{\ensuremath{\iota}}
 \DeclareUnicodeCharacter{03B4}{\ensuremath{\delta}}
 \DeclareUnicodeCharacter{2190}{\ensuremath{\leftarrow}}
 \DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}
@@ -1292,6 +1293,49 @@ We conclude by Hf applied to u n using Hu n n_ge
               ``pour tout $\varepsilon > 0$ dans $\mathbb{R}$''.
       \end{itemize}
       informath \commit{6a81736}, \commit{0359e14}, \commit{580b75f}.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{41. Folding long proofs}
+  \scriptsize
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \prompt{show proof texts in html in such a way that parts of the proof (corresponding to
+      subtrees) can be toggled visible and hidden. If hidden, only the hypothesis and the
+      conclusion are shown.}
+      \prompt{try folding by cited lines too}
+      \begin{itemize}
+        \item \textbf{Subproofs}: an assumption gets a triangle \ok{$\blacktriangledown$} that
+              hides the lines up to the conclusion reached under it; nested as the scopes of
+              \texttt{-proof-indent}.
+        \item \textbf{Derivations}: a line that cites earlier lines (``\texttt{existsE} 45, 46,
+              53 (46)'') hides what it depends on through them, except the assumptions
+              still open at it and the hypotheses of the theorem.
+        \item ``fold all'' leaves the outline; ``unfold all'' everything.
+        \item First in edukera, then \texttt{scripts/proof\_folds.py} of Informath, used by
+              edukera, mathlib-informath, godement-index and the Rijke index.
+        \item Here: \ok{1,596} subproof and \ok{2,962} derivation folds in the 7,658 proofs.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      The longest proof, \texttt{IsCompact.elim\_directed\_cover} (58 lines), folded:
+      \begin{enumerate}\setlength\itemsep{0pt}
+        \item[1.] Assume that $I$ is nonempty, $s$ is compact, \ldots, $U$ is directed.
+        \item[2.] $\blacktriangleright$ To prove that for all $i_0 \in I$, there exists
+              $i_{47} \in I$ such that $s \subseteq U(i_{47})$ \ldots\ \emph{(lines 3--55 folded)}
+        \item[56.] There exists $i_1 \in I$ such that $s \subseteq U(i_1)$.
+              \hfill\texttt{IsCompact.induction\_on} 1, 4, 16, 38, 55
+        \item[57.] For all $i_0 \in I$, \ldots \hfill\texttt{forallI} 2, 56
+        \item[58.] There exists $i \in I$ such that $s \subseteq U(i)$.
+              \hfill\texttt{Nonempty.elim} 1, 57
+      \end{enumerate}
+      Unfolded once: the four cases of the compactness induction (empty set, subset, union,
+      neighbourhood), each folded again.
+
+      \bad{``Assume that $I$ is nonempty. [\texttt{hiota}]''}: the instance
+      \texttt{[hι : Nonempty ι]} was dropped from the statement but used by the proof
+      \texttt{Nonempty.elim hι}. Now kept where a proof uses it (\texttt{statedClass}: 11 statements): ``Let $I$ be a nonempty set.
     \end{column}
   \end{columns}
 \end{frame}

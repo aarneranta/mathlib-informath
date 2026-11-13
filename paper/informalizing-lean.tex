@@ -31,6 +31,7 @@
 }
 % the same characters in text (\ttt{intro ε ε\_pos})
 \DeclareUnicodeCharacter{03B5}{\ensuremath{\varepsilon}}
+\DeclareUnicodeCharacter{03B9}{\ensuremath{\iota}}
 \DeclareUnicodeCharacter{03B4}{\ensuremath{\delta}}
 \DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}
 \DeclareUnicodeCharacter{27E8}{\ensuremath{\langle}}
@@ -395,6 +396,20 @@ t (theorem)
 \end{lstlisting}
 A user's own symbol table can be added on top of Mathlib's, for the concepts that the code
 defines itself.
+
+\paragraph{Folding proofs.} A long proof text is easier to read as an outline whose parts can be
+opened one at a time. On the pages, the parts of a proof that correspond to subtrees of the proof
+can be hidden and shown again, leaving the hypothesis and the conclusion. Two kinds of folds are
+made from the lines and their justifications alone. The \emph{subproof} of an assumption is the
+lines between it and the conclusion reached under it, as the scopes of \ttt{-proof-indent} show
+them; a toggle at the assumption hides them. The \emph{derivation} of a line that cites earlier
+lines (``\ttt{existsE} 45, 46, 53 (46)'', the parenthesized lines being discharged) is the lines
+it depends on through its citations, transitively, except the assumptions still open at it and
+the hypotheses of the theorem, which stay visible; a derivation that hides the same lines as a
+subproof is left out. ``Fold all'' folds the subproofs and leaves the outline of the proof. The
+folding is a small Python module of Informath (\ttt{scripts/proof\_folds.py}), used for the
+proof texts of Mathlib, of Godement's book \cite{godement-index} and of the Edukera exercises
+alike. The 7,658 proof texts have 1,596 subproof folds and 2,962 derivation folds.
 
 \section{Reading versus checking: lean2dk}
 \label{sec:lean2dk}
@@ -913,6 +928,25 @@ $x_1 \in X$.\quad 2. $x_1 +_v s = x_1 +_v s$. \ttt{[rfl]}\quad 3. For all elemen
 $x_1 +_v s = x_1 +_v s$. \ttt{[forallI 1, 2]}}
 \noindent and the last ``$\mathrm{LeftAddCosetEquivalence}(s)$ is an equivalence relation''
 \ttt{[Equivalence.mk 3, 8, 15]}, in Czech ``je relace ekvivalence''.
+
+The longest proof text, of \ttt{IsCompact.elim\_directed\_cover} (an open directed cover of a
+compact set has a single member that includes it), has 58 lines, nested seven scopes deep.
+With all subproofs folded, it shows its outline:
+\reading{1. Assume that $I$ is nonempty, $s$ is compact, for all elements $i_2$ of $I$, $U(i_2)$ is open, \ldots\
+and $U$ is directed.\quad 2. To prove that for all elements $i_0$ of $I$, there exists an
+element $i_{47}$ of $I$ such that $s \subseteq U(i_{47})$, \ldots\ \emph{(lines 3--55
+folded)}\quad 56. There exists an element $i_1$ of $I$ such that $s \subseteq U(i_1)$.
+\ttt{[IsCompact.induction\_on 1, 4, 16, 38, 55]}\quad 57. \ldots\quad 58. There exists an
+element $i$ of $I$ such that $s \subseteq U(i)$. \ttt{[Nonempty.elim 1, 57]}}
+\noindent Opening line 2 shows the four cases of the induction on compact sets (the empty set, a
+subset, a union, a neighbourhood of each point), each folded again. Reading this proof showed a
+bug: the instance \ttt{[hι : Nonempty ι]}, which the exporter leaves out of statements as a
+technical class, is used by the proof (\ttt{Nonempty.elim hι}), which then referred to a
+variable that nothing bound, shown as a line ``Assume that $I$ is nonempty'' justified by
+\ttt{hiota}. Now such an instance of \ttt{Nonempty}, \ttt{Inhabited}, \ttt{Nontrivial} or
+\ttt{CharZero}, classes that a textbook does state, is kept where the proof uses it (11
+statements), and the statement now begins ``Let $X$ be a topological space. Let $s \in \wp X$. Let
+$I$ be a nonempty set.''
 
 \paragraph{Bad cases.} Not everything reads well:
 \begin{itemize}

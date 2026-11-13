@@ -271,7 +271,13 @@ The statements leave out, besides decidability, the instance hypotheses that
 a textbook never states (`droppedInstance` in `Export.lean`: the coercion
 classes `FunLike` and `SetLike`, the compatibility of an order or an action
 with the operations, the bare notation classes `Zero`, `Add`, ...), and so do
-the λs of their proofs.
+the λs of their proofs. Among them, `Nonempty`, `Inhabited`, `Nontrivial` and
+`CharZero` are hypotheses that a textbook does state ("let ι be nonempty"):
+where the translated proof uses one explicitly (`Nonempty.elim hι` in
+`IsCompact.elim_directed_cover`), it is kept, in the statement and as a λ of
+the proof (`statedClass`; 11 statements). Proofs that use the others
+explicitly (`OneHomClass.map_one F M N x x1 x2 f` in `map_one`, about 40)
+still refer to variables that nothing binds.
 
 ## Algebraic structures
 

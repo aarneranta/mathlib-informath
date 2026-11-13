@@ -299,8 +299,8 @@ def Set__Nonempty__to_subtype : (X : Set) -> (s : Elem (powerset X)) -> (h : Pro
 Set__Nonempty__to_type : (X : Set) -> (s : Elem (powerset X)) -> (h : Proof (Set__Nonempty X s)) -> Proof (Nonempty X).
 
 (; //LEAN:Set.Nonempty.of_subtype ;)
-def Set__Nonempty__of_subtype : (X : Set) -> (s : Elem (powerset X)) -> Proof (Set__Nonempty X s) :=
-  X => s => iffEl (Nonempty (Subtype X (x => Membership__mem X (powerset X) s x))) (exists X (a => Membership__mem X (powerset X) s a)) (nonempty_subtype X (Membership__mem X (powerset X) s)) h.
+def Set__Nonempty__of_subtype : (X : Set) -> (s : Elem (powerset X)) -> (_ : Proof (Nonempty (Set__Elem X s))) -> Proof (Set__Nonempty X s) :=
+  X => s => h => iffEl (Nonempty (Subtype X (x => Membership__mem X (powerset X) s x))) (exists X (a => Membership__mem X (powerset X) s a)) (nonempty_subtype X (Membership__mem X (powerset X) s)) h.
 
 (; //LEAN:Set.empty_def ;)
 def Set__empty_def : (X : Set) -> Proof (Eqt (powerset X) (EmptyCollection__emptyCollection (powerset X)) (Set__ofPred X (_x => false))) :=
@@ -392,8 +392,8 @@ def Set__forall_mem_ofPred : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X
 Set__Nonempty__forall_const : (X : Set) -> (s : Elem (powerset X)) -> (h : Proof (Set__Nonempty X s)) -> (p : Prop) -> Proof (iff (forall X (x => if (Membership__mem X (powerset X) s x) p)) p).
 
 (; //LEAN:Set.forall_mem_const ;)
-def Set__forall_mem_const : (X : Set) -> (s : Elem (powerset X)) -> (p : Prop) -> Proof (iff (forall X (x => if (Membership__mem X (powerset X) s x) p)) p) :=
-  X => s => p => Set__Nonempty__forall_const X s (iffEl (Nonempty (Set__Elem X s)) (Set__Nonempty X s) (Set__nonempty_coe_sort X s) h) p.
+def Set__forall_mem_const : (X : Set) -> (s : Elem (powerset X)) -> (p : Prop) -> (_ : Proof (Nonempty (Set__Elem X s))) -> Proof (iff (forall X (x => if (Membership__mem X (powerset X) s x) p)) p) :=
+  X => s => p => h => Set__Nonempty__forall_const X s (iffEl (Nonempty (Set__Elem X s)) (Set__Nonempty X s) (Set__nonempty_coe_sort X s) h) p.
 
 (; //LEAN:Set.exists_mem_empty ;)
 def Set__exists_mem_empty : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (iff (exists X (x => and (Membership__mem X (powerset X) (EmptyCollection__emptyCollection (powerset X)) x) (p x))) false) :=
@@ -411,8 +411,8 @@ def Set__exists_mem_ofPred : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X
 Set__Nonempty__exists_const : (X : Set) -> (s : Elem (powerset X)) -> (h : Proof (Set__Nonempty X s)) -> (p : Prop) -> Proof (iff (exists X (x => and (Membership__mem X (powerset X) s x) p)) p).
 
 (; //LEAN:Set.exists_mem_const ;)
-def Set__exists_mem_const : (X : Set) -> (s : Elem (powerset X)) -> (p : Prop) -> Proof (iff (exists X (x => and (Membership__mem X (powerset X) s x) p)) p) :=
-  X => s => p => Set__Nonempty__exists_const X s (iffEl (Nonempty (Set__Elem X s)) (Set__Nonempty X s) (Set__nonempty_coe_sort X s) h) p.
+def Set__exists_mem_const : (X : Set) -> (s : Elem (powerset X)) -> (p : Prop) -> (_ : Proof (Nonempty (Set__Elem X s))) -> Proof (iff (exists X (x => and (Membership__mem X (powerset X) s x) p)) p) :=
+  X => s => p => h => Set__Nonempty__exists_const X s (iffEl (Nonempty (Set__Elem X s)) (Set__Nonempty X s) (Set__nonempty_coe_sort X s) h) p.
 
 (; //LEAN:Set.empty_ssubset ;)
 def Set__empty_ssubset : (X : Set) -> (s : Elem (powerset X)) -> Proof (iff (HasSSubset__SSubset (powerset X) (EmptyCollection__emptyCollection (powerset X)) s) (Set__Nonempty X s)) :=

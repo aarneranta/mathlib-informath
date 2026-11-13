@@ -15,6 +15,13 @@ docstring, which is shown apart; each declaration links to its line on
 GitHub, at the commit of the checkout.
 """
 import html, json, os, re
+import sys
+
+# folding proof texts: scripts/proof_folds.py of Informath, in $INFORMATH_ROOT or next to this checkout
+sys.path[:0] = [os.path.join(d, 'scripts') for d in [os.environ.get('INFORMATH_ROOT', ''),
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'informath')]
+                if os.path.exists(os.path.join(d, 'scripts', 'proof_folds.py'))][:1]
+import proof_folds
 
 MATHLIB = os.environ.get('MATHLIB', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'mathlib4'))
 GITHUB = 'https://github.com/leanprover-community/mathlib4/blob/%s/%s#L%d'
@@ -82,22 +89,14 @@ def justification_html(j, where, here):
     return re.sub(r'\\texttt\{([^{}]*)\}', one, html.escape(j, quote=False))
 
 
-INDENT = '\\hspace*{1.5em}'      # one open scope of a line (RunInformath -proof-indent)
-
-
 def proof_html(rows, where, here):
     """The lines of a proof text, indented by the scopes open at them, with a
-    vertical line for each as in Fitch's notation."""
-    def sentence(t):
-        depth = 0
-        while t.startswith(INDENT):
-            t, depth = t[len(INDENT):], depth + 1
-        return '<td class=s%s>%s</td>' % (' style="--depth:%d"' % depth if depth else '', reading_html(t))
-    body = ''.join('<tr><td class=n>%s</td>%s<td class=j>%s</td></tr>'
-                   % (html.escape(n), sentence(t), justification_html(j, where, here))
-                   for n, t, j in rows)
-    return ('<details%s><summary>%d lines</summary><table class=proof>%s</table></details>'
-            % (' open' if len(rows) <= 12 else '', len(rows), body))
+    vertical line for each as in Fitch's notation; subproofs and derivations
+    can be folded (Informath's scripts/proof_folds.py)."""
+    table = proof_folds.proof_table(rows, sentence_html=lambda t, row: reading_html(t),
+                                    justification_html=lambda j: justification_html(j, where, here))
+    return ('<details%s><summary>%d lines</summary>%s</details>'
+            % (' open' if len(rows) <= 12 else '', len(rows), table))
 
 
 def doc_html(doc):
@@ -242,8 +241,9 @@ window.MathJax = {
 <header>%s</header>
 %s%s
 </body></html>
-""" % (html.escape(title), json.dumps(macros), MATHJAX, extra, STYLE + lang_css(), head, body,
-       LANG_SCRIPT if 'class=langs' in head else '')
+""" % (html.escape(title), json.dumps(macros), MATHJAX, extra, STYLE + lang_css() + proof_folds.FOLD_CSS, head, body,
+       (LANG_SCRIPT if 'class=langs' in head else '')
+       + ('<script>%s</script>' % proof_folds.FOLD_JS if 'class="foldable"' in body else ''))
 
 
 def lang_css():

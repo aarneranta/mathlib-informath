@@ -343,9 +343,11 @@ partial def binder (n : Name) (t b : Expr) (bi : BinderInfo) (isLam : Bool)
         let named := (← get).namedLocals.contains y.fvarId!
         let dom ← if named then typeOf t else tr t
         return s!"forall {paren dom} ({nm} => {bs})"
+      -- a function type: its codomain is a type too (Elem X, not X)
+      let cod ← hypoType body
       if !b.hasLooseBVars then
-        return s!"{← hypoType t} -> {bs}"
-      return s!"({nm} : {← hypoType t !((← get).namedLocals.contains y.fvarId!)}) -> {bs}"
+        return s!"{← hypoType t} -> {cod}"
+      return s!"({nm} : {← hypoType t !((← get).namedLocals.contains y.fvarId!)}) -> {cod}"
 
 /-- The Set an object of type t belongs to: Nat for ℕ, and for a class, the
 set of its structures (TopologicalSpace X: TopologicalSpace__on X). -/

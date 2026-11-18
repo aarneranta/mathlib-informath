@@ -5,18 +5,18 @@ Real__expOrderIso__app : (a1 : Elem Real) -> Elem (Set__Elem Real (Set__Ioi Real
 
 (; doc: The Landau notation `f =O[l] g` where `f` and `g` are two functions on a type `α` and `l` is a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by a constant multiple of `‖g‖`. In other words, `‖f‖ / ‖g‖` is eventually bounded, modulo division by zero issues that are avoided by this definition. ;)
 (; //LEAN:Asymptotics.IsBigO ;)
-Asymptotics__IsBigO : (X : Set) -> (E : Set) -> (F : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> E)) -> (g : (Elem X -> F)) -> Prop.
+Asymptotics__IsBigO : (X : Set) -> (E : Set) -> (F : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Elem E)) -> (g : (Elem X -> Elem F)) -> Prop.
 
 (; //LEAN:Asymptotics.IsBigO.trans_isLittleO ;)
-Asymptotics__IsBigO__trans_isLittleO : (X : Set) -> (E : Set) -> (G : Set) -> (F' : Set) -> (_ : Proof (Norm E)) -> (_ : Proof (Norm G)) -> (_ : Proof (SeminormedAddCommGroup F')) -> (l : Elem (Filter X)) -> (f : (Elem X -> E)) -> (g : (Elem X -> F')) -> (k : (Elem X -> G)) -> (hfg : Proof (Asymptotics__IsBigO X E F' l f g)) -> (hgk : Proof (Asymptotics__IsLittleO X F' G l g k)) -> Proof (Asymptotics__IsLittleO X E G l f k).
+Asymptotics__IsBigO__trans_isLittleO : (X : Set) -> (E : Set) -> (G : Set) -> (F' : Set) -> (_ : Proof (Norm E)) -> (_ : Proof (Norm G)) -> (_ : Proof (SeminormedAddCommGroup F')) -> (l : Elem (Filter X)) -> (f : (Elem X -> Elem E)) -> (g : (Elem X -> Elem F')) -> (k : (Elem X -> Elem G)) -> (hfg : Proof (Asymptotics__IsBigO X E F' l f g)) -> (hgk : Proof (Asymptotics__IsLittleO X F' G l g k)) -> Proof (Asymptotics__IsLittleO X E G l f k).
 
 (; doc: The Landau notation `f =o[l] g` where `f` and `g` are two functions on a type `α` and `l` is a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by an arbitrarily small constant multiple of `‖g‖`. In other words, `‖f‖ / ‖g‖` tends to `0` along `l`, modulo division by zero issues that are avoided by this definition. ;)
 (; //LEAN:Asymptotics.IsLittleO ;)
-Asymptotics__IsLittleO : (X : Set) -> (E : Set) -> (F : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> E)) -> (g : (Elem X -> F)) -> Prop.
+Asymptotics__IsLittleO : (X : Set) -> (E : Set) -> (F : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Elem E)) -> (g : (Elem X -> Elem F)) -> Prop.
 
 (; doc: We say that `f` is `Θ(g)` along a filter `l` (notation: `f =Θ[l] g`) if `f =O[l] g` and `g =O[l] f`. ;)
 (; //LEAN:Asymptotics.IsTheta ;)
-Asymptotics__IsTheta : (X : Set) -> (E : Set) -> (F : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> E)) -> (g : (Elem X -> F)) -> Prop.
+Asymptotics__IsTheta : (X : Set) -> (E : Set) -> (F : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Elem E)) -> (g : (Elem X -> Elem F)) -> Prop.
 
 (; //LEAN:Asymptotics.isLittleO_pow_pow ;)
 Asymptotics__isLittleO_pow_pow : (X : Set) -> (_ : Proof (NormedDivisionRing X)) -> (m : Elem Nat) -> (n : Elem Nat) -> (h : Proof (Lt m n)) -> Proof (Asymptotics__IsLittleO X X X (nhds X 0) (x1 => pow x1 n) (x2 => pow x2 m)).
@@ -38,7 +38,7 @@ Complex : Set.
 Complex__exp : (z : Elem Complex) -> Elem Complex.
 
 (; //LEAN:Complex.exp_sum ;)
-Complex__exp_sum : (X : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Complex)) -> Proof (Eqt Complex (Complex__exp (Finset__sum X Complex s (x => f x))) (Finset__prod X Complex s (x1 => Complex__exp (f x1)))).
+Complex__exp_sum : (X : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Elem Complex)) -> Proof (Eqt Complex (Complex__exp (Finset__sum X Complex s (x => f x))) (Finset__prod X Complex s (x1 => Complex__exp (f x1)))).
 
 (; doc: The real part of a complex number. ;)
 (; //LEAN:Complex.re ;)
@@ -46,49 +46,49 @@ Complex__re : (self : Elem Complex) -> Elem Real.
 
 (; doc: A function between topological spaces is continuous if the preimage of every open set is open. Registered as a structure to make sure it is not unfolded by Lean. ;)
 (; //LEAN:Continuous ;)
-Continuous : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+Continuous : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; //LEAN:Continuous.continuousAt ;)
-Continuous__continuousAt : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (x2 : Elem X) -> (h : Proof (Continuous X Y f)) -> Proof (ContinuousAt X Y f x2).
+Continuous__continuousAt : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Elem Y)) -> (x2 : Elem X) -> (h : Proof (Continuous X Y f)) -> Proof (ContinuousAt X Y f x2).
 
 (; //LEAN:Continuous.continuousOn ;)
-Continuous__continuousOn : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (h : Proof (Continuous X Y f)) -> Proof (ContinuousOn X Y f s).
+Continuous__continuousOn : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (h : Proof (Continuous X Y f)) -> Proof (ContinuousOn X Y f s).
 
 (; //LEAN:Continuous.image_Icc_of_strictMono ;)
-Continuous__image_Icc_of_strictMono : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConditionallyCompleteLinearOrder X)) -> (_ : Proof (OrderTopology X)) -> (_ : Proof (DenselyOrdered X)) -> (W : Set) -> (_ : Proof (LinearOrder W)) -> (_ : Proof (TopologicalSpace W)) -> (_ : Proof (OrderClosedTopology W)) -> (a : Elem X) -> (b : Elem X) -> (f : (Elem X -> W)) -> (hf_c : Proof (Continuous X W f)) -> (hf : Proof (StrictMono X W f)) -> Proof (Eqt (powerset W) (Set__image X W f (Set__Icc X a b)) (Set__Icc W (f a) (f b))).
+Continuous__image_Icc_of_strictMono : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConditionallyCompleteLinearOrder X)) -> (_ : Proof (OrderTopology X)) -> (_ : Proof (DenselyOrdered X)) -> (W : Set) -> (_ : Proof (LinearOrder W)) -> (_ : Proof (TopologicalSpace W)) -> (_ : Proof (OrderClosedTopology W)) -> (a : Elem X) -> (b : Elem X) -> (f : (Elem X -> Elem W)) -> (hf_c : Proof (Continuous X W f)) -> (hf : Proof (StrictMono X W f)) -> Proof (Eqt (powerset W) (Set__image X W f (Set__Icc X a b)) (Set__Icc W (f a) (f b))).
 
 (; //LEAN:Continuous.image_Ico_of_strictMono ;)
-Continuous__image_Ico_of_strictMono : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConditionallyCompleteLinearOrder X)) -> (_ : Proof (OrderTopology X)) -> (_ : Proof (DenselyOrdered X)) -> (W : Set) -> (_ : Proof (LinearOrder W)) -> (_ : Proof (TopologicalSpace W)) -> (_ : Proof (OrderClosedTopology W)) -> (a : Elem X) -> (b : Elem X) -> (f : (Elem X -> W)) -> (hf_c : Proof (Continuous X W f)) -> (hf : Proof (StrictMono X W f)) -> Proof (Eqt (powerset W) (Set__image X W f (Set__Ico X a b)) (Set__Ico W (f a) (f b))).
+Continuous__image_Ico_of_strictMono : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConditionallyCompleteLinearOrder X)) -> (_ : Proof (OrderTopology X)) -> (_ : Proof (DenselyOrdered X)) -> (W : Set) -> (_ : Proof (LinearOrder W)) -> (_ : Proof (TopologicalSpace W)) -> (_ : Proof (OrderClosedTopology W)) -> (a : Elem X) -> (b : Elem X) -> (f : (Elem X -> Elem W)) -> (hf_c : Proof (Continuous X W f)) -> (hf : Proof (StrictMono X W f)) -> Proof (Eqt (powerset W) (Set__image X W f (Set__Ico X a b)) (Set__Ico W (f a) (f b))).
 
 (; //LEAN:Continuous.image_Ioc_of_strictMono ;)
-Continuous__image_Ioc_of_strictMono : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConditionallyCompleteLinearOrder X)) -> (_ : Proof (OrderTopology X)) -> (_ : Proof (DenselyOrdered X)) -> (W : Set) -> (_ : Proof (LinearOrder W)) -> (_ : Proof (TopologicalSpace W)) -> (_ : Proof (OrderClosedTopology W)) -> (a : Elem X) -> (b : Elem X) -> (f : (Elem X -> W)) -> (hf_c : Proof (Continuous X W f)) -> (hf : Proof (StrictMono X W f)) -> Proof (Eqt (powerset W) (Set__image X W f (Set__Ioc X a b)) (Set__Ioc W (f a) (f b))).
+Continuous__image_Ioc_of_strictMono : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConditionallyCompleteLinearOrder X)) -> (_ : Proof (OrderTopology X)) -> (_ : Proof (DenselyOrdered X)) -> (W : Set) -> (_ : Proof (LinearOrder W)) -> (_ : Proof (TopologicalSpace W)) -> (_ : Proof (OrderClosedTopology W)) -> (a : Elem X) -> (b : Elem X) -> (f : (Elem X -> Elem W)) -> (hf_c : Proof (Continuous X W f)) -> (hf : Proof (StrictMono X W f)) -> Proof (Eqt (powerset W) (Set__image X W f (Set__Ioc X a b)) (Set__Ioc W (f a) (f b))).
 
 (; //LEAN:Continuous.image_Ioo_of_strictMono ;)
-Continuous__image_Ioo_of_strictMono : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConditionallyCompleteLinearOrder X)) -> (_ : Proof (OrderTopology X)) -> (_ : Proof (DenselyOrdered X)) -> (W : Set) -> (_ : Proof (LinearOrder W)) -> (_ : Proof (TopologicalSpace W)) -> (_ : Proof (OrderClosedTopology W)) -> (a : Elem X) -> (b : Elem X) -> (f : (Elem X -> W)) -> (hf_c : Proof (Continuous X W f)) -> (hf : Proof (StrictMono X W f)) -> Proof (Eqt (powerset W) (Set__image X W f (Set__Ioo X a b)) (Set__Ioo W (f a) (f b))).
+Continuous__image_Ioo_of_strictMono : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConditionallyCompleteLinearOrder X)) -> (_ : Proof (OrderTopology X)) -> (_ : Proof (DenselyOrdered X)) -> (W : Set) -> (_ : Proof (LinearOrder W)) -> (_ : Proof (TopologicalSpace W)) -> (_ : Proof (OrderClosedTopology W)) -> (a : Elem X) -> (b : Elem X) -> (f : (Elem X -> Elem W)) -> (hf_c : Proof (Continuous X W f)) -> (hf : Proof (StrictMono X W f)) -> Proof (Eqt (powerset W) (Set__image X W f (Set__Ioo X a b)) (Set__Ioo W (f a) (f b))).
 
 (; //LEAN:Continuous.tendsto ;)
-Continuous__tendsto : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Continuous X Y f)) -> (x2 : Elem X) -> Proof (Filter__Tendsto X Y f (nhds X x2) (nhds Y (f x2))).
+Continuous__tendsto : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Continuous X Y f)) -> (x2 : Elem X) -> Proof (Filter__Tendsto X Y f (nhds X x2) (nhds Y (f x2))).
 
 (; doc: A function between topological spaces is continuous at a point `x₀` if `f x` tends to `f x₀` when `x` tends to `x₀`. ;)
 (; //LEAN:ContinuousAt ;)
-ContinuousAt : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x2 : Elem X) -> Prop.
+ContinuousAt : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (x2 : Elem X) -> Prop.
 
 (; doc: A function between topological spaces is continuous on a subset `s` when it's continuous at every point of `s` within `s`. ;)
 (; //LEAN:ContinuousOn ;)
-ContinuousOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+ContinuousOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; //LEAN:ContinuousOn.image_Ici_of_monotoneOn ;)
-ContinuousOn__image_Ici_of_monotoneOn : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConditionallyCompleteLinearOrder X)) -> (_ : Proof (OrderTopology X)) -> (_ : Proof (DenselyOrdered X)) -> (W : Set) -> (_ : Proof (LinearOrder W)) -> (_ : Proof (TopologicalSpace W)) -> (_ : Proof (OrderClosedTopology W)) -> (a : Elem X) -> (f : (Elem X -> W)) -> (hf : Proof (ContinuousOn X W f (Set__Ici X a))) -> (hmono : Proof (MonotoneOn X W f (Set__Ici X a))) -> (htop : Proof (Filter__Tendsto X W f (Filter__atTop X) (Filter__atTop W))) -> Proof (Eqt (powerset W) (Set__image X W f (Set__Ici X a)) (Set__Ici W (f a))).
+ContinuousOn__image_Ici_of_monotoneOn : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConditionallyCompleteLinearOrder X)) -> (_ : Proof (OrderTopology X)) -> (_ : Proof (DenselyOrdered X)) -> (W : Set) -> (_ : Proof (LinearOrder W)) -> (_ : Proof (TopologicalSpace W)) -> (_ : Proof (OrderClosedTopology W)) -> (a : Elem X) -> (f : (Elem X -> Elem W)) -> (hf : Proof (ContinuousOn X W f (Set__Ici X a))) -> (hmono : Proof (MonotoneOn X W f (Set__Ici X a))) -> (htop : Proof (Filter__Tendsto X W f (Filter__atTop X) (Filter__atTop W))) -> Proof (Eqt (powerset W) (Set__image X W f (Set__Ici X a)) (Set__Ici W (f a))).
 
 (; //LEAN:ContinuousOn.image_Ioi_of_strictMonoOn ;)
-ContinuousOn__image_Ioi_of_strictMonoOn : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConditionallyCompleteLinearOrder X)) -> (_ : Proof (OrderTopology X)) -> (_ : Proof (DenselyOrdered X)) -> (W : Set) -> (_ : Proof (LinearOrder W)) -> (_ : Proof (TopologicalSpace W)) -> (_ : Proof (OrderClosedTopology W)) -> (a : Elem X) -> (f : (Elem X -> W)) -> (hf : Proof (ContinuousOn X W f (Set__Ici X a))) -> (hmono : Proof (StrictMonoOn X W f (Set__Ici X a))) -> (htop : Proof (Filter__Tendsto X W f (Filter__atTop X) (Filter__atTop W))) -> Proof (Eqt (powerset W) (Set__image X W f (Set__Ioi X a)) (Set__Ioi W (f a))).
+ContinuousOn__image_Ioi_of_strictMonoOn : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConditionallyCompleteLinearOrder X)) -> (_ : Proof (OrderTopology X)) -> (_ : Proof (DenselyOrdered X)) -> (W : Set) -> (_ : Proof (LinearOrder W)) -> (_ : Proof (TopologicalSpace W)) -> (_ : Proof (OrderClosedTopology W)) -> (a : Elem X) -> (f : (Elem X -> Elem W)) -> (hf : Proof (ContinuousOn X W f (Set__Ici X a))) -> (hmono : Proof (StrictMonoOn X W f (Set__Ici X a))) -> (htop : Proof (Filter__Tendsto X W f (Filter__atTop X) (Filter__atTop W))) -> Proof (Eqt (powerset W) (Set__image X W f (Set__Ioi X a)) (Set__Ioi W (f a))).
 
 (; //LEAN:ContinuousOn.image_uIcc_of_monotoneOn ;)
-ContinuousOn__image_uIcc_of_monotoneOn : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConditionallyCompleteLinearOrder X)) -> (_ : Proof (OrderTopology X)) -> (_ : Proof (DenselyOrdered X)) -> (W : Set) -> (_ : Proof (LinearOrder W)) -> (_ : Proof (TopologicalSpace W)) -> (_ : Proof (OrderClosedTopology W)) -> (a : Elem X) -> (b : Elem X) -> (f : (Elem X -> W)) -> (hf : Proof (ContinuousOn X W f (Set__uIcc X a b))) -> (hmono : Proof (MonotoneOn X W f (Set__uIcc X a b))) -> Proof (Eqt (powerset W) (Set__image X W f (Set__uIcc X a b)) (Set__uIcc W (f a) (f b))).
+ContinuousOn__image_uIcc_of_monotoneOn : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (ConditionallyCompleteLinearOrder X)) -> (_ : Proof (OrderTopology X)) -> (_ : Proof (DenselyOrdered X)) -> (W : Set) -> (_ : Proof (LinearOrder W)) -> (_ : Proof (TopologicalSpace W)) -> (_ : Proof (OrderClosedTopology W)) -> (a : Elem X) -> (b : Elem X) -> (f : (Elem X -> Elem W)) -> (hf : Proof (ContinuousOn X W f (Set__uIcc X a b))) -> (hmono : Proof (MonotoneOn X W f (Set__uIcc X a b))) -> Proof (Eqt (powerset W) (Set__image X W f (Set__uIcc X a b)) (Set__uIcc W (f a) (f b))).
 
 (; doc: A function between topological spaces is continuous at a point `x₀` within a subset `s` if `f x` tends to `f x₀` when `x` tends to `x₀` while staying within `s`. ;)
 (; //LEAN:ContinuousWithinAt ;)
-ContinuousWithinAt : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (x2 : Elem X) -> Prop.
+ContinuousWithinAt : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (x2 : Elem X) -> Prop.
 
 (; doc: Distance between two points ;)
 (; //LEAN:Dist.dist ;)
@@ -123,17 +123,17 @@ Filter__Eventually__of_forall : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem
 
 (; doc: `f.IsBoundedUnder (≺) u`: the image of the filter `f` under `u` is eventually bounded w.r.t. the relation `≺`, i.e. eventually, it is bounded by some uniform bound. ;)
 (; //LEAN:Filter.IsBoundedUnder ;)
-Filter__IsBoundedUnder : (X : Set) -> (Y : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (f : Elem (Filter Y)) -> (u : (Elem Y -> X)) -> Prop.
+Filter__IsBoundedUnder : (X : Set) -> (Y : Set) -> (r : (Elem X -> (Elem X -> Prop))) -> (f : Elem (Filter Y)) -> (u : (Elem Y -> Elem X)) -> Prop.
 
 (; doc: `Filter.Tendsto` is the generic "limit of a function" predicate. `Tendsto f l₁ l₂` asserts that for every `l₂` neighborhood `a`, the `f`-preimage of `a` is an `l₁` neighborhood. ;)
 (; //LEAN:Filter.Tendsto ;)
-Filter__Tendsto : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> Prop.
+Filter__Tendsto : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> Prop.
 
 (; //LEAN:Filter.Tendsto.comp ;)
-Filter__Tendsto__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> Z)) -> (x : Elem (Filter X)) -> (y : Elem (Filter Y)) -> (z : Elem (Filter Z)) -> (hg : Proof (Filter__Tendsto Y Z g y z)) -> (hf : Proof (Filter__Tendsto X Y f x y)) -> Proof (Filter__Tendsto X Z (Function__comp X Y Z g f) x z).
+Filter__Tendsto__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem Y -> Elem Z)) -> (x : Elem (Filter X)) -> (y : Elem (Filter Y)) -> (z : Elem (Filter Z)) -> (hg : Proof (Filter__Tendsto Y Z g y z)) -> (hf : Proof (Filter__Tendsto X Y f x y)) -> Proof (Filter__Tendsto X Z (Function__comp X Y Z g f) x z).
 
 (; //LEAN:Filter.Tendsto.congr ;)
-Filter__Tendsto__congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> (h : Proof (forall X (x => Eqt Y (f1 x) (f2 x)))) -> (h1 : Proof (Filter__Tendsto X Y f1 l1 l2)) -> Proof (Filter__Tendsto X Y f2 l1 l2).
+Filter__Tendsto__congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Elem Y)) -> (f2 : (Elem X -> Elem Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> (h : Proof (forall X (x => Eqt Y (f1 x) (f2 x)))) -> (h1 : Proof (Filter__Tendsto X Y f1 l1 l2)) -> Proof (Filter__Tendsto X Y f2 l1 l2).
 
 (; doc: `atBot` is the filter representing the limit `→ -∞` on an ordered set. It is generated by the collection of down-sets `{b | b ≤ a}`. (The preorder need not have a bottom element for this to be well defined, and indeed is trivial when a bottom element `x` exists, i.e., it coincides with `pure x`.) ;)
 (; //LEAN:Filter.atBot ;)
@@ -145,28 +145,28 @@ Filter__atTop : (X : Set) -> Elem (Filter X).
 
 (; doc: The inverse map of a filter. A set `s` belongs to `Filter.comap m f` if either of the following equivalent conditions hold.  1. There exists a set `t ∈ f` such that `m ⁻¹' t ⊆ s`. This is used as a definition. 2. The set `kernImage m s = {y | ∀ x, m x = y → x ∈ s}` belongs to `f`, see `Filter.mem_comap'`. 3. The set `(m '' sᶜ)ᶜ` belongs to `f`, see `Filter.mem_comap_iff_compl` and    `Filter.compl_mem_comap`. ;)
 (; //LEAN:Filter.comap ;)
-Filter__comap : (X : Set) -> (Y : Set) -> (m : (Elem X -> Y)) -> (f : Elem (Filter Y)) -> Elem (Filter X).
+Filter__comap : (X : Set) -> (Y : Set) -> (m : (Elem X -> Elem Y)) -> (f : Elem (Filter Y)) -> Elem (Filter X).
 
 (; doc: A bounded function `u` is in particular eventually bounded. ;)
 (; //LEAN:Filter.isBoundedUnder_of ;)
-Filter__isBoundedUnder_of : (X : Set) -> (Y : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (f : Elem (Filter Y)) -> (u : (Elem Y -> X)) -> (h : Proof (exists X (b => forall Y (x => r (u x) b)))) -> Proof (Filter__IsBoundedUnder X Y r f u).
+Filter__isBoundedUnder_of : (X : Set) -> (Y : Set) -> (r : (Elem X -> (Elem X -> Prop))) -> (f : Elem (Filter Y)) -> (u : (Elem Y -> Elem X)) -> (h : Proof (exists X (b => forall Y (x => r (u x) b)))) -> Proof (Filter__IsBoundedUnder X Y r f u).
 
 (; doc: The forward map of a filter ;)
 (; //LEAN:Filter.map ;)
-Filter__map : (X : Set) -> (Y : Set) -> (m : (Elem X -> Y)) -> (f : Elem (Filter X)) -> Elem (Filter Y).
+Filter__map : (X : Set) -> (Y : Set) -> (m : (Elem X -> Elem Y)) -> (f : Elem (Filter X)) -> Elem (Filter Y).
 
 (; doc: The principal filter of `s` is the collection of all supersets of `s`. ;)
 (; //LEAN:Filter.principal ;)
 Filter__principal : (X : Set) -> (s : Elem (powerset X)) -> Elem (Filter X).
 
 (; //LEAN:Filter.tendsto_inf ;)
-Filter__tendsto_inf : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x : Elem (Filter X)) -> (y1 : Elem (Filter Y)) -> (y2 : Elem (Filter Y)) -> Proof (iff (Filter__Tendsto X Y f x (Min__min (Filter Y) y1 y2)) (and (Filter__Tendsto X Y f x y1) (Filter__Tendsto X Y f x y2))).
+Filter__tendsto_inf : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (x : Elem (Filter X)) -> (y1 : Elem (Filter Y)) -> (y2 : Elem (Filter Y)) -> Proof (iff (Filter__Tendsto X Y f x (Min__min (Filter Y) y1 y2)) (and (Filter__Tendsto X Y f x y1) (Filter__Tendsto X Y f x y2))).
 
 (; //LEAN:Filter.tendsto_neg_atBot_atTop ;)
 Filter__tendsto_neg_atBot_atTop : (G : Set) -> (_ : Proof (AddCommGroup G)) -> (_ : Proof (PartialOrder G)) -> (_ : Proof (IsOrderedAddMonoid G)) -> Proof (Filter__Tendsto G G (Neg__neg G) (Filter__atBot G) (Filter__atTop G)).
 
 (; //LEAN:Filter.tendsto_principal ;)
-Filter__tendsto_principal : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (s : Elem (powerset Y)) -> Proof (iff (Filter__Tendsto X Y f l (Filter__principal Y s)) (Filter__Eventually X (a => Membership__mem Y (powerset Y) s (f a)) l)).
+Filter__tendsto_principal : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (l : Elem (Filter X)) -> (s : Elem (powerset Y)) -> Proof (iff (Filter__Tendsto X Y f l (Filter__principal Y s)) (Filter__Eventually X (a => Membership__mem Y (powerset Y) s (f a)) l)).
 
 (; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
 (; //LEAN:Finset ;)
@@ -174,7 +174,7 @@ Finset : (X : Set) -> Set.
 
 (; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.prod ;)
-Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem M)) -> Elem M.
 
 (; doc: `range n` is the set of natural numbers less than `n`. ;)
 (; //LEAN:Finset.range ;)
@@ -182,14 +182,14 @@ Finset__range : (n : Elem Nat) -> Elem (Finset Nat).
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
-Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem M)) -> Elem M.
 
 (; doc: Function composition, usually written with the infix operator `∘`. A new function is created from two existing functions, where one function's output is used as input to the other.  Examples:  * `Function.comp List.reverse (List.drop 2) [3, 2, 4, 1] = [1, 4]`  * `(List.reverse ∘ List.drop 2) [3, 2, 4, 1] = [1, 4]`  Conventions for notations in identifiers:   * The recommended spelling of `∘` in identifiers is `comp`. ;)
 (; //LEAN:Function.comp ;)
-Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
+Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> Elem W)) -> (g : (Elem X -> Elem Y)) -> (x : Elem X) -> Elem W.
 
 (; //LEAN:Function.comp_apply ;)
-Function__comp_apply : (Y : Set) -> (W : Set) -> (X : Set) -> (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Proof (Eqt W (f (g x)) (f (g x))).
+Function__comp_apply : (Y : Set) -> (W : Set) -> (X : Set) -> (f : (Elem Y -> Elem W)) -> (g : (Elem X -> Elem Y)) -> (x : Elem X) -> Proof (Eqt W (f (g x)) (f (g x))).
 
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
@@ -197,11 +197,11 @@ HSMul__hSMul : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem
 
 (; doc: `HasProd f a L` means that the (potentially infinite) product of the `f b` for `b : β` converges to `a` along the SummationFilter `L`.  By default `L` is the `unconditional` one, corresponding to the limit of all finite sets towards the entire type. So we take the product over bigger and bigger finite sets. This product operation is invariant under permuting the terms (while products for more general summation filters usually are not).  For the definition and many statements, `α` does not need to be a topological monoid, only a monoid with a topology (i.e. the multiplication is not assumed to be continuous). We only add this assumption later, for the lemmas where it is relevant.  These are defined in an identical way to infinite sums (`HasSum`). For example, we say that the function `ℕ → ℝ` sending `n` to `1 / 2` has a product of `0`, rather than saying that it does not converge as some authors would. ;)
 (; //LEAN:HasProd ;)
-HasProd : (X : Set) -> (Y : Set) -> (f : (Elem Y -> X)) -> (a : Elem X) -> (L : Elem (optParam (SummationFilter Y) (SummationFilter__unconditional Y))) -> Prop.
+HasProd : (X : Set) -> (Y : Set) -> (f : (Elem Y -> Elem X)) -> (a : Elem X) -> (L : Elem (optParam (SummationFilter Y) (SummationFilter__unconditional Y))) -> Prop.
 
 (; doc: `HasSum f a L` means that the (potentially infinite) sum of the `f b` for `b : β` converges to `a` along the SummationFilter `L`.  By default `L` is the `unconditional` one, corresponding to the limit of all finite sets towards the entire type. So we take the sum over bigger and bigger finite sets. This sum operation is invariant under permuting the terms (while sums for more general summation filters usually are not). This is based on Mario Carneiro's [infinite sum `df-tsms` in Metamath](http://us.metamath.org/mpeuni/df-tsms.html).  In particular, the function `ℕ → ℝ` sending `n` to `(-1) ^ n / (n + 1)` does not have a sum for this definition, although it is summable for the `conditional` summation filter that takes limits of sums over `n ∈ {0, ..., X}` as `X → ∞`. However, a series which is *absolutely* convergent with respect to the conditional summation filter is in fact unconditionally summable.  For the definition and many statements, `α` does not need to be a topological additive monoid, only an additive monoid with a topology (i.e. the addition is not assumed to be continuous). We only add this assumption later, for the lemmas where it is relevant. ;)
 (; //LEAN:HasSum ;)
-HasSum : (X : Set) -> (Y : Set) -> (f : (Elem Y -> X)) -> (a : Elem X) -> (L : Elem (optParam (SummationFilter Y) (SummationFilter__unconditional Y))) -> Prop.
+HasSum : (X : Set) -> (Y : Set) -> (f : (Elem Y -> Elem X)) -> (a : Elem X) -> (L : Elem (optParam (SummationFilter Y) (SummationFilter__unconditional Y))) -> Prop.
 
 (; //LEAN:Homeomorph.isOpenEmbedding ;)
 Homeomorph__isOpenEmbedding : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (h : Elem (Homeomorph X Y)) -> Proof (Topology__IsOpenEmbedding X Y h).
@@ -230,10 +230,10 @@ Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Pro
 Min__min : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; //LEAN:Monotone.isBoundedUnder_le_comp_iff ;)
-Monotone__isBoundedUnder_le_comp_iff : (X : Set) -> (Y : Set) -> (Z : Set) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (Preorder Z)) -> (_ : Proof (NoMaxOrder Z)) -> (g : (Elem Y -> Z)) -> (f : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (hg : Proof (Monotone Y Z g)) -> (hg' : Proof (Filter__Tendsto Y Z g (Filter__atTop Y) (Filter__atTop Z))) -> Proof (iff (Filter__IsBoundedUnder Z X (x2 => x3 => Leq x2 x3) l (Function__comp X Y Z g f)) (Filter__IsBoundedUnder Y X (x4 => x5 => Leq x4 x5) l f)).
+Monotone__isBoundedUnder_le_comp_iff : (X : Set) -> (Y : Set) -> (Z : Set) -> (_ : Proof (LinearOrder Y)) -> (_ : Proof (Preorder Z)) -> (_ : Proof (NoMaxOrder Z)) -> (g : (Elem Y -> Elem Z)) -> (f : (Elem X -> Elem Y)) -> (l : Elem (Filter X)) -> (hg : Proof (Monotone Y Z g)) -> (hg' : Proof (Filter__Tendsto Y Z g (Filter__atTop Y) (Filter__atTop Z))) -> Proof (iff (Filter__IsBoundedUnder Z X (x2 => x3 => Leq x2 x3) l (Function__comp X Y Z g f)) (Filter__IsBoundedUnder Y X (x4 => x5 => Leq x4 x5) l f)).
 
 (; //LEAN:Monotone.monotoneOn ;)
-Monotone__monotoneOn : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Monotone X Y f)) -> (s : Elem (powerset X)) -> Proof (MonotoneOn X Y f s).
+Monotone__monotoneOn : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Monotone X Y f)) -> (s : Elem (powerset X)) -> Proof (MonotoneOn X Y f s).
 
 (; doc: The canonical homomorphism `Nat → R`. In most use cases, the target type will have a (semi)ring structure, and this homomorphism should be a (semi)ring homomorphism.  `NatCast` and `IntCast` exist to allow different libraries with their own types that can be notated as natural numbers to have consistent `simp` normal forms without needing to create coercion simplification sets that are aware of all combinations. Libraries should make it easy to work with `NatCast` where possible. For instance, in Mathlib there will be such a homomorphism (and thus a `NatCast R` instance) whenever `R` is an additive monoid with a `1`.  The prototypical example is `Int.ofNat`. ;)
 (; //LEAN:Nat.cast ;)
@@ -284,7 +284,7 @@ Real__exp_pos : (x : Elem Real) -> Proof (Lt 0 (Real__exp x)).
 Real__exp_strictMono : Proof (StrictMono Real Real Real__exp).
 
 (; //LEAN:Real.exp_sum ;)
-Real__exp_sum : (X : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Real)) -> Proof (Eq (Real__exp (Finset__sum X Real s (x => f x))) (Finset__prod X Real s (x1 => Real__exp (f x1)))).
+Real__exp_sum : (X : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Elem Real)) -> Proof (Eq (Real__exp (Finset__sum X Real s (x => f x))) (Finset__prod X Real s (x1 => Real__exp (f x1)))).
 
 (; doc: The square root of a real number. This returns 0 for negative inputs.  This has notation `√x`. Note that `√x⁻¹` is parsed as `√(x⁻¹)`. ;)
 (; //LEAN:Real.sqrt ;)
@@ -328,11 +328,11 @@ Set__Ioo : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (powerset X).
 
 (; doc: Restrict codomain of a function `f` to a set `s`. Same as `Subtype.coind` but this version has codomain `↥s` instead of `Subtype s`. ;)
 (; //LEAN:Set.codRestrict ;)
-Set__codRestrict : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (s : Elem (powerset X)) -> (h : Proof (forall I (x1 => Membership__mem X (powerset X) s (f x1)))) -> (x : Elem I) -> Elem (Set__Elem X s).
+Set__codRestrict : (X : Set) -> (I : Set) -> (f : (Elem I -> Elem X)) -> (s : Elem (powerset X)) -> (h : Proof (forall I (x1 => Membership__mem X (powerset X) s (f x1)))) -> (x : Elem I) -> Elem (Set__Elem X s).
 
 (; doc: The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that `f a = b` for some `a ∈ s`. ;)
 (; //LEAN:Set.image ;)
-Set__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
+Set__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
 
 (; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
 (; //LEAN:Set.ofPred ;)
@@ -340,7 +340,7 @@ Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
 
 (; doc: Range of a function.  This function is more flexible than `f '' univ`, as the image requires that the domain is in Type and not an arbitrary Sort. ;)
 (; //LEAN:Set.range ;)
-Set__range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> Elem (powerset X).
+Set__range : (X : Set) -> (I : Set) -> (f : (Elem I -> Elem X)) -> Elem (powerset X).
 
 (; doc: `uIcc a b` is the set of elements lying between `a` and `b`, with `a` and `b` included. Note that we define it more generally in a lattice as `Set.Icc (a ⊓ b) (a ⊔ b)`. In a product type, `uIcc` corresponds to the bounding box of the two elements. ;)
 (; //LEAN:Set.uIcc ;)
@@ -351,14 +351,14 @@ Set__uIcc : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (powerset X).
 Singleton__singleton : (X : Set) -> (Y : Set) -> (x : Elem X) -> Elem Y.
 
 (; //LEAN:StrictMono.monotone ;)
-StrictMono__monotone : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (StrictMono X Y f)) -> Proof (Monotone X Y f).
+StrictMono__monotone : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (StrictMono X Y f)) -> Proof (Monotone X Y f).
 
 (; doc: A strictly monotone surjective function from a linear order is an order isomorphism. ;)
 (; //LEAN:StrictMono.orderIsoOfSurjective ;)
-StrictMono__orderIsoOfSurjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (h_mono : Proof (StrictMono X Y f)) -> (h_surj : Proof (Function__Surjective X Y f)) -> Elem (OrderIso X Y).
+StrictMono__orderIsoOfSurjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (h_mono : Proof (StrictMono X Y f)) -> (h_surj : Proof (Function__Surjective X Y f)) -> Elem (OrderIso X Y).
 
 (; //LEAN:StrictMono.strictMonoOn ;)
-StrictMono__strictMonoOn : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (StrictMono X Y f)) -> (s : Elem (powerset X)) -> Proof (StrictMonoOn X Y f s).
+StrictMono__strictMonoOn : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (StrictMono X Y f)) -> (s : Elem (powerset X)) -> Proof (StrictMonoOn X Y f s).
 
 (; doc: All the elements of a type that satisfy a predicate.  `Subtype p`, usually written `{ x : α // p x }` or `{ x // p x }`, contains all elements `x : α` for which `p x` is true. Its constructor is a pair of the value and the proof that it satisfies the predicate. In run-time code, `{ x : α // p x }` is represented identically to `α`.  There is a coercion from `{ x : α // p x }` to `α`, so elements of a subtype may be used where the underlying type is expected.  Examples:  * `{ n : Nat // n % 2 = 0 }` is the type of even numbers.  * `{ xs : Array String // xs.size = 5 }` is the type of arrays with five `String`s.  * Given `xs : List α`, `List { x : α // x ∈ xs }` is the type of lists in which all elements are    contained in `xs`.  Conventions for notations in identifiers:   * The recommended spelling of `{ x // p x }` in identifiers is `subtype`. ;)
 (; //LEAN:Subtype ;)
@@ -370,7 +370,7 @@ Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x
 
 (; doc: `Summable f` means that `f` has some (infinite) sum with respect to `L`. Use `tsum` to get the value. ;)
 (; //LEAN:Summable ;)
-Summable : (X : Set) -> (Y : Set) -> (f : (Elem Y -> X)) -> (L : Elem (optParam (SummationFilter Y) (SummationFilter__unconditional Y))) -> Prop.
+Summable : (X : Set) -> (Y : Set) -> (f : (Elem Y -> Elem X)) -> (L : Elem (optParam (SummationFilter Y) (SummationFilter__unconditional Y))) -> Prop.
 
 (; doc: The filter ;)
 (; //LEAN:SummationFilter.filter ;)
@@ -385,23 +385,23 @@ SummationFilter__unconditional : (Y : Set) -> Elem (SummationFilter Y).
 TopologicalSpace : (X : Set) -> Prop.
 
 (; //LEAN:Topology.IsEmbedding.toIsInducing ;)
-Topology__IsEmbedding__toIsInducing : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (self : Proof (Topology__IsEmbedding X Y f)) -> Proof (Topology__IsInducing X Y f).
+Topology__IsEmbedding__toIsInducing : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Elem Y)) -> (self : Proof (Topology__IsEmbedding X Y f)) -> Proof (Topology__IsInducing X Y f).
 
 (; //LEAN:Topology.IsInducing.nhds_eq_comap ;)
-Topology__IsInducing__nhds_eq_comap : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (TopologicalSpace X)) -> (hf : Proof (Topology__IsInducing X Y f)) -> (x2 : Elem X) -> Proof (Eqt (Filter X) (nhds X x2) (Filter__comap X Y f (nhds Y (f x2)))).
+Topology__IsInducing__nhds_eq_comap : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (TopologicalSpace X)) -> (hf : Proof (Topology__IsInducing X Y f)) -> (x2 : Elem X) -> Proof (Eqt (Filter X) (nhds X x2) (Filter__comap X Y f (nhds Y (f x2)))).
 
 (; doc: An open embedding is an embedding with open range. ;)
 (; //LEAN:Topology.IsOpenEmbedding ;)
-Topology__IsOpenEmbedding : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+Topology__IsOpenEmbedding : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; //LEAN:Topology.IsOpenEmbedding.comp ;)
-Topology__IsOpenEmbedding__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> Z)) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (TopologicalSpace Z)) -> (hg : Proof (Topology__IsOpenEmbedding Y Z g)) -> (hf : Proof (Topology__IsOpenEmbedding X Y f)) -> Proof (Topology__IsOpenEmbedding X Z (Function__comp X Y Z g f)).
+Topology__IsOpenEmbedding__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem Y -> Elem Z)) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (TopologicalSpace Z)) -> (hg : Proof (Topology__IsOpenEmbedding Y Z g)) -> (hf : Proof (Topology__IsOpenEmbedding X Y f)) -> Proof (Topology__IsOpenEmbedding X Z (Function__comp X Y Z g f)).
 
 (; //LEAN:Topology.IsOpenEmbedding.map_nhds_eq ;)
-Topology__IsOpenEmbedding__map_nhds_eq : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (hf : Proof (Topology__IsOpenEmbedding X Y f)) -> (x2 : Elem X) -> Proof (Eqt (Filter Y) (Filter__map X Y f (nhds X x2)) (nhds Y (f x2))).
+Topology__IsOpenEmbedding__map_nhds_eq : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (hf : Proof (Topology__IsOpenEmbedding X Y f)) -> (x2 : Elem X) -> Proof (Eqt (Filter Y) (Filter__map X Y f (nhds X x2)) (nhds Y (f x2))).
 
 (; //LEAN:Topology.IsOpenEmbedding.toIsEmbedding ;)
-Topology__IsOpenEmbedding__toIsEmbedding : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (self : Proof (Topology__IsOpenEmbedding X Y f)) -> Proof (Topology__IsEmbedding X Y f).
+Topology__IsOpenEmbedding__toIsEmbedding : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Elem Y)) -> (self : Proof (Topology__IsOpenEmbedding X Y f)) -> Proof (Topology__IsEmbedding X Y f).
 
 (; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:True ;)
@@ -409,33 +409,33 @@ True : Prop.
 
 (; doc: A function `f : α → β` is *uniformly continuous* on `s : Set α` if `(f x, f y)` tends to the diagonal as `(x, y)` tends to the diagonal while remaining in `s ×ˢ s`. In other words, if `x` is sufficiently close to `y`, then `f x` is close to `f y` no matter where `x` and `y` are located in `s`. ;)
 (; //LEAN:UniformContinuousOn ;)
-UniformContinuousOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+UniformContinuousOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: `abs a`, denoted `|a|`, is the absolute value of `a` ;)
 (; //LEAN:abs ;)
 abs : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:comap_nhdsWithin_range ;)
-comap_nhdsWithin_range : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (y : Elem Y) -> Proof (Eqt (Filter X) (Filter__comap X Y f (nhdsWithin Y y (Set__range Y X f))) (Filter__comap X Y f (nhds Y y))).
+comap_nhdsWithin_range : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Elem Y)) -> (y : Elem Y) -> Proof (Eqt (Filter X) (Filter__comap X Y f (nhdsWithin Y y (Set__range Y X f))) (Filter__comap X Y f (nhds Y y))).
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Elem Y)) -> (f2 : (Elem X -> Elem Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Elem Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
-congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Eqt (Elem X -> Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
+congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem X -> Elem Y)) -> (h : Proof (Eqt (Elem X -> Elem Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
 
-(; doc: If a function is locally Lipschitz around a point, then it is continuous at this point. ;)
+(; doc: If a function is locally Lipschitz around a point, then it is continuous at this point.  ;)
 (; //LEAN:continuousAt_of_locally_lipschitz ;)
-continuousAt_of_locally_lipschitz : (X : Set) -> (Y : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (_ : Proof (PseudoMetricSpace Y)) -> (f : (Elem X -> Y)) -> (x2 : Elem X) -> (r : Elem Real) -> (hr : Proof (Lt 0 r)) -> (K : Elem Real) -> (h : Proof (forall X (y => if (Lt (Dist__dist X y x2) r) (Leq (Dist__dist Y (f y) (f x2)) (times K (Dist__dist X y x2)))))) -> Proof (ContinuousAt X Y f x2).
+continuousAt_of_locally_lipschitz : (X : Set) -> (Y : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (_ : Proof (PseudoMetricSpace Y)) -> (f : (Elem X -> Elem Y)) -> (x2 : Elem X) -> (r : Elem Real) -> (hr : Proof (Lt 0 r)) -> (K : Elem Real) -> (h : Proof (forall X (y => if (Lt (Dist__dist X y x2) r) (Leq (Dist__dist Y (f y) (f x2)) (times K (Dist__dist X y x2)))))) -> Proof (ContinuousAt X Y f x2).
 
 (; //LEAN:continuous_iff_continuousAt ;)
-continuous_iff_continuousAt : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> Proof (iff (Continuous X Y f) (forall X (x2 => ContinuousAt X Y f x2))).
+continuous_iff_continuousAt : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Elem Y)) -> Proof (iff (Continuous X Y f) (forall X (x2 => ContinuousAt X Y f x2))).
 
 (; doc: **Alias** of `dist_eq_norm_sub`. ;)
 (; //LEAN:dist_eq_norm ;)
@@ -456,7 +456,7 @@ eq_self : (X : Set) -> (a : Elem X) -> Proof (Eqt Prop (Eqt X a a) True).
 id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:implies_congr ;)
-implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h1 : Proof (Eqt Set X X1)) -> (h2 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> X2) (Elem X1 -> X3)).
+implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h1 : Proof (Eqt Set X X1)) -> (h2 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> Elem X2) (Elem X1 -> Elem X3)).
 
 (; //LEAN:inv_eq_one_div ;)
 inv_eq_one_div : (G : Set) -> (_ : Proof (DivInvMonoid G)) -> (x1 : Elem G) -> Proof (Eqt G (Inv__inv G x1) (div 1 x1)).
@@ -471,7 +471,7 @@ le_rfl : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> Proof (Leq a a
 (; //LEAN:neg_neg ;)
 neg_neg : (G : Set) -> (_ : Proof (InvolutiveNeg G)) -> (a : Elem G) -> Proof (Eqt G (Neg__neg G (Neg__neg G a)) a).
 
-(; doc: A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the infimum over the principal filters of all open sets containing `x`.  [Wikidata Q3275652](https://www.wikidata.org/wiki/Q3275652) ;)
+(; doc: A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the infimum over the principal filters of all open sets containing `x`. ;)
 (; //LEAN:nhds ;)
 nhds : (X : Set) -> (x1 : Elem X) -> Elem (Filter X).
 
@@ -495,11 +495,11 @@ rfl : (X : Set) -> (a : Elem X) -> Proof (Eqt X a a).
 (; //LEAN:tendsto_inv_atTop_zero ;)
 tendsto_inv_atTop_zero : (X : Set) -> (_ : Proof (Semifield X)) -> (_ : Proof (LinearOrder X)) -> (_ : Proof (IsStrictOrderedRing X)) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (OrderTopology X)) -> Proof (Filter__Tendsto X X (r => Inv__inv X r) (Filter__atTop X) (nhds X 0)).
 
-(; doc: `zero_le_one` with the type argument implicit. ;)
+(; doc: `zero_le_one` with the type argument implicit.  ;)
 (; //LEAN:zero_le_one ;)
 zero_le_one : (X : Set) -> (_ : Proof (LE X)) -> (_ : Proof (ZeroLEOneClass X)) -> Proof (Leq 0 1).
 
-(; doc: See `zero_lt_one'` for a version with the type explicit. ;)
+(; doc: See `zero_lt_one'` for a version with the type explicit.  ;)
 (; //LEAN:zero_lt_one ;)
 zero_lt_one : (X : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (ZeroLEOneClass X)) -> (_ : Proof (NeZero X 1)) -> Proof (Lt 0 1).
 

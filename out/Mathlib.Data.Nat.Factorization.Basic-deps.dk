@@ -56,7 +56,7 @@ Finset__filter : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) ->
 
 (; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.prod ;)
-Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem M)) -> Elem M.
 
 (; doc: `range n` is the set of natural numbers less than `n`. ;)
 (; //LEAN:Finset.range ;)
@@ -64,7 +64,7 @@ Finset__range : (n : Elem Nat) -> Elem (Finset Nat).
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
-Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem M)) -> Elem M.
 
 (; doc: `univ` is the universal finite set of type `Finset α` implied from the assumption `Fintype α`. ;)
 (; //LEAN:Finset.univ ;)
@@ -86,7 +86,7 @@ Finsupp__notMem_support_iff : (X : Set) -> (M : Set) -> (f : Elem (Finsupp X M))
 
 (; doc: `prod f g` is the product of `g a (f a)` over the support of `f`. ;)
 (; //LEAN:Finsupp.prod ;)
-Finsupp__prod : (X : Set) -> (M : Set) -> (N : Set) -> (f : Elem (Finsupp X M)) -> (g : (Elem X -> Elem M -> N)) -> Elem N.
+Finsupp__prod : (X : Set) -> (M : Set) -> (N : Set) -> (f : Elem (Finsupp X M)) -> (g : (Elem X -> (Elem M -> Elem N))) -> Elem N.
 
 (; doc: `single a b` is the finitely supported function with value `b` at `a` and zero otherwise. ;)
 (; //LEAN:Finsupp.single ;)
@@ -96,9 +96,9 @@ Finsupp__single : (X : Set) -> (M : Set) -> (a : Elem X) -> (b : Elem M) -> Elem
 (; //LEAN:Finsupp.support ;)
 Finsupp__support : (X : Set) -> (M : Set) -> (self : Elem (Finsupp X M)) -> Elem (Finset X).
 
-(; doc: Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation from `β` to `α`. ;)
+(; doc: Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation from `β` to `α`.  ;)
 (; //LEAN:Function.onFun ;)
-Function__onFun : (X : Set) -> (Y : Set) -> (X1 : Set) -> (f : (Elem Y -> Elem Y -> X1)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> (x1 : Elem X) -> Elem X1.
+Function__onFun : (X : Set) -> (Y : Set) -> (X1 : Set) -> (f : (Elem Y -> (Elem Y -> Elem X1))) -> (g : (Elem X -> Elem Y)) -> (x : Elem X) -> (x1 : Elem X) -> Elem X1.
 
 (; //LEAN:Iff.trans ;)
 Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h1 : Proof (iff a b)) -> (h2 : Proof (iff b c)) -> Proof (iff a c).
@@ -193,7 +193,7 @@ Ne__bot_lt : (X : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (OrderBot X
 
 (; doc: A relation `r` holds pairwise if `r i j` for all `i ≠ j`. ;)
 (; //LEAN:Pairwise ;)
-Pairwise : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Pairwise : (X : Set) -> (r : (Elem X -> (Elem X -> Prop))) -> Prop.
 
 (; doc: `Icc a b` is the left-closed right-closed interval $[a, b]$. ;)
 (; //LEAN:Set.Icc ;)
@@ -221,11 +221,11 @@ True : Prop.
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
-congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Eqt (Elem X -> Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
+congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem X -> Elem Y)) -> (h : Proof (Eqt (Elem X -> Elem Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
 
 (; //LEAN:dvd_pow_self ;)
 dvd_pow_self : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) -> (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (divide a (pow a n)).
@@ -248,10 +248,6 @@ of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
 
 (; //LEAN:or_iff_left ;)
 or_iff_left : (b : Prop) -> (a : Prop) -> (hb : Proof (not b)) -> Proof (iff (or a b) a).
-
-(; doc: For `p ≠ 1`, the `p`-adic valuation of a natural `n ≠ 0` is the largest natural number `k` such that `p^k` divides `n`. If `n = 0` or `p = 1`, then `padicValNat p n` defaults to `0`. ;)
-(; //LEAN:padicValNat ;)
-padicValNat : (p : Elem Nat) -> (n : Elem Nat) -> Elem Nat.
 
 (; //LEAN:pow_one ;)
 pow_one : (M : Set) -> (_ : Proof (Monoid M)) -> (a : Elem M) -> Proof (Eqt M (pow a 1) a).

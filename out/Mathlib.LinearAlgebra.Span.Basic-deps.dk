@@ -45,7 +45,7 @@ AddCommMagma__toAdd : (G : Set) -> Proof (Add G).
 AddCommMonoid : (M : Set) -> Prop.
 
 (; //LEAN:AddHom.mk ;)
-AddHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> N)) -> (map_add' : Proof (forall M (x2 => forall M (y => Eqt N (toFun (plus x2 y)) (plus (toFun x2) (toFun y)))))) -> Elem (AddHom M N).
+AddHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> Elem N)) -> (map_add' : Proof (forall M (x2 => forall M (y => Eqt N (toFun (plus x2 y)) (plus (toFun x2) (toFun y)))))) -> Elem (AddHom M N).
 
 (; doc: A substructure satisfying `AddMemClass` is closed under addition. ;)
 (; //LEAN:AddMemClass.add_mem ;)
@@ -159,11 +159,11 @@ Finset : (X : Set) -> Set.
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; doc: A function `f : α → β` is called surjective if every `b : β` is equal to `f a` for some `a : α`. ;)
 (; //LEAN:Function.Surjective ;)
-Function__Surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+Function__Surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
@@ -223,7 +223,7 @@ LinearEquiv : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (sigma' 
 LinearEquiv__apply_symm_apply : (R : Set) -> (S : Set) -> (M : Set) -> (X : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (AddCommMonoid X)) -> (module_M : Proof (Module R M)) -> (module_S_M2 : Proof (Module S X)) -> (sigma : Elem (RingHom R S)) -> (sigma' : Elem (RingHom S R)) -> (re1 : Proof (RingHomInvPair R S sigma sigma')) -> (re2 : Proof (RingHomInvPair S R sigma' sigma)) -> (e : Elem (LinearEquiv R S sigma sigma' M X)) -> (c : Elem X) -> Proof (Eqt X (e (LinearEquiv__symm__app e c)) c).
 
 (; //LEAN:LinearEquiv.mk ;)
-LinearEquiv__mk : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (sigma' : Elem (RingHom S R)) -> (M : Set) -> (X : Set) -> (toLinearMap : Elem (LinearMap R S sigma M X)) -> (invFun : (Elem X -> M)) -> (left_inv : Proof (autoParam (Function__LeftInverse M X invFun (AddHom__toFun M X (LinearMap__toAddHom R S sigma M X toLinearMap))) Equiv__left_inv___autoParam)) -> (right_inv : Proof (autoParam (Function__RightInverse M X invFun (AddHom__toFun M X (LinearMap__toAddHom R S sigma M X toLinearMap))) Equiv__right_inv___autoParam)) -> Elem (LinearEquiv R S sigma sigma' M X).
+LinearEquiv__mk : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (sigma' : Elem (RingHom S R)) -> (M : Set) -> (X : Set) -> (toLinearMap : Elem (LinearMap R S sigma M X)) -> (invFun : (Elem X -> Elem M)) -> (left_inv : Proof (autoParam (Function__LeftInverse M X invFun (AddHom__toFun M X (LinearMap__toAddHom R S sigma M X toLinearMap))) Equiv__left_inv___autoParam)) -> (right_inv : Proof (autoParam (Function__RightInverse M X invFun (AddHom__toFun M X (LinearMap__toAddHom R S sigma M X toLinearMap))) Equiv__right_inv___autoParam)) -> Elem (LinearEquiv R S sigma sigma' M X).
 
 (; doc: Linear equivalence between two equal submodules. ;)
 (; //LEAN:LinearEquiv.ofEq ;)
@@ -305,7 +305,7 @@ Module : (R : Set) -> (M : Set) -> Prop.
 (; //LEAN:Module.End ;)
 Module__End : (R : Set) -> (M : Set) -> Set.
 
-(; doc: An `R`-module `M` is torsion-free if scalar multiplication by an element `r : R` is injective if multiplication (on `R`) by `r` is.  For domains, this is equivalent to the usual condition of `r • m = 0 → r = 0 ∨ m = 0`. See `smul_eq_zero`. ;)
+(; doc: An `R`-module `M` is torsion-free if scalar multiplication by an element `r : R` is injective if multiplication \(on `R`\) by `r` is.  For domains, this is equivalent to the usual condition of `r • m = 0 → r = 0 ∨ m = 0`. See `smul_eq_zero`.  ;)
 (; //LEAN:Module.IsTorsionFree ;)
 Module__IsTorsionFree : (R : Set) -> (M : Set) -> Prop.
 
@@ -315,7 +315,7 @@ Monoid : (M : Set) -> Prop.
 
 (; doc: A function `f` is monotone if `a ≤ b` implies `f a ≤ f b`. ;)
 (; //LEAN:Monotone ;)
-Monotone : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+Monotone : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; doc: `-a` computes the negative or opposite of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `-` in identifiers is `neg` (when used as a unary operator). ;)
 (; //LEAN:Neg.neg ;)
@@ -337,11 +337,11 @@ OmegaCompletePartialOrder__Chain__toOrderHom : (X : Set) -> (self : Elem (OmegaC
 
 (; doc: A function `f` between `ω`-complete partial orders is `ωScottContinuous` if it is Scott continuous over chains. ;)
 (; //LEAN:OmegaCompletePartialOrder.ωScottContinuous ;)
-OmegaCompletePartialOrder___u3c9_ScottContinuous : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+OmegaCompletePartialOrder___u3c9_ScottContinuous : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; doc: **Alias** of the reverse direction of `OmegaCompletePartialOrder.ωScottContinuous_iff_monotone_map_ωSup`.  ---  `ωScottContinuous f` asserts that `f` is both monotone and distributes over ωSup. ;)
 (; //LEAN:OmegaCompletePartialOrder.ωScottContinuous.of_monotone_map_ωSup ;)
-OmegaCompletePartialOrder___u3c9_ScottContinuous__of_monotone_map__u3c9_Sup : (X : Set) -> (Y : Set) -> (_ : Proof (OmegaCompletePartialOrder X)) -> (_ : Proof (OmegaCompletePartialOrder Y)) -> (f : (Elem X -> Y)) -> (h : Proof (exists (Monotone X Y f) (hf => forall (OmegaCompletePartialOrder__Chain X) (c => Eqt Y (f (OmegaCompletePartialOrder___u3c9_Sup X c)) (OmegaCompletePartialOrder___u3c9_Sup Y (OmegaCompletePartialOrder__Chain__map X Y c (OrderHom__mk X Y f hf))))))) -> Proof (OmegaCompletePartialOrder___u3c9_ScottContinuous X Y f).
+OmegaCompletePartialOrder___u3c9_ScottContinuous__of_monotone_map__u3c9_Sup : (X : Set) -> (Y : Set) -> (_ : Proof (OmegaCompletePartialOrder X)) -> (_ : Proof (OmegaCompletePartialOrder Y)) -> (f : (Elem X -> Elem Y)) -> (h : Proof (exists (Monotone X Y f) (hf => forall (OmegaCompletePartialOrder__Chain X) (c => Eqt Y (f (OmegaCompletePartialOrder___u3c9_Sup X c)) (OmegaCompletePartialOrder___u3c9_Sup Y (OmegaCompletePartialOrder__Chain__map X Y c (OrderHom__mk X Y f hf))))))) -> Proof (OmegaCompletePartialOrder___u3c9_ScottContinuous X Y f).
 
 (; doc: The supremum of an increasing sequence ;)
 (; //LEAN:OmegaCompletePartialOrder.ωSup ;)
@@ -354,7 +354,7 @@ Or__resolve_left : (a : Prop) -> (b : Prop) -> (h : Proof (or a b)) -> (na : Pro
 Or__resolve_right : (a : Prop) -> (b : Prop) -> (h : Proof (or a b)) -> (nb : Proof (not b)) -> Proof a.
 
 (; //LEAN:OrderHom.mk ;)
-OrderHom__mk : (X : Set) -> (Y : Set) -> (toFun : (Elem X -> Y)) -> (monotone' : Proof (Monotone X Y toFun)) -> Elem (OrderHom X Y).
+OrderHom__mk : (X : Set) -> (Y : Set) -> (toFun : (Elem X -> Elem Y)) -> (monotone' : Proof (Monotone X Y toFun)) -> Elem (OrderHom X Y).
 
 (; doc: The product type, usually written `α × β`. Product types are also called pair or tuple types. Elements of this type are pairs in which the first element is an `α` and the second element is a `β`.  Products nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.  Conventions for notations in identifiers:   * The recommended spelling of `×` in identifiers is `Prod`. ;)
 (; //LEAN:Prod ;)
@@ -408,7 +408,7 @@ Set__Elem : (X : Set) -> (s : Elem (powerset X)) -> Set.
 
 (; doc: Two functions `f₁ f₂ : α → β` are equal on `s` if `f₁ x = f₂ x` for all `x ∈ s`. ;)
 (; //LEAN:Set.EqOn ;)
-Set__EqOn : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+Set__EqOn : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Elem Y)) -> (f2 : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: A set is finite if the corresponding `Subtype` is finite, i.e., if there exists a natural `n : ℕ` and an equivalence `s ≃ Fin n`. ;)
 (; //LEAN:Set.Finite ;)
@@ -416,7 +416,7 @@ Set__Finite : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: `MapsTo f s t` means that the image of `s` is contained in `t`. ;)
 (; //LEAN:Set.MapsTo ;)
-Set__MapsTo : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> Prop.
+Set__MapsTo : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> Prop.
 
 (; doc: The property `s.Nonempty` expresses the fact that the set `s` is not empty. It should be used in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks to the dot notation. ;)
 (; //LEAN:Set.Nonempty ;)
@@ -427,29 +427,29 @@ Set__Nonempty : (X : Set) -> (s : Elem (powerset X)) -> Prop.
 Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Set.forall_mem_range ;)
-Set__forall_mem_range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (p : (Elem X -> Prop)) -> Proof (iff (forall X (a => if (Membership__mem X (powerset X) (Set__range X I f) a) (p a))) (forall I (i => p (f i)))).
+Set__forall_mem_range : (X : Set) -> (I : Set) -> (f : (Elem I -> Elem X)) -> (p : (Elem X -> Prop)) -> Proof (iff (forall X (a => if (Membership__mem X (powerset X) (Set__range X I f) a) (p a))) (forall I (i => p (f i)))).
 
 (; doc: Indexed union of a family of sets ;)
 (; //LEAN:Set.iUnion ;)
-Set__iUnion : (X : Set) -> (I : Set) -> (s : (Elem I -> powerset X)) -> Elem (powerset X).
+Set__iUnion : (X : Set) -> (I : Set) -> (s : (Elem I -> Elem (powerset X))) -> Elem (powerset X).
 
 (; doc: The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that `f a = b` for some `a ∈ s`. ;)
 (; //LEAN:Set.image ;)
-Set__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
+Set__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
 
 (; //LEAN:Set.image_mono ;)
-Set__image_mono : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X s t)) -> Proof (Set__Subset Y (Set__image X Y f s) (Set__image X Y f t)).
+Set__image_mono : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X s t)) -> Proof (Set__Subset Y (Set__image X Y f s) (Set__image X Y f t)).
 
 (; doc: image and preimage are a Galois connection ;)
 (; //LEAN:Set.image_subset_iff ;)
-Set__image_subset_iff : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> (f : (Elem X -> Y)) -> Proof (iff (Set__Subset Y (Set__image X Y f s) t) (Set__Subset X s (Set__preimage X Y f t))).
+Set__image_subset_iff : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> (f : (Elem X -> Elem Y)) -> Proof (iff (Set__Subset Y (Set__image X Y f s) t) (Set__Subset X s (Set__preimage X Y f t))).
 
 (; //LEAN:Set.mem_prod ;)
 Set__mem_prod : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> (p : Elem (Prod X Y)) -> Proof (iff (Membership__mem (Prod X Y) (powerset (Prod X Y)) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) s t) p) (and (Membership__mem X (powerset X) s (Prod__fst X Y p)) (Membership__mem Y (powerset Y) t (Prod__snd X Y p)))).
 
 (; doc: The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`, is the set of `x : α` such that `f x ∈ s`. ;)
 (; //LEAN:Set.preimage ;)
-Set__preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset Y)) -> Elem (powerset X).
+Set__preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset Y)) -> Elem (powerset X).
 
 (; //LEAN:Set.prod_inter_prod ;)
 Set__prod_inter_prod : (X : Set) -> (Y : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (t1 : Elem (powerset Y)) -> (t2 : Elem (powerset Y)) -> Proof (Eqt (powerset (Prod X Y)) (Inter__inter (powerset (Prod X Y)) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) s1 t1) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) s2 t2)) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) (Inter__inter (powerset X) s1 s2) (Inter__inter (powerset Y) t1 t2))).
@@ -459,7 +459,7 @@ Set__prod_mono : (X : Set) -> (Y : Set) -> (s1 : Elem (powerset X)) -> (s2 : Ele
 
 (; doc: Range of a function.  This function is more flexible than `f '' univ`, as the image requires that the domain is in Type and not an arbitrary Sort. ;)
 (; //LEAN:Set.range ;)
-Set__range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> Elem (powerset X).
+Set__range : (X : Set) -> (I : Set) -> (f : (Elem I -> Elem X)) -> Elem (powerset X).
 
 (; doc: The coercion from a term of a `SetLike` to its corresponding `Set`. ;)
 (; //LEAN:SetLike.coe ;)
@@ -518,7 +518,7 @@ Submodule__linearMap_eq_iff_of_eq_span___proof_1 : (R : Set) -> (M : Set) -> (_ 
 Submodule__map : (R : Set) -> (X : Set) -> (M : Set) -> (X1 : Set) -> (sigma12 : Elem (RingHom R X)) -> (f : Elem (LinearMap R X sigma12 M X1)) -> (p : Elem (Submodule R M)) -> Elem (Submodule X X1).
 
 (; //LEAN:Submodule.mem_iSup_of_mem ;)
-Submodule__mem_iSup_of_mem : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (I : Set) -> (b : Elem M) -> (p : (Elem I -> Submodule R M)) -> (i : Elem I) -> (h : Proof (Membership__mem M (Submodule R M) (p i) b)) -> Proof (Membership__mem M (Submodule R M) (iSup (Submodule R M) I (i1 => p i1)) b).
+Submodule__mem_iSup_of_mem : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (I : Set) -> (b : Elem M) -> (p : (Elem I -> Elem (Submodule R M))) -> (i : Elem I) -> (h : Proof (Membership__mem M (Submodule R M) (p i) b)) -> Proof (Membership__mem M (Submodule R M) (iSup (Submodule R M) I (i1 => p i1)) b).
 
 (; //LEAN:Submodule.mem_span_singleton_self ;)
 Submodule__mem_span_singleton_self : (R : Set) -> (M : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (Module R M)) -> (x3 : Elem M) -> Proof (Membership__mem M (Submodule R M) (Submodule__span R M (Singleton__singleton M (powerset M) x3)) x3).
@@ -654,22 +654,22 @@ ZeroMemClass__zero_mem : (S : Set) -> (M : Set) -> (x : Proof (Zero M)) -> (x1 :
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Elem Y)) -> (f2 : (Elem X -> Elem Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Elem Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; //LEAN:ge_of_eq ;)
 ge_of_eq : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Eqt X a b)) -> Proof (Leq b a).
 
 (; doc: Indexed infimum ;)
 (; //LEAN:iInf ;)
-iInf : (X : Set) -> (I : Set) -> (s : (Elem I -> X)) -> Elem X.
+iInf : (X : Set) -> (I : Set) -> (s : (Elem I -> Elem X)) -> Elem X.
 
 (; doc: Indexed supremum ;)
 (; //LEAN:iSup ;)
-iSup : (X : Set) -> (I : Set) -> (s : (Elem I -> X)) -> Elem X.
+iSup : (X : Set) -> (I : Set) -> (s : (Elem I -> Elem X)) -> Elem X.
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)

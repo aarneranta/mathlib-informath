@@ -31,18 +31,18 @@ AddSubgroup : (G : Set) -> Set.
 Con__mk : (M : Set) -> (toSetoid : Proof (Setoid M)) -> (mul' : Proof (forall M (w => forall M (x1 => forall M (y => forall M (z => if (Setoid__r M w x1) (if (Setoid__r M y z) (Setoid__r M (times w y) (times x1 z))))))))) -> Elem (Con M).
 
 (; //LEAN:Eq.rec ;)
-Eq__rec : (X : Set) -> (x : Elem X) -> (motive : ((x2 : Elem X) -> Proof (Eqt X x x2) -> Set)) -> (refl : Elem (motive x (Eq__refl X x))) -> (x1 : Elem X) -> (t : Proof (Eqt X x x1)) -> Elem (motive x1 t).
+Eq__rec : (X : Set) -> (x : Elem X) -> (motive : ((x2 : Elem X) -> (Proof (Eqt X x x2) -> Set))) -> (refl : Elem (motive x (Eq__refl X x))) -> (x1 : Elem X) -> (t : Proof (Eqt X x x1)) -> Elem (motive x1 t).
 
 (; doc: Equality is symmetric: if `a = b` then `b = a`.  Because this is in the `Eq` namespace, if you have a variable `h : a = b`, `h.symm` can be used as shorthand for `Eq.symm h` as a proof of `b = a`.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:Eq.symm ;)
 Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Proof (Eqt X b a).
 
 (; //LEAN:Equiv.mk ;)
-Equiv__mk : (X : Set) -> (Y : Set) -> (toFun : (Elem X -> Y)) -> (invFun : (Elem Y -> X)) -> (left_inv : Proof (autoParam (Function__LeftInverse X Y invFun toFun) Equiv__left_inv___autoParam)) -> (right_inv : Proof (autoParam (Function__RightInverse X Y invFun toFun) Equiv__right_inv___autoParam)) -> Elem (Equiv X Y).
+Equiv__mk : (X : Set) -> (Y : Set) -> (toFun : (Elem X -> Elem Y)) -> (invFun : (Elem Y -> Elem X)) -> (left_inv : Proof (autoParam (Function__LeftInverse X Y invFun toFun) Equiv__left_inv___autoParam)) -> (right_inv : Proof (autoParam (Function__RightInverse X Y invFun toFun) Equiv__right_inv___autoParam)) -> Elem (Equiv X Y).
 
 (; doc: A function `f : α → β` is called surjective if every `b : β` is equal to `f a` for some `a : α`. ;)
 (; //LEAN:Function.Surjective ;)
-Function__Surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+Function__Surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; doc: `HasQuotient.Quotient A b` (denoted as `A ⧸ b`) is the quotient of the type `A` by `b`. ;)
 (; //LEAN:HasQuotient.Quotient ;)
@@ -129,7 +129,7 @@ MonoidHom__mk : (M : Set) -> (N : Set) -> (toOneHom : Elem (OneHom M N)) -> (map
 NonAssocSemiring : (X : Set) -> Prop.
 
 (; //LEAN:OneHom.mk ;)
-OneHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> N)) -> (map_one' : Proof (Eqt N (toFun 1) 1)) -> Elem (OneHom M N).
+OneHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> Elem N)) -> (map_one' : Proof (Eqt N (toFun 1) 1)) -> Elem (OneHom M N).
 
 (; doc: A version of `Quotient.inductionOn` taking `{s : Setoid α}` as an implicit argument instead of an instance argument. ;)
 (; //LEAN:Quotient.inductionOn' ;)
@@ -213,15 +213,15 @@ Semiring__toNonAssocSemiring : (X : Set) -> Elem (NonAssocSemiring__on X).
 
 (; doc: Indexed union of a family of sets ;)
 (; //LEAN:Set.iUnion ;)
-Set__iUnion : (X : Set) -> (I : Set) -> (s : (Elem I -> powerset X)) -> Elem (powerset X).
+Set__iUnion : (X : Set) -> (I : Set) -> (s : (Elem I -> Elem (powerset X))) -> Elem (powerset X).
 
 (; doc: The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that `f a = b` for some `a ∈ s`. ;)
 (; //LEAN:Set.image ;)
-Set__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
+Set__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
 
 (; doc: The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`, is the set of `x : α` such that `f x ∈ s`. ;)
 (; //LEAN:Set.preimage ;)
-Set__preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset Y)) -> Elem (powerset X).
+Set__preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset Y)) -> Elem (powerset X).
 
 (; doc: A submodule of a module is one which is closed under vector operations. This is a sufficient condition for the subset of vectors in the submodule to themselves form a module. ;)
 (; //LEAN:Submodule ;)

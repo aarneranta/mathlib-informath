@@ -17,7 +17,7 @@ DFunLike__coe__app : (a1 : Elem (AddMonoidHom R (AddMonoid__End R))) -> (a2 : El
 AddHom : (M : Set) -> (N : Set) -> Set.
 
 (; //LEAN:AddHom.mk ;)
-AddHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> N)) -> (map_add' : Proof (forall M (x2 => forall M (y => Eqt N (toFun (plus x2 y)) (plus (toFun x2) (toFun y)))))) -> Elem (AddHom M N).
+AddHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> Elem N)) -> (map_add' : Proof (forall M (x2 => forall M (y => Eqt N (toFun (plus x2 y)) (plus (toFun x2) (toFun y)))))) -> Elem (AddHom M N).
 
 (; //LEAN:AddHom.mulLeft._proof_1 ;)
 AddHom__mulLeft___proof_1 : (R : Set) -> (_ : Proof (Distrib R)) -> (r : Elem R) -> (b : Elem R) -> (c : Elem R) -> Proof (Eqt R (times r (plus b c)) (plus (times r b) (times r c))).
@@ -79,7 +79,7 @@ AddMonoidHom__mulRight___proof_1 : (R : Set) -> (_ : Proof (NonUnitalNonAssocSem
 (; //LEAN:AddMonoidHom.mulRight._proof_2 ;)
 AddMonoidHom__mulRight___proof_2 : (R : Set) -> (_ : Proof (NonUnitalNonAssocSemiring R)) -> (r : Elem R) -> (x1 : Elem R) -> (x2 : Elem R) -> Proof (Eqt R (times (plus x1 x2) r) (plus (times x1 r) (times x2 r))).
 
-(; doc: Two elements commute if `a * b = b * a`. ;)
+(; doc: Two elements commute if `a * b = b * a`.  ;)
 (; //LEAN:Commute ;)
 Commute : (M : Set) -> (a : Elem M) -> (b : Elem M) -> Prop.
 
@@ -139,11 +139,11 @@ IsDomain__mk : (X : Set) -> (_ : Proof (Semiring X)) -> (_ : Proof (IsCancelMulZ
 (; //LEAN:IsLeftCancelMulZero ;)
 IsLeftCancelMulZero : (X : Set) -> Prop.
 
-(; doc: A left-regular element is an element `c` such that multiplication on the left by `c` is injective. ;)
+(; doc: A left-regular element is an element `c` such that multiplication on the left by `c` is injective.  ;)
 (; //LEAN:IsLeftRegular ;)
 IsLeftRegular : (R : Set) -> (c : Elem R) -> Prop.
 
-(; doc: A regular element is an element `c` such that multiplication by `c` both on the left and on the right is injective. ;)
+(; doc: A regular element is an element `c` such that multiplication by `c` both on the left and on the right is injective.  ;)
 (; //LEAN:IsRegular ;)
 IsRegular : (R : Set) -> (c : Elem R) -> Prop.
 
@@ -151,7 +151,7 @@ IsRegular : (R : Set) -> (c : Elem R) -> Prop.
 (; //LEAN:IsRightCancelMulZero ;)
 IsRightCancelMulZero : (X : Set) -> Prop.
 
-(; doc: A right-regular element is an element `c` such that multiplication on the right by `c` is injective. ;)
+(; doc: A right-regular element is an element `c` such that multiplication on the right by `c` is injective.  ;)
 (; //LEAN:IsRightRegular ;)
 IsRightRegular : (R : Set) -> (c : Elem R) -> Prop.
 
@@ -238,14 +238,14 @@ Subsingleton__eq_zero : (X : Set) -> (_ : Proof (Subsingleton X)) -> (a : Elem X
 
 (; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
 (; //LEAN:Trans.trans ;)
-Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> Elem Y -> Set)) -> (s : (Elem Y -> Elem Z -> Set)) -> (t : (Elem X -> Elem Z -> Set)) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Z) -> (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
+Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> (Elem Y -> Set))) -> (s : (Elem Y -> (Elem Z -> Set))) -> (t : (Elem X -> (Elem Z -> Set))) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Z) -> (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
 
 (; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:True ;)
 True : Prop.
 
 (; //LEAN:ZeroHom.mk ;)
-ZeroHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> N)) -> (map_zero' : Proof (Eqt N (toFun 0) 0)) -> Elem (ZeroHom M N).
+ZeroHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> Elem N)) -> (map_zero' : Proof (Eqt N (toFun 0) 0)) -> Elem (ZeroHom M N).
 
 (; //LEAN:add_right_inj ;)
 add_right_inj : (G : Set) -> (_ : Proof (IsLeftCancelAdd G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G (plus a b) (plus a c)) (Eqt G b c)).
@@ -255,15 +255,15 @@ add_zero : (M : Set) -> (_ : Proof (AddZeroClass M)) -> (a : Elem M) -> Proof (E
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Elem Y)) -> (f2 : (Elem X -> Elem Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Elem Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
-congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Eqt (Elem X -> Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
+congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem X -> Elem Y)) -> (h : Proof (Eqt (Elem X -> Elem Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
 
 (; doc: **Alias** of `div_eq_mul_inv`.  ---  Dividing by an element is the same as multiplying by its inverse.  This is a duplicate of `DivInvMonoid.div_eq_mul_inv` ensuring that the types unfold better. ;)
 (; //LEAN:division_def ;)

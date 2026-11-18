@@ -55,7 +55,7 @@ def Eq__trans_lt : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> 
   lt_of_eq_of_lt.
 
 (; //LEAN:Order.Preimage ;)
-def Order__Preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : (Elem Y -> Elem Y -> Prop)) -> (x : Elem X) -> (y : Elem X) -> Prop :=
+def Order__Preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : (Elem Y -> (Elem Y -> Prop))) -> (x : Elem X) -> (y : Elem X) -> Prop :=
   X => Y => f => s => x => y => s (f x) (f y).
 
 (; //LEAN:«term_⁻¹'o_» ;)
@@ -393,11 +393,11 @@ def ne_iff_lt_iff_le : (X : Set) -> (_ : Proof (PartialOrder X)) -> (a : Elem X)
   X => x => a => b => Decidable__ne_iff_lt_iff_le X a b.
 
 (; //LEAN:commutative_of_le ;)
-def commutative_of_le : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder X)) -> (f : (Elem Y -> Elem Y -> X)) -> (comm : Proof (forall Y (a1 => forall Y (b1 => Leq (f a1 b1) (f b1 a1))))) -> (a : Elem Y) -> (b : Elem Y) -> Proof (Eqt X (f a b) (f b a)) :=
+def commutative_of_le : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder X)) -> (f : (Elem Y -> (Elem Y -> Elem X))) -> (comm : Proof (forall Y (a1 => forall Y (b1 => Leq (f a1 b1) (f b1 a1))))) -> (a : Elem Y) -> (b : Elem Y) -> Proof (Eqt X (f a b) (f b a)) :=
   X => Y => x => f => comm => a => b => LE__le__antisymm X (f a b) (f b a) (forallE Y (b2 => Leq (f a b2) (f b2 a)) (forallE Y (a1 => forall Y (b1 => Leq (f a1 b1) (f b1 a1))) comm a) b) (forallE Y (b4 => Leq (f b b4) (f b4 b)) (forallE Y (a2 => forall Y (b3 => Leq (f a2 b3) (f b3 a2))) comm b) a).
 
 (; //LEAN:associative_of_commutative_of_le ;)
-def associative_of_commutative_of_le : (X : Set) -> (_ : Proof (PartialOrder X)) -> (f : (Elem X -> Elem X -> X)) -> (comm : Proof (Std__Commutative X f)) -> (assoc : Proof (forall X (a => forall X (b => forall X (c => Leq (f (f a b) c) (f a (f b c))))))) -> Proof (Std__Associative X f) :=
+def associative_of_commutative_of_le : (X : Set) -> (_ : Proof (PartialOrder X)) -> (f : (Elem X -> (Elem X -> Elem X))) -> (comm : Proof (Std__Commutative X f)) -> (assoc : Proof (forall X (a => forall X (b => forall X (c => Leq (f (f a b) c) (f a (f b c))))))) -> Proof (Std__Associative X f) :=
   X => x => f => comm => assoc => Std__Associative__mk X f (forallI X (a => forall X (b5 => forall X (c8 => Eqt X (f (f a b5) c8) (f a (f b5 c8))))) (a => forallI X (b => forall X (c7 => Eqt X (f (f a b) c7) (f a (f b c7)))) (b => forallI X (c => Eqt X (f (f a b) c) (f a (f b c))) (c => le_antisymm X (f (f a b) c) (f a (f b c)) (forallE X (c3 => Leq (f (f a b) c3) (f a (f b c3))) (forallE X (b2 => forall X (c2 => Leq (f (f a b2) c2) (f a (f b2 c2)))) (forallE X (a1 => forall X (b1 => forall X (c1 => Leq (f (f a1 b1) c1) (f a1 (f b1 c1))))) assoc a) b) c) (Eq__mpr (Leq (f a (f b c)) (f (f a b) c)) (Leq (f (f b c) a) (f (f a b) c)) (id (Eqt Prop (Leq (f a (f b c)) (f (f a b) c)) (Leq (f (f b c) a) (f (f a b) c))) (congrArg X Prop (f a (f b c)) (f (f b c) a) (_a => Leq _a (f (f a b) c)) (Std__Commutative__comm X f a (f b c)))) (Eq__mpr (Leq (f (f b c) a) (f (f a b) c)) (Leq (f (f c b) a) (f (f a b) c)) (id (Eqt Prop (Leq (f (f b c) a) (f (f a b) c)) (Leq (f (f c b) a) (f (f a b) c))) (congrArg X Prop (f b c) (f c b) (_a1 => Leq (f _a1 a) (f (f a b) c)) (Std__Commutative__comm X f b c))) (Eq__mpr (Leq (f (f c b) a) (f (f a b) c)) (Leq (f (f c b) a) (f c (f a b))) (id (Eqt Prop (Leq (f (f c b) a) (f (f a b) c)) (Leq (f (f c b) a) (f c (f a b)))) (congrArg X Prop (f (f a b) c) (f c (f a b)) (_a2 => Leq (f (f c b) a) _a2) (Std__Commutative__comm X f (f a b) c))) (Eq__mpr (Leq (f (f c b) a) (f c (f a b))) (Leq (f (f c b) a) (f c (f b a))) (id (Eqt Prop (Leq (f (f c b) a) (f c (f a b))) (Leq (f (f c b) a) (f c (f b a)))) (congrArg X Prop (f a b) (f b a) (_a3 => Leq (f (f c b) a) (f c _a3)) (Std__Commutative__comm X f a b))) (forallE X (c6 => Leq (f (f c b) c6) (f c (f b c6))) (forallE X (b4 => forall X (c5 => Leq (f (f c b4) c5) (f c (f b4 c5)))) (forallE X (a2 => forall X (b3 => forall X (c4 => Leq (f (f a2 b3) c4) (f a2 (f b3 c4))))) assoc c) b) a))))))))).
 
 (; //LEAN:LE.le.lt_or_ge ;)
@@ -559,7 +559,7 @@ def le_iff_le_iff_lt_iff_lt : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder 
   X => Y => x => x1 => a => b => c => d => iffI (iff (Leq a b) (Leq c d)) (iff (Lt b a) (Lt d c)) (lt_iff_lt_of_le_iff_le X Y a b c d) (H => Iff__trans (Leq a b) (not (Lt b a)) (Leq c d) (Iff__symm (not (Lt b a)) (Leq a b) (not_lt X b a)) (Iff__trans (not (Lt b a)) (not (Lt d c)) (Leq c d) (not_congr (Lt b a) (Lt d c) H) (not_lt Y d c))).
 
 (; //LEAN:rel_imp_eq_of_rel_imp_le ;)
-def rel_imp_eq_of_rel_imp_le : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder Y)) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Symm X r)) -> (f : (Elem X -> Y)) -> (h1 : Proof (forall X (a1 => forall X (b1 => if (r a1 b1) (Leq (f a1) (f b1)))))) -> (a : Elem X) -> (b : Elem X) -> (h2 : Proof (r a b)) -> Proof (Eqt Y (f a) (f b)) :=
+def rel_imp_eq_of_rel_imp_le : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder Y)) -> (r : (Elem X -> (Elem X -> Prop))) -> (_ : Proof (Std__Symm X r)) -> (f : (Elem X -> Elem Y)) -> (h1 : Proof (forall X (a1 => forall X (b1 => if (r a1 b1) (Leq (f a1) (f b1)))))) -> (a : Elem X) -> (b : Elem X) -> (h2 : Proof (r a b)) -> Proof (Eqt Y (f a) (f b)) :=
   X => Y => x => r => h => f => h1 => a => b => h2 => le_antisymm Y (f a) (f b) (ifE (r a b) (Leq (f a) (f b)) (forallE X (b2 => if (r a b2) (Leq (f a) (f b2))) (forallE X (a1 => forall X (b1 => if (r a1 b1) (Leq (f a1) (f b1)))) h1 a) b) h2) (ifE (r b a) (Leq (f b) (f a)) (forallE X (b4 => if (r b b4) (Leq (f b) (f b4))) (forallE X (a2 => forall X (b3 => if (r a2 b3) (Leq (f a2) (f b3)))) h1 b) a) (symm X r a b h2)).
 
 (; //LEAN:Preorder.toLE_injective_iff ;)
@@ -597,119 +597,119 @@ def LinearOrder__ext_lt : (X : Set) -> (A : Elem (LinearOrder__on X)) -> (B : El
   X => A => B => H => LinearOrder__toPartialOrder_injective X A B (PartialOrder__ext_lt X (LinearOrder__toPartialOrder X) (LinearOrder__toPartialOrder X) H).
 
 (; //LEAN:Pi.compl_def ;)
-def Pi__compl_def : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i4 : Elem I) -> Compl (pi i4))) -> (x1 : ((i3 : Elem I) -> pi i3)) -> Proof (Eqt ((i : Elem I) -> pi i) (Compl__compl ((i1 : Elem I) -> pi i1) x1) (i2 => Compl__compl (pi i2) (x1 i2))) :=
-  I => pi => x => x1 => rfl ((i : Elem I) -> pi i) (Compl__compl ((i1 : Elem I) -> pi i1) x1).
+def Pi__compl_def : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i4 : Elem I) -> Proof (Compl (pi i4)))) -> (x1 : ((i3 : Elem I) -> Elem (pi i3))) -> Proof (Eqt ((i : Elem I) -> Elem (pi i)) (Compl__compl ((i1 : Elem I) -> Elem (pi i1)) x1) (i2 => Compl__compl (pi i2) (x1 i2))) :=
+  I => pi => x => x1 => rfl ((i : Elem I) -> Elem (pi i)) (Compl__compl ((i1 : Elem I) -> Elem (pi i1)) x1).
 
 (; //LEAN:Pi.hnot_def ;)
-Pi__hnot_def : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i4 : Elem I) -> HNot (pi i4))) -> (x1 : ((i3 : Elem I) -> pi i3)) -> Proof (Eqt ((i : Elem I) -> pi i) (HNot__hnot ((i1 : Elem I) -> pi i1) x1) (i2 => HNot__hnot (pi i2) (x1 i2))).
+Pi__hnot_def : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i4 : Elem I) -> Proof (HNot (pi i4)))) -> (x1 : ((i3 : Elem I) -> Elem (pi i3))) -> Proof (Eqt ((i : Elem I) -> Elem (pi i)) (HNot__hnot ((i1 : Elem I) -> Elem (pi i1)) x1) (i2 => HNot__hnot (pi i2) (x1 i2))).
 
 (; //LEAN:Pi.hnot_apply ;)
-Pi__hnot_apply : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> HNot (pi i3))) -> (x1 : ((i2 : Elem I) -> pi i2)) -> (i : Elem I) -> Proof (Eqt (pi i) (HNot__hnot ((i1 : Elem I) -> pi i1) x1 i) (HNot__hnot (pi i) (x1 i))).
+Pi__hnot_apply : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Proof (HNot (pi i3)))) -> (x1 : ((i2 : Elem I) -> Elem (pi i2))) -> (i : Elem I) -> Proof (Eqt (pi i) (HNot__hnot ((i1 : Elem I) -> Elem (pi i1)) x1 i) (HNot__hnot (pi i) (x1 i))).
 
 (; //LEAN:Pi.compl_apply ;)
-def Pi__compl_apply : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Compl (pi i3))) -> (x1 : ((i2 : Elem I) -> pi i2)) -> (i : Elem I) -> Proof (Eqt (pi i) (Compl__compl ((i1 : Elem I) -> pi i1) x1 i) (Compl__compl (pi i) (x1 i))) :=
-  I => pi => x => x1 => i => rfl (pi i) (Compl__compl ((i1 : Elem I) -> pi i1) x1 i).
+def Pi__compl_apply : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Proof (Compl (pi i3)))) -> (x1 : ((i2 : Elem I) -> Elem (pi i2))) -> (i : Elem I) -> Proof (Eqt (pi i) (Compl__compl ((i1 : Elem I) -> Elem (pi i1)) x1 i) (Compl__compl (pi i) (x1 i))) :=
+  I => pi => x => x1 => i => rfl (pi i) (Compl__compl ((i1 : Elem I) -> Elem (pi i1)) x1 i).
 
 (; //LEAN:compl_lt ;)
-compl_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> Proof (Eqt (Elem X -> Elem X -> Prop) (Compl__compl (Elem X -> Elem X -> Prop) (x5 => x6 => Lt x5 x6)) (x7 => x8 => Geq x7 x8)).
+compl_lt : (X : Set) -> (_ : Proof (LinearOrder X)) -> Proof (Eqt (Elem X -> (Elem X -> Prop)) (Compl__compl (Elem X -> (Elem X -> Prop)) (x7 => x8 => Lt x7 x8)) (x9 => x10 => Geq x9 x10)).
 
 (; //LEAN:compl_le ;)
-compl_le : (X : Set) -> (_ : Proof (LinearOrder X)) -> Proof (Eqt (Elem X -> Elem X -> Prop) (Compl__compl (Elem X -> Elem X -> Prop) (x5 => x6 => Leq x5 x6)) (x7 => x8 => Gt x7 x8)).
+compl_le : (X : Set) -> (_ : Proof (LinearOrder X)) -> Proof (Eqt (Elem X -> (Elem X -> Prop)) (Compl__compl (Elem X -> (Elem X -> Prop)) (x7 => x8 => Leq x7 x8)) (x9 => x10 => Gt x9 x10)).
 
 (; //LEAN:compl_gt ;)
-compl_gt : (X : Set) -> (_ : Proof (LinearOrder X)) -> Proof (Eqt (Elem X -> Elem X -> Prop) (Compl__compl (Elem X -> Elem X -> Prop) (x5 => x6 => Gt x5 x6)) (x7 => x8 => Leq x7 x8)).
+compl_gt : (X : Set) -> (_ : Proof (LinearOrder X)) -> Proof (Eqt (Elem X -> (Elem X -> Prop)) (Compl__compl (Elem X -> (Elem X -> Prop)) (x7 => x8 => Gt x7 x8)) (x9 => x10 => Leq x9 x10)).
 
 (; //LEAN:compl_ge ;)
-compl_ge : (X : Set) -> (_ : Proof (LinearOrder X)) -> Proof (Eqt (Elem X -> Elem X -> Prop) (Compl__compl (Elem X -> Elem X -> Prop) (x5 => x6 => Geq x5 x6)) (x7 => x8 => Lt x7 x8)).
+compl_ge : (X : Set) -> (_ : Proof (LinearOrder X)) -> Proof (Eqt (Elem X -> (Elem X -> Prop)) (Compl__compl (Elem X -> (Elem X -> Prop)) (x7 => x8 => Geq x7 x8)) (x9 => x10 => Lt x9 x10)).
 
 (; //LEAN:Pi.lt_def ;)
-Pi__lt_def : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Preorder (pi i3))) -> (x1 : ((i2 : Elem I) -> pi i2)) -> (y : ((i1 : Elem I) -> pi i1)) -> Proof (iff (Lt x1 y) (and (Leq x1 y) (exists I (i => Lt (x1 i) (y i))))).
+Pi__lt_def : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Proof (Preorder (pi i3)))) -> (x1 : ((i2 : Elem I) -> Elem (pi i2))) -> (y : ((i1 : Elem I) -> Elem (pi i1))) -> Proof (iff (Lt x1 y) (and (Leq x1 y) (exists I (i => Lt (x1 i) (y i))))).
 
 (; //LEAN:Sum.elim_le_elim_iff ;)
-def Sum__elim_le_elim_iff : (Y : Set) -> (X : Set) -> (X1 : Set) -> (_ : Proof (LE Y)) -> (u1 : (Elem X -> Y)) -> (v1 : (Elem X -> Y)) -> (u2 : (Elem X1 -> Y)) -> (v2 : (Elem X1 -> Y)) -> Proof (iff (Leq (Sum__elim X X1 Y u1 u2) (Sum__elim X X1 Y v1 v2)) (and (Leq u1 v1) (Leq u2 v2))) :=
+def Sum__elim_le_elim_iff : (Y : Set) -> (X : Set) -> (X1 : Set) -> (_ : Proof (LE Y)) -> (u1 : (Elem X -> Elem Y)) -> (v1 : (Elem X -> Elem Y)) -> (u2 : (Elem X1 -> Elem Y)) -> (v2 : (Elem X1 -> Elem Y)) -> Proof (iff (Leq (Sum__elim X X1 Y u1 u2) (Sum__elim X X1 Y v1 v2)) (and (Leq u1 v1) (Leq u2 v2))) :=
   Y => X => X1 => x => u1 => v1 => u2 => v2 => Sum__forall X X1 (i => Leq (Sum__elim X X1 Y u1 u2 i) (Sum__elim X X1 Y v1 v2 i)).
 
 (; //LEAN:Sum.const_le_elim_iff ;)
-Sum__const_le_elim_iff : (Y : Set) -> (X : Set) -> (X1 : Set) -> (_ : Proof (LE Y)) -> (b : Elem Y) -> (v1 : (Elem X -> Y)) -> (v2 : (Elem X1 -> Y)) -> Proof (iff (Leq (Function__const Y (Sum X X1) b) (Sum__elim X X1 Y v1 v2)) (and (Leq (Function__const Y X b) v1) (Leq (Function__const Y X1 b) v2))).
+Sum__const_le_elim_iff : (Y : Set) -> (X : Set) -> (X1 : Set) -> (_ : Proof (LE Y)) -> (b : Elem Y) -> (v1 : (Elem X -> Elem Y)) -> (v2 : (Elem X1 -> Elem Y)) -> Proof (iff (Leq (Function__const Y (Sum X X1) b) (Sum__elim X X1 Y v1 v2)) (and (Leq (Function__const Y X b) v1) (Leq (Function__const Y X1 b) v2))).
 
 (; //LEAN:Sum.elim_le_const_iff ;)
-Sum__elim_le_const_iff : (Y : Set) -> (X : Set) -> (X1 : Set) -> (_ : Proof (LE Y)) -> (b : Elem Y) -> (u1 : (Elem X -> Y)) -> (u2 : (Elem X1 -> Y)) -> Proof (iff (Leq (Sum__elim X X1 Y u1 u2) (Function__const Y (Sum X X1) b)) (and (Leq u1 (Function__const Y X b)) (Leq u2 (Function__const Y X1 b)))).
+Sum__elim_le_const_iff : (Y : Set) -> (X : Set) -> (X1 : Set) -> (_ : Proof (LE Y)) -> (b : Elem Y) -> (u1 : (Elem X -> Elem Y)) -> (u2 : (Elem X1 -> Elem Y)) -> Proof (iff (Leq (Sum__elim X X1 Y u1 u2) (Function__const Y (Sum X X1) b)) (and (Leq u1 (Function__const Y X b)) (Leq u2 (Function__const Y X1 b)))).
 
 (; //LEAN:StrongLT ;)
-def StrongLT : (I : Set) -> (pi : (Elem I -> Set)) -> (a : ((i1 : Elem I) -> pi i1)) -> (b : ((i : Elem I) -> pi i)) -> Prop :=
+def StrongLT : (I : Set) -> (pi : (Elem I -> Set)) -> (a : ((i1 : Elem I) -> Elem (pi i1))) -> (b : ((i : Elem I) -> Elem (pi i))) -> Prop :=
   I => pi => a => b => forall I (i => Lt (a i) (b i)).
 
 (; //LEAN:le_of_strongLT ;)
-def le_of_strongLT : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Preorder (pi i2))) -> (a : ((i1 : Elem I) -> pi i1)) -> (b : ((i : Elem I) -> pi i)) -> (h : Proof (StrongLT I pi a b)) -> Proof (Leq a b) :=
+def le_of_strongLT : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Proof (Preorder (pi i2)))) -> (a : ((i1 : Elem I) -> Elem (pi i1))) -> (b : ((i : Elem I) -> Elem (pi i))) -> (h : Proof (StrongLT I pi a b)) -> Proof (Leq a b) :=
   I => pi => x => a => b => h => forallI I (x1 => Leq (a x1) (b x1)) (x1 => LT__lt__le (pi x1) (a x1) (b x1) (forallE I (i => Lt (a i) (b i)) h x1)).
 
 (; //LEAN:lt_of_strongLT ;)
-lt_of_strongLT : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Preorder (pi i2))) -> (a : ((i1 : Elem I) -> pi i1)) -> (b : ((i : Elem I) -> pi i)) -> (h1 : Proof (StrongLT I pi a b)) -> Proof (Lt a b).
+lt_of_strongLT : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Proof (Preorder (pi i2)))) -> (a : ((i1 : Elem I) -> Elem (pi i1))) -> (b : ((i : Elem I) -> Elem (pi i))) -> (h1 : Proof (StrongLT I pi a b)) -> Proof (Lt a b).
 
 (; //LEAN:strongLT_of_strongLT_of_le ;)
-def strongLT_of_strongLT_of_le : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Preorder (pi i3))) -> (a : ((i2 : Elem I) -> pi i2)) -> (b : ((i1 : Elem I) -> pi i1)) -> (c : ((i : Elem I) -> pi i)) -> (hab : Proof (StrongLT I pi a b)) -> (hbc : Proof (Leq b c)) -> Proof (StrongLT I pi a c) :=
+def strongLT_of_strongLT_of_le : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Proof (Preorder (pi i3)))) -> (a : ((i2 : Elem I) -> Elem (pi i2))) -> (b : ((i1 : Elem I) -> Elem (pi i1))) -> (c : ((i : Elem I) -> Elem (pi i))) -> (hab : Proof (StrongLT I pi a b)) -> (hbc : Proof (Leq b c)) -> Proof (StrongLT I pi a c) :=
   I => pi => x => a => b => c => hab => hbc => forallI I (x1 => Lt (a x1) (c x1)) (x1 => LT__lt__trans_le (pi x1) (a x1) (b x1) (c x1) (forallE I (i => Lt (a i) (b i)) hab x1) (forallE I (i1 => Leq (b i1) (c i1)) hbc x1)).
 
 (; //LEAN:strongLT_of_le_of_strongLT ;)
-strongLT_of_le_of_strongLT : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Preorder (pi i3))) -> (a : ((i2 : Elem I) -> pi i2)) -> (b : ((i1 : Elem I) -> pi i1)) -> (c : ((i : Elem I) -> pi i)) -> (hbc : Proof (Leq c b)) -> (hab : Proof (StrongLT I pi b a)) -> Proof (StrongLT I pi c a).
+strongLT_of_le_of_strongLT : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Proof (Preorder (pi i3)))) -> (a : ((i2 : Elem I) -> Elem (pi i2))) -> (b : ((i1 : Elem I) -> Elem (pi i1))) -> (c : ((i : Elem I) -> Elem (pi i))) -> (hbc : Proof (Leq c b)) -> (hab : Proof (StrongLT I pi b a)) -> Proof (StrongLT I pi c a).
 
 (; //LEAN:StrongLT.le ;)
-def StrongLT__le : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Preorder (pi i2))) -> (a : ((i1 : Elem I) -> pi i1)) -> (b : ((i : Elem I) -> pi i)) -> (h : Proof (StrongLT I pi a b)) -> Proof (Leq a b) :=
+def StrongLT__le : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Proof (Preorder (pi i2)))) -> (a : ((i1 : Elem I) -> Elem (pi i1))) -> (b : ((i : Elem I) -> Elem (pi i))) -> (h : Proof (StrongLT I pi a b)) -> Proof (Leq a b) :=
   le_of_strongLT.
 
 (; //LEAN:StrongLT.lt ;)
-def StrongLT__lt : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Preorder (pi i2))) -> (a : ((i1 : Elem I) -> pi i1)) -> (b : ((i : Elem I) -> pi i)) -> (h1 : Proof (StrongLT I pi a b)) -> Proof (Lt a b) :=
+def StrongLT__lt : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Proof (Preorder (pi i2)))) -> (a : ((i1 : Elem I) -> Elem (pi i1))) -> (b : ((i : Elem I) -> Elem (pi i))) -> (h1 : Proof (StrongLT I pi a b)) -> Proof (Lt a b) :=
   lt_of_strongLT.
 
 (; //LEAN:LE.le.trans_strongLT ;)
-LE__le__trans_strongLT : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Preorder (pi i3))) -> (a : ((i2 : Elem I) -> pi i2)) -> (b : ((i1 : Elem I) -> pi i1)) -> (c : ((i : Elem I) -> pi i)) -> (hbc : Proof (Leq c b)) -> (hab : Proof (StrongLT I pi b a)) -> Proof (StrongLT I pi c a).
+LE__le__trans_strongLT : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Proof (Preorder (pi i3)))) -> (a : ((i2 : Elem I) -> Elem (pi i2))) -> (b : ((i1 : Elem I) -> Elem (pi i1))) -> (c : ((i : Elem I) -> Elem (pi i))) -> (hbc : Proof (Leq c b)) -> (hab : Proof (StrongLT I pi b a)) -> Proof (StrongLT I pi c a).
 
 (; //LEAN:StrongLT.trans_le ;)
-def StrongLT__trans_le : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Preorder (pi i3))) -> (a : ((i2 : Elem I) -> pi i2)) -> (b : ((i1 : Elem I) -> pi i1)) -> (c : ((i : Elem I) -> pi i)) -> (hab : Proof (StrongLT I pi a b)) -> (hbc : Proof (Leq b c)) -> Proof (StrongLT I pi a c) :=
+def StrongLT__trans_le : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Proof (Preorder (pi i3)))) -> (a : ((i2 : Elem I) -> Elem (pi i2))) -> (b : ((i1 : Elem I) -> Elem (pi i1))) -> (c : ((i : Elem I) -> Elem (pi i))) -> (hab : Proof (StrongLT I pi a b)) -> (hbc : Proof (Leq b c)) -> Proof (StrongLT I pi a c) :=
   strongLT_of_strongLT_of_le.
 
 (; //LEAN:le_update_iff ;)
-def le_update_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Preorder (pi i3))) -> (x2 : ((i2 : Elem I) -> pi i2)) -> (y : ((i1 : Elem I) -> pi i1)) -> (i : Elem I) -> (a : Elem (pi i)) -> Proof (iff (Leq x2 (Function__update I pi y i a)) (and (Leq (x2 i) a) (forall I (j => if (Neq j i) (Leq (x2 j) (y j)))))) :=
+def le_update_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Proof (Preorder (pi i3)))) -> (x2 : ((i2 : Elem I) -> Elem (pi i2))) -> (y : ((i1 : Elem I) -> Elem (pi i1))) -> (i : Elem I) -> (a : Elem (pi i)) -> Proof (iff (Leq x2 (Function__update I pi y i a)) (and (Leq (x2 i) a) (forall I (j => if (Neq j i) (Leq (x2 j) (y j)))))) :=
   I => pi => x1 => x2 => y => i => a => Function__forall_update_iff I pi y i a (j => z => Leq (x2 j) z).
 
 (; //LEAN:update_le_iff ;)
-update_le_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Preorder (pi i3))) -> (x2 : ((i2 : Elem I) -> pi i2)) -> (y : ((i1 : Elem I) -> pi i1)) -> (i : Elem I) -> (a : Elem (pi i)) -> Proof (iff (Leq (Function__update I pi y i a) x2) (and (Leq a (x2 i)) (forall I (j => if (Neq j i) (Leq (y j) (x2 j)))))).
+update_le_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Proof (Preorder (pi i3)))) -> (x2 : ((i2 : Elem I) -> Elem (pi i2))) -> (y : ((i1 : Elem I) -> Elem (pi i1))) -> (i : Elem I) -> (a : Elem (pi i)) -> Proof (iff (Leq (Function__update I pi y i a) x2) (and (Leq a (x2 i)) (forall I (j => if (Neq j i) (Leq (y j) (x2 j)))))).
 
 (; //LEAN:update_le_update_iff ;)
-update_le_update_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Preorder (pi i3))) -> (x2 : ((i2 : Elem I) -> pi i2)) -> (y : ((i1 : Elem I) -> pi i1)) -> (i : Elem I) -> (a : Elem (pi i)) -> (b : Elem (pi i)) -> Proof (iff (Leq (Function__update I pi x2 i a) (Function__update I pi y i b)) (and (Leq a b) (forall I (j => if (Neq j i) (Leq (x2 j) (y j)))))).
+update_le_update_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i3 : Elem I) -> Proof (Preorder (pi i3)))) -> (x2 : ((i2 : Elem I) -> Elem (pi i2))) -> (y : ((i1 : Elem I) -> Elem (pi i1))) -> (i : Elem I) -> (a : Elem (pi i)) -> (b : Elem (pi i)) -> Proof (iff (Leq (Function__update I pi x2 i a) (Function__update I pi y i b)) (and (Leq a b) (forall I (j => if (Neq j i) (Leq (x2 j) (y j)))))).
 
 (; //LEAN:update_le_update_iff' ;)
-update_le_update_iff' : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Preorder (pi i2))) -> (x2 : ((i1 : Elem I) -> pi i1)) -> (i : Elem I) -> (a : Elem (pi i)) -> (b : Elem (pi i)) -> Proof (iff (Leq (Function__update I pi x2 i a) (Function__update I pi x2 i b)) (Leq a b)).
+update_le_update_iff' : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Proof (Preorder (pi i2)))) -> (x2 : ((i1 : Elem I) -> Elem (pi i1))) -> (i : Elem I) -> (a : Elem (pi i)) -> (b : Elem (pi i)) -> Proof (iff (Leq (Function__update I pi x2 i a) (Function__update I pi x2 i b)) (Leq a b)).
 
 (; //LEAN:update_lt_update_iff ;)
-def update_lt_update_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Preorder (pi i2))) -> (x2 : ((i1 : Elem I) -> pi i1)) -> (i : Elem I) -> (a : Elem (pi i)) -> (b : Elem (pi i)) -> Proof (iff (Lt (Function__update I pi x2 i a) (Function__update I pi x2 i b)) (Lt a b)) :=
-  I => pi => x1 => x2 => i => a => b => lt_iff_lt_of_le_iff_le' ((a1 : Elem I) -> pi a1) (pi i) (Function__update I pi x2 i b) (Function__update I pi x2 i a) b a (update_le_update_iff' I pi x2 i b a) (update_le_update_iff' I pi x2 i a b).
+def update_lt_update_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Proof (Preorder (pi i2)))) -> (x2 : ((i1 : Elem I) -> Elem (pi i1))) -> (i : Elem I) -> (a : Elem (pi i)) -> (b : Elem (pi i)) -> Proof (iff (Lt (Function__update I pi x2 i a) (Function__update I pi x2 i b)) (Lt a b)) :=
+  I => pi => x1 => x2 => i => a => b => lt_iff_lt_of_le_iff_le' ((a1 : Elem I) -> Elem (pi a1)) (pi i) (Function__update I pi x2 i b) (Function__update I pi x2 i a) b a (update_le_update_iff' I pi x2 i b a) (update_le_update_iff' I pi x2 i a b).
 
 (; //LEAN:update_le_self_iff ;)
-update_le_self_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Preorder (pi i2))) -> (x2 : ((i1 : Elem I) -> pi i1)) -> (i : Elem I) -> (a : Elem (pi i)) -> Proof (iff (Leq (Function__update I pi x2 i a) x2) (Leq a (x2 i))).
+update_le_self_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Proof (Preorder (pi i2)))) -> (x2 : ((i1 : Elem I) -> Elem (pi i1))) -> (i : Elem I) -> (a : Elem (pi i)) -> Proof (iff (Leq (Function__update I pi x2 i a) x2) (Leq a (x2 i))).
 
 (; //LEAN:le_update_self_iff ;)
-le_update_self_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Preorder (pi i2))) -> (x2 : ((i1 : Elem I) -> pi i1)) -> (i : Elem I) -> (a : Elem (pi i)) -> Proof (iff (Leq x2 (Function__update I pi x2 i a)) (Leq (x2 i) a)).
+le_update_self_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Proof (Preorder (pi i2)))) -> (x2 : ((i1 : Elem I) -> Elem (pi i1))) -> (i : Elem I) -> (a : Elem (pi i)) -> Proof (iff (Leq x2 (Function__update I pi x2 i a)) (Leq (x2 i) a)).
 
 (; //LEAN:update_lt_self_iff ;)
-update_lt_self_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Preorder (pi i2))) -> (x2 : ((i1 : Elem I) -> pi i1)) -> (i : Elem I) -> (a : Elem (pi i)) -> Proof (iff (Lt (Function__update I pi x2 i a) x2) (Lt a (x2 i))).
+update_lt_self_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Proof (Preorder (pi i2)))) -> (x2 : ((i1 : Elem I) -> Elem (pi i1))) -> (i : Elem I) -> (a : Elem (pi i)) -> Proof (iff (Lt (Function__update I pi x2 i a) x2) (Lt a (x2 i))).
 
 (; //LEAN:lt_update_self_iff ;)
-lt_update_self_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Preorder (pi i2))) -> (x2 : ((i1 : Elem I) -> pi i1)) -> (i : Elem I) -> (a : Elem (pi i)) -> Proof (iff (Lt x2 (Function__update I pi x2 i a)) (Lt (x2 i) a)).
+lt_update_self_iff : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Proof (Preorder (pi i2)))) -> (x2 : ((i1 : Elem I) -> Elem (pi i1))) -> (i : Elem I) -> (a : Elem (pi i)) -> Proof (iff (Lt x2 (Function__update I pi x2 i a)) (Lt (x2 i) a)).
 
 (; //LEAN:Pi.himp_def ;)
-Pi__himp_def : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i5 : Elem I) -> HImp (pi i5))) -> (x1 : ((i4 : Elem I) -> pi i4)) -> (y : ((i3 : Elem I) -> pi i3)) -> Proof (Eqt ((i : Elem I) -> pi i) (HImp__himp ((i1 : Elem I) -> pi i1) y x1) (i2 => HImp__himp (pi i2) (y i2) (x1 i2))).
+Pi__himp_def : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i5 : Elem I) -> Proof (HImp (pi i5)))) -> (x1 : ((i4 : Elem I) -> Elem (pi i4))) -> (y : ((i3 : Elem I) -> Elem (pi i3))) -> Proof (Eqt ((i : Elem I) -> Elem (pi i)) (HImp__himp ((i1 : Elem I) -> Elem (pi i1)) y x1) (i2 => HImp__himp (pi i2) (y i2) (x1 i2))).
 
 (; //LEAN:Pi.sdiff_def ;)
-def Pi__sdiff_def : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i5 : Elem I) -> SDiff (pi i5))) -> (x1 : ((i4 : Elem I) -> pi i4)) -> (y : ((i3 : Elem I) -> pi i3)) -> Proof (Eqt ((i : Elem I) -> pi i) (SDiff__sdiff ((i1 : Elem I) -> pi i1) x1 y) (i2 => SDiff__sdiff (pi i2) (x1 i2) (y i2))) :=
-  I => pi => x => x1 => y => rfl ((i : Elem I) -> pi i) (SDiff__sdiff ((i1 : Elem I) -> pi i1) x1 y).
+def Pi__sdiff_def : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i5 : Elem I) -> Proof (SDiff (pi i5)))) -> (x1 : ((i4 : Elem I) -> Elem (pi i4))) -> (y : ((i3 : Elem I) -> Elem (pi i3))) -> Proof (Eqt ((i : Elem I) -> Elem (pi i)) (SDiff__sdiff ((i1 : Elem I) -> Elem (pi i1)) x1 y) (i2 => SDiff__sdiff (pi i2) (x1 i2) (y i2))) :=
+  I => pi => x => x1 => y => rfl ((i : Elem I) -> Elem (pi i)) (SDiff__sdiff ((i1 : Elem I) -> Elem (pi i1)) x1 y).
 
 (; //LEAN:Pi.himp_apply ;)
-Pi__himp_apply : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i4 : Elem I) -> HImp (pi i4))) -> (x1 : ((i3 : Elem I) -> pi i3)) -> (y : ((i2 : Elem I) -> pi i2)) -> (i : Elem I) -> Proof (Eqt (pi i) (HImp__himp ((i1 : Elem I) -> pi i1) y x1 i) (HImp__himp (pi i) (y i) (x1 i))).
+Pi__himp_apply : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i4 : Elem I) -> Proof (HImp (pi i4)))) -> (x1 : ((i3 : Elem I) -> Elem (pi i3))) -> (y : ((i2 : Elem I) -> Elem (pi i2))) -> (i : Elem I) -> Proof (Eqt (pi i) (HImp__himp ((i1 : Elem I) -> Elem (pi i1)) y x1 i) (HImp__himp (pi i) (y i) (x1 i))).
 
 (; //LEAN:Pi.sdiff_apply ;)
-def Pi__sdiff_apply : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i4 : Elem I) -> SDiff (pi i4))) -> (x1 : ((i3 : Elem I) -> pi i3)) -> (y : ((i2 : Elem I) -> pi i2)) -> (i : Elem I) -> Proof (Eqt (pi i) (SDiff__sdiff ((i1 : Elem I) -> pi i1) x1 y i) (SDiff__sdiff (pi i) (x1 i) (y i))) :=
-  I => pi => x => x1 => y => i => rfl (pi i) (SDiff__sdiff ((i1 : Elem I) -> pi i1) x1 y i).
+def Pi__sdiff_apply : (I : Set) -> (pi : (Elem I -> Set)) -> (_ : Proof ((i4 : Elem I) -> Proof (SDiff (pi i4)))) -> (x1 : ((i3 : Elem I) -> Elem (pi i3))) -> (y : ((i2 : Elem I) -> Elem (pi i2))) -> (i : Elem I) -> Proof (Eqt (pi i) (SDiff__sdiff ((i1 : Elem I) -> Elem (pi i1)) x1 y i) (SDiff__sdiff (pi i) (x1 i) (y i))) :=
+  I => pi => x => x1 => y => i => rfl (pi i) (SDiff__sdiff ((i1 : Elem I) -> Elem (pi i1)) x1 y i).
 
 (; //LEAN:Function.const_le_const ;)
 Function__const_le_const : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Leq (Function__const X Y a) (Function__const X Y b)) (Leq a b)).
@@ -718,42 +718,42 @@ Function__const_le_const : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) ->
 Function__const_lt_const : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Lt (Function__const X Y a) (Function__const X Y b)) (Lt a b)).
 
 (; //LEAN:Function.Injective.preorder ;)
-def Function__Injective__preorder : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (le : Proof (forall X (x4 => forall X (y1 => iff (Leq (f x4) (f y1)) (Leq x4 y1))))) -> (lt : Proof (forall X (x3 => forall X (y => iff (Lt (f x3) (f y)) (Lt x3 y))))) -> Elem (Preorder__on X) :=
+def Function__Injective__preorder : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (le : Proof (forall X (x4 => forall X (y1 => iff (Leq (f x4) (f y1)) (Leq x4 y1))))) -> (lt : Proof (forall X (x3 => forall X (y => iff (Lt (f x3) (f y)) (Lt x3 y))))) -> Elem (Preorder__on X) :=
   X => Y => f => le => lt => Preorder__mk X (Function__Injective__preorder___proof_2 X Y f le) (Function__Injective__preorder___proof_3 X Y f le) (x3 => x4 => Function__Injective__preorder___proof_1 X Y f le lt x3 x4).
 
 (; //LEAN:Function.Injective.partialOrder ;)
-def Function__Injective__partialOrder : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective X Y f)) -> (le : Proof (forall X (x4 => forall X (y1 => iff (Leq (f x4) (f y1)) (Leq x4 y1))))) -> (lt : Proof (forall X (x3 => forall X (y => iff (Lt (f x3) (f y)) (Lt x3 y))))) -> Elem (PartialOrder__on X) :=
+def Function__Injective__partialOrder : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Injective X Y f)) -> (le : Proof (forall X (x4 => forall X (y1 => iff (Leq (f x4) (f y1)) (Leq x4 y1))))) -> (lt : Proof (forall X (x3 => forall X (y => iff (Lt (f x3) (f y)) (Lt x3 y))))) -> Elem (PartialOrder__on X) :=
   X => Y => f => hf => le => lt => PartialOrder__mk X (Function__Injective__partialOrder___proof_1 X Y f hf le lt).
 
 (; //LEAN:Function.Injective.linearOrder ;)
-def Function__Injective__linearOrder : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective X Y f)) -> (le : Proof (forall X (x13 => forall X (y4 => iff (Leq (f x13) (f y4)) (Leq x13 y4))))) -> (lt : Proof (forall X (x12 => forall X (y3 => iff (Lt (f x12) (f y3)) (Lt x12 y3))))) -> (min : Proof (forall X (x11 => forall X (y2 => Eqt Y (f (Min__min X x11 y2)) (Min__min Y (f x11) (f y2)))))) -> (max : Proof (forall X (x10 => forall X (y1 => Eqt Y (f (Max__max X x10 y1)) (Max__max Y (f x10) (f y1)))))) -> (compare : Proof (forall X (x9 => forall X (y => Eqt Ordering (Ord__compare Y (f x9) (f y)) (Ord__compare X x9 y))))) -> Elem (LinearOrder__on X) :=
+def Function__Injective__linearOrder : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Injective X Y f)) -> (le : Proof (forall X (x13 => forall X (y4 => iff (Leq (f x13) (f y4)) (Leq x13 y4))))) -> (lt : Proof (forall X (x12 => forall X (y3 => iff (Lt (f x12) (f y3)) (Lt x12 y3))))) -> (min : Proof (forall X (x11 => forall X (y2 => Eqt Y (f (Min__min X x11 y2)) (Min__min Y (f x11) (f y2)))))) -> (max : Proof (forall X (x10 => forall X (y1 => Eqt Y (f (Max__max X x10 y1)) (Max__max Y (f x10) (f y1)))))) -> (compare : Proof (forall X (x9 => forall X (y => Eqt Ordering (Ord__compare Y (f x9) (f y)) (Ord__compare X x9 y))))) -> Elem (LinearOrder__on X) :=
   X => Y => f => hf => le => lt => min => max => compare => LinearOrder__mk X (x9 => x10 => Function__Injective__linearOrder___proof_2 X Y f hf le lt x9 x10) x7 x6 x8 (x11 => x12 => Function__Injective__linearOrder___proof_4 X Y f hf le lt min x11 x12) (x13 => x14 => Function__Injective__linearOrder___proof_6 X Y f hf le lt max x13 x14) (x15 => x16 => Function__Injective__linearOrder___proof_7 X Y f hf le lt compare x15 x16).
 
 (; //LEAN:Preorder.lift ;)
-def Preorder__lift : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Elem (Preorder__on X) :=
+def Preorder__lift : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Elem (Preorder__on X) :=
   X => Y => f => Function__Injective__preorder X Y f (Preorder__lift___proof_1 X Y f) (Preorder__lift___proof_2 X Y f).
 
 (; //LEAN:PartialOrder.lift ;)
-def PartialOrder__lift : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (inj : Proof (Function__Injective X Y f)) -> Elem (PartialOrder__on X) :=
+def PartialOrder__lift : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (inj : Proof (Function__Injective X Y f)) -> Elem (PartialOrder__on X) :=
   X => Y => f => inj => Function__Injective__partialOrder X Y f inj (PartialOrder__lift___proof_1 X Y f) (PartialOrder__lift___proof_2 X Y f).
 
 (; //LEAN:compare_of_injective_eq_compareOfLessAndEq ;)
-compare_of_injective_eq_compareOfLessAndEq : (X : Set) -> (Y : Set) -> (a : Elem X) -> (b : Elem X) -> (x : Elem (LinearOrder__on Y)) -> (f : (Elem X -> Y)) -> (inj : Proof (Function__Injective X Y f)) -> Proof (Eqt Ordering (Ord__compare Y (f a) (f b)) (compareOfLessAndEq__in_4 X a b (PartialOrder__lift X Y f inj))).
+compare_of_injective_eq_compareOfLessAndEq : (X : Set) -> (Y : Set) -> (a : Elem X) -> (b : Elem X) -> (x : Elem (LinearOrder__on Y)) -> (f : (Elem X -> Elem Y)) -> (inj : Proof (Function__Injective X Y f)) -> Proof (Eqt Ordering (Ord__compare Y (f a) (f b)) (compareOfLessAndEq__in_4 X a b (PartialOrder__lift X Y f inj))).
 
 (; //LEAN:LinearOrder.lift ;)
-def LinearOrder__lift : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (inj : Proof (Function__Injective X Y f)) -> (hsup : Proof (forall X (x4 => forall X (y1 => Eqt Y (f (Max__max X x4 y1)) (Max__max Y (f x4) (f y1)))))) -> (hinf : Proof (forall X (x3 => forall X (y => Eqt Y (f (Min__min X x3 y)) (Min__min Y (f x3) (f y)))))) -> Elem (LinearOrder__on X) :=
+def LinearOrder__lift : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (inj : Proof (Function__Injective X Y f)) -> (hsup : Proof (forall X (x4 => forall X (y1 => Eqt Y (f (Max__max X x4 y1)) (Max__max Y (f x4) (f y1)))))) -> (hinf : Proof (forall X (x3 => forall X (y => Eqt Y (f (Min__min X x3 y)) (Min__min Y (f x3) (f y)))))) -> Elem (LinearOrder__on X) :=
   X => Y => f => inj => hsup => hinf => Function__Injective__linearOrder X Y f inj (LinearOrder__lift___proof_1 X Y f) (LinearOrder__lift___proof_2 X Y f) hinf hsup (LinearOrder__lift___proof_3 X Y f).
 
 (; //LEAN:LinearOrder.lift' ;)
-def LinearOrder__lift' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (inj : Proof (Function__Injective X Y f)) -> Elem (LinearOrder__on X) :=
+def LinearOrder__lift' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (inj : Proof (Function__Injective X Y f)) -> Elem (LinearOrder__on X) :=
   X => Y => f => inj => LinearOrder__lift X Y f inj (LinearOrder__lift'___proof_1 X Y f) (LinearOrder__lift'___proof_2 X Y f).
 
 (; //LEAN:LinearOrder.liftWithOrd ;)
-def LinearOrder__liftWithOrd : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (inj : Proof (Function__Injective X Y f)) -> (hsup : Proof (forall X (x5 => forall X (y1 => Eqt Y (f (Max__max X x5 y1)) (Max__max Y (f x5) (f y1)))))) -> (hinf : Proof (forall X (x4 => forall X (y => Eqt Y (f (Min__min X x4 y)) (Min__min Y (f x4) (f y)))))) -> (compare_f : Proof (forall X (a => forall X (b => Eqt Ordering (Ord__compare X a b) (Ord__compare Y (f a) (f b)))))) -> Elem (LinearOrder__on X) :=
+def LinearOrder__liftWithOrd : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (inj : Proof (Function__Injective X Y f)) -> (hsup : Proof (forall X (x5 => forall X (y1 => Eqt Y (f (Max__max X x5 y1)) (Max__max Y (f x5) (f y1)))))) -> (hinf : Proof (forall X (x4 => forall X (y => Eqt Y (f (Min__min X x4 y)) (Min__min Y (f x4) (f y)))))) -> (compare_f : Proof (forall X (a => forall X (b => Eqt Ordering (Ord__compare X a b) (Ord__compare Y (f a) (f b)))))) -> Elem (LinearOrder__on X) :=
   X => Y => f => inj => hsup => hinf => compare_f => Function__Injective__linearOrder X Y f inj (LinearOrder__lift___proof_1 X Y f) (LinearOrder__lift___proof_2 X Y f) hinf hsup (LinearOrder__liftWithOrd___proof_1 X Y f compare_f).
 
 (; //LEAN:LinearOrder.liftWithOrd' ;)
-def LinearOrder__liftWithOrd' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (inj : Proof (Function__Injective X Y f)) -> (compare_f : Proof (forall X (a => forall X (b => Eqt Ordering (Ord__compare X a b) (Ord__compare Y (f a) (f b)))))) -> Elem (LinearOrder__on X) :=
+def LinearOrder__liftWithOrd' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (inj : Proof (Function__Injective X Y f)) -> (compare_f : Proof (forall X (a => forall X (b => Eqt Ordering (Ord__compare X a b) (Ord__compare Y (f a) (f b)))))) -> Elem (LinearOrder__on X) :=
   X => Y => f => inj => compare_f => LinearOrder__liftWithOrd X Y f inj (LinearOrder__lift'___proof_1 X Y f) (LinearOrder__lift'___proof_2 X Y f) compare_f.
 
 (; //LEAN:Subtype.mk_le_mk ;)
@@ -911,6 +911,6 @@ def PUnit__not_lt : (a : Elem PUnit) -> (b : Elem PUnit) -> Proof (not (Lt a b))
   a => b => not_false.
 
 (; //LEAN:subrelation_iff_le ;)
-def subrelation_iff_le : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (s : (Elem X -> Elem X -> Prop)) -> Proof (iff (Subrelation X r s) (Leq r s)) :=
+def subrelation_iff_le : (X : Set) -> (r : (Elem X -> (Elem X -> Prop))) -> (s : (Elem X -> (Elem X -> Prop))) -> Proof (iff (Subrelation X r s) (Leq r s)) :=
   X => r => s => Iff__rfl (Subrelation X r s).
 

@@ -345,39 +345,39 @@ Real__nat_floor_real_sqrt_eq_nat_sqrt : (a : Elem Nat) -> Proof (Eq (Nat__floor 
 Real__sqrt_one_add_le : (x : Elem Real) -> (h : Proof (Leq (Neg__neg Real 1) x)) -> Proof (Leq (Real__sqrt (plus 1 x)) (plus 1 (div x 2))).
 
 (; //LEAN:Real.sqrt_prod ;)
-Real__sqrt_prod : (I : Set) -> (s : Elem (Finset I)) -> (x : (Elem I -> Real)) -> (hx : Proof (forall I (i2 => if (Membership__mem I (Finset I) s i2) (Leq 0 (x i2))))) -> Proof (Eq (Real__sqrt (Finset__prod I Real s (i => x i))) (Finset__prod I Real s (i1 => Real__sqrt (x i1)))).
+Real__sqrt_prod : (I : Set) -> (s : Elem (Finset I)) -> (x : (Elem I -> Elem Real)) -> (hx : Proof (forall I (i2 => if (Membership__mem I (Finset I) s i2) (Leq 0 (x i2))))) -> Proof (Eq (Real__sqrt (Finset__prod I Real s (i => x i))) (Finset__prod I Real s (i1 => Real__sqrt (x i1)))).
 
 (; //LEAN:Filter.Tendsto.sqrt ;)
-def Filter__Tendsto__sqrt : (X : Set) -> (f : (Elem X -> Real)) -> (l : Elem (Filter X)) -> (x : Elem Real) -> (h : Proof (Filter__Tendsto X Real f l (nhds Real x))) -> Proof (Filter__Tendsto X Real (x1 => Real__sqrt (f x1)) l (nhds Real (Real__sqrt x))) :=
+def Filter__Tendsto__sqrt : (X : Set) -> (f : (Elem X -> Elem Real)) -> (l : Elem (Filter X)) -> (x : Elem Real) -> (h : Proof (Filter__Tendsto X Real f l (nhds Real x))) -> Proof (Filter__Tendsto X Real (x1 => Real__sqrt (f x1)) l (nhds Real (Real__sqrt x))) :=
   X => f => l => x => h => Filter__Tendsto__comp X Real Real f (x1 => Real__sqrt x1) l (nhds Real x) (nhds Real (Real__sqrt x)) (Continuous__tendsto Real Real (x2 => Real__sqrt x2) Real__continuous_sqrt x) h.
 
 (; //LEAN:ContinuousWithinAt.sqrt ;)
-def ContinuousWithinAt__sqrt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Real)) -> (s : Elem (powerset X)) -> (x1 : Elem X) -> (h : Proof (ContinuousWithinAt X Real f s x1)) -> Proof (ContinuousWithinAt X Real (x2 => Real__sqrt (f x2)) s x1) :=
+def ContinuousWithinAt__sqrt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Elem Real)) -> (s : Elem (powerset X)) -> (x1 : Elem X) -> (h : Proof (ContinuousWithinAt X Real f s x1)) -> Proof (ContinuousWithinAt X Real (x2 => Real__sqrt (f x2)) s x1) :=
   X => x => f => s => x1 => h => Filter__Tendsto__sqrt X f (nhdsWithin X x1 s) (f x1) h.
 
 (; //LEAN:ContinuousAt.sqrt ;)
-def ContinuousAt__sqrt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Real)) -> (x1 : Elem X) -> (h : Proof (ContinuousAt X Real f x1)) -> Proof (ContinuousAt X Real (x2 => Real__sqrt (f x2)) x1) :=
+def ContinuousAt__sqrt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Elem Real)) -> (x1 : Elem X) -> (h : Proof (ContinuousAt X Real f x1)) -> Proof (ContinuousAt X Real (x2 => Real__sqrt (f x2)) x1) :=
   X => x => f => x1 => h => Filter__Tendsto__sqrt X f (nhds X x1) (f x1) h.
 
 (; //LEAN:ContinuousOn.sqrt ;)
-def ContinuousOn__sqrt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Real)) -> (s : Elem (powerset X)) -> (h : Proof (ContinuousOn X Real f s)) -> Proof (ContinuousOn X Real (x1 => Real__sqrt (f x1)) s) :=
+def ContinuousOn__sqrt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Elem Real)) -> (s : Elem (powerset X)) -> (h : Proof (ContinuousOn X Real f s)) -> Proof (ContinuousOn X Real (x1 => Real__sqrt (f x1)) s) :=
   X => x => f => s => h => forallI X (x1 => if (Membership__mem X (powerset X) s x1) (ContinuousWithinAt X Real (x4 => Real__sqrt (f x4)) s x1)) (x1 => ifI (Membership__mem X (powerset X) s x1) (ContinuousWithinAt X Real (x3 => Real__sqrt (f x3)) s x1) (hx => ContinuousWithinAt__sqrt X f s x1 (ifE (Membership__mem X (powerset X) s x1) (ContinuousWithinAt X Real f s x1) (forallE X (x2 => if (Membership__mem X (powerset X) s x2) (ContinuousWithinAt X Real f s x2)) h x1) hx))).
 
 (; //LEAN:Continuous.sqrt ;)
-def Continuous__sqrt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Real)) -> (h : Proof (Continuous X Real f)) -> Proof (Continuous X Real (x1 => Real__sqrt (f x1))) :=
+def Continuous__sqrt : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X -> Elem Real)) -> (h : Proof (Continuous X Real f)) -> Proof (Continuous X Real (x1 => Real__sqrt (f x1))) :=
   X => x => f => h => Continuous__comp X Real Real f (x1 => Real__sqrt x1) Real__continuous_sqrt h.
 
 (; //LEAN:NNReal.sum_mul_le_sqrt_mul_sqrt ;)
-def NNReal__sum_mul_le_sqrt_mul_sqrt : (I : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> NNReal)) -> (g : (Elem I -> NNReal)) -> Proof (Leq (Finset__sum I NNReal s (i => times (f i) (g i))) (times (NNReal__sqrt__app (Finset__sum I NNReal s (i1 => pow (f i1) 2))) (NNReal__sqrt__app (Finset__sum I NNReal s (i2 => pow (g i2) 2))))) :=
+def NNReal__sum_mul_le_sqrt_mul_sqrt : (I : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem NNReal)) -> (g : (Elem I -> Elem NNReal)) -> Proof (Leq (Finset__sum I NNReal s (i => times (f i) (g i))) (times (NNReal__sqrt__app (Finset__sum I NNReal s (i1 => pow (f i1) 2))) (NNReal__sqrt__app (Finset__sum I NNReal s (i2 => pow (g i2) 2))))) :=
   I => s => f => g => LE__le__trans_eq NNReal (Finset__sum I NNReal s (i => times (f i) (g i))) (NNReal__sqrt__app (times (Finset__sum I NNReal s (i1 => pow (f i1) 2)) (Finset__sum I NNReal s (i2 => pow (g i2) 2)))) (times (NNReal__sqrt__app (Finset__sum I NNReal s (i3 => pow (f i3) 2))) (NNReal__sqrt__app (Finset__sum I NNReal s (i4 => pow (g i4) 2)))) (iffEr (Leq (Finset__sum I NNReal s (i5 => times (f i5) (g i5))) (NNReal__sqrt__app (times (Finset__sum I NNReal s (i6 => pow (f i6) 2)) (Finset__sum I NNReal s (i7 => pow (g i7) 2))))) (Leq (pow (Finset__sum I NNReal s (i8 => times (f i8) (g i8))) 2) (times (Finset__sum I NNReal s (i9 => pow (f i9) 2)) (Finset__sum I NNReal s (i10 => pow (g i10) 2)))) (NNReal__le_sqrt_iff_sq_le (Finset__sum I NNReal s (i11 => times (f i11) (g i11))) (times (Finset__sum I NNReal s (i12 => pow (f i12) 2)) (Finset__sum I NNReal s (i13 => pow (g i13) 2)))) (Finset__sum_mul_sq_le_sq_mul_sq I NNReal s f g)) (NNReal__sqrt_mul (Finset__sum I NNReal s (i14 => pow (f i14) 2)) (Finset__sum I NNReal s (i15 => pow (g i15) 2))).
 
 (; //LEAN:NNReal.sum_sqrt_mul_sqrt_le ;)
-NNReal__sum_sqrt_mul_sqrt_le : (I : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> NNReal)) -> (g : (Elem I -> NNReal)) -> Proof (Leq (Finset__sum I NNReal s (i => times (NNReal__sqrt__app (f i)) (NNReal__sqrt__app (g i)))) (times (NNReal__sqrt__app (Finset__sum I NNReal s (i1 => f i1))) (NNReal__sqrt__app (Finset__sum I NNReal s (i2 => g i2))))).
+NNReal__sum_sqrt_mul_sqrt_le : (I : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem NNReal)) -> (g : (Elem I -> Elem NNReal)) -> Proof (Leq (Finset__sum I NNReal s (i => times (NNReal__sqrt__app (f i)) (NNReal__sqrt__app (g i)))) (times (NNReal__sqrt__app (Finset__sum I NNReal s (i1 => f i1))) (NNReal__sqrt__app (Finset__sum I NNReal s (i2 => g i2))))).
 
 (; //LEAN:Real.sum_mul_le_sqrt_mul_sqrt ;)
-def Real__sum_mul_le_sqrt_mul_sqrt : (I : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Real)) -> (g : (Elem I -> Real)) -> Proof (Leq (Finset__sum I Real s (i => times (f i) (g i))) (times (Real__sqrt (Finset__sum I Real s (i1 => pow (f i1) 2))) (Real__sqrt (Finset__sum I Real s (i2 => pow (g i2) 2))))) :=
+def Real__sum_mul_le_sqrt_mul_sqrt : (I : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem Real)) -> (g : (Elem I -> Elem Real)) -> Proof (Leq (Finset__sum I Real s (i => times (f i) (g i))) (times (Real__sqrt (Finset__sum I Real s (i1 => pow (f i1) 2))) (Real__sqrt (Finset__sum I Real s (i2 => pow (g i2) 2))))) :=
   I => s => f => g => LE__le__trans_eq Real (Finset__sum I Real s (i => times (f i) (g i))) (Real__sqrt (times (Finset__sum I Real s (i1 => pow (f i1) 2)) (Finset__sum I Real s (i2 => pow (g i2) 2)))) (times (Real__sqrt (Finset__sum I Real s (i3 => pow (f i3) 2))) (Real__sqrt (Finset__sum I Real s (i4 => pow (g i4) 2)))) (Real__le_sqrt_of_sq_le (Finset__sum I Real s (i5 => times (f i5) (g i5))) (times (Finset__sum I Real s (i6 => pow (f i6) 2)) (Finset__sum I Real s (i7 => pow (g i7) 2))) (Finset__sum_mul_sq_le_sq_mul_sq I Real s f g)) (Real__sqrt_mul (Finset__sum I Real s (i8 => pow (f i8) 2)) (Finset__sum_nonneg I Real (i9 => pow (f i9) 2) s (forallI I (x => if (Membership__mem I (Finset I) s x) (Leq 0 (pow (f x) (times 2 1)))) (x => ifI (Membership__mem I (Finset I) s x) (Leq 0 (pow (f x) (times 2 1))) (h => Even__pow_nonneg Real (times 2 1) (even_two_mul Nat 1) (f x))))) (Finset__sum I Real s (i10 => pow (g i10) 2))).
 
 (; //LEAN:Real.sum_sqrt_mul_sqrt_le ;)
-Real__sum_sqrt_mul_sqrt_le : (I : Set) -> (f : (Elem I -> Real)) -> (g : (Elem I -> Real)) -> (s : Elem (Finset I)) -> (hf : Proof (forall I (i4 => Leq 0 (f i4)))) -> (hg : Proof (forall I (i3 => Leq 0 (g i3)))) -> Proof (Leq (Finset__sum I Real s (i => times (Real__sqrt (f i)) (Real__sqrt (g i)))) (times (Real__sqrt (Finset__sum I Real s (i1 => f i1))) (Real__sqrt (Finset__sum I Real s (i2 => g i2))))).
+Real__sum_sqrt_mul_sqrt_le : (I : Set) -> (f : (Elem I -> Elem Real)) -> (g : (Elem I -> Elem Real)) -> (s : Elem (Finset I)) -> (hf : Proof (forall I (i4 => Leq 0 (f i4)))) -> (hg : Proof (forall I (i3 => Leq 0 (g i3)))) -> Proof (Leq (Finset__sum I Real s (i => times (Real__sqrt (f i)) (Real__sqrt (g i)))) (times (Real__sqrt (Finset__sum I Real s (i1 => f i1))) (Real__sqrt (Finset__sum I Real s (i2 => g i2))))).
 

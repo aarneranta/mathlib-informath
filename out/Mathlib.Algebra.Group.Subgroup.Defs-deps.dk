@@ -49,7 +49,7 @@ AddMonoidHom__mk : (M : Set) -> (N : Set) -> (toZeroHom : Elem (ZeroHom M N)) ->
 
 (; doc: Makes an additive group homomorphism from a proof that the map preserves addition. ;)
 (; //LEAN:AddMonoidHom.mk' ;)
-AddMonoidHom__mk' : (M : Set) -> (G : Set) -> (f : (Elem M -> G)) -> (map_add : Proof (forall M (a => forall M (b => Eqt G (f (plus a b)) (plus (f a) (f b)))))) -> Elem (AddMonoidHom M G).
+AddMonoidHom__mk' : (M : Set) -> (G : Set) -> (f : (Elem M -> Elem G)) -> (map_add : Proof (forall M (a => forall M (b => Eqt G (f (plus a b)) (plus (f a) (f b)))))) -> Elem (AddMonoidHom M G).
 
 (; //LEAN:AddSubgroup.copy._proof_1 ;)
 AddSubgroup__copy___proof_1 : (G : Set) -> (_ : Proof (AddGroup G)) -> (K : Elem (AddSubgroup G)) -> (s : Elem (powerset G)) -> (hs : Proof (Eqt (powerset G) s (SetLike__coe (AddSubgroup G) G K))) -> (x1 : Elem G) -> (hx : Proof (Membership__mem G (powerset G) s x1)) -> Proof (Membership__mem G (powerset G) s (Neg__neg G x1)).
@@ -155,10 +155,10 @@ Eq__symm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (h : Proof (Eqt X a b)) 
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; //LEAN:Function.Injective.eq_iff ;)
-Function__Injective__eq_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (I : Proof (Function__Injective X Y f)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt Y (f a) (f b)) (Eqt X a b)).
+Function__Injective__eq_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (I : Proof (Function__Injective X Y f)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt Y (f a) (f b)) (Eqt X a b)).
 
 (; doc: A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.  There is also a division operation `/` such that `a / b = a * b⁻¹`, with a default so that `a / b = a * b⁻¹` holds by definition.  Use `Group.ofLeftAxioms` or `Group.ofRightAxioms` to define a group structure on a type with the minimum proof obligations.  [Wikidata Q83478](https://www.wikidata.org/wiki/Q83478) ;)
 (; //LEAN:Group ;)
@@ -222,11 +222,11 @@ MonoidHom__mk : (M : Set) -> (N : Set) -> (toOneHom : Elem (OneHom M N)) -> (map
 
 (; doc: Makes a group homomorphism from a proof that the map preserves multiplication. ;)
 (; //LEAN:MonoidHom.mk' ;)
-MonoidHom__mk' : (M : Set) -> (G : Set) -> (f : (Elem M -> G)) -> (map_mul : Proof (forall M (a => forall M (b => Eqt G (f (times a b)) (times (f a) (f b)))))) -> Elem (MonoidHom M G).
+MonoidHom__mk' : (M : Set) -> (G : Set) -> (f : (Elem M -> Elem G)) -> (map_mul : Proof (forall M (a => forall M (b => Eqt G (f (times a b)) (times (f a) (f b)))))) -> Elem (MonoidHom M G).
 
 (; doc: A function `f` is monotone if `a ≤ b` implies `f a ≤ f b`. ;)
 (; //LEAN:Monotone ;)
-Monotone : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+Monotone : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; doc: `MulMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(*)` ;)
 (; //LEAN:MulMemClass ;)
@@ -254,7 +254,7 @@ NegZeroClass__toNeg : (G : Set) -> Proof (Neg G).
 NegZeroClass__toZero : (G : Set) -> Proof (Zero G).
 
 (; //LEAN:OneHom.mk ;)
-OneHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> N)) -> (map_one' : Proof (Eqt N (toFun 1) 1)) -> Elem (OneHom M N).
+OneHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> Elem N)) -> (map_one' : Proof (Eqt N (toFun 1) 1)) -> Elem (OneHom M N).
 
 (; doc: `OneMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `1 ∈ s` for all `s`. ;)
 (; //LEAN:OneMemClass ;)
@@ -270,7 +270,7 @@ Preorder : (X : Set) -> Prop.
 
 (; doc: `f` is injective on `s` if the restriction of `f` to `s` is injective. ;)
 (; //LEAN:Set.InjOn ;)
-Set__InjOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+Set__InjOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: The property `s.Nonempty` expresses the fact that the set `s` is not empty. It should be used in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks to the dot notation. ;)
 (; //LEAN:Set.Nonempty ;)
@@ -320,10 +320,10 @@ SetLike__mem_coe : (A : Set) -> (B : Set) -> (p : Elem A) -> (x : Elem B) -> Pro
 
 (; doc: A function `f` is strictly monotone if `a < b` implies `f a < f b`. ;)
 (; //LEAN:StrictMono ;)
-StrictMono : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+StrictMono : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; //LEAN:StrictMono.monotone ;)
-StrictMono__monotone : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (StrictMono X Y f)) -> Proof (Monotone X Y f).
+StrictMono__monotone : (X : Set) -> (Y : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (StrictMono X Y f)) -> Proof (Monotone X Y f).
 
 (; doc: A `SubNegMonoid` is an `AddMonoid` with unary `-` and binary `-` operations satisfying `sub_eq_add_neg : ∀ a b, a - b = a + -b`.  The default for `sub` is such that `a - b = a + -b` holds by definition.  Adding `sub` as a field rather than defining `a - b := a + -b` allows us to avoid certain classes of unification failures, for example: Let `foo X` be a type with a `∀ X, Sub (Foo X)` instance but no `∀ X, Neg (Foo X)`. Suppose we also have an instance `∀ X [Cromulent X], AddGroup (Foo X)`. Then the `(-)` coming from `AddGroup.sub` cannot be definitionally equal to the `(-)` coming from `Foo.Sub`.  In the same way, adding a `zsmul` field makes it possible to avoid definitional failures in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] for more explanations on this. ;)
 (; //LEAN:SubNegMonoid ;)
@@ -439,7 +439,7 @@ Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x
 Union__union : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; //LEAN:ZeroHom.mk ;)
-ZeroHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> N)) -> (map_zero' : Proof (Eqt N (toFun 0) 0)) -> Elem (ZeroHom M N).
+ZeroHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> Elem N)) -> (map_zero' : Proof (Eqt N (toFun 0) 0)) -> Elem (ZeroHom M N).
 
 (; doc: `ZeroMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `0 ∈ s` for all `s`. ;)
 (; //LEAN:ZeroMemClass ;)
@@ -457,7 +457,7 @@ add_neg_cancel_right : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> 
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
@@ -495,7 +495,7 @@ nsmul_mem : (M : Set) -> (A : Set) -> (_ : Proof (AddMonoid M)) -> (_ : Proof (A
 (; //LEAN:pow_mem ;)
 pow_mem : (M : Set) -> (A : Set) -> (_ : Proof (Monoid M)) -> (_ : Proof (SubmonoidClass A M)) -> (S : Elem A) -> (x2 : Elem M) -> (hx : Proof (Membership__mem M A S x2)) -> (n : Elem Nat) -> Proof (Membership__mem M A S (pow x2 n)).
 
-(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
+(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc2/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
 (; //LEAN:propext ;)
 propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a b).
 

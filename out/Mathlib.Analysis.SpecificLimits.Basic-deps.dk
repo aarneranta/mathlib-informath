@@ -22,7 +22,7 @@ Bot__bot : (X : Set) -> Elem X.
 
 (; doc: Cauchy sequences. Usually defined on ℕ, but often it is also useful to say that a function defined on ℝ is Cauchy at +∞ to deduce convergence. Therefore, we define it in a type class that is general enough to cover both ℕ and ℝ, which are the main motivating examples. ;)
 (; //LEAN:CauchySeq ;)
-CauchySeq : (X : Set) -> (Y : Set) -> (u : (Elem Y -> X)) -> Prop.
+CauchySeq : (X : Set) -> (Y : Set) -> (u : (Elem Y -> Elem X)) -> Prop.
 
 (; //LEAN:CommSemiring.toSemiring ;)
 CommSemiring__toSemiring : (R : Set) -> Elem (Semiring__on R).
@@ -72,9 +72,6 @@ ENNReal__inv_lt_top___simp_1 : (x : Elem ENNReal) -> Proof (Eqt Prop (Lt (Inv__i
 (; doc: Coercion from `ℝ≥0` to `ℝ≥0∞`. ;)
 (; //LEAN:ENNReal.ofNNReal ;)
 ENNReal__ofNNReal : (x : Elem NNReal) -> Elem ENNReal.
-
-(; //LEAN:ENNReal.tsum_comp_le_tsum_of_injective ;)
-ENNReal__tsum_comp_le_tsum_of_injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Injective X Y f)) -> (g : (Elem Y -> ENNReal)) -> Proof (Leq (tsum ENNReal X (x => g (f x)) (SummationFilter__unconditional X)) (tsum ENNReal Y (y => g y) (SummationFilter__unconditional Y))).
 
 (; doc: The type of extended real numbers `[-∞, ∞]`, constructed as `WithBot (WithTop ℝ)`. ;)
 (; //LEAN:EReal ;)
@@ -127,52 +124,52 @@ Filter__Eventually__of_forall : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem
 
 (; doc: Two functions `f` and `g` are *eventually equal* along a filter `l` if the set of `x` such that `f x = g x` belongs to `l`. ;)
 (; //LEAN:Filter.EventuallyEq ;)
-Filter__EventuallyEq : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> Prop.
+Filter__EventuallyEq : (X : Set) -> (Y : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Elem Y)) -> (g : (Elem X -> Elem Y)) -> Prop.
 
 (; doc: We say that a filter `l` has a basis `s : ι → Set α` bounded by `p : ι → Prop`, if `t ∈ l` if and only if `t` includes `s i` for some `i` such that `p i`. ;)
 (; //LEAN:Filter.HasBasis ;)
-Filter__HasBasis : (X : Set) -> (I : Set) -> (l : Elem (Filter X)) -> (p : (Elem I -> Prop)) -> (s : (Elem I -> powerset X)) -> Prop.
+Filter__HasBasis : (X : Set) -> (I : Set) -> (l : Elem (Filter X)) -> (p : (Elem I -> Prop)) -> (s : (Elem I -> Elem (powerset X))) -> Prop.
 
 (; //LEAN:Filter.Ioi_mem_atTop ;)
 Filter__Ioi_mem_atTop : (X : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (NoTopOrder X)) -> (x1 : Elem X) -> Proof (Membership__mem (powerset X) (Filter X) (Filter__atTop X) (Set__Ioi X x1)).
 
 (; doc: `Filter.Tendsto` is the generic "limit of a function" predicate. `Tendsto f l₁ l₂` asserts that for every `l₂` neighborhood `a`, the `f`-preimage of `a` is an `l₁` neighborhood. ;)
 (; //LEAN:Filter.Tendsto ;)
-Filter__Tendsto : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> Prop.
+Filter__Tendsto : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> Prop.
 
 (; doc: If a function `f` tends to infinity along a filter, then `f` multiplied by a positive constant (on the right) also tends to infinity. For a version working in `ℕ` or `ℤ`, use `Filter.Tendsto.atTop_mul_const'` instead. ;)
 (; //LEAN:Filter.Tendsto.atTop_mul_const ;)
-Filter__Tendsto__atTop_mul_const : (X : Set) -> (Y : Set) -> (_ : Proof (Semifield X)) -> (_ : Proof (LinearOrder X)) -> (_ : Proof (IsStrictOrderedRing X)) -> (l : Elem (Filter Y)) -> (f : (Elem Y -> X)) -> (r : Elem X) -> (hr : Proof (Lt 0 r)) -> (hf : Proof (Filter__Tendsto Y X f l (Filter__atTop X))) -> Proof (Filter__Tendsto Y X (x2 => times (f x2) r) l (Filter__atTop X)).
+Filter__Tendsto__atTop_mul_const : (X : Set) -> (Y : Set) -> (_ : Proof (Semifield X)) -> (_ : Proof (LinearOrder X)) -> (_ : Proof (IsStrictOrderedRing X)) -> (l : Elem (Filter Y)) -> (f : (Elem Y -> Elem X)) -> (r : Elem X) -> (hr : Proof (Lt 0 r)) -> (hf : Proof (Filter__Tendsto Y X f l (Filter__atTop X))) -> Proof (Filter__Tendsto Y X (x2 => times (f x2) r) l (Filter__atTop X)).
 
 (; //LEAN:Filter.Tendsto.comp ;)
-Filter__Tendsto__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> Z)) -> (x : Elem (Filter X)) -> (y : Elem (Filter Y)) -> (z : Elem (Filter Z)) -> (hg : Proof (Filter__Tendsto Y Z g y z)) -> (hf : Proof (Filter__Tendsto X Y f x y)) -> Proof (Filter__Tendsto X Z (Function__comp X Y Z g f) x z).
+Filter__Tendsto__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem Y -> Elem Z)) -> (x : Elem (Filter X)) -> (y : Elem (Filter Y)) -> (z : Elem (Filter Z)) -> (hg : Proof (Filter__Tendsto Y Z g y z)) -> (hf : Proof (Filter__Tendsto X Y f x y)) -> Proof (Filter__Tendsto X Z (Function__comp X Y Z g f) x z).
 
 (; //LEAN:Filter.Tendsto.congr ;)
-Filter__Tendsto__congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> (h : Proof (forall X (x => Eqt Y (f1 x) (f2 x)))) -> (h1 : Proof (Filter__Tendsto X Y f1 l1 l2)) -> Proof (Filter__Tendsto X Y f2 l1 l2).
+Filter__Tendsto__congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Elem Y)) -> (f2 : (Elem X -> Elem Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> (h : Proof (forall X (x => Eqt Y (f1 x) (f2 x)))) -> (h1 : Proof (Filter__Tendsto X Y f1 l1 l2)) -> Proof (Filter__Tendsto X Y f2 l1 l2).
 
 (; //LEAN:Filter.Tendsto.congr' ;)
-Filter__Tendsto__congr' : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> (hl : Proof (Filter__EventuallyEq X Y l1 f1 f2)) -> (h : Proof (Filter__Tendsto X Y f1 l1 l2)) -> Proof (Filter__Tendsto X Y f2 l1 l2).
+Filter__Tendsto__congr' : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Elem Y)) -> (f2 : (Elem X -> Elem Y)) -> (l1 : Elem (Filter X)) -> (l2 : Elem (Filter Y)) -> (hl : Proof (Filter__EventuallyEq X Y l1 f1 f2)) -> (h : Proof (Filter__Tendsto X Y f1 l1 l2)) -> Proof (Filter__Tendsto X Y f2 l1 l2).
 
 (; doc: If `f` tends to infinity along a filter, then `f` multiplied by a positive constant (on the left) also tends to infinity. For a version working in `ℕ` or `ℤ`, use `Filter.Tendsto.const_mul_atTop'` instead. ;)
 (; //LEAN:Filter.Tendsto.const_mul_atTop ;)
-Filter__Tendsto__const_mul_atTop : (X : Set) -> (Y : Set) -> (_ : Proof (Semifield X)) -> (_ : Proof (LinearOrder X)) -> (_ : Proof (IsStrictOrderedRing X)) -> (l : Elem (Filter Y)) -> (f : (Elem Y -> X)) -> (r : Elem X) -> (hr : Proof (Lt 0 r)) -> (hf : Proof (Filter__Tendsto Y X f l (Filter__atTop X))) -> Proof (Filter__Tendsto Y X (x2 => times r (f x2)) l (Filter__atTop X)).
+Filter__Tendsto__const_mul_atTop : (X : Set) -> (Y : Set) -> (_ : Proof (Semifield X)) -> (_ : Proof (LinearOrder X)) -> (_ : Proof (IsStrictOrderedRing X)) -> (l : Elem (Filter Y)) -> (f : (Elem Y -> Elem X)) -> (r : Elem X) -> (hr : Proof (Lt 0 r)) -> (hf : Proof (Filter__Tendsto Y X f l (Filter__atTop X))) -> Proof (Filter__Tendsto Y X (x2 => times r (f x2)) l (Filter__atTop X)).
 
 (; doc: If a function converges to a value in a multiplicative topological group, then its inverse converges to the inverse of this value. For the version in topological groups with zero (including topological fields) assuming additionally that the limit is nonzero, use `Filter.Tendsto.inv₀`. ;)
 (; //LEAN:Filter.Tendsto.inv ;)
-Filter__Tendsto__inv : (G : Set) -> (X : Set) -> (_ : Proof (TopologicalSpace G)) -> (_ : Proof (ContinuousInv G)) -> (f : (Elem X -> G)) -> (l : Elem (Filter X)) -> (y : Elem G) -> (h1 : Proof (Filter__Tendsto X G f l (nhds G y))) -> Proof (Filter__Tendsto X G (x2 => Inv__inv G (f x2)) l (nhds G (Inv__inv G y))).
+Filter__Tendsto__inv : (G : Set) -> (X : Set) -> (_ : Proof (TopologicalSpace G)) -> (_ : Proof (ContinuousInv G)) -> (f : (Elem X -> Elem G)) -> (l : Elem (Filter X)) -> (y : Elem G) -> (h1 : Proof (Filter__Tendsto X G f l (nhds G y))) -> Proof (Filter__Tendsto X G (x2 => Inv__inv G (f x2)) l (nhds G (Inv__inv G y))).
 
 (; //LEAN:Filter.Tendsto.mono_right ;)
-Filter__Tendsto__mono_right : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x : Elem (Filter X)) -> (y : Elem (Filter Y)) -> (z : Elem (Filter Y)) -> (hy : Proof (Filter__Tendsto X Y f x y)) -> (hz : Proof (Leq y z)) -> Proof (Filter__Tendsto X Y f x z).
+Filter__Tendsto__mono_right : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (x : Elem (Filter X)) -> (y : Elem (Filter Y)) -> (z : Elem (Filter Y)) -> (hy : Proof (Filter__Tendsto X Y f x y)) -> (hz : Proof (Leq y z)) -> Proof (Filter__Tendsto X Y f x z).
 
 (; //LEAN:Filter.Tendsto.mul ;)
-Filter__Tendsto__mul : (M : Set) -> (_ : Proof (TopologicalSpace M)) -> (_ : Proof (ContinuousMul M)) -> (X : Set) -> (f : (Elem X -> M)) -> (g : (Elem X -> M)) -> (x2 : Elem (Filter X)) -> (a : Elem M) -> (b : Elem M) -> (hf : Proof (Filter__Tendsto X M f x2 (nhds M a))) -> (hg : Proof (Filter__Tendsto X M g x2 (nhds M b))) -> Proof (Filter__Tendsto X M (x3 => times (f x3) (g x3)) x2 (nhds M (times a b))).
+Filter__Tendsto__mul : (M : Set) -> (_ : Proof (TopologicalSpace M)) -> (_ : Proof (ContinuousMul M)) -> (X : Set) -> (f : (Elem X -> Elem M)) -> (g : (Elem X -> Elem M)) -> (x2 : Elem (Filter X)) -> (a : Elem M) -> (b : Elem M) -> (hf : Proof (Filter__Tendsto X M f x2 (nhds M a))) -> (hg : Proof (Filter__Tendsto X M g x2 (nhds M b))) -> Proof (Filter__Tendsto X M (x3 => times (f x3) (g x3)) x2 (nhds M (times a b))).
 
-(; doc: In a linearly ordered semifield with the order topology, if `f` tends to a positive constant `C` and `g` tends to `Filter.atTop` then `f * g` tends to `Filter.atTop`. ;)
+(; doc: In a linearly ordered semifield with the order topology, if `f` tends to a positive constant `C` and `g` tends to `Filter.atTop` then `f * g` tends to `Filter.atTop`.  ;)
 (; //LEAN:Filter.Tendsto.pos_mul_atTop ;)
-Filter__Tendsto__pos_mul_atTop : (X : Set) -> (X1 : Set) -> (_ : Proof (Semifield X)) -> (_ : Proof (LinearOrder X)) -> (_ : Proof (IsStrictOrderedRing X)) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (OrderTopology X)) -> (l : Elem (Filter X1)) -> (f : (Elem X1 -> X)) -> (g : (Elem X1 -> X)) -> (C : Elem X) -> (hC : Proof (Lt 0 C)) -> (hf : Proof (Filter__Tendsto X1 X f l (nhds X C))) -> (hg : Proof (Filter__Tendsto X1 X g l (Filter__atTop X))) -> Proof (Filter__Tendsto X1 X (x3 => times (f x3) (g x3)) l (Filter__atTop X)).
+Filter__Tendsto__pos_mul_atTop : (X : Set) -> (X1 : Set) -> (_ : Proof (Semifield X)) -> (_ : Proof (LinearOrder X)) -> (_ : Proof (IsStrictOrderedRing X)) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (OrderTopology X)) -> (l : Elem (Filter X1)) -> (f : (Elem X1 -> Elem X)) -> (g : (Elem X1 -> Elem X)) -> (C : Elem X) -> (hC : Proof (Lt 0 C)) -> (hf : Proof (Filter__Tendsto X1 X f l (nhds X C))) -> (hg : Proof (Filter__Tendsto X1 X g l (Filter__atTop X))) -> Proof (Filter__Tendsto X1 X (x3 => times (f x3) (g x3)) l (Filter__atTop X)).
 
 (; //LEAN:Filter.Tendsto.sub ;)
-Filter__Tendsto__sub : (G : Set) -> (X : Set) -> (_ : Proof (TopologicalSpace G)) -> (_ : Proof (ContinuousSub G)) -> (f : (Elem X -> G)) -> (g : (Elem X -> G)) -> (l : Elem (Filter X)) -> (a : Elem G) -> (b : Elem G) -> (hf : Proof (Filter__Tendsto X G f l (nhds G a))) -> (hg : Proof (Filter__Tendsto X G g l (nhds G b))) -> Proof (Filter__Tendsto X G (x2 => minus (f x2) (g x2)) l (nhds G (minus a b))).
+Filter__Tendsto__sub : (G : Set) -> (X : Set) -> (_ : Proof (TopologicalSpace G)) -> (_ : Proof (ContinuousSub G)) -> (f : (Elem X -> Elem G)) -> (g : (Elem X -> Elem G)) -> (l : Elem (Filter X)) -> (a : Elem G) -> (b : Elem G) -> (hf : Proof (Filter__Tendsto X G f l (nhds G a))) -> (hg : Proof (Filter__Tendsto X G g l (nhds G b))) -> Proof (Filter__Tendsto X G (x2 => minus (f x2) (g x2)) l (nhds G (minus a b))).
 
 (; doc: `atTop` is the filter representing the limit `→ ∞` on an ordered set. It is generated by the collection of up-sets `{b | a ≤ b}`. (The preorder need not have a top element for this to be well defined, and indeed is trivial when a top element `x` exists, i.e., it coincides with `pure x`.) ;)
 (; //LEAN:Filter.atTop ;)
@@ -189,23 +186,23 @@ Filter__mem_of_superset : (X : Set) -> (f : Elem (Filter X)) -> (x : Elem (power
 Filter__principal : (X : Set) -> (s : Elem (powerset X)) -> Elem (Filter X).
 
 (; //LEAN:Filter.tendsto_add_atTop_iff_nat ;)
-Filter__tendsto_add_atTop_iff_nat : (X : Set) -> (f : (Elem Nat -> X)) -> (l : Elem (Filter X)) -> (k : Elem Nat) -> Proof (iff (Filter__Tendsto Nat X (n => f (plus n k)) (Filter__atTop Nat) l) (Filter__Tendsto Nat X f (Filter__atTop Nat) l)).
+Filter__tendsto_add_atTop_iff_nat : (X : Set) -> (f : (Elem Nat -> Elem X)) -> (l : Elem (Filter X)) -> (k : Elem Nat) -> Proof (iff (Filter__Tendsto Nat X (n => f (plus n k)) (Filter__atTop Nat) l) (Filter__Tendsto Nat X f (Filter__atTop Nat) l)).
 
 (; //LEAN:Filter.tendsto_atTop_atTop_of_monotone ;)
-Filter__tendsto_atTop_atTop_of_monotone : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Y)) -> (hf : Proof (Monotone X Y f)) -> (h : Proof (forall Y (b => exists X (a => Leq b (f a))))) -> Proof (Filter__Tendsto X Y f (Filter__atTop X) (Filter__atTop Y)).
+Filter__tendsto_atTop_atTop_of_monotone : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Monotone X Y f)) -> (h : Proof (forall Y (b => exists X (a => Leq b (f a))))) -> Proof (Filter__Tendsto X Y f (Filter__atTop X) (Filter__atTop Y)).
 
 (; doc: If `u` is a monotone function with linear ordered codomain and the range of `u` is not bounded above, then `Tendsto u atTop atTop`. ;)
 (; //LEAN:Filter.tendsto_atTop_atTop_of_monotone' ;)
-Filter__tendsto_atTop_atTop_of_monotone' : (I : Set) -> (X : Set) -> (_ : Proof (Preorder I)) -> (_ : Proof (LinearOrder X)) -> (u : (Elem I -> X)) -> (h : Proof (Monotone I X u)) -> (H : Proof (not (BddAbove X (Set__range X I u)))) -> Proof (Filter__Tendsto I X u (Filter__atTop I) (Filter__atTop X)).
+Filter__tendsto_atTop_atTop_of_monotone' : (I : Set) -> (X : Set) -> (_ : Proof (Preorder I)) -> (_ : Proof (LinearOrder X)) -> (u : (Elem I -> Elem X)) -> (h : Proof (Monotone I X u)) -> (H : Proof (not (BddAbove X (Set__range X I u)))) -> Proof (Filter__Tendsto I X u (Filter__atTop I) (Filter__atTop X)).
 
 (; //LEAN:Filter.tendsto_atTop_mono ;)
-Filter__tendsto_atTop_mono : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (forall X (n => Leq (f n) (g n)))) -> (h1 : Proof (Filter__Tendsto X Y f l (Filter__atTop Y))) -> Proof (Filter__Tendsto X Y g l (Filter__atTop Y)).
+Filter__tendsto_atTop_mono : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (l : Elem (Filter X)) -> (f : (Elem X -> Elem Y)) -> (g : (Elem X -> Elem Y)) -> (h : Proof (forall X (n => Leq (f n) (g n)))) -> (h1 : Proof (Filter__Tendsto X Y f l (Filter__atTop Y))) -> Proof (Filter__Tendsto X Y g l (Filter__atTop Y)).
 
 (; //LEAN:Filter.tendsto_inf ;)
-Filter__tendsto_inf : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x : Elem (Filter X)) -> (y1 : Elem (Filter Y)) -> (y2 : Elem (Filter Y)) -> Proof (iff (Filter__Tendsto X Y f x (Min__min (Filter Y) y1 y2)) (and (Filter__Tendsto X Y f x y1) (Filter__Tendsto X Y f x y2))).
+Filter__tendsto_inf : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (x : Elem (Filter X)) -> (y1 : Elem (Filter Y)) -> (y2 : Elem (Filter Y)) -> Proof (iff (Filter__Tendsto X Y f x (Min__min (Filter Y) y1 y2)) (and (Filter__Tendsto X Y f x y1) (Filter__Tendsto X Y f x y2))).
 
 (; //LEAN:Filter.tendsto_principal ;)
-Filter__tendsto_principal : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (l : Elem (Filter X)) -> (s : Elem (powerset Y)) -> Proof (iff (Filter__Tendsto X Y f l (Filter__principal Y s)) (Filter__Eventually X (a => Membership__mem Y (powerset Y) s (f a)) l)).
+Filter__tendsto_principal : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (l : Elem (Filter X)) -> (s : Elem (powerset Y)) -> Proof (iff (Filter__Tendsto X Y f l (Filter__principal Y s)) (Filter__Eventually X (a => Membership__mem Y (powerset Y) s (f a)) l)).
 
 (; doc: `Finset α` is the type of finite sets of elements of `α`. It is implemented as a multiset (a list up to permutation) which has no duplicate elements. ;)
 (; //LEAN:Finset ;)
@@ -217,7 +214,7 @@ Finset__range : (n : Elem Nat) -> Elem (Finset Nat).
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
-Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem M)) -> Elem M.
 
 (; doc: A `FloorRing` is a linear ordered ring over `α` with a function `floor : α → ℤ` satisfying `∀ (z : ℤ) (a : α), z ≤ floor a ↔ (z : α) ≤ a`. ;)
 (; //LEAN:FloorRing ;)
@@ -233,7 +230,7 @@ FloorSemiring__floor : (X : Set) -> (x : Proof (Semiring X)) -> (x1 : Proof (Par
 
 (; doc: Function composition, usually written with the infix operator `∘`. A new function is created from two existing functions, where one function's output is used as input to the other.  Examples:  * `Function.comp List.reverse (List.drop 2) [3, 2, 4, 1] = [1, 4]`  * `(List.reverse ∘ List.drop 2) [3, 2, 4, 1] = [1, 4]`  Conventions for notations in identifiers:   * The recommended spelling of `∘` in identifiers is `comp`. ;)
 (; //LEAN:Function.comp ;)
-Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
+Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> Elem W)) -> (g : (Elem X -> Elem Y)) -> (x : Elem X) -> Elem W.
 
 (; doc: A type `G₀` is a “group with zero” if it is a monoid with zero element (distinct from `1`) such that every nonzero element is invertible. The type is required to come with an “inverse” function, and the inverse of `0` must be `0`.  Examples include division rings and the ordered monoids that are the target of valuations in general valuation theory. ;)
 (; //LEAN:GroupWithZero ;)
@@ -245,10 +242,10 @@ HMod__hMod : (X : Set) -> (Y : Set) -> (Z : Set) -> (x : Elem X) -> (x1 : Elem Y
 
 (; doc: `HasSum f a L` means that the (potentially infinite) sum of the `f b` for `b : β` converges to `a` along the SummationFilter `L`.  By default `L` is the `unconditional` one, corresponding to the limit of all finite sets towards the entire type. So we take the sum over bigger and bigger finite sets. This sum operation is invariant under permuting the terms (while sums for more general summation filters usually are not). This is based on Mario Carneiro's [infinite sum `df-tsms` in Metamath](http://us.metamath.org/mpeuni/df-tsms.html).  In particular, the function `ℕ → ℝ` sending `n` to `(-1) ^ n / (n + 1)` does not have a sum for this definition, although it is summable for the `conditional` summation filter that takes limits of sums over `n ∈ {0, ..., X}` as `X → ∞`. However, a series which is *absolutely* convergent with respect to the conditional summation filter is in fact unconditionally summable.  For the definition and many statements, `α` does not need to be a topological additive monoid, only an additive monoid with a topology (i.e. the addition is not assumed to be continuous). We only add this assumption later, for the lemmas where it is relevant. ;)
 (; //LEAN:HasSum ;)
-HasSum : (X : Set) -> (Y : Set) -> (f : (Elem Y -> X)) -> (a : Elem X) -> (L : Elem (optParam (SummationFilter Y) (SummationFilter__unconditional Y))) -> Prop.
+HasSum : (X : Set) -> (Y : Set) -> (f : (Elem Y -> Elem X)) -> (a : Elem X) -> (L : Elem (optParam (SummationFilter Y) (SummationFilter__unconditional Y))) -> Prop.
 
 (; //LEAN:HasSum.tsum_eq ;)
-HasSum__tsum_eq : (X : Set) -> (Y : Set) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof (TopologicalSpace X)) -> (L : Elem (SummationFilter Y)) -> (f : (Elem Y -> X)) -> (a : Elem X) -> (_ : Proof (T2Space X)) -> (ha : Proof (HasSum X Y f a L)) -> Proof (Eqt X (tsum X Y (b => f b) L) a).
+HasSum__tsum_eq : (X : Set) -> (Y : Set) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof (TopologicalSpace X)) -> (L : Elem (SummationFilter Y)) -> (f : (Elem Y -> Elem X)) -> (a : Elem X) -> (_ : Proof (T2Space X)) -> (ha : Proof (HasSum X Y f a L)) -> Proof (Eqt X (tsum X Y (b => f b) L) a).
 
 (; doc: `a⁻¹` computes the inverse of `a`. The meaning of this notation is type-dependent.  Conventions for notations in identifiers:   * The recommended spelling of `⁻¹` in identifiers is `inv`. ;)
 (; //LEAN:Inv.inv ;)
@@ -292,7 +289,7 @@ Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Pro
 
 (; doc: Given `f : β → ℝ`, if `f` sends `{i | p i}` to a set of positive numbers accumulating to zero, then `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.  For specific bases see `uniformity_basis_dist`, `uniformity_basis_dist_inv_nat_succ`, and `uniformity_basis_dist_inv_nat_pos`. ;)
 (; //LEAN:Metric.mk_uniformity_basis ;)
-Metric__mk_uniformity_basis : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (Y : Set) -> (p : (Elem Y -> Prop)) -> (f : (Elem Y -> Real)) -> (hf0 : Proof (forall Y (i2 => if (p i2) (Lt 0 (f i2))))) -> (hf : Proof (forall Real (epsilon => if (Lt 0 epsilon) (exists Y (i1 => and (p i1) (Leq (f i1) epsilon)))))) -> Proof (Filter__HasBasis (Prod X X) Y (uniformity X) p (i => Set__ofPred (Prod X X) (p1 => Lt (Dist__dist X (Prod__fst X X p1) (Prod__snd X X p1)) (f i)))).
+Metric__mk_uniformity_basis : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (Y : Set) -> (p : (Elem Y -> Prop)) -> (f : (Elem Y -> Elem Real)) -> (hf0 : Proof (forall Y (i2 => if (p i2) (Lt 0 (f i2))))) -> (hf : Proof (forall Real (epsilon => if (Lt 0 epsilon) (exists Y (i1 => and (p i1) (Leq (f i1) epsilon)))))) -> Proof (Filter__HasBasis (Prod X X) Y (uniformity X) p (i => Set__ofPred (Prod X X) (p1 => Lt (Dist__dist X (Prod__fst X X p1) (Prod__snd X X p1)) (f i)))).
 
 (; doc: Returns the lesser of its two arguments.  Conventions for notations in identifiers:   * The recommended spelling of `min` in identifiers is `min`.   * The recommended spelling of `⊓` in identifiers is `inf` (`⊓` is the preferred notation for `min` when the type is not linearly ordered.). ;)
 (; //LEAN:Min.min ;)
@@ -320,7 +317,7 @@ NNReal__coe_lt_one___simp_1 : (r : Elem NNReal) -> Proof (Eqt Prop (Lt (NNReal__
 NNReal__coe_nonneg : (r : Elem NNReal) -> Proof (Leq 0 (NNReal__toReal r)).
 
 (; //LEAN:NNReal.tendsto_coe ;)
-NNReal__tendsto_coe : (X : Set) -> (f : Elem (Filter X)) -> (m : (Elem X -> NNReal)) -> (x : Elem NNReal) -> Proof (iff (Filter__Tendsto X Real (a => NNReal__toReal (m a)) f (nhds Real (NNReal__toReal x))) (Filter__Tendsto X NNReal m f (nhds NNReal x))).
+NNReal__tendsto_coe : (X : Set) -> (f : Elem (Filter X)) -> (m : (Elem X -> Elem NNReal)) -> (x : Elem NNReal) -> Proof (iff (Filter__Tendsto X Real (a => NNReal__toReal (m a)) f (nhds Real (NNReal__toReal x))) (Filter__Tendsto X NNReal m f (nhds NNReal x))).
 
 (; doc: Coercion `ℝ≥0 → ℝ`. ;)
 (; //LEAN:NNReal.toReal ;)
@@ -409,7 +406,7 @@ Set__Ioi : (X : Set) -> (b : Elem X) -> Elem (powerset X).
 Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> Prop.
 
 (; //LEAN:Set.exists_range_iff ;)
-Set__exists_range_iff : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (p : (Elem X -> Prop)) -> Proof (iff (exists X (a => and (Membership__mem X (powerset X) (Set__range X I f) a) (p a))) (exists I (i => p (f i)))).
+Set__exists_range_iff : (X : Set) -> (I : Set) -> (f : (Elem I -> Elem X)) -> (p : (Elem X -> Prop)) -> Proof (iff (exists X (a => and (Membership__mem X (powerset X) (Set__range X I f) a) (p a))) (exists I (i => p (f i)))).
 
 (; //LEAN:Set.mem_Ioi._simp_1 ;)
 Set__mem_Ioi___simp_1 : (X : Set) -> (_ : Proof (Preorder X)) -> (b : Elem X) -> (x1 : Elem X) -> Proof (Eqt Prop (Membership__mem X (powerset X) (Set__Ioi X b) x1) (Lt b x1)).
@@ -420,7 +417,7 @@ Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
 
 (; doc: Range of a function.  This function is more flexible than `f '' univ`, as the image requires that the domain is in Type and not an arbitrary Sort. ;)
 (; //LEAN:Set.range ;)
-Set__range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> Elem (powerset X).
+Set__range : (X : Set) -> (I : Set) -> (f : (Elem I -> Elem X)) -> Elem (powerset X).
 
 (; //LEAN:Set.subset_compl_singleton_iff._simp_1 ;)
 Set__subset_compl_singleton_iff___simp_1 : (X : Set) -> (s : Elem (powerset X)) -> (a : Elem X) -> Proof (Eqt Prop (Set__Subset X s (Compl__compl (powerset X) (Singleton__singleton X (powerset X) a))) (not (Membership__mem X (powerset X) s a))).
@@ -443,10 +440,10 @@ Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x
 
 (; doc: `Summable f` means that `f` has some (infinite) sum with respect to `L`. Use `tsum` to get the value. ;)
 (; //LEAN:Summable ;)
-Summable : (X : Set) -> (Y : Set) -> (f : (Elem Y -> X)) -> (L : Elem (optParam (SummationFilter Y) (SummationFilter__unconditional Y))) -> Prop.
+Summable : (X : Set) -> (Y : Set) -> (f : (Elem Y -> Elem X)) -> (L : Elem (optParam (SummationFilter Y) (SummationFilter__unconditional Y))) -> Prop.
 
 (; //LEAN:Summable.comp_injective ;)
-Summable__comp_injective : (X : Set) -> (Y : Set) -> (Z : Set) -> (_ : Proof (UniformSpace X)) -> (_ : Proof (AddCommGroup X)) -> (_ : Proof (IsUniformAddGroup X)) -> (f : (Elem Y -> X)) -> (_ : Proof (CompleteSpace X)) -> (i : (Elem Z -> Y)) -> (hf : Proof (Summable X Y f (SummationFilter__unconditional Y))) -> (hi : Proof (Function__Injective Z Y i)) -> Proof (Summable X Z (Function__comp Z Y X f i) (SummationFilter__unconditional Z)).
+Summable__comp_injective : (X : Set) -> (Y : Set) -> (Z : Set) -> (_ : Proof (UniformSpace X)) -> (_ : Proof (AddCommGroup X)) -> (_ : Proof (IsUniformAddGroup X)) -> (f : (Elem Y -> Elem X)) -> (_ : Proof (CompleteSpace X)) -> (i : (Elem Z -> Elem Y)) -> (hf : Proof (Summable X Y f (SummationFilter__unconditional Y))) -> (hi : Proof (Function__Injective Z Y i)) -> Proof (Summable X Z (Function__comp Z Y X f i) (SummationFilter__unconditional Z)).
 
 (; doc: **Unconditional summation**: a function on `β` is said to be *unconditionally summable* if its partial sums over finite subsets converge with respect to the `atTop` filter. ;)
 (; //LEAN:SummationFilter.unconditional ;)
@@ -471,17 +468,17 @@ abs : (X : Set) -> (a : Elem X) -> Elem X.
 (; //LEAN:add_one_pow_unbounded_of_pos ;)
 add_one_pow_unbounded_of_pos : (R : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (PartialOrder R)) -> (_ : Proof (IsStrictOrderedRing R)) -> (_ : Proof (Archimedean R)) -> (y : Elem R) -> (x2 : Elem R) -> (hy : Proof (Lt 0 y)) -> Proof (exists Nat (n => Lt x2 (pow (plus y 1) n))).
 
-(; doc: If the distance between consecutive points of a sequence is estimated by a summable series, then the original sequence is a Cauchy sequence. ;)
+(; doc: If the distance between consecutive points of a sequence is estimated by a summable series, then the original sequence is a Cauchy sequence.  ;)
 (; //LEAN:cauchySeq_of_dist_le_of_summable ;)
-cauchySeq_of_dist_le_of_summable : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (f : (Elem Nat -> X)) -> (d : (Elem Nat -> Real)) -> (hf : Proof (forall Nat (n => Leq (Dist__dist X (f n) (f (succ n))) (d n)))) -> (hd : Proof (Summable Real Nat d (SummationFilter__unconditional Nat))) -> Proof (CauchySeq X Nat f).
+cauchySeq_of_dist_le_of_summable : (X : Set) -> (_ : Proof (PseudoMetricSpace X)) -> (f : (Elem Nat -> Elem X)) -> (d : (Elem Nat -> Elem Real)) -> (hf : Proof (forall Nat (n => Leq (Dist__dist X (f n) (f (succ n))) (d n)))) -> (hd : Proof (Summable Real Nat d (SummationFilter__unconditional Nat))) -> Proof (CauchySeq X Nat f).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
-congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Eqt (Elem X -> Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
+congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem X -> Elem Y)) -> (h : Proof (Eqt (Elem X -> Elem Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
 
 (; doc: Dividing by an element is the same as multiplying by its inverse.  This is a duplicate of `DivInvMonoid.div_eq_mul_inv` ensuring that the types unfold better. ;)
 (; //LEAN:div_eq_mul_inv ;)
@@ -496,20 +493,20 @@ eq_self : (X : Set) -> (a : Elem X) -> Proof (Eqt Prop (Eqt X a a) True).
 (; //LEAN:eq_true ;)
 eq_true : (p : Prop) -> (h : Proof p) -> Proof (Eqt Prop p True).
 
-(; doc: For any `y < 1` and any positive `x`, there exists `n : ℕ` with `y ^ n < x`. ;)
+(; doc: For any `y < 1` and any positive `x`, there exists `n : ℕ` with `y ^ n < x`.  ;)
 (; //LEAN:exists_pow_lt_of_lt_one ;)
 exists_pow_lt_of_lt_one : (K : Set) -> (_ : Proof (Semifield K)) -> (_ : Proof (LinearOrder K)) -> (_ : Proof (IsStrictOrderedRing K)) -> (_ : Proof (Archimedean K)) -> (x2 : Elem K) -> (y : Elem K) -> (_ : Proof (ExistsAddOfLE K)) -> (hx : Proof (Lt 0 x2)) -> (hy : Proof (Lt y 1)) -> Proof (exists Nat (n => Lt (pow y n) x2)).
 
-(; doc: **Function extensionality.** If two functions return equal results for all possible arguments, then they are equal.  It is called “extensionality” because it provides a way to prove two objects equal based on the properties of the underlying mathematical functions, rather than based on the syntax used to denote them. Function extensionality is a theorem that can be [proved using quotient types](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=quotient-funext). ;)
+(; doc: **Function extensionality.** If two functions return equal results for all possible arguments, then they are equal.  It is called “extensionality” because it provides a way to prove two objects equal based on the properties of the underlying mathematical functions, rather than based on the syntax used to denote them. Function extensionality is a theorem that can be [proved using quotient types](https://lean-lang.org/doc/reference/4.36.0-rc2/find/?domain=Verso.Genre.Manual.section&name=quotient-funext). ;)
 (; //LEAN:funext ;)
-funext : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> beta x3)) -> (g : ((x2 : Elem X) -> beta x2)) -> (h : Proof (forall X (x1 => Eqt (beta x1) (f x1) (g x1)))) -> Proof (Eqt ((x : Elem X) -> beta x) f g).
+funext : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x3 : Elem X) -> Elem (beta x3))) -> (g : ((x2 : Elem X) -> Elem (beta x2))) -> (h : Proof (forall X (x1 => Eqt (beta x1) (f x1) (g x1)))) -> Proof (Eqt ((x : Elem X) -> Elem (beta x)) f g).
 
 (; //LEAN:geom_sum_eq ;)
 geom_sum_eq : (K : Set) -> (_ : Proof (DivisionRing K)) -> (x1 : Elem K) -> (h : Proof (Neq x1 1)) -> (n : Elem Nat) -> Proof (Eqt K (Finset__sum Nat K (Finset__range n) (i => pow x1 i)) (div (minus (pow x1 n) 1) (minus x1 1))).
 
 (; doc: A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if the sequence of partial sum converges to `r`. ;)
 (; //LEAN:hasSum_iff_tendsto_nat_of_nonneg ;)
-hasSum_iff_tendsto_nat_of_nonneg : (f : (Elem Nat -> Real)) -> (hf : Proof (forall Nat (i1 => Leq 0 (f i1)))) -> (r : Elem Real) -> Proof (iff (HasSum Real Nat f r (SummationFilter__unconditional Nat)) (Filter__Tendsto Nat Real (n => Finset__sum Nat Real (Finset__range n) (i => f i)) (Filter__atTop Nat) (nhds Real r))).
+hasSum_iff_tendsto_nat_of_nonneg : (f : (Elem Nat -> Elem Real)) -> (hf : Proof (forall Nat (i1 => Leq 0 (f i1)))) -> (r : Elem Real) -> Proof (iff (HasSum Real Nat f r (SummationFilter__unconditional Nat)) (Filter__Tendsto Nat Real (n => Finset__sum Nat Real (Finset__range n) (i => f i)) (Filter__atTop Nat) (nhds Real r))).
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
@@ -553,7 +550,7 @@ neg_mul : (X : Set) -> (_ : Proof (HasDistribNeg X)) -> (a : Elem X) -> (b : Ele
 (; //LEAN:neg_sub ;)
 neg_sub : (X : Set) -> (_ : Proof (SubtractionMonoid X)) -> (a : Elem X) -> (b : Elem X) -> Proof (Eqt X (Neg__neg X (minus a b)) (minus b a)).
 
-(; doc: A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the infimum over the principal filters of all open sets containing `x`.  [Wikidata Q3275652](https://www.wikidata.org/wiki/Q3275652) ;)
+(; doc: A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the infimum over the principal filters of all open sets containing `x`. ;)
 (; //LEAN:nhds ;)
 nhds : (X : Set) -> (x1 : Elem X) -> Elem (Filter X).
 
@@ -613,13 +610,17 @@ tsub_pos_iff_lt___simp_1 : (X : Set) -> (_ : Proof (AddCommMonoid X)) -> (_ : Pr
 
 (; doc: `∑' i, f i` is the unconditional sum of `f` if it exists, or 0 otherwise.  More generally, if `L` is a `SummationFilter`, `∑'[L] i, f i` is the sum of `f` with respect to `L` if it exists, and `0` otherwise.  (Note that even if the unconditional sum exists, it might not be unique if the topology is not separated. When the support of `f` is finite, we make the most reasonable choice, to use the sum over the support. Otherwise, we choose arbitrarily an `a` satisfying `HasSum f a`. Similar remarks apply to more general summation filters.) ;)
 (; //LEAN:tsum ;)
-tsum : (X : Set) -> (Y : Set) -> (f : (Elem Y -> X)) -> (L : Elem (optParam (SummationFilter Y) (SummationFilter__unconditional Y))) -> Elem X.
+tsum : (X : Set) -> (Y : Set) -> (f : (Elem Y -> Elem X)) -> (L : Elem (optParam (SummationFilter Y) (SummationFilter__unconditional Y))) -> Elem X.
+
+(; doc: See also `Summable.tsum_le_tsum_of_inj` for more general result without `CompleteLattice` assumption. ;)
+(; //LEAN:tsum_comp_le_tsum_of_injective ;)
+tsum_comp_le_tsum_of_injective : (I : Set) -> (X : Set) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof (CompleteLattice X)) -> (_ : Proof (CanonicallyOrderedAdd X)) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (SupConvergenceClass X)) -> (X1 : Set) -> (_ : Proof (IsOrderedAddMonoid X)) -> (_ : Proof (OrderClosedTopology X)) -> (f : (Elem I -> Elem X1)) -> (hf : Proof (Function__Injective I X1 f)) -> (g : (Elem X1 -> Elem X)) -> Proof (Leq (tsum X I (x3 => g (f x3)) (SummationFilter__unconditional I)) (tsum X X1 (y => g y) (SummationFilter__unconditional X1))).
 
 (; doc: The uniformity is a filter on α × α (inferred from an ambient uniform space structure on α). ;)
 (; //LEAN:uniformity ;)
 uniformity : (X : Set) -> Elem (Filter (Prod X X)).
 
-(; doc: `zero_le_one` with the type argument implicit. ;)
+(; doc: `zero_le_one` with the type argument implicit.  ;)
 (; //LEAN:zero_le_one ;)
 zero_le_one : (X : Set) -> (_ : Proof (LE X)) -> (_ : Proof (ZeroLEOneClass X)) -> Proof (Leq 0 1).
 

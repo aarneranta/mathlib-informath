@@ -1,6 +1,12 @@
 (; constants used by Mathlib.Order.Bounds.Basic, declared with their translated types ;)
 
 (; the structures of a class on its parameters ;)
+InfSet__on : (X : Set) -> Set.
+
+(; a constant with an instance argument that the statement gives ;)
+InfSet__sInf__in : (X : Set) -> (self : Elem (InfSet__on X)) -> (x : Elem (powerset X)) -> Elem X.
+
+(; the structures of a class on its parameters ;)
 Lattice__on : (X : Set) -> Set.
 
 (; the structures of a class on its parameters ;)
@@ -19,14 +25,23 @@ OrderSupSet__on : (X : Set) -> Set.
 OrderTop__on : (X : Set) -> Set.
 
 (; the structures of a class on its parameters ;)
+Preorder__on : (X : Set) -> Set.
+
+(; the structures of a class on its parameters ;)
 SemilatticeInf__on : (X : Set) -> Set.
 
 (; the structures of a class on its parameters ;)
 SemilatticeSup__on : (X : Set) -> Set.
 
+(; the structures of a class on its parameters ;)
+SupSet__on : (X : Set) -> Set.
+
+(; a constant with an instance argument that the statement gives ;)
+SupSet__sSup__in : (X : Set) -> (self : Elem (SupSet__on X)) -> (x : Elem (powerset X)) -> Elem X.
+
 (; doc: The antisymmetrization relation `AntisymmRel r` is defined so that `AntisymmRel r a b ↔ r a b ∧ r b a`. ;)
 (; //LEAN:AntisymmRel ;)
-AntisymmRel : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (a : Elem X) -> (b : Elem X) -> Prop.
+AntisymmRel : (X : Set) -> (r : (Elem X -> (Elem X -> Prop))) -> (a : Elem X) -> (b : Elem X) -> Prop.
 
 (; doc: A set is bounded above if there exists an upper bound. ;)
 (; //LEAN:BddAbove ;)
@@ -58,7 +73,7 @@ DenselyOrdered : (X : Set) -> Prop.
 
 (; doc: A subset of `α` is directed if there is an element of the set `≼`-above any pair of elements in the set. ;)
 (; //LEAN:DirectedOn ;)
-DirectedOn : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (s : Elem (powerset X)) -> Prop.
+DirectedOn : (X : Set) -> (r : (Elem X -> (Elem X -> Prop))) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: Two elements of a lattice are disjoint if their inf is the bottom element.   (This generalizes disjoint sets, viewed as members of the subset lattice.)  Note that we define this without reference to `⊓`, as this allows us to talk about orders where the infimum is not unique, or where implementing `Inf` would require additional `Decidable` arguments. ;)
 (; //LEAN:Disjoint ;)
@@ -72,12 +87,16 @@ EmptyCollection__emptyCollection : (X : Set) -> Elem X.
 (; //LEAN:Eq.trans ;)
 Eq__trans : (X : Set) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (h1 : Proof (Eqt X a b)) -> (h2 : Proof (Eqt X b c)) -> Proof (Eqt X a c).
 
+(; doc: Extract an element from an existential statement, using `Classical.choose`. ;)
+(; //LEAN:Exists.choose ;)
+Exists__choose : (X : Set) -> (p : (Elem X -> Prop)) -> (P : Proof (exists X (a => p a))) -> Elem X.
+
 (; //LEAN:Exists.imp ;)
 Exists__imp : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h : Proof (forall X (a2 => if (p a2) (q a2)))) -> (h1 : Proof (exists X (a1 => p a1))) -> Proof (exists X (a => q a)).
 
 (; doc: Function composition, usually written with the infix operator `∘`. A new function is created from two existing functions, where one function's output is used as input to the other.  Examples:  * `Function.comp List.reverse (List.drop 2) [3, 2, 4, 1] = [1, 4]`  * `(List.reverse ∘ List.drop 2) [3, 2, 4, 1] = [1, 4]`  Conventions for notations in identifiers:   * The recommended spelling of `∘` in identifiers is `comp`. ;)
 (; //LEAN:Function.comp ;)
-Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
+Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> Elem W)) -> (g : (Elem X -> Elem Y)) -> (x : Elem X) -> Elem W.
 
 (; doc: A generalized co-Heyting algebra is a lattice with an additional binary difference operation `\` such that `(· \ a)` is left adjoint to `(· ⊔ a)`.  This generalizes `CoheytingAlgebra` by not requiring a top element. ;)
 (; //LEAN:GeneralizedCoheytingAlgebra ;)
@@ -142,7 +161,7 @@ IsCoinitialFor : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X))
 (; //LEAN:IsDirectedOrder ;)
 IsDirectedOrder : (X : Set) -> Prop.
 
-(; doc: `IsEmpty α` expresses that `α` is empty. ;)
+(; doc: `IsEmpty α` expresses that `α` is empty.  ;)
 (; //LEAN:IsEmpty ;)
 IsEmpty : (X : Set) -> Prop.
 
@@ -182,7 +201,7 @@ LE__le__trans_lt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b :
 LT__lt__le : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (hab : Proof (Lt a b)) -> Proof (Leq a b).
 
 (; //LEAN:Lattice.mk ;)
-Lattice__mk : (X : Set) -> (inf : (Elem X -> Elem X -> X)) -> (inf_le_left : Proof (forall X (a2 => forall X (b2 => Leq (inf a2 b2) a2)))) -> (inf_le_right : Proof (forall X (a1 => forall X (b1 => Leq (inf a1 b1) b1)))) -> (le_inf : Proof (forall X (a => forall X (b => forall X (c => if (Leq a b) (if (Leq a c) (Leq a (inf b c)))))))) -> Elem (Lattice__on X).
+Lattice__mk : (X : Set) -> (inf : (Elem X -> (Elem X -> Elem X))) -> (inf_le_left : Proof (forall X (a2 => forall X (b2 => Leq (inf a2 b2) a2)))) -> (inf_le_right : Proof (forall X (a1 => forall X (b1 => Leq (inf a1 b1) b1)))) -> (le_inf : Proof (forall X (a => forall X (b => forall X (c => if (Leq a b) (if (Leq a c) (Leq a (inf b c)))))))) -> Elem (Lattice__on X).
 
 (; doc: A `ParserDescr` is a grammar for parsers. This is used by the `syntax` command to produce parsers without having to `import Lean`. ;)
 (; //LEAN:Lean.ParserDescr ;)
@@ -338,20 +357,20 @@ SemilatticeInf__le_inf : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (a : Ele
 SemilatticeSup : (X : Set) -> Prop.
 
 (; //LEAN:SemilatticeSup.mk ;)
-SemilatticeSup__mk : (X : Set) -> (sup : (Elem X -> Elem X -> X)) -> (le_sup_left : Proof (forall X (a2 => forall X (b2 => Leq a2 (sup a2 b2))))) -> (le_sup_right : Proof (forall X (a1 => forall X (b1 => Leq b1 (sup a1 b1))))) -> (sup_le : Proof (forall X (a => forall X (b => forall X (c => if (Leq a c) (if (Leq b c) (Leq (sup a b) c))))))) -> Elem (SemilatticeSup__on X).
+SemilatticeSup__mk : (X : Set) -> (sup : (Elem X -> (Elem X -> Elem X))) -> (le_sup_left : Proof (forall X (a2 => forall X (b2 => Leq a2 (sup a2 b2))))) -> (le_sup_right : Proof (forall X (a1 => forall X (b1 => Leq b1 (sup a1 b1))))) -> (sup_le : Proof (forall X (a => forall X (b => forall X (c => if (Leq a c) (if (Leq b c) (Leq (sup a b) c))))))) -> Elem (SemilatticeSup__on X).
 
 (; //LEAN:SemilatticeSup.ofIsLUB._proof_1 ;)
-SemilatticeSup__ofIsLUB___proof_1 : (X : Set) -> (_ : Proof (PartialOrder X)) -> (sup : (Elem X -> Elem X -> X)) -> (isLUB_pair : Proof (forall X (a1 => forall X (b1 => IsLUB X (Insert__insert X (powerset X) a1 (Singleton__singleton X (powerset X) b1)) (sup a1 b1))))) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq a (sup a b)).
+SemilatticeSup__ofIsLUB___proof_1 : (X : Set) -> (_ : Proof (PartialOrder X)) -> (sup : (Elem X -> (Elem X -> Elem X))) -> (isLUB_pair : Proof (forall X (a1 => forall X (b1 => IsLUB X (Insert__insert X (powerset X) a1 (Singleton__singleton X (powerset X) b1)) (sup a1 b1))))) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq a (sup a b)).
 
 (; //LEAN:SemilatticeSup.ofIsLUB._proof_2 ;)
-SemilatticeSup__ofIsLUB___proof_2 : (X : Set) -> (_ : Proof (PartialOrder X)) -> (sup : (Elem X -> Elem X -> X)) -> (isLUB_pair : Proof (forall X (a1 => forall X (b1 => IsLUB X (Insert__insert X (powerset X) a1 (Singleton__singleton X (powerset X) b1)) (sup a1 b1))))) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq b (sup a b)).
+SemilatticeSup__ofIsLUB___proof_2 : (X : Set) -> (_ : Proof (PartialOrder X)) -> (sup : (Elem X -> (Elem X -> Elem X))) -> (isLUB_pair : Proof (forall X (a1 => forall X (b1 => IsLUB X (Insert__insert X (powerset X) a1 (Singleton__singleton X (powerset X) b1)) (sup a1 b1))))) -> (a : Elem X) -> (b : Elem X) -> Proof (Leq b (sup a b)).
 
 (; //LEAN:SemilatticeSup.ofIsLUB._proof_3 ;)
-SemilatticeSup__ofIsLUB___proof_3 : (X : Set) -> (_ : Proof (PartialOrder X)) -> (sup : (Elem X -> Elem X -> X)) -> (isLUB_pair : Proof (forall X (a1 => forall X (b1 => IsLUB X (Insert__insert X (powerset X) a1 (Singleton__singleton X (powerset X) b1)) (sup a1 b1))))) -> (a : Elem X) -> (b : Elem X) -> (x1 : Elem X) -> (hac : Proof (Leq a x1)) -> (hbc : Proof (Leq b x1)) -> Proof (Leq (sup a b) x1).
+SemilatticeSup__ofIsLUB___proof_3 : (X : Set) -> (_ : Proof (PartialOrder X)) -> (sup : (Elem X -> (Elem X -> Elem X))) -> (isLUB_pair : Proof (forall X (a1 => forall X (b1 => IsLUB X (Insert__insert X (powerset X) a1 (Singleton__singleton X (powerset X) b1)) (sup a1 b1))))) -> (a : Elem X) -> (b : Elem X) -> (x1 : Elem X) -> (hac : Proof (Leq a x1)) -> (hbc : Proof (Leq b x1)) -> Proof (Leq (sup a b) x1).
 
 (; doc: A bounded or final set. Not to be confused with `Bornology.IsBounded`. ;)
 (; //LEAN:Set.Bounded ;)
-Set__Bounded : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (s : Elem (powerset X)) -> Prop.
+Set__Bounded : (X : Set) -> (r : (Elem X -> (Elem X -> Prop))) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: Given the set `s`, `Elem s` is the `Type` of element of `s`.  It is currently an abbreviation so that instance coming from `Subtype` are available. If you're interested in making it a `def`, as it probably should be, you'll then need to create additional instances (and possibly prove lemmas about them). See e.g. `Mathlib/Data/Set/Order.lean`. ;)
 (; //LEAN:Set.Elem ;)
@@ -433,7 +452,7 @@ Set__ext : (X : Set) -> (a : Elem (powerset X)) -> (b : Elem (powerset X)) -> (h
 
 (; doc: The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that `f a = b` for some `a ∈ s`. ;)
 (; //LEAN:Set.image ;)
-Set__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
+Set__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
 
 (; //LEAN:Set.inter_subset_left ;)
 Set__inter_subset_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Set__Subset X (Inter__inter (powerset X) s t) s).
@@ -457,17 +476,17 @@ Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
 
 (; doc: The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`, is the set of `x : α` such that `f x ∈ s`. ;)
 (; //LEAN:Set.preimage ;)
-Set__preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset Y)) -> Elem (powerset X).
+Set__preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset Y)) -> Elem (powerset X).
 
 (; doc: Range of a function.  This function is more flexible than `f '' univ`, as the image requires that the domain is in Type and not an arbitrary Sort. ;)
 (; //LEAN:Set.range ;)
-Set__range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> Elem (powerset X).
+Set__range : (X : Set) -> (I : Set) -> (f : (Elem I -> Elem X)) -> Elem (powerset X).
 
 (; //LEAN:Set.range_comp_subset_range ;)
-Set__range_comp_subset_range : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem Y -> Z)) -> Proof (Set__Subset Z (Set__range Z X (Function__comp X Y Z g f)) (Set__range Z Y g)).
+Set__range_comp_subset_range : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem Y -> Elem Z)) -> Proof (Set__Subset Z (Set__range Z X (Function__comp X Y Z g f)) (Set__range Z Y g)).
 
 (; //LEAN:Set.range_eq_empty ;)
-Set__range_eq_empty : (X : Set) -> (I : Set) -> (_ : Proof (IsEmpty I)) -> (f : (Elem I -> X)) -> Proof (Eqt (powerset X) (Set__range X I f) (EmptyCollection__emptyCollection (powerset X))).
+Set__range_eq_empty : (X : Set) -> (I : Set) -> (_ : Proof (IsEmpty I)) -> (f : (Elem I -> Elem X)) -> Proof (Eqt (powerset X) (Set__range X I f) (EmptyCollection__emptyCollection (powerset X))).
 
 (; //LEAN:Set.right_mem_Icc ;)
 Set__right_mem_Icc : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Membership__mem X (powerset X) (Set__Icc X b a) a) (Leq b a)).
@@ -496,7 +515,7 @@ Set__univ : (X : Set) -> Elem (powerset X).
 Singleton__singleton : (X : Set) -> (Y : Set) -> (x : Elem X) -> Elem Y.
 
 (; //LEAN:Std.Total.directedOn ;)
-Std__Total__directedOn : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Total X r)) -> (s : Elem (powerset X)) -> Proof (DirectedOn X r s).
+Std__Total__directedOn : (X : Set) -> (r : (Elem X -> (Elem X -> Prop))) -> (_ : Proof (Std__Total X r)) -> (s : Elem (powerset X)) -> Proof (DirectedOn X r s).
 
 (; doc: Class for the `sSup` operator ;)
 (; //LEAN:SupSet ;)
@@ -512,7 +531,7 @@ Top__top : (X : Set) -> Elem X.
 
 (; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
 (; //LEAN:Trans.trans ;)
-Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> Elem Y -> Set)) -> (s : (Elem Y -> Elem Z -> Set)) -> (t : (Elem X -> Elem Z -> Set)) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Z) -> (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
+Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> (Elem Y -> Set))) -> (s : (Elem Y -> (Elem Z -> Set))) -> (t : (Elem X -> (Elem Z -> Set))) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Z) -> (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
 
 (; doc: `a ∪ b` is the union of `a` and `b`.  Conventions for notations in identifiers:   * The recommended spelling of `∪` in identifiers is `union`. ;)
 (; //LEAN:Union.union ;)
@@ -530,19 +549,23 @@ bot_unique : (X : Set) -> (_ : Proof (PartialOrder X)) -> (_ : Proof (OrderBot X
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: **Alias** of `congrArg`. ;)
 (; //LEAN:congr_arg ;)
-congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+
+(; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
+(; //LEAN:dite ;)
+dite : (X : Set) -> (c : Prop) -> (t : (Proof c -> Elem X)) -> (e : (Proof (not c) -> Elem X)) -> Elem X.
 
 (; doc: Indexed infimum ;)
 (; //LEAN:iInf ;)
-iInf : (X : Set) -> (I : Set) -> (s : (Elem I -> X)) -> Elem X.
+iInf : (X : Set) -> (I : Set) -> (s : (Elem I -> Elem X)) -> Elem X.
 
 (; doc: Indexed supremum ;)
 (; //LEAN:iSup ;)
-iSup : (X : Set) -> (I : Set) -> (s : (Elem I -> X)) -> Elem X.
+iSup : (X : Set) -> (I : Set) -> (s : (Elem I -> Elem X)) -> Elem X.
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)

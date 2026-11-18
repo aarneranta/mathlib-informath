@@ -90,7 +90,7 @@ def IsBezout__associated_gcd_gcd : (R : Set) -> (_ : Proof (CommRing R)) -> (x1 
   R => x => x1 => y => h => x2 => gcd_greatest_associated R x1 y (IsBezout__gcd R x1 y) (IsBezout__gcd_dvd_left R x1 y) (IsBezout__gcd_dvd_right R x1 y) (forallI R (x3 => if (divide x3 x1) (if (divide x3 y) (divide x3 (IsBezout__gcd R x1 y)))) (x3 => IsBezout__dvd_gcd R x1 y x3)).
 
 (; //LEAN:Finset.gcd_eq_sum_mul ;)
-Finset__gcd_eq_sum_mul : (R : Set) -> (X : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsBezout R)) -> (_ : Proof (NormalizedGCDMonoid R)) -> (s : Elem (Finset X)) -> (f : (Elem X -> R)) -> Proof (exists (Elem X -> R) (g => Eqt R (Finset__gcd R X s f) (Finset__sum X R s (a => times (f a) (g a))))).
+Finset__gcd_eq_sum_mul : (R : Set) -> (X : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsBezout R)) -> (_ : Proof (NormalizedGCDMonoid R)) -> (s : Elem (Finset X)) -> (f : (Elem X -> Elem R)) -> Proof (exists (Elem X -> Elem R) (g => Eqt R (Finset__gcd R X s f) (Finset__sum X R s (a => times (f a) (g a))))).
 
 (; //LEAN:IsPrime.to_maximal_ideal ;)
 IsPrime__to_maximal_ideal : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsDomain R)) -> (_ : Proof (IsPrincipalIdealRing R)) -> (S : Elem (Ideal R)) -> (_ : Proof (Ideal__IsPrime R S)) -> (hS : Proof (Neq S (Bot__bot (Ideal R)))) -> Proof (Ideal__IsMaximal R S).
@@ -153,8 +153,8 @@ def isPrincipalIdealRing_prod_iff : (R : Set) -> (S : Set) -> (_ : Proof (Semiri
   R => S => x => x1 => iffI (IsPrincipalIdealRing (Prod R S)) (and (IsPrincipalIdealRing R) (IsPrincipalIdealRing S)) (h => andI (IsPrincipalIdealRing R) (IsPrincipalIdealRing S) (IsPrincipalIdealRing__of_surjective (Prod R S) R (RingHom (Prod R S) R) (RingHom__fst R S) (Prod__fst_surjective R S)) (IsPrincipalIdealRing__of_surjective (Prod R S) S (RingHom (Prod R S) S) (RingHom__snd R S) (Prod__snd_surjective R S))) (h1 => inferInstance (IsPrincipalIdealRing (Prod R S))).
 
 (; //LEAN:isPrincipalIdealRing_pi_iff ;)
-def isPrincipalIdealRing_pi_iff : (I : Set) -> (_ : Proof (Finite I)) -> (R : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Semiring (R i2))) -> Proof (iff (IsPrincipalIdealRing ((i : Elem I) -> R i)) (forall I (i1 => IsPrincipalIdealRing (R i1)))) :=
-  I => h => R => x => iffI (IsPrincipalIdealRing ((i : Elem I) -> R i)) (forall I (i1 => IsPrincipalIdealRing (R i1))) (h1 => forallI I (i2 => IsPrincipalIdealRing (R i2)) (i2 => IsPrincipalIdealRing__of_surjective ((i3 : Elem I) -> R i3) (R i2) (RingHom ((i4 : Elem I) -> R i4) (R i2)) (Pi__evalRingHom I R i2) (Function__surjective_eval I R i2))) (h2 => inferInstance (IsPrincipalIdealRing ((i5 : Elem I) -> R i5))).
+def isPrincipalIdealRing_pi_iff : (I : Set) -> (_ : Proof (Finite I)) -> (R : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Proof (Semiring (R i2)))) -> Proof (iff (IsPrincipalIdealRing ((i : Elem I) -> Elem (R i))) (forall I (i1 => IsPrincipalIdealRing (R i1)))) :=
+  I => h => R => x => iffI (IsPrincipalIdealRing ((i : Elem I) -> Elem (R i))) (forall I (i1 => IsPrincipalIdealRing (R i1))) (h1 => forallI I (i2 => IsPrincipalIdealRing (R i2)) (i2 => IsPrincipalIdealRing__of_surjective ((i3 : Elem I) -> Elem (R i3)) (R i2) (RingHom ((i4 : Elem I) -> Elem (R i4)) (R i2)) (Pi__evalRingHom I R i2) (Function__surjective_eval I R i2))) (h2 => inferInstance (IsPrincipalIdealRing ((i5 : Elem I) -> Elem (R i5)))).
 
 (; //LEAN:isCoprime_of_dvd ;)
 def isCoprime_of_dvd : (R : Set) -> (_ : Proof (CommRing R)) -> (_ : Proof (IsBezout R)) -> (x1 : Elem R) -> (y : Elem R) -> (nonzero : Proof (not (and (Eqt R x1 0) (Eqt R y 0)))) -> (H : Proof (forall R (z => if (Membership__mem R (powerset R) (nonunits R) z) (if (Neq z 0) (if (divide z x1) (not (divide z y))))))) -> Proof (IsCoprime R x1 y) :=

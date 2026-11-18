@@ -1,15 +1,18 @@
 (; constants used by Mathlib.Algebra.Polynomial.Div, declared with their translated types ;)
 
 (; a constant applied as a function: DFunLike.coe ;)
-Polynomial__C__app : (a1 : Elem R) -> Elem (Polynomial R).
+AddMonoidAlgebra__coeff__app : (a1 : Elem (Polynomial R)) -> (a2 : Elem Nat) -> Elem R.
 
 (; a constant applied as a function: DFunLike.coe ;)
-Polynomial__coeff__app : (a1 : Elem (Polynomial R)) -> (a2 : Elem Nat) -> Elem R.
+Polynomial__C__app : (a1 : Elem R) -> Elem (Polynomial R).
 
 (; a constant applied as a function: DFunLike.coe ;)
 Polynomial__monomial__app : (a1 : Elem Nat) -> (a2 : Elem R) -> Elem (Polynomial R).
 
-(; doc: Two elements of a `Monoid` are `Associated` if one of them is another one multiplied by a unit on the right. ;)
+(; //LEAN:AddMonoidAlgebra.instDecidableEq ;)
+AddMonoidAlgebra__instDecidableEq : (R : Set) -> (M : Set) -> Proof (DecidableEq (AddMonoidAlgebra R M)).
+
+(; doc: Two elements of a `Monoid` are `Associated` if one of them is another one multiplied by a unit on the right.  ;)
 (; //LEAN:Associated ;)
 Associated : (M : Set) -> (x1 : Elem M) -> (y : Elem M) -> Prop.
 
@@ -55,7 +58,7 @@ Finset__Icc : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem (Finset X).
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
-Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem M)) -> Elem M.
 
 (; doc: `univ` is the universal finite set of type `Finset α` implied from the assumption `Fintype α`. ;)
 (; //LEAN:Finset.univ ;)
@@ -63,7 +66,7 @@ Finset__univ : (X : Set) -> Elem (Finset X).
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; //LEAN:Iff.trans ;)
 Iff__trans : (a : Prop) -> (b : Prop) -> (c : Prop) -> (h1 : Proof (iff a b)) -> (h2 : Proof (iff b c)) -> Proof (iff a c).
@@ -155,7 +158,7 @@ Polynomial__degree : (R : Set) -> (p : Elem (Polynomial R)) -> Elem (WithBot Nat
 (; //LEAN:Polynomial.degree_modByMonic_lt._unary ;)
 Polynomial__degree_modByMonic_lt___unary : (R : Set) -> (_ : Proof (Ring R)) -> (_x : Elem (PSigma (Polynomial R) (p => PSigma (Polynomial R) (q => Polynomial__Monic R q)))) -> Proof (Lt (Polynomial__degree R (Polynomial__modByMonic R (PSigma__proj0 _x) (PSigma__proj0 (PSigma__proj1 _x)))) (Polynomial__degree R (PSigma__proj0 (PSigma__proj1 _x)))).
 
-(; doc: See `divByMonic`. ;)
+(; doc: See `divByMonic`.  ;)
 (; //LEAN:Polynomial.divModByMonicAux._unary ;)
 Polynomial__divModByMonicAux___unary : (R : Set) -> (_x : Elem (PSigma (Polynomial R) (_p => PSigma (Polynomial R) (q => Polynomial__Monic R q)))) -> Elem (Prod (Polynomial R) (Polynomial R)).
 
@@ -166,9 +169,6 @@ Polynomial__eval : (R : Set) -> (x1 : Elem R) -> (p : Elem (Polynomial R)) -> El
 (; doc: Evaluate a polynomial `p` given a ring hom `f` from the scalar ring to the target and a value `x` for the variable in the target ;)
 (; //LEAN:Polynomial.eval₂ ;)
 Polynomial__eval_u2082_ : (R : Set) -> (S : Set) -> (f : Elem (RingHom R S)) -> (x2 : Elem S) -> (p : Elem (Polynomial R)) -> Elem S.
-
-(; //LEAN:Polynomial.instDecidableEq ;)
-Polynomial__instDecidableEq : (R : Set) -> Proof (DecidableEq (Polynomial R)).
 
 (; doc: `leadingCoeff p` gives the coefficient of the highest power of `X` in `p`. ;)
 (; //LEAN:Polynomial.leadingCoeff ;)
@@ -247,7 +247,7 @@ Set__ofPred : (X : Set) -> (Mem : (Elem X -> Prop)) -> Elem (powerset X).
 (; //LEAN:True ;)
 True : Prop.
 
-(; doc: Attach `⊥` to a type. ;)
+(; doc: Attach `⊥` to a type.  ;)
 (; //LEAN:WithBot ;)
 WithBot : (X : Set) -> Set.
 
@@ -256,21 +256,21 @@ and_iff_right : (a : Prop) -> (b : Prop) -> (ha : Proof a) -> Proof (iff (and a 
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Elem Y)) -> (f2 : (Elem X -> Elem Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Elem Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:dite ;)
-dite : (X : Set) -> (c : Prop) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Elem X.
+dite : (X : Set) -> (c : Prop) -> (t : (Proof c -> Elem X)) -> (e : (Proof (not c) -> Elem X)) -> Elem X.
 
 (; //LEAN:dite_eq_left ;)
-dite_eq_left : (c : Prop) -> (h : Proof (Decidable c)) -> (hc : Proof c) -> (X : Set) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Proof (Eqt X (dite X c t e) (t hc)).
+dite_eq_left : (c : Prop) -> (h : Proof (Decidable c)) -> (hc : Proof c) -> (X : Set) -> (t : (Proof c -> Elem X)) -> (e : (Proof (not c) -> Elem X)) -> Proof (Eqt X (dite X c t e) (t hc)).
 
 (; //LEAN:dite_eq_right ;)
-dite_eq_right : (c : Prop) -> (h : Proof (Decidable c)) -> (hnc : Proof (not c)) -> (X : Set) -> (t : (Proof c -> X)) -> (e : (Proof (not c) -> X)) -> Proof (Eqt X (dite X c t e) (e hnc)).
+dite_eq_right : (c : Prop) -> (h : Proof (Decidable c)) -> (hnc : Proof (not c)) -> (X : Set) -> (t : (Proof c -> Elem X)) -> (e : (Proof (not c) -> Elem X)) -> Proof (Eqt X (dite X c t e) (e hnc)).
 
 (; //LEAN:eq_sub_iff_add_eq ;)
 eq_sub_iff_add_eq : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> Proof (iff (Eqt G a (minus b c)) (Eqt G (plus a c) b)).
@@ -308,7 +308,7 @@ pow_multiplicity_dvd : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) -> (b
 (; //LEAN:pow_zero ;)
 pow_zero : (M : Set) -> (_ : Proof (Monoid M)) -> (a : Elem M) -> Proof (Eqt M (pow a 0) 1).
 
-(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
+(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc2/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
 (; //LEAN:propext ;)
 propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a b).
 

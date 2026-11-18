@@ -15,14 +15,14 @@ Nat__factorization_eq_zero_iff_remainder : (p : Elem Nat) -> (r : Elem Nat) -> (
 Nat__factorization_eq_zero_iff' : (n : Elem Nat) -> Proof (iff (Eqt (Finsupp Nat Nat) (Nat__factorization n) 0) (or (Eq n 0) (Eq n 1))).
 
 (; //LEAN:Nat.factorization_prod_apply ;)
-Nat__factorization_prod_apply : (X : Set) -> (p : Elem Nat) -> (S : Elem (Finset X)) -> (g : (Elem X -> Nat)) -> (hS : Proof (forall X (x2 => if (Membership__mem X (Finset X) S x2) (Neq (g x2) 0)))) -> Proof (Eq (Nat__factorization__app (Finset__prod X Nat S (x => g x)) p) (Finset__sum X Nat S (x1 => Nat__factorization__app (g x1) p))).
+Nat__factorization_prod_apply : (X : Set) -> (p : Elem Nat) -> (S : Elem (Finset X)) -> (g : (Elem X -> Elem Nat)) -> (hS : Proof (forall X (x2 => if (Membership__mem X (Finset X) S x2) (Neq (g x2) 0)))) -> Proof (Eq (Nat__factorization__app (Finset__prod X Nat S (x => g x)) p) (Finset__sum X Nat S (x1 => Nat__factorization__app (g x1) p))).
 
 (; //LEAN:Nat.prod_factorization_eq_prod_primeFactors ;)
-def Nat__prod_factorization_eq_prod_primeFactors : (n : Elem Nat) -> (Y : Set) -> (_ : Proof (CommMonoid Y)) -> (f : (Elem Nat -> Elem Nat -> Y)) -> Proof (Eqt Y (Finsupp__prod Nat Nat Y (Nat__factorization n) (x1 => x2 => f x1 x2)) (Finset__prod Nat Y (Nat__primeFactors n) (p => f p (Nat__factorization__app n p)))) :=
+def Nat__prod_factorization_eq_prod_primeFactors : (n : Elem Nat) -> (Y : Set) -> (_ : Proof (CommMonoid Y)) -> (f : (Elem Nat -> (Elem Nat -> Elem Y))) -> Proof (Eqt Y (Finsupp__prod Nat Nat Y (Nat__factorization n) (x1 => x2 => f x1 x2)) (Finset__prod Nat Y (Nat__primeFactors n) (p => f p (Nat__factorization__app n p)))) :=
   n => Y => x => f => rfl Y (Finsupp__prod Nat Nat Y (Nat__factorization n) (x1 => x2 => f x1 x2)).
 
 (; //LEAN:Nat.prod_primeFactors_prod_factorization ;)
-def Nat__prod_primeFactors_prod_factorization : (n : Elem Nat) -> (Y : Set) -> (_ : Proof (CommMonoid Y)) -> (f : (Elem Nat -> Y)) -> Proof (Eqt Y (Finset__prod Nat Y (Nat__primeFactors n) (p => f p)) (Finsupp__prod Nat Nat Y (Nat__factorization n) (p1 => x1 => f p1))) :=
+def Nat__prod_primeFactors_prod_factorization : (n : Elem Nat) -> (Y : Set) -> (_ : Proof (CommMonoid Y)) -> (f : (Elem Nat -> Elem Y)) -> Proof (Eqt Y (Finset__prod Nat Y (Nat__primeFactors n) (p => f p)) (Finsupp__prod Nat Nat Y (Nat__factorization n) (p1 => x1 => f p1))) :=
   n => Y => x => f => rfl Y (Finset__prod Nat Y (Nat__primeFactors n) (p => f p)).
 
 (; //LEAN:Nat.Prime.factorization_self ;)
@@ -179,10 +179,10 @@ Nat__factorization_gcd : (a : Elem Nat) -> (b : Elem Nat) -> (ha_pos : Proof (Ne
 Nat__factorization_lcm : (a : Elem Nat) -> (b : Elem Nat) -> (ha : Proof (Neq a 0)) -> (hb : Proof (Neq b 0)) -> Proof (Eqt (Finsupp Nat Nat) (Nat__factorization (Nat__lcm a b)) (Max__max (Finsupp Nat Nat) (Nat__factorization a) (Nat__factorization b))).
 
 (; //LEAN:Nat.sum_primeFactors_gcd_add_sum_primeFactors_mul ;)
-Nat__sum_primeFactors_gcd_add_sum_primeFactors_mul : (Y : Set) -> (_ : Proof (AddCommMonoid Y)) -> (m : Elem Nat) -> (n : Elem Nat) -> (f : (Elem Nat -> Y)) -> Proof (Eqt Y (plus (Finset__sum Nat Y (Nat__primeFactors (gcd m n)) (x1 => f x1)) (Finset__sum Nat Y (Nat__primeFactors (times m n)) (x2 => f x2))) (plus (Finset__sum Nat Y (Nat__primeFactors m) (x3 => f x3)) (Finset__sum Nat Y (Nat__primeFactors n) (x4 => f x4)))).
+Nat__sum_primeFactors_gcd_add_sum_primeFactors_mul : (Y : Set) -> (_ : Proof (AddCommMonoid Y)) -> (m : Elem Nat) -> (n : Elem Nat) -> (f : (Elem Nat -> Elem Y)) -> Proof (Eqt Y (plus (Finset__sum Nat Y (Nat__primeFactors (gcd m n)) (x1 => f x1)) (Finset__sum Nat Y (Nat__primeFactors (times m n)) (x2 => f x2))) (plus (Finset__sum Nat Y (Nat__primeFactors m) (x3 => f x3)) (Finset__sum Nat Y (Nat__primeFactors n) (x4 => f x4)))).
 
 (; //LEAN:Nat.prod_primeFactors_gcd_mul_prod_primeFactors_mul ;)
-Nat__prod_primeFactors_gcd_mul_prod_primeFactors_mul : (Y : Set) -> (_ : Proof (CommMonoid Y)) -> (m : Elem Nat) -> (n : Elem Nat) -> (f : (Elem Nat -> Y)) -> Proof (Eqt Y (times (Finset__prod Nat Y (Nat__primeFactors (gcd m n)) (x1 => f x1)) (Finset__prod Nat Y (Nat__primeFactors (times m n)) (x2 => f x2))) (times (Finset__prod Nat Y (Nat__primeFactors m) (x3 => f x3)) (Finset__prod Nat Y (Nat__primeFactors n) (x4 => f x4)))).
+Nat__prod_primeFactors_gcd_mul_prod_primeFactors_mul : (Y : Set) -> (_ : Proof (CommMonoid Y)) -> (m : Elem Nat) -> (n : Elem Nat) -> (f : (Elem Nat -> Elem Y)) -> Proof (Eqt Y (times (Finset__prod Nat Y (Nat__primeFactors (gcd m n)) (x1 => f x1)) (Finset__prod Nat Y (Nat__primeFactors (times m n)) (x2 => f x2))) (times (Finset__prod Nat Y (Nat__primeFactors m) (x3 => f x3)) (Finset__prod Nat Y (Nat__primeFactors n) (x4 => f x4)))).
 
 (; //LEAN:Nat.setOfPred_pow_dvd_eq_Icc_factorization ;)
 Nat__setOfPred_pow_dvd_eq_Icc_factorization : (n : Elem Nat) -> (p : Elem Nat) -> (pp : Proof (prime p)) -> (hn : Proof (Neq n 0)) -> Proof (Eqt (powerset Nat) (Set__ofPred Nat (i => and (Neq i 0) (divide (pow p i) n))) (Set__Icc Nat 1 (Nat__factorization__app n p))).
@@ -208,11 +208,11 @@ Nat__factorization_eq_of_coprime_left : (p : Elem Nat) -> (a : Elem Nat) -> (b :
 (; //LEAN:Nat.factorization_eq_of_coprime_right ;)
 Nat__factorization_eq_of_coprime_right : (p : Elem Nat) -> (a : Elem Nat) -> (b : Elem Nat) -> (hab : Proof (Nat__Coprime a b)) -> (hpb : Proof (Membership__mem Nat (List Nat) (Nat__primeFactorsList b) p)) -> Proof (Eq (Nat__factorization__app (times a b) p) (Nat__factorization__app b p)).
 
-(; //LEAN:Nat.eq_iff_prime_padicValNat_eq ;)
-Nat__eq_iff_prime_padicValNat_eq : (a : Elem Nat) -> (b : Elem Nat) -> (ha : Proof (Neq a 0)) -> (hb : Proof (Neq b 0)) -> Proof (iff (Eq a b) (forall Nat (p => if (prime p) (Eq (padicValNat p a) (padicValNat p b))))).
+(; //LEAN:Nat.eq_iff_prime_multiplicity_eq ;)
+Nat__eq_iff_prime_multiplicity_eq : (a : Elem Nat) -> (b : Elem Nat) -> (ha : Proof (Neq a 0)) -> (hb : Proof (Neq b 0)) -> Proof (iff (Eq a b) (forall Nat (p => if (prime p) (Eq (multiplicity Nat p a) (multiplicity Nat p b))))).
 
-(; //LEAN:Nat.prod_pow_prime_padicValNat ;)
-Nat__prod_pow_prime_padicValNat : (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> (m : Elem Nat) -> (pr : Proof (Lt n m)) -> Proof (Eq (Finset__prod Nat Nat (Finset__filter Nat (p => prime p) (Finset__range m)) (p1 => pow p1 (padicValNat p1 n))) n).
+(; //LEAN:Nat.prod_pow_prime_multiplicity ;)
+Nat__prod_pow_prime_multiplicity : (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> (m : Elem Nat) -> (pr : Proof (Lt n m)) -> Proof (Eq (Finset__prod Nat Nat (Finset__filter Nat (p => prime p) (Finset__range m)) (p1 => pow p1 (multiplicity Nat p1 n))) n).
 
 (; //LEAN:Nat.prod_primeFactors_pow_factorization ;)
 def Nat__prod_primeFactors_pow_factorization : (n : Elem Nat) -> (hn : Proof (Neq n 0)) -> Proof (Eq n (Finset__prod Nat Nat (Nat__primeFactors n) (p => pow p (Nat__factorization__app n p)))) :=

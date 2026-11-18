@@ -1,17 +1,17 @@
 (; constants used by Mathlib.RingTheory.UniqueFactorizationDomain.Basic, declared with their translated types ;)
 
-(; doc: Two elements of a `Monoid` are `Associated` if one of them is another one multiplied by a unit on the right. ;)
+(; doc: Two elements of a `Monoid` are `Associated` if one of them is another one multiplied by a unit on the right.  ;)
 (; //LEAN:Associated ;)
 Associated : (M : Set) -> (x1 : Elem M) -> (y : Elem M) -> Prop.
 
-(; doc: The quotient of a monoid by the `Associated` relation. Two elements `x` and `y` are associated iff there is a unit `u` such that `x * u = y`. There is a natural monoid structure on `Associates M`. ;)
+(; doc: The quotient of a monoid by the `Associated` relation. Two elements `x` and `y` are associated iff there is a unit `u` such that `x * u = y`. There is a natural monoid structure on `Associates M`.  ;)
 (; //LEAN:Associates ;)
 Associates : (M : Set) -> Set.
 
 (; //LEAN:Associates.dvdNotUnit_of_lt ;)
 Associates__dvdNotUnit_of_lt : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (a : Elem (Associates M)) -> (b : Elem (Associates M)) -> (hlt : Proof (Lt a b)) -> Proof (DvdNotUnit (Associates M) a b).
 
-(; doc: The canonical quotient map from a monoid `M` into the `Associates` of `M` ;)
+(; doc: The canonical quotient map from a monoid `M` into the `Associates` of `M`  ;)
 (; //LEAN:Associates.mk ;)
 Associates__mk : (M : Set) -> (a : Elem M) -> Elem (Associates M).
 
@@ -35,10 +35,10 @@ DvdNotUnit : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Prop.
 
 (; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.prod ;)
-Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem M)) -> Elem M.
 
 (; //LEAN:Function.Surjective.wellFounded_iff ;)
-Function__Surjective__wellFounded_iff : (X : Set) -> (Y : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (s : (Elem Y -> Elem Y -> Prop)) -> (f : (Elem X -> Y)) -> (hf : Proof (Function__Surjective X Y f)) -> (o : Proof (forall X (a => forall X (b => iff (r a b) (s (f a) (f b)))))) -> Proof (iff (WellFounded X r) (WellFounded Y s)).
+Function__Surjective__wellFounded_iff : (X : Set) -> (Y : Set) -> (r : (Elem X -> (Elem X -> Prop))) -> (s : (Elem Y -> (Elem Y -> Prop))) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Surjective X Y f)) -> (o : Proof (forall X (a => forall X (b => iff (r a b) (s (f a) (f b)))))) -> Proof (iff (WellFounded X r) (WellFounded Y s)).
 
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
@@ -87,7 +87,7 @@ Multiset : (X : Set) -> Set.
 
 (; doc: `Rel r s t` -- lift the relation `r` between two elements to a relation between `s` and `t`, s.t. there is a one-to-one mapping between elements in `s` and `t` following `r`. ;)
 (; //LEAN:Multiset.Rel ;)
-Multiset__Rel : (X : Set) -> (Y : Set) -> (r : (Elem X -> Elem Y -> Prop)) -> (x : Elem (Multiset X)) -> (x1 : Elem (Multiset Y)) -> Prop.
+Multiset__Rel : (X : Set) -> (Y : Set) -> (r : (Elem X -> (Elem Y -> Prop))) -> (x : Elem (Multiset X)) -> (x1 : Elem (Multiset Y)) -> Prop.
 
 (; doc: The cardinality of a multiset is the sum of the multiplicities of all its elements, or simply the length of the underlying list. ;)
 (; //LEAN:Multiset.card ;)
@@ -117,7 +117,7 @@ Prime__not_isUnit : (M : Set) -> (_ : Proof (CommMonoidWithZero M)) -> (p : Elem
 Singleton__singleton : (X : Set) -> (Y : Set) -> (x : Elem X) -> Elem Y.
 
 (; //LEAN:Subrelation.wf ;)
-Subrelation__wf : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> (q : (Elem X -> Elem X -> Prop)) -> (h1 : Proof (Subrelation X q r)) -> (h2 : Proof (WellFounded X r)) -> Proof (WellFounded X q).
+Subrelation__wf : (X : Set) -> (r : (Elem X -> (Elem X -> Prop))) -> (q : (Elem X -> (Elem X -> Prop))) -> (h1 : Proof (Subrelation X q r)) -> (h2 : Proof (WellFounded X r)) -> Proof (WellFounded X q).
 
 (; doc: Unique factorization monoids are defined as cancellative `CommMonoidWithZero`s with well-founded strict divisibility relations, but this is equivalent to more familiar definitions:  Each element (except zero) is uniquely represented as a multiset of irreducible factors. Uniqueness is only up to associated elements.  Each element (except zero) is non-uniquely represented as a multiset of prime factors.  To define a UFD using the definition in terms of multisets of irreducible factors, use the definition `of_existsUnique_irreducible_factors`  To define a UFD using the definition in terms of multisets of prime factors, use the definition `of_exists_prime_factors` ;)
 (; //LEAN:UniqueFactorizationMonoid ;)
@@ -138,7 +138,7 @@ UniqueFactorizationMonoid__mk : (X : Set) -> (_ : Proof (CommMonoidWithZero X)) 
 
 (; doc: A relation `r` is `WellFounded` if all elements of `α` are accessible within `r`. If a relation is `WellFounded`, it does not allow for an infinite descent along the relation.  If the arguments of the recursive calls in a function definition decrease according to a well founded relation, then the function terminates. Well-founded relations are sometimes called _Artinian_ or said to satisfy the “descending chain condition”. ;)
 (; //LEAN:WellFounded ;)
-WellFounded : (X : Set) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
+WellFounded : (X : Set) -> (r : (Elem X -> (Elem X -> Prop))) -> Prop.
 
 (; doc: A class for a well-founded relation `<`. ;)
 (; //LEAN:WellFoundedLT ;)

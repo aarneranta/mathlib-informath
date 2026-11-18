@@ -97,7 +97,7 @@ Finset__attach : (X : Set) -> (s : Elem (Finset X)) -> Elem (Finset (Subtype X (
 
 (; doc: `Finset.biUnion s t` is the union of `t a` over `a ∈ s`.  (This was formerly `bind` due to the monad structure on types with `DecidableEq`.) ;)
 (; //LEAN:Finset.biUnion ;)
-Finset__biUnion : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : (Elem X -> Finset Y)) -> Elem (Finset Y).
+Finset__biUnion : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : (Elem X -> Elem (Finset Y))) -> Elem (Finset Y).
 
 (; doc: `s.card` is the number of elements of `s`, aka its cardinality.  The notation `#s` can be accessed in the `Finset` locale. ;)
 (; //LEAN:Finset.card ;)
@@ -133,7 +133,7 @@ Finset__disjUnion_eq_union : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Fi
 
 (; doc: `disjiUnion s f h` is the set such that `a ∈ disjiUnion s f` iff `a ∈ f i` for some `i ∈ s`. It is the same as `s.biUnion f`, but it does not require decidable equality on the type. The hypothesis ensures that the sets are disjoint. ;)
 (; //LEAN:Finset.disjiUnion ;)
-Finset__disjiUnion : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : (Elem X -> Finset Y)) -> (hf : Proof (Set__PairwiseDisjoint (Finset Y) X (SetLike__coe (Finset X) X s) t)) -> Elem (Finset Y).
+Finset__disjiUnion : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (t : (Elem X -> Elem (Finset Y))) -> (hf : Proof (Set__PairwiseDisjoint (Finset Y) X (SetLike__coe (Finset X) X s) t)) -> Elem (Finset Y).
 
 (; doc: `erase s a` is the set `s - {a}`, that is, the elements of `s` which are not equal to `a`. ;)
 (; //LEAN:Finset.erase ;)
@@ -148,29 +148,29 @@ Finset__filter_subset : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset
 
 (; doc: `fold op b f s` folds the commutative associative operation `op` over the `f`-image of `s`, i.e. `fold (+) b f {1,2,3} = f 1 + f 2 + f 3 + b`. ;)
 (; //LEAN:Finset.fold ;)
-Finset__fold : (X : Set) -> (Y : Set) -> (op : (Elem Y -> Elem Y -> Y)) -> (b : Elem Y) -> (f : (Elem X -> Y)) -> (s : Elem (Finset X)) -> Elem Y.
+Finset__fold : (X : Set) -> (Y : Set) -> (op : (Elem Y -> (Elem Y -> Elem Y))) -> (b : Elem Y) -> (f : (Elem X -> Elem Y)) -> (s : Elem (Finset X)) -> Elem Y.
 
 (; //LEAN:Finset.fold_cons ;)
-Finset__fold_cons : (X : Set) -> (Y : Set) -> (op : (Elem Y -> Elem Y -> Y)) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (f : (Elem X -> Y)) -> (b : Elem Y) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (not (Membership__mem X (Finset X) s a))) -> Proof (Eqt Y (Finset__fold X Y op b f (Finset__cons X a s h)) (op (f a) (Finset__fold X Y op b f s))).
+Finset__fold_cons : (X : Set) -> (Y : Set) -> (op : (Elem Y -> (Elem Y -> Elem Y))) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (f : (Elem X -> Elem Y)) -> (b : Elem Y) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (not (Membership__mem X (Finset X) s a))) -> Proof (Eqt Y (Finset__fold X Y op b f (Finset__cons X a s h)) (op (f a) (Finset__fold X Y op b f s))).
 
 (; //LEAN:Finset.fold_image ;)
-Finset__fold_image : (X : Set) -> (Y : Set) -> (Z : Set) -> (op : (Elem Y -> Elem Y -> Y)) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (f : (Elem X -> Y)) -> (b : Elem Y) -> (g : (Elem Z -> X)) -> (s : Elem (Finset Z)) -> (H : Proof (Set__InjOn Z X g (SetLike__coe (Finset Z) Z s))) -> Proof (Eqt Y (Finset__fold X Y op b f (Finset__image Z X g s)) (Finset__fold Z Y op b (Function__comp Z X Y f g) s)).
+Finset__fold_image : (X : Set) -> (Y : Set) -> (Z : Set) -> (op : (Elem Y -> (Elem Y -> Elem Y))) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (f : (Elem X -> Elem Y)) -> (b : Elem Y) -> (g : (Elem Z -> Elem X)) -> (s : Elem (Finset Z)) -> (H : Proof (Set__InjOn Z X g (SetLike__coe (Finset Z) Z s))) -> Proof (Eqt Y (Finset__fold X Y op b f (Finset__image Z X g s)) (Finset__fold Z Y op b (Function__comp Z X Y f g) s)).
 
 (; //LEAN:Finset.fold_insert ;)
-Finset__fold_insert : (X : Set) -> (Y : Set) -> (op : (Elem Y -> Elem Y -> Y)) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (f : (Elem X -> Y)) -> (b : Elem Y) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (not (Membership__mem X (Finset X) s a))) -> Proof (Eqt Y (Finset__fold X Y op b f (Insert__insert X (Finset X) a s)) (op (f a) (Finset__fold X Y op b f s))).
+Finset__fold_insert : (X : Set) -> (Y : Set) -> (op : (Elem Y -> (Elem Y -> Elem Y))) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (f : (Elem X -> Elem Y)) -> (b : Elem Y) -> (s : Elem (Finset X)) -> (a : Elem X) -> (h : Proof (not (Membership__mem X (Finset X) s a))) -> Proof (Eqt Y (Finset__fold X Y op b f (Insert__insert X (Finset X) a s)) (op (f a) (Finset__fold X Y op b f s))).
 
 (; //LEAN:Finset.fold_op_distrib ;)
-Finset__fold_op_distrib : (X : Set) -> (Y : Set) -> (op : (Elem Y -> Elem Y -> Y)) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (b1 : Elem Y) -> (b2 : Elem Y) -> Proof (Eqt Y (Finset__fold X Y op (op b1 b2) (x => op (f x) (g x)) s) (op (Finset__fold X Y op b1 f s) (Finset__fold X Y op b2 g s))).
+Finset__fold_op_distrib : (X : Set) -> (Y : Set) -> (op : (Elem Y -> (Elem Y -> Elem Y))) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (s : Elem (Finset X)) -> (f : (Elem X -> Elem Y)) -> (g : (Elem X -> Elem Y)) -> (b1 : Elem Y) -> (b2 : Elem Y) -> Proof (Eqt Y (Finset__fold X Y op (op b1 b2) (x => op (f x) (g x)) s) (op (Finset__fold X Y op b1 f s) (Finset__fold X Y op b2 g s))).
 
 (; //LEAN:Finset.fold_singleton ;)
-Finset__fold_singleton : (X : Set) -> (Y : Set) -> (op : (Elem Y -> Elem Y -> Y)) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (f : (Elem X -> Y)) -> (b : Elem Y) -> (a : Elem X) -> Proof (Eqt Y (Finset__fold X Y op b f (Singleton__singleton X (Finset X) a)) (op (f a) b)).
+Finset__fold_singleton : (X : Set) -> (Y : Set) -> (op : (Elem Y -> (Elem Y -> Elem Y))) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (f : (Elem X -> Elem Y)) -> (b : Elem Y) -> (a : Elem X) -> Proof (Eqt Y (Finset__fold X Y op b f (Singleton__singleton X (Finset X) a)) (op (f a) b)).
 
 (; //LEAN:Finset.fold_union_inter ;)
-Finset__fold_union_inter : (X : Set) -> (Y : Set) -> (op : (Elem Y -> Elem Y -> Y)) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (f : (Elem X -> Y)) -> (s1 : Elem (Finset X)) -> (s2 : Elem (Finset X)) -> (b1 : Elem Y) -> (b2 : Elem Y) -> Proof (Eqt Y (op (Finset__fold X Y op b1 f (Union__union (Finset X) s1 s2)) (Finset__fold X Y op b2 f (Inter__inter (Finset X) s1 s2))) (op (Finset__fold X Y op b2 f s1) (Finset__fold X Y op b1 f s2))).
+Finset__fold_union_inter : (X : Set) -> (Y : Set) -> (op : (Elem Y -> (Elem Y -> Elem Y))) -> (_ : Proof (Std__Commutative Y op)) -> (_ : Proof (Std__Associative Y op)) -> (f : (Elem X -> Elem Y)) -> (s1 : Elem (Finset X)) -> (s2 : Elem (Finset X)) -> (b1 : Elem Y) -> (b2 : Elem Y) -> Proof (Eqt Y (op (Finset__fold X Y op b1 f (Union__union (Finset X) s1 s2)) (Finset__fold X Y op b2 f (Inter__inter (Finset X) s1 s2))) (op (Finset__fold X Y op b2 f s1) (Finset__fold X Y op b1 f s2))).
 
 (; doc: `image f s` is the forward image of `s` under `f`. ;)
 (; //LEAN:Finset.image ;)
-Finset__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (Finset X)) -> Elem (Finset Y).
+Finset__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (Finset X)) -> Elem (Finset Y).
 
 (; doc: When `f` is an embedding of `α` in `β` and `s` is a finset in `α`, then `s.map f` is the image finset in `β`. The embedding condition guarantees that there are no duplicates in the image. ;)
 (; //LEAN:Finset.map ;)
@@ -180,7 +180,7 @@ Finset__map : (X : Set) -> (Y : Set) -> (f : Elem (Function__Embedding X Y)) -> 
 Finset__mem_filter : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> (a : Elem X) -> Proof (iff (Membership__mem X (Finset X) (Finset__filter X (x1 => p x1) s) a) (and (Membership__mem X (Finset X) s a) (p a))).
 
 (; //LEAN:Finset.mem_image_of_mem ;)
-Finset__mem_image_of_mem : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Y)) -> (a : Elem X) -> (h : Proof (Membership__mem X (Finset X) s a)) -> Proof (Membership__mem Y (Finset Y) (Finset__image X Y f s) (f a)).
+Finset__mem_image_of_mem : (X : Set) -> (Y : Set) -> (s : Elem (Finset X)) -> (f : (Elem X -> Elem Y)) -> (a : Elem X) -> (h : Proof (Membership__mem X (Finset X) s a)) -> Proof (Membership__mem Y (Finset Y) (Finset__image X Y f s) (f a)).
 
 (; //LEAN:Finset.mem_sdiff ;)
 Finset__mem_sdiff : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (a : Elem X) -> Proof (iff (Membership__mem X (Finset X) (SDiff__sdiff (Finset X) s t) a) (and (Membership__mem X (Finset X) s a) (not (Membership__mem X (Finset X) t a)))).
@@ -199,7 +199,7 @@ Finset__mem_univ___simp_1 : (X : Set) -> (_ : Proof (Fintype X)) -> (x1 : Elem X
 
 (; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.prod ;)
-Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem M)) -> Elem M.
 
 (; //LEAN:Finset.prod_const_one ;)
 Finset__prod_const_one : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (_ : Proof (CommMonoid M)) -> Proof (Eqt M (Finset__prod I M s (_x => 1)) 1).
@@ -220,13 +220,10 @@ Finset__subtype : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
-Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem M)) -> Elem M.
 
 (; //LEAN:Finset.sum_const_zero ;)
 Finset__sum_const_zero : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (_ : Proof (AddCommMonoid M)) -> Proof (Eqt M (Finset__sum I M s (_x => 0)) 0).
-
-(; //LEAN:Finset.sup_eq_union ;)
-Finset__sup_eq_union : (X : Set) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> Proof (Eqt (Finset X) (Union__union (Finset X) s t) (Union__union (Finset X) s t)).
 
 (; doc: Given a finset of elements `α ⊕ β`, extract all the elements of the form `α`. This forms a quasi-inverse to `disjSum`, in that it recovers its left input.  See also `List.partitionMap`. ;)
 (; //LEAN:Finset.toLeft ;)
@@ -254,19 +251,19 @@ Function__Embedding__subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Elem (Func
 
 (; doc: g factors through f : `f a = f b → g a = g b` ;)
 (; //LEAN:Function.FactorsThrough ;)
-Function__FactorsThrough : (X : Set) -> (Y : Set) -> (Z : Set) -> (g : (Elem X -> Z)) -> (f : (Elem X -> Y)) -> Prop.
+Function__FactorsThrough : (X : Set) -> (Y : Set) -> (Z : Set) -> (g : (Elem X -> Elem Z)) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; doc: **Alias** of `Set.injOn_of_injective`. ;)
 (; //LEAN:Function.Injective.injOn ;)
-Function__Injective__injOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (h : Proof (Function__Injective X Y f)) -> (s : Elem (powerset X)) -> Proof (Set__InjOn X Y f s).
+Function__Injective__injOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Function__Injective X Y f)) -> (s : Elem (powerset X)) -> Proof (Set__InjOn X Y f s).
 
 (; doc: Function composition, usually written with the infix operator `∘`. A new function is created from two existing functions, where one function's output is used as input to the other.  Examples:  * `Function.comp List.reverse (List.drop 2) [3, 2, 4, 1] = [1, 4]`  * `(List.reverse ∘ List.drop 2) [3, 2, 4, 1] = [1, 4]`  Conventions for notations in identifiers:   * The recommended spelling of `∘` in identifiers is `comp`. ;)
 (; //LEAN:Function.comp ;)
-Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
+Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> Elem W)) -> (g : (Elem X -> Elem Y)) -> (x : Elem X) -> Elem W.
 
 (; doc: The constant function that ignores its argument.  If `a : α`, then `Function.const β a : β → α` is the “constant function with value `a`”. For all arguments `b : β`, `Function.const β a b = a`. It is often written directly as `fun _ => a`.  Examples:  * `Function.const Bool 10 true = 10`  * `Function.const Bool 10 false = 10`  * `Function.const String 10 "any string" = 10` ;)
 (; //LEAN:Function.const ;)
@@ -274,7 +271,7 @@ Function__const : (X : Set) -> (Y : Set) -> (a : Elem X) -> (x : Elem Y) -> Elem
 
 (; doc: Extension of a function `g : α → γ` along a function `f : α → β`.  For every `a : α`, `f a` is sent to `g a`. `f` might not be surjective, so we use an auxiliary function `j : β → γ` by sending `b : β` not in the range of `f` to `j b`. If you do not care about the behavior outside the range, `j` can be used as a junk value by setting it to be `0` or `Classical.arbitrary` (assuming `γ` is nonempty).  This definition is mathematically meaningful only when `f a₁ = f a₂ → g a₁ = g a₂` (spelled `g.FactorsThrough f`). In particular this holds if `f` is injective.  A typical use case is extending a function from a subtype to the entire type. If you wish to extend `g : {b : β // p b} → γ` to a function `β → γ`, you should use `Function.extend Subtype.val g j`. ;)
 (; //LEAN:Function.extend ;)
-Function__extend : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Z)) -> (j : (Elem Y -> Z)) -> (x : Elem Y) -> Elem Z.
+Function__extend : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem X -> Elem Z)) -> (j : (Elem Y -> Elem Z)) -> (x : Elem Y) -> Elem Z.
 
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
@@ -335,7 +332,7 @@ List : (X : Set) -> Set.
 List__Nodup : (X : Set) -> (x : Elem (List X)) -> Prop.
 
 (; //LEAN:List.brecOn ;)
-List__brecOn : (X : Set) -> (motive : (Elem (List X) -> Set)) -> (t : Elem (List X)) -> (F_1 : ((t1 : Elem (List X)) -> Elem (List__below X motive t1) -> motive t1)) -> Elem (motive t).
+List__brecOn : (X : Set) -> (motive : (Elem (List X) -> Set)) -> (t : Elem (List X)) -> (F_1 : ((t1 : Elem (List X)) -> (Elem (List__below X motive t1) -> Elem (motive t1)))) -> Elem (motive t).
 
 (; doc: Counts the number of times an element occurs in a list.  Examples: * `[1, 1, 2, 3, 5].count 1 = 2` * `[1, 1, 2, 3, 5].count 5 = 1` * `[1, 1, 2, 3, 5].count 4 = 0` ;)
 (; //LEAN:List.count ;)
@@ -347,21 +344,21 @@ List__length : (X : Set) -> (x : Elem (List X)) -> Elem Nat.
 
 (; doc: Applies a function to each element of the list, returning the resulting list of values.  `O(|l|)`.  Examples: * `[a, b, c].map f = [f a, f b, f c]` * `[].map Nat.succ = []` * `["one", "two", "three"].map (·.length) = [3, 3, 5]` * `["one", "two", "three"].map (·.reverse) = ["eno", "owt", "eerht"]` ;)
 (; //LEAN:List.map ;)
-List__map : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (l : Elem (List X)) -> Elem (List Y).
+List__map : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (l : Elem (List X)) -> Elem (List Y).
 
 (; doc: Computes the product of the elements of a list.  Examples: * `[a, b, c].prod = a * (b * (c * 1))` * `[1, 2, 5].prod = 10` ;)
 (; //LEAN:List.prod ;)
 List__prod : (X : Set) -> (x2 : Elem (List X)) -> Elem X.
 
 (; //LEAN:List.prod_toFinset._f ;)
-List__prod_toFinset___f : (I : Set) -> (M : Set) -> (_ : Proof (CommMonoid M)) -> (f : (Elem I -> M)) -> (x2 : Elem (List I)) -> (f1 : Elem (List__below I (x4 => if (List__Nodup I x4) (Eqt M (Finset__prod I M (List__toFinset I x4) (x5 => f x5)) (List__prod M (List__map I M f x4)))) x2)) -> (h : Proof (List__Nodup I x2)) -> Proof (Eqt M (Finset__prod I M (List__toFinset I x2) (x3 => f x3)) (List__prod M (List__map I M f x2))).
+List__prod_toFinset___f : (I : Set) -> (M : Set) -> (_ : Proof (CommMonoid M)) -> (f : (Elem I -> Elem M)) -> (x2 : Elem (List I)) -> (f1 : Elem (List__below I (x4 => if (List__Nodup I x4) (Eqt M (Finset__prod I M (List__toFinset I x4) (x5 => f x5)) (List__prod M (List__map I M f x4)))) x2)) -> (h : Proof (List__Nodup I x2)) -> Proof (Eqt M (Finset__prod I M (List__toFinset I x2) (x3 => f x3)) (List__prod M (List__map I M f x2))).
 
 (; doc: Computes the sum of the elements of a list.  Examples: * `[a, b, c].sum = a + (b + (c + 0))` * `[1, 2, 5].sum = 8` ;)
 (; //LEAN:List.sum ;)
 List__sum : (X : Set) -> (x2 : Elem (List X)) -> Elem X.
 
 (; //LEAN:List.sum_toFinset._f ;)
-List__sum_toFinset___f : (I : Set) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem I -> M)) -> (x2 : Elem (List I)) -> (f1 : Elem (List__below I (x4 => if (List__Nodup I x4) (Eqt M (Finset__sum I M (List__toFinset I x4) (x5 => f x5)) (List__sum M (List__map I M f x4)))) x2)) -> (h : Proof (List__Nodup I x2)) -> Proof (Eqt M (Finset__sum I M (List__toFinset I x2) (x3 => f x3)) (List__sum M (List__map I M f x2))).
+List__sum_toFinset___f : (I : Set) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (f : (Elem I -> Elem M)) -> (x2 : Elem (List I)) -> (f1 : Elem (List__below I (x4 => if (List__Nodup I x4) (Eqt M (Finset__sum I M (List__toFinset I x4) (x5 => f x5)) (List__sum M (List__map I M f x4)))) x2)) -> (h : Proof (List__Nodup I x2)) -> Proof (Eqt M (Finset__sum I M (List__toFinset I x2) (x3 => f x3)) (List__sum M (List__map I M f x2))).
 
 (; doc: `toFinset l` removes duplicates from the list `l` to produce a finset. ;)
 (; //LEAN:List.toFinset ;)
@@ -373,7 +370,7 @@ Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Pro
 
 (; doc: A function `f` is monotone if `a ≤ b` implies `f a ≤ f b`. ;)
 (; //LEAN:Monotone ;)
-Monotone : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+Monotone : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; doc: `Multiset α` is the quotient of `List α` by list permutation. The result is a type of finite sets with duplicates allowed. ;)
 (; //LEAN:Multiset ;)
@@ -384,7 +381,7 @@ Multiset : (X : Set) -> Set.
 Multiset__card : (X : Set) -> (x : Elem (Multiset X)) -> Elem Nat.
 
 (; //LEAN:Multiset.card_bind ;)
-Multiset__card_bind : (X : Set) -> (Y : Set) -> (s : Elem (Multiset X)) -> (f : (Elem X -> Multiset Y)) -> Proof (Eq (Multiset__card Y (Multiset__bind X Y s f)) (Multiset__sum Nat (Multiset__map X Nat (Function__comp X (Multiset Y) Nat (Multiset__card Y) f) s))).
+Multiset__card_bind : (X : Set) -> (Y : Set) -> (s : Elem (Multiset X)) -> (f : (Elem X -> Elem (Multiset Y))) -> Proof (Eq (Multiset__card Y (Multiset__bind X Y s f)) (Multiset__sum Nat (Multiset__map X Nat (Function__comp X (Multiset Y) Nat (Multiset__card Y) f) s))).
 
 (; doc: `count a s` is the multiplicity of `a` in `s`. ;)
 (; //LEAN:Multiset.count ;)
@@ -392,7 +389,7 @@ Multiset__count : (X : Set) -> (a : Elem X) -> (x1 : Elem (Multiset X)) -> Elem 
 
 (; doc: `map f s` is the lift of the list `map` operation. The multiplicity of `b` in `map f s` is the number of `a ∈ s` (counting multiplicity) such that `f a = b`. ;)
 (; //LEAN:Multiset.map ;)
-Multiset__map : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (Multiset X)) -> Elem (Multiset Y).
+Multiset__map : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (Multiset X)) -> Elem (Multiset Y).
 
 (; //LEAN:Multiset.map_const ;)
 Multiset__map_const : (X : Set) -> (Y : Set) -> (s : Elem (Multiset X)) -> (b : Elem Y) -> Proof (Eqt (Multiset Y) (Multiset__map X Y (Function__const Y X b) s) (Multiset__replicate Y (Multiset__card X s) b)).
@@ -402,7 +399,7 @@ Multiset__map_const : (X : Set) -> (Y : Set) -> (s : Elem (Multiset X)) -> (b : 
 Multiset__prod : (M : Set) -> (x1 : Elem (Multiset M)) -> Elem M.
 
 (; //LEAN:Multiset.prod_dvd_prod_of_dvd ;)
-Multiset__prod_dvd_prod_of_dvd : (M : Set) -> (N : Set) -> (_ : Proof (CommMonoid N)) -> (S : Elem (Multiset M)) -> (g1 : (Elem M -> N)) -> (g2 : (Elem M -> N)) -> (h : Proof (forall M (a => if (Membership__mem M (Multiset M) S a) (divide (g1 a) (g2 a))))) -> Proof (divide (Multiset__prod N (Multiset__map M N g1 S)) (Multiset__prod N (Multiset__map M N g2 S))).
+Multiset__prod_dvd_prod_of_dvd : (M : Set) -> (N : Set) -> (_ : Proof (CommMonoid N)) -> (S : Elem (Multiset M)) -> (g1 : (Elem M -> Elem N)) -> (g2 : (Elem M -> Elem N)) -> (h : Proof (forall M (a => if (Membership__mem M (Multiset M) S a) (divide (g1 a) (g2 a))))) -> Proof (divide (Multiset__prod N (Multiset__map M N g1 S)) (Multiset__prod N (Multiset__map M N g2 S))).
 
 (; //LEAN:Multiset.prod_replicate ;)
 Multiset__prod_replicate : (M : Set) -> (_ : Proof (CommMonoid M)) -> (n : Elem Nat) -> (a : Elem M) -> Proof (Eqt M (Multiset__prod M (Multiset__replicate M n a)) (pow a n)).
@@ -416,7 +413,7 @@ Multiset__replicate : (X : Set) -> (n : Elem Nat) -> (a : Elem X) -> Elem (Multi
 Multiset__sum : (M : Set) -> (x1 : Elem (Multiset M)) -> Elem M.
 
 (; //LEAN:Multiset.sum_map_tsub ;)
-Multiset__sum_map_tsub : (I : Set) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (PartialOrder M)) -> (_ : Proof (ExistsAddOfLE M)) -> (_ : Proof (OrderedSub M)) -> (l : Elem (Multiset I)) -> (f : (Elem I -> M)) -> (g : (Elem I -> M)) -> (hfg : Proof (forall I (x4 => if (Membership__mem I (Multiset I) l x4) (Leq (g x4) (f x4))))) -> Proof (Eqt M (Multiset__sum M (Multiset__map I M (x3 => minus (f x3) (g x3)) l)) (minus (Multiset__sum M (Multiset__map I M f l)) (Multiset__sum M (Multiset__map I M g l)))).
+Multiset__sum_map_tsub : (I : Set) -> (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (PartialOrder M)) -> (_ : Proof (ExistsAddOfLE M)) -> (_ : Proof (OrderedSub M)) -> (l : Elem (Multiset I)) -> (f : (Elem I -> Elem M)) -> (g : (Elem I -> Elem M)) -> (hfg : Proof (forall I (x4 => if (Membership__mem I (Multiset I) l x4) (Leq (g x4) (f x4))))) -> Proof (Eqt M (Multiset__sum M (Multiset__map I M (x3 => minus (f x3) (g x3)) l)) (minus (Multiset__sum M (Multiset__map I M f l)) (Multiset__sum M (Multiset__map I M g l)))).
 
 (; //LEAN:Multiset.sum_replicate ;)
 Multiset__sum_replicate : (M : Set) -> (_ : Proof (AddCommMonoid M)) -> (n : Elem Nat) -> (a : Elem M) -> Proof (Eqt M (Multiset__sum M (Multiset__replicate M n a)) (HSMul__hSMul Nat M M n a)).
@@ -462,7 +459,7 @@ SDiff__sdiff : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 
 (; doc: `f` is bijective from `s` to `t` if `f` is injective on `s` and `f '' s = t`. ;)
 (; //LEAN:Set.BijOn ;)
-Set__BijOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> Prop.
+Set__BijOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> Prop.
 
 (; doc: Given the set `s`, `Elem s` is the `Type` of element of `s`.  It is currently an abbreviation so that instance coming from `Subtype` are available. If you're interested in making it a `def`, as it probably should be, you'll then need to create additional instances (and possibly prove lemmas about them). See e.g. `Mathlib/Data/Set/Order.lean`. ;)
 (; //LEAN:Set.Elem ;)
@@ -470,19 +467,19 @@ Set__Elem : (X : Set) -> (s : Elem (powerset X)) -> Set.
 
 (; doc: `f` is injective on `s` if the restriction of `f` to `s` is injective. ;)
 (; //LEAN:Set.InjOn ;)
-Set__InjOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+Set__InjOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: `MapsTo f s t` means that the image of `s` is contained in `t`. ;)
 (; //LEAN:Set.MapsTo ;)
-Set__MapsTo : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> Prop.
+Set__MapsTo : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> Prop.
 
 (; doc: The relation `r` holds pairwise on the set `s` if `r x y` for all *distinct* `x y ∈ s`. ;)
 (; //LEAN:Set.Pairwise ;)
-Set__Pairwise : (X : Set) -> (s : Elem (powerset X)) -> (r : (Elem X -> Elem X -> Prop)) -> Prop.
+Set__Pairwise : (X : Set) -> (s : Elem (powerset X)) -> (r : (Elem X -> (Elem X -> Prop))) -> Prop.
 
 (; doc: A set is `PairwiseDisjoint` under `f`, if the images of any distinct two elements under `f` are disjoint.  `s.Pairwise Disjoint` is (definitionally) the same as `s.PairwiseDisjoint id`. We prefer the latter in order to allow dot notation on `Set.PairwiseDisjoint`, even though the former unfolds more nicely. ;)
 (; //LEAN:Set.PairwiseDisjoint ;)
-Set__PairwiseDisjoint : (X : Set) -> (I : Set) -> (s : Elem (powerset I)) -> (f : (Elem I -> X)) -> Prop.
+Set__PairwiseDisjoint : (X : Set) -> (I : Set) -> (s : Elem (powerset I)) -> (f : (Elem I -> Elem X)) -> Prop.
 
 (; doc: The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.  Note that you should **not** use this definition directly, but instead write `s ⊆ t`. ;)
 (; //LEAN:Set.Subset ;)
@@ -490,23 +487,23 @@ Set__Subset : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) 
 
 (; doc: The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that `f a = b` for some `a ∈ s`. ;)
 (; //LEAN:Set.image ;)
-Set__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
+Set__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Elem (powerset Y).
 
 (; //LEAN:Set.image_univ ;)
-Set__image_univ : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Proof (Eqt (powerset Y) (Set__image X Y f (Set__univ X)) (Set__range Y X f)).
+Set__image_univ : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (Eqt (powerset Y) (Set__image X Y f (Set__univ X)) (Set__range Y X f)).
 
 (; //LEAN:Set.mapsTo_univ._simp_1 ;)
-Set__mapsTo_univ___simp_1 : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Proof (Eqt Prop (Set__MapsTo X Y f s (Set__univ Y)) True).
+Set__mapsTo_univ___simp_1 : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Proof (Eqt Prop (Set__MapsTo X Y f s (Set__univ Y)) True).
 
 (; //LEAN:Set.mem_range._simp_1 ;)
-Set__mem_range___simp_1 : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> (x : Elem X) -> Proof (Eqt Prop (Membership__mem X (powerset X) (Set__range X I f) x) (exists I (y => Eqt X (f y) x))).
+Set__mem_range___simp_1 : (X : Set) -> (I : Set) -> (f : (Elem I -> Elem X)) -> (x : Elem X) -> Proof (Eqt Prop (Membership__mem X (powerset X) (Set__range X I f) x) (exists I (y => Eqt X (f y) x))).
 
 (; //LEAN:Set.mem_toFinset ;)
 Set__mem_toFinset : (X : Set) -> (s : Elem (powerset X)) -> (_ : Proof (Fintype (Set__Elem X s))) -> (a : Elem X) -> Proof (iff (Membership__mem X (Finset X) (Set__toFinset X s) a) (Membership__mem X (powerset X) s a)).
 
 (; doc: Range of a function.  This function is more flexible than `f '' univ`, as the image requires that the domain is in Type and not an arbitrary Sort. ;)
 (; //LEAN:Set.range ;)
-Set__range : (X : Set) -> (I : Set) -> (f : (Elem I -> X)) -> Elem (powerset X).
+Set__range : (X : Set) -> (I : Set) -> (f : (Elem I -> Elem X)) -> Elem (powerset X).
 
 (; doc: Construct a finset enumerating a set `s`, given a `Fintype` instance. ;)
 (; //LEAN:Set.toFinset ;)
@@ -543,7 +540,7 @@ Subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Set.
 (; //LEAN:Subtype.mk ;)
 Subtype__mk : (X : Set) -> (p : (Elem X -> Prop)) -> (val : Elem X) -> (property : Proof (p val)) -> Elem (Subtype X (x => p x)).
 
-(; doc: A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x` instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib/Data/Set/Basic.lean`. ;)
+(; doc: A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x` instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib/Data/Set/Basic.lean`.  ;)
 (; //LEAN:Subtype.prop ;)
 Subtype__prop : (X : Set) -> (p : (Elem X -> Prop)) -> (x : Elem (Subtype X (x1 => p x1))) -> Proof (p (Subtype__val X p x)).
 
@@ -560,7 +557,7 @@ Sum : (X : Set) -> (Y : Set) -> Set.
 
 (; doc: Case analysis for sums that applies the appropriate function `f` or `g` after checking which constructor is present. ;)
 (; //LEAN:Sum.elim ;)
-Sum__elim : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Z)) -> (g : (Elem Y -> Z)) -> (x : Elem (Sum X Y)) -> Elem Z.
+Sum__elim : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Z)) -> (g : (Elem Y -> Elem Z)) -> (x : Elem (Sum X Y)) -> Elem Z.
 
 (; doc: Left injection into the sum type `α ⊕ β`. ;)
 (; //LEAN:Sum.inl ;)
@@ -572,7 +569,7 @@ Sum__inr : (X : Set) -> (Y : Set) -> (val : Elem Y) -> Elem (Sum X Y).
 
 (; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
 (; //LEAN:Trans.trans ;)
-Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> Elem Y -> Set)) -> (s : (Elem Y -> Elem Z -> Set)) -> (t : (Elem X -> Elem Z -> Set)) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Z) -> (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
+Trans__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (r : (Elem X -> (Elem Y -> Set))) -> (s : (Elem Y -> (Elem Z -> Set))) -> (t : (Elem X -> (Elem Z -> Set))) -> (a : Elem X) -> (b : Elem Y) -> (c : Elem Z) -> (x : Elem (r a b)) -> (x1 : Elem (s b c)) -> Elem (t a c).
 
 (; doc: `True` is a proposition and has only an introduction rule, `True.intro : True`. In other words, `True` is simply true, and has a canonical proof, `True.intro` For more information: [Propositional Logic](https://lean-lang.org/theorem_proving_in_lean4/propositions_and_proofs.html#propositional-logic) ;)
 (; //LEAN:True ;)
@@ -611,19 +608,19 @@ by_cases : (p : Prop) -> (q : Prop) -> (hpq : Proof (if p q)) -> (hnpq : Proof (
 
 (; doc: Congruence in both function and argument. If `f₁ = f₂` and `a₁ = a₂` then `f₁ a₁ = f₂ a₂`. This only works for nondependent functions; the theorem statement is more complex in the dependent case.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congr ;)
-congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
+congr : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Elem Y)) -> (f2 : (Elem X -> Elem Y)) -> (a1 : Elem X) -> (a2 : Elem X) -> (h1 : Proof (Eqt (Elem X -> Elem Y) f1 f2)) -> (h2 : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f1 a1) (f2 a2)).
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
-congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Eqt (Elem X -> Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
+congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem X -> Elem Y)) -> (h : Proof (Eqt (Elem X -> Elem Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
 
 (; doc: **Alias** of `congrArg`. ;)
 (; //LEAN:congr_arg ;)
-congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; //LEAN:div_eq_of_eq_mul' ;)
 div_eq_of_eq_mul' : (G : Set) -> (_ : Proof (CommGroup G)) -> (a : Elem G) -> (b : Elem G) -> (c : Elem G) -> (h : Proof (Eqt G a (times b c))) -> Proof (Eqt G (div a b) c).
@@ -648,7 +645,7 @@ forall_const___simp_1 : (b : Prop) -> (X : Set) -> Proof (Eqt Prop (forall X (x 
 id : (X : Set) -> (a : Elem X) -> Elem X.
 
 (; //LEAN:implies_congr ;)
-implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h1 : Proof (Eqt Set X X1)) -> (h2 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> X2) (Elem X1 -> X3)).
+implies_congr : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (h1 : Proof (Eqt Set X X1)) -> (h2 : Proof (Eqt Set X2 X3)) -> Proof (Eqt Set (Elem X -> Elem X2) (Elem X1 -> Elem X3)).
 
 (; //LEAN:isCompl_compl ;)
 isCompl_compl : (X : Set) -> (x : Elem X) -> (_ : Proof (BooleanAlgebra X)) -> Proof (IsCompl X x (Compl__compl X x)).
@@ -687,7 +684,7 @@ pow_add : (M : Set) -> (_ : Proof (Monoid M)) -> (a : Elem M) -> (m : Elem Nat) 
 (; //LEAN:pow_zero ;)
 pow_zero : (M : Set) -> (_ : Proof (Monoid M)) -> (a : Elem M) -> Proof (Eqt M (pow a 0) 1).
 
-(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
+(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc2/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
 (; //LEAN:propext ;)
 propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a b).
 

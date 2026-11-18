@@ -4,7 +4,7 @@
 ZeroHom : (M : Set) -> (N : Set) -> Set.
 
 (; //LEAN:ZeroHom.mk ;)
-ZeroHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> N)) -> (map_zero' : Proof (Eqt N (toFun 0) 0)) -> Elem (ZeroHom M N).
+ZeroHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> Elem N)) -> (map_zero' : Proof (Eqt N (toFun 0) 0)) -> Elem (ZeroHom M N).
 
 (; //LEAN:ZeroHom.toFun ;)
 ZeroHom__toFun : (M : Set) -> (N : Set) -> (self : Elem (ZeroHom M N)) -> (x2 : Elem M) -> Elem N.
@@ -25,7 +25,7 @@ ZeroHomClass__map_zero : (F : Set) -> (M : Set) -> (N : Set) -> (x : Proof (Zero
 AddHom : (M : Set) -> (N : Set) -> Set.
 
 (; //LEAN:AddHom.mk ;)
-AddHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> N)) -> (map_add' : Proof (forall M (x2 => forall M (y => Eqt N (toFun (plus x2 y)) (plus (toFun x2) (toFun y)))))) -> Elem (AddHom M N).
+AddHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> Elem N)) -> (map_add' : Proof (forall M (x2 => forall M (y => Eqt N (toFun (plus x2 y)) (plus (toFun x2) (toFun y)))))) -> Elem (AddHom M N).
 
 (; //LEAN:AddHom.toFun ;)
 AddHom__toFun : (M : Set) -> (N : Set) -> (self : Elem (AddHom M N)) -> (x2 : Elem M) -> Elem N.
@@ -73,7 +73,7 @@ AddMonoidHomClass__mk : (F : Set) -> (M : Set) -> (N : Set) -> (_ : Proof (AddZe
 OneHom : (M : Set) -> (N : Set) -> Set.
 
 (; //LEAN:OneHom.mk ;)
-OneHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> N)) -> (map_one' : Proof (Eqt N (toFun 1) 1)) -> Elem (OneHom M N).
+OneHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> Elem N)) -> (map_one' : Proof (Eqt N (toFun 1) 1)) -> Elem (OneHom M N).
 
 (; //LEAN:OneHom.toFun ;)
 OneHom__toFun : (M : Set) -> (N : Set) -> (self : Elem (OneHom M N)) -> (x2 : Elem M) -> Elem N.
@@ -103,10 +103,10 @@ def map_zero : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Proof (Eqt
   M => N => F => f => ZeroHomClass__map_zero F M N x x1 x2 f.
 
 (; //LEAN:map_comp_zero ;)
-map_comp_zero : (I : Set) -> (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Proof (Eqt (Elem I -> N) (Function__comp I M N f 0) 0).
+map_comp_zero : (I : Set) -> (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Proof (Eqt (Elem I -> Elem N) (Function__comp I M N f 0) 0).
 
 (; //LEAN:map_comp_one ;)
-map_comp_one : (I : Set) -> (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Proof (Eqt (Elem I -> N) (Function__comp I M N f 1) 1).
+map_comp_one : (I : Set) -> (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Proof (Eqt (Elem I -> Elem N) (Function__comp I M N f 1) 1).
 
 (; //LEAN:Subsingleton.of_oneHomClass ;)
 def Subsingleton__of_oneHomClass : (M : Set) -> (N : Set) -> (F : Set) -> (_ : Proof (Subsingleton M)) -> Proof (Subsingleton F) :=
@@ -149,18 +149,18 @@ def ZeroHomClass__toZeroHom : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F
   M => N => F => f => ZeroHom__mk M N f (ZeroHomClass__map_zero F M N x x1 x2 f).
 
 (; //LEAN:ZeroHom.coe_coe ;)
-def ZeroHom__coe_coe : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Proof (Eqt (Elem M -> N) (ZeroHomClass__toZeroHom M N F f) f) :=
-  M => N => F => f => rfl (Elem M -> N) (ZeroHomClass__toZeroHom M N F f).
+def ZeroHom__coe_coe : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Proof (Eqt (Elem M -> Elem N) (ZeroHomClass__toZeroHom M N F f) f) :=
+  M => N => F => f => rfl (Elem M -> Elem N) (ZeroHomClass__toZeroHom M N F f).
 
 (; //LEAN:OneHom.coe_coe ;)
-def OneHom__coe_coe : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Proof (Eqt (Elem M -> N) (OneHomClass__toOneHom M N F f) f) :=
-  M => N => F => f => rfl (Elem M -> N) (OneHomClass__toOneHom M N F f).
+def OneHom__coe_coe : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Proof (Eqt (Elem M -> Elem N) (OneHomClass__toOneHom M N F f) f) :=
+  M => N => F => f => rfl (Elem M -> Elem N) (OneHomClass__toOneHom M N F f).
 
 (; //LEAN:MulHom ;)
 MulHom : (M : Set) -> (N : Set) -> Set.
 
 (; //LEAN:MulHom.mk ;)
-MulHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> N)) -> (map_mul' : Proof (forall M (x2 => forall M (y => Eqt N (toFun (times x2 y)) (times (toFun x2) (toFun y)))))) -> Elem (MulHom M N).
+MulHom__mk : (M : Set) -> (N : Set) -> (toFun : (Elem M -> Elem N)) -> (map_mul' : Proof (forall M (x2 => forall M (y => Eqt N (toFun (times x2 y)) (times (toFun x2) (toFun y)))))) -> Elem (MulHom M N).
 
 (; //LEAN:MulHom.toFun ;)
 MulHom__toFun : (M : Set) -> (N : Set) -> (self : Elem (MulHom M N)) -> (x2 : Elem M) -> Elem N.
@@ -189,10 +189,10 @@ def map_add : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> (x3 : Elem 
   M => N => F => f => x3 => y => AddHomClass__map_add F M N x x1 x2 f x3 y.
 
 (; //LEAN:map_comp_add ;)
-map_comp_add : (I : Set) -> (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> (g : (Elem I -> M)) -> (h1 : (Elem I -> M)) -> Proof (Eqt (Elem I -> N) (Function__comp I M N f (plus g h1)) (plus (Function__comp I M N f g) (Function__comp I M N f h1))).
+map_comp_add : (I : Set) -> (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> (g : (Elem I -> Elem M)) -> (h1 : (Elem I -> Elem M)) -> Proof (Eqt (Elem I -> Elem N) (Function__comp I M N f (plus g h1)) (plus (Function__comp I M N f g) (Function__comp I M N f h1))).
 
 (; //LEAN:map_comp_mul ;)
-map_comp_mul : (I : Set) -> (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> (g : (Elem I -> M)) -> (h1 : (Elem I -> M)) -> Proof (Eqt (Elem I -> N) (Function__comp I M N f (times g h1)) (times (Function__comp I M N f g) (Function__comp I M N f h1))).
+map_comp_mul : (I : Set) -> (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> (g : (Elem I -> Elem M)) -> (h1 : (Elem I -> Elem M)) -> Proof (Eqt (Elem I -> Elem N) (Function__comp I M N f (times g h1)) (times (Function__comp I M N f g) (Function__comp I M N f h1))).
 
 (; //LEAN:MulHomClass.toMulHom ;)
 def MulHomClass__toMulHom : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Elem (MulHom M N) :=
@@ -203,12 +203,12 @@ def AddHomClass__toAddHom : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) 
   M => N => F => f => AddHom__mk M N f (AddHomClass__map_add F M N x x1 x2 f).
 
 (; //LEAN:AddHom.coe_coe ;)
-def AddHom__coe_coe : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Proof (Eqt (Elem M -> N) (AddHomClass__toAddHom M N F f) f) :=
-  M => N => F => f => rfl (Elem M -> N) (AddHomClass__toAddHom M N F f).
+def AddHom__coe_coe : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Proof (Eqt (Elem M -> Elem N) (AddHomClass__toAddHom M N F f) f) :=
+  M => N => F => f => rfl (Elem M -> Elem N) (AddHomClass__toAddHom M N F f).
 
 (; //LEAN:MulHom.coe_coe ;)
-def MulHom__coe_coe : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Proof (Eqt (Elem M -> N) (MulHomClass__toMulHom M N F f) f) :=
-  M => N => F => f => rfl (Elem M -> N) (MulHomClass__toMulHom M N F f).
+def MulHom__coe_coe : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> Proof (Eqt (Elem M -> Elem N) (MulHomClass__toMulHom M N F f) f) :=
+  M => N => F => f => rfl (Elem M -> Elem N) (MulHomClass__toMulHom M N F f).
 
 (; //LEAN:MonoidHom ;)
 MonoidHom : (M : Set) -> (N : Set) -> Set.
@@ -243,12 +243,12 @@ def AddMonoidHom__ofClass : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) 
   M => N => F => f => AddMonoidHom__mk M N (ZeroHom__mk M N (AddHom__toFun M N (AddHomClass__toAddHom M N F f)) (AddMonoidHom__ofClass___proof_1 M N F f)) (AddMonoidHom__ofClass___proof_2 M N F f).
 
 (; //LEAN:MonoidHom.coe_ofClass ;)
-def MonoidHom__coe_ofClass : (M : Set) -> (N : Set) -> (F : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> (f : Elem F) -> Proof (Eqt (Elem M -> N) (MonoidHom__ofClass M N F f) f) :=
-  M => N => F => x => x1 => f => rfl (Elem M -> N) (MonoidHom__ofClass M N F f).
+def MonoidHom__coe_ofClass : (M : Set) -> (N : Set) -> (F : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> (f : Elem F) -> Proof (Eqt (Elem M -> Elem N) (MonoidHom__ofClass M N F f) f) :=
+  M => N => F => x => x1 => f => rfl (Elem M -> Elem N) (MonoidHom__ofClass M N F f).
 
 (; //LEAN:AddMonoidHom.coe_ofClass ;)
-def AddMonoidHom__coe_ofClass : (M : Set) -> (N : Set) -> (F : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem F) -> Proof (Eqt (Elem M -> N) (AddMonoidHom__ofClass M N F f) f) :=
-  M => N => F => x => x1 => f => rfl (Elem M -> N) (AddMonoidHom__ofClass M N F f).
+def AddMonoidHom__coe_ofClass : (M : Set) -> (N : Set) -> (F : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem F) -> Proof (Eqt (Elem M -> Elem N) (AddMonoidHom__ofClass M N F f) f) :=
+  M => N => F => x => x1 => f => rfl (Elem M -> Elem N) (AddMonoidHom__ofClass M N F f).
 
 (; //LEAN:map_add_eq_zero ;)
 map_add_eq_zero : (M : Set) -> (N : Set) -> (F : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem F) -> (a : Elem M) -> (b : Elem M) -> (h1 : Proof (Eqt M (plus a b) 0)) -> Proof (Eqt N (plus (f a) (f b)) 0).
@@ -263,10 +263,10 @@ map_div' : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (DivInvMonoid G)) -
 map_sub' : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (SubNegMonoid G)) -> (_ : Proof (SubNegMonoid H)) -> (f : Elem F) -> (hf : Proof (forall G (a1 => Eqt H (f (Neg__neg G a1)) (Neg__neg H (f a1))))) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt H (f (minus a b)) (minus (f a) (f b))).
 
 (; //LEAN:map_comp_sub' ;)
-map_comp_sub' : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (SubNegMonoid G)) -> (_ : Proof (SubNegMonoid H)) -> (f : Elem F) -> (hf : Proof (forall G (a => Eqt H (f (Neg__neg G a)) (Neg__neg H (f a))))) -> (g : (Elem I -> G)) -> (h1 : (Elem I -> G)) -> Proof (Eqt (Elem I -> H) (Function__comp I G H f (minus g h1)) (minus (Function__comp I G H f g) (Function__comp I G H f h1))).
+map_comp_sub' : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (SubNegMonoid G)) -> (_ : Proof (SubNegMonoid H)) -> (f : Elem F) -> (hf : Proof (forall G (a => Eqt H (f (Neg__neg G a)) (Neg__neg H (f a))))) -> (g : (Elem I -> Elem G)) -> (h1 : (Elem I -> Elem G)) -> Proof (Eqt (Elem I -> Elem H) (Function__comp I G H f (minus g h1)) (minus (Function__comp I G H f g) (Function__comp I G H f h1))).
 
 (; //LEAN:map_comp_div' ;)
-map_comp_div' : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (DivInvMonoid G)) -> (_ : Proof (DivInvMonoid H)) -> (f : Elem F) -> (hf : Proof (forall G (a => Eqt H (f (Inv__inv G a)) (Inv__inv H (f a))))) -> (g : (Elem I -> G)) -> (h1 : (Elem I -> G)) -> Proof (Eqt (Elem I -> H) (Function__comp I G H f (div g h1)) (div (Function__comp I G H f g) (Function__comp I G H f h1))).
+map_comp_div' : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (DivInvMonoid G)) -> (_ : Proof (DivInvMonoid H)) -> (f : Elem F) -> (hf : Proof (forall G (a => Eqt H (f (Inv__inv G a)) (Inv__inv H (f a))))) -> (g : (Elem I -> Elem G)) -> (h1 : (Elem I -> Elem G)) -> Proof (Eqt (Elem I -> Elem H) (Function__comp I G H f (div g h1)) (div (Function__comp I G H f g) (Function__comp I G H f h1))).
 
 (; //LEAN:map_inv ;)
 def map_inv : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Group G)) -> (_ : Proof (DivisionMonoid H)) -> (f : Elem F) -> (a : Elem G) -> Proof (Eqt H (f (Inv__inv G a)) (Inv__inv H (f a))) :=
@@ -277,10 +277,10 @@ def map_neg : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddGroup G)) ->
   G => H => F => x1 => x2 => f => a => eq_neg_of_add_eq_zero_left H (f (Neg__neg G a)) (f a) (map_add_eq_zero G H F f (Neg__neg G a) a (neg_add_cancel G a)).
 
 (; //LEAN:map_comp_inv ;)
-map_comp_inv : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Group G)) -> (_ : Proof (DivisionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> G)) -> Proof (Eqt (Elem I -> H) (Function__comp I G H f (Inv__inv (Elem I -> G) g)) (Inv__inv (Elem I -> H) (Function__comp I G H f g))).
+map_comp_inv : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Group G)) -> (_ : Proof (DivisionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> Elem G)) -> Proof (Eqt (Elem I -> Elem H) (Function__comp I G H f (Inv__inv (Elem I -> Elem G) g)) (Inv__inv (Elem I -> Elem H) (Function__comp I G H f g))).
 
 (; //LEAN:map_comp_neg ;)
-map_comp_neg : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (SubtractionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> G)) -> Proof (Eqt (Elem I -> H) (Function__comp I G H f (Neg__neg (Elem I -> G) g)) (Neg__neg (Elem I -> H) (Function__comp I G H f g))).
+map_comp_neg : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (SubtractionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> Elem G)) -> Proof (Eqt (Elem I -> Elem H) (Function__comp I G H f (Neg__neg (Elem I -> Elem G) g)) (Neg__neg (Elem I -> Elem H) (Function__comp I G H f g))).
 
 (; //LEAN:map_mul_inv ;)
 map_mul_inv : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Group G)) -> (_ : Proof (DivisionMonoid H)) -> (f : Elem F) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt H (f (times a (Inv__inv G b))) (times (f a) (Inv__inv H (f b)))).
@@ -289,10 +289,10 @@ map_mul_inv : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Group G)) -> (_
 map_add_neg : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (SubtractionMonoid H)) -> (f : Elem F) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt H (f (plus a (Neg__neg G b))) (plus (f a) (Neg__neg H (f b)))).
 
 (; //LEAN:map_comp_add_neg ;)
-map_comp_add_neg : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (SubtractionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> G)) -> (h1 : (Elem I -> G)) -> Proof (Eqt (Elem I -> H) (Function__comp I G H f (plus g (Neg__neg (Elem I -> G) h1))) (plus (Function__comp I G H f g) (Neg__neg (Elem I -> H) (Function__comp I G H f h1)))).
+map_comp_add_neg : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (SubtractionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> Elem G)) -> (h1 : (Elem I -> Elem G)) -> Proof (Eqt (Elem I -> Elem H) (Function__comp I G H f (plus g (Neg__neg (Elem I -> Elem G) h1))) (plus (Function__comp I G H f g) (Neg__neg (Elem I -> Elem H) (Function__comp I G H f h1)))).
 
 (; //LEAN:map_comp_mul_inv ;)
-map_comp_mul_inv : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Group G)) -> (_ : Proof (DivisionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> G)) -> (h1 : (Elem I -> G)) -> Proof (Eqt (Elem I -> H) (Function__comp I G H f (times g (Inv__inv (Elem I -> G) h1))) (times (Function__comp I G H f g) (Inv__inv (Elem I -> H) (Function__comp I G H f h1)))).
+map_comp_mul_inv : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Group G)) -> (_ : Proof (DivisionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> Elem G)) -> (h1 : (Elem I -> Elem G)) -> Proof (Eqt (Elem I -> Elem H) (Function__comp I G H f (times g (Inv__inv (Elem I -> Elem G) h1))) (times (Function__comp I G H f g) (Inv__inv (Elem I -> Elem H) (Function__comp I G H f h1)))).
 
 (; //LEAN:map_div ;)
 def map_div : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Group G)) -> (_ : Proof (DivisionMonoid H)) -> (f : Elem F) -> (a : Elem G) -> (b : Elem G) -> Proof (Eqt H (f (div a b)) (div (f a) (f b))) :=
@@ -303,10 +303,10 @@ def map_sub : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddGroup G)) ->
   G => H => F => x1 => x2 => f => map_sub' G H F f (map_neg G H F f).
 
 (; //LEAN:map_comp_div ;)
-map_comp_div : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Group G)) -> (_ : Proof (DivisionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> G)) -> (h1 : (Elem I -> G)) -> Proof (Eqt (Elem I -> H) (Function__comp I G H f (div g h1)) (div (Function__comp I G H f g) (Function__comp I G H f h1))).
+map_comp_div : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Group G)) -> (_ : Proof (DivisionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> Elem G)) -> (h1 : (Elem I -> Elem G)) -> Proof (Eqt (Elem I -> Elem H) (Function__comp I G H f (div g h1)) (div (Function__comp I G H f g) (Function__comp I G H f h1))).
 
 (; //LEAN:map_comp_sub ;)
-map_comp_sub : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (SubtractionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> G)) -> (h1 : (Elem I -> G)) -> Proof (Eqt (Elem I -> H) (Function__comp I G H f (minus g h1)) (minus (Function__comp I G H f g) (Function__comp I G H f h1))).
+map_comp_sub : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (SubtractionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> Elem G)) -> (h1 : (Elem I -> Elem G)) -> Proof (Eqt (Elem I -> Elem H) (Function__comp I G H f (minus g h1)) (minus (Function__comp I G H f g) (Function__comp I G H f h1))).
 
 (; //LEAN:map_pow ;)
 map_pow : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Monoid G)) -> (_ : Proof (Monoid H)) -> (f : Elem F) -> (a : Elem G) -> (n : Elem Nat) -> Proof (Eqt H (f (pow a n)) (pow (f a) n)).
@@ -315,10 +315,10 @@ map_pow : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Monoid G)) -> (_ : 
 map_nsmul : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddMonoid G)) -> (_ : Proof (AddMonoid H)) -> (f : Elem F) -> (n : Elem Nat) -> (a : Elem G) -> Proof (Eqt H (f (HSMul__hSMul Nat G G n a)) (HSMul__hSMul Nat H H n (f a))).
 
 (; //LEAN:map_comp_nsmul ;)
-map_comp_nsmul : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddMonoid G)) -> (_ : Proof (AddMonoid H)) -> (f : Elem F) -> (g : (Elem I -> G)) -> (n : Elem Nat) -> Proof (Eqt (Elem I -> H) (Function__comp I G H f (HSMul__hSMul Nat (Elem I -> G) (Elem I -> G) n g)) (HSMul__hSMul Nat (Elem I -> H) (Elem I -> H) n (Function__comp I G H f g))).
+map_comp_nsmul : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddMonoid G)) -> (_ : Proof (AddMonoid H)) -> (f : Elem F) -> (g : (Elem I -> Elem G)) -> (n : Elem Nat) -> Proof (Eqt (Elem I -> Elem H) (Function__comp I G H f (HSMul__hSMul Nat (Elem I -> Elem G) (Elem I -> Elem G) n g)) (HSMul__hSMul Nat (Elem I -> Elem H) (Elem I -> Elem H) n (Function__comp I G H f g))).
 
 (; //LEAN:map_comp_pow ;)
-map_comp_pow : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Monoid G)) -> (_ : Proof (Monoid H)) -> (f : Elem F) -> (g : (Elem I -> G)) -> (n : Elem Nat) -> Proof (Eqt (Elem I -> H) (Function__comp I G H f (pow g n)) (pow (Function__comp I G H f g) n)).
+map_comp_pow : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Monoid G)) -> (_ : Proof (Monoid H)) -> (f : Elem F) -> (g : (Elem I -> Elem G)) -> (n : Elem Nat) -> Proof (Eqt (Elem I -> Elem H) (Function__comp I G H f (pow g n)) (pow (Function__comp I G H f g) n)).
 
 (; //LEAN:map_zpow' ;)
 map_zpow' : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (DivInvMonoid G)) -> (_ : Proof (DivInvMonoid H)) -> (f : Elem F) -> (hf : Proof (forall G (x3 => Eqt H (f (Inv__inv G x3)) (Inv__inv H (f x3))))) -> (a : Elem G) -> (n : Elem Int) -> Proof (Eqt H (f (pow a n)) (pow (f a) n)).
@@ -327,10 +327,10 @@ map_zpow' : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (DivInvMonoid G)) 
 map_zsmul' : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (SubNegMonoid G)) -> (_ : Proof (SubNegMonoid H)) -> (f : Elem F) -> (hf : Proof (forall G (x3 => Eqt H (f (Neg__neg G x3)) (Neg__neg H (f x3))))) -> (a : Elem G) -> (n : Elem Int) -> Proof (Eqt H (f (HSMul__hSMul Int G G n a)) (HSMul__hSMul Int H H n (f a))).
 
 (; //LEAN:map_comp_zsmul' ;)
-map_comp_zsmul' : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (SubNegMonoid G)) -> (_ : Proof (SubNegMonoid H)) -> (f : Elem F) -> (hf : Proof (forall G (x9 => Eqt H (f (Neg__neg G x9)) (Neg__neg H (f x9))))) -> (g : (Elem I -> G)) -> (n : Elem Int) -> Proof (Eqt (Elem I -> H) (Function__comp I G H f (HSMul__hSMul Int (Elem I -> G) (Elem I -> G) n g)) (HSMul__hSMul Int (Elem I -> H) (Elem I -> H) n (Function__comp I G H f g))).
+map_comp_zsmul' : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (SubNegMonoid G)) -> (_ : Proof (SubNegMonoid H)) -> (f : Elem F) -> (hf : Proof (forall G (x9 => Eqt H (f (Neg__neg G x9)) (Neg__neg H (f x9))))) -> (g : (Elem I -> Elem G)) -> (n : Elem Int) -> Proof (Eqt (Elem I -> Elem H) (Function__comp I G H f (HSMul__hSMul Int (Elem I -> Elem G) (Elem I -> Elem G) n g)) (HSMul__hSMul Int (Elem I -> Elem H) (Elem I -> Elem H) n (Function__comp I G H f g))).
 
 (; //LEAN:map_comp_zpow' ;)
-map_comp_zpow' : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (DivInvMonoid G)) -> (_ : Proof (DivInvMonoid H)) -> (f : Elem F) -> (hf : Proof (forall G (x5 => Eqt H (f (Inv__inv G x5)) (Inv__inv H (f x5))))) -> (g : (Elem I -> G)) -> (n : Elem Int) -> Proof (Eqt (Elem I -> H) (Function__comp I G H f (pow g n)) (pow (Function__comp I G H f g) n)).
+map_comp_zpow' : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (DivInvMonoid G)) -> (_ : Proof (DivInvMonoid H)) -> (f : Elem F) -> (hf : Proof (forall G (x5 => Eqt H (f (Inv__inv G x5)) (Inv__inv H (f x5))))) -> (g : (Elem I -> Elem G)) -> (n : Elem Int) -> Proof (Eqt (Elem I -> Elem H) (Function__comp I G H f (pow g n)) (pow (Function__comp I G H f g) n)).
 
 (; //LEAN:map_zpow ;)
 def map_zpow : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Group G)) -> (_ : Proof (DivisionMonoid H)) -> (f : Elem F) -> (g : Elem G) -> (n : Elem Int) -> Proof (Eqt H (f (pow g n)) (pow (f g) n)) :=
@@ -341,10 +341,10 @@ def map_zsmul : (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddGroup G)) 
   G => H => F => x1 => x2 => f => n => g => map_zsmul' G H F f (map_neg G H F f) g n.
 
 (; //LEAN:map_comp_zpow ;)
-map_comp_zpow : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Group G)) -> (_ : Proof (DivisionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> G)) -> (n : Elem Int) -> Proof (Eqt (Elem I -> H) (Function__comp I G H f (pow g n)) (pow (Function__comp I G H f g) n)).
+map_comp_zpow : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (Group G)) -> (_ : Proof (DivisionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> Elem G)) -> (n : Elem Int) -> Proof (Eqt (Elem I -> Elem H) (Function__comp I G H f (pow g n)) (pow (Function__comp I G H f g) n)).
 
 (; //LEAN:map_comp_zsmul ;)
-map_comp_zsmul : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (SubtractionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> G)) -> (n : Elem Int) -> Proof (Eqt (Elem I -> H) (Function__comp I G H f (HSMul__hSMul Int (Elem I -> G) (Elem I -> G) n g)) (HSMul__hSMul Int (Elem I -> H) (Elem I -> H) n (Function__comp I G H f g))).
+map_comp_zsmul : (I : Set) -> (G : Set) -> (H : Set) -> (F : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (SubtractionMonoid H)) -> (f : Elem F) -> (g : (Elem I -> Elem G)) -> (n : Elem Int) -> Proof (Eqt (Elem I -> Elem H) (Function__comp I G H f (HSMul__hSMul Int (Elem I -> Elem G) (Elem I -> Elem G) n g)) (HSMul__hSMul Int (Elem I -> Elem H) (Elem I -> Elem H) n (Function__comp I G H f g))).
 
 (; //LEAN:Function.Injective.isMulTorsionFree ;)
 Function__Injective__isMulTorsionFree : (M : Set) -> (N : Set) -> (_ : Proof (Monoid M)) -> (_ : Proof (Monoid N)) -> (_ : Proof (IsMulTorsionFree N)) -> (f : Elem (MonoidHom M N)) -> (hf : Proof (Function__Injective M N f)) -> Proof (IsMulTorsionFree M).
@@ -362,68 +362,68 @@ def Function__Injective__hasUniqueDiv : (M : Set) -> (N : Set) -> (_ : Proof (Ad
   M => N => x => x1 => h => f => hf => HasUniqueDiv__mk M (forallI Nat (n => if (Neq n 0) (forall M (x5 => forall M (y3 => if (Eqt M ((a19 => HSMul__hSMul Nat M M n a19) x5) ((a20 => HSMul__hSMul Nat M M n a20) y3)) (Eqt M x5 y3))))) (n => ifI (Neq n 0) (forall M (x4 => forall M (y2 => if (Eqt M ((a17 => HSMul__hSMul Nat M M n a17) x4) ((a18 => HSMul__hSMul Nat M M n a18) y2)) (Eqt M x4 y2)))) (hn => forallI M (x2 => forall M (y1 => if (Eqt M ((a15 => HSMul__hSMul Nat M M n a15) x2) ((a16 => HSMul__hSMul Nat M M n a16) y1)) (Eqt M x2 y1))) (x2 => forallI M (y => if (Eqt M ((a13 => HSMul__hSMul Nat M M n a13) x2) ((a14 => HSMul__hSMul Nat M M n a14) y)) (Eqt M x2 y)) (y => ifI (Eqt M ((a11 => HSMul__hSMul Nat M M n a11) x2) ((a12 => HSMul__hSMul Nat M M n a12) y)) (Eqt M x2 y) (hxy => ifE (Eqt N (f x2) (f y)) (Eqt M x2 y) (forallE M (a21 => if (Eqt N (f x2) (f a21)) (Eqt M x2 a21)) (forallE M (a1 => forall M (a2 => if (Eqt N (f a1) (f a2)) (Eqt M a1 a2))) hf x2) y) (HasUniqueDiv__nsmul_right_injective N x1 n hn (f x2) (f y) (id (Eqt N ((a => HSMul__hSMul Nat N N n a) (f x2)) ((a3 => HSMul__hSMul Nat N N n a3) (f y))) (Eq__mp (Eqt N (f ((a4 => HSMul__hSMul Nat M M n a4) x2)) (f ((a5 => HSMul__hSMul Nat M M n a5) y))) (Eqt N (HSMul__hSMul Nat N N n (f x2)) (HSMul__hSMul Nat N N n (f y))) (congr N Prop (Eq N (f ((a6 => HSMul__hSMul Nat M M n a6) x2))) (Eq N (HSMul__hSMul Nat N N n (f x2))) (f ((a7 => HSMul__hSMul Nat M M n a7) y)) (HSMul__hSMul Nat N N n (f y)) (congrArg N (Elem N -> Prop) (f ((a8 => HSMul__hSMul Nat M M n a8) x2)) (HSMul__hSMul Nat N N n (f x2)) (Eq N) (map_nsmul M N (AddMonoidHom M N) f n x2)) (map_nsmul M N (AddMonoidHom M N) f n y)) (congrArg M N ((a9 => HSMul__hSMul Nat M M n a9) x2) ((a10 => HSMul__hSMul Nat M M n a10) y) f hxy)))))))))).
 
 (; //LEAN:ZeroHom.coe_mk ;)
-def ZeroHom__coe_mk : (M : Set) -> (N : Set) -> (f : (Elem M -> N)) -> (h1 : Proof (Eqt N (f 0) 0)) -> Proof (Eqt (Elem M -> N) (ZeroHom__mk M N f h1) f) :=
-  M => N => f => h1 => rfl (Elem M -> N) (ZeroHom__mk M N f h1).
+def ZeroHom__coe_mk : (M : Set) -> (N : Set) -> (f : (Elem M -> Elem N)) -> (h1 : Proof (Eqt N (f 0) 0)) -> Proof (Eqt (Elem M -> Elem N) (ZeroHom__mk M N f h1) f) :=
+  M => N => f => h1 => rfl (Elem M -> Elem N) (ZeroHom__mk M N f h1).
 
 (; //LEAN:OneHom.coe_mk ;)
-def OneHom__coe_mk : (M : Set) -> (N : Set) -> (f : (Elem M -> N)) -> (h1 : Proof (Eqt N (f 1) 1)) -> Proof (Eqt (Elem M -> N) (OneHom__mk M N f h1) f) :=
-  M => N => f => h1 => rfl (Elem M -> N) (OneHom__mk M N f h1).
+def OneHom__coe_mk : (M : Set) -> (N : Set) -> (f : (Elem M -> Elem N)) -> (h1 : Proof (Eqt N (f 1) 1)) -> Proof (Eqt (Elem M -> Elem N) (OneHom__mk M N f h1) f) :=
+  M => N => f => h1 => rfl (Elem M -> Elem N) (OneHom__mk M N f h1).
 
 (; //LEAN:ZeroHom.toFun_eq_coe ;)
-def ZeroHom__toFun_eq_coe : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> Proof (Eqt (Elem M -> N) (ZeroHom__toFun M N f) f) :=
-  M => N => f => rfl (Elem M -> N) (ZeroHom__toFun M N f).
+def ZeroHom__toFun_eq_coe : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> Proof (Eqt (Elem M -> Elem N) (ZeroHom__toFun M N f) f) :=
+  M => N => f => rfl (Elem M -> Elem N) (ZeroHom__toFun M N f).
 
 (; //LEAN:OneHom.toFun_eq_coe ;)
-def OneHom__toFun_eq_coe : (M : Set) -> (N : Set) -> (f : Elem (OneHom M N)) -> Proof (Eqt (Elem M -> N) (OneHom__toFun M N f) f) :=
-  M => N => f => rfl (Elem M -> N) (OneHom__toFun M N f).
+def OneHom__toFun_eq_coe : (M : Set) -> (N : Set) -> (f : Elem (OneHom M N)) -> Proof (Eqt (Elem M -> Elem N) (OneHom__toFun M N f) f) :=
+  M => N => f => rfl (Elem M -> Elem N) (OneHom__toFun M N f).
 
 (; //LEAN:MulHom.coe_mk ;)
-def MulHom__coe_mk : (M : Set) -> (N : Set) -> (f : (Elem M -> N)) -> (hmul : Proof (forall M (x2 => forall M (y => Eqt N (f (times x2 y)) (times (f x2) (f y)))))) -> Proof (Eqt (Elem M -> N) (MulHom__mk M N f hmul) f) :=
-  M => N => f => hmul => rfl (Elem M -> N) (MulHom__mk M N f hmul).
+def MulHom__coe_mk : (M : Set) -> (N : Set) -> (f : (Elem M -> Elem N)) -> (hmul : Proof (forall M (x2 => forall M (y => Eqt N (f (times x2 y)) (times (f x2) (f y)))))) -> Proof (Eqt (Elem M -> Elem N) (MulHom__mk M N f hmul) f) :=
+  M => N => f => hmul => rfl (Elem M -> Elem N) (MulHom__mk M N f hmul).
 
 (; //LEAN:AddHom.coe_mk ;)
-def AddHom__coe_mk : (M : Set) -> (N : Set) -> (f : (Elem M -> N)) -> (hadd : Proof (forall M (x2 => forall M (y => Eqt N (f (plus x2 y)) (plus (f x2) (f y)))))) -> Proof (Eqt (Elem M -> N) (AddHom__mk M N f hadd) f) :=
-  M => N => f => hadd => rfl (Elem M -> N) (AddHom__mk M N f hadd).
+def AddHom__coe_mk : (M : Set) -> (N : Set) -> (f : (Elem M -> Elem N)) -> (hadd : Proof (forall M (x2 => forall M (y => Eqt N (f (plus x2 y)) (plus (f x2) (f y)))))) -> Proof (Eqt (Elem M -> Elem N) (AddHom__mk M N f hadd) f) :=
+  M => N => f => hadd => rfl (Elem M -> Elem N) (AddHom__mk M N f hadd).
 
 (; //LEAN:MulHom.toFun_eq_coe ;)
-def MulHom__toFun_eq_coe : (M : Set) -> (N : Set) -> (f : Elem (MulHom M N)) -> Proof (Eqt (Elem M -> N) (MulHom__toFun M N f) f) :=
-  M => N => f => rfl (Elem M -> N) (MulHom__toFun M N f).
+def MulHom__toFun_eq_coe : (M : Set) -> (N : Set) -> (f : Elem (MulHom M N)) -> Proof (Eqt (Elem M -> Elem N) (MulHom__toFun M N f) f) :=
+  M => N => f => rfl (Elem M -> Elem N) (MulHom__toFun M N f).
 
 (; //LEAN:AddHom.toFun_eq_coe ;)
-def AddHom__toFun_eq_coe : (M : Set) -> (N : Set) -> (f : Elem (AddHom M N)) -> Proof (Eqt (Elem M -> N) (AddHom__toFun M N f) f) :=
-  M => N => f => rfl (Elem M -> N) (AddHom__toFun M N f).
+def AddHom__toFun_eq_coe : (M : Set) -> (N : Set) -> (f : Elem (AddHom M N)) -> Proof (Eqt (Elem M -> Elem N) (AddHom__toFun M N f) f) :=
+  M => N => f => rfl (Elem M -> Elem N) (AddHom__toFun M N f).
 
 (; //LEAN:MonoidHom.coe_mk ;)
-def MonoidHom__coe_mk : (M : Set) -> (N : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> (f : Elem (OneHom M N)) -> (hmul : Proof (forall M (x2 => forall M (y => Eqt N (OneHom__toFun M N f (times x2 y)) (times (OneHom__toFun M N f x2) (OneHom__toFun M N f y)))))) -> Proof (Eqt (Elem M -> N) (MonoidHom__mk M N f hmul) f) :=
-  M => N => x => x1 => f => hmul => rfl (Elem M -> N) (MonoidHom__mk M N f hmul).
+def MonoidHom__coe_mk : (M : Set) -> (N : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> (f : Elem (OneHom M N)) -> (hmul : Proof (forall M (x2 => forall M (y => Eqt N (OneHom__toFun M N f (times x2 y)) (times (OneHom__toFun M N f x2) (OneHom__toFun M N f y)))))) -> Proof (Eqt (Elem M -> Elem N) (MonoidHom__mk M N f hmul) f) :=
+  M => N => x => x1 => f => hmul => rfl (Elem M -> Elem N) (MonoidHom__mk M N f hmul).
 
 (; //LEAN:AddMonoidHom.coe_mk ;)
-def AddMonoidHom__coe_mk : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (ZeroHom M N)) -> (hadd : Proof (forall M (x2 => forall M (y => Eqt N (ZeroHom__toFun M N f (plus x2 y)) (plus (ZeroHom__toFun M N f x2) (ZeroHom__toFun M N f y)))))) -> Proof (Eqt (Elem M -> N) (AddMonoidHom__mk M N f hadd) f) :=
-  M => N => x => x1 => f => hadd => rfl (Elem M -> N) (AddMonoidHom__mk M N f hadd).
+def AddMonoidHom__coe_mk : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (ZeroHom M N)) -> (hadd : Proof (forall M (x2 => forall M (y => Eqt N (ZeroHom__toFun M N f (plus x2 y)) (plus (ZeroHom__toFun M N f x2) (ZeroHom__toFun M N f y)))))) -> Proof (Eqt (Elem M -> Elem N) (AddMonoidHom__mk M N f hadd) f) :=
+  M => N => x => x1 => f => hadd => rfl (Elem M -> Elem N) (AddMonoidHom__mk M N f hadd).
 
 (; //LEAN:MonoidHom.toOneHom_coe ;)
-def MonoidHom__toOneHom_coe : (M : Set) -> (N : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> (f : Elem (MonoidHom M N)) -> Proof (Eqt (Elem M -> N) (MonoidHom__toOneHom M N f) f) :=
-  M => N => x => x1 => f => rfl (Elem M -> N) (MonoidHom__toOneHom M N f).
+def MonoidHom__toOneHom_coe : (M : Set) -> (N : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> (f : Elem (MonoidHom M N)) -> Proof (Eqt (Elem M -> Elem N) (MonoidHom__toOneHom M N f) f) :=
+  M => N => x => x1 => f => rfl (Elem M -> Elem N) (MonoidHom__toOneHom M N f).
 
 (; //LEAN:AddMonoidHom.toZeroHom_coe ;)
-def AddMonoidHom__toZeroHom_coe : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> Proof (Eqt (Elem M -> N) (AddMonoidHom__toZeroHom M N f) f) :=
-  M => N => x => x1 => f => rfl (Elem M -> N) (AddMonoidHom__toZeroHom M N f).
+def AddMonoidHom__toZeroHom_coe : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> Proof (Eqt (Elem M -> Elem N) (AddMonoidHom__toZeroHom M N f) f) :=
+  M => N => x => x1 => f => rfl (Elem M -> Elem N) (AddMonoidHom__toZeroHom M N f).
 
 (; //LEAN:AddMonoidHom.toAddHom_coe ;)
-def AddMonoidHom__toAddHom_coe : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> Proof (Eqt (Elem M -> N) (AddHom__toFun M N (AddMonoidHom__toAddHom M N f)) f) :=
-  M => N => x => x1 => f => rfl (Elem M -> N) (AddHom__toFun M N (AddMonoidHom__toAddHom M N f)).
+def AddMonoidHom__toAddHom_coe : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> Proof (Eqt (Elem M -> Elem N) (AddHom__toFun M N (AddMonoidHom__toAddHom M N f)) f) :=
+  M => N => x => x1 => f => rfl (Elem M -> Elem N) (AddHom__toFun M N (AddMonoidHom__toAddHom M N f)).
 
 (; //LEAN:MonoidHom.toMulHom_coe ;)
-def MonoidHom__toMulHom_coe : (M : Set) -> (N : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> (f : Elem (MonoidHom M N)) -> Proof (Eqt (Elem M -> N) (MulHom__toFun M N (MonoidHom__toMulHom M N f)) f) :=
-  M => N => x => x1 => f => rfl (Elem M -> N) (MulHom__toFun M N (MonoidHom__toMulHom M N f)).
+def MonoidHom__toMulHom_coe : (M : Set) -> (N : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> (f : Elem (MonoidHom M N)) -> Proof (Eqt (Elem M -> Elem N) (MulHom__toFun M N (MonoidHom__toMulHom M N f)) f) :=
+  M => N => x => x1 => f => rfl (Elem M -> Elem N) (MulHom__toFun M N (MonoidHom__toMulHom M N f)).
 
 (; //LEAN:AddMonoidHom.toFun_eq_coe ;)
-def AddMonoidHom__toFun_eq_coe : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> Proof (Eqt (Elem M -> N) (ZeroHom__toFun M N (AddMonoidHom__toZeroHom M N f)) f) :=
-  M => N => x => x1 => f => rfl (Elem M -> N) (ZeroHom__toFun M N (AddMonoidHom__toZeroHom M N f)).
+def AddMonoidHom__toFun_eq_coe : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> Proof (Eqt (Elem M -> Elem N) (ZeroHom__toFun M N (AddMonoidHom__toZeroHom M N f)) f) :=
+  M => N => x => x1 => f => rfl (Elem M -> Elem N) (ZeroHom__toFun M N (AddMonoidHom__toZeroHom M N f)).
 
 (; //LEAN:MonoidHom.toFun_eq_coe ;)
-def MonoidHom__toFun_eq_coe : (M : Set) -> (N : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> (f : Elem (MonoidHom M N)) -> Proof (Eqt (Elem M -> N) (OneHom__toFun M N (MonoidHom__toOneHom M N f)) f) :=
-  M => N => x => x1 => f => rfl (Elem M -> N) (OneHom__toFun M N (MonoidHom__toOneHom M N f)).
+def MonoidHom__toFun_eq_coe : (M : Set) -> (N : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> (f : Elem (MonoidHom M N)) -> Proof (Eqt (Elem M -> Elem N) (OneHom__toFun M N (MonoidHom__toOneHom M N f)) f) :=
+  M => N => x => x1 => f => rfl (Elem M -> Elem N) (OneHom__toFun M N (MonoidHom__toOneHom M N f)).
 
 (; //LEAN:ZeroHom.ext ;)
 def ZeroHom__ext : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> (g : Elem (ZeroHom M N)) -> (h : Proof (forall M (x2 => Eqt N (f x2) (g x2)))) -> Proof (Eqt (ZeroHom M N) f g) :=
@@ -468,18 +468,18 @@ def MonoidHom__ext : (M : Set) -> (N : Set) -> (_ : Proof (MulOne M)) -> (_ : Pr
   M => N => x => x1 => f => g => h => DFunLike__ext (MonoidHom M N) M (x2 => N) f g h.
 
 (; //LEAN:MonoidHom.mk' ;)
-def MonoidHom__mk' : (M : Set) -> (G : Set) -> (f : (Elem M -> G)) -> (map_mul : Proof (forall M (a => forall M (b => Eqt G (f (times a b)) (times (f a) (f b)))))) -> Elem (MonoidHom M G) :=
+def MonoidHom__mk' : (M : Set) -> (G : Set) -> (f : (Elem M -> Elem G)) -> (map_mul : Proof (forall M (a => forall M (b => Eqt G (f (times a b)) (times (f a) (f b)))))) -> Elem (MonoidHom M G) :=
   M => G => f => map_mul => MonoidHom__mk M G (OneHom__mk M G f (MonoidHom__mk'___proof_1 M G f map_mul)) map_mul.
 
 (; //LEAN:AddMonoidHom.mk' ;)
-def AddMonoidHom__mk' : (M : Set) -> (G : Set) -> (f : (Elem M -> G)) -> (map_add : Proof (forall M (a => forall M (b => Eqt G (f (plus a b)) (plus (f a) (f b)))))) -> Elem (AddMonoidHom M G) :=
+def AddMonoidHom__mk' : (M : Set) -> (G : Set) -> (f : (Elem M -> Elem G)) -> (map_add : Proof (forall M (a => forall M (b => Eqt G (f (plus a b)) (plus (f a) (f b)))))) -> Elem (AddMonoidHom M G) :=
   M => G => f => map_add => AddMonoidHom__mk M G (ZeroHom__mk M G f (AddMonoidHom__mk'___proof_1 M G f map_add)) map_add.
 
 (; //LEAN:AddMonoidHom.mk'_apply ;)
-AddMonoidHom__mk'_apply : (M : Set) -> (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (AddZeroClass M)) -> (f : (Elem M -> G)) -> (map_add : Proof (forall M (a => forall M (b => Eqt G (f (plus a b)) (plus (f a) (f b)))))) -> Proof (Eqt (Elem M -> G) (AddMonoidHom__mk' M G f map_add) f).
+AddMonoidHom__mk'_apply : (M : Set) -> (G : Set) -> (_ : Proof (AddGroup G)) -> (_ : Proof (AddZeroClass M)) -> (f : (Elem M -> Elem G)) -> (map_add : Proof (forall M (a => forall M (b => Eqt G (f (plus a b)) (plus (f a) (f b)))))) -> Proof (Eqt (Elem M -> Elem G) (AddMonoidHom__mk' M G f map_add) f).
 
 (; //LEAN:MonoidHom.mk'_apply ;)
-MonoidHom__mk'_apply : (M : Set) -> (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (MulOneClass M)) -> (f : (Elem M -> G)) -> (map_mul : Proof (forall M (a => forall M (b => Eqt G (f (times a b)) (times (f a) (f b)))))) -> Proof (Eqt (Elem M -> G) (MonoidHom__mk' M G f map_mul) f).
+MonoidHom__mk'_apply : (M : Set) -> (G : Set) -> (_ : Proof (Group G)) -> (_ : Proof (MulOneClass M)) -> (f : (Elem M -> Elem G)) -> (map_mul : Proof (forall M (a => forall M (b => Eqt G (f (times a b)) (times (f a) (f b)))))) -> Proof (Eqt (Elem M -> Elem G) (MonoidHom__mk' M G f map_mul) f).
 
 (; //LEAN:OneHom.mk_coe ;)
 def OneHom__mk_coe : (M : Set) -> (N : Set) -> (f : Elem (OneHom M N)) -> (h1 : Proof (Eqt N (f 1) 1)) -> Proof (Eqt (OneHom M N) (OneHom__mk M N f h1) f) :=
@@ -506,75 +506,75 @@ def AddMonoidHom__mk_coe : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> 
   M => N => x => x1 => f => hadd => AddMonoidHom__ext M N (AddMonoidHom__mk M N (ZeroHomClass__toZeroHom M N (AddMonoidHom M N) f) hadd) f (forallI M (x2 => Eqt N (AddMonoidHom__mk__app (ZeroHomClass__toZeroHom M N (AddMonoidHom M N) f) hadd x2) (AddMonoidHom__mk__app (ZeroHomClass__toZeroHom M N (AddMonoidHom M N) f) hadd x2)) (x2 => rfl N (AddMonoidHom__mk__app (ZeroHomClass__toZeroHom M N (AddMonoidHom M N) f) hadd x2))).
 
 (; //LEAN:OneHom.copy ;)
-def OneHom__copy : (M : Set) -> (N : Set) -> (f : Elem (OneHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Elem (OneHom M N) :=
+def OneHom__copy : (M : Set) -> (N : Set) -> (f : Elem (OneHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Elem (OneHom M N) :=
   M => N => f => f' => h => OneHom__mk M N f' (OneHom__copy___proof_1 M N f f' h).
 
 (; //LEAN:ZeroHom.copy ;)
-def ZeroHom__copy : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Elem (ZeroHom M N) :=
+def ZeroHom__copy : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Elem (ZeroHom M N) :=
   M => N => f => f' => h => ZeroHom__mk M N f' (ZeroHom__copy___proof_1 M N f f' h).
 
 (; //LEAN:ZeroHom.coe_copy ;)
-def ZeroHom__coe_copy : (M : Set) -> (N : Set) -> (x : Proof (Zero M)) -> (x1 : Proof (Zero N)) -> (f : Elem (ZeroHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Proof (Eqt (Elem M -> N) (ZeroHom__copy M N f f' h) f') :=
-  M => N => x => x1 => f => f' => h => rfl (Elem M -> N) (ZeroHom__copy M N f f' h).
+def ZeroHom__coe_copy : (M : Set) -> (N : Set) -> (x : Proof (Zero M)) -> (x1 : Proof (Zero N)) -> (f : Elem (ZeroHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Proof (Eqt (Elem M -> Elem N) (ZeroHom__copy M N f f' h) f') :=
+  M => N => x => x1 => f => f' => h => rfl (Elem M -> Elem N) (ZeroHom__copy M N f f' h).
 
 (; //LEAN:OneHom.coe_copy ;)
-def OneHom__coe_copy : (M : Set) -> (N : Set) -> (x : Proof (One M)) -> (x1 : Proof (One N)) -> (f : Elem (OneHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Proof (Eqt (Elem M -> N) (OneHom__copy M N f f' h) f') :=
-  M => N => x => x1 => f => f' => h => rfl (Elem M -> N) (OneHom__copy M N f f' h).
+def OneHom__coe_copy : (M : Set) -> (N : Set) -> (x : Proof (One M)) -> (x1 : Proof (One N)) -> (f : Elem (OneHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Proof (Eqt (Elem M -> Elem N) (OneHom__copy M N f f' h) f') :=
+  M => N => x => x1 => f => f' => h => rfl (Elem M -> Elem N) (OneHom__copy M N f f' h).
 
 (; //LEAN:OneHom.coe_copy_eq ;)
-def OneHom__coe_copy_eq : (M : Set) -> (N : Set) -> (x : Proof (One M)) -> (x1 : Proof (One N)) -> (f : Elem (OneHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Proof (Eqt (OneHom M N) (OneHom__copy M N f f' h) f) :=
+def OneHom__coe_copy_eq : (M : Set) -> (N : Set) -> (x : Proof (One M)) -> (x1 : Proof (One N)) -> (f : Elem (OneHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Proof (Eqt (OneHom M N) (OneHom__copy M N f f' h) f) :=
   M => N => x => x1 => f => f' => h => DFunLike__ext' (OneHom M N) M (x2 => N) (OneHom__copy M N f f' h) f h.
 
 (; //LEAN:ZeroHom.coe_copy_eq ;)
-def ZeroHom__coe_copy_eq : (M : Set) -> (N : Set) -> (x : Proof (Zero M)) -> (x1 : Proof (Zero N)) -> (f : Elem (ZeroHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Proof (Eqt (ZeroHom M N) (ZeroHom__copy M N f f' h) f) :=
+def ZeroHom__coe_copy_eq : (M : Set) -> (N : Set) -> (x : Proof (Zero M)) -> (x1 : Proof (Zero N)) -> (f : Elem (ZeroHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Proof (Eqt (ZeroHom M N) (ZeroHom__copy M N f f' h) f) :=
   M => N => x => x1 => f => f' => h => DFunLike__ext' (ZeroHom M N) M (x2 => N) (ZeroHom__copy M N f f' h) f h.
 
 (; //LEAN:MulHom.copy ;)
-def MulHom__copy : (M : Set) -> (N : Set) -> (f : Elem (MulHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Elem (MulHom M N) :=
+def MulHom__copy : (M : Set) -> (N : Set) -> (f : Elem (MulHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Elem (MulHom M N) :=
   M => N => f => f' => h => MulHom__mk M N f' (MulHom__copy___proof_1 M N f f' h).
 
 (; //LEAN:AddHom.copy ;)
-def AddHom__copy : (M : Set) -> (N : Set) -> (f : Elem (AddHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Elem (AddHom M N) :=
+def AddHom__copy : (M : Set) -> (N : Set) -> (f : Elem (AddHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Elem (AddHom M N) :=
   M => N => f => f' => h => AddHom__mk M N f' (AddHom__copy___proof_1 M N f f' h).
 
 (; //LEAN:MulHom.coe_copy ;)
-def MulHom__coe_copy : (M : Set) -> (N : Set) -> (x : Proof (Mul M)) -> (x1 : Proof (Mul N)) -> (f : Elem (MulHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Proof (Eqt (Elem M -> N) (MulHom__copy M N f f' h) f') :=
-  M => N => x => x1 => f => f' => h => rfl (Elem M -> N) (MulHom__copy M N f f' h).
+def MulHom__coe_copy : (M : Set) -> (N : Set) -> (x : Proof (Mul M)) -> (x1 : Proof (Mul N)) -> (f : Elem (MulHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Proof (Eqt (Elem M -> Elem N) (MulHom__copy M N f f' h) f') :=
+  M => N => x => x1 => f => f' => h => rfl (Elem M -> Elem N) (MulHom__copy M N f f' h).
 
 (; //LEAN:AddHom.coe_copy ;)
-def AddHom__coe_copy : (M : Set) -> (N : Set) -> (x : Proof (Add M)) -> (x1 : Proof (Add N)) -> (f : Elem (AddHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Proof (Eqt (Elem M -> N) (AddHom__copy M N f f' h) f') :=
-  M => N => x => x1 => f => f' => h => rfl (Elem M -> N) (AddHom__copy M N f f' h).
+def AddHom__coe_copy : (M : Set) -> (N : Set) -> (x : Proof (Add M)) -> (x1 : Proof (Add N)) -> (f : Elem (AddHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Proof (Eqt (Elem M -> Elem N) (AddHom__copy M N f f' h) f') :=
+  M => N => x => x1 => f => f' => h => rfl (Elem M -> Elem N) (AddHom__copy M N f f' h).
 
 (; //LEAN:AddHom.coe_copy_eq ;)
-def AddHom__coe_copy_eq : (M : Set) -> (N : Set) -> (x : Proof (Add M)) -> (x1 : Proof (Add N)) -> (f : Elem (AddHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Proof (Eqt (AddHom M N) (AddHom__copy M N f f' h) f) :=
+def AddHom__coe_copy_eq : (M : Set) -> (N : Set) -> (x : Proof (Add M)) -> (x1 : Proof (Add N)) -> (f : Elem (AddHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Proof (Eqt (AddHom M N) (AddHom__copy M N f f' h) f) :=
   M => N => x => x1 => f => f' => h => DFunLike__ext' (AddHom M N) M (x2 => N) (AddHom__copy M N f f' h) f h.
 
 (; //LEAN:MulHom.coe_copy_eq ;)
-def MulHom__coe_copy_eq : (M : Set) -> (N : Set) -> (x : Proof (Mul M)) -> (x1 : Proof (Mul N)) -> (f : Elem (MulHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Proof (Eqt (MulHom M N) (MulHom__copy M N f f' h) f) :=
+def MulHom__coe_copy_eq : (M : Set) -> (N : Set) -> (x : Proof (Mul M)) -> (x1 : Proof (Mul N)) -> (f : Elem (MulHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Proof (Eqt (MulHom M N) (MulHom__copy M N f f' h) f) :=
   M => N => x => x1 => f => f' => h => DFunLike__ext' (MulHom M N) M (x2 => N) (MulHom__copy M N f f' h) f h.
 
 (; //LEAN:MonoidHom.copy ;)
-def MonoidHom__copy : (M : Set) -> (N : Set) -> (f : Elem (MonoidHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Elem (MonoidHom M N) :=
+def MonoidHom__copy : (M : Set) -> (N : Set) -> (f : Elem (MonoidHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Elem (MonoidHom M N) :=
   M => N => f => f' => h => MonoidHom__mk M N (OneHom__copy M N (MonoidHom__toOneHom M N f) f' h) (MonoidHom__copy___proof_1 M N f f' h).
 
 (; //LEAN:AddMonoidHom.copy ;)
-def AddMonoidHom__copy : (M : Set) -> (N : Set) -> (f : Elem (AddMonoidHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Elem (AddMonoidHom M N) :=
+def AddMonoidHom__copy : (M : Set) -> (N : Set) -> (f : Elem (AddMonoidHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Elem (AddMonoidHom M N) :=
   M => N => f => f' => h => AddMonoidHom__mk M N (ZeroHom__copy M N (AddMonoidHom__toZeroHom M N f) f' h) (AddMonoidHom__copy___proof_1 M N f f' h).
 
 (; //LEAN:AddMonoidHom.coe_copy ;)
-def AddMonoidHom__coe_copy : (M : Set) -> (N : Set) -> (x : Proof (AddZero M)) -> (x1 : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Proof (Eqt (Elem M -> N) (AddMonoidHom__copy M N f f' h) f') :=
-  M => N => x => x1 => f => f' => h => rfl (Elem M -> N) (AddMonoidHom__copy M N f f' h).
+def AddMonoidHom__coe_copy : (M : Set) -> (N : Set) -> (x : Proof (AddZero M)) -> (x1 : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Proof (Eqt (Elem M -> Elem N) (AddMonoidHom__copy M N f f' h) f') :=
+  M => N => x => x1 => f => f' => h => rfl (Elem M -> Elem N) (AddMonoidHom__copy M N f f' h).
 
 (; //LEAN:MonoidHom.coe_copy ;)
-def MonoidHom__coe_copy : (M : Set) -> (N : Set) -> (x : Proof (MulOne M)) -> (x1 : Proof (MulOne N)) -> (f : Elem (MonoidHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Proof (Eqt (Elem M -> N) (MonoidHom__copy M N f f' h) f') :=
-  M => N => x => x1 => f => f' => h => rfl (Elem M -> N) (MonoidHom__copy M N f f' h).
+def MonoidHom__coe_copy : (M : Set) -> (N : Set) -> (x : Proof (MulOne M)) -> (x1 : Proof (MulOne N)) -> (f : Elem (MonoidHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Proof (Eqt (Elem M -> Elem N) (MonoidHom__copy M N f f' h) f') :=
+  M => N => x => x1 => f => f' => h => rfl (Elem M -> Elem N) (MonoidHom__copy M N f f' h).
 
 (; //LEAN:MonoidHom.copy_eq ;)
-def MonoidHom__copy_eq : (M : Set) -> (N : Set) -> (x : Proof (MulOne M)) -> (x1 : Proof (MulOne N)) -> (f : Elem (MonoidHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Proof (Eqt (MonoidHom M N) (MonoidHom__copy M N f f' h) f) :=
+def MonoidHom__copy_eq : (M : Set) -> (N : Set) -> (x : Proof (MulOne M)) -> (x1 : Proof (MulOne N)) -> (f : Elem (MonoidHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Proof (Eqt (MonoidHom M N) (MonoidHom__copy M N f f' h) f) :=
   M => N => x => x1 => f => f' => h => DFunLike__ext' (MonoidHom M N) M (x2 => N) (MonoidHom__copy M N f f' h) f h.
 
 (; //LEAN:AddMonoidHom.copy_eq ;)
-def AddMonoidHom__copy_eq : (M : Set) -> (N : Set) -> (x : Proof (AddZero M)) -> (x1 : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> (f' : (Elem M -> N)) -> (h : Proof (Eqt (Elem M -> N) f' f)) -> Proof (Eqt (AddMonoidHom M N) (AddMonoidHom__copy M N f f' h) f) :=
+def AddMonoidHom__copy_eq : (M : Set) -> (N : Set) -> (x : Proof (AddZero M)) -> (x1 : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> (f' : (Elem M -> Elem N)) -> (h : Proof (Eqt (Elem M -> Elem N) f' f)) -> Proof (Eqt (AddMonoidHom M N) (AddMonoidHom__copy M N f f' h) f) :=
   M => N => x => x1 => f => f' => h => DFunLike__ext' (AddMonoidHom M N) M (x2 => N) (AddMonoidHom__copy M N f f' h) f h.
 
 (; //LEAN:OneHom.map_one ;)
@@ -675,28 +675,28 @@ def AddMonoidHom__id : (M : Set) -> Elem (AddMonoidHom M M) :=
   M => AddMonoidHom__mk M M (ZeroHom__mk M M (x1 => x1) (AddMonoidHom__id___proof_1 M)) (AddMonoidHom__id___proof_2 M).
 
 (; //LEAN:ZeroHom.coe_id ;)
-def ZeroHom__coe_id : (M : Set) -> Proof (Eqt (Elem M -> M) (ZeroHom__id M) (id M)) :=
-  M => rfl (Elem M -> M) (ZeroHom__id M).
+def ZeroHom__coe_id : (M : Set) -> Proof (Eqt (Elem M -> Elem M) (ZeroHom__id M) (id M)) :=
+  M => rfl (Elem M -> Elem M) (ZeroHom__id M).
 
 (; //LEAN:OneHom.coe_id ;)
-def OneHom__coe_id : (M : Set) -> Proof (Eqt (Elem M -> M) (OneHom__id M) (id M)) :=
-  M => rfl (Elem M -> M) (OneHom__id M).
+def OneHom__coe_id : (M : Set) -> Proof (Eqt (Elem M -> Elem M) (OneHom__id M) (id M)) :=
+  M => rfl (Elem M -> Elem M) (OneHom__id M).
 
 (; //LEAN:AddHom.coe_id ;)
-def AddHom__coe_id : (M : Set) -> Proof (Eqt (Elem M -> M) (AddHom__id M) (id M)) :=
-  M => rfl (Elem M -> M) (AddHom__id M).
+def AddHom__coe_id : (M : Set) -> Proof (Eqt (Elem M -> Elem M) (AddHom__id M) (id M)) :=
+  M => rfl (Elem M -> Elem M) (AddHom__id M).
 
 (; //LEAN:MulHom.coe_id ;)
-def MulHom__coe_id : (M : Set) -> Proof (Eqt (Elem M -> M) (MulHom__id M) (id M)) :=
-  M => rfl (Elem M -> M) (MulHom__id M).
+def MulHom__coe_id : (M : Set) -> Proof (Eqt (Elem M -> Elem M) (MulHom__id M) (id M)) :=
+  M => rfl (Elem M -> Elem M) (MulHom__id M).
 
 (; //LEAN:MonoidHom.coe_id ;)
-def MonoidHom__coe_id : (M : Set) -> (_ : Proof (MulOne M)) -> Proof (Eqt (Elem M -> M) (MonoidHom__id M) (id M)) :=
-  M => x => rfl (Elem M -> M) (MonoidHom__id M).
+def MonoidHom__coe_id : (M : Set) -> (_ : Proof (MulOne M)) -> Proof (Eqt (Elem M -> Elem M) (MonoidHom__id M) (id M)) :=
+  M => x => rfl (Elem M -> Elem M) (MonoidHom__id M).
 
 (; //LEAN:AddMonoidHom.coe_id ;)
-def AddMonoidHom__coe_id : (M : Set) -> (_ : Proof (AddZero M)) -> Proof (Eqt (Elem M -> M) (AddMonoidHom__id M) (id M)) :=
-  M => x => rfl (Elem M -> M) (AddMonoidHom__id M).
+def AddMonoidHom__coe_id : (M : Set) -> (_ : Proof (AddZero M)) -> Proof (Eqt (Elem M -> Elem M) (AddMonoidHom__id M) (id M)) :=
+  M => x => rfl (Elem M -> Elem M) (AddMonoidHom__id M).
 
 (; //LEAN:OneHom.comp ;)
 def OneHom__comp : (M : Set) -> (N : Set) -> (P : Set) -> (hnp : Elem (OneHom N P)) -> (hmn : Elem (OneHom M N)) -> Elem (OneHom M P) :=
@@ -723,28 +723,28 @@ def AddMonoidHom__comp : (M : Set) -> (N : Set) -> (P : Set) -> (hnp : Elem (Add
   M => N => P => hnp => hmn => AddMonoidHom__mk M P (ZeroHom__mk M P (x3 => hnp (hmn x3)) (AddMonoidHom__comp___proof_1 M N P hnp hmn)) (AddMonoidHom__comp___proof_2 M N P hnp hmn).
 
 (; //LEAN:ZeroHom.coe_comp ;)
-def ZeroHom__coe_comp : (M : Set) -> (N : Set) -> (P : Set) -> (g : Elem (ZeroHom N P)) -> (f : Elem (ZeroHom M N)) -> Proof (Eqt (Elem M -> P) (ZeroHom__comp M N P g f) (Function__comp M N P g f)) :=
-  M => N => P => g => f => rfl (Elem M -> P) (ZeroHom__comp M N P g f).
+def ZeroHom__coe_comp : (M : Set) -> (N : Set) -> (P : Set) -> (g : Elem (ZeroHom N P)) -> (f : Elem (ZeroHom M N)) -> Proof (Eqt (Elem M -> Elem P) (ZeroHom__comp M N P g f) (Function__comp M N P g f)) :=
+  M => N => P => g => f => rfl (Elem M -> Elem P) (ZeroHom__comp M N P g f).
 
 (; //LEAN:OneHom.coe_comp ;)
-def OneHom__coe_comp : (M : Set) -> (N : Set) -> (P : Set) -> (g : Elem (OneHom N P)) -> (f : Elem (OneHom M N)) -> Proof (Eqt (Elem M -> P) (OneHom__comp M N P g f) (Function__comp M N P g f)) :=
-  M => N => P => g => f => rfl (Elem M -> P) (OneHom__comp M N P g f).
+def OneHom__coe_comp : (M : Set) -> (N : Set) -> (P : Set) -> (g : Elem (OneHom N P)) -> (f : Elem (OneHom M N)) -> Proof (Eqt (Elem M -> Elem P) (OneHom__comp M N P g f) (Function__comp M N P g f)) :=
+  M => N => P => g => f => rfl (Elem M -> Elem P) (OneHom__comp M N P g f).
 
 (; //LEAN:MulHom.coe_comp ;)
-def MulHom__coe_comp : (M : Set) -> (N : Set) -> (P : Set) -> (g : Elem (MulHom N P)) -> (f : Elem (MulHom M N)) -> Proof (Eqt (Elem M -> P) (MulHom__comp M N P g f) (Function__comp M N P g f)) :=
-  M => N => P => g => f => rfl (Elem M -> P) (MulHom__comp M N P g f).
+def MulHom__coe_comp : (M : Set) -> (N : Set) -> (P : Set) -> (g : Elem (MulHom N P)) -> (f : Elem (MulHom M N)) -> Proof (Eqt (Elem M -> Elem P) (MulHom__comp M N P g f) (Function__comp M N P g f)) :=
+  M => N => P => g => f => rfl (Elem M -> Elem P) (MulHom__comp M N P g f).
 
 (; //LEAN:AddHom.coe_comp ;)
-def AddHom__coe_comp : (M : Set) -> (N : Set) -> (P : Set) -> (g : Elem (AddHom N P)) -> (f : Elem (AddHom M N)) -> Proof (Eqt (Elem M -> P) (AddHom__comp M N P g f) (Function__comp M N P g f)) :=
-  M => N => P => g => f => rfl (Elem M -> P) (AddHom__comp M N P g f).
+def AddHom__coe_comp : (M : Set) -> (N : Set) -> (P : Set) -> (g : Elem (AddHom N P)) -> (f : Elem (AddHom M N)) -> Proof (Eqt (Elem M -> Elem P) (AddHom__comp M N P g f) (Function__comp M N P g f)) :=
+  M => N => P => g => f => rfl (Elem M -> Elem P) (AddHom__comp M N P g f).
 
 (; //LEAN:AddMonoidHom.coe_comp ;)
-def AddMonoidHom__coe_comp : (M : Set) -> (N : Set) -> (P : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (_ : Proof (AddZero P)) -> (g : Elem (AddMonoidHom N P)) -> (f : Elem (AddMonoidHom M N)) -> Proof (Eqt (Elem M -> P) (AddMonoidHom__comp M N P g f) (Function__comp M N P g f)) :=
-  M => N => P => x => x1 => x2 => g => f => rfl (Elem M -> P) (AddMonoidHom__comp M N P g f).
+def AddMonoidHom__coe_comp : (M : Set) -> (N : Set) -> (P : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (_ : Proof (AddZero P)) -> (g : Elem (AddMonoidHom N P)) -> (f : Elem (AddMonoidHom M N)) -> Proof (Eqt (Elem M -> Elem P) (AddMonoidHom__comp M N P g f) (Function__comp M N P g f)) :=
+  M => N => P => x => x1 => x2 => g => f => rfl (Elem M -> Elem P) (AddMonoidHom__comp M N P g f).
 
 (; //LEAN:MonoidHom.coe_comp ;)
-def MonoidHom__coe_comp : (M : Set) -> (N : Set) -> (P : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> (_ : Proof (MulOne P)) -> (g : Elem (MonoidHom N P)) -> (f : Elem (MonoidHom M N)) -> Proof (Eqt (Elem M -> P) (MonoidHom__comp M N P g f) (Function__comp M N P g f)) :=
-  M => N => P => x => x1 => x2 => g => f => rfl (Elem M -> P) (MonoidHom__comp M N P g f).
+def MonoidHom__coe_comp : (M : Set) -> (N : Set) -> (P : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> (_ : Proof (MulOne P)) -> (g : Elem (MonoidHom N P)) -> (f : Elem (MonoidHom M N)) -> Proof (Eqt (Elem M -> Elem P) (MonoidHom__comp M N P g f) (Function__comp M N P g f)) :=
+  M => N => P => x => x1 => x2 => g => f => rfl (Elem M -> Elem P) (MonoidHom__comp M N P g f).
 
 (; //LEAN:OneHom.comp_apply ;)
 def OneHom__comp_apply : (M : Set) -> (N : Set) -> (P : Set) -> (g : Elem (OneHom N P)) -> (f : Elem (OneHom M N)) -> (x3 : Elem M) -> Proof (Eqt P (OneHom__comp__app g f x3) (g (f x3))) :=
@@ -832,19 +832,19 @@ AddMonoidHom__cancel_left : (M : Set) -> (N : Set) -> (P : Set) -> (_ : Proof (A
 
 (; //LEAN:AddMonoidHom.toZeroHom_injective ;)
 def AddMonoidHom__toZeroHom_injective : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> Proof (Function__Injective (AddMonoidHom M N) (ZeroHom M N) (AddMonoidHom__toZeroHom M N)) :=
-  M => N => x => x1 => Function__Injective__of_comp (ZeroHom M N) (Elem M -> N) (AddMonoidHom M N) (DFunLike__coe (ZeroHom M N) M (x2 => N)) (AddMonoidHom__toZeroHom M N) (DFunLike__coe_injective (AddMonoidHom M N) M (x3 => N)).
+  M => N => x => x1 => Function__Injective__of_comp (ZeroHom M N) (Elem M -> Elem N) (AddMonoidHom M N) (DFunLike__coe (ZeroHom M N) M (x2 => N)) (AddMonoidHom__toZeroHom M N) (DFunLike__coe_injective (AddMonoidHom M N) M (x3 => N)).
 
 (; //LEAN:MonoidHom.toOneHom_injective ;)
 def MonoidHom__toOneHom_injective : (M : Set) -> (N : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> Proof (Function__Injective (MonoidHom M N) (OneHom M N) (MonoidHom__toOneHom M N)) :=
-  M => N => x => x1 => Function__Injective__of_comp (OneHom M N) (Elem M -> N) (MonoidHom M N) (DFunLike__coe (OneHom M N) M (x2 => N)) (MonoidHom__toOneHom M N) (DFunLike__coe_injective (MonoidHom M N) M (x3 => N)).
+  M => N => x => x1 => Function__Injective__of_comp (OneHom M N) (Elem M -> Elem N) (MonoidHom M N) (DFunLike__coe (OneHom M N) M (x2 => N)) (MonoidHom__toOneHom M N) (DFunLike__coe_injective (MonoidHom M N) M (x3 => N)).
 
 (; //LEAN:MonoidHom.toMulHom_injective ;)
 def MonoidHom__toMulHom_injective : (M : Set) -> (N : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> Proof (Function__Injective (MonoidHom M N) (MulHom M N) (MonoidHom__toMulHom M N)) :=
-  M => N => x => x1 => Function__Injective__of_comp (MulHom M N) (Elem M -> N) (MonoidHom M N) (DFunLike__coe (MulHom M N) M (x2 => N)) (MonoidHom__toMulHom M N) (DFunLike__coe_injective (MonoidHom M N) M (x3 => N)).
+  M => N => x => x1 => Function__Injective__of_comp (MulHom M N) (Elem M -> Elem N) (MonoidHom M N) (DFunLike__coe (MulHom M N) M (x2 => N)) (MonoidHom__toMulHom M N) (DFunLike__coe_injective (MonoidHom M N) M (x3 => N)).
 
 (; //LEAN:AddMonoidHom.toAddHom_injective ;)
 def AddMonoidHom__toAddHom_injective : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> Proof (Function__Injective (AddMonoidHom M N) (AddHom M N) (AddMonoidHom__toAddHom M N)) :=
-  M => N => x => x1 => Function__Injective__of_comp (AddHom M N) (Elem M -> N) (AddMonoidHom M N) (DFunLike__coe (AddHom M N) M (x2 => N)) (AddMonoidHom__toAddHom M N) (DFunLike__coe_injective (AddMonoidHom M N) M (x3 => N)).
+  M => N => x => x1 => Function__Injective__of_comp (AddHom M N) (Elem M -> Elem N) (AddMonoidHom M N) (DFunLike__coe (AddHom M N) M (x2 => N)) (AddMonoidHom__toAddHom M N) (DFunLike__coe_injective (AddMonoidHom M N) M (x3 => N)).
 
 (; //LEAN:ZeroHom.comp_id ;)
 def ZeroHom__comp_id : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> Proof (Eqt (ZeroHom M N) (ZeroHom__comp M M N f (ZeroHom__id M)) f) :=
@@ -888,11 +888,11 @@ def AddHom__id_comp : (M : Set) -> (N : Set) -> (f : Elem (AddHom M N)) -> Proof
 
 (; //LEAN:MonoidHom.id_comp ;)
 def MonoidHom__id_comp : (M : Set) -> (N : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOne N)) -> (f : Elem (MonoidHom M N)) -> Proof (Eqt (MonoidHom M N) (MonoidHom__comp M N N (MonoidHom__id N) f) f) :=
-  M => N => x => x1 => f => MonoidHom__ext M N (MonoidHom__comp M N N (MonoidHom__id N) f) f (forallI M (x2 => Eqt N (MonoidHom__comp__app (MonoidHom__id N) f x2) (MonoidHom__comp__app (MonoidHom__id N) f x2)) (x2 => rfl N (MonoidHom__comp__app (MonoidHom__id N) f x2))).
+  M => N => x => x1 => f => rfl (MonoidHom M N) (MonoidHom__comp M N N (MonoidHom__id N) f).
 
 (; //LEAN:AddMonoidHom.id_comp ;)
 def AddMonoidHom__id_comp : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (f : Elem (AddMonoidHom M N)) -> Proof (Eqt (AddMonoidHom M N) (AddMonoidHom__comp M N N (AddMonoidHom__id N) f) f) :=
-  M => N => x => x1 => f => AddMonoidHom__ext M N (AddMonoidHom__comp M N N (AddMonoidHom__id N) f) f (forallI M (x2 => Eqt N (AddMonoidHom__comp__app (AddMonoidHom__id N) f x2) (AddMonoidHom__comp__app (AddMonoidHom__id N) f x2)) (x2 => rfl N (AddMonoidHom__comp__app (AddMonoidHom__id N) f x2))).
+  M => N => x => x1 => f => rfl (AddMonoidHom M N) (AddMonoidHom__comp M N N (AddMonoidHom__id N) f).
 
 (; //LEAN:MonoidHom.map_pow ;)
 def MonoidHom__map_pow : (M : Set) -> (N : Set) -> (_ : Proof (Monoid M)) -> (_ : Proof (Monoid N)) -> (f : Elem (MonoidHom M N)) -> (a : Elem M) -> (n : Elem Nat) -> Proof (Eqt N (f (pow a n)) (pow (f a) n)) :=
@@ -911,31 +911,31 @@ def AddMonoidHom__map_zsmul' : (M : Set) -> (N : Set) -> (_ : Proof (SubNegMonoi
   M => N => x => x1 => f => hf => n => a => map_zsmul' M N (AddMonoidHom M N) f hf a n.
 
 (; //LEAN:OneHom.inverse ;)
-def OneHom__inverse : (M : Set) -> (N : Set) -> (f : Elem (OneHom M N)) -> (g : (Elem N -> M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> Elem (OneHom N M) :=
+def OneHom__inverse : (M : Set) -> (N : Set) -> (f : Elem (OneHom M N)) -> (g : (Elem N -> Elem M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> Elem (OneHom N M) :=
   M => N => f => g => h1 => OneHom__mk N M g (OneHom__inverse___proof_1 M N f g h1).
 
 (; //LEAN:ZeroHom.inverse_apply ;)
-ZeroHom__inverse_apply : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> (g : (Elem N -> M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> (x2 : Elem N) -> Proof (Eqt M (ZeroHom__inverse__app f g h1 x2) (g x2)).
+ZeroHom__inverse_apply : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> (g : (Elem N -> Elem M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> (x2 : Elem N) -> Proof (Eqt M (ZeroHom__inverse__app f g h1 x2) (g x2)).
 
 (; //LEAN:ZeroHom.inverse ;)
-def ZeroHom__inverse : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> (g : (Elem N -> M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> Elem (ZeroHom N M) :=
+def ZeroHom__inverse : (M : Set) -> (N : Set) -> (f : Elem (ZeroHom M N)) -> (g : (Elem N -> Elem M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> Elem (ZeroHom N M) :=
   M => N => f => g => h1 => ZeroHom__mk N M g (ZeroHom__inverse___proof_1 M N f g h1).
 
 (; //LEAN:OneHom.inverse_apply ;)
-OneHom__inverse_apply : (M : Set) -> (N : Set) -> (f : Elem (OneHom M N)) -> (g : (Elem N -> M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> (x2 : Elem N) -> Proof (Eqt M (OneHom__inverse__app f g h1 x2) (g x2)).
+OneHom__inverse_apply : (M : Set) -> (N : Set) -> (f : Elem (OneHom M N)) -> (g : (Elem N -> Elem M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> (x2 : Elem N) -> Proof (Eqt M (OneHom__inverse__app f g h1 x2) (g x2)).
 
 (; //LEAN:MulHom.inverse ;)
-def MulHom__inverse : (M : Set) -> (N : Set) -> (f : Elem (MulHom M N)) -> (g : (Elem N -> M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> (h2 : Proof (Function__RightInverse M N g f)) -> Elem (MulHom N M) :=
+def MulHom__inverse : (M : Set) -> (N : Set) -> (f : Elem (MulHom M N)) -> (g : (Elem N -> Elem M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> (h2 : Proof (Function__RightInverse M N g f)) -> Elem (MulHom N M) :=
   M => N => f => g => h1 => h2 => MulHom__mk N M g (MulHom__inverse___proof_3 M N f g h1 h2).
 
 (; //LEAN:MulHom.inverse_apply ;)
-MulHom__inverse_apply : (M : Set) -> (N : Set) -> (f : Elem (MulHom M N)) -> (g : (Elem N -> M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> (h2 : Proof (Function__RightInverse M N g f)) -> (x2 : Elem N) -> Proof (Eqt M (MulHom__inverse__app f g h1 h2 x2) (g x2)).
+MulHom__inverse_apply : (M : Set) -> (N : Set) -> (f : Elem (MulHom M N)) -> (g : (Elem N -> Elem M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> (h2 : Proof (Function__RightInverse M N g f)) -> (x2 : Elem N) -> Proof (Eqt M (MulHom__inverse__app f g h1 h2 x2) (g x2)).
 
 (; //LEAN:AddHom.inverse_apply ;)
-AddHom__inverse_apply : (M : Set) -> (N : Set) -> (f : Elem (AddHom M N)) -> (g : (Elem N -> M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> (h2 : Proof (Function__RightInverse M N g f)) -> (x2 : Elem N) -> Proof (Eqt M (AddHom__inverse__app f g h1 h2 x2) (g x2)).
+AddHom__inverse_apply : (M : Set) -> (N : Set) -> (f : Elem (AddHom M N)) -> (g : (Elem N -> Elem M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> (h2 : Proof (Function__RightInverse M N g f)) -> (x2 : Elem N) -> Proof (Eqt M (AddHom__inverse__app f g h1 h2 x2) (g x2)).
 
 (; //LEAN:AddHom.inverse ;)
-def AddHom__inverse : (M : Set) -> (N : Set) -> (f : Elem (AddHom M N)) -> (g : (Elem N -> M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> (h2 : Proof (Function__RightInverse M N g f)) -> Elem (AddHom N M) :=
+def AddHom__inverse : (M : Set) -> (N : Set) -> (f : Elem (AddHom M N)) -> (g : (Elem N -> Elem M)) -> (h1 : Proof (Function__LeftInverse M N g f)) -> (h2 : Proof (Function__RightInverse M N g f)) -> Elem (AddHom N M) :=
   M => N => f => g => h1 => h2 => AddHom__mk N M g (AddHom__inverse___proof_3 M N f g h1 h2).
 
 (; //LEAN:Function.Surjective.isMulCommutative ;)
@@ -945,18 +945,18 @@ Function__Surjective__isMulCommutative : (M : Set) -> (N : Set) -> (F : Set) -> 
 Function__Surjective__isAddCommutative : (M : Set) -> (N : Set) -> (F : Set) -> (f : Elem F) -> (is_surj : Proof (Function__Surjective M N f)) -> (_ : Proof (IsAddCommutative M)) -> Proof (IsAddCommutative N).
 
 (; //LEAN:MonoidHom.inverse ;)
-def MonoidHom__inverse : (A : Set) -> (B : Set) -> (f : Elem (MonoidHom A B)) -> (g : (Elem B -> A)) -> (h1 : Proof (Function__LeftInverse A B g f)) -> (h2 : Proof (Function__RightInverse A B g f)) -> Elem (MonoidHom B A) :=
+def MonoidHom__inverse : (A : Set) -> (B : Set) -> (f : Elem (MonoidHom A B)) -> (g : (Elem B -> Elem A)) -> (h1 : Proof (Function__LeftInverse A B g f)) -> (h2 : Proof (Function__RightInverse A B g f)) -> Elem (MonoidHom B A) :=
   A => B => f => g => h1 => h2 => MonoidHom__mk B A (OneHom__mk B A g (MonoidHom__inverse___proof_3 A B f g h1)) (MonoidHom__inverse___proof_4 A B f g h1 h2).
 
-(; //LEAN:AddMonoidHom.inverse_apply ;)
-AddMonoidHom__inverse_apply : (A : Set) -> (B : Set) -> (_ : Proof (AddMonoid A)) -> (_ : Proof (AddMonoid B)) -> (f : Elem (AddMonoidHom A B)) -> (g : (Elem B -> A)) -> (h1 : Proof (Function__LeftInverse A B g f)) -> (h2 : Proof (Function__RightInverse A B g f)) -> (x2 : Elem B) -> Proof (Eqt A (AddMonoidHom__inverse__app f g h1 h2 x2) (g x2)).
+(; //LEAN:AddMonoidHom.inverse ;)
+def AddMonoidHom__inverse : (A : Set) -> (B : Set) -> (f : Elem (AddMonoidHom A B)) -> (g : (Elem B -> Elem A)) -> (h1 : Proof (Function__LeftInverse A B g f)) -> (h2 : Proof (Function__RightInverse A B g f)) -> Elem (AddMonoidHom B A) :=
+  A => B => f => g => h1 => h2 => AddMonoidHom__mk B A (ZeroHom__mk B A g (AddMonoidHom__inverse___proof_3 A B f g h1)) (AddMonoidHom__inverse___proof_4 A B f g h1 h2).
 
 (; //LEAN:MonoidHom.inverse_apply ;)
-MonoidHom__inverse_apply : (A : Set) -> (B : Set) -> (_ : Proof (Monoid A)) -> (_ : Proof (Monoid B)) -> (f : Elem (MonoidHom A B)) -> (g : (Elem B -> A)) -> (h1 : Proof (Function__LeftInverse A B g f)) -> (h2 : Proof (Function__RightInverse A B g f)) -> (x2 : Elem B) -> Proof (Eqt A (MonoidHom__inverse__app f g h1 h2 x2) (g x2)).
+MonoidHom__inverse_apply : (A : Set) -> (B : Set) -> (_ : Proof (Monoid A)) -> (_ : Proof (Monoid B)) -> (f : Elem (MonoidHom A B)) -> (g : (Elem B -> Elem A)) -> (h1 : Proof (Function__LeftInverse A B g f)) -> (h2 : Proof (Function__RightInverse A B g f)) -> (x2 : Elem B) -> Proof (Eqt A (MonoidHom__inverse__app f g h1 h2 x2) (g x2)).
 
-(; //LEAN:AddMonoidHom.inverse ;)
-def AddMonoidHom__inverse : (A : Set) -> (B : Set) -> (f : Elem (AddMonoidHom A B)) -> (g : (Elem B -> A)) -> (h1 : Proof (Function__LeftInverse A B g f)) -> (h2 : Proof (Function__RightInverse A B g f)) -> Elem (AddMonoidHom B A) :=
-  A => B => f => g => h1 => h2 => AddMonoidHom__mk B A (ZeroHom__mk B A g (AddMonoidHom__inverse___proof_3 A B f g h1)) (AddMonoidHom__inverse___proof_4 A B f g h1 h2).
+(; //LEAN:AddMonoidHom.inverse_apply ;)
+AddMonoidHom__inverse_apply : (A : Set) -> (B : Set) -> (_ : Proof (AddMonoid A)) -> (_ : Proof (AddMonoid B)) -> (f : Elem (AddMonoidHom A B)) -> (g : (Elem B -> Elem A)) -> (h1 : Proof (Function__LeftInverse A B g f)) -> (h2 : Proof (Function__RightInverse A B g f)) -> (x2 : Elem B) -> Proof (Eqt A (AddMonoidHom__inverse__app f g h1 h2 x2) (g x2)).
 
 (; //LEAN:Monoid.End ;)
 def Monoid__End : (M : Set) -> Set :=
@@ -966,10 +966,6 @@ def Monoid__End : (M : Set) -> Set :=
 def AddMonoid__End : (M : Set) -> Set :=
   M => AddMonoidHom M M.
 
-(; //LEAN:AddMonoid.End.ext ;)
-def AddMonoid__End__ext : (M : Set) -> (_ : Proof (AddZero M)) -> (f : Elem (AddMonoid__End M)) -> (g : Elem (AddMonoid__End M)) -> (h : Proof (forall M (x1 => Eqt M (f x1) (g x1)))) -> Proof (Eqt (AddMonoid__End M) f g) :=
-  M => x => f => g => h => DFunLike__ext (AddMonoid__End M) M (x1 => M) f g h.
-
 (; //LEAN:Monoid.End.ext_iff ;)
 Monoid__End__ext_iff : (M : Set) -> (_ : Proof (MulOne M)) -> (f : Elem (Monoid__End M)) -> (g : Elem (Monoid__End M)) -> Proof (iff (Eqt (Monoid__End M) f g) (forall M (x1 => Eqt M (f x1) (g x1)))).
 
@@ -977,56 +973,52 @@ Monoid__End__ext_iff : (M : Set) -> (_ : Proof (MulOne M)) -> (f : Elem (Monoid_
 def Monoid__End__ext : (M : Set) -> (_ : Proof (MulOne M)) -> (f : Elem (Monoid__End M)) -> (g : Elem (Monoid__End M)) -> (h : Proof (forall M (x1 => Eqt M (f x1) (g x1)))) -> Proof (Eqt (Monoid__End M) f g) :=
   M => x => f => g => h => DFunLike__ext (Monoid__End M) M (x1 => M) f g h.
 
+(; //LEAN:AddMonoid.End.ext ;)
+def AddMonoid__End__ext : (M : Set) -> (_ : Proof (AddZero M)) -> (f : Elem (AddMonoid__End M)) -> (g : Elem (AddMonoid__End M)) -> (h : Proof (forall M (x1 => Eqt M (f x1) (g x1)))) -> Proof (Eqt (AddMonoid__End M) f g) :=
+  M => x => f => g => h => DFunLike__ext (AddMonoid__End M) M (x1 => M) f g h.
+
 (; //LEAN:AddMonoid.End.ext_iff ;)
 AddMonoid__End__ext_iff : (M : Set) -> (_ : Proof (AddZero M)) -> (f : Elem (AddMonoid__End M)) -> (g : Elem (AddMonoid__End M)) -> Proof (iff (Eqt (AddMonoid__End M) f g) (forall M (x1 => Eqt M (f x1) (g x1)))).
 
 (; //LEAN:AddMonoid.End.coe_pow ;)
-def AddMonoid__End__coe_pow : (M : Set) -> (_ : Proof (AddZero M)) -> (f : Elem (AddMonoid__End M)) -> (n : Elem Nat) -> Proof (Eqt (Elem M -> M) (pow f n) (Nat__iterate M f n)) :=
-  M => x => f => n => rfl (Elem M -> M) (pow f n).
+def AddMonoid__End__coe_pow : (M : Set) -> (_ : Proof (AddZero M)) -> (f : Elem (AddMonoid__End M)) -> (n : Elem Nat) -> Proof (Eqt (Elem M -> Elem M) (pow f n) (Nat__iterate M f n)) :=
+  M => x => f => n => rfl (Elem M -> Elem M) (pow f n).
 
 (; //LEAN:Monoid.End.coe_pow ;)
-def Monoid__End__coe_pow : (M : Set) -> (_ : Proof (MulOne M)) -> (f : Elem (Monoid__End M)) -> (n : Elem Nat) -> Proof (Eqt (Elem M -> M) (pow f n) (Nat__iterate M f n)) :=
-  M => x => f => n => rfl (Elem M -> M) (pow f n).
+def Monoid__End__coe_pow : (M : Set) -> (_ : Proof (MulOne M)) -> (f : Elem (Monoid__End M)) -> (n : Elem Nat) -> Proof (Eqt (Elem M -> Elem M) (pow f n) (Nat__iterate M f n)) :=
+  M => x => f => n => rfl (Elem M -> Elem M) (pow f n).
 
 (; //LEAN:AddMonoid.End.coe_one ;)
-def AddMonoid__End__coe_one : (M : Set) -> (_ : Proof (AddZero M)) -> Proof (Eqt (Elem M -> M) 1 (id M)) :=
-  M => x => rfl (Elem M -> M) 1.
+def AddMonoid__End__coe_one : (M : Set) -> (_ : Proof (AddZero M)) -> Proof (Eqt (Elem M -> Elem M) 1 (id M)) :=
+  M => x => rfl (Elem M -> Elem M) 1.
 
 (; //LEAN:Monoid.End.coe_one ;)
-def Monoid__End__coe_one : (M : Set) -> (_ : Proof (MulOne M)) -> Proof (Eqt (Elem M -> M) 1 (id M)) :=
-  M => x => rfl (Elem M -> M) 1.
-
-(; //LEAN:AddMonoid.End.coe_mul ;)
-def AddMonoid__End__coe_mul : (M : Set) -> (_ : Proof (AddZero M)) -> (f : Elem (AddMonoid__End M)) -> (g : Elem (AddMonoid__End M)) -> Proof (Eqt (Elem M -> M) (times f g) (Function__comp M M M f g)) :=
-  M => x => f => g => rfl (Elem M -> M) (times f g).
+def Monoid__End__coe_one : (M : Set) -> (_ : Proof (MulOne M)) -> Proof (Eqt (Elem M -> Elem M) 1 (id M)) :=
+  M => x => rfl (Elem M -> Elem M) 1.
 
 (; //LEAN:Monoid.End.coe_mul ;)
-def Monoid__End__coe_mul : (M : Set) -> (_ : Proof (MulOne M)) -> (f : Elem (Monoid__End M)) -> (g : Elem (Monoid__End M)) -> Proof (Eqt (Elem M -> M) (times f g) (Function__comp M M M f g)) :=
-  M => x => f => g => rfl (Elem M -> M) (times f g).
+def Monoid__End__coe_mul : (M : Set) -> (_ : Proof (MulOne M)) -> (f : Elem (Monoid__End M)) -> (g : Elem (Monoid__End M)) -> Proof (Eqt (Elem M -> Elem M) (times f g) (Function__comp M M M f g)) :=
+  M => x => f => g => rfl (Elem M -> Elem M) (times f g).
 
-(; //LEAN:ZeroHom.zero_apply ;)
-def ZeroHom__zero_apply : (M : Set) -> (N : Set) -> (x2 : Elem M) -> Proof (Eqt N (OfNat__ofNat__app 0 x2) 0) :=
-  M => N => x2 => rfl N (OfNat__ofNat__app 0 x2).
-
-(; //LEAN:OneHom.one_apply ;)
-def OneHom__one_apply : (M : Set) -> (N : Set) -> (x2 : Elem M) -> Proof (Eqt N (OfNat__ofNat__app 1 x2) 1) :=
-  M => N => x2 => rfl N (OfNat__ofNat__app 1 x2).
-
-(; //LEAN:AddMonoidHom.zero_apply ;)
-def AddMonoidHom__zero_apply : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZeroClass N)) -> (x2 : Elem M) -> Proof (Eqt N (OfNat__ofNat__app 0 x2) 0) :=
-  M => N => x => x1 => x2 => rfl N (OfNat__ofNat__app 0 x2).
+(; //LEAN:AddMonoid.End.coe_mul ;)
+def AddMonoid__End__coe_mul : (M : Set) -> (_ : Proof (AddZero M)) -> (f : Elem (AddMonoid__End M)) -> (g : Elem (AddMonoid__End M)) -> Proof (Eqt (Elem M -> Elem M) (times f g) (Function__comp M M M f g)) :=
+  M => x => f => g => rfl (Elem M -> Elem M) (times f g).
 
 (; //LEAN:MonoidHom.one_apply ;)
 def MonoidHom__one_apply : (M : Set) -> (N : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOneClass N)) -> (x2 : Elem M) -> Proof (Eqt N (OfNat__ofNat__app 1 x2) 1) :=
   M => N => x => x1 => x2 => rfl N (OfNat__ofNat__app 1 x2).
 
-(; //LEAN:ZeroHom.zero_comp ;)
-def ZeroHom__zero_comp : (M : Set) -> (N : Set) -> (P : Set) -> (f : Elem (ZeroHom M N)) -> Proof (Eqt (ZeroHom M P) (ZeroHom__comp M N P 0 f) 0) :=
-  M => N => P => f => rfl (ZeroHom M P) (ZeroHom__comp M N P 0 f).
+(; //LEAN:AddMonoidHom.zero_apply ;)
+def AddMonoidHom__zero_apply : (M : Set) -> (N : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZeroClass N)) -> (x2 : Elem M) -> Proof (Eqt N (OfNat__ofNat__app 0 x2) 0) :=
+  M => N => x => x1 => x2 => rfl N (OfNat__ofNat__app 0 x2).
 
 (; //LEAN:OneHom.one_comp ;)
 def OneHom__one_comp : (M : Set) -> (N : Set) -> (P : Set) -> (f : Elem (OneHom M N)) -> Proof (Eqt (OneHom M P) (OneHom__comp M N P 1 f) 1) :=
   M => N => P => f => rfl (OneHom M P) (OneHom__comp M N P 1 f).
+
+(; //LEAN:ZeroHom.zero_comp ;)
+def ZeroHom__zero_comp : (M : Set) -> (N : Set) -> (P : Set) -> (f : Elem (ZeroHom M N)) -> Proof (Eqt (ZeroHom M P) (ZeroHom__comp M N P 0 f) 0) :=
+  M => N => P => f => rfl (ZeroHom M P) (ZeroHom__comp M N P 0 f).
 
 (; //LEAN:ZeroHom.comp_zero ;)
 ZeroHom__comp_zero : (M : Set) -> (N : Set) -> (P : Set) -> (f : Elem (ZeroHom N P)) -> Proof (Eqt (ZeroHom M P) (ZeroHom__comp M N P f 0) 0).
@@ -1042,11 +1034,11 @@ def MonoidHom__one_comp : (M : Set) -> (N : Set) -> (P : Set) -> (_ : Proof (Mul
 def AddMonoidHom__zero_comp : (M : Set) -> (N : Set) -> (P : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZero N)) -> (_ : Proof (AddZeroClass P)) -> (f : Elem (AddMonoidHom M N)) -> Proof (Eqt (AddMonoidHom M P) (AddMonoidHom__comp M N P 0 f) 0) :=
   M => N => P => x => x1 => x2 => f => rfl (AddMonoidHom M P) (AddMonoidHom__comp M N P 0 f).
 
-(; //LEAN:MonoidHom.comp_one ;)
-MonoidHom__comp_one : (M : Set) -> (N : Set) -> (P : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOneClass N)) -> (_ : Proof (MulOneClass P)) -> (f : Elem (MonoidHom N P)) -> Proof (Eqt (MonoidHom M P) (MonoidHom__comp M N P f 1) 1).
-
 (; //LEAN:AddMonoidHom.comp_zero ;)
 AddMonoidHom__comp_zero : (M : Set) -> (N : Set) -> (P : Set) -> (_ : Proof (AddZero M)) -> (_ : Proof (AddZeroClass N)) -> (_ : Proof (AddZeroClass P)) -> (f : Elem (AddMonoidHom N P)) -> Proof (Eqt (AddMonoidHom M P) (AddMonoidHom__comp M N P f 0) 0).
+
+(; //LEAN:MonoidHom.comp_one ;)
+MonoidHom__comp_one : (M : Set) -> (N : Set) -> (P : Set) -> (_ : Proof (MulOne M)) -> (_ : Proof (MulOneClass N)) -> (_ : Proof (MulOneClass P)) -> (f : Elem (MonoidHom N P)) -> Proof (Eqt (MonoidHom M P) (MonoidHom__comp M N P f 1) 1).
 
 (; //LEAN:MonoidHom.map_inv ;)
 def MonoidHom__map_inv : (X : Set) -> (Y : Set) -> (_ : Proof (Group X)) -> (_ : Proof (DivisionMonoid Y)) -> (f : Elem (MonoidHom X Y)) -> (a : Elem X) -> Proof (Eqt Y (f (Inv__inv X a)) (Inv__inv Y (f a))) :=
@@ -1078,13 +1070,13 @@ MonoidHom__map_mul_inv : (X : Set) -> (Y : Set) -> (_ : Proof (Group X)) -> (_ :
 (; //LEAN:AddMonoidHom.map_add_neg ;)
 AddMonoidHom__map_add_neg : (X : Set) -> (Y : Set) -> (_ : Proof (AddGroup X)) -> (_ : Proof (SubtractionMonoid Y)) -> (f : Elem (AddMonoidHom X Y)) -> (g : Elem X) -> (h : Elem X) -> Proof (Eqt Y (f (plus g (Neg__neg X h))) (plus (f g) (Neg__neg Y (f h)))).
 
-(; //LEAN:iterate_map_add ;)
-def iterate_map_add : (M : Set) -> (F : Set) -> (f : Elem F) -> (n : Elem Nat) -> (x2 : Elem M) -> (y : Elem M) -> Proof (Eqt M (Nat__iterate M f n (plus x2 y)) (plus (Nat__iterate M f n x2) (Nat__iterate M f n y))) :=
-  M => F => f => n => x2 => y => Function__Semiconj_u2082___iterate M f plus (map_add M M F f) n x2 y.
-
 (; //LEAN:iterate_map_mul ;)
 def iterate_map_mul : (M : Set) -> (F : Set) -> (f : Elem F) -> (n : Elem Nat) -> (x2 : Elem M) -> (y : Elem M) -> Proof (Eqt M (Nat__iterate M f n (times x2 y)) (times (Nat__iterate M f n x2) (Nat__iterate M f n y))) :=
   M => F => f => n => x2 => y => Function__Semiconj_u2082___iterate M f times (map_mul M M F f) n x2 y.
+
+(; //LEAN:iterate_map_add ;)
+def iterate_map_add : (M : Set) -> (F : Set) -> (f : Elem F) -> (n : Elem Nat) -> (x2 : Elem M) -> (y : Elem M) -> Proof (Eqt M (Nat__iterate M f n (plus x2 y)) (plus (Nat__iterate M f n x2) (Nat__iterate M f n y))) :=
+  M => F => f => n => x2 => y => Function__Semiconj_u2082___iterate M f plus (map_add M M F f) n x2 y.
 
 (; //LEAN:iterate_map_one ;)
 def iterate_map_one : (M : Set) -> (F : Set) -> (f : Elem F) -> (n : Elem Nat) -> Proof (Eqt M (Nat__iterate M f n 1) 1) :=
@@ -1102,13 +1094,13 @@ def iterate_map_neg : (M : Set) -> (F : Set) -> (_ : Proof (AddGroup M)) -> (f :
 def iterate_map_inv : (M : Set) -> (F : Set) -> (_ : Proof (Group M)) -> (f : Elem F) -> (n : Elem Nat) -> (x2 : Elem M) -> Proof (Eqt M (Nat__iterate M f n (Inv__inv M x2)) (Inv__inv M (Nat__iterate M f n x2))) :=
   M => F => x => f => n => x2 => Function__Commute__iterate_left M f (Inv__inv M) (map_inv M M F f) n x2.
 
-(; //LEAN:iterate_map_sub ;)
-def iterate_map_sub : (M : Set) -> (F : Set) -> (_ : Proof (AddGroup M)) -> (f : Elem F) -> (n : Elem Nat) -> (x2 : Elem M) -> (y : Elem M) -> Proof (Eqt M (Nat__iterate M f n (minus x2 y)) (minus (Nat__iterate M f n x2) (Nat__iterate M f n y))) :=
-  M => F => x => f => n => x2 => y => Function__Semiconj_u2082___iterate M f minus (map_sub M M F f) n x2 y.
-
 (; //LEAN:iterate_map_div ;)
 def iterate_map_div : (M : Set) -> (F : Set) -> (_ : Proof (Group M)) -> (f : Elem F) -> (n : Elem Nat) -> (x2 : Elem M) -> (y : Elem M) -> Proof (Eqt M (Nat__iterate M f n (div x2 y)) (div (Nat__iterate M f n x2) (Nat__iterate M f n y))) :=
   M => F => x => f => n => x2 => y => Function__Semiconj_u2082___iterate M f div (map_div M M F f) n x2 y.
+
+(; //LEAN:iterate_map_sub ;)
+def iterate_map_sub : (M : Set) -> (F : Set) -> (_ : Proof (AddGroup M)) -> (f : Elem F) -> (n : Elem Nat) -> (x2 : Elem M) -> (y : Elem M) -> Proof (Eqt M (Nat__iterate M f n (minus x2 y)) (minus (Nat__iterate M f n x2) (Nat__iterate M f n y))) :=
+  M => F => x => f => n => x2 => y => Function__Semiconj_u2082___iterate M f minus (map_sub M M F f) n x2 y.
 
 (; //LEAN:iterate_map_nsmul ;)
 def iterate_map_nsmul : (M : Set) -> (F : Set) -> (_ : Proof (AddMonoid M)) -> (f : Elem F) -> (n : Elem Nat) -> (x2 : Elem M) -> (k : Elem Nat) -> Proof (Eqt M (Nat__iterate M f n (HSMul__hSMul Nat M M k x2)) (HSMul__hSMul Nat M M k (Nat__iterate M f n x2))) :=
@@ -1118,11 +1110,11 @@ def iterate_map_nsmul : (M : Set) -> (F : Set) -> (_ : Proof (AddMonoid M)) -> (
 def iterate_map_pow : (M : Set) -> (F : Set) -> (_ : Proof (Monoid M)) -> (f : Elem F) -> (n : Elem Nat) -> (x2 : Elem M) -> (k : Elem Nat) -> Proof (Eqt M (Nat__iterate M f n (pow x2 k)) (pow (Nat__iterate M f n x2) k)) :=
   M => F => x => f => n => x2 => k => Function__Commute__iterate_left M f (x3 => pow x3 k) (forallI M (x4 => Eqt M (f (pow x4 k)) (pow (f x4) k)) (x4 => map_pow M M F f x4 k)) n x2.
 
-(; //LEAN:iterate_map_zsmul ;)
-def iterate_map_zsmul : (M : Set) -> (F : Set) -> (_ : Proof (AddGroup M)) -> (f : Elem F) -> (n : Elem Nat) -> (x2 : Elem M) -> (k : Elem Int) -> Proof (Eqt M (Nat__iterate M f n (HSMul__hSMul Int M M k x2)) (HSMul__hSMul Int M M k (Nat__iterate M f n x2))) :=
-  M => F => x => f => n => x2 => k => Function__Commute__iterate_left M f (x3 => HSMul__hSMul Int M M k x3) (forallI M (x4 => Eqt M (f (HSMul__hSMul Int M M k x4)) (HSMul__hSMul Int M M k (f x4))) (x4 => map_zsmul M M F f k x4)) n x2.
-
 (; //LEAN:iterate_map_zpow ;)
 def iterate_map_zpow : (M : Set) -> (F : Set) -> (_ : Proof (Group M)) -> (f : Elem F) -> (n : Elem Nat) -> (x2 : Elem M) -> (k : Elem Int) -> Proof (Eqt M (Nat__iterate M f n (pow x2 k)) (pow (Nat__iterate M f n x2) k)) :=
   M => F => x => f => n => x2 => k => Function__Commute__iterate_left M f (x3 => pow x3 k) (forallI M (x4 => Eqt M (f (pow x4 k)) (pow (f x4) k)) (x4 => map_zpow M M F f x4 k)) n x2.
+
+(; //LEAN:iterate_map_zsmul ;)
+def iterate_map_zsmul : (M : Set) -> (F : Set) -> (_ : Proof (AddGroup M)) -> (f : Elem F) -> (n : Elem Nat) -> (x2 : Elem M) -> (k : Elem Int) -> Proof (Eqt M (Nat__iterate M f n (HSMul__hSMul Int M M k x2)) (HSMul__hSMul Int M M k (Nat__iterate M f n x2))) :=
+  M => F => x => f => n => x2 => k => Function__Commute__iterate_left M f (x3 => HSMul__hSMul Int M M k x3) (forallI M (x4 => Eqt M (f (HSMul__hSMul Int M M k x4)) (HSMul__hSMul Int M M k (f x4))) (x4 => map_zsmul M M F f k x4)) n x2.
 

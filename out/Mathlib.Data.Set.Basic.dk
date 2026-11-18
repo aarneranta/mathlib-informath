@@ -30,14 +30,6 @@ def Set__top_eq_univ : (X : Set) -> Proof (Eqt (powerset X) (Set__univ X) (Set__
 def Set__bot_eq_empty : (X : Set) -> Proof (Eqt (powerset X) (EmptyCollection__emptyCollection (powerset X)) (EmptyCollection__emptyCollection (powerset X))) :=
   X => rfl (powerset X) (EmptyCollection__emptyCollection (powerset X)).
 
-(; //LEAN:Set.sup_eq_union ;)
-def Set__sup_eq_union : (X : Set) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset X) -> powerset X) (x2 => x3 => Union__union (powerset X) x2 x3) (x4 => x5 => Union__union (powerset X) x4 x5)) :=
-  X => rfl (Elem (powerset X) -> Elem (powerset X) -> powerset X) (x2 => x3 => Union__union (powerset X) x2 x3).
-
-(; //LEAN:Set.inf_eq_inter ;)
-def Set__inf_eq_inter : (X : Set) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset X) -> powerset X) (x2 => x3 => Inter__inter (powerset X) x2 x3) (x4 => x5 => Inter__inter (powerset X) x4 x5)) :=
-  X => rfl (Elem (powerset X) -> Elem (powerset X) -> powerset X) (x2 => x3 => Inter__inter (powerset X) x2 x3).
-
 (; //LEAN:Set.coe_eq_subtype ;)
 def Set__coe_eq_subtype : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt Set (Set__Elem X s) (Subtype X (x => Membership__mem X (powerset X) s x))) :=
   X => s => rfl Set (Set__Elem X s).
@@ -55,11 +47,11 @@ def SetCoe__exists : (X : Set) -> (s : Elem (powerset X)) -> (p : (Elem (Set__El
   X => s => p => Subtype__exists X (Membership__mem X (powerset X) s) p.
 
 (; //LEAN:SetCoe.exists' ;)
-def SetCoe__exists' : (X : Set) -> (s : Elem (powerset X)) -> (p : ((x4 : Elem X) -> Proof (Membership__mem X (powerset X) s x4) -> Prop)) -> Proof (iff (exists X (x => exists (Membership__mem X (powerset X) s x) (h => p x h))) (exists (Set__Elem X s) (x1 => p (Subtype__val X (x2 => Membership__mem X (powerset X) s x2) x1) (Subtype__property X (x3 => Membership__mem X (powerset X) s x3) x1)))) :=
+def SetCoe__exists' : (X : Set) -> (s : Elem (powerset X)) -> (p : ((x4 : Elem X) -> (Proof (Membership__mem X (powerset X) s x4) -> Prop))) -> Proof (iff (exists X (x => exists (Membership__mem X (powerset X) s x) (h => p x h))) (exists (Set__Elem X s) (x1 => p (Subtype__val X (x2 => Membership__mem X (powerset X) s x2) x1) (Subtype__property X (x3 => Membership__mem X (powerset X) s x3) x1)))) :=
   X => s => p => Iff__symm (exists (Set__Elem X s) (x => p (Subtype__val X (x1 => Membership__mem X (powerset X) s x1) x) (Subtype__property X (x2 => Membership__mem X (powerset X) s x2) x))) (exists X (x3 => exists (Membership__mem X (powerset X) s x3) (h => p (Subtype__val X (x4 => Membership__mem X (powerset X) s x4) (Subtype__mk X (x5 => Membership__mem X (powerset X) s x5) x3 h)) (Subtype__property X (x6 => Membership__mem X (powerset X) s x6) (Subtype__mk X (x7 => Membership__mem X (powerset X) s x7) x3 h))))) (SetCoe__exists X s (x8 => p (Subtype__val X (x9 => Membership__mem X (powerset X) s x9) x8) (Subtype__property X (x10 => Membership__mem X (powerset X) s x10) x8))).
 
 (; //LEAN:SetCoe.forall' ;)
-def SetCoe__forall' : (X : Set) -> (s : Elem (powerset X)) -> (p : ((x4 : Elem X) -> Proof (Membership__mem X (powerset X) s x4) -> Prop)) -> Proof (iff (forall X (x => forall (Proof (Membership__mem X (powerset X) s x)) (h => p x h))) (forall (Set__Elem X s) (x1 => p (Subtype__val X (x2 => Membership__mem X (powerset X) s x2) x1) (Subtype__property X (x3 => Membership__mem X (powerset X) s x3) x1)))) :=
+def SetCoe__forall' : (X : Set) -> (s : Elem (powerset X)) -> (p : ((x4 : Elem X) -> (Proof (Membership__mem X (powerset X) s x4) -> Prop))) -> Proof (iff (forall X (x => forall (Proof (Membership__mem X (powerset X) s x)) (h => p x h))) (forall (Set__Elem X s) (x1 => p (Subtype__val X (x2 => Membership__mem X (powerset X) s x2) x1) (Subtype__property X (x3 => Membership__mem X (powerset X) s x3) x1)))) :=
   X => s => p => Iff__symm (forall (Set__Elem X s) (x => p (Subtype__val X (x1 => Membership__mem X (powerset X) s x1) x) (Subtype__property X (x2 => Membership__mem X (powerset X) s x2) x))) (forall X (x3 => forall (Proof (Membership__mem X (powerset X) s x3)) (h => p (Subtype__val X (x4 => Membership__mem X (powerset X) s x4) (Subtype__mk X (x5 => Membership__mem X (powerset X) s x5) x3 h)) (Subtype__property X (x6 => Membership__mem X (powerset X) s x6) (Subtype__mk X (x7 => Membership__mem X (powerset X) s x7) x3 h))))) (SetCoe__forall X s (x8 => p (Subtype__val X (x9 => Membership__mem X (powerset X) s x9) x8) (Subtype__property X (x10 => Membership__mem X (powerset X) s x10) x8))).
 
 (; //LEAN:set_coe_cast ;)
@@ -373,8 +365,21 @@ Set__eq_empty_of_isEmpty : (X : Set) -> (s : Elem (powerset X)) -> (_ : Proof (I
 def Set__eq_empty_or_nonempty : (X : Set) -> (s : Elem (powerset X)) -> Proof (or (Eqt (powerset X) s (EmptyCollection__emptyCollection (powerset X))) (Set__Nonempty X s)) :=
   X => s => iffEr (or (Eqt (powerset X) s (EmptyCollection__emptyCollection (powerset X))) (Set__Nonempty X s)) (if (not (Eqt (powerset X) s (EmptyCollection__emptyCollection (powerset X)))) (Set__Nonempty X s)) (Classical__or_iff_not_imp_left (Eqt (powerset X) s (EmptyCollection__emptyCollection (powerset X))) (Set__Nonempty X s)) (iffEr (Set__Nonempty X s) (Neq s (EmptyCollection__emptyCollection (powerset X))) (Set__nonempty_iff_ne_empty X s)).
 
-(; //LEAN:Set.subset_eq_empty ;)
-Set__subset_eq_empty : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X t s)) -> (e : Proof (Eqt (powerset X) s (EmptyCollection__emptyCollection (powerset X)))) -> Proof (Eqt (powerset X) t (EmptyCollection__emptyCollection (powerset X))).
+(; //LEAN:Set.eq_empty_of_subset ;)
+def Set__eq_empty_of_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X t s)) -> (e : Proof (Eqt (powerset X) s (EmptyCollection__emptyCollection (powerset X)))) -> Proof (Eqt (powerset X) t (EmptyCollection__emptyCollection (powerset X))) :=
+  X => s => t => h => e => eq_bot_mono (powerset X) s t h e.
+
+(; //LEAN:Set.empty_eq_of_subset ;)
+def Set__empty_eq_of_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X t s)) -> (e : Proof (Eqt (powerset X) (EmptyCollection__emptyCollection (powerset X)) s)) -> Proof (Eqt (powerset X) (EmptyCollection__emptyCollection (powerset X)) t) :=
+  X => s => t => h => e => bot_eq_mono (powerset X) s t h e.
+
+(; //LEAN:Set.ne_empty_of_subset ;)
+def Set__ne_empty_of_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X s t)) -> (e : Proof (Neq s (EmptyCollection__emptyCollection (powerset X)))) -> Proof (Neq t (EmptyCollection__emptyCollection (powerset X))) :=
+  X => s => t => h => e => ne_bot_mono (powerset X) s t h e.
+
+(; //LEAN:Set.empty_ne_of_subset ;)
+def Set__empty_ne_of_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X s t)) -> (e : Proof (Neq (EmptyCollection__emptyCollection (powerset X)) s)) -> Proof (Neq (EmptyCollection__emptyCollection (powerset X)) t) :=
+  X => s => t => h => e => bot_ne_mono (powerset X) s t h e.
 
 (; //LEAN:Set.forall_mem_empty ;)
 def Set__forall_mem_empty : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (iff (forall X (x => if (Membership__mem X (powerset X) (EmptyCollection__emptyCollection (powerset X)) x) (p x))) True) :=
@@ -462,7 +467,20 @@ def Set__eq_univ_of_forall : (X : Set) -> (s : Elem (powerset X)) -> (h : Proof 
 Set__Nonempty__eq_univ : (X : Set) -> (s : Elem (powerset X)) -> (_ : Proof (Subsingleton X)) -> (h1 : Proof (Set__Nonempty X s)) -> Proof (Eqt (powerset X) s (Set__univ X)).
 
 (; //LEAN:Set.eq_univ_of_subset ;)
-Set__eq_univ_of_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X s t)) -> (hs : Proof (Eqt (powerset X) s (Set__univ X))) -> Proof (Eqt (powerset X) t (Set__univ X)).
+def Set__eq_univ_of_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X s t)) -> (hs : Proof (Eqt (powerset X) s (Set__univ X))) -> Proof (Eqt (powerset X) t (Set__univ X)) :=
+  X => s => t => h => hs => eq_top_mono (powerset X) s t h hs.
+
+(; //LEAN:Set.univ_eq_of_subset ;)
+def Set__univ_eq_of_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X s t)) -> (hs : Proof (Eqt (powerset X) (Set__univ X) s)) -> Proof (Eqt (powerset X) (Set__univ X) t) :=
+  X => s => t => h => hs => top_eq_mono (powerset X) s t h hs.
+
+(; //LEAN:Set.ne_univ_of_subset ;)
+def Set__ne_univ_of_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X t s)) -> (hs : Proof (Neq s (Set__univ X))) -> Proof (Neq t (Set__univ X)) :=
+  X => s => t => h => hs => ne_top_mono (powerset X) s t h hs.
+
+(; //LEAN:Set.univ_ne_of_subset ;)
+def Set__univ_ne_of_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X t s)) -> (hs : Proof (Neq (Set__univ X) s)) -> Proof (Neq (Set__univ X) t) :=
+  X => s => t => h => hs => top_ne_mono (powerset X) s t h hs.
 
 (; //LEAN:Set.exists_mem_univ_of_nonempty ;)
 Set__exists_mem_univ_of_nonempty : (X : Set) -> Proof (exists X (x => Membership__mem X (powerset X) (Set__univ X) x)).
@@ -521,7 +539,7 @@ def Set__mem_union : (X : Set) -> (x : Elem X) -> (a : Elem (powerset X)) -> (b 
 
 (; //LEAN:Set.union_self ;)
 def Set__union_self : (X : Set) -> (a : Elem (powerset X)) -> Proof (Eqt (powerset X) (Union__union (powerset X) a a) a) :=
-  X => a => Set__ext X (Union__union (powerset X) a a) a (forallI X (x => iff (or (Membership__mem X (powerset X) a x) (Membership__mem X (powerset X) a x)) (Membership__mem X (powerset X) a x)) (x => or_self_iff (Membership__mem X (powerset X) a x))).
+  X => a => sup_idem (powerset X) a.
 
 (; //LEAN:Set.union_empty ;)
 def Set__union_empty : (X : Set) -> (a : Elem (powerset X)) -> Proof (Eqt (powerset X) (Union__union (powerset X) a (EmptyCollection__emptyCollection (powerset X))) a) :=
@@ -533,19 +551,19 @@ def Set__empty_union : (X : Set) -> (a : Elem (powerset X)) -> Proof (Eqt (power
 
 (; //LEAN:Set.union_comm ;)
 def Set__union_comm : (X : Set) -> (a : Elem (powerset X)) -> (b : Elem (powerset X)) -> Proof (Eqt (powerset X) (Union__union (powerset X) a b) (Union__union (powerset X) b a)) :=
-  X => a => b => Set__ext X (Union__union (powerset X) a b) (Union__union (powerset X) b a) (forallI X (x => iff (or (Membership__mem X (powerset X) a x) (Membership__mem X (powerset X) b x)) (or (Membership__mem X (powerset X) b x) (Membership__mem X (powerset X) a x))) (x => or_comm (Membership__mem X (powerset X) a x) (Membership__mem X (powerset X) b x))).
+  X => a => b => sup_comm (powerset X) a b.
 
 (; //LEAN:Set.union_assoc ;)
 def Set__union_assoc : (X : Set) -> (a : Elem (powerset X)) -> (b : Elem (powerset X)) -> (c : Elem (powerset X)) -> Proof (Eqt (powerset X) (Union__union (powerset X) (Union__union (powerset X) a b) c) (Union__union (powerset X) a (Union__union (powerset X) b c))) :=
-  X => a => b => c => Set__ext X (Union__union (powerset X) (Union__union (powerset X) a b) c) (Union__union (powerset X) a (Union__union (powerset X) b c)) (forallI X (x => iff (or (or (Membership__mem X (powerset X) a x) (Membership__mem X (powerset X) b x)) (Membership__mem X (powerset X) c x)) (or (Membership__mem X (powerset X) a x) (or (Membership__mem X (powerset X) b x) (Membership__mem X (powerset X) c x)))) (x => or_assoc (Membership__mem X (powerset X) a x) (Membership__mem X (powerset X) b x) (Membership__mem X (powerset X) c x))).
+  X => a => b => c => sup_assoc (powerset X) a b c.
 
 (; //LEAN:Set.union_left_comm ;)
 def Set__union_left_comm : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (s3 : Elem (powerset X)) -> Proof (Eqt (powerset X) (Union__union (powerset X) s1 (Union__union (powerset X) s2 s3)) (Union__union (powerset X) s2 (Union__union (powerset X) s1 s3))) :=
-  X => s1 => s2 => s3 => Set__ext X (Union__union (powerset X) s1 (Union__union (powerset X) s2 s3)) (Union__union (powerset X) s2 (Union__union (powerset X) s1 s3)) (forallI X (x => iff (or (Membership__mem X (powerset X) s1 x) (or (Membership__mem X (powerset X) s2 x) (Membership__mem X (powerset X) s3 x))) (or (Membership__mem X (powerset X) s2 x) (or (Membership__mem X (powerset X) s1 x) (Membership__mem X (powerset X) s3 x)))) (x => or_left_comm (Membership__mem X (powerset X) s1 x) (Membership__mem X (powerset X) s2 x) (Membership__mem X (powerset X) s3 x))).
+  X => s1 => s2 => s3 => sup_left_comm (powerset X) s1 s2 s3.
 
 (; //LEAN:Set.union_right_comm ;)
 def Set__union_right_comm : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (s3 : Elem (powerset X)) -> Proof (Eqt (powerset X) (Union__union (powerset X) (Union__union (powerset X) s1 s2) s3) (Union__union (powerset X) (Union__union (powerset X) s1 s3) s2)) :=
-  X => s1 => s2 => s3 => Set__ext X (Union__union (powerset X) (Union__union (powerset X) s1 s2) s3) (Union__union (powerset X) (Union__union (powerset X) s1 s3) s2) (forallI X (x => iff (or (or (Membership__mem X (powerset X) s1 x) (Membership__mem X (powerset X) s2 x)) (Membership__mem X (powerset X) s3 x)) (or (or (Membership__mem X (powerset X) s1 x) (Membership__mem X (powerset X) s3 x)) (Membership__mem X (powerset X) s2 x))) (x => or_right_comm (Membership__mem X (powerset X) s1 x) (Membership__mem X (powerset X) s2 x) (Membership__mem X (powerset X) s3 x))).
+  X => s1 => s2 => s3 => sup_right_comm (powerset X) s1 s2 s3.
 
 (; //LEAN:Set.union_eq_left ;)
 def Set__union_eq_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Eqt (powerset X) (Union__union (powerset X) s t) s) (Set__Subset X t s)) :=
@@ -565,30 +583,28 @@ def Set__union_eq_self_of_subset_right : (X : Set) -> (s : Elem (powerset X)) ->
 
 (; //LEAN:Set.subset_union_left ;)
 def Set__subset_union_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Set__Subset X s (Union__union (powerset X) s t)) :=
-  X => s => t => forallI X (x => if (Membership__mem X (powerset X) s x) (or (Membership__mem X (powerset X) s x) (Membership__mem X (powerset X) t x))) (x => orIl (Membership__mem X (powerset X) s x) (Membership__mem X (powerset X) t x)).
+  X => s => t => le_sup_left (powerset X) s t.
 
 (; //LEAN:Set.subset_union_right ;)
 def Set__subset_union_right : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Set__Subset X t (Union__union (powerset X) s t)) :=
-  X => s => t => forallI X (x => if (Membership__mem X (powerset X) t x) (or (Membership__mem X (powerset X) s x) (Membership__mem X (powerset X) t x))) (x => orIr (Membership__mem X (powerset X) s x) (Membership__mem X (powerset X) t x)).
+  X => s => t => le_sup_right (powerset X) s t.
 
 (; //LEAN:Set.union_subset ;)
-Set__union_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (r : Elem (powerset X)) -> (sr : Proof (Set__Subset X s r)) -> (tr : Proof (Set__Subset X t r)) -> Proof (Set__Subset X (Union__union (powerset X) s t) r).
+def Set__union_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (r : Elem (powerset X)) -> (sr : Proof (Set__Subset X s r)) -> (tr : Proof (Set__Subset X t r)) -> Proof (Set__Subset X (Union__union (powerset X) s t) r) :=
+  X => s => t => r => sr => tr => sup_le (powerset X) s t r sr tr.
 
 (; //LEAN:Set.union_subset_iff ;)
 def Set__union_subset_iff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> Proof (iff (Set__Subset X (Union__union (powerset X) s t) u) (and (Set__Subset X s u) (Set__Subset X t u))) :=
-  X => s => t => u => Iff__trans (forall X (a => if (or (Membership__mem X (powerset X) s a) (Membership__mem X (powerset X) t a)) (Membership__mem X (powerset X) u a))) (forall X (a1 => and (if (Membership__mem X (powerset X) s a1) (Membership__mem X (powerset X) u a1)) (if (Membership__mem X (powerset X) t a1) (Membership__mem X (powerset X) u a1)))) (and (Set__Subset X s u) (Set__Subset X t u)) (forall_congr' X (x => if (or (Membership__mem X (powerset X) s x) (Membership__mem X (powerset X) t x)) (Membership__mem X (powerset X) u x)) (x1 => and (if (Membership__mem X (powerset X) s x1) (Membership__mem X (powerset X) u x1)) (if (Membership__mem X (powerset X) t x1) (Membership__mem X (powerset X) u x1))) (forallI X (x2 => iff (if (or (Membership__mem X (powerset X) s x2) (Membership__mem X (powerset X) t x2)) (Membership__mem X (powerset X) u x2)) (and (if (Membership__mem X (powerset X) s x2) (Membership__mem X (powerset X) u x2)) (if (Membership__mem X (powerset X) t x2) (Membership__mem X (powerset X) u x2)))) (x2 => or_imp (Membership__mem X (powerset X) s x2) (Membership__mem X (powerset X) t x2) (Membership__mem X (powerset X) u x2)))) (forall_and X (a2 => if (Membership__mem X (powerset X) s a2) (Membership__mem X (powerset X) u a2)) (a3 => if (Membership__mem X (powerset X) t a3) (Membership__mem X (powerset X) u a3))).
+  X => s => t => u => sup_le_iff (powerset X) s t u.
 
 (; //LEAN:Set.union_subset_union ;)
-def Set__union_subset_union : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (t1 : Elem (powerset X)) -> (t2 : Elem (powerset X)) -> (h1 : Proof (Set__Subset X s1 s2)) -> (h2 : Proof (Set__Subset X t1 t2)) -> Proof (Set__Subset X (Union__union (powerset X) s1 t1) (Union__union (powerset X) s2 t2)) :=
-  X => s1 => s2 => t1 => t2 => h1 => h2 => sup_le_sup (powerset X) s1 s2 t1 t2 h1 h2.
+Set__union_subset_union : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (t1 : Elem (powerset X)) -> (t2 : Elem (powerset X)) -> (h1 : Proof (Set__Subset X s1 s2)) -> (h2 : Proof (Set__Subset X t1 t2)) -> Proof (Set__Subset X (Union__union (powerset X) s1 t1) (Union__union (powerset X) s2 t2)).
 
 (; //LEAN:Set.union_subset_union_left ;)
-def Set__union_subset_union_left : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X s1 s2)) -> Proof (Set__Subset X (Union__union (powerset X) s1 t) (Union__union (powerset X) s2 t)) :=
-  X => s1 => s2 => t => h => Set__union_subset_union X s1 s2 t t h (Set__Subset__rfl X t).
+Set__union_subset_union_left : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X s1 s2)) -> Proof (Set__Subset X (Union__union (powerset X) s1 t) (Union__union (powerset X) s2 t)).
 
 (; //LEAN:Set.union_subset_union_right ;)
-def Set__union_subset_union_right : (X : Set) -> (s : Elem (powerset X)) -> (t1 : Elem (powerset X)) -> (t2 : Elem (powerset X)) -> (h : Proof (Set__Subset X t1 t2)) -> Proof (Set__Subset X (Union__union (powerset X) s t1) (Union__union (powerset X) s t2)) :=
-  X => s => t1 => t2 => h => Set__union_subset_union X s s t1 t2 (Set__Subset__rfl X s) h.
+Set__union_subset_union_right : (X : Set) -> (t1 : Elem (powerset X)) -> (t2 : Elem (powerset X)) -> (s : Elem (powerset X)) -> (h : Proof (Set__Subset X t1 t2)) -> Proof (Set__Subset X (Union__union (powerset X) s t1) (Union__union (powerset X) s t2)).
 
 (; //LEAN:Set.subset_union_of_subset_left ;)
 def Set__subset_union_of_subset_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X s t)) -> (u : Elem (powerset X)) -> Proof (Set__Subset X s (Union__union (powerset X) t u)) :=
@@ -669,47 +685,47 @@ def Set__mem_of_mem_inter_right : (X : Set) -> (x : Elem X) -> (a : Elem (powers
 
 (; //LEAN:Set.inter_self ;)
 def Set__inter_self : (X : Set) -> (a : Elem (powerset X)) -> Proof (Eqt (powerset X) (Inter__inter (powerset X) a a) a) :=
-  X => a => Set__ext X (Inter__inter (powerset X) a a) a (forallI X (x => iff (and (Membership__mem X (powerset X) a x) (Membership__mem X (powerset X) a x)) (Membership__mem X (powerset X) a x)) (x => and_self_iff (Membership__mem X (powerset X) a x))).
+  X => a => inf_idem (powerset X) a.
 
 (; //LEAN:Set.inter_empty ;)
 def Set__inter_empty : (X : Set) -> (a : Elem (powerset X)) -> Proof (Eqt (powerset X) (Inter__inter (powerset X) a (EmptyCollection__emptyCollection (powerset X))) (EmptyCollection__emptyCollection (powerset X))) :=
-  X => a => Set__ext X (Inter__inter (powerset X) a (EmptyCollection__emptyCollection (powerset X))) (EmptyCollection__emptyCollection (powerset X)) (forallI X (x => iff (Membership__mem X (powerset X) (Inter__inter (powerset X) a (EmptyCollection__emptyCollection (powerset X))) x) (Membership__mem X (powerset X) (EmptyCollection__emptyCollection (powerset X)) x)) (x => iff_of_eq (Membership__mem X (powerset X) (Inter__inter (powerset X) a (EmptyCollection__emptyCollection (powerset X))) x) (Membership__mem X (powerset X) (EmptyCollection__emptyCollection (powerset X)) x) (and_false (Membership__mem X (powerset X) a x)))).
+  X => a => inf_bot_eq (powerset X) a.
 
 (; //LEAN:Set.empty_inter ;)
 def Set__empty_inter : (X : Set) -> (a : Elem (powerset X)) -> Proof (Eqt (powerset X) (Inter__inter (powerset X) (EmptyCollection__emptyCollection (powerset X)) a) (EmptyCollection__emptyCollection (powerset X))) :=
-  X => a => Set__ext X (Inter__inter (powerset X) (EmptyCollection__emptyCollection (powerset X)) a) (EmptyCollection__emptyCollection (powerset X)) (forallI X (x => iff (Membership__mem X (powerset X) (Inter__inter (powerset X) (EmptyCollection__emptyCollection (powerset X)) a) x) (Membership__mem X (powerset X) (EmptyCollection__emptyCollection (powerset X)) x)) (x => iff_of_eq (Membership__mem X (powerset X) (Inter__inter (powerset X) (EmptyCollection__emptyCollection (powerset X)) a) x) (Membership__mem X (powerset X) (EmptyCollection__emptyCollection (powerset X)) x) (false_and (Membership__mem X (powerset X) a x)))).
+  X => a => bot_inf_eq (powerset X) a.
 
 (; //LEAN:Set.inter_comm ;)
 def Set__inter_comm : (X : Set) -> (a : Elem (powerset X)) -> (b : Elem (powerset X)) -> Proof (Eqt (powerset X) (Inter__inter (powerset X) a b) (Inter__inter (powerset X) b a)) :=
-  X => a => b => Set__ext X (Inter__inter (powerset X) a b) (Inter__inter (powerset X) b a) (forallI X (x => iff (and (Membership__mem X (powerset X) a x) (Membership__mem X (powerset X) b x)) (and (Membership__mem X (powerset X) b x) (Membership__mem X (powerset X) a x))) (x => and_comm (Membership__mem X (powerset X) a x) (Membership__mem X (powerset X) b x))).
+  X => a => b => inf_comm (powerset X) a b.
 
 (; //LEAN:Set.inter_assoc ;)
 def Set__inter_assoc : (X : Set) -> (a : Elem (powerset X)) -> (b : Elem (powerset X)) -> (c : Elem (powerset X)) -> Proof (Eqt (powerset X) (Inter__inter (powerset X) (Inter__inter (powerset X) a b) c) (Inter__inter (powerset X) a (Inter__inter (powerset X) b c))) :=
-  X => a => b => c => Set__ext X (Inter__inter (powerset X) (Inter__inter (powerset X) a b) c) (Inter__inter (powerset X) a (Inter__inter (powerset X) b c)) (forallI X (x => iff (and (and (Membership__mem X (powerset X) a x) (Membership__mem X (powerset X) b x)) (Membership__mem X (powerset X) c x)) (and (Membership__mem X (powerset X) a x) (and (Membership__mem X (powerset X) b x) (Membership__mem X (powerset X) c x)))) (x => and_assoc (Membership__mem X (powerset X) a x) (Membership__mem X (powerset X) b x) (Membership__mem X (powerset X) c x))).
+  X => a => b => c => inf_assoc (powerset X) a b c.
 
 (; //LEAN:Set.inter_left_comm ;)
 def Set__inter_left_comm : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (s3 : Elem (powerset X)) -> Proof (Eqt (powerset X) (Inter__inter (powerset X) s1 (Inter__inter (powerset X) s2 s3)) (Inter__inter (powerset X) s2 (Inter__inter (powerset X) s1 s3))) :=
-  X => s1 => s2 => s3 => Set__ext X (Inter__inter (powerset X) s1 (Inter__inter (powerset X) s2 s3)) (Inter__inter (powerset X) s2 (Inter__inter (powerset X) s1 s3)) (forallI X (x => iff (and (Membership__mem X (powerset X) s1 x) (and (Membership__mem X (powerset X) s2 x) (Membership__mem X (powerset X) s3 x))) (and (Membership__mem X (powerset X) s2 x) (and (Membership__mem X (powerset X) s1 x) (Membership__mem X (powerset X) s3 x)))) (x => and_left_comm (Membership__mem X (powerset X) s1 x) (Membership__mem X (powerset X) s2 x) (Membership__mem X (powerset X) s3 x))).
+  X => s1 => s2 => s3 => inf_left_comm (powerset X) s1 s2 s3.
 
 (; //LEAN:Set.inter_right_comm ;)
 def Set__inter_right_comm : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (s3 : Elem (powerset X)) -> Proof (Eqt (powerset X) (Inter__inter (powerset X) (Inter__inter (powerset X) s1 s2) s3) (Inter__inter (powerset X) (Inter__inter (powerset X) s1 s3) s2)) :=
-  X => s1 => s2 => s3 => Set__ext X (Inter__inter (powerset X) (Inter__inter (powerset X) s1 s2) s3) (Inter__inter (powerset X) (Inter__inter (powerset X) s1 s3) s2) (forallI X (x => iff (and (and (Membership__mem X (powerset X) s1 x) (Membership__mem X (powerset X) s2 x)) (Membership__mem X (powerset X) s3 x)) (and (and (Membership__mem X (powerset X) s1 x) (Membership__mem X (powerset X) s3 x)) (Membership__mem X (powerset X) s2 x))) (x => and_right_comm (Membership__mem X (powerset X) s1 x) (Membership__mem X (powerset X) s2 x) (Membership__mem X (powerset X) s3 x))).
+  X => s1 => s2 => s3 => inf_right_comm (powerset X) s1 s2 s3.
 
 (; //LEAN:Set.inter_subset_left ;)
 def Set__inter_subset_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Set__Subset X (Inter__inter (powerset X) s t) s) :=
-  X => s => t => forallI X (x => if (and (Membership__mem X (powerset X) s x) (Membership__mem X (powerset X) t x)) (Membership__mem X (powerset X) s x)) (x => andEl (Membership__mem X (powerset X) s x) (Membership__mem X (powerset X) t x)).
+  X => s => t => inf_le_left (powerset X) s t.
 
 (; //LEAN:Set.inter_subset_right ;)
 def Set__inter_subset_right : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Set__Subset X (Inter__inter (powerset X) s t) t) :=
-  X => s => t => forallI X (x => if (and (Membership__mem X (powerset X) s x) (Membership__mem X (powerset X) t x)) (Membership__mem X (powerset X) t x)) (x => andEr (Membership__mem X (powerset X) s x) (Membership__mem X (powerset X) t x)).
+  X => s => t => inf_le_right (powerset X) s t.
 
 (; //LEAN:Set.subset_inter ;)
 def Set__subset_inter : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (r : Elem (powerset X)) -> (rs : Proof (Set__Subset X r s)) -> (rt : Proof (Set__Subset X r t)) -> Proof (Set__Subset X r (Inter__inter (powerset X) s t)) :=
-  X => s => t => r => rs => rt => forallI X (x => if (Membership__mem X (powerset X) r x) (and (Membership__mem X (powerset X) s x) (Membership__mem X (powerset X) t x))) (x => ifI (Membership__mem X (powerset X) r x) (and (Membership__mem X (powerset X) s x) (Membership__mem X (powerset X) t x)) (h => andI (Membership__mem X (powerset X) s x) (Membership__mem X (powerset X) t x) (ifE (Membership__mem X (powerset X) r x) (Membership__mem X (powerset X) s x) (forallE X (a => if (Membership__mem X (powerset X) r a) (Membership__mem X (powerset X) s a)) rs x) h) (ifE (Membership__mem X (powerset X) r x) (Membership__mem X (powerset X) t x) (forallE X (a1 => if (Membership__mem X (powerset X) r a1) (Membership__mem X (powerset X) t a1)) rt x) h))).
+  X => s => t => r => rs => rt => le_inf (powerset X) r s t rs rt.
 
 (; //LEAN:Set.subset_inter_iff ;)
 def Set__subset_inter_iff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (r : Elem (powerset X)) -> Proof (iff (Set__Subset X r (Inter__inter (powerset X) s t)) (and (Set__Subset X r s) (Set__Subset X r t))) :=
-  X => s => t => r => Iff__trans (forall X (a => if (Membership__mem X (powerset X) r a) (and (Membership__mem X (powerset X) s a) (Membership__mem X (powerset X) t a)))) (forall X (a1 => and (if (Membership__mem X (powerset X) r a1) (Membership__mem X (powerset X) s a1)) (if (Membership__mem X (powerset X) r a1) (Membership__mem X (powerset X) t a1)))) (and (Set__Subset X r s) (Set__Subset X r t)) (forall_congr' X (x => if (Membership__mem X (powerset X) r x) (and (Membership__mem X (powerset X) s x) (Membership__mem X (powerset X) t x))) (x1 => and (if (Membership__mem X (powerset X) r x1) (Membership__mem X (powerset X) s x1)) (if (Membership__mem X (powerset X) r x1) (Membership__mem X (powerset X) t x1))) (forallI X (x2 => iff (if (Membership__mem X (powerset X) r x2) (and (Membership__mem X (powerset X) s x2) (Membership__mem X (powerset X) t x2))) (and (if (Membership__mem X (powerset X) r x2) (Membership__mem X (powerset X) s x2)) (if (Membership__mem X (powerset X) r x2) (Membership__mem X (powerset X) t x2)))) (x2 => imp_and (Membership__mem X (powerset X) s x2) (Membership__mem X (powerset X) t x2) (Membership__mem X (powerset X) r x2)))) (forall_and X (a2 => if (Membership__mem X (powerset X) r a2) (Membership__mem X (powerset X) s a2)) (a3 => if (Membership__mem X (powerset X) r a3) (Membership__mem X (powerset X) t a3))).
+  X => s => t => r => le_inf_iff (powerset X) r s t.
 
 (; //LEAN:Set.inter_eq_left ;)
 def Set__inter_eq_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Eqt (powerset X) (Inter__inter (powerset X) s t) s) (Set__Subset X s t)) :=
@@ -768,24 +784,19 @@ def Set__univ_inter : (X : Set) -> (a : Elem (powerset X)) -> Proof (Eqt (powers
   X => a => top_inf_eq (powerset X) a.
 
 (; //LEAN:Set.inter_subset_inter ;)
-def Set__inter_subset_inter : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (t1 : Elem (powerset X)) -> (t2 : Elem (powerset X)) -> (h1 : Proof (Set__Subset X s1 t1)) -> (h2 : Proof (Set__Subset X s2 t2)) -> Proof (Set__Subset X (Inter__inter (powerset X) s1 s2) (Inter__inter (powerset X) t1 t2)) :=
-  X => s1 => s2 => t1 => t2 => h1 => h2 => inf_le_inf (powerset X) t1 s1 t2 s2 h1 h2.
+Set__inter_subset_inter : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (t1 : Elem (powerset X)) -> (t2 : Elem (powerset X)) -> (h1 : Proof (Set__Subset X s1 t1)) -> (h2 : Proof (Set__Subset X s2 t2)) -> Proof (Set__Subset X (Inter__inter (powerset X) s1 s2) (Inter__inter (powerset X) t1 t2)).
 
 (; //LEAN:Set.inter_subset_inter_left ;)
-def Set__inter_subset_inter_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> (H : Proof (Set__Subset X s t)) -> Proof (Set__Subset X (Inter__inter (powerset X) s u) (Inter__inter (powerset X) t u)) :=
-  X => s => t => u => H => Set__inter_subset_inter X s u t u H (Set__Subset__rfl X u).
+Set__inter_subset_inter_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> (H : Proof (Set__Subset X s t)) -> Proof (Set__Subset X (Inter__inter (powerset X) s u) (Inter__inter (powerset X) t u)).
 
 (; //LEAN:Set.inter_subset_inter_right ;)
-def Set__inter_subset_inter_right : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> (H : Proof (Set__Subset X s t)) -> Proof (Set__Subset X (Inter__inter (powerset X) u s) (Inter__inter (powerset X) u t)) :=
-  X => s => t => u => H => Set__inter_subset_inter X u s u t (Set__Subset__rfl X u) H.
+Set__inter_subset_inter_right : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> (H : Proof (Set__Subset X s t)) -> Proof (Set__Subset X (Inter__inter (powerset X) u s) (Inter__inter (powerset X) u t)).
 
 (; //LEAN:Set.union_inter_cancel_left ;)
-def Set__union_inter_cancel_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (powerset X) (Inter__inter (powerset X) (Union__union (powerset X) s t) s) s) :=
-  X => s => t => Set__inter_eq_self_of_subset_right X (Union__union (powerset X) s t) s (Set__subset_union_left X s t).
+Set__union_inter_cancel_left : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (powerset X) (Inter__inter (powerset X) (Union__union (powerset X) s t) s) s).
 
 (; //LEAN:Set.union_inter_cancel_right ;)
-def Set__union_inter_cancel_right : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (powerset X) (Inter__inter (powerset X) (Union__union (powerset X) s t) t) t) :=
-  X => s => t => Set__inter_eq_self_of_subset_right X (Union__union (powerset X) s t) t (Set__subset_union_right X s t).
+Set__union_inter_cancel_right : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (powerset X) (Inter__inter (powerset X) (Union__union (powerset X) s t) t) t).
 
 (; //LEAN:Set.inter_ofPred_eq_sep ;)
 def Set__inter_ofPred_eq_sep : (X : Set) -> (s : Elem (powerset X)) -> (p : (Elem X -> Prop)) -> Proof (Eqt (powerset X) (Inter__inter (powerset X) s (Set__ofPred X (a => p a))) (Set__ofPred X (a1 => and (Membership__mem X (powerset X) s a1) (p a1)))) :=
@@ -958,35 +969,35 @@ def Set__powerset_univ : (X : Set) -> Proof (Eqt (powerset (powerset X)) (Set__p
   X => Set__eq_univ_of_forall (powerset X) (Set__powerset X (Set__univ X)) (Set__subset_univ X).
 
 (; //LEAN:Set.mem_dite_univ_right ;)
-Set__mem_dite_univ_right : (X : Set) -> (p : Prop) -> (t : (Proof p -> powerset X)) -> (x1 : Elem X) -> Proof (iff (Membership__mem X (powerset X) (dite (powerset X) p (h => t h) (h1 => Set__univ X)) x1) (forall (Proof p) (h2 => Membership__mem X (powerset X) (t h2) x1))).
+Set__mem_dite_univ_right : (X : Set) -> (p : Prop) -> (t : (Proof p -> Elem (powerset X))) -> (x1 : Elem X) -> Proof (iff (Membership__mem X (powerset X) (dite (powerset X) p (h => t h) (h1 => Set__univ X)) x1) (forall (Proof p) (h2 => Membership__mem X (powerset X) (t h2) x1))).
 
 (; //LEAN:Set.mem_ite_univ_right ;)
 def Set__mem_ite_univ_right : (X : Set) -> (p : Prop) -> (t : Elem (powerset X)) -> (x1 : Elem X) -> Proof (iff (Membership__mem X (powerset X) (ite (powerset X) p t (Set__univ X)) x1) (if p (Membership__mem X (powerset X) t x1))) :=
   X => p => t => x1 => Set__mem_dite_univ_right X p (h => t) x1.
 
 (; //LEAN:Set.mem_dite_univ_left ;)
-Set__mem_dite_univ_left : (X : Set) -> (p : Prop) -> (t : (Proof (not p) -> powerset X)) -> (x1 : Elem X) -> Proof (iff (Membership__mem X (powerset X) (dite (powerset X) p (h => Set__univ X) (h1 => t h1)) x1) (forall (Proof (not p)) (h2 => Membership__mem X (powerset X) (t h2) x1))).
+Set__mem_dite_univ_left : (X : Set) -> (p : Prop) -> (t : (Proof (not p) -> Elem (powerset X))) -> (x1 : Elem X) -> Proof (iff (Membership__mem X (powerset X) (dite (powerset X) p (h => Set__univ X) (h1 => t h1)) x1) (forall (Proof (not p)) (h2 => Membership__mem X (powerset X) (t h2) x1))).
 
 (; //LEAN:Set.mem_ite_univ_left ;)
 def Set__mem_ite_univ_left : (X : Set) -> (p : Prop) -> (t : Elem (powerset X)) -> (x1 : Elem X) -> Proof (iff (Membership__mem X (powerset X) (ite (powerset X) p (Set__univ X) t) x1) (if (not p) (Membership__mem X (powerset X) t x1))) :=
   X => p => t => x1 => Set__mem_dite_univ_left X p (h => t) x1.
 
 (; //LEAN:Set.mem_dite_empty_right ;)
-Set__mem_dite_empty_right : (X : Set) -> (p : Prop) -> (t : (Proof p -> powerset X)) -> (x1 : Elem X) -> Proof (iff (Membership__mem X (powerset X) (dite (powerset X) p (h => t h) (h1 => EmptyCollection__emptyCollection (powerset X))) x1) (exists p (h2 => Membership__mem X (powerset X) (t h2) x1))).
+Set__mem_dite_empty_right : (X : Set) -> (p : Prop) -> (t : (Proof p -> Elem (powerset X))) -> (x1 : Elem X) -> Proof (iff (Membership__mem X (powerset X) (dite (powerset X) p (h => t h) (h1 => EmptyCollection__emptyCollection (powerset X))) x1) (exists p (h2 => Membership__mem X (powerset X) (t h2) x1))).
 
 (; //LEAN:Set.mem_ite_empty_right ;)
 def Set__mem_ite_empty_right : (X : Set) -> (p : Prop) -> (t : Elem (powerset X)) -> (x1 : Elem X) -> Proof (iff (Membership__mem X (powerset X) (ite (powerset X) p t (EmptyCollection__emptyCollection (powerset X))) x1) (and p (Membership__mem X (powerset X) t x1))) :=
   X => p => t => x1 => Iff__trans (Membership__mem X (powerset X) (dite (powerset X) p (h => t) (h1 => EmptyCollection__emptyCollection (powerset X))) x1) (exists p (h2 => Membership__mem X (powerset X) t x1)) (and p (Membership__mem X (powerset X) t x1)) (Set__mem_dite_empty_right X p (h3 => t) x1) (of_eq_true (iff (exists p (h4 => Membership__mem X (powerset X) t x1)) (and p (Membership__mem X (powerset X) t x1))) (Eq__trans Prop (iff (exists p (h5 => Membership__mem X (powerset X) t x1)) (and p (Membership__mem X (powerset X) t x1))) (iff (and p (Membership__mem X (powerset X) t x1)) (and p (Membership__mem X (powerset X) t x1))) True (congrFun' Prop Prop (iff (exists p (h6 => Membership__mem X (powerset X) t x1))) (iff (and p (Membership__mem X (powerset X) t x1))) (congrArg Prop (Prop -> Prop) (exists p (h7 => Membership__mem X (powerset X) t x1)) (and p (Membership__mem X (powerset X) t x1)) iff (exists_prop___simp_1 (Membership__mem X (powerset X) t x1) p)) (and p (Membership__mem X (powerset X) t x1))) (iff_self (and p (Membership__mem X (powerset X) t x1))))).
 
 (; //LEAN:Set.mem_dite_empty_left ;)
-Set__mem_dite_empty_left : (X : Set) -> (p : Prop) -> (t : (Proof (not p) -> powerset X)) -> (x1 : Elem X) -> Proof (iff (Membership__mem X (powerset X) (dite (powerset X) p (h => EmptyCollection__emptyCollection (powerset X)) (h1 => t h1)) x1) (exists (not p) (h2 => Membership__mem X (powerset X) (t h2) x1))).
+Set__mem_dite_empty_left : (X : Set) -> (p : Prop) -> (t : (Proof (not p) -> Elem (powerset X))) -> (x1 : Elem X) -> Proof (iff (Membership__mem X (powerset X) (dite (powerset X) p (h => EmptyCollection__emptyCollection (powerset X)) (h1 => t h1)) x1) (exists (not p) (h2 => Membership__mem X (powerset X) (t h2) x1))).
 
 (; //LEAN:Set.mem_ite_empty_left ;)
 def Set__mem_ite_empty_left : (X : Set) -> (p : Prop) -> (t : Elem (powerset X)) -> (x1 : Elem X) -> Proof (iff (Membership__mem X (powerset X) (ite (powerset X) p (EmptyCollection__emptyCollection (powerset X)) t) x1) (and (not p) (Membership__mem X (powerset X) t x1))) :=
   X => p => t => x1 => Iff__trans (Membership__mem X (powerset X) (dite (powerset X) p (h => EmptyCollection__emptyCollection (powerset X)) (h1 => t)) x1) (exists (not p) (h2 => Membership__mem X (powerset X) t x1)) (and (not p) (Membership__mem X (powerset X) t x1)) (Set__mem_dite_empty_left X p (h3 => t) x1) (of_eq_true (iff (exists (not p) (h4 => Membership__mem X (powerset X) t x1)) (and (not p) (Membership__mem X (powerset X) t x1))) (Eq__trans Prop (iff (exists (not p) (h5 => Membership__mem X (powerset X) t x1)) (and (not p) (Membership__mem X (powerset X) t x1))) (iff (and (not p) (Membership__mem X (powerset X) t x1)) (and (not p) (Membership__mem X (powerset X) t x1))) True (congrFun' Prop Prop (iff (exists (not p) (h6 => Membership__mem X (powerset X) t x1))) (iff (and (not p) (Membership__mem X (powerset X) t x1))) (congrArg Prop (Prop -> Prop) (exists (not p) (h7 => Membership__mem X (powerset X) t x1)) (and (not p) (Membership__mem X (powerset X) t x1)) iff (exists_prop___simp_1 (Membership__mem X (powerset X) t x1) (not p))) (and (not p) (Membership__mem X (powerset X) t x1))) (iff_self (and (not p) (Membership__mem X (powerset X) t x1))))).
 
 (; //LEAN:Function.Injective.nonempty_apply_iff ;)
-Function__Injective__nonempty_apply_iff : (X : Set) -> (Y : Set) -> (f : (Elem (powerset X) -> powerset Y)) -> (hf : Proof (Function__Injective (powerset X) (powerset Y) f)) -> (h2 : Proof (Eqt (powerset Y) (f (EmptyCollection__emptyCollection (powerset X))) (EmptyCollection__emptyCollection (powerset Y)))) -> (s : Elem (powerset X)) -> Proof (iff (Set__Nonempty Y (f s)) (Set__Nonempty X s)).
+Function__Injective__nonempty_apply_iff : (X : Set) -> (Y : Set) -> (f : (Elem (powerset X) -> Elem (powerset Y))) -> (hf : Proof (Function__Injective (powerset X) (powerset Y) f)) -> (h2 : Proof (Eqt (powerset Y) (f (EmptyCollection__emptyCollection (powerset X))) (EmptyCollection__emptyCollection (powerset Y)))) -> (s : Elem (powerset X)) -> Proof (iff (Set__Nonempty Y (f s)) (Set__Nonempty X s)).
 
 (; //LEAN:Subsingleton.eq_univ_of_nonempty ;)
 Subsingleton__eq_univ_of_nonempty : (X : Set) -> (_ : Proof (Subsingleton X)) -> (s : Elem (powerset X)) -> (h1 : Proof (Set__Nonempty X s)) -> Proof (Eqt (powerset X) s (Set__univ X)).

@@ -34,11 +34,11 @@ Finset : (X : Set) -> Set.
 
 (; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.prod ;)
-Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem M)) -> Elem M.
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
-Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem M)) -> Elem M.
 
 (; doc: `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that `f x = 0` for all but finitely many `x`. ;)
 (; //LEAN:Finsupp ;)
@@ -46,7 +46,7 @@ Finsupp : (X : Set) -> (M : Set) -> Set.
 
 (; doc: `prod f g` is the product of `g a (f a)` over the support of `f`. ;)
 (; //LEAN:Finsupp.prod ;)
-Finsupp__prod : (X : Set) -> (M : Set) -> (N : Set) -> (f : Elem (Finsupp X M)) -> (g : (Elem X -> Elem M -> N)) -> Elem N.
+Finsupp__prod : (X : Set) -> (M : Set) -> (N : Set) -> (f : Elem (Finsupp X M)) -> (g : (Elem X -> (Elem M -> Elem N))) -> Elem N.
 
 (; doc: `single a b` is the finitely supported function with value `b` at `a` and zero otherwise. ;)
 (; //LEAN:Finsupp.single ;)
@@ -96,7 +96,7 @@ Multiset__ofList : (X : Set) -> (x : Elem (List X)) -> Elem (Multiset X).
 Nat__Coprime : (m : Elem Nat) -> (n : Elem Nat) -> Prop.
 
 (; //LEAN:Nat.factorizationEquiv.match_1 ;)
-Nat__factorizationEquiv__match_1 : (motive : (Elem PNat -> Set)) -> (x : Elem PNat) -> (h_1 : ((n : Elem Nat) -> (h : Proof (Lt 0 n)) -> motive (Subtype__mk Nat (n1 => Lt 0 n1) n h))) -> Elem (motive x).
+Nat__factorizationEquiv__match_1 : (motive : (Elem PNat -> Set)) -> (x : Elem PNat) -> (h_1 : ((n : Elem Nat) -> ((h1 : Proof (Lt 0 n)) -> Elem (motive (Subtype__mk Nat (n4 => Lt 0 n4) n h1))))) -> Elem (motive x).
 
 (; doc: The least common multiple of `m` and `n` is the smallest natural number that's evenly divisible by both `m` and `n`. Returns `0` if either `m` or `n` is `0`.  Examples:  * `Nat.lcm 9 6 = 18`  * `Nat.lcm 9 3 = 9`  * `Nat.lcm 0 3 = 0`  * `Nat.lcm 3 0 = 0` ;)
 (; //LEAN:Nat.lcm ;)
@@ -129,7 +129,7 @@ PNat : Set.
 
 (; doc: `f` is injective on `s` if the restriction of `f` to `s` is injective. ;)
 (; //LEAN:Set.InjOn ;)
-Set__InjOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+Set__InjOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` ;)
 (; //LEAN:Set.ofPred ;)
@@ -152,15 +152,15 @@ True : Prop.
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Congruence in the function part of an application: If `f = g` then `f a = g a`. ;)
 (; //LEAN:congrFun ;)
-congrFun : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x2 : Elem X) -> beta x2)) -> (g : ((x1 : Elem X) -> beta x1)) -> (h : Proof (Eqt ((x : Elem X) -> beta x) f g)) -> (a : Elem X) -> Proof (Eqt (beta a) (f a) (g a)).
+congrFun : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((x2 : Elem X) -> Elem (beta x2))) -> (g : ((x1 : Elem X) -> Elem (beta x1))) -> (h : Proof (Eqt ((x : Elem X) -> Elem (beta x)) f g)) -> (a : Elem X) -> Proof (Eqt (beta a) (f a) (g a)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
-congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Eqt (Elem X -> Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
+congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem X -> Elem Y)) -> (h : Proof (Eqt (Elem X -> Elem Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
 
 (; //LEAN:eq_self ;)
 eq_self : (X : Set) -> (a : Elem X) -> Proof (Eqt Prop (Eqt X a a) True).
@@ -175,10 +175,6 @@ multiplicity : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Elem Nat.
 
 (; //LEAN:of_eq_true ;)
 of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
-
-(; doc: For `p ≠ 1`, the `p`-adic valuation of a natural `n ≠ 0` is the largest natural number `k` such that `p^k` divides `n`. If `n = 0` or `p = 1`, then `padicValNat p n` defaults to `0`. ;)
-(; //LEAN:padicValNat ;)
-padicValNat : (p : Elem Nat) -> (n : Elem Nat) -> Elem Nat.
 
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)

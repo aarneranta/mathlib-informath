@@ -81,18 +81,18 @@ Finset__filter : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) ->
 
 (; doc: `filterMap f s` is a combination filter/map operation on `s`. The function `f : α → Option β` is applied to each element of `s`; if `f a` is `some b` then `b` is included in the result, otherwise `a` is excluded from the resulting finset.  In notation, `filterMap f s` is the finset `{b : β | ∃ a ∈ s, f a = some b}`. ;)
 (; //LEAN:Finset.filterMap ;)
-Finset__filterMap : (X : Set) -> (Y : Set) -> (f : (Elem X -> Option Y)) -> (s : Elem (Finset X)) -> (f_inj : Proof (forall X (a => forall X (a' => forall Y (b => if (Membership__mem Y (Option Y) (f a) b) (if (Membership__mem Y (Option Y) (f a') b) (Eqt X a a'))))))) -> Elem (Finset Y).
+Finset__filterMap : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem (Option Y))) -> (s : Elem (Finset X)) -> (f_inj : Proof (forall X (a => forall X (a' => forall Y (b => if (Membership__mem Y (Option Y) (f a) b) (if (Membership__mem Y (Option Y) (f a') b) (Eqt X a a'))))))) -> Elem (Finset Y).
 
 (; //LEAN:Finset.filter_subset_filter ;)
 Finset__filter_subset_filter : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (Finset X)) -> (t : Elem (Finset X)) -> (h : Proof (Set__Subset X s t)) -> Proof (Set__Subset X (Finset__filter X (x1 => p x1) s) (Finset__filter X (x2 => p x2) t)).
 
 (; doc: `fold op b f s` folds the commutative associative operation `op` over the `f`-image of `s`, i.e. `fold (+) b f {1,2,3} = f 1 + f 2 + f 3 + b`. ;)
 (; //LEAN:Finset.fold ;)
-Finset__fold : (X : Set) -> (Y : Set) -> (op : (Elem Y -> Elem Y -> Y)) -> (b : Elem Y) -> (f : (Elem X -> Y)) -> (s : Elem (Finset X)) -> Elem Y.
+Finset__fold : (X : Set) -> (Y : Set) -> (op : (Elem Y -> (Elem Y -> Elem Y))) -> (b : Elem Y) -> (f : (Elem X -> Elem Y)) -> (s : Elem (Finset X)) -> Elem Y.
 
 (; doc: `image f s` is the forward image of `s` under `f`. ;)
 (; //LEAN:Finset.image ;)
-Finset__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (Finset X)) -> Elem (Finset Y).
+Finset__image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (Finset X)) -> Elem (Finset Y).
 
 (; doc: When `f` is an embedding of `α` in `β` and `s` is a finset in `α`, then `s.map f` is the image finset in `β`. The embedding condition guarantees that there are no duplicates in the image. ;)
 (; //LEAN:Finset.map ;)
@@ -100,7 +100,7 @@ Finset__map : (X : Set) -> (Y : Set) -> (f : Elem (Function__Embedding X Y)) -> 
 
 (; doc: `∏ x ∈ s, f x` is the product of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∏ x, f x`, is a shorthand for `∏ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.prod ;)
-Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__prod : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem M)) -> Elem M.
 
 (; doc: `range n` is the set of natural numbers less than `n`. ;)
 (; //LEAN:Finset.range ;)
@@ -111,18 +111,18 @@ Finset__subset_iff : (X : Set) -> (s1 : Elem (Finset X)) -> (s2 : Elem (Finset X
 
 (; doc: `∑ x ∈ s, f x` is the sum of `f x` as `x` ranges over the elements of the finite set `s`.  When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for `∑ x ∈ Finset.univ, f x`. ;)
 (; //LEAN:Finset.sum ;)
-Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> M)) -> Elem M.
+Finset__sum : (I : Set) -> (M : Set) -> (s : Elem (Finset I)) -> (f : (Elem I -> Elem M)) -> Elem M.
 
 (; doc: Supremum of a finite set: `sup {a, b, c} f = f a ⊔ f b ⊔ f c` ;)
 (; //LEAN:Finset.sup ;)
-Finset__sup : (X : Set) -> (Y : Set) -> (s : Elem (Finset Y)) -> (f : (Elem Y -> X)) -> Elem X.
+Finset__sup : (X : Set) -> (Y : Set) -> (s : Elem (Finset Y)) -> (f : (Elem Y -> Elem X)) -> Elem X.
 
 (; doc: The underlying multiset ;)
 (; //LEAN:Finset.val ;)
 Finset__val : (X : Set) -> (self : Elem (Finset X)) -> Elem (Multiset X).
 
 (; //LEAN:Function.Embedding.mk ;)
-Function__Embedding__mk : (X : Set) -> (Y : Set) -> (toFun : (Elem X -> Y)) -> (inj' : Proof (Function__Injective X Y toFun)) -> Elem (Function__Embedding X Y).
+Function__Embedding__mk : (X : Set) -> (Y : Set) -> (toFun : (Elem X -> Elem Y)) -> (inj' : Proof (Function__Injective X Y toFun)) -> Elem (Function__Embedding X Y).
 
 (; doc: If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. ;)
 (; //LEAN:Function.Embedding.prodMap ;)
@@ -138,13 +138,13 @@ Function__Embedding__trans : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : Elem (F
 
 (; doc: A function `f : α → β` is called injective if `f x = f y` implies `x = y`. ;)
 (; //LEAN:Function.Injective ;)
-Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+Function__Injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; //LEAN:Function.Injective.eq_iff ;)
-Function__Injective__eq_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (I : Proof (Function__Injective X Y f)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt Y (f a) (f b)) (Eqt X a b)).
+Function__Injective__eq_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (I : Proof (Function__Injective X Y f)) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt Y (f a) (f b)) (Eqt X a b)).
 
 (; //LEAN:Function.LeftInverse.injective ;)
-Function__LeftInverse__injective : (X : Set) -> (Y : Set) -> (g : (Elem Y -> X)) -> (f : (Elem X -> Y)) -> (h : Proof (Function__LeftInverse X Y g f)) -> Proof (Function__Injective X Y f).
+Function__LeftInverse__injective : (X : Set) -> (Y : Set) -> (g : (Elem Y -> Elem X)) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Function__LeftInverse X Y g f)) -> Proof (Function__Injective X Y f).
 
 (; doc: `insert x xs` inserts the element `x` into the collection `xs`. ;)
 (; //LEAN:Insert.insert ;)
@@ -177,10 +177,10 @@ List__Nodup : (X : Set) -> (x : Elem (List X)) -> Prop.
 
 (; doc: Each element of a list is related to all later elements of the list by `R`.  `Pairwise R l` means that all the elements of `l` with earlier indexes are `R`-related to all the elements with later indexes.  For example, `Pairwise (· ≠ ·) l` asserts that `l` has no duplicates, and `Pairwise (· < ·) l` asserts that `l` is (strictly) sorted.  Examples:  * `Pairwise (· < ·) [1, 2, 3] ↔ (1 < 2 ∧ 1 < 3) ∧ 2 < 3`  * `Pairwise (· = ·) [1, 2, 3] = False`  * `Pairwise (· ≠ ·) [1, 2, 3] = True` ;)
 (; //LEAN:List.Pairwise ;)
-List__Pairwise : (X : Set) -> (R : (Elem X -> Elem X -> Prop)) -> (x : Elem (List X)) -> Prop.
+List__Pairwise : (X : Set) -> (R : (Elem X -> (Elem X -> Prop))) -> (x : Elem (List X)) -> Prop.
 
 (; //LEAN:List.Pairwise.nodup ;)
-List__Pairwise__nodup : (X : Set) -> (l : Elem (List X)) -> (r : (Elem X -> Elem X -> Prop)) -> (_ : Proof (Std__Irrefl X r)) -> (h1 : Proof (List__Pairwise X r l)) -> Proof (List__Nodup X l).
+List__Pairwise__nodup : (X : Set) -> (l : Elem (List X)) -> (r : (Elem X -> (Elem X -> Prop))) -> (_ : Proof (Std__Irrefl X r)) -> (h1 : Proof (List__Pairwise X r l)) -> Proof (List__Nodup X l).
 
 (; doc: **Alias** of the reverse direction of `List.sortedGT_iff_pairwise`. ;)
 (; //LEAN:List.Pairwise.sortedGT ;)
@@ -204,18 +204,18 @@ List__cons : (X : Set) -> (head : Elem X) -> (tail : Elem (List X)) -> Elem (Lis
 
 (; doc: Applies a function that returns an `Option` to each element of a list, collecting the non-`none` values.  `O(|l|)`.  Example: ```lean example #eval [1, 2, 5, 2, 7, 7].filterMap fun x =>   if x > 2 then some (2 * x) else none ``` ```output [10, 14, 14] ``` ;)
 (; //LEAN:List.filterMap ;)
-List__filterMap : (X : Set) -> (Y : Set) -> (f : (Elem X -> Option Y)) -> (x : Elem (List X)) -> Elem (List Y).
+List__filterMap : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem (Option Y))) -> (x : Elem (List X)) -> Elem (List Y).
 
 (; doc: Applies a function to each element of the list, returning the resulting list of values.  `O(|l|)`.  Examples: * `[a, b, c].map f = [f a, f b, f c]` * `[].map Nat.succ = []` * `["one", "two", "three"].map (·.length) = [3, 3, 5]` * `["one", "two", "three"].map (·.reverse) = ["eno", "owt", "eerht"]` ;)
 (; //LEAN:List.map ;)
-List__map : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (l : Elem (List X)) -> Elem (List Y).
+List__map : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (l : Elem (List X)) -> Elem (List Y).
 
 (; doc: The empty list, usually written `[]`.  Conventions for notations in identifiers:   * The recommended spelling of `[]` in identifiers is `nil`. ;)
 (; //LEAN:List.nil ;)
 List__nil : (X : Set) -> Elem (List X).
 
 (; //LEAN:List.pairwise_map ;)
-List__pairwise_map : (X : Set) -> (x : Set) -> (f : (Elem X -> x)) -> (R : (Elem x -> Elem x -> Prop)) -> (l : Elem (List X)) -> Proof (iff (List__Pairwise x R (List__map X x f l)) (List__Pairwise X (a => b => R (f a) (f b)) l)).
+List__pairwise_map : (X : Set) -> (x : Set) -> (f : (Elem X -> Elem x)) -> (R : (Elem x -> (Elem x -> Prop))) -> (l : Elem (List X)) -> Proof (iff (List__Pairwise x R (List__map X x f l)) (List__Pairwise X (a => b => R (f a) (f b)) l)).
 
 (; doc: Returns a list of the numbers with the given length `len`, starting at `start` and increasing by `step` at each element.  In other words, `List.range' start len step` is `[start, start+step, ..., start+(len-1)*step]`.  Examples:  * `List.range' 0 3 (step := 1) = [0, 1, 2]`  * `List.range' 0 3 (step := 2) = [0, 2, 4]`  * `List.range' 0 4 (step := 2) = [0, 2, 4, 6]`  * `List.range' 3 4 (step := 2) = [3, 5, 7, 9]` ;)
 (; //LEAN:List.range' ;)
@@ -256,7 +256,7 @@ Nat__Prime__two_le : (p : Elem Nat) -> (h : Proof (prime p)) -> Proof (Leq 2 p).
 (; //LEAN:Nat.cast ;)
 Nat__cast : (R : Set) -> (x1 : Elem Nat) -> Elem R.
 
-(; doc: `Nat.cast` as an embedding into monoids of characteristic `0`. ;)
+(; doc: `Nat.cast` as an embedding into monoids of characteristic `0`.  ;)
 (; //LEAN:Nat.castEmbedding ;)
 Nat__castEmbedding : (R : Set) -> Elem (Function__Embedding Nat R).
 
@@ -330,7 +330,7 @@ and_iff_left : (b : Prop) -> (a : Prop) -> (hb : Proof b) -> Proof (iff (and a b
 
 (; doc: **Alias** of `congrArg`. ;)
 (; //LEAN:congr_arg ;)
-congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+congr_arg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; //LEAN:dvd_rfl ;)
 dvd_rfl : (X : Set) -> (_ : Proof (Monoid X)) -> (a : Elem X) -> Proof (divide a a).

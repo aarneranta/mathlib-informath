@@ -120,14 +120,14 @@ def ZMod__exists : (n : Elem Nat) -> (P : (Elem (ZMod n) -> Prop)) -> Proof (iff
 ZMod__cast_id : (n : Elem Nat) -> (i : Elem (ZMod n)) -> Proof (Eqt (ZMod n) (ZMod__cast (ZMod n) n i) i).
 
 (; //LEAN:ZMod.cast_id' ;)
-def ZMod__cast_id' : (n : Elem Nat) -> Proof (Eqt (Elem (ZMod n) -> ZMod n) (ZMod__cast (ZMod n) n) (id (ZMod n))) :=
+def ZMod__cast_id' : (n : Elem Nat) -> Proof (Eqt (Elem (ZMod n) -> Elem (ZMod n)) (ZMod__cast (ZMod n) n) (id (ZMod n))) :=
   n => funext (ZMod n) (x => ZMod n) (ZMod__cast (ZMod n) n) (id (ZMod n)) (ZMod__cast_id n).
 
 (; //LEAN:ZMod.natCast_comp_val ;)
-ZMod__natCast_comp_val : (n : Elem Nat) -> (R : Set) -> (_ : Proof (Ring R)) -> (_ : Proof (NeZero Nat n)) -> Proof (Eqt (Elem (ZMod n) -> R) (Function__comp (ZMod n) Nat R (Nat__cast R) (ZMod__val n)) (ZMod__cast R n)).
+ZMod__natCast_comp_val : (n : Elem Nat) -> (R : Set) -> (_ : Proof (Ring R)) -> (_ : Proof (NeZero Nat n)) -> Proof (Eqt (Elem (ZMod n) -> Elem R) (Function__comp (ZMod n) Nat R (Nat__cast R) (ZMod__val n)) (ZMod__cast R n)).
 
 (; //LEAN:ZMod.intCast_comp_cast ;)
-ZMod__intCast_comp_cast : (n : Elem Nat) -> (R : Set) -> (_ : Proof (Ring R)) -> Proof (Eqt (Elem (ZMod n) -> R) (Function__comp (ZMod n) Int R (Int__cast R) (ZMod__cast Int n)) (ZMod__cast R n)).
+ZMod__intCast_comp_cast : (n : Elem Nat) -> (R : Set) -> (_ : Proof (Ring R)) -> Proof (Eqt (Elem (ZMod n) -> Elem R) (Function__comp (ZMod n) Int R (Int__cast R) (ZMod__cast Int n)) (ZMod__cast R n)).
 
 (; //LEAN:ZMod.natCast_val ;)
 def ZMod__natCast_val : (n : Elem Nat) -> (R : Set) -> (_ : Proof (Ring R)) -> (_ : Proof (NeZero Nat n)) -> (i : Elem (ZMod n)) -> Proof (Eqt R (Nat__cast R (ZMod__val n i)) (ZMod__cast R n i)) :=
@@ -591,7 +591,7 @@ def ZMod__lift_castAddHom : (n : Elem Nat) -> (A : Set) -> (_ : Proof (AddGroup 
   n => A => x => f => x1 => AddMonoidHom__liftOfRightInverse_comp_apply Int (ZMod n) A (Int__castAddHom (ZMod n)) (ZMod__cast Int n) (forallI (ZMod n) (x2 => Eqt (ZMod n) (Int__cast (ZMod n) (ZMod__cast Int n x2)) x2) (x2 => ZMod__intCast_zmod_cast n x2)) (Equiv__subtypeEquivRight__app (ZMod__lift___proof_1 n A) f) x1.
 
 (; //LEAN:ZMod.lift_comp_coe ;)
-def ZMod__lift_comp_coe : (n : Elem Nat) -> (A : Set) -> (_ : Proof (AddGroup A)) -> (f : Elem (Subtype (AddMonoidHom Int A) (f3 => Eqt A (f3 (Nat__cast Int n)) 0))) -> Proof (Eqt (Elem Int -> A) (Function__comp Int (ZMod n) A (ZMod__lift__app n f) (Int__cast (ZMod n))) (Subtype__val (AddMonoidHom Int A) (f2 => Eqt A (f2 (Nat__cast Int n)) 0) f)) :=
+def ZMod__lift_comp_coe : (n : Elem Nat) -> (A : Set) -> (_ : Proof (AddGroup A)) -> (f : Elem (Subtype (AddMonoidHom Int A) (f3 => Eqt A (f3 (Nat__cast Int n)) 0))) -> Proof (Eqt (Elem Int -> Elem A) (Function__comp Int (ZMod n) A (ZMod__lift__app n f) (Int__cast (ZMod n))) (Subtype__val (AddMonoidHom Int A) (f2 => Eqt A (f2 (Nat__cast Int n)) 0) f)) :=
   n => A => x => f => funext Int (x1 => A) (Function__comp Int (ZMod n) A (ZMod__lift__app n f) (Int__cast (ZMod n))) (Subtype__val (AddMonoidHom Int A) (f2 => Eqt A (f2 (Nat__cast Int n)) 0) f) (ZMod__lift_coe n A f).
 
 (; //LEAN:ZMod.lift_comp_castAddHom ;)
@@ -623,7 +623,7 @@ ZModModule__two_le_char : (n : Elem Nat) -> (G : Set) -> (_ : Proof (AddCommGrou
 
 (; //LEAN:ZModModule.periodicPts_add_left ;)
 def ZModModule__periodicPts_add_left : (n : Elem Nat) -> (G : Set) -> (_ : Proof (AddCommGroup G)) -> (_ : Proof (Module (ZMod n) G)) -> (_ : Proof (NeZero Nat n)) -> (x2 : Elem G) -> Proof (Eqt (powerset G) (Function__periodicPts G (x3 => plus x2 x3)) (Set__univ G)) :=
-  n => G => x => x1 => h => x2 => Set__eq_univ_of_forall G (Function__periodicPts G (x3 => plus x2 x3)) (forallI G (y => exists Nat (n2 => and (Gt n2 0) (Function__IsPeriodicPt G (x24 => plus x2 x24) n2 y))) (y => existsI Nat (n1 => and (Gt n1 0) (Function__IsPeriodicPt G (x4 => plus x2 x4) n1 y)) n (andI (Gt n 0) (Function__IsPeriodicPt G (x5 => plus x2 x5) n y) (NeZero__pos Nat n) (Eq__mpr (Function__IsPeriodicPt G (x6 => plus x2 x6) n y) (Function__IsFixedPt G (x7 => x7) y) (id (Eqt Prop (Function__IsPeriodicPt G (x8 => plus x2 x8) n y) (Function__IsFixedPt G (x9 => x9) y)) (congrFun' G Prop (Function__IsFixedPt G (Nat__iterate G (x10 => plus x2 x10) n)) (Function__IsFixedPt G (x11 => x11)) (congrArg (Elem G -> G) (Elem G -> Prop) (Nat__iterate G (x14 => plus x2 x14) n) (x15 => x15) (Function__IsFixedPt G) (Eq__trans (Elem G -> G) (Nat__iterate G (x17 => plus x2 x17) n) (x18 => plus (HSMul__hSMul Nat G G n x2) x18) (x19 => x19) (add_left_iterate G x2 n) (funext G (x20 => G) (plus (HSMul__hSMul Nat G G n x2)) (x21 => x21) (forallI G (x22 => Eqt G (plus (HSMul__hSMul Nat G G n x2) x22) x22) (x22 => Eq__trans G (plus (HSMul__hSMul Nat G G n x2) x22) (plus 0 x22) x22 (congrFun' G G (plus (HSMul__hSMul Nat G G n x2)) (plus 0) (congrArg G (Elem G -> G) (HSMul__hSMul Nat G G n x2) 0 plus (ZModModule__char_nsmul_eq_zero n G x2)) x22) (zero_add G x22)))))) y)) (Function__isFixedPt_id G y))))).
+  n => G => x => x1 => h => x2 => Set__eq_univ_of_forall G (Function__periodicPts G (x3 => plus x2 x3)) (forallI G (y => exists Nat (n2 => and (Gt n2 0) (Function__IsPeriodicPt G (x24 => plus x2 x24) n2 y))) (y => existsI Nat (n1 => and (Gt n1 0) (Function__IsPeriodicPt G (x4 => plus x2 x4) n1 y)) n (andI (Gt n 0) (Function__IsPeriodicPt G (x5 => plus x2 x5) n y) (NeZero__pos Nat n) (Eq__mpr (Function__IsPeriodicPt G (x6 => plus x2 x6) n y) (Function__IsFixedPt G (x7 => x7) y) (id (Eqt Prop (Function__IsPeriodicPt G (x8 => plus x2 x8) n y) (Function__IsFixedPt G (x9 => x9) y)) (congrFun' G Prop (Function__IsFixedPt G (Nat__iterate G (x10 => plus x2 x10) n)) (Function__IsFixedPt G (x11 => x11)) (congrArg (Elem G -> Elem G) (Elem G -> Prop) (Nat__iterate G (x14 => plus x2 x14) n) (x15 => x15) (Function__IsFixedPt G) (Eq__trans (Elem G -> Elem G) (Nat__iterate G (x17 => plus x2 x17) n) (x18 => plus (HSMul__hSMul Nat G G n x2) x18) (x19 => x19) (add_left_iterate G x2 n) (funext G (x20 => G) (plus (HSMul__hSMul Nat G G n x2)) (x21 => x21) (forallI G (x22 => Eqt G (plus (HSMul__hSMul Nat G G n x2) x22) x22) (x22 => Eq__trans G (plus (HSMul__hSMul Nat G G n x2) x22) (plus 0 x22) x22 (congrFun' G G (plus (HSMul__hSMul Nat G G n x2)) (plus 0) (congrArg G (Elem G -> Elem G) (HSMul__hSMul Nat G G n x2) 0 plus (ZModModule__char_nsmul_eq_zero n G x2)) x22) (zero_add G x22)))))) y)) (Function__isFixedPt_id G y))))).
 
 (; //LEAN:ZModModule.add_self ;)
 ZModModule__add_self : (G : Set) -> (_ : Proof (AddCommGroup G)) -> (_ : Proof (Module (ZMod 2) G)) -> (x2 : Elem G) -> Proof (Eqt G (plus x2 x2) 0).

@@ -771,7 +771,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt ((p : Elem Nat) -> Decidable (prime p)) Nat__decidablePrime Nat__decidablePrime'",
+    "prop": "Eqt ((p : Elem Nat) -> Proof (Decidable (prime p))) Nat__decidablePrime Nat__decidablePrime'",
     "by": "subsingleton",
     "method": "routine",
     "depth": 0
@@ -1052,6 +1052,58 @@
     "prop": "Eq (Nat__minFac n) 1",
     "by": "exact (le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')).symm",
     "depth": 2
+   }
+  ]
+ },
+ {
+  "name": "Nat__exists_prime_and_dvd_and_dvd_div",
+  "lean": "Nat.exists_prime_and_dvd_and_dvd_div",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "c",
+      "Elem Nat"
+     ],
+     [
+      "hne",
+      "Proof (Neq m (times m c))"
+     ]
+    ],
+    "by": "obtain ⟨c, rfl⟩ := hmn",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "exists Nat (p => and (prime p) (and (divide p (times m c)) (divide m (div (times m c) p))))",
+    "by": "obtain ⟨c, rfl⟩ := hmn",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "divide m (div (times m c) (Nat__minFac c))",
+    "by": "refine ⟨c.minFac, minFac_prime (by grind), (minFac_dvd c).mul_left m, ?_⟩",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "Neq c 1",
+    "by": "grind",
+    "method": "routine",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "divide m (times m (div c (Nat__minFac c)))",
+    "by": "rw [Nat.mul_div_assoc m (minFac_dvd c)]",
+    "depth": 0
+   },
+   {
+    "unit": "conclusion",
+    "prop": "divide m (times m (div c (Nat__minFac c)))",
+    "by": "exact Nat.dvd_mul_right _ _",
+    "depth": 0
    }
   ]
  },

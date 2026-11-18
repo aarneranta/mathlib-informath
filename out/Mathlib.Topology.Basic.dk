@@ -19,18 +19,18 @@ def isOpen_fold : (X : Set) -> (s : Elem (powerset X)) -> (t : Proof (Topologica
   X => s => t => rfl Prop (TopologicalSpace__IsOpen X s).
 
 (; //LEAN:isOpen_iUnion ;)
-def isOpen_iUnion : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem I -> powerset X)) -> (h : Proof (forall I (i1 => IsOpen X (f i1)))) -> Proof (IsOpen X (Set__iUnion X I (i => f i))) :=
+def isOpen_iUnion : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem I -> Elem (powerset X))) -> (h : Proof (forall I (i1 => IsOpen X (f i1)))) -> Proof (IsOpen X (Set__iUnion X I (i => f i))) :=
   X => I => x => f => h => isOpen_sUnion X (Set__range (powerset X) I (i => f i)) (iffEr (forall (powerset X) (a => if (Membership__mem (powerset X) (powerset (powerset X)) (Set__range (powerset X) I (i1 => f i1)) a) (IsOpen X a))) (forall I (i2 => IsOpen X (f i2))) (Set__forall_mem_range (powerset X) I (i3 => f i3) (IsOpen X)) h).
 
 (; //LEAN:isOpen_biUnion ;)
-def isOpen_biUnion : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X1)) -> (f : (Elem X1 -> powerset X)) -> (h : Proof (forall X1 (i1 => if (Membership__mem X1 (powerset X1) s i1) (IsOpen X (f i1))))) -> Proof (IsOpen X (Set__iUnion X X1 (i => Set__iUnion X (Membership__mem X1 (powerset X1) s i) (h1 => f i)))) :=
+def isOpen_biUnion : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X1)) -> (f : (Elem X1 -> Elem (powerset X))) -> (h : Proof (forall X1 (i1 => if (Membership__mem X1 (powerset X1) s i1) (IsOpen X (f i1))))) -> Proof (IsOpen X (Set__iUnion X X1 (i => Set__iUnion X (Membership__mem X1 (powerset X1) s i) (h1 => f i)))) :=
   X => X1 => x => s => f => h => isOpen_iUnion X X1 (i => Set__iUnion X (Membership__mem X1 (powerset X1) s i) (h1 => f i)) (forallI X1 (i1 => IsOpen X (Set__iUnion X (Membership__mem X1 (powerset X1) s i1) (i3 => f i1))) (i1 => isOpen_iUnion X (Membership__mem X1 (powerset X1) s i1) (h2 => f i1) (ifI (Membership__mem X1 (powerset X1) s i1) (IsOpen X (f i1)) (hi => ifE (Membership__mem X1 (powerset X1) s i1) (IsOpen X (f i1)) (forallE X1 (i2 => if (Membership__mem X1 (powerset X1) s i2) (IsOpen X (f i2))) h i1) hi)))).
 
 (; //LEAN:IsOpen.union ;)
 IsOpen__union : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset X)) -> (_ : Proof (TopologicalSpace X)) -> (h1 : Proof (IsOpen X s1)) -> (h2 : Proof (IsOpen X s2)) -> Proof (IsOpen X (Union__union (powerset X) s1 s2)).
 
 (; //LEAN:isOpen_iff_of_cover ;)
-isOpen_iff_of_cover : (X : Set) -> (X1 : Set) -> (s : Elem (powerset X)) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X1 -> powerset X)) -> (ho : Proof (forall X1 (i2 => IsOpen X (f i2)))) -> (hU : Proof (Eqt (powerset X) (Set__iUnion X X1 (i1 => f i1)) (Set__univ X))) -> Proof (iff (IsOpen X s) (forall X1 (i => IsOpen X (Inter__inter (powerset X) (f i) s)))).
+isOpen_iff_of_cover : (X : Set) -> (X1 : Set) -> (s : Elem (powerset X)) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem X1 -> Elem (powerset X))) -> (ho : Proof (forall X1 (i2 => IsOpen X (f i2)))) -> (hU : Proof (Eqt (powerset X) (Set__iUnion X X1 (i1 => f i1)) (Set__univ X))) -> Proof (iff (IsOpen X s) (forall X1 (i => IsOpen X (Inter__inter (powerset X) (f i) s)))).
 
 (; //LEAN:isOpen_empty ;)
 isOpen_empty : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (IsOpen X (EmptyCollection__emptyCollection (powerset X))).
@@ -39,17 +39,17 @@ isOpen_empty : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (IsOpen X 
 Set__Finite__isOpen_sInter : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset (powerset X))) -> (hs : Proof (Set__Finite (powerset X) s)) -> (h : Proof (forall (powerset X) (t => if (Membership__mem (powerset X) (powerset (powerset X)) s t) (IsOpen X t)))) -> Proof (IsOpen X (Set__sInter X s)).
 
 (; //LEAN:Set.Finite.isOpen_biInter ;)
-Set__Finite__isOpen_biInter : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X1)) -> (f : (Elem X1 -> powerset X)) -> (hs : Proof (Set__Finite X1 s)) -> (h : Proof (forall X1 (i1 => if (Membership__mem X1 (powerset X1) s i1) (IsOpen X (f i1))))) -> Proof (IsOpen X (Set__iInter X X1 (i => Set__iInter X (Membership__mem X1 (powerset X1) s i) (h1 => f i)))).
+Set__Finite__isOpen_biInter : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X1)) -> (f : (Elem X1 -> Elem (powerset X))) -> (hs : Proof (Set__Finite X1 s)) -> (h : Proof (forall X1 (i1 => if (Membership__mem X1 (powerset X1) s i1) (IsOpen X (f i1))))) -> Proof (IsOpen X (Set__iInter X X1 (i => Set__iInter X (Membership__mem X1 (powerset X1) s i) (h1 => f i)))).
 
 (; //LEAN:isOpen_iInter_of_finite ;)
-def isOpen_iInter_of_finite : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (Finite I)) -> (s : (Elem I -> powerset X)) -> (h1 : Proof (forall I (i1 => IsOpen X (s i1)))) -> Proof (IsOpen X (Set__iInter X I (i => s i))) :=
+def isOpen_iInter_of_finite : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (Finite I)) -> (s : (Elem I -> Elem (powerset X))) -> (h1 : Proof (forall I (i1 => IsOpen X (s i1)))) -> Proof (IsOpen X (Set__iInter X I (i => s i))) :=
   X => I => x => h => s => h1 => Set__Finite__isOpen_sInter X (Set__range (powerset X) I (i => s i)) (Set__finite_range (powerset X) I (i1 => s i1)) (iffEr (forall (powerset X) (a => if (Membership__mem (powerset X) (powerset (powerset X)) (Set__range (powerset X) I (i2 => s i2)) a) (IsOpen X a))) (forall I (i3 => IsOpen X (s i3))) (Set__forall_mem_range (powerset X) I (i4 => s i4) (IsOpen X)) h1).
 
 (; //LEAN:IsOpen.iInter_of_finite_ne_univ ;)
-IsOpen__iInter_of_finite_ne_univ : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (I : Set) -> (s : (Elem I -> powerset X)) -> (hs : Proof (forall I (i2 => IsOpen X (s i2)))) -> (hs_ne_univ : Proof (Set__Finite I (Set__ofPred I (i1 => Neq (s i1) (Set__univ X))))) -> Proof (IsOpen X (Set__iInter X I (i => s i))).
+IsOpen__iInter_of_finite_ne_univ : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (I : Set) -> (s : (Elem I -> Elem (powerset X))) -> (hs : Proof (forall I (i2 => IsOpen X (s i2)))) -> (hs_ne_univ : Proof (Set__Finite I (Set__ofPred I (i1 => Neq (s i1) (Set__univ X))))) -> Proof (IsOpen X (Set__iInter X I (i => s i))).
 
 (; //LEAN:isOpen_biInter_finset ;)
-def isOpen_biInter_finset : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (Finset X1)) -> (f : (Elem X1 -> powerset X)) -> (h : Proof (forall X1 (i1 => if (Membership__mem X1 (Finset X1) s i1) (IsOpen X (f i1))))) -> Proof (IsOpen X (Set__iInter X X1 (i => Set__iInter X (Membership__mem X1 (Finset X1) s i) (h1 => f i)))) :=
+def isOpen_biInter_finset : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (Finset X1)) -> (f : (Elem X1 -> Elem (powerset X))) -> (h : Proof (forall X1 (i1 => if (Membership__mem X1 (Finset X1) s i1) (IsOpen X (f i1))))) -> Proof (IsOpen X (Set__iInter X X1 (i => Set__iInter X (Membership__mem X1 (Finset X1) s i) (h1 => f i)))) :=
   X => X1 => x => s => f => h => Set__Finite__isOpen_biInter X X1 (SetLike__coe (Finset X1) X1 s) f (Finset__finite_toSet X1 s) h.
 
 (; //LEAN:isOpen_const ;)
@@ -97,11 +97,11 @@ IsClosed__union : (X : Set) -> (s1 : Elem (powerset X)) -> (s2 : Elem (powerset 
 isClosed_sInter : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset (powerset X))) -> (h : Proof (forall (powerset X) (t => if (Membership__mem (powerset X) (powerset (powerset X)) s t) (IsClosed X t)))) -> Proof (IsClosed X (Set__sInter X s)).
 
 (; //LEAN:isClosed_iInter ;)
-def isClosed_iInter : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem I -> powerset X)) -> (h : Proof (forall I (i1 => IsClosed X (f i1)))) -> Proof (IsClosed X (Set__iInter X I (i => f i))) :=
+def isClosed_iInter : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : (Elem I -> Elem (powerset X))) -> (h : Proof (forall I (i1 => IsClosed X (f i1)))) -> Proof (IsClosed X (Set__iInter X I (i => f i))) :=
   X => I => x => f => h => isClosed_sInter X (Set__range (powerset X) I (i => f i)) (iffEr (forall (powerset X) (a => if (Membership__mem (powerset X) (powerset (powerset X)) (Set__range (powerset X) I (i1 => f i1)) a) (IsClosed X a))) (forall I (i2 => IsClosed X (f i2))) (Set__forall_mem_range (powerset X) I (i3 => f i3) (IsClosed X)) h).
 
 (; //LEAN:isClosed_biInter ;)
-def isClosed_biInter : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X1)) -> (f : (Elem X1 -> powerset X)) -> (h : Proof (forall X1 (i1 => if (Membership__mem X1 (powerset X1) s i1) (IsClosed X (f i1))))) -> Proof (IsClosed X (Set__iInter X X1 (i => Set__iInter X (Membership__mem X1 (powerset X1) s i) (h1 => f i)))) :=
+def isClosed_biInter : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X1)) -> (f : (Elem X1 -> Elem (powerset X))) -> (h : Proof (forall X1 (i1 => if (Membership__mem X1 (powerset X1) s i1) (IsClosed X (f i1))))) -> Proof (IsClosed X (Set__iInter X X1 (i => Set__iInter X (Membership__mem X1 (powerset X1) s i) (h1 => f i)))) :=
   X => X1 => x => s => f => h => isClosed_iInter X X1 (i => Set__iInter X (Membership__mem X1 (powerset X1) s i) (h1 => f i)) (forallI X1 (i1 => IsClosed X (Set__iInter X (Membership__mem X1 (powerset X1) s i1) (i3 => f i1))) (i1 => isClosed_iInter X (Membership__mem X1 (powerset X1) s i1) (h2 => f i1) (forallE X1 (i2 => if (Membership__mem X1 (powerset X1) s i2) (IsClosed X (f i2))) h i1))).
 
 (; //LEAN:isClosed_compl_iff ;)
@@ -123,20 +123,20 @@ def IsClosed__sdiff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerse
   X => s => t => x => h1 => h2 => IsClosed__inter X s (Compl__compl (powerset X) t) h1 (iffEr (IsClosed X (Compl__compl (powerset X) t)) (IsOpen X t) (isClosed_compl_iff X t) h2).
 
 (; //LEAN:Set.Finite.isClosed_biUnion ;)
-Set__Finite__isClosed_biUnion : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X1)) -> (f : (Elem X1 -> powerset X)) -> (hs : Proof (Set__Finite X1 s)) -> (h : Proof (forall X1 (i1 => if (Membership__mem X1 (powerset X1) s i1) (IsClosed X (f i1))))) -> Proof (IsClosed X (Set__iUnion X X1 (i => Set__iUnion X (Membership__mem X1 (powerset X1) s i) (h1 => f i)))).
+Set__Finite__isClosed_biUnion : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset X1)) -> (f : (Elem X1 -> Elem (powerset X))) -> (hs : Proof (Set__Finite X1 s)) -> (h : Proof (forall X1 (i1 => if (Membership__mem X1 (powerset X1) s i1) (IsClosed X (f i1))))) -> Proof (IsClosed X (Set__iUnion X X1 (i => Set__iUnion X (Membership__mem X1 (powerset X1) s i) (h1 => f i)))).
 
 (; //LEAN:Set.Finite.isClosed_sUnion ;)
 Set__Finite__isClosed_sUnion : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (powerset (powerset X))) -> (hs : Proof (Set__Finite (powerset X) s)) -> (h : Proof (forall (powerset X) (t => if (Membership__mem (powerset X) (powerset (powerset X)) s t) (IsClosed X t)))) -> Proof (IsClosed X (Set__sUnion X s)).
 
 (; //LEAN:isClosed_biUnion_finset ;)
-def isClosed_biUnion_finset : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (Finset X1)) -> (f : (Elem X1 -> powerset X)) -> (h : Proof (forall X1 (i1 => if (Membership__mem X1 (Finset X1) s i1) (IsClosed X (f i1))))) -> Proof (IsClosed X (Set__iUnion X X1 (i => Set__iUnion X (Membership__mem X1 (Finset X1) s i) (h1 => f i)))) :=
+def isClosed_biUnion_finset : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (s : Elem (Finset X1)) -> (f : (Elem X1 -> Elem (powerset X))) -> (h : Proof (forall X1 (i1 => if (Membership__mem X1 (Finset X1) s i1) (IsClosed X (f i1))))) -> Proof (IsClosed X (Set__iUnion X X1 (i => Set__iUnion X (Membership__mem X1 (Finset X1) s i) (h1 => f i)))) :=
   X => X1 => x => s => f => h => Set__Finite__isClosed_biUnion X X1 (SetLike__coe (Finset X1) X1 s) f (Finset__finite_toSet X1 s) h.
 
 (; //LEAN:isClosed_iUnion_of_finite ;)
-isClosed_iUnion_of_finite : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (Finite I)) -> (s : (Elem I -> powerset X)) -> (h1 : Proof (forall I (i1 => IsClosed X (s i1)))) -> Proof (IsClosed X (Set__iUnion X I (i => s i))).
+isClosed_iUnion_of_finite : (X : Set) -> (I : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (Finite I)) -> (s : (Elem I -> Elem (powerset X))) -> (h1 : Proof (forall I (i1 => IsClosed X (s i1)))) -> Proof (IsClosed X (Set__iUnion X I (i => s i))).
 
 (; //LEAN:IsClosed.iUnion_of_finite_nonempty ;)
-IsClosed__iUnion_of_finite_nonempty : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (I : Set) -> (s : (Elem I -> powerset X)) -> (hs : Proof (forall I (i2 => IsClosed X (s i2)))) -> (hs_nonempty : Proof (Set__Finite I (Set__ofPred I (i1 => Set__Nonempty X (s i1))))) -> Proof (IsClosed X (Set__iUnion X I (i => s i))).
+IsClosed__iUnion_of_finite_nonempty : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (I : Set) -> (s : (Elem I -> Elem (powerset X))) -> (hs : Proof (forall I (i2 => IsClosed X (s i2)))) -> (hs_nonempty : Proof (Set__Finite I (Set__ofPred I (i1 => Set__Nonempty X (s i1))))) -> Proof (IsClosed X (Set__iUnion X I (i => s i))).
 
 (; //LEAN:isClosed_imp ;)
 isClosed_imp : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (hp : Proof (IsOpen X (Set__ofPred X (x3 => p x3)))) -> (hq : Proof (IsClosed X (Set__ofPred X (x2 => q x2)))) -> Proof (IsClosed X (Set__ofPred X (x1 => if (p x1) (q x1)))).
@@ -154,9 +154,9 @@ def le_nhds_lim : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : Elem (Fi
   X => x => f => h => Classical__epsilon_spec X (y => Leq f (nhds X y)) h.
 
 (; //LEAN:tendsto_nhds_limUnder ;)
-def tendsto_nhds_limUnder : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : Elem (Filter X1)) -> (g : (Elem X1 -> X)) -> (h : Proof (exists X (x1 => Filter__Tendsto X1 X g f (nhds X x1)))) -> Proof (Filter__Tendsto X1 X g f (nhds X (Filter__limUnder X X1 f g))) :=
+def tendsto_nhds_limUnder : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : Elem (Filter X1)) -> (g : (Elem X1 -> Elem X)) -> (h : Proof (exists X (x1 => Filter__Tendsto X1 X g f (nhds X x1)))) -> Proof (Filter__Tendsto X1 X g f (nhds X (Filter__limUnder X X1 f g))) :=
   X => X1 => x => f => g => h => le_nhds_lim X (Filter__map X1 X g f) h.
 
 (; //LEAN:limUnder_of_not_tendsto ;)
-limUnder_of_not_tendsto : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : Elem (Filter X1)) -> (g : (Elem X1 -> X)) -> (h : Proof (not (exists X (x1 => Filter__Tendsto X1 X g f (nhds X x1))))) -> Proof (Eqt X (Filter__limUnder X X1 f g) (Classical__choice X hX)).
+limUnder_of_not_tendsto : (X : Set) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X)) -> (f : Elem (Filter X1)) -> (g : (Elem X1 -> Elem X)) -> (h : Proof (not (exists X (x1 => Filter__Tendsto X1 X g f (nhds X x1))))) -> Proof (Eqt X (Filter__limUnder X X1 f g) (Classical__choice X hX)).
 

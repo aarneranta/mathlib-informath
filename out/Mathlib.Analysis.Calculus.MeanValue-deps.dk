@@ -5,24 +5,24 @@ ContinuousLinearMap__smulRightL__app : (a1 : Set) -> (a2 : Set) -> (a3 : Set) ->
 
 (; doc: The Landau notation `f =o[l] g` where `f` and `g` are two functions on a type `α` and `l` is a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by an arbitrarily small constant multiple of `‖g‖`. In other words, `‖f‖ / ‖g‖` tends to `0` along `l`, modulo division by zero issues that are avoided by this definition. ;)
 (; //LEAN:Asymptotics.IsLittleO ;)
-Asymptotics__IsLittleO : (X : Set) -> (E : Set) -> (F : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> E)) -> (g : (Elem X -> F)) -> Prop.
+Asymptotics__IsLittleO : (X : Set) -> (E : Set) -> (F : Set) -> (l : Elem (Filter X)) -> (f : (Elem X -> Elem E)) -> (g : (Elem X -> Elem F)) -> Prop.
 
 (; doc: See also `Continuous.comp_continuousOn'` using the form `fun y ↦ g (f y)` instead of `g ∘ f`. ;)
 (; //LEAN:Continuous.comp_continuousOn ;)
-Continuous__comp_continuousOn : (X : Set) -> (Y : Set) -> (Z : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (TopologicalSpace Z)) -> (g : (Elem Y -> Z)) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (hg : Proof (Continuous Y Z g)) -> (hf : Proof (ContinuousOn X Y f s)) -> Proof (ContinuousOn X Z (Function__comp X Y Z g f) s).
+Continuous__comp_continuousOn : (X : Set) -> (Y : Set) -> (Z : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (TopologicalSpace Z)) -> (g : (Elem Y -> Elem Z)) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (hg : Proof (Continuous Y Z g)) -> (hf : Proof (ContinuousOn X Y f s)) -> Proof (ContinuousOn X Z (Function__comp X Y Z g f) s).
 
 (; //LEAN:Continuous.continuousAt ;)
-Continuous__continuousAt : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (x2 : Elem X) -> (h : Proof (Continuous X Y f)) -> Proof (ContinuousAt X Y f x2).
+Continuous__continuousAt : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Elem Y)) -> (x2 : Elem X) -> (h : Proof (Continuous X Y f)) -> Proof (ContinuousAt X Y f x2).
 
 (; doc: A function between topological spaces is continuous at a point `x₀` if `f x` tends to `f x₀` when `x` tends to `x₀`. ;)
 (; //LEAN:ContinuousAt ;)
-ContinuousAt : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (x2 : Elem X) -> Prop.
+ContinuousAt : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (x2 : Elem X) -> Prop.
 
 (; //LEAN:ContinuousAt.comp ;)
-ContinuousAt__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (TopologicalSpace Z)) -> (f : (Elem X -> Y)) -> (x3 : Elem X) -> (g : (Elem Y -> Z)) -> (hg : Proof (ContinuousAt Y Z g (f x3))) -> (hf : Proof (ContinuousAt X Y f x3)) -> Proof (ContinuousAt X Z (Function__comp X Y Z g f) x3).
+ContinuousAt__comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (_ : Proof (TopologicalSpace Z)) -> (f : (Elem X -> Elem Y)) -> (x3 : Elem X) -> (g : (Elem Y -> Elem Z)) -> (hg : Proof (ContinuousAt Y Z g (f x3))) -> (hf : Proof (ContinuousAt X Y f x3)) -> Proof (ContinuousAt X Z (Function__comp X Y Z g f) x3).
 
 (; //LEAN:ContinuousAt.continuousWithinAt ;)
-ContinuousAt__continuousWithinAt : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (x2 : Elem X) -> (h : Proof (ContinuousAt X Y f x2)) -> Proof (ContinuousWithinAt X Y f s x2).
+ContinuousAt__continuousWithinAt : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (x2 : Elem X) -> (h : Proof (ContinuousAt X Y f x2)) -> Proof (ContinuousWithinAt X Y f s x2).
 
 (; doc: Continuous linear maps between modules. We only put the type classes that are necessary for the definition, although in applications `M` and `M₂` will be topological modules over the topological ring `R`. ;)
 (; //LEAN:ContinuousLinearMap ;)
@@ -34,8 +34,8 @@ ContinuousLinearMap__continuous : (X : Set) -> (X1 : Set) -> (_ : Proof (Semirin
 (; //LEAN:ContinuousLinearMap.ext_ring ;)
 ContinuousLinearMap__ext_ring : (X : Set) -> (_ : Proof (Semiring X)) -> (X1 : Set) -> (_ : Proof (TopologicalSpace X1)) -> (_ : Proof (AddCommMonoid X1)) -> (_ : Proof (Module X X1)) -> (_ : Proof (TopologicalSpace X)) -> (f : Elem (ContinuousLinearMap X X (RingHom__id X) X X1)) -> (g : Elem (ContinuousLinearMap X X (RingHom__id X) X X1)) -> (h : Proof (Eqt X1 (f 1) (g 1))) -> Proof (Eqt (ContinuousLinearMap X X (RingHom__id X) X X1) f g).
 
-(; //LEAN:ContinuousLinearMap.nnnorm_toSpanSingleton ;)
-ContinuousLinearMap__nnnorm_toSpanSingleton : (X : Set) -> (E : Set) -> (_ : Proof (SeminormedAddCommGroup E)) -> (_ : Proof (NontriviallyNormedField X)) -> (_ : Proof (NormedSpace X E)) -> (x3 : Elem E) -> Proof (Eqt NNReal (NNNorm__nnnorm (ContinuousLinearMap X X (RingHom__id X) X E) (ContinuousLinearMap__toSpanSingleton X E x3)) (NNNorm__nnnorm E x3)).
+(; //LEAN:ContinuousLinearMap.nnNorm_toSpanSingleton ;)
+ContinuousLinearMap__nnNorm_toSpanSingleton : (X : Set) -> (E : Set) -> (_ : Proof (SeminormedAddCommGroup E)) -> (_ : Proof (NontriviallyNormedField X)) -> (_ : Proof (NormedSpace X E)) -> (x3 : Elem E) -> Proof (Eqt NNReal (NNNorm__nnNorm (ContinuousLinearMap X X (RingHom__id X) X E) (ContinuousLinearMap__toSpanSingleton X E x3)) (NNNorm__nnNorm E x3)).
 
 (; //LEAN:ContinuousLinearMap.norm_toSpanSingleton ;)
 ContinuousLinearMap__norm_toSpanSingleton : (X : Set) -> (E : Set) -> (_ : Proof (SeminormedAddCommGroup E)) -> (_ : Proof (NontriviallyNormedField X)) -> (_ : Proof (NormedSpace X E)) -> (x3 : Elem E) -> Proof (Eq (Norm__norm (ContinuousLinearMap X X (RingHom__id X) X E) (ContinuousLinearMap__toSpanSingleton X E x3)) (Norm__norm E x3)).
@@ -46,11 +46,11 @@ ContinuousLinearMap__toSpanSingleton : (X : Set) -> (X1 : Set) -> (x5 : Elem X1)
 
 (; doc: A function between topological spaces is continuous on a subset `s` when it's continuous at every point of `s` within `s`. ;)
 (; //LEAN:ContinuousOn ;)
-ContinuousOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+ContinuousOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: A function between topological spaces is continuous at a point `x₀` within a subset `s` if `f x` tends to `f x₀` when `x` tends to `x₀` while staying within `s`. ;)
 (; //LEAN:ContinuousWithinAt ;)
-ContinuousWithinAt : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> (x2 : Elem X) -> Prop.
+ContinuousWithinAt : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (x2 : Elem X) -> Prop.
 
 (; doc: Convexity of sets. ;)
 (; //LEAN:Convex ;)
@@ -58,34 +58,34 @@ Convex : (X : Set) -> (E : Set) -> (s : Elem (powerset E)) -> Prop.
 
 (; doc: `Differentiable 𝕜 f` means that `f` is differentiable at any point. ;)
 (; //LEAN:Differentiable ;)
-Differentiable : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> F)) -> Prop.
+Differentiable : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> Elem F)) -> Prop.
 
 (; doc: A function `f` is differentiable at a point `x` if it admits a derivative there (possibly non-unique). ;)
 (; //LEAN:DifferentiableAt ;)
-DifferentiableAt : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> F)) -> (x7 : Elem E) -> Prop.
+DifferentiableAt : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> Elem F)) -> (x7 : Elem E) -> Prop.
 
 (; //LEAN:DifferentiableAt.hasDerivAt ;)
-DifferentiableAt__hasDerivAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem X -> F)) -> (x3 : Elem X) -> (h : Proof (DifferentiableAt X X F f x3)) -> Proof (HasDerivAt X F f (deriv X F f x3) x3).
+DifferentiableAt__hasDerivAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem X -> Elem F)) -> (x3 : Elem X) -> (h : Proof (DifferentiableAt X X F f x3)) -> Proof (HasDerivAt X F f (deriv X F f x3) x3).
 
 (; //LEAN:DifferentiableAt.hasFDerivAt ;)
-DifferentiableAt__hasFDerivAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> F)) -> (x7 : Elem E) -> (h : Proof (DifferentiableAt X E F f x7)) -> Proof (HasFDerivAt X E F f (fderiv X E F f x7) x7).
+DifferentiableAt__hasFDerivAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> Elem F)) -> (x7 : Elem E) -> (h : Proof (DifferentiableAt X E F f x7)) -> Proof (HasFDerivAt X E F f (fderiv X E F f x7) x7).
 
 (; doc: `DifferentiableOn 𝕜 f s` means that `f` is differentiable within `s` at any point of `s`. ;)
 (; //LEAN:DifferentiableOn ;)
-DifferentiableOn : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> F)) -> (s : Elem (powerset E)) -> Prop.
+DifferentiableOn : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> Elem F)) -> (s : Elem (powerset E)) -> Prop.
 
 (; //LEAN:DifferentiableOn.sub ;)
-DifferentiableOn__sub : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (NormedAddCommGroup E)) -> (_ : Proof (NormedSpace X E)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem E -> F)) -> (g : (Elem E -> F)) -> (s : Elem (powerset E)) -> (hf : Proof (DifferentiableOn X E F f s)) -> (hg : Proof (DifferentiableOn X E F g s)) -> Proof (DifferentiableOn X E F (minus f g) s).
+DifferentiableOn__sub : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (NormedAddCommGroup E)) -> (_ : Proof (NormedSpace X E)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem E -> Elem F)) -> (g : (Elem E -> Elem F)) -> (s : Elem (powerset E)) -> (hf : Proof (DifferentiableOn X E F f s)) -> (hg : Proof (DifferentiableOn X E F g s)) -> Proof (DifferentiableOn X E F (minus f g) s).
 
 (; doc: A function `f` is differentiable at a point `x` within a set `s` if it admits a derivative there (possibly non-unique). ;)
 (; //LEAN:DifferentiableWithinAt ;)
-DifferentiableWithinAt : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> F)) -> (s : Elem (powerset E)) -> (x7 : Elem E) -> Prop.
+DifferentiableWithinAt : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> Elem F)) -> (s : Elem (powerset E)) -> (x7 : Elem E) -> Prop.
 
 (; //LEAN:DifferentiableWithinAt.hasDerivWithinAt ;)
-DifferentiableWithinAt__hasDerivWithinAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem X -> F)) -> (x3 : Elem X) -> (s : Elem (powerset X)) -> (h : Proof (DifferentiableWithinAt X X F f s x3)) -> Proof (HasDerivWithinAt X F f (derivWithin X F f s x3) s x3).
+DifferentiableWithinAt__hasDerivWithinAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem X -> Elem F)) -> (x3 : Elem X) -> (s : Elem (powerset X)) -> (h : Proof (DifferentiableWithinAt X X F f s x3)) -> Proof (HasDerivWithinAt X F f (derivWithin X F f s x3) s x3).
 
 (; //LEAN:DifferentiableWithinAt.hasFDerivWithinAt ;)
-DifferentiableWithinAt__hasFDerivWithinAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> F)) -> (x7 : Elem E) -> (s : Elem (powerset E)) -> (h : Proof (DifferentiableWithinAt X E F f s x7)) -> Proof (HasFDerivWithinAt X E F f (fderivWithin X E F f s x7) s x7).
+DifferentiableWithinAt__hasFDerivWithinAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> Elem F)) -> (x7 : Elem E) -> (s : Elem (powerset E)) -> (h : Proof (DifferentiableWithinAt X E F f s x7)) -> Proof (HasFDerivWithinAt X E F f (fderivWithin X E F f s x7) s x7).
 
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
@@ -115,55 +115,55 @@ Filter__Frequently : (X : Set) -> (p : (Elem X -> Prop)) -> (f : Elem (Filter X)
 
 (; doc: Function composition, usually written with the infix operator `∘`. A new function is created from two existing functions, where one function's output is used as input to the other.  Examples:  * `Function.comp List.reverse (List.drop 2) [3, 2, 4, 1] = [1, 4]`  * `(List.reverse ∘ List.drop 2) [3, 2, 4, 1] = [1, 4]`  Conventions for notations in identifiers:   * The recommended spelling of `∘` in identifiers is `comp`. ;)
 (; //LEAN:Function.comp ;)
-Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> W)) -> (g : (Elem X -> Y)) -> (x : Elem X) -> Elem W.
+Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> Elem W)) -> (g : (Elem X -> Elem Y)) -> (x : Elem X) -> Elem W.
 
 (; doc: `f` has the derivative `f'` at the point `x`.  That is, `f x' = f x + (x' - x) • f' + o(x' - x)` where `x'` converges to `x`. ;)
 (; //LEAN:HasDerivAt ;)
-HasDerivAt : (X : Set) -> (F : Set) -> (f : (Elem X -> F)) -> (f' : Elem F) -> (x4 : Elem X) -> Prop.
+HasDerivAt : (X : Set) -> (F : Set) -> (f : (Elem X -> Elem F)) -> (f' : Elem F) -> (x4 : Elem X) -> Prop.
 
 (; //LEAN:HasDerivAt.continuousAt ;)
-HasDerivAt__continuousAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem X -> F)) -> (f' : Elem F) -> (x3 : Elem X) -> (h : Proof (HasDerivAt X F f f' x3)) -> Proof (ContinuousAt X F f x3).
+HasDerivAt__continuousAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem X -> Elem F)) -> (f' : Elem F) -> (x3 : Elem X) -> (h : Proof (HasDerivAt X F f f' x3)) -> Proof (ContinuousAt X F f x3).
 
 (; //LEAN:HasDerivAt.hasDerivWithinAt ;)
-HasDerivAt__hasDerivWithinAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem X -> F)) -> (f' : Elem F) -> (x3 : Elem X) -> (s : Elem (powerset X)) -> (h : Proof (HasDerivAt X F f f' x3)) -> Proof (HasDerivWithinAt X F f f' s x3).
+HasDerivAt__hasDerivWithinAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem X -> Elem F)) -> (f' : Elem F) -> (x3 : Elem X) -> (s : Elem (powerset X)) -> (h : Proof (HasDerivAt X F f f' x3)) -> Proof (HasDerivWithinAt X F f f' s x3).
 
 (; doc: **Alias** of the forward direction of `hasDerivAt_iff_hasFDerivAt`.  ---  Expressing `HasDerivAt f f' x` in terms of `HasFDerivAt` ;)
 (; //LEAN:HasDerivAt.hasFDerivAt ;)
-HasDerivAt__hasFDerivAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem X -> F)) -> (x4 : Elem X) -> (f' : Elem F) -> (h1 : Proof (HasDerivAt X F f f' x4)) -> Proof (HasFDerivAt X X F f (ContinuousLinearMap__toSpanSingleton X F f') x4).
+HasDerivAt__hasFDerivAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem X -> Elem F)) -> (x4 : Elem X) -> (f' : Elem F) -> (h1 : Proof (HasDerivAt X F f f' x4)) -> Proof (HasFDerivAt X X F f (ContinuousLinearMap__toSpanSingleton X F f') x4).
 
 (; doc: `f` has the derivative `f'` at the point `x` within the subset `s`.  That is, `f x' = f x + (x' - x) • f' + o(x' - x)` where `x'` converges to `x` inside `s`. ;)
 (; //LEAN:HasDerivWithinAt ;)
-HasDerivWithinAt : (X : Set) -> (F : Set) -> (f : (Elem X -> F)) -> (f' : Elem F) -> (s : Elem (powerset X)) -> (x4 : Elem X) -> Prop.
+HasDerivWithinAt : (X : Set) -> (F : Set) -> (f : (Elem X -> Elem F)) -> (f' : Elem F) -> (s : Elem (powerset X)) -> (x4 : Elem X) -> Prop.
 
 (; doc: **Alias** of the forward direction of `hasDerivWithinAt_iff_hasFDerivWithinAt`.  ---  Expressing `HasDerivWithinAt f f' s x` in terms of `HasFDerivWithinAt` ;)
 (; //LEAN:HasDerivWithinAt.hasFDerivWithinAt ;)
-HasDerivWithinAt__hasFDerivWithinAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem X -> F)) -> (x4 : Elem X) -> (s : Elem (powerset X)) -> (f' : Elem F) -> (h1 : Proof (HasDerivWithinAt X F f f' s x4)) -> Proof (HasFDerivWithinAt X X F f (ContinuousLinearMap__toSpanSingleton X F f') s x4).
+HasDerivWithinAt__hasFDerivWithinAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem X -> Elem F)) -> (x4 : Elem X) -> (s : Elem (powerset X)) -> (f' : Elem F) -> (h1 : Proof (HasDerivWithinAt X F f f' s x4)) -> Proof (HasFDerivWithinAt X X F f (ContinuousLinearMap__toSpanSingleton X F f') s x4).
 
 (; //LEAN:HasDerivWithinAt.liminf_right_slope_le ;)
-HasDerivWithinAt__liminf_right_slope_le : (f : (Elem Real -> Real)) -> (f' : Elem Real) -> (x : Elem Real) -> (r : Elem Real) -> (hf : Proof (HasDerivWithinAt Real Real f f' (Set__Ici Real x) x)) -> (hr : Proof (Lt f' r)) -> Proof (Filter__Frequently Real (z => Lt (slope Real Real Real f x z) r) (nhdsWithin Real x (Set__Ioi Real x))).
+HasDerivWithinAt__liminf_right_slope_le : (f : (Elem Real -> Elem Real)) -> (f' : Elem Real) -> (x : Elem Real) -> (r : Elem Real) -> (hf : Proof (HasDerivWithinAt Real Real f f' (Set__Ici Real x) x)) -> (hr : Proof (Lt f' r)) -> Proof (Filter__Frequently Real (z => Lt (slope Real Real Real f x z) r) (nhdsWithin Real x (Set__Ioi Real x))).
 
 (; doc: If `f` has derivative `f'` within `(x, +∞)` at `x`, then for any `r > ‖f'‖` the ratio `(‖f z‖ - ‖f x‖) / (z - x)` is frequently less than `r` as `z → x+0`. In other words, the limit inferior of this ratio as `z` tends to `x+0` is less than or equal to `‖f'‖`.  See also  * `HasDerivWithinAt.limsup_norm_slope_le` for a stronger version using   limit superior and any set `s`; * `HasDerivWithinAt.liminf_right_norm_slope_le` for a stronger version using   `‖f z - f xp‖` instead of `‖f z‖ - ‖f x‖`. ;)
 (; //LEAN:HasDerivWithinAt.liminf_right_slope_norm_le ;)
-HasDerivWithinAt__liminf_right_slope_norm_le : (E : Set) -> (_ : Proof (NormedAddCommGroup E)) -> (_ : Proof (NormedSpace Real E)) -> (f : (Elem Real -> E)) -> (f' : Elem E) -> (x2 : Elem Real) -> (r : Elem Real) -> (hf : Proof (HasDerivWithinAt Real E f f' (Set__Ici Real x2) x2)) -> (hr : Proof (Lt (Norm__norm E f') r)) -> Proof (Filter__Frequently Real (z => Lt (times (Inv__inv Real (minus z x2)) (minus (Norm__norm E (f z)) (Norm__norm E (f x2)))) r) (nhdsWithin Real x2 (Set__Ioi Real x2))).
+HasDerivWithinAt__liminf_right_slope_norm_le : (E : Set) -> (_ : Proof (NormedAddCommGroup E)) -> (_ : Proof (NormedSpace Real E)) -> (f : (Elem Real -> Elem E)) -> (f' : Elem E) -> (x2 : Elem Real) -> (r : Elem Real) -> (hf : Proof (HasDerivWithinAt Real E f f' (Set__Ici Real x2) x2)) -> (hr : Proof (Lt (Norm__norm E f') r)) -> Proof (Filter__Frequently Real (z => Lt (times (Inv__inv Real (minus z x2)) (minus (Norm__norm E (f z)) (Norm__norm E (f x2)))) r) (nhdsWithin Real x2 (Set__Ioi Real x2))).
 
 (; doc: A function `f` has the continuous linear map `f'` as derivative at `x` if `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` tends to `x`. ;)
 (; //LEAN:HasFDerivAt ;)
-HasFDerivAt : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (x7 : Elem E) -> Prop.
+HasFDerivAt : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> Elem F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (x7 : Elem E) -> Prop.
 
 (; //LEAN:HasFDerivAt.hasFDerivWithinAt ;)
-HasFDerivAt__hasFDerivWithinAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (x7 : Elem E) -> (s : Elem (powerset E)) -> (h : Proof (HasFDerivAt X E F f f' x7)) -> Proof (HasFDerivWithinAt X E F f f' s x7).
+HasFDerivAt__hasFDerivWithinAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> Elem F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (x7 : Elem E) -> (s : Elem (powerset E)) -> (h : Proof (HasFDerivAt X E F f f' x7)) -> Proof (HasFDerivWithinAt X E F f f' s x7).
 
 (; doc: A function `f` has the continuous linear map `f'` as derivative at `x` within a set `s` if `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` tends to `x` inside `s`. ;)
 (; //LEAN:HasFDerivWithinAt ;)
-HasFDerivWithinAt : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (s : Elem (powerset E)) -> (x7 : Elem E) -> Prop.
+HasFDerivWithinAt : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> Elem F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (s : Elem (powerset E)) -> (x7 : Elem E) -> Prop.
 
 (; doc: `f` has the derivative `f'` at the point `x` in the sense of strict differentiability.  That is, `f y - f z = (y - z) • f' + o(y - z)` as `y, z → x`. ;)
 (; //LEAN:HasStrictDerivAt ;)
-HasStrictDerivAt : (X : Set) -> (F : Set) -> (f : (Elem X -> F)) -> (f' : Elem F) -> (x4 : Elem X) -> Prop.
+HasStrictDerivAt : (X : Set) -> (F : Set) -> (f : (Elem X -> Elem F)) -> (f' : Elem F) -> (x4 : Elem X) -> Prop.
 
 (; doc: A function `f` has derivative `f'` at `a` in the sense of *strict differentiability* if `f x - f y - f' (x - y) = o(x - y)` as `x, y → a`. This form of differentiability is required, e.g., by the inverse function theorem. Any `C^1` function on a vector space over `ℝ` is strictly differentiable but this definition works, e.g., for vector spaces over `p`-adic numbers. ;)
 (; //LEAN:HasStrictFDerivAt ;)
-HasStrictFDerivAt : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (x7 : Elem E) -> Prop.
+HasStrictFDerivAt : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> Elem F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (x7 : Elem E) -> Prop.
 
 (; doc: `a ∩ b` is the intersection of `a` and `b`.  Conventions for notations in identifiers:   * The recommended spelling of `∩` in identifiers is `inter`. ;)
 (; //LEAN:Inter.inter ;)
@@ -175,7 +175,7 @@ Inv__inv : (X : Set) -> (x : Elem X) -> Elem X.
 
 (; doc: A function between topological spaces is locally constant if the preimage of any set is open. ;)
 (; //LEAN:IsLocallyConstant ;)
-IsLocallyConstant : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> Prop.
+IsLocallyConstant : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; doc: `IsOpen s` means that `s` is open in the ambient topological space on `X` ;)
 (; //LEAN:IsOpen ;)
@@ -191,19 +191,19 @@ LE__le__trans_lt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b :
 
 (; doc: A function `f` is **Lipschitz continuous** with constant `K ≥ 0` **on `s`** if for all `x, y` in `s` we have `dist (f x) (f y) ≤ K * dist x y`. ;)
 (; //LEAN:LipschitzOnWith ;)
-LipschitzOnWith : (X : Set) -> (Y : Set) -> (K : Elem NNReal) -> (f : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+LipschitzOnWith : (X : Set) -> (Y : Set) -> (K : Elem NNReal) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: A function `f` is **Lipschitz continuous** with constant `K ≥ 0` if for all `x, y` we have `dist (f x) (f y) ≤ K * dist x y`. ;)
 (; //LEAN:LipschitzWith ;)
-LipschitzWith : (X : Set) -> (Y : Set) -> (K : Elem NNReal) -> (f : (Elem X -> Y)) -> Prop.
+LipschitzWith : (X : Set) -> (Y : Set) -> (K : Elem NNReal) -> (f : (Elem X -> Elem Y)) -> Prop.
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
 Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
 
 (; doc: the `ℝ≥0`-valued norm function. ;)
-(; //LEAN:NNNorm.nnnorm ;)
-NNNorm__nnnorm : (E : Set) -> (x : Elem E) -> Elem NNReal.
+(; //LEAN:NNNorm.nnNorm ;)
+NNNorm__nnNorm : (E : Set) -> (x : Elem E) -> Elem NNReal.
 
 (; doc: Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace ;)
 (; //LEAN:NNReal ;)
@@ -242,7 +242,7 @@ RingHom__id : (X : Set) -> Elem (RingHom X X).
 
 (; doc: Two functions `f₁ f₂ : α → β` are equal on `s` if `f₁ x = f₂ x` for all `x ∈ s`. ;)
 (; //LEAN:Set.EqOn ;)
-Set__EqOn : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Y)) -> (f2 : (Elem X -> Y)) -> (s : Elem (powerset X)) -> Prop.
+Set__EqOn : (X : Set) -> (Y : Set) -> (f1 : (Elem X -> Elem Y)) -> (f2 : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Prop.
 
 (; doc: `Icc a b` is the left-closed right-closed interval $[a, b]$. ;)
 (; //LEAN:Set.Icc ;)
@@ -262,7 +262,7 @@ Set__Ioi : (X : Set) -> (b : Elem X) -> Elem (powerset X).
 
 (; doc: The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`, is the set of `x : α` such that `f x ∈ s`. ;)
 (; //LEAN:Set.preimage ;)
-Set__preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (s : Elem (powerset Y)) -> Elem (powerset X).
+Set__preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset Y)) -> Elem (powerset X).
 
 (; doc: The universal set on a type `α` is the set containing all elements of `α`.  This is conceptually the "same as" `α` (in set theory, it is actually the same), but type theory makes the distinction that `α` is a type while `Set.univ` is a term of type `Set α`. `Set.univ` can itself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`. ;)
 (; //LEAN:Set.univ ;)
@@ -289,11 +289,11 @@ UniqueDiffWithinAt : (R : Set) -> (E : Set) -> (s : Elem (powerset E)) -> (x4 : 
 
 (; doc: Congruence in the function argument: if `a₁ = a₂` then `f a₁ = f a₂` for any (nondependent) function `f`. This is more powerful than it might look at first, because you can also use a lambda expression for `f` to prove that `<something containing a₁> = <something containing a₂>`. This function is used internally by tactics like `congr` and `simp` to apply equalities inside subterms.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:congrArg ;)
-congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
+congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Eqt X a1 a2)) -> Proof (Eqt Y (f a1) (f a2)).
 
 (; doc: Similar to `congrFun` but `β` does not depend on `α`. ;)
 (; //LEAN:congrFun' ;)
-congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Y)) -> (g : (Elem X -> Y)) -> (h : Proof (Eqt (Elem X -> Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
+congrFun' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem X -> Elem Y)) -> (h : Proof (Eqt (Elem X -> Elem Y) f g)) -> (a : Elem X) -> Proof (Eqt Y (f a) (g a)).
 
 (; //LEAN:continuous_norm ;)
 continuous_norm : (E : Set) -> (_ : Proof (SeminormedAddGroup E)) -> Proof (Continuous E Real (a => Norm__norm E a)).
@@ -303,25 +303,25 @@ convex_univ : (X : Set) -> (E : Set) -> (_ : Proof (Semiring X)) -> (_ : Proof (
 
 (; doc: Derivative of `f` at the point `x`, if it exists.  Zero otherwise.  If the derivative exists (i.e., `∃ f', HasDerivAt f f' x`), then `f x' = f x + (x' - x) • deriv f x + o(x' - x)` where `x'` converges to `x`. ;)
 (; //LEAN:deriv ;)
-deriv : (X : Set) -> (F : Set) -> (f : (Elem X -> F)) -> (x4 : Elem X) -> Elem F.
+deriv : (X : Set) -> (F : Set) -> (f : (Elem X -> Elem F)) -> (x4 : Elem X) -> Elem F.
 
 (; doc: Derivative of `f` at the point `x` within the set `s`, if it exists.  Zero otherwise.  If the derivative exists (i.e., `∃ f', HasDerivWithinAt f f' s x`), then `f x' = f x + (x' - x) • derivWithin f s x + o(x' - x)` where `x'` converges to `x` inside `s`. ;)
 (; //LEAN:derivWithin ;)
-derivWithin : (X : Set) -> (F : Set) -> (f : (Elem X -> F)) -> (s : Elem (powerset X)) -> (x4 : Elem X) -> Elem F.
+derivWithin : (X : Set) -> (F : Set) -> (f : (Elem X -> Elem F)) -> (s : Elem (powerset X)) -> (x4 : Elem X) -> Elem F.
 
 (; //LEAN:eq_comm ;)
 eq_comm : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Proof (iff (Eqt X a b) (Eqt X b a)).
 
 (; doc: If `f` has a derivative at `x`, then `fderiv 𝕜 f x` is such a derivative. Otherwise, it is set to `0`. ;)
 (; //LEAN:fderiv ;)
-fderiv : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> F)) -> (x7 : Elem E) -> Elem (ContinuousLinearMap X X (RingHom__id X) E F).
+fderiv : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> Elem F)) -> (x7 : Elem E) -> Elem (ContinuousLinearMap X X (RingHom__id X) E F).
 
 (; doc: If `f` has a derivative at `x` within `s`, then `fderivWithin 𝕜 f s x` is such a derivative. Otherwise, it is set to `0`. We also set it to be zero, if zero is one of possible derivatives. ;)
 (; //LEAN:fderivWithin ;)
-fderivWithin : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> F)) -> (s : Elem (powerset E)) -> (x7 : Elem E) -> Elem (ContinuousLinearMap X X (RingHom__id X) E F).
+fderivWithin : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> Elem F)) -> (s : Elem (powerset E)) -> (x7 : Elem E) -> Elem (ContinuousLinearMap X X (RingHom__id X) E F).
 
 (; //LEAN:fderivWithin_sub ;)
-fderivWithin_sub : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (NormedAddCommGroup E)) -> (_ : Proof (NormedSpace X E)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem E -> F)) -> (g : (Elem E -> F)) -> (x5 : Elem E) -> (s : Elem (powerset E)) -> (hxs : Proof (UniqueDiffWithinAt X E s x5)) -> (hf : Proof (DifferentiableWithinAt X E F f s x5)) -> (hg : Proof (DifferentiableWithinAt X E F g s x5)) -> Proof (Eqt (ContinuousLinearMap X X (RingHom__id X) E F) (fderivWithin X E F (minus f g) s x5) (minus (fderivWithin X E F f s x5) (fderivWithin X E F g s x5))).
+fderivWithin_sub : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (NormedAddCommGroup E)) -> (_ : Proof (NormedSpace X E)) -> (F : Set) -> (_ : Proof (NormedAddCommGroup F)) -> (_ : Proof (NormedSpace X F)) -> (f : (Elem E -> Elem F)) -> (g : (Elem E -> Elem F)) -> (x5 : Elem E) -> (s : Elem (powerset E)) -> (hxs : Proof (UniqueDiffWithinAt X E s x5)) -> (hf : Proof (DifferentiableWithinAt X E F f s x5)) -> (hg : Proof (DifferentiableWithinAt X E F g s x5)) -> Proof (Eqt (ContinuousLinearMap X X (RingHom__id X) E F) (fderivWithin X E F (minus f g) s x5) (minus (fderivWithin X E F f s x5) (fderivWithin X E F g s x5))).
 
 (; doc: The identity function. `id` takes an implicit argument `α : Sort u` (a type in any universe), and an argument `a : α`, and returns `a`.  Although this may look like a useless function, one application of the identity function is to explicitly put a type on an expression. If `e` has type `T`, and `T'` is definitionally equal to `T`, then `@id T' e` typechecks, and Lean knows that this expression has type `T'` rather than `T`. This can make a difference for typeclass inference, since `T` and `T'` may have different typeclass instances on them. `show T' from e` is sugar for an `@id T' e` expression. ;)
 (; //LEAN:id ;)
@@ -333,12 +333,12 @@ le_trans : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X)
 
 (; doc: `f` is Lipschitz iff it is Lipschitz on the entire space. ;)
 (; //LEAN:lipschitzOnWith_univ ;)
-lipschitzOnWith_univ : (X : Set) -> (Y : Set) -> (_ : Proof (PseudoEMetricSpace X)) -> (_ : Proof (PseudoEMetricSpace Y)) -> (K : Elem NNReal) -> (f : (Elem X -> Y)) -> Proof (iff (LipschitzOnWith X Y K f (Set__univ X)) (LipschitzWith X Y K f)).
+lipschitzOnWith_univ : (X : Set) -> (Y : Set) -> (_ : Proof (PseudoEMetricSpace X)) -> (_ : Proof (PseudoEMetricSpace Y)) -> (K : Elem NNReal) -> (f : (Elem X -> Elem Y)) -> Proof (iff (LipschitzOnWith X Y K f (Set__univ X)) (LipschitzWith X Y K f)).
 
 (; //LEAN:lt_of_le_of_lt ;)
 lt_of_le_of_lt : (X : Set) -> (_ : Proof (Preorder X)) -> (a : Elem X) -> (b : Elem X) -> (c : Elem X) -> (hab : Proof (Leq a b)) -> (hbc : Proof (Lt b c)) -> Proof (Lt a c).
 
-(; doc: A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the infimum over the principal filters of all open sets containing `x`.  [Wikidata Q3275652](https://www.wikidata.org/wiki/Q3275652) ;)
+(; doc: A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the infimum over the principal filters of all open sets containing `x`. ;)
 (; //LEAN:nhds ;)
 nhds : (X : Set) -> (x1 : Elem X) -> Elem (Filter X).
 
@@ -349,13 +349,13 @@ nhdsWithin : (X : Set) -> (x1 : Elem X) -> (s : Elem (powerset X)) -> Elem (Filt
 (; //LEAN:of_eq_true ;)
 of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
 
-(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc1/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
+(; doc: The [axiom](https://lean-lang.org/doc/reference/4.36.0-rc2/find/?domain=Verso.Genre.Manual.section&name=axioms) of **propositional extensionality**. It asserts that if propositions `a` and `b` are logically equivalent (that is, if `a` can be proved from `b` and vice versa), then `a` and `b` are *equal*, meaning `a` can be replaced with `b` in all contexts.  The standard logical connectives provably respect propositional extensionality. However, an axiom is needed for higher order expressions like `P a` where `P : Prop → Prop` is unknown, as well as for equality. Propositional extensionality is intuitionistically valid. ;)
 (; //LEAN:propext ;)
 propext : (a : Prop) -> (b : Prop) -> (h : Proof (iff a b)) -> Proof (Eqt Prop a b).
 
-(; doc: `slope f a b = (b - a)⁻¹ • (f b -ᵥ f a)` is the slope of a function `f` on the interval `[a, b]`. Note that `slope f a a = 0`, not the derivative of `f` at `a`. ;)
+(; doc: `slope f a b = (b - a)⁻¹ • (f b -ᵥ f a)` is the slope of a function `f` on the interval `[a, b]`. Note that `slope f a a = 0`, not the derivative of `f` at `a`.  ;)
 (; //LEAN:slope ;)
-slope : (k : Set) -> (E : Set) -> (PE : Set) -> (f : (Elem k -> PE)) -> (a : Elem k) -> (b : Elem k) -> Elem E.
+slope : (k : Set) -> (E : Set) -> (PE : Set) -> (f : (Elem k -> Elem PE)) -> (a : Elem k) -> (b : Elem k) -> Elem E.
 
 (; //LEAN:sub_eq_zero ;)
 sub_eq_zero : (G : Set) -> (_ : Proof (AddGroup G)) -> (a : Elem G) -> (b : Elem G) -> Proof (iff (Eqt G (minus a b) 0) (Eqt G a b)).

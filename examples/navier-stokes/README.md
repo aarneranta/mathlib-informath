@@ -47,11 +47,9 @@ The pages read statements and definitions, not proofs.
   (or `$NAVIER_STOKES`), built with `lake exe cache get; lake build` (about 40
   minutes).
 - **Informath.** It is found in `$INFORMATH_ROOT` (default `../informath`
-  beside mathlib-informath), at commit 1c96fcc with
-  [informath-definienda.patch](informath-definienda.patch) applied. The patch
-  fixes how a definition is read when its constant has hidden (implicit)
-  arguments: without it, the definition's head showed its arguments shifted.
-  It is to be committed to Informath.
+  beside mathlib-informath), at commit 7385dc0 or later. That commit fixes how
+  a definition is read when its constant has hidden (implicit) arguments:
+  before it, the definition's head showed its arguments shifted.
 
 The steps of `build.sh`:
 

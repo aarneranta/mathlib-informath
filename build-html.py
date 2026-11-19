@@ -34,6 +34,25 @@ MATHJAX = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js'
 
 # ---------------------------------------------------------------- the pieces
 
+MAX_DEFINIENS = 40
+
+
+def after_assign(text):
+    """What follows the first := outside brackets, or the first equation of a
+    definition by cases (| ...), or None."""
+    depth = 0
+    for k, ch in enumerate(text):
+        if ch in '([{':
+            depth += 1
+        elif ch in ')]}':
+            depth -= 1
+        elif depth == 0 and text[k:k + 2] == ':=':
+            return text[k + 2:]
+        elif depth == 0 and ch == '|' and text[text.rfind('\n', 0, k) + 1:k].strip() == '':
+            return text[k:]                         # the first equation, at the start of a line
+    return None
+
+
 def source(module, d):
     """The declaration as written in Mathlib, without its docstring and proof:
     up to its first := outside brackets (not the one of @[deprecated (since := ...)]).
@@ -49,6 +68,17 @@ def source(module, d):
         i += 1
     if d.get('definiens') or d.get('tactics'):      # the definiens or the tactic proof too
         return '\n'.join(lines[i:end]).rstrip()
+    # a definition shows its definiens even when Informath does not read it
+    # (equations, a match, a term too big to translate), unless it is a
+    # tactic proof (by ...); up to MAX_DEFINIENS lines
+    if d.get('kind') not in ('theorem', 'constructor') and not d.get('structure'):
+        text = '\n'.join(lines[i:end]).rstrip()
+        body = after_assign(text)
+        if body is not None and not re.match(r'\s*by\b', body):
+            shown = text.split('\n')
+            if len(shown) > MAX_DEFINIENS:
+                shown = shown[:MAX_DEFINIENS] + ['  …']
+            return '\n'.join(shown)
     out, depth = [], 0
     while i < end:
         l = lines[i]
@@ -166,7 +196,7 @@ INTRO = """<p>Statements of <a href="https://github.com/leanprover-community/mat
 (commit <code>{COMMIT}</code>), each with its <b>Lean</b> source, its translation to
 <b>Dedukti</b> by <code>Export.lean</code>, and its informalization by
 <a href="https://github.com/GrammaticalFramework/informath">Informath</a>, in
-<b>English</b>, as a <b>formula</b>, and in <b>French</b>, <b>Czech</b>, <b>German</b> and <b>Swedish</b>,
+<b>English</b>, as a <b>formula</b>, and in <b>French</b>,
 which the buttons at each entry show there, and the check boxes above the entries everywhere. The Dedukti translation drops implicit and
 instance arguments and maps Lean's arithmetic and logic to Informath's base
 (<code>mapping.tsv</code>); the other Mathlib constants are worded by the symbol table

@@ -1,8 +1,13 @@
 # mathlib-informath
 
 Informalizations of Lean Mathlib4: Mathlib's statements translated to Dedukti
-and read in English, French, Czech, German and as formulas by
-[Informath](https://github.com/GrammaticalFramework/informath).
+and read in English, French and as formulas by
+[Informath](https://github.com/GrammaticalFramework/informath). Czech, German
+and Swedish are postponed until the English and French readings stabilize.
+
+[examples/navier-stokes](examples/navier-stokes/README.md) applies the same
+tools to OpenAI's Lean formalization of finite-time blowup for Navier–Stokes,
+beside the article *Navier–Stokes lost in translation*.
 
 [mathlib-informath.html](mathlib-informath.html) is a table of contents, with
 one page in `pages/` for each part of Mathlib in `modules.txt`: 82 modules,
@@ -13,7 +18,7 @@ for each statement:
 
 * its Lean source, with a link to its line in Mathlib on GitHub,
 * its translation to Dedukti,
-* Informath's informalization in English, French, Czech and German and as a formula,
+* Informath's informalization in English and French and as a formula,
   rendered by MathJax; the other languages than English are hidden until their buttons
   at an entry, or their check boxes above the entries, are clicked,
 * for a theorem whose proof is a term (not a tactic proof), the proof in
@@ -262,10 +267,10 @@ all modules, 7023 of the 9126 readings are fully worded, and 7594 of the 8472
 theorems have a proof text (3653 from terms, 3941 from tactics); 42 proofs
 fail, mostly where a λ proves a proposition that is a ∀ only after a definition
 is unfolded. The
-readings and proof texts are in English, French and Czech (`LANGUAGES` in
-`build-index.py`): 6605 of the readings are fully worded in French and 6518
-in Czech. The French and Czech words of the Mathlib lexicon
-(`translations.tsv`) are to be reviewed.
+readings and proof texts are in English and French (`LANGUAGES=Eng,Fre`
+for `build-index.py`): 6532 of the readings are fully worded in French. The
+French words of the Mathlib lexicon (`translations.tsv`) are to be
+reviewed.
 
 The statements leave out, besides decidability, the instance hypotheses that
 a textbook never states (`droppedInstance` in `Export.lean`: the coercion

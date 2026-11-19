@@ -14,7 +14,8 @@ MODULES="NavierStokes.ComparatorDefinitions NavierStokes.ComparatorSolution
  NavierStokes.R3.SmoothSobolevL6 NavierStokes.R3.ComparisonSetup
  NavierStokes.R3.ComparisonCutoffs"
 # the exporter reads the sources (for the definientia) from $MATHLIB
-export MATHLIB="${NAVIER_STOKES:-$(cd ../../.. && pwd)/../NavierStokesAndEuler}"
+export MATHLIB="${NAVIER_STOKES:-$(cd ../.. && pwd)/../NavierStokesAndEuler}"
+[ -d "$MATHLIB/NavierStokes" ] || { echo "no NavierStokesAndEuler in $MATHLIB"; exit 1; }
 (cd exporter && lake build export && lake exe export $MODULES)
 python3 scripts/name-table.py
 python3 scripts/read-modules.py work/index.json $MODULES

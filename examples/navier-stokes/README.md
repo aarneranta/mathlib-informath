@@ -47,9 +47,11 @@ The pages read statements and definitions, not proofs.
   (or `$NAVIER_STOKES`), built with `lake exe cache get; lake build` (about 40
   minutes).
 - **Informath.** It is found in `$INFORMATH_ROOT` (default `../informath`
-  beside mathlib-informath), at commit 7385dc0 or later. That commit fixes how
-  a definition is read when its constant has hidden (implicit) arguments:
-  before it, the definition's head showed its arguments shifted.
+  beside mathlib-informath), at commit f9d7c00 or later. Two fixes made for
+  this example are in it: the head of a definition whose constant has hidden
+  (implicit) arguments showed its arguments shifted (7385dc0), and binder
+  macros of propositions, like "eventually", lacked their bound variable
+  (f9d7c00).
 
 The steps of `build.sh`:
 
@@ -86,13 +88,8 @@ their proofs, transitively (`cd exporter; lake env lean checks/Uses.lean`).
 
 ## Open issues
 
-- Two declarations of `NavierStokes.R3.ComparisonCutoffs` fail to render with
-  mathlib-informath's `\FilterEventually` macro (a λ where it expects a bound
-  variable).
-- mathlib-informath's `Inv__inv` entry `$#1^{-1}$` gives a double exponent
-  before a power; it is overridden here with braces, and should be fixed in
-  `mathlib.dkgf`.
-- 26 of the 618 readings still show some notion by its Lean name.
+- 51 of the 618 readings still show some notion by its Lean name, mostly
+  Mathlib notions in the bodies of definitions.
 - The proofs, most of them tactic proofs, are not read. Comparing the
   arguments, and not only the statements, would need mathlib-informath's
   tactic replay.

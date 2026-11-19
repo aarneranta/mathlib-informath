@@ -1,0 +1,22 @@
+#!/bin/sh
+# Informalize the modules of NavierStokesAndEuler listed in MODULES:
+# export (Lean), symbol tables, readings (Informath), pages.
+# Needs ../../../NavierStokesAndEuler built (lake exe cache get; lake build)
+# and Informath in $INFORMATH_ROOT (default: ../informath beside mathlib-informath).
+set -e
+cd "$(dirname "$0")"
+MODULES="NavierStokes.ComparatorDefinitions NavierStokes.ComparatorSolution
+ Euler.SolutionDefinitions Euler.Solution
+ NavierStokes.SmoothFamilyTorusInverse NavierStokes.ParametricTorusInverse
+ NavierStokes.SmoothFourierData NavierStokes.TorusInverse
+ NavierStokes.R3.PressureFlux NavierStokes.R3.PressureFluxTest
+ NavierStokes.R3.RieszTestOperators NavierStokes.R3.RieszL2Bounds
+ NavierStokes.R3.SmoothSobolevL6 NavierStokes.R3.ComparisonSetup
+ NavierStokes.R3.ComparisonCutoffs"
+# the exporter reads the sources (for the definientia) from $MATHLIB
+export MATHLIB="${NAVIER_STOKES:-$(cd ../../.. && pwd)/../NavierStokesAndEuler}"
+(cd exporter && lake build export && lake exe export $MODULES)
+python3 scripts/name-table.py
+python3 scripts/read-modules.py work/index.json $MODULES
+python3 scripts/build-pages.py work/index.json
+python3 scripts/build-comparison.py work/index.json

@@ -1,0 +1,159 @@
+# Informath symbol table for the constants of NavierStokesAndEuler (f9e8bc5),
+# on top of mathlib-informath's definitions.dkgf and mathlib.dkgf.
+# Each entry is written from the Lean definition (cited), in the notation of
+# OpenAI's paper where the definition allows it. #k counts explicit arguments.
+
+# Mathlib: R^n
+# Export.lean: EuclideanSpace 𝕜 (Fin n) is EuclideanSpace__Fin 𝕜 n
+EuclideanSpace__Fin : ${#1}^{#2}$
+EuclideanSpace : ${#1}^{#2}$
+# Fin n = {0, ..., n-1}
+Fin : $[#1]$
+List__length : $|#1|$
+List__replicate : ${#2}^{#1}$
+ContDiff : $#3 \in C^{#2}$
+WithTop__some : $#1$
+
+# TorusInverse.lean: abbrev Plane := ℝ × ℝ; abbrev Frequency := ℤ × ℤ
+NavierStokes__TorusInverse__Plane : $\mathbb{R}^2$
+NavierStokes__TorusInverse__Frequency : $\mathbb{Z}^2$
+NavierStokes__TorusInverse__Direction : "direction"
+# def weight (k) := 1 + |k.1| + |k.2|
+NavierStokes__TorusInverse__weight : $(1 + |{#1}_1| + |{#1}_2|)$
+# def coeffSeminorm p a := ∑' k, weight k ^ p * ‖a k‖
+NavierStokes__TorusInverse__coeffSeminorm : $\|#2\|_{\ell^1_{#1}}$
+# def derivativeWord : List Bool → ..., false = ∂/∂y1, true = ∂/∂y2 (coordinatePartial)
+NavierStokes__TorusInverse__derivativeWord : $\partial^{#1} #2 (#3)$
+Bool__false : $y_1$
+Bool__true : $y_2$
+
+# SmoothFourierData.lean
+# def xJet p f := partialX^[p] f, partialX f z := fderiv ℝ f z (1, 0)
+NavierStokes__SmoothFourierData__xJet : $\partial_{y_1}^{#1} #2 (#3)$
+# def swapFunction f := fun z => f (z.2, z.1): f^swap(y1, y2) = f(y2, y1)
+NavierStokes__SmoothFourierData__swapFunction : ${#1}^{\mathrm{swap}}(#2)$
+# def UnitPeriodic f := ∀ z k, f (z + k) = f z
+NavierStokes__SmoothFourierData__UnitPeriodic : "#1 is periodic"
+# def coefficient f k := the Fourier coefficient of f at k
+NavierStokes__SmoothFourierData__coefficient : $\widehat{#1}(#2)$
+
+# SmoothFamilyTorusInverse.lean: abbrev Point P := P × Plane; Source P := Point P → ℂ
+NavierStokes__SmoothFamilyTorusInverse__Point : $#1 \times \mathbb{R}^2$
+NavierStokes__SmoothFamilyTorusInverse__Source : $(#1 \times \mathbb{R}^2 \to \mathbb{C})$
+# def slice f p := fun Y => f (p, Y)
+NavierStokes__SmoothFamilyTorusInverse__slice : $#1(#2, #3)$
+# def Periodic f := ∀ p, UnitPeriodic (slice f p)
+NavierStokes__SmoothFamilyTorusInverse__Periodic : "#1 is periodic"
+# def inverse d f z := directionalInverse d (coefficient f z.1) z.2
+NavierStokes__SmoothFamilyTorusInverse__inverse : $(N_{#1}^{-1} #2)(#3)$
+# def JetBound f S n C := ∀ j ≤ n, ∀ p ∈ S, ∀ Y, ‖iteratedFDeriv ℝ j f (p, Y)‖ ≤ C
+NavierStokes__SmoothFamilyTorusInverse__JetBound : $\|#1\|_{C^{#3}(#2 \times \mathbb{R}^2)} \leq #4$
+# def parameterJet q f z := the q-th derivative of f in the parameter, at z
+NavierStokes__SmoothFamilyTorusInverse__parameterJet : $\partial_p^{#1} #2 (#3)$
+# def mixedJet q w f z := tensorTorusWord w (fun Y => parameterJet q f (z.1, Y)) z.2
+NavierStokes__SmoothFamilyTorusInverse__mixedJet : $\partial^{#2} \partial_p^{#1} #3 (#4)$
+# def tensorTorusWord: the torus derivatives of the word, false = ∂/∂y1, true = ∂/∂y2
+NavierStokes__SmoothFamilyTorusInverse__tensorTorusWord : $\partial^{#1} #2 (#3)$
+
+# ParametricTorusInverse.lean (the same notions for P = ℝ)
+NavierStokes__ParametricTorusInverse__Point : $\mathbb{R} \times \mathbb{R}^2$
+NavierStokes__ParametricTorusInverse__Source : $(\mathbb{R} \times \mathbb{R}^2 \to \mathbb{C})$
+NavierStokes__ParametricTorusInverse__slice : $#1(#2, #3)$
+NavierStokes__ParametricTorusInverse__Periodic : "#1 is periodic"
+NavierStokes__ParametricTorusInverse__inverse : $(N_{#1}^{-1} #2)(#3)$
+NavierStokes__ParametricTorusInverse__parameterJet : $\partial_p^{#1} #2$
+NavierStokes__ParametricTorusInverse__mixedJet : $\partial^{#2} \partial_p^{#1} #3 (#4)$
+# def mixedLossConstant r := 6‖ω⁻¹‖ ‖ω‖^r 3^(r+5) ∑' k, (weight k ^ 4)⁻¹
+NavierStokes__ParametricTorusInverse__mixedLossConstant : $K_{#1}$
+# ⊤ of ℕ∞ (smoothness order) and of ℝ≥0∞ (Euler norms): ∞
+Top__top : $\infty$
+# ∑' k, f k (tsum f L, L the unconditional summation filter by default):
+# the bound variable is a parameter of the macro, as in mathlib.dkgf's \FinsetSum
+tsum : \TsumUncond
+#MACRO \newcommand{\TsumUncond}[3]{\sum_{#1} #2}
+
+# partial applications (Export.lean: c__part<m>, the m last arguments missing)
+NavierStokes__SmoothFourierData__swapFunction__part1 : ${#1}^{\mathrm{swap}}$
+NavierStokes__SmoothFourierData__coefficient__part1 : $\widehat{#1}$
+NavierStokes__SmoothFourierData__xJet__part1 : $\partial_{y_1}^{#1} #2$
+NavierStokes__SmoothFamilyTorusInverse__slice__part1 : $#1(#2, \cdot)$
+NavierStokes__SmoothFamilyTorusInverse__inverse__part1 : $N_{#1}^{-1} #2$
+NavierStokes__ParametricTorusInverse__slice__part1 : $#1(#2, \cdot)$
+NavierStokes__ParametricTorusInverse__inverse__part1 : $N_{#1}^{-1} #2$
+NavierStokes__TorusInverse__derivativeWord__part1 : $\partial^{#1} #2$
+NavierStokes__SmoothFamilyTorusInverse__tensorTorusWord__part1 : $\partial^{#1} #2$
+NavierStokes__SmoothFamilyTorusInverse__parameterJet__part1 : $\partial_p^{#1} #2$
+NavierStokes__ParametricTorusInverse__parameterJet__part1 : $\partial_p^{#1} #2$
+# def inverseCoeff d a k := multiplier d k * a k
+NavierStokes__TorusInverse__inverseCoeff : $m_{#1}(#3)\, #2(#3)$
+NavierStokes__TorusInverse__inverseCoeff__part1 : $m_{#1} #2$
+NavierStokes__TorusInverse__multiplier : $m_{#1}(#2)$
+NavierStokes__TorusInverse__omega : $(2\pi i)$
+
+# The pressure flux (NavierStokes/R3), in the notation of "Lost in translation" § on (10.19)
+# ProblemStatement.lean: abbrev Space := ℝ³, SpaceTime := ℝ × Space,
+# VelocityField := SpaceTime → Space, PressureField := SpaceTime → ℝ
+NavierStokesR3__ProblemStatement__Space : $\mathbb{R}^3$
+NavierStokes__ProblemStatement__Space : $\mathbb{R}^3$
+NavierStokesR3__ProblemStatement__VelocityField : $(\mathbb{R} \times \mathbb{R}^3 \to \mathbb{R}^3)$
+NavierStokesR3__ProblemStatement__PressureField : $(\mathbb{R} \times \mathbb{R}^3 \to \mathbb{R})$
+# ComparisonCutoffs.lean: def cutoff R x := baseCutoff (R⁻¹ • x); def weight R x := cutoff R x ^ 8
+NavierStokesR3__ComparisonCutoffs__cutoff : $\varphi_{#1}(#2)$
+NavierStokesR3__ComparisonCutoffs__cutoff__part1 : $\varphi_{#1}$
+NavierStokesR3__ComparisonCutoffs__weight : $\chi_{#1}(#2)$
+NavierStokesR3__ComparisonCutoffs__weight__part1 : $\chi_{#1}$
+# ComparisonSetup.lean: def comparisonLpNorm p f := (eLpNorm f p volume).toReal
+NavierStokesR3__Comparison__comparisonLpNorm : $\|#2\|_{L^{#1}}$
+# def cutoffL6 φ w t := comparisonLpNorm 6 (fun x => φ x ^ 4 • w (t, x))   (the article's B_R)
+NavierStokesR3__Comparison__cutoffL6 : $\|{#1}^4\, #2(#3, \cdot)\|_{L^6}$
+# def dissipationRoot φ w t := √(∫ x, φ x ^ 8 * |∇ w(t, ·)|²(x))   (the article's A_R)
+NavierStokesR3__Comparison__dissipationRoot : $\bigl(\int {#1}^8\, |\nabla #2(#3, \cdot)|^2\bigr)^{1/2}$
+# def tensorDiff u v t i j x := u(t,x)_i u(t,x)_j - v(t,x)_i v(t,x)_j
+NavierStokesR3__Comparison__tensorDiff : $({#1}_{#4} {#1}_{#5} - {#2}_{#4} {#2}_{#5})(#3, #6)$
+NavierStokesR3__Comparison__tensorDiff__part1 : $({#1}_{#4} {#1}_{#5} - {#2}_{#4} {#2}_{#5})(#3, \cdot)$
+
+# Mathlib (measure theory)
+MeasureTheory__MemLp : $#1 \in L^{#2}(#3)$
+MeasureTheory__Integrable : $#1 \in L^{1}(#2)$
+MeasureTheory__MeasureSpace__volume : $dx$
+# fderiv ℝ f x v: the derivative of f at x in the direction v
+fderiv__app : $D#2(#3)\,#4$
+
+# Export.lean: (u - v) x etc. for functions u, v
+HSub__hSub__app1 : $(#1 - #2)(#3)$
+HAdd__hAdd__app1 : $(#1 + #2)(#3)$
+HMul__hMul__app1 : $(#1 #2)(#3)$
+HSMul__hSMul__app1 : $(#1 \cdot #2)(#3)$
+Neg__neg__app1 : $(-#1)(#2)$
+
+# Mathlib (linear algebra, sums) used by the definitions
+# LinearMap.trace R M f (applied: Export.lean's DFunLike.coe form)
+LinearMap__trace__app : $\operatorname{tr}(#3)$
+# the coercion of a continuous linear map to a linear map
+ContinuousLinearMap__toLinearMap : $#1$
+# EuclideanSpace.single i a: the vector with a at i, 0 elsewhere
+EuclideanSpace__single : $#2 e_{#1}$
+SummationFilter__unconditional : $\mathrm{unconditional}(#1)$
+# coercions between number types: as a mathematician writes them, not at all
+Complex__ofReal : $#1$
+ENNReal__ofReal : $#1$
+NNReal__toReal : $#1$
+ENNReal__toReal : $#1$
+Complex__I : $i$
+# inner 𝕜 x y
+Inner__inner : $\langle #2, #3 \rangle$
+# star (conj) on ℂ, starRingEnd ℂ z
+starRingEnd__app : $\overline{#2}$
+# Function.Periodic f c := ∀ x, f (x + c) = f x
+Function__Periodic : $#1(\cdot + #2) = #1$
+# Function.HasUncurry.uncurry f: f : X → Y → Z as a function of a pair (one shown argument)
+Function__HasUncurry__uncurry : $#1$
+# derivWithin f s x: the derivative of f at x within s
+derivWithin : $\bigl(#1\bigr)'_{#2}(#3)$
+# ContDiffOn 𝕜 n f s
+ContDiffOn : $#3 \in C^{#2}(#4)$
+Set__univ : $\mathrm{univ}$
+
+# mathlib.dkgf's Inv__inv is $#1^{-1}$, which a power after it makes a double
+# exponent (x^{-1}^{p}): braced here
+Inv__inv : "the inverse of #1" | ${#1^{-1}}$

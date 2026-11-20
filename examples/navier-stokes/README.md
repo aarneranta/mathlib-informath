@@ -37,6 +37,18 @@ assess a formalized argument. The answer, for this sample, is in
 
 The pages read statements and definitions, not proofs.
 
+[constants.tsv](constants.tsv) lists the Lean constants that the readings
+show, with the number of their occurrences (most first), where they are
+declared (in NavierStokesAndEuler, in Mathlib, or in Lean's own library), and
+the symbol table entry that the readings use, with its table. The counts are
+those of the informalized text: the statements of the theorems without their
+proofs, and the statements and bodies of the definitions, without the
+arguments that `#HIDE` hides (implicit types and instances) and without the
+theorems that a definition's body uses as proofs. A constant mapped to
+Informath's base (`HAdd.hAdd` to `plus`) shows the base's entry; one written
+`c__part<m>` or `c__app<m>` counts as `c`. It is made by
+`scripts/constants-table.py` (the modules from `exporter/checks/Origins.lean`).
+
 ## How it is made
 
     ./build.sh

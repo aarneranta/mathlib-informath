@@ -238,7 +238,7 @@
    },
    {
     "unit": "enough",
-    "prop": "and (Leq (f a) (plus (B a) (times r (minus a a)))) (and (ContinuousOn Real Real (x5 => plus (B x5) (times r (minus x5 a))) (Set__Icc Real a b)) (and (forall Real (x5 => if (Membership__mem Real (powerset Real) (Set__Ico Real a b) x5) (HasDerivWithinAt Real Real (x6 => plus (B x6) (times r (minus x6 a))) (UNSUPPORTED x5) (Set__Ici Real x5) x5))) (and (forall Real (x5 => if (Membership__mem Real (powerset Real) (Set__Ico Real a b) x5) (if (Eq (f x5) (plus (B x5) (times r (minus x5 a)))) (Lt (B' x5) (UNSUPPORTED x5))))) (and (Membership__mem Real (powerset Real) (Set__Icc Real a b) x) (Elem Real -> Real)))))",
+    "prop": "and (Leq (f a) (plus (B a) (times r (minus a a)))) (and (ContinuousOn Real Real (x5 => plus (B x5) (times r (minus x5 a))) (Set__Icc Real a b)) (and (forall Real (x5 => if (Membership__mem Real (powerset Real) (Set__Ico Real a b) x5) (HasDerivWithinAt Real Real (x6 => plus (B x6) (times r (minus x6 a))) (UNSUPPORTED x5) (Set__Ici Real x5) x5))) (and (forall Real (x5 => if (Membership__mem Real (powerset Real) (Set__Ico Real a b) x5) (if (Eq (f x5) (plus (B x5) (times r (minus x5 a)))) (Lt (B' x5) (UNSUPPORTED x5))))) (and (Membership__mem Real (powerset Real) (Set__Icc Real a b) x) (Elem Real -> Elem Real)))))",
     "by": "apply image_le_of_liminf_slope_right_lt_deriv_boundary' hf bound",
     "depth": 1
    },
@@ -324,7 +324,7 @@
     "hypos": [
      [
       "g",
-      "(Elem Real -> E)"
+      "(Elem Real -> Elem E)"
      ]
     ],
     "by": "let g x := f x - f a",
@@ -369,7 +369,7 @@
     "hypos": [
      [
       "B",
-      "(Elem Real -> Real)"
+      "(Elem Real -> Elem Real)"
      ]
     ],
     "by": "let B x := C * (x - a)",
@@ -633,7 +633,7 @@
     "hypos": [
      [
       "g",
-      "(Elem Real -> E)"
+      "(Elem Real -> Elem E)"
      ]
     ],
     "by": "set g := (AffineMap.lineMap x y : ℝ → E)",
@@ -746,7 +746,7 @@
      ],
      [
       "hepsilon",
-      "Proof (Set__Subset E (Inter__inter (powerset E) (Metric__ball E x epsilon) s) (Set__ofPred E (y1 => and (HasFDerivWithinAt 𝕜 E G f (f' y1) s y1) (Lt (NNNorm__nnnorm (ContinuousLinearMap 𝕜 𝕜 (RingHom__id 𝕜) E G) (f' y1)) K))))"
+      "Proof (Set__Subset E (Inter__inter (powerset E) (Metric__ball E x epsilon) s) (Set__ofPred E (y1 => and (HasFDerivWithinAt 𝕜 E G f (f' y1) s y1) (Lt (NNNorm__nnNorm (ContinuousLinearMap 𝕜 𝕜 (RingHom__id 𝕜) E G) (f' y1)) K))))"
      ]
     ],
     "by": "obtain ⟨ε, ε0, hε⟩ : ∃ ε > 0,",
@@ -754,7 +754,7 @@
    },
    {
     "unit": "conclusion",
-    "prop": "(Set__Subset E (Inter__inter (powerset E) s (Metric__ball E x epsilon)) (Set__ofPred E (y1 => and (HasFDerivWithinAt 𝕜 E G f (f' y1) s y1) (Lt (NNNorm__nnnorm (ContinuousLinearMap 𝕜 𝕜 (RingHom__id 𝕜) E G) (f' y1)) K))))",
+    "prop": "(Set__Subset E (Inter__inter (powerset E) s (Metric__ball E x epsilon)) (Set__ofPred E (y1 => and (HasFDerivWithinAt 𝕜 E G f (f' y1) s y1) (Lt (NNNorm__nnNorm (ContinuousLinearMap 𝕜 𝕜 (RingHom__id 𝕜) E G) (f' y1)) K))))",
     "by": "rw [inter_comm] at hε",
     "method": "rewriting",
     "depth": 0
@@ -774,6 +774,46 @@
   ]
  },
  {
+  "name": "lipschitzWith_of_nnNorm_fderiv_le",
+  "lean": "lipschitzWith_of_nnNorm_fderiv_le",
+  "steps": [
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "this",
+      "Proof (RCLike 𝕜)"
+     ]
+    ],
+    "by": "let : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜",
+    "depth": 1
+   },
+   {
+    "unit": "hypos",
+    "hypos": [
+     [
+      "A",
+      "Proof (NormedSpace Real E)"
+     ]
+    ],
+    "by": "let A : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E",
+    "depth": 2
+   },
+   {
+    "unit": "enough",
+    "prop": "LipschitzOnWith E G C f (Set__univ E)",
+    "by": "rw [← lipschitzOnWith_univ]",
+    "depth": 2
+   },
+   {
+    "unit": "conclusion",
+    "prop": "LipschitzOnWith E G C f (Set__univ E)",
+    "by": "exact lipschitzOnWith_of_nnNorm_fderiv_le (fun x _ ↦ hf x) (fun x _ ↦ bound x) convex_univ",
+    "depth": 2
+   }
+  ]
+ },
+ {
   "name": "Convex__norm_image_sub_le_of_norm_hasFDerivWithin_le'",
   "lean": "Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le'",
   "steps": [
@@ -782,7 +822,7 @@
     "hypos": [
      [
       "g",
-      "(Elem E -> G)"
+      "(Elem E -> Elem G)"
      ]
     ],
     "by": "let g y := f y - φ y",
@@ -926,7 +966,7 @@
    },
    {
     "unit": "enough",
-    "prop": "exists Real (x1 => and (Gt x1 0) (Set__Subset E (Metric__ball E y x1) (Inter__inter (powerset E) s (Set__preimage E G f t))))",
+    "prop": "exists Real (epsilon => and (Gt epsilon 0) (Set__Subset E (Metric__ball E y epsilon) (Inter__inter (powerset E) s (Set__preimage E G f t))))",
     "by": "refine Metric.isOpen_iff.mpr fun y ⟨hy, hy'⟩ ↦ ?_",
     "depth": 0
    },
@@ -1126,7 +1166,7 @@
    },
    {
     "unit": "conclusion",
-    "prop": "(Continuous (Subtype E (x1 => Membership__mem E (powerset E) s x1)) G (Function__comp (Subtype E (x2 => Membership__mem E (powerset E) s x2)) E G f (Subtype__val E (Membership__mem E (powerset E) s))))",
+    "prop": "(Continuous (Subtype E (x1 => Membership__mem E (powerset E) s x1)) G (Function__comp (Subtype E (x2 => Membership__mem E (powerset E) s x2)) E G f Subtype__val__part1))",
     "by": "have h₂ := hf.continuousOn.comp_continuous continuous_subtype_val (fun x ↦ x.2)",
     "depth": 2
    },
@@ -1160,7 +1200,7 @@
      ],
      [
       "ht'",
-      "Proof (Eqt (powerset (Subtype E (x3 => Membership__mem E (powerset E) s x3))) (Set__preimage (Subtype E (x4 => Membership__mem E (powerset E) s x4)) E (Subtype__val E (Membership__mem E (powerset E) s)) t) (Compl__compl (powerset (Subtype E (x5 => Membership__mem E (powerset E) s x5))) (Set__preimage (Subtype E (x6 => Membership__mem E (powerset E) s x6)) G (Function__comp (Subtype E (x7 => Membership__mem E (powerset E) s x7)) E G f (Subtype__val E (Membership__mem E (powerset E) s))) (Singleton__singleton G (powerset G) (f y)))))"
+      "Proof (Eqt (powerset (Subtype E (x4 => Membership__mem E (powerset E) s x4))) (Set__preimage (Subtype E (x5 => Membership__mem E (powerset E) s x5)) E Subtype__val__part1 t) (Compl__compl (powerset (Subtype E (x6 => Membership__mem E (powerset E) s x6))) (Set__preimage (Subtype E (x7 => Membership__mem E (powerset E) s x7)) G (Function__comp (Subtype E (x8 => Membership__mem E (powerset E) s x8)) E G f Subtype__val__part1) (Singleton__singleton G (powerset G) (f y)))))"
      ]
     ],
     "by": "obtain ⟨t, ht, ht'⟩ := (isClosed_singleton (x := f y)).preimage h₂",
@@ -1756,7 +1796,7 @@
    },
    {
     "unit": "enough",
-    "prop": "exists Real (x2 => and (Gt x2 0) (forall (Prod G G) (y1 => if (Membership__mem (Prod G G) (powerset (Prod G G)) (Metric__ball (Prod G G) (Prod__mk G G x x) x2) y1) (Leq (Norm__norm H (minus (minus (f (Prod__fst G G y1)) (f (Prod__snd G G y1))) ((f' x) (minus (Prod__fst G G y1) (Prod__snd G G y1))))) (times c (Norm__norm G (minus (Prod__fst G G y1) (Prod__snd G G y1))))))))",
+    "prop": "exists Real (epsilon => and (Gt epsilon 0) (forall (Prod G G) (y1 => if (Membership__mem (Prod G G) (powerset (Prod G G)) (Metric__ball (Prod G G) (Prod__mk G G x x) epsilon) y1) (Leq (Norm__norm H (minus (minus (f (Prod__fst G G y1)) (f (Prod__snd G G y1))) ((f' x) (minus (Prod__fst G G y1) (Prod__snd G G y1))))) (times c (Norm__norm G (minus (Prod__fst G G y1) (Prod__snd G G y1))))))))",
     "by": "refine fun c hc => Metric.eventually_nhds_iff_ball.mpr ?_",
     "depth": 0
    },

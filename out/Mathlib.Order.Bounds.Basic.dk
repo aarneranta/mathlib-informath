@@ -25,8 +25,8 @@ def bddAbove_def : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset 
 Set__bounded_ge : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X)) -> Proof (iff (Set__Bounded X (x1 => x2 => Leq x2 x1) s) (BddBelow X s)).
 
 (; //LEAN:Set.bounded_le ;)
-def Set__bounded_le : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X)) -> Proof (iff (Set__Bounded X Leq s) (BddAbove X s)) :=
-  X => x => s => Iff__rfl (Set__Bounded X Leq s).
+def Set__bounded_le : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X)) -> Proof (iff (Set__Bounded X (x1 => x2 => Leq x1 x2) s) (BddAbove X s)) :=
+  X => x => s => Iff__rfl (Set__Bounded X (x1 => x2 => Leq x1 x2) s).
 
 (; //LEAN:top_mem_upperBounds ;)
 def top_mem_upperBounds : (X : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (OrderTop X)) -> (s : Elem (powerset X)) -> Proof (Membership__mem X (powerset X) (upperBounds X s) (Top__top X)) :=
@@ -145,7 +145,7 @@ def IsCofinalFor__mono_right : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Ele
 IsCoinitialFor__mono_right : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> (htu : Proof (Set__Subset X t u)) -> (hst : Proof (IsCoinitialFor X s t)) -> Proof (IsCoinitialFor X s u).
 
 (; //LEAN:DirectedOn.isCofinalFor_fst_image_prod_snd_image ;)
-DirectedOn__isCofinalFor_fst_image_prod_snd_image : (X : Set) -> (_ : Proof (Preorder X)) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (s : Elem (powerset (Prod X Y))) -> (hs : Proof (DirectedOn (Prod X Y) (x2 => x3 => Leq x2 x3) s)) -> Proof (IsCofinalFor (Prod X Y) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) (Set__image (Prod X Y) X (Prod__fst X Y) s) (Set__image (Prod X Y) Y (Prod__snd X Y) s)) s).
+DirectedOn__isCofinalFor_fst_image_prod_snd_image : (X : Set) -> (_ : Proof (Preorder X)) -> (Y : Set) -> (_ : Proof (Preorder Y)) -> (s : Elem (powerset (Prod X Y))) -> (hs : Proof (DirectedOn (Prod X Y) (x2 => x3 => Leq x2 x3) s)) -> Proof (IsCofinalFor (Prod X Y) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) (Set__image (Prod X Y) X Prod__fst__part1 s) (Set__image (Prod X Y) Y Prod__snd__part1 s)) s).
 
 (; //LEAN:IsCofinalFor.nonempty ;)
 IsCofinalFor__nonempty : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (IsCofinalFor X s t)) -> (hs : Proof (Set__Nonempty X s)) -> Proof (Set__Nonempty X t).
@@ -735,7 +735,7 @@ IsGLB__nonempty : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X
 
 (; //LEAN:nonempty_of_not_bddAbove ;)
 def nonempty_of_not_bddAbove : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X)) -> (_ : Proof (Nonempty X)) -> (h : Proof (not (BddAbove X s))) -> Proof (Set__Nonempty X s) :=
-  X => x => s => ha => h => Nonempty__elim X (Set__Nonempty X s) ha (forallI X (x1 => exists X (a => Membership__mem X (powerset X) s a)) (x1 => Exists__imp X (y => and (Membership__mem X (powerset X) s y) (not (Leq y x1))) (Membership__mem X (powerset X) s) (forallI X (x2 => if (and (Membership__mem X (powerset X) s x2) (not (Leq x2 x1))) (Membership__mem X (powerset X) s x2)) (x2 => ifI (and (Membership__mem X (powerset X) s x2) (not (Leq x2 x1))) (Membership__mem X (powerset X) s x2) (ha1 => andEl (Membership__mem X (powerset X) s x2) (not (Leq x2 x1)) ha1))) (iffEl (not (BddAbove X s)) (forall X (x3 => exists X (y1 => and (Membership__mem X (powerset X) s y1) (not (Leq y1 x3))))) (not_bddAbove_iff' X s) h x1))).
+  X => x => s => ha => h => Nonempty__elim X (Set__Nonempty X s) ha (forallI X (x1 => exists X (a => Membership__mem X (powerset X) s a)) (x1 => Exists__imp X (y => and (Membership__mem X (powerset X) s y) (not (Leq y x1))) (Membership__mem__part1 s) (forallI X (x3 => if (and (Membership__mem X (powerset X) s x3) (not (Leq x3 x1))) (Membership__mem X (powerset X) s x3)) (x3 => ifI (and (Membership__mem X (powerset X) s x3) (not (Leq x3 x1))) (Membership__mem X (powerset X) s x3) (ha1 => andEl (Membership__mem X (powerset X) s x3) (not (Leq x3 x1)) ha1))) (iffEl (not (BddAbove X s)) (forall X (x4 => exists X (y1 => and (Membership__mem X (powerset X) s y1) (not (Leq y1 x4))))) (not_bddAbove_iff' X s) h x1))).
 
 (; //LEAN:nonempty_of_not_bddBelow ;)
 nonempty_of_not_bddBelow : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X)) -> (h : Proof (not (BddBelow X s))) -> Proof (Set__Nonempty X s).
@@ -831,10 +831,10 @@ def OrderSupSet__choose : (X : Set) -> (d : Elem X) -> Elem (OrderSupSet__on X) 
 OrderInfSet__choose : (X : Set) -> (d : Elem X) -> Elem (OrderInfSet__on X).
 
 (; //LEAN:OrderSupSet.choose_sSup ;)
-OrderSupSet__choose_sSup : (X : Set) -> (x : Elem (Preorder__on X)) -> (d : Elem X) -> (s : Elem (powerset X)) -> Proof (Eqt X (SupSet__sSup__in X (OrderSupSet__choose X d) s) (dite X (exists X (x1 => IsLUB X s x1)) (h => Exists__choose X (IsLUB X s) h) (h1 => d))).
+OrderSupSet__choose_sSup : (X : Set) -> (x : Elem (Preorder__on X)) -> (d : Elem X) -> (s : Elem (powerset X)) -> Proof (Eqt X (SupSet__sSup__in X (OrderSupSet__choose X d) s) (dite X (exists X (x1 => IsLUB X s x1)) (h => Exists__choose X (x2 => IsLUB X s x2) h) (h1 => d))).
 
 (; //LEAN:OrderInfSet.choose_sInf ;)
-OrderInfSet__choose_sInf : (X : Set) -> (x : Elem (Preorder__on X)) -> (d : Elem X) -> (s : Elem (powerset X)) -> Proof (Eqt X (InfSet__sInf__in X (OrderInfSet__choose X d) s) (dite X (exists X (x1 => IsGLB X s x1)) (h => Exists__choose X (IsGLB X s) h) (h1 => d))).
+OrderInfSet__choose_sInf : (X : Set) -> (x : Elem (Preorder__on X)) -> (d : Elem X) -> (s : Elem (powerset X)) -> Proof (Eqt X (InfSet__sInf__in X (OrderInfSet__choose X d) s) (dite X (exists X (x1 => IsGLB X s x1)) (h => Exists__choose X (x2 => IsGLB X s x2) h) (h1 => d))).
 
 (; //LEAN:OrderSupSet.chooseBot ;)
 def OrderSupSet__chooseBot : (X : Set) -> (d : Elem X) -> Elem (OrderSupSet__on X) :=
@@ -898,7 +898,7 @@ def isLUB_lt_iff : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset 
 
 (; //LEAN:le_of_isLUB_le_isGLB ;)
 def le_of_isLUB_le_isGLB : (X : Set) -> (_ : Proof (Preorder X)) -> (s : Elem (powerset X)) -> (a : Elem X) -> (b : Elem X) -> (x1 : Elem X) -> (y : Elem X) -> (ha : Proof (IsGLB X s a)) -> (hb : Proof (IsLUB X s b)) -> (hab : Proof (Leq b a)) -> (hx : Proof (Membership__mem X (powerset X) s x1)) -> (hy : Proof (Membership__mem X (powerset X) s y)) -> Proof (Leq x1 y) :=
-  X => x => s => a => b => x1 => y => ha => hb => hab => hx => hy => Trans__trans X X X Leq Leq Leq x1 a y (Trans__trans X X X Leq Leq Leq x1 b a (andEl (Membership__mem X (powerset X) (upperBounds X s) b) (Membership__mem X (powerset X) (lowerBounds X (upperBounds X s)) b) hb x1 hx) hab) (andEl (Membership__mem X (powerset X) (lowerBounds X s) a) (Membership__mem X (powerset X) (upperBounds X (lowerBounds X s)) a) ha y hy).
+  X => x => s => a => b => x1 => y => ha => hb => hab => hx => hy => Trans__trans X X X (x2 => x3 => Leq x2 x3) (x4 => x5 => Leq x4 x5) (x6 => x7 => Leq x6 x7) x1 a y (Trans__trans X X X (x8 => x9 => Leq x8 x9) (x10 => x11 => Leq x10 x11) (x12 => x13 => Leq x12 x13) x1 b a (andEl (Membership__mem X (powerset X) (upperBounds X s) b) (Membership__mem X (powerset X) (lowerBounds X (upperBounds X s)) b) hb x1 hx) hab) (andEl (Membership__mem X (powerset X) (lowerBounds X s) a) (Membership__mem X (powerset X) (upperBounds X (lowerBounds X s)) a) ha y hy).
 
 (; //LEAN:lowerBounds_prod ;)
 lowerBounds_prod : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (Preorder Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> (hs : Proof (Set__Nonempty X s)) -> (ht : Proof (Set__Nonempty Y t)) -> Proof (Eqt (powerset (Prod X Y)) (lowerBounds (Prod X Y) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) s t)) (SProd__sprod (powerset X) (powerset Y) (powerset (Prod X Y)) (lowerBounds X s) (lowerBounds Y t))).
@@ -1068,5 +1068,5 @@ SemilatticeInf__ofIsGLB : (X : Set) -> (inf : (Elem X -> (Elem X -> Elem X))) ->
 
 (; //LEAN:Lattice.ofIsLUBofIsGLB ;)
 def Lattice__ofIsLUBofIsGLB : (X : Set) -> (sup : (Elem X -> (Elem X -> Elem X))) -> (inf : (Elem X -> (Elem X -> Elem X))) -> (isLUB_pair : Proof (forall X (a1 => forall X (b1 => IsLUB X (Insert__insert X (powerset X) a1 (Singleton__singleton X (powerset X) b1)) (sup a1 b1))))) -> (isGLB_pair : Proof (forall X (a => forall X (b => IsGLB X (Insert__insert X (powerset X) a (Singleton__singleton X (powerset X) b)) (inf a b))))) -> Elem (Lattice__on X) :=
-  X => sup => inf => isLUB_pair => isGLB_pair => Lattice__mk X (SemilatticeInf__inf X) (SemilatticeInf__inf_le_left X) (SemilatticeInf__inf_le_right X) (SemilatticeInf__le_inf X).
+  X => sup => inf => isLUB_pair => isGLB_pair => Lattice__mk X SemilatticeInf__inf__part2 (SemilatticeInf__inf_le_left X) (SemilatticeInf__inf_le_right X) (SemilatticeInf__le_inf X).
 

@@ -1,5 +1,17 @@
 (; constants used by Mathlib.Topology.Connected.Basic, declared with their translated types ;)
 
+(; a constant with an instance argument that the statement gives ;)
+Membership__mem__part1 : (a1 : Elem (powerset X)) -> (Elem X -> Prop).
+
+(; a constant with an instance argument that the statement gives ;)
+Prod__fst__part1 : (Elem (Prod X Y) -> Elem X).
+
+(; a constant with an instance argument that the statement gives ;)
+Prod__snd__part1 : (Elem (Prod X Y) -> Elem Y).
+
+(; a constant with an instance argument that the statement gives ;)
+Subtype__val__part1 : (Elem (Subtype X (x2 => Membership__mem X (powerset X) s x2)) -> Elem X).
+
 (; //LEAN:Classical.byContradiction ;)
 Classical__byContradiction : (p : Prop) -> (h : Proof (if (not p) false)) -> Proof p.
 
@@ -338,11 +350,7 @@ Subtype__mk : (X : Set) -> (p : (Elem X -> Prop)) -> (val : Elem X) -> (property
 
 (; doc: We make this the simp lemma instead of `range_coe`. The reason is that if we write for `s : Set α` the function `(↑) : s → α`, then the inferred implicit arguments of `(↑)` are `↑α (fun x ↦ x ∈ s)`. ;)
 (; //LEAN:Subtype.range_coe_subtype ;)
-Subtype__range_coe_subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Eqt (powerset X) (Set__range X (Subtype X (x => p x)) (Subtype__val X p)) (Set__ofPred X (x1 => p x1))).
-
-(; doc: The value in the underlying type that satisfies the predicate. ;)
-(; //LEAN:Subtype.val ;)
-Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x => p x))) -> Elem X.
+Subtype__range_coe_subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Eqt (powerset X) (Set__range X (Subtype X (x => p x)) Subtype__val__part1) (Set__ofPred X (x2 => p x2))).
 
 (; doc: Order equipped with a sensible successor function. ;)
 (; //LEAN:SuccOrder ;)
@@ -376,13 +384,13 @@ congrArg : (X : Set) -> (Y : Set) -> (a1 : Elem X) -> (a2 : Elem X) -> (f : (Ele
 continuous_apply : (I : Set) -> (A : (Elem I -> Set)) -> (_ : Proof ((i2 : Elem I) -> Proof (TopologicalSpace (A i2)))) -> (i : Elem I) -> Proof (Continuous ((i1 : Elem I) -> Elem (A i1)) (A i) (p => p i)).
 
 (; //LEAN:continuous_fst ;)
-continuous_fst : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> Proof (Continuous (Prod X Y) X (Prod__fst X Y)).
+continuous_fst : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> Proof (Continuous (Prod X Y) X Prod__fst__part1).
 
 (; //LEAN:continuous_snd ;)
-continuous_snd : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> Proof (Continuous (Prod X Y) Y (Prod__snd X Y)).
+continuous_snd : (X : Set) -> (Y : Set) -> (_ : Proof (TopologicalSpace X)) -> (_ : Proof (TopologicalSpace Y)) -> Proof (Continuous (Prod X Y) Y Prod__snd__part1).
 
 (; //LEAN:continuous_subtype_val ;)
-continuous_subtype_val : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (p : (Elem X -> Prop)) -> Proof (Continuous (Subtype X (x1 => p x1)) X (Subtype__val X p)).
+continuous_subtype_val : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> (p : (Elem X -> Prop)) -> Proof (Continuous (Subtype X (x1 => p x1)) X Subtype__val__part1).
 
 (; doc: "Dependent" if-then-else, normally written via the notation `if h : c then t(h) else e(h)`, is sugar for `dite c (fun h => t(h)) (fun h => e(h))`, and it is the same as `if c then t else e` except that `t` is allowed to depend on a proof `h : c`, and `e` can depend on `h : ¬c`. (Both branches use the same name for the hypothesis, even though it has different types in the two cases.)  We use this to be able to communicate the if-then-else condition to the branches. For example, `Array.get arr i h` expects a proof `h : i < arr.size` in order to avoid a bounds check, so you can write `if h : i < arr.size then arr.get i h else ...` to avoid the bounds check inside the if branch. (Of course in this case we have only lifted the check into an explicit `if`, but we could also use this proof multiple times or derive `i < arr.size` from some other proposition that we are checking in the `if`.)  Conventions for notations in identifiers:   * The recommended spelling of `if h : c then t else e` in identifiers is `dite` (use `left` for `t` and `right` for `e`). ;)
 (; //LEAN:dite ;)

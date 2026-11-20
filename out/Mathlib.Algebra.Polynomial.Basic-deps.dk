@@ -144,10 +144,6 @@ DivisionSemiring : (K : Set) -> Prop.
 (; //LEAN:EmptyCollection.emptyCollection ;)
 EmptyCollection__emptyCollection : (X : Set) -> Elem X.
 
-(; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
-(; //LEAN:Eq ;)
-Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
-
 (; doc: Non-dependent recursor for the equality type. ;)
 (; //LEAN:Eq.ndrec ;)
 Eq__ndrec : (X : Set) -> (a : Elem X) -> (motive : (Elem X -> Set)) -> (m : Elem (motive a)) -> (b : Elem X) -> (h : Proof (Eqt X a b)) -> Elem (motive b).
@@ -302,7 +298,7 @@ Lean__TrailingParserDescr : Set.
 
 (; doc: A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and `f (c • x) = (σ c) • f x`. Elements of `LinearMap σ M M₂` (available under the notation `M →ₛₗ[σ] M₂`) are bundled versions of such maps. For plain linear maps (i.e. for which `σ = RingHom.id R`), the notation `M →ₗ[R] M₂` is available. An unbundled version of plain linear maps is available with the predicate `IsLinearMap`, but it should be avoided most of the time. ;)
 (; //LEAN:LinearMap ;)
-LinearMap : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> Set.
+LinearMap : (R : Set) -> (S : Set) -> ({|sigma|} : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> Set.
 
 (; doc: Composition of two linear maps is a linear map ;)
 (; //LEAN:LinearMap.comp ;)
@@ -310,27 +306,27 @@ LinearMap__comp : (X : Set) -> (X1 : Set) -> (X2 : Set) -> (X3 : Set) -> (X4 : S
 
 (; doc: If two linear maps are equal, they are equal at each point. ;)
 (; //LEAN:LinearMap.congr_fun ;)
-LinearMap__congr_fun : (R : Set) -> (S : Set) -> (M : Set) -> (X : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof (Module R M)) -> (_ : Proof (Module S X)) -> (sigma : Elem (RingHom R S)) -> (f : Elem (LinearMap R S sigma M X)) -> (g : Elem (LinearMap R S sigma M X)) -> (h : Proof (Eqt (LinearMap R S sigma M X) f g)) -> (x6 : Elem M) -> Proof (Eqt X (f x6) (g x6)).
+LinearMap__congr_fun : (R : Set) -> (S : Set) -> (M : Set) -> (X : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof (Module R M)) -> (_ : Proof (Module S X)) -> ({|sigma|} : Elem (RingHom R S)) -> (f : Elem (LinearMap R S {|sigma|} M X)) -> (g : Elem (LinearMap R S {|sigma|} M X)) -> (h : Proof (Eqt (LinearMap R S {|sigma|} M X) f g)) -> (x6 : Elem M) -> Proof (Eqt X (f x6) (g x6)).
 
 (; //LEAN:LinearMap.map_eq_zero_iff ;)
-LinearMap__map_eq_zero_iff : (R : Set) -> (S : Set) -> (M : Set) -> (X : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof (Module R M)) -> (_ : Proof (Module S X)) -> (sigma : Elem (RingHom R S)) -> (f : Elem (LinearMap R S sigma M X)) -> (h : Proof (Function__Injective M X f)) -> (x6 : Elem M) -> Proof (iff (Eqt X (f x6) 0) (Eqt M x6 0)).
+LinearMap__map_eq_zero_iff : (R : Set) -> (S : Set) -> (M : Set) -> (X : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof (Module R M)) -> (_ : Proof (Module S X)) -> ({|sigma|} : Elem (RingHom R S)) -> (f : Elem (LinearMap R S {|sigma|} M X)) -> (h : Proof (Function__Injective M X f)) -> (x6 : Elem M) -> Proof (iff (Eqt X (f x6) 0) (Eqt M x6 0)).
 
 (; //LEAN:LinearMap.map_zero ;)
-LinearMap__map_zero : (R : Set) -> (S : Set) -> (M : Set) -> (X : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof (Module R M)) -> (_ : Proof (Module S X)) -> (sigma : Elem (RingHom R S)) -> (f : Elem (LinearMap R S sigma M X)) -> Proof (Eqt X (f 0) 0).
+LinearMap__map_zero : (R : Set) -> (S : Set) -> (M : Set) -> (X : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof (Module R M)) -> (_ : Proof (Module S X)) -> ({|sigma|} : Elem (RingHom R S)) -> (f : Elem (LinearMap R S {|sigma|} M X)) -> Proof (Eqt X (f 0) 0).
 
 (; //LEAN:LinearMap.mk ;)
-LinearMap__mk : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> (toAddHom : Elem (AddHom M X)) -> (map_smul' : Proof (forall R (m => forall M (x6 => Eqt X (AddHom__toFun M X toAddHom (HSMul__hSMul R M M m x6)) (HSMul__hSMul S X X (sigma m) (AddHom__toFun M X toAddHom x6)))))) -> Elem (LinearMap R S sigma M X).
+LinearMap__mk : (R : Set) -> (S : Set) -> ({|sigma|} : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> (toAddHom : Elem (AddHom M X)) -> (map_smul' : Proof (forall R (m => forall M (x6 => Eqt X (AddHom__toFun M X toAddHom (HSMul__hSMul R M M m x6)) (HSMul__hSMul S X X ({|sigma|} m) (AddHom__toFun M X toAddHom x6)))))) -> Elem (LinearMap R S {|sigma|} M X).
 
 (; doc: The `AddHom` underlying a `LinearMap`. ;)
 (; //LEAN:LinearMap.toAddHom ;)
-LinearMap__toAddHom : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> (self : Elem (LinearMap R S sigma M X)) -> Elem (AddHom M X).
+LinearMap__toAddHom : (R : Set) -> (S : Set) -> ({|sigma|} : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> (self : Elem (LinearMap R S {|sigma|} M X)) -> Elem (AddHom M X).
 
 (; doc: Convert a linear map to an additive monoid hom. ;)
 (; //LEAN:LinearMap.toAddMonoidHom ;)
-LinearMap__toAddMonoidHom : (R : Set) -> (S : Set) -> (X : Set) -> (X1 : Set) -> (modM1 : Proof (Module R X)) -> (modM2 : Proof (Module S X1)) -> (sigma : Elem (RingHom R S)) -> (f : Elem (LinearMap R S sigma X X1)) -> Elem (AddMonoidHom X X1).
+LinearMap__toAddMonoidHom : (R : Set) -> (S : Set) -> (X : Set) -> (X1 : Set) -> (modM1 : Proof (Module R X)) -> (modM2 : Proof (Module S X1)) -> ({|sigma|} : Elem (RingHom R S)) -> (f : Elem (LinearMap R S {|sigma|} X X1)) -> Elem (AddMonoidHom X X1).
 
 (; //LEAN:LinearMap.toAddMonoidHom_injective ;)
-LinearMap__toAddMonoidHom_injective : (R : Set) -> (S : Set) -> (M : Set) -> (X : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof (Module R M)) -> (_ : Proof (Module S X)) -> (sigma : Elem (RingHom R S)) -> Proof (Function__Injective (LinearMap R S sigma M X) (AddMonoidHom M X) (LinearMap__toAddMonoidHom R S M X x4 x5 sigma)).
+LinearMap__toAddMonoidHom_injective : (R : Set) -> (S : Set) -> (M : Set) -> (X : Set) -> (_ : Proof (Semiring R)) -> (_ : Proof (Semiring S)) -> (_ : Proof (AddCommMonoid M)) -> (_ : Proof (AddCommMonoid X)) -> (_ : Proof (Module R M)) -> (_ : Proof (Module S X)) -> ({|sigma|} : Elem (RingHom R S)) -> Proof (Function__Injective (LinearMap R S {|sigma|} M X) (AddMonoidHom M X) (LinearMap__toAddMonoidHom R S M X x4 x5 {|sigma|})).
 
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)

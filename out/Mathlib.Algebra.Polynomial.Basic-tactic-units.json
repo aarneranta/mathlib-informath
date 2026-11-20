@@ -5,13 +5,13 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "iff (Eqt (Finset Nat) (Polynomial__support R (Polynomial__ofFinsupp R toFinsupp')) (EmptyCollection__emptyCollection (Finset Nat))) (Eqt (Polynomial R) (Polynomial__ofFinsupp R toFinsupp') 0)",
+    "prop": "iff (Eqt (Finset Nat) (Polynomial__support R (AddMonoidAlgebra__ofCoeff R Nat coeff')) (EmptyCollection__emptyCollection (Finset Nat))) (Eqt (Polynomial R) (AddMonoidAlgebra__ofCoeff R Nat coeff') 0)",
     "by": "rcases p with ⟨⟩",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "iff (Eqt (Finset Nat) (Polynomial__support R (Polynomial__ofFinsupp R toFinsupp')) (EmptyCollection__emptyCollection (Finset Nat))) (Eqt (Polynomial R) (Polynomial__ofFinsupp R toFinsupp') 0)",
+    "prop": "iff (Eqt (Finset Nat) (Polynomial__support R (AddMonoidAlgebra__ofCoeff R Nat coeff')) (EmptyCollection__emptyCollection (Finset Nat))) (Eqt (Polynomial R) (AddMonoidAlgebra__ofCoeff R Nat coeff') 0)",
     "by": "simp [support]",
     "method": "simplification",
     "depth": 0
@@ -37,8 +37,8 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app (Polynomial__monomial__app n a) m) (ite R (Eq n m) a 0)",
-    "by": "simp [coeff, Finsupp.single_apply]",
+    "prop": "Eqt (Finsupp Nat R) (AddMonoidAlgebra__coeff R Nat (Polynomial__monomial__app n r)) (Finsupp__single Nat R n r)",
+    "by": "simp [monomial]",
     "method": "simplification",
     "depth": 0
    }
@@ -87,7 +87,7 @@
    {
     "unit": "conclusion",
     "prop": "iff (Eqt (Polynomial R) (Polynomial__monomial__app m a) (Polynomial__monomial__app n b)) (or (and (Eq m n) (Eqt R a b)) (and (Eqt R a 0) (Eqt R b 0)))",
-    "by": "rw [← toFinsupp_inj, toFinsupp_monomial, toFinsupp_monomial, single_inj]",
+    "by": "rw [← single_eq_monomial, ← single_eq_monomial, AddMonoidAlgebra.single_inj]",
     "method": "rewriting",
     "depth": 0
    }
@@ -212,26 +212,14 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "Eqt (Polynomial R) (times (Polynomial__X R) (Polynomial__ofFinsupp R toFinsupp')) (times (Polynomial__ofFinsupp R toFinsupp') (Polynomial__X R))",
-    "by": "rcases p with ⟨⟩",
-    "depth": 0
-   },
-   {
-    "unit": "enough",
-    "prop": "Eqt (AddMonoidAlgebra R Nat) (times (AddMonoidAlgebra__single R Nat 1 1) toFinsupp') (times toFinsupp' (AddMonoidAlgebra__single R Nat 1 1))",
-    "by": "simp only [X, ← ofFinsupp_single, ← ofFinsupp_mul, ofFinsupp.injEq]",
-    "depth": 0
-   },
-   {
-    "unit": "enough",
-    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (times (AddMonoidAlgebra__single R Nat 1 1) toFinsupp') a') (AddMonoidAlgebra__coeff__app (times toFinsupp' (AddMonoidAlgebra__single R Nat 1 1)) a')",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (times (Polynomial__X R) p) a') (AddMonoidAlgebra__coeff__app (times p (Polynomial__X R)) a')",
     "by": "ext",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (times (AddMonoidAlgebra__single R Nat 1 1) toFinsupp') a') (AddMonoidAlgebra__coeff__app (times toFinsupp' (AddMonoidAlgebra__single R Nat 1 1)) a')",
-    "by": "simp [AddMonoidAlgebra.coeff_mul, add_comm]",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (times (Polynomial__X R) p) a') (AddMonoidAlgebra__coeff__app (times p (Polynomial__X R)) a')",
+    "by": "simp [X, monomial, AddMonoidAlgebra.coeff_mul, Finsupp.sum_single_index, add_comm]",
     "method": "simplification",
     "depth": 0
    }
@@ -368,19 +356,53 @@
   ]
  },
  {
+  "name": "Polynomial__coeff_monomial_apply",
+  "lean": "Polynomial.coeff_monomial_apply",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (Polynomial__monomial__app n a) m) (ite R (Eq n m) a 0)",
+    "by": "simp [Finsupp.single_apply]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
   "name": "Polynomial__coeff_one",
   "lean": "Polynomial.coeff_one",
   "steps": [
    {
-    "unit": "enough",
-    "prop": "Eqt R (Polynomial__coeff__app 1 n) (ite R (Eq 0 n) 1 0)",
-    "by": "simp_rw [eq_comm (a := n) (b := 0)]",
+    "unit": "conclusion",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app 1 n) (ite R (Eq n 0) 1 0)",
+    "by": "simp [eq_comm, one_def, Finsupp.single_apply]",
+    "method": "simplification",
     "depth": 0
-   },
+   }
+  ]
+ },
+ {
+  "name": "Polynomial__coeff_X_zero",
+  "lean": "Polynomial.coeff_X_zero",
+  "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app 1 n) (ite R (Eq 0 n) 1 0)",
-    "by": "exact coeff_monomial",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (Polynomial__X R) 0) 0",
+    "by": "simp [X]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Polynomial__coeff_X_one",
+  "lean": "Polynomial.coeff_X_one",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (Polynomial__X R) 1) 1",
+    "by": "simp [X]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -391,8 +413,21 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app (Polynomial__monomial__app (plus n 1) a) 0) 0",
-    "by": "simp [coeff_monomial]",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (Polynomial__monomial__app (plus n 1) a) 0) 0",
+    "by": "simp",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Polynomial__coeff_X",
+  "lean": "Polynomial.coeff_X",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (Polynomial__X R) n) (ite R (Eq 1 n) 1 0)",
+    "by": "simp [X, Finsupp.single_apply]",
     "method": "simplification",
     "depth": 0
    }
@@ -404,7 +439,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app (Polynomial__X R) n) 0",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (Polynomial__X R) n) 0",
     "by": "rw [coeff_X, ite_eq_right hn.symm]",
     "method": "rewriting",
     "depth": 0
@@ -417,14 +452,14 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "iff (Membership__mem Nat (Finset Nat) (Polynomial__support R (Polynomial__ofFinsupp R toFinsupp')) n) (Neq (Polynomial__coeff__app (Polynomial__ofFinsupp R toFinsupp') n) 0)",
+    "prop": "iff (Membership__mem Nat (Finset Nat) (Polynomial__support R (AddMonoidAlgebra__ofCoeff R Nat coeff')) n) (Neq (AddMonoidAlgebra__coeff__app (AddMonoidAlgebra__ofCoeff R Nat coeff') n) 0)",
     "by": "rcases p with ⟨⟩",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "iff (Membership__mem Nat (Finset Nat) (Polynomial__support R (Polynomial__ofFinsupp R toFinsupp')) n) (Neq (Polynomial__coeff__app (Polynomial__ofFinsupp R toFinsupp') n) 0)",
-    "by": "simp",
+    "prop": "iff (Membership__mem Nat (Finset Nat) (Polynomial__support R (AddMonoidAlgebra__ofCoeff R Nat coeff')) n) (Neq (AddMonoidAlgebra__coeff__app (AddMonoidAlgebra__ofCoeff R Nat coeff') n) 0)",
+    "by": "simp [support]",
     "method": "simplification",
     "depth": 0
    }
@@ -436,7 +471,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "iff (not (Membership__mem Nat (Finset Nat) (Polynomial__support R p) n)) (Eqt R (Polynomial__coeff__app p n) 0)",
+    "prop": "iff (not (Membership__mem Nat (Finset Nat) (Polynomial__support R p) n)) (Eqt R (AddMonoidAlgebra__coeff__app p n) 0)",
     "by": "simp",
     "method": "simplification",
     "depth": 0
@@ -448,15 +483,22 @@
   "lean": "Polynomial.coeff_C",
   "steps": [
    {
-    "unit": "enough",
-    "prop": "iff (Eq n 0) (Eq 0 n)",
-    "by": "convert! coeff_monomial (a := a) (m := n) (n := 0) using 2",
+    "unit": "conclusion",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (Polynomial__C__app a) n) (ite R (Eq n 0) a 0)",
+    "by": "simp [C, monomial, Finsupp.single_apply, eq_comm]",
+    "method": "simplification",
     "depth": 0
-   },
+   }
+  ]
+ },
+ {
+  "name": "Polynomial__coeff_C_zero",
+  "lean": "Polynomial.coeff_C_zero",
+  "steps": [
    {
     "unit": "conclusion",
-    "prop": "iff (Eq n 0) (Eq 0 n)",
-    "by": "simp [eq_comm]",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (Polynomial__C__app a) 0) a",
+    "by": "simp [C, monomial]",
     "method": "simplification",
     "depth": 0
    }
@@ -468,7 +510,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app (Polynomial__C__app a) n) 0",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (Polynomial__C__app a) n) 0",
     "by": "rw [coeff_C, ite_eq_right h]",
     "method": "rewriting",
     "depth": 0
@@ -481,7 +523,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app (Polynomial__C__app r) (plus n 1)) 0",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (Polynomial__C__app r) (plus n 1)) 0",
     "by": "simp [coeff_C]",
     "method": "simplification",
     "depth": 0
@@ -494,8 +536,21 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app (Nat__cast (Polynomial R) m) n) (Nat__cast R (ite Nat (Eq n 0) m 0))",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (Nat__cast (Polynomial R) m) n) (Nat__cast R (ite Nat (Eq n 0) m 0))",
     "by": "simp only [← C_eq_natCast, coeff_C, Nat.cast_ite, Nat.cast_zero]",
+    "method": "simplification",
+    "depth": 0
+   }
+  ]
+ },
+ {
+  "name": "Polynomial__coeff_ofNat_zero",
+  "lean": "Polynomial.coeff_ofNat_zero",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (OfNat__ofNat (Polynomial R) a) 0) (OfNat__ofNat R a)",
+    "by": "simp",
     "method": "simplification",
     "depth": 0
    }
@@ -506,15 +561,9 @@
   "lean": "Polynomial.coeff_ofNat_succ",
   "steps": [
    {
-    "unit": "enough",
-    "prop": "Eqt R (Polynomial__coeff__app (Nat__cast (Polynomial R) (OfNat__ofNat Nat a)) (plus n 1)) 0",
-    "by": "rw [← Nat.cast_ofNat]",
-    "depth": 0
-   },
-   {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app (Nat__cast (Polynomial R) (OfNat__ofNat Nat a)) (plus n 1)) 0",
-    "by": "simp [-Nat.cast_ofNat]",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (OfNat__ofNat (Polynomial R) a) (plus n 1)) 0",
+    "by": "simp",
     "method": "simplification",
     "depth": 0
    }
@@ -577,15 +626,10 @@
   "lean": "Polynomial.support_monomial",
   "steps": [
    {
-    "unit": "enough",
-    "prop": "Eqt (Finset Nat) (Finsupp__support Nat R (AddMonoidAlgebra__coeff R Nat (AddMonoidAlgebra__single R Nat n a))) (Singleton__singleton Nat (Finset Nat) n)",
-    "by": "rw [← ofFinsupp_single, support]",
-    "depth": 0
-   },
-   {
     "unit": "conclusion",
-    "prop": "Eqt (Finset Nat) (Finsupp__support Nat R (AddMonoidAlgebra__coeff R Nat (AddMonoidAlgebra__single R Nat n a))) (Singleton__singleton Nat (Finset Nat) n)",
-    "by": "exact Finsupp.support_single _ h",
+    "prop": "Eqt (Finset Nat) (Polynomial__support R (Polynomial__monomial__app n a)) (Singleton__singleton Nat (Finset Nat) n)",
+    "by": "simp [support, coeff_monomial, h]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -596,13 +640,13 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "Set__Subset Nat (Finsupp__support Nat R (AddMonoidAlgebra__coeff R Nat (AddMonoidAlgebra__single R Nat n a))) (Singleton__singleton Nat (Finset Nat) n)",
-    "by": "rw [← ofFinsupp_single, support]",
+    "prop": "Set__Subset Nat (Finsupp__support Nat R (Finsupp__single Nat R n a)) (Singleton__singleton Nat (Finset Nat) n)",
+    "by": "rw [support, coeff_monomial]",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "Set__Subset Nat (Finsupp__support Nat R (AddMonoidAlgebra__coeff R Nat (AddMonoidAlgebra__single R Nat n a))) (Singleton__singleton Nat (Finset Nat) n)",
+    "prop": "Set__Subset Nat (Finsupp__support Nat R (Finsupp__single Nat R n a)) (Singleton__singleton Nat (Finset Nat) n)",
     "by": "exact Finsupp.support_single_subset",
     "depth": 0
    }
@@ -737,7 +781,7 @@
    {
     "unit": "conclusion",
     "prop": "iff (Eqt (Polynomial R) (plus (times (Polynomial__C__app u) (pow (Polynomial__X R) k)) (times (Polynomial__C__app v) (pow (Polynomial__X R) l))) (plus (times (Polynomial__C__app u) (pow (Polynomial__X R) m)) (times (Polynomial__C__app v) (pow (Polynomial__X R) n)))) (or (and (Eq k m) (Eq l n)) (or (and (Eqt R u v) (and (Eq k n) (Eq l m))) (and (Eqt R (plus u v) 0) (and (Eq k l) (Eq m n)))))",
-    "by": "simp [C_mul_X_pow_eq_monomial, ← toFinsupp_inj, single_add_single_inj, *]",
+    "by": "simp [C_mul_X_pow_eq_monomial, ← single_eq_monomial, AddMonoidAlgebra.single_add_single_inj, *]",
     "method": "simplification",
     "depth": 0
    }
@@ -843,25 +887,25 @@
    },
    {
     "unit": "verify",
-    "prop": "(forall (Finset Nat) (s => motive (Finset__sum Nat (Polynomial R) s (n2 => times (Polynomial__C__app (Polynomial__coeff__app p n2)) (pow (Polynomial__X R) n2)))))",
+    "prop": "(forall (Finset Nat) (s => motive (Finset__sum Nat (Polynomial R) s (n2 => times (Polynomial__C__app (AddMonoidAlgebra__coeff__app p n2)) (pow (Polynomial__X R) n2)))))",
     "by": "have B : ∀ s : Finset ℕ, motive (s.sum fun n : ℕ ↦ Polynomial.C (p.coeff n) * X ^ n)",
     "depth": 0
    },
    {
     "unit": "enough",
-    "prop": "and (motive (Finset__sum Nat (Polynomial R) (EmptyCollection__emptyCollection (Finset Nat)) (n2 => times (Polynomial__C__app (Polynomial__coeff__app p n2)) (pow (Polynomial__X R) n2)))) (forall Nat (a3 => forall (Finset Nat) (s => if (not (Membership__mem Nat (Finset Nat) s a3)) (if (motive (Finset__sum Nat (Polynomial R) s (n3 => times (Polynomial__C__app (Polynomial__coeff__app p n3)) (pow (Polynomial__X R) n3)))) (motive (Finset__sum Nat (Polynomial R) (Insert__insert Nat (Finset Nat) a3 s) (n2 => times (Polynomial__C__app (Polynomial__coeff__app p n2)) (pow (Polynomial__X R) n2))))))))",
+    "prop": "and (motive (Finset__sum Nat (Polynomial R) (EmptyCollection__emptyCollection (Finset Nat)) (n2 => times (Polynomial__C__app (AddMonoidAlgebra__coeff__app p n2)) (pow (Polynomial__X R) n2)))) (forall Nat (a3 => forall (Finset Nat) (s => if (not (Membership__mem Nat (Finset Nat) s a3)) (if (motive (Finset__sum Nat (Polynomial R) s (n3 => times (Polynomial__C__app (AddMonoidAlgebra__coeff__app p n3)) (pow (Polynomial__X R) n3)))) (motive (Finset__sum Nat (Polynomial R) (Insert__insert Nat (Finset Nat) a3 s) (n2 => times (Polynomial__C__app (AddMonoidAlgebra__coeff__app p n2)) (pow (Polynomial__X R) n2))))))))",
     "by": "apply Finset.induction",
     "depth": 0
    },
    {
     "unit": "enough",
-    "prop": "Eqt (Polynomial R) (Finset__sum Nat (Polynomial R) (EmptyCollection__emptyCollection (Finset Nat)) (n2 => times (Polynomial__C__app (Polynomial__coeff__app p n2)) (pow (Polynomial__X R) n2))) (Polynomial__C__app 0)",
+    "prop": "Eqt (Polynomial R) (Finset__sum Nat (Polynomial R) (EmptyCollection__emptyCollection (Finset Nat)) (n2 => times (Polynomial__C__app (AddMonoidAlgebra__coeff__app p n2)) (pow (Polynomial__X R) n2))) (Polynomial__C__app 0)",
     "by": "convert C 0",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "Eqt (Polynomial R) (Finset__sum Nat (Polynomial R) (EmptyCollection__emptyCollection (Finset Nat)) (n2 => times (Polynomial__C__app (Polynomial__coeff__app p n2)) (pow (Polynomial__X R) n2))) (Polynomial__C__app 0)",
+    "prop": "Eqt (Polynomial R) (Finset__sum Nat (Polynomial R) (EmptyCollection__emptyCollection (Finset Nat)) (n2 => times (Polynomial__C__app (AddMonoidAlgebra__coeff__app p n2)) (pow (Polynomial__X R) n2))) (Polynomial__C__app 0)",
     "by": "exact C_0.symm",
     "depth": 0
    },
@@ -882,7 +926,7 @@
      ],
      [
       "ih",
-      "Proof (motive (Finset__sum Nat (Polynomial R) s (n2 => times (Polynomial__C__app (Polynomial__coeff__app p n2)) (pow (Polynomial__X R) n2))))"
+      "Proof (motive (Finset__sum Nat (Polynomial R) s (n2 => times (Polynomial__C__app (AddMonoidAlgebra__coeff__app p n2)) (pow (Polynomial__X R) n2))))"
      ]
     ],
     "by": "intro n s ns ih",
@@ -890,25 +934,25 @@
    },
    {
     "unit": "enough",
-    "prop": "motive (plus (times (Polynomial__C__app (Polynomial__coeff__app p n)) (pow (Polynomial__X R) n)) (Finset__sum Nat (Polynomial R) s (x1 => times (Polynomial__C__app (Polynomial__coeff__app p x1)) (pow (Polynomial__X R) x1))))",
+    "prop": "motive (plus (times (Polynomial__C__app (AddMonoidAlgebra__coeff__app p n)) (pow (Polynomial__X R) n)) (Finset__sum Nat (Polynomial R) s (x1 => times (Polynomial__C__app (AddMonoidAlgebra__coeff__app p x1)) (pow (Polynomial__X R) x1))))",
     "by": "rw [sum_insert ns]",
     "depth": 1
    },
    {
     "unit": "conclusion",
-    "prop": "motive (plus (times (Polynomial__C__app (Polynomial__coeff__app p n)) (pow (Polynomial__X R) n)) (Finset__sum Nat (Polynomial R) s (x1 => times (Polynomial__C__app (Polynomial__coeff__app p x1)) (pow (Polynomial__X R) x1))))",
+    "prop": "motive (plus (times (Polynomial__C__app (AddMonoidAlgebra__coeff__app p n)) (pow (Polynomial__X R) n)) (Finset__sum Nat (Polynomial R) s (x1 => times (Polynomial__C__app (AddMonoidAlgebra__coeff__app p x1)) (pow (Polynomial__X R) x1))))",
     "by": "exact add _ _ A ih",
     "depth": 1
    },
    {
     "unit": "enough",
-    "prop": "motive (Finset__sum Nat (Polynomial R) (Polynomial__support R p) (n3 => times (Polynomial__C__app (Polynomial__coeff__app p n3)) (pow (Polynomial__X R) n3)))",
+    "prop": "motive (Finset__sum Nat (Polynomial R) (Polynomial__support R p) (n3 => times (Polynomial__C__app (AddMonoidAlgebra__coeff__app p n3)) (pow (Polynomial__X R) n3)))",
     "by": "rw [← sum_C_mul_X_pow_eq p, Polynomial.sum]",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "motive (Finset__sum Nat (Polynomial R) (Polynomial__support R p) (n3 => times (Polynomial__C__app (Polynomial__coeff__app p n3)) (pow (Polynomial__X R) n3)))",
+    "prop": "motive (Finset__sum Nat (Polynomial R) (Polynomial__support R p) (n3 => times (Polynomial__C__app (AddMonoidAlgebra__coeff__app p n3)) (pow (Polynomial__X R) n3)))",
     "by": "exact B (support p)",
     "depth": 0
    }
@@ -920,8 +964,8 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt (Finset Nat) (Polynomial__support R (Polynomial__erase R n p)) (Finset__erase Nat (Polynomial__support R p) n)",
-    "by": "simp [support]",
+    "prop": "Eqt (Finset Nat) (Polynomial__support R (AddMonoidAlgebra__erase R Nat n p)) (Finset__erase Nat (Polynomial__support R p) n)",
+    "by": "simp [support, Finsupp.support_erase]",
     "method": "simplification",
     "depth": 0
    }
@@ -932,21 +976,10 @@
   "lean": "Polynomial.coeff_erase",
   "steps": [
    {
-    "unit": "enough",
-    "prop": "Eqt R (Polynomial__coeff__app (Polynomial__erase R n (Polynomial__ofFinsupp R toFinsupp')) i) (ite R (Eq i n) 0 (Polynomial__coeff__app (Polynomial__ofFinsupp R toFinsupp') i))",
-    "by": "rcases p with ⟨⟩",
-    "depth": 0
-   },
-   {
-    "unit": "enough",
-    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (AddMonoidAlgebra__erase R Nat n toFinsupp') i) (ite R (Eq i n) 0 (AddMonoidAlgebra__coeff__app toFinsupp' i))",
-    "by": "simp only [erase_def, coeff]",
-    "depth": 0
-   },
-   {
     "unit": "conclusion",
-    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (AddMonoidAlgebra__erase R Nat n toFinsupp') i) (ite R (Eq i n) 0 (AddMonoidAlgebra__coeff__app toFinsupp' i))",
-    "by": "exact ite_congr rfl (fun _ ↦ rfl) (fun _ ↦ rfl)",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (AddMonoidAlgebra__erase R Nat n p) i) (ite R (Eq i n) 0 (AddMonoidAlgebra__coeff__app p i))",
+    "by": "simp [Finsupp.erase_apply]",
+    "method": "simplification",
     "depth": 0
    }
   ]
@@ -956,15 +989,9 @@
   "lean": "Polynomial.coeff_update",
   "steps": [
    {
-    "unit": "enough",
-    "prop": "Eqt R (Polynomial__coeff__app (Polynomial__update R p n a) x') (Function__update Nat (a => R) (Polynomial__coeff R p) n a x')",
-    "by": "ext",
-    "depth": 0
-   },
-   {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app (Polynomial__update R p n a) x') (Function__update Nat (a => R) (Polynomial__coeff R p) n a x')",
-    "by": "simp [coeff, update]",
+    "prop": "Eqt (Elem Nat -> Elem R) (AddMonoidAlgebra__coeff R Nat (AddMonoidAlgebra__update R Nat n a p)) (Function__update Nat (a1 => R) (AddMonoidAlgebra__coeff R Nat p) n a)",
+    "by": "simp",
     "method": "simplification",
     "depth": 0
    }
@@ -976,7 +1003,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app (Polynomial__update R p n a) i) (ite R (Eq i n) a (Polynomial__coeff__app p i))",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (AddMonoidAlgebra__update R Nat n a p) i) (ite R (Eq i n) a (AddMonoidAlgebra__coeff__app p i))",
     "by": "rw [coeff_update, Function.update_apply]",
     "method": "rewriting",
     "depth": 0
@@ -989,7 +1016,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app (Polynomial__update R p n a) i) (Polynomial__coeff__app p i)",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (AddMonoidAlgebra__update R Nat n a p) i) (AddMonoidAlgebra__coeff__app p i)",
     "by": "rw [p.coeff_update_apply, ite_eq_right h]",
     "method": "rewriting",
     "depth": 0
@@ -1002,13 +1029,13 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "Eqt R (Polynomial__coeff__app (Polynomial__update R p n 0) n') (Polynomial__coeff__app (Polynomial__erase R n p) n')",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (AddMonoidAlgebra__update R Nat n 0 p) a') (AddMonoidAlgebra__coeff__app (AddMonoidAlgebra__erase R Nat n p) a')",
     "by": "ext",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app (Polynomial__update R p n 0) n') (Polynomial__coeff__app (Polynomial__erase R n p) n')",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (AddMonoidAlgebra__update R Nat n 0 p) a') (AddMonoidAlgebra__coeff__app (AddMonoidAlgebra__erase R Nat n p) a')",
     "by": "rw [coeff_update_apply, coeff_erase]",
     "method": "rewriting",
     "depth": 0
@@ -1021,14 +1048,14 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt (Finset Nat) (Polynomial__support R (Polynomial__update R p n a)) (ite (Finset Nat) (Eqt R a 0) (Finset__erase Nat (Polynomial__support R p) n) (Insert__insert Nat (Finset Nat) n (Polynomial__support R p)))",
-    "by": "classical simp [support, update, Finsupp.support_update]",
+    "prop": "Eqt (Finset Nat) (Polynomial__support R (AddMonoidAlgebra__update R Nat n a p)) (ite (Finset Nat) (Eqt R a 0) (Finset__erase Nat (Polynomial__support R p) n) (Insert__insert Nat (Finset Nat) n (Polynomial__support R p)))",
+    "by": "classical simp [support, Finsupp.support_update]",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "Eqt (Finset Nat) (Polynomial__support R (Polynomial__update R p n a)) (ite (Finset Nat) (Eqt R a 0) (Finset__erase Nat (Polynomial__support R p) n) (Insert__insert Nat (Finset Nat) n (Polynomial__support R p)))",
-    "by": "simp [support, update, Finsupp.support_update]",
+    "prop": "Eqt (Finset Nat) (Polynomial__support R (AddMonoidAlgebra__update R Nat n a p)) (ite (Finset Nat) (Eqt R a 0) (Finset__erase Nat (Polynomial__support R p) n) (Insert__insert Nat (Finset Nat) n (Polynomial__support R p)))",
+    "by": "simp [support, Finsupp.support_update]",
     "method": "simplification",
     "depth": 0
    }
@@ -1040,7 +1067,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt (Finset Nat) (Polynomial__support R (Polynomial__update R p n 0)) (Finset__erase Nat (Polynomial__support R p) n)",
+    "prop": "Eqt (Finset Nat) (Polynomial__support R (AddMonoidAlgebra__update R Nat n 0 p)) (Finset__erase Nat (Polynomial__support R p) n)",
     "by": "rw [update_zero_eq_erase, support_erase]",
     "method": "rewriting",
     "depth": 0
@@ -1053,13 +1080,13 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt (Finset Nat) (Polynomial__support R (Polynomial__update R p n a)) (Insert__insert Nat (Finset Nat) n (Polynomial__support R p))",
+    "prop": "Eqt (Finset Nat) (Polynomial__support R (AddMonoidAlgebra__update R Nat n a p)) (Insert__insert Nat (Finset Nat) n (Polynomial__support R p))",
     "by": "classical rw [support_update, ite_eq_right ha]",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "Eqt (Finset Nat) (Polynomial__support R (Polynomial__update R p n a)) (Insert__insert Nat (Finset Nat) n (Polynomial__support R p))",
+    "prop": "Eqt (Finset Nat) (Polynomial__support R (AddMonoidAlgebra__update R Nat n a p)) (Insert__insert Nat (Finset Nat) n (Polynomial__support R p))",
     "by": "rw [support_update, ite_eq_right ha]",
     "method": "rewriting",
     "depth": 0
@@ -1072,7 +1099,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "iff (Membership__mem R (Finset R) (Polynomial__coeffs R p) c) (exists Nat (n => and (Membership__mem Nat (Finset Nat) (Polynomial__support R p) n) (Eqt R c (Polynomial__coeff__app p n))))",
+    "prop": "iff (Membership__mem R (Finset R) (Polynomial__coeffs R p) c) (exists Nat (n => and (Membership__mem Nat (Finset Nat) (Polynomial__support R p) n) (Eqt R c (AddMonoidAlgebra__coeff__app p n))))",
     "by": "simp [coeffs, eq_comm, (Finset.mem_image)]",
     "method": "simplification",
     "depth": 0
@@ -1085,7 +1112,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "iff (Set__Subset R (SetLike__coe (Finset R) R (Polynomial__coeffs R p)) s) (forall Nat (n => if (Neq (Polynomial__coeff__app p n) 0) (Membership__mem R (powerset R) s (Polynomial__coeff__app p n))))",
+    "prop": "iff (Set__Subset R (SetLike__coe (Finset R) R (Polynomial__coeffs R p)) s) (forall Nat (n => if (Neq (AddMonoidAlgebra__coeff__app p n) 0) (Membership__mem R (powerset R) s (AddMonoidAlgebra__coeff__app p n))))",
     "by": "grind [mem_coeffs_iff]",
     "method": "routine",
     "depth": 0
@@ -1098,7 +1125,7 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "iff (Set__Subset R (Polynomial__coeffs R p) s) (forall Nat (n => if (Neq (Polynomial__coeff__app p n) 0) (Membership__mem R (Finset R) s (Polynomial__coeff__app p n))))",
+    "prop": "iff (Set__Subset R (Polynomial__coeffs R p) s) (forall Nat (n => if (Neq (AddMonoidAlgebra__coeff__app p n) 0) (Membership__mem R (Finset R) s (AddMonoidAlgebra__coeff__app p n))))",
     "by": "simpa using coe_coeffs_subset_iff (s := (s : Set R))",
     "method": "simplification",
     "depth": 0
@@ -1111,13 +1138,13 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "forall Nat (n => if (Neq (Polynomial__coeff__app 1 n) 0) (Membership__mem R (Finset R) (Singleton__singleton R (Finset R) 1) (Polynomial__coeff__app 1 n)))",
+    "prop": "forall Nat (n => if (Neq (AddMonoidAlgebra__coeff__app 1 n) 0) (Membership__mem R (Finset R) (Singleton__singleton R (Finset R) 1) (AddMonoidAlgebra__coeff__app 1 n)))",
     "by": "rw [coeffs_subset_iff]",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "forall Nat (n => if (Neq (Polynomial__coeff__app 1 n) 0) (Membership__mem R (Finset R) (Singleton__singleton R (Finset R) 1) (Polynomial__coeff__app 1 n)))",
+    "prop": "forall Nat (n => if (Neq (AddMonoidAlgebra__coeff__app 1 n) 0) (Membership__mem R (Finset R) (Singleton__singleton R (Finset R) 1) (AddMonoidAlgebra__coeff__app 1 n)))",
     "by": "simp [coeff_one]",
     "method": "simplification",
     "depth": 0
@@ -1130,13 +1157,13 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "exists Nat (a => and (not (Eqt R (Polynomial__coeff__app p a) 0)) (Eqt R (Polynomial__coeff__app p a) (Polynomial__coeff__app p n)))",
+    "prop": "exists Nat (a => and (not (Eqt R (AddMonoidAlgebra__coeff__app p a) 0)) (Eqt R (AddMonoidAlgebra__coeff__app p a) (AddMonoidAlgebra__coeff__app p n)))",
     "by": "simp only [coeffs, mem_support_iff, Finset.mem_image, Ne]",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "exists Nat (a => and (not (Eqt R (Polynomial__coeff__app p a) 0)) (Eqt R (Polynomial__coeff__app p a) (Polynomial__coeff__app p n)))",
+    "prop": "exists Nat (a => and (not (Eqt R (AddMonoidAlgebra__coeff__app p a) 0)) (Eqt R (AddMonoidAlgebra__coeff__app p a) (AddMonoidAlgebra__coeff__app p n)))",
     "by": "exact ⟨n, h, rfl⟩",
     "depth": 0
    }
@@ -1149,7 +1176,7 @@
    {
     "unit": "conclusion",
     "prop": "iff (Eqt (Finset R) (Polynomial__coeffs R p) (EmptyCollection__emptyCollection (Finset R))) (Eqt (Polynomial R) p 0)",
-    "by": "simp [← Finset.subset_empty, coeffs_subset_iff, Polynomial.ext_iff]",
+    "by": "simp [Finset.ext_iff, coeffs, ← coeff_eq_zero, Finsupp.ext_iff]",
     "method": "simplification",
     "depth": 0
    }
@@ -1174,13 +1201,13 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "Eqt (Finset R) (Finset__image Nat R (n => Polynomial__coeff__app (Polynomial__monomial__app n c) n) (Singleton__singleton Nat (Finset Nat) n)) (Singleton__singleton R (Finset R) c)",
+    "prop": "Eqt (Finset R) (Finset__image Nat R (n => AddMonoidAlgebra__coeff__app (Polynomial__monomial__app n c) n) (Singleton__singleton Nat (Finset Nat) n)) (Singleton__singleton R (Finset R) c)",
     "by": "rw [coeffs, support_monomial n hc]",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "Eqt (Finset R) (Finset__image Nat R (n => Polynomial__coeff__app (Polynomial__monomial__app n c) n) (Singleton__singleton Nat (Finset Nat) n)) (Singleton__singleton R (Finset R) c)",
+    "prop": "Eqt (Finset R) (Finset__image Nat R (n => AddMonoidAlgebra__coeff__app (Polynomial__monomial__app n c) n) (Singleton__singleton Nat (Finset Nat) n)) (Singleton__singleton R (Finset R) c)",
     "by": "simp",
     "method": "simplification",
     "depth": 0
@@ -1193,8 +1220,8 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app (Neg__neg (Polynomial R) p) n) (Neg__neg R (Polynomial__coeff__app p n))",
-    "by": "simp [coeff]",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (Neg__neg (Polynomial R) p) n) (Neg__neg R (AddMonoidAlgebra__coeff__app p n))",
+    "by": "simp",
     "method": "simplification",
     "depth": 0
    }
@@ -1206,8 +1233,8 @@
   "steps": [
    {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app (minus p q) n) (minus (Polynomial__coeff__app p n) (Polynomial__coeff__app q n))",
-    "by": "simp [coeff, sub_eq_add_neg]",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app (minus p q) n) (minus (AddMonoidAlgebra__coeff__app p n) (AddMonoidAlgebra__coeff__app q n))",
+    "by": "simp",
     "method": "simplification",
     "depth": 0
    }

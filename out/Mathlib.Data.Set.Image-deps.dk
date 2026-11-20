@@ -1,5 +1,47 @@
 (; constants used by Mathlib.Data.Set.Image, declared with their translated types ;)
 
+(; a constant with an instance argument that the statement gives ;)
+Compl__compl__part1 : (Elem (powerset X) -> Elem (powerset X)).
+
+(; a constant with an instance argument that the statement gives ;)
+Insert__insert__part1 : (a1 : Elem X) -> (Elem (powerset X) -> Elem (powerset X)).
+
+(; a constant with an instance argument that the statement gives ;)
+Membership__mem__part1 : (a1 : Elem (powerset Y)) -> (Elem Y -> Prop).
+
+(; a constant with an instance argument that the statement gives ;)
+Membership__mem__part2 : (Elem (powerset Y) -> (Elem Y -> Prop)).
+
+(; a constant with an instance argument that the statement gives ;)
+Nat__iterate__part1 : (a1 : (Elem X -> Elem X)) -> (a2 : Elem Nat) -> (Elem X -> Elem X).
+
+(; a constant with an instance argument that the statement gives ;)
+Option__some__part1 : (Elem X -> Elem (Option X)).
+
+(; a constant with an instance argument that the statement gives ;)
+Prod__fst__part1 : (Elem (Prod X Y) -> Elem X).
+
+(; a constant with an instance argument that the statement gives ;)
+Prod__snd__part1 : (Elem (Prod X Y) -> Elem Y).
+
+(; a constant with an instance argument that the statement gives ;)
+Prod__swap__part1 : (Elem (Prod X Y) -> Elem (Prod Y X)).
+
+(; a constant with an instance argument that the statement gives ;)
+Set__image__part1 : (a1 : (Elem X -> Elem Y)) -> (Elem (powerset X) -> Elem (powerset Y)).
+
+(; a constant with an instance argument that the statement gives ;)
+Set__preimage__part1 : (a1 : (Elem X -> Elem X)) -> (Elem (powerset X) -> Elem (powerset X)).
+
+(; a constant with an instance argument that the statement gives ;)
+Subtype__val__part1 : (Elem (Subtype X (x2 => Membership__mem X (powerset X) (Compl__compl (powerset X) s) x2)) -> Elem X).
+
+(; a constant with an instance argument that the statement gives ;)
+Sum__inl__part1 : (Elem X -> Elem (Sum X Y)).
+
+(; a constant with an instance argument that the statement gives ;)
+Sum__inr__part1 : (Elem Y -> Elem (Sum X Y)).
+
 (; doc: The Boolean values, `true` and `false`.  Logically speaking, this is equivalent to `Prop` (the type of propositions). The distinction is public important for programming: both propositions and their proofs are erased in the code generator, while `Bool` corresponds to the Boolean type in most programming languages and carries precisely one bit of run-time information. ;)
 (; //LEAN:Bool ;)
 Bool : Set.
@@ -30,10 +72,6 @@ Disjoint__le_bot : (X : Set) -> (_ : Proof (SemilatticeInf X)) -> (_ : Proof (Or
 (; doc: `∅` or `{}` is the empty set or empty collection. It is supported by the `EmptyCollection` typeclass.  Conventions for notations in identifiers:   * The recommended spelling of `{}` in identifiers is `empty`.   * The recommended spelling of `∅` in identifiers is `empty`. ;)
 (; //LEAN:EmptyCollection.emptyCollection ;)
 EmptyCollection__emptyCollection : (X : Set) -> Elem X.
-
-(; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
-(; //LEAN:Eq ;)
-Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: Non-dependent recursor for the equality type. ;)
 (; //LEAN:Eq.ndrec ;)
@@ -227,10 +265,6 @@ Monotone : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Prop.
 (; //LEAN:Monotone.strictMono_of_injective ;)
 Monotone__strictMono_of_injective : (X : Set) -> (Y : Set) -> (_ : Proof (Preorder X)) -> (_ : Proof (PartialOrder Y)) -> (f : (Elem X -> Elem Y)) -> (h1 : Proof (Monotone X Y f)) -> (h2 : Proof (Function__Injective X Y f)) -> Proof (StrictMono X Y f).
 
-(; doc: Iterate a function. ;)
-(; //LEAN:Nat.iterate ;)
-Nat__iterate : (X : Set) -> (op : (Elem X -> Elem X)) -> (x : Elem Nat) -> (x1 : Elem X) -> Elem X.
-
 (; doc: `Nonempty α` is a typeclass that says that `α` is not an empty type, that is, there exists an element in the type. It differs from `Inhabited α` in that `Nonempty α` is a `Prop`, which means that it does not actually carry an element of `α`, only a proof that *there exists* such an element. Given `Nonempty α`, you can construct an element of `α` *nonconstructively* using `Classical.choice`. ;)
 (; //LEAN:Nonempty ;)
 Nonempty : (X : Set) -> Prop.
@@ -267,7 +301,7 @@ Prod : (X : Set) -> (Y : Set) -> Set.
 Prod__fst : (X : Set) -> (Y : Set) -> (self : Elem (Prod X Y)) -> Elem X.
 
 (; //LEAN:Prod.fst_surjective ;)
-Prod__fst_surjective : (X : Set) -> (Y : Set) -> Proof (Function__Surjective (Prod X Y) X (Prod__fst X Y)).
+Prod__fst_surjective : (X : Set) -> (Y : Set) -> Proof (Function__Surjective (Prod X Y) X Prod__fst__part1).
 
 (; doc: Constructs a pair. This is usually written `(x, y)` instead of `Prod.mk x y`.  Conventions for notations in identifiers:   * The recommended spelling of `(a, b)` in identifiers is `mk`. ;)
 (; //LEAN:Prod.mk ;)
@@ -278,17 +312,13 @@ Prod__mk : (X : Set) -> (Y : Set) -> (fst : Elem X) -> (snd : Elem Y) -> Elem (P
 Prod__snd : (X : Set) -> (Y : Set) -> (self : Elem (Prod X Y)) -> Elem Y.
 
 (; //LEAN:Prod.snd_surjective ;)
-Prod__snd_surjective : (X : Set) -> (Y : Set) -> Proof (Function__Surjective (Prod X Y) Y (Prod__snd X Y)).
-
-(; doc: Swaps the elements in a pair.  Examples: * `(1, 2).swap = (2, 1)` * `("orange", -87).swap = (-87, "orange")` ;)
-(; //LEAN:Prod.swap ;)
-Prod__swap : (X : Set) -> (Y : Set) -> (x : Elem (Prod X Y)) -> Elem (Prod Y X).
+Prod__snd_surjective : (X : Set) -> (Y : Set) -> Proof (Function__Surjective (Prod X Y) Y Prod__snd__part1).
 
 (; //LEAN:Prod.swap_leftInverse ;)
-Prod__swap_leftInverse : (X : Set) -> (Y : Set) -> Proof (Function__LeftInverse (Prod Y X) (Prod X Y) (Prod__swap X Y) (Prod__swap Y X)).
+Prod__swap_leftInverse : (X : Set) -> (Y : Set) -> Proof (Function__LeftInverse (Prod Y X) (Prod X Y) Prod__swap__part1 Prod__swap__part1).
 
 (; //LEAN:Prod.swap_rightInverse ;)
-Prod__swap_rightInverse : (X : Set) -> (Y : Set) -> Proof (Function__RightInverse (Prod Y X) (Prod X Y) (Prod__swap X Y) (Prod__swap Y X)).
+Prod__swap_rightInverse : (X : Set) -> (Y : Set) -> Proof (Function__RightInverse (Prod Y X) (Prod X Y) Prod__swap__part1 Prod__swap__part1).
 
 (; doc: Low-level quotient types. Quotient types coarsen the propositional equality for a type `α`, so that terms related by some relation `r` are considered equal in `Quot r`.  Set-theoretically, `Quot r` can be seen as the set of equivalence classes of `α` modulo `r`. Functions from `Quot r` must prove that they respect `r`: to define a function `f : Quot r → β`, it is necessary to provide `f' : α → β` and prove that for all `x : α` and `y : α`, `r x y → f' x = f' y`.  `Quot` is a built-in primitive:  * `Quot.mk` places elements of the underlying type `α` into the quotient.  * `Quot.lift` allows the definition of functions from the quotient to some other type.  * `Quot.sound` asserts the equality of elements related by `r`.  * `Quot.ind` is used to write proofs about quotients by assuming that all elements are constructed    with `Quot.mk`.  The relation `r` is not required to be an equivalence relation; the resulting quotient type's equality extends `r` to an equivalence as a consequence of the rules for equality and quotients. When `r` is an equivalence relation, it can be more convenient to use the higher-level type `Quotient`. ;)
 (; //LEAN:Quot ;)

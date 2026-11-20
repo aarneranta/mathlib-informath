@@ -18,6 +18,12 @@ Polynomial__monomial__app : (a1 : Elem Nat) -> (a2 : Elem T) -> Elem (Polynomial
 (; a constant applied as a function: DFunLike.coe ;)
 Polynomial__ofMultiset__app : (a1 : Elem (Multiset R)) -> Elem (Polynomial R).
 
+(; a constant with an instance argument that the statement gives ;)
+Polynomial__roots__part1 : (Elem (Polynomial R) -> Elem (Multiset R)).
+
+(; a constant with an instance argument that the statement gives ;)
+Subtype__val__part1 : (Elem (Subtype R (x2 => Membership__mem R (Finset R) s x2)) -> Elem R).
+
 (; doc: Defining the homomorphism in the category R-Alg, denoted `A →ₐ[R] B`. ;)
 (; //LEAN:AlgHom ;)
 AlgHom : (R : Set) -> (A : Set) -> (B : Set) -> Set.
@@ -67,10 +73,6 @@ CommSemiring__toSemiring : (R : Set) -> Elem (Semiring__on R).
 (; doc: `∅` or `{}` is the empty set or empty collection. It is supported by the `EmptyCollection` typeclass.  Conventions for notations in identifiers:   * The recommended spelling of `{}` in identifiers is `empty`.   * The recommended spelling of `∅` in identifiers is `empty`. ;)
 (; //LEAN:EmptyCollection.emptyCollection ;)
 EmptyCollection__emptyCollection : (X : Set) -> Elem X.
-
-(; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
-(; //LEAN:Eq ;)
-Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: **Alias** of `ge_of_eq`. ;)
 (; //LEAN:Eq.ge ;)
@@ -499,7 +501,7 @@ Subtype__prop : (X : Set) -> (p : (Elem X -> Prop)) -> (x : Elem (Subtype X (x1 
 Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x => p x))) -> Elem X.
 
 (; //LEAN:Subtype.val_injective ;)
-Subtype__val_injective : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Function__Injective (Subtype X (x => p x)) X (Subtype__val X p)).
+Subtype__val_injective : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Function__Injective (Subtype X (x => p x)) X Subtype__val__part1).
 
 (; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
 (; //LEAN:Trans.trans ;)

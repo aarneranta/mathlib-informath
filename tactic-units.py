@@ -75,6 +75,7 @@ GREEK = dict(zip('αβγδεζηθικλμνξπρστυφχψωϕΓΔΘΛΞΠΣ
                   'phi', 'chi', 'psi', 'omega', 'phi', 'Gamma', 'Delta', 'Theta', 'Lambda', 'Xi',
                   'Pi', 'Sigma', 'Phi', 'Psi', 'Omega']))
 SUBSCRIPT = {chr(0x2080 + i): str(i) for i in range(10)}
+BASE_NAMES = {'sigma', 'pi'}
 WORD = re.compile(r"[\w']+")
 
 
@@ -85,7 +86,10 @@ def clean(s, sorts=()):
     def word(m):
         w = m.group(0)
         table = LATIN if w in sorts else {}
-        return ''.join(table.get(c) or GREEK.get(c) or SUBSCRIPT.get(c, c) for c in w)
+        r = ''.join(table.get(c) or GREEK.get(c) or SUBSCRIPT.get(c, c) for c in w)
+        # a Greek letter whose name is a constant of Informath's base (σ, sigma
+        # the sum; π, pi) is quoted, as Export.lean's freshName does
+        return '{|%s|}' % r if r in BASE_NAMES and r != w else r
     return WORD.sub(word, s)
 
 

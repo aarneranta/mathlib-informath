@@ -785,7 +785,7 @@
      ],
      [
       "hn",
-      "Proof (Eqt ((i3 : Elem eta) -> Gs i3) (pow x n) 1)"
+      "Proof (Eqt ((i3 : Elem eta) -> Elem (Gs i3)) (pow x n) 1)"
      ]
     ],
     "by": "obtain ⟨n, npos, hn⟩ := h.exists_pow_eq_one",
@@ -816,7 +816,7 @@
      ],
      [
       "hn",
-      "Proof (Eqt ((i3 : Elem eta) -> Gs i3) (HSMul__hSMul Nat ((i4 : Elem eta) -> Gs i4) ((i5 : Elem eta) -> Gs i5) n x) 0)"
+      "Proof (Eqt ((i3 : Elem eta) -> Elem (Gs i3)) (HSMul__hSMul Nat ((i4 : Elem eta) -> Elem (Gs i4)) ((i5 : Elem eta) -> Elem (Gs i5)) n x) 0)"
      ]
     ],
     "by": "obtain ⟨n, npos, hn⟩ := h.exists_pow_eq_one",
@@ -1302,21 +1302,20 @@
    },
    {
     "unit": "verify",
-    "prop": "(Eqt G (pow x (times 2 (plus r 1))) x)",
-    "by": "have key : x ^ (2 * (r + 1)) = x",
-    "depth": 0
-   },
-   {
-    "unit": "verify",
     "prop": "(Eq (times 2 (plus r 1)) (plus (plus (times 2 r) 1) 1))",
-    "by": "have h2 : 2 * (r + 1) = 2 * r + 1 + 1 := by omega",
+    "by": "have h2 : 2 * (r + 1) = 2 * r + 1 + 1 := by lia",
     "depth": 0
    },
    {
     "unit": "conclusion",
     "prop": "Eq (times 2 (plus r 1)) (plus (plus (times 2 r) 1) 1)",
-    "by": "omega",
-    "method": "computation",
+    "by": "lia",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(Eqt G (pow x (times 2 (plus r 1))) x)",
+    "by": "have key : x ^ (2 * (r + 1)) = x := by rw [h2, pow_succ, hx, one_mul]",
     "depth": 0
    },
    {
@@ -1362,21 +1361,20 @@
    },
    {
     "unit": "verify",
-    "prop": "(Eqt G (HSMul__hSMul Nat G G (times 2 (plus r 1)) x) x)",
-    "by": "have key : x ^ (2 * (r + 1)) = x",
-    "depth": 0
-   },
-   {
-    "unit": "verify",
     "prop": "(Eq (times 2 (plus r 1)) (plus (plus (times 2 r) 1) 1))",
-    "by": "have h2 : 2 * (r + 1) = 2 * r + 1 + 1 := by omega",
+    "by": "have h2 : 2 * (r + 1) = 2 * r + 1 + 1 := by lia",
     "depth": 0
    },
    {
     "unit": "conclusion",
     "prop": "Eq (times 2 (plus r 1)) (plus (plus (times 2 r) 1) 1)",
-    "by": "omega",
-    "method": "computation",
+    "by": "lia",
+    "depth": 0
+   },
+   {
+    "unit": "verify",
+    "prop": "(Eqt G (HSMul__hSMul Nat G G (times 2 (plus r 1)) x) x)",
+    "by": "have key : x ^ (2 * (r + 1)) = x := by rw [h2, pow_succ, hx, one_mul]",
     "depth": 0
    },
    {
@@ -2068,124 +2066,17 @@
   "lean": "orderOf_eq_of_pow_and_pow_div_prime",
   "steps": [
    {
-    "unit": "hypos",
-    "hypos": [
-     [
-      "a",
-      "Elem Nat"
-     ],
-     [
-      "ha",
-      "Proof (Eq n (times (orderOf G x) a))"
-     ]
-    ],
-    "by": "obtain ⟨a, ha⟩ := exists_eq_mul_right_of_dvd (orderOf_dvd_of_pow_eq_one hx)",
-    "depth": 0
-   },
-   {
     "unit": "enough",
-    "prop": "Eq a 1",
-    "by": "suffices a = 1 by simp [this, ha]",
+    "prop": "exists Nat (p => and (prime p) (and (divide p n) (Eqt G (pow x (div n p)) 1)))",
+    "by": "contrapose! hd",
     "depth": 0
-   },
-   {
-    "unit": "hypos",
-    "hypos": [
-     [
-      "this",
-      "Proof (Eq a 1)"
-     ]
-    ],
-    "by": "",
-    "depth": 1
    },
    {
     "unit": "conclusion",
-    "prop": "Eq (orderOf G x) n",
-    "by": "simp [this, ha]",
+    "prop": "exists Nat (p => and (prime p) (and (divide p n) (Eqt G (pow x (div n p)) 1)))",
+    "by": "simpa [orderOf_dvd_iff_pow_eq_one] using",
     "method": "simplification",
-    "depth": 1
-   },
-   {
-    "unit": "hypos",
-    "hypos": [
-     [
-      "h",
-      "Proof (not (Eq a 1))"
-     ]
-    ],
-    "by": "by_contra h",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
-    "prop": "false",
-    "by": "by_contra h",
     "depth": 0
-   },
-   {
-    "unit": "verify",
-    "prop": "(divide (Nat__minFac a) n)",
-    "by": "have a_min_fac_dvd_p_sub_one : a.minFac ∣ n",
-    "depth": 1
-   },
-   {
-    "unit": "hypos",
-    "hypos": [
-     [
-      "b",
-      "Elem Nat"
-     ],
-     [
-      "hb",
-      "Proof (Eq a (times b (Nat__minFac a)))"
-     ]
-    ],
-    "by": "obtain ⟨b, hb⟩ : ∃ b : ℕ, a = b * a.minFac := exists_eq_mul_left_of_dvd a.minFac_dvd",
-    "depth": 1
-   },
-   {
-    "unit": "conclusion",
-    "prop": "(Eq n (times (times (orderOf G x) b) (Nat__minFac a)))",
-    "by": "rw [hb, ← mul_assoc] at ha",
-    "method": "rewriting",
-    "depth": 1
-   },
-   {
-    "unit": "conclusion",
-    "prop": "divide (Nat__minFac a) n",
-    "by": "exact Dvd.intro_left (orderOf x * b) ha.symm",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
-    "prop": "Eqt G (pow x (div n (Nat__minFac a))) 1",
-    "by": "refine hd a.minFac (Nat.minFac_prime h) a_min_fac_dvd_p_sub_one ?_",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
-    "prop": "and (divide (Nat__minFac a) a) (IsOfFinOrder G x)",
-    "by": "rw [← orderOf_dvd_iff_pow_eq_one, Nat.dvd_div_iff_mul_dvd a_min_fac_dvd_p_sub_one, ha, mul_comm,",
-    "depth": 1
-   },
-   {
-    "unit": "conclusion",
-    "prop": "divide (Nat__minFac a) a",
-    "by": "exact Nat.minFac_dvd a",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
-    "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (pow x n) 1))",
-    "by": "rw [isOfFinOrder_iff_pow_eq_one]",
-    "depth": 1
-   },
-   {
-    "unit": "conclusion",
-    "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (pow x n) 1))",
-    "by": "exact Exists.intro n (id ⟨hn, hx⟩)",
-    "depth": 1
    }
   ]
  },
@@ -2194,124 +2085,17 @@
   "lean": "addOrderOf_eq_of_nsmul_and_div_prime_nsmul",
   "steps": [
    {
-    "unit": "hypos",
-    "hypos": [
-     [
-      "a",
-      "Elem Nat"
-     ],
-     [
-      "ha",
-      "Proof (Eq n (times (addOrderOf G x) a))"
-     ]
-    ],
-    "by": "obtain ⟨a, ha⟩ := exists_eq_mul_right_of_dvd (orderOf_dvd_of_pow_eq_one hx)",
-    "depth": 0
-   },
-   {
     "unit": "enough",
-    "prop": "Eq a 1",
-    "by": "suffices a = 1 by simp [this, ha]",
+    "prop": "exists Nat (p => and (prime p) (and (divide p n) (Eqt G (HSMul__hSMul Nat G G (div n p) x) 0)))",
+    "by": "contrapose! hd",
     "depth": 0
-   },
-   {
-    "unit": "hypos",
-    "hypos": [
-     [
-      "this",
-      "Proof (Eq a 1)"
-     ]
-    ],
-    "by": "",
-    "depth": 1
    },
    {
     "unit": "conclusion",
-    "prop": "Eq (addOrderOf G x) n",
-    "by": "simp [this, ha]",
+    "prop": "exists Nat (p => and (prime p) (and (divide p n) (Eqt G (HSMul__hSMul Nat G G (div n p) x) 0)))",
+    "by": "simpa [orderOf_dvd_iff_pow_eq_one] using",
     "method": "simplification",
-    "depth": 1
-   },
-   {
-    "unit": "hypos",
-    "hypos": [
-     [
-      "h",
-      "Proof (not (Eq a 1))"
-     ]
-    ],
-    "by": "by_contra h",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
-    "prop": "false",
-    "by": "by_contra h",
     "depth": 0
-   },
-   {
-    "unit": "verify",
-    "prop": "(divide (Nat__minFac a) n)",
-    "by": "have a_min_fac_dvd_p_sub_one : a.minFac ∣ n",
-    "depth": 1
-   },
-   {
-    "unit": "hypos",
-    "hypos": [
-     [
-      "b",
-      "Elem Nat"
-     ],
-     [
-      "hb",
-      "Proof (Eq a (times b (Nat__minFac a)))"
-     ]
-    ],
-    "by": "obtain ⟨b, hb⟩ : ∃ b : ℕ, a = b * a.minFac := exists_eq_mul_left_of_dvd a.minFac_dvd",
-    "depth": 1
-   },
-   {
-    "unit": "conclusion",
-    "prop": "(Eq n (times (times (addOrderOf G x) b) (Nat__minFac a)))",
-    "by": "rw [hb, ← mul_assoc] at ha",
-    "method": "rewriting",
-    "depth": 1
-   },
-   {
-    "unit": "conclusion",
-    "prop": "divide (Nat__minFac a) n",
-    "by": "exact Dvd.intro_left (orderOf x * b) ha.symm",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
-    "prop": "Eqt G (HSMul__hSMul Nat G G (div n (Nat__minFac a)) x) 0",
-    "by": "refine hd a.minFac (Nat.minFac_prime h) a_min_fac_dvd_p_sub_one ?_",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
-    "prop": "and (divide (Nat__minFac a) a) (IsOfFinAddOrder G x)",
-    "by": "rw [← orderOf_dvd_iff_pow_eq_one, Nat.dvd_div_iff_mul_dvd a_min_fac_dvd_p_sub_one, ha, mul_comm,",
-    "depth": 1
-   },
-   {
-    "unit": "conclusion",
-    "prop": "divide (Nat__minFac a) a",
-    "by": "exact Nat.minFac_dvd a",
-    "depth": 1
-   },
-   {
-    "unit": "enough",
-    "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul Nat G G n x) 0))",
-    "by": "rw [isOfFinOrder_iff_pow_eq_one]",
-    "depth": 1
-   },
-   {
-    "unit": "conclusion",
-    "prop": "exists Nat (n => and (Lt 0 n) (Eqt G (HSMul__hSMul Nat G G n x) 0))",
-    "by": "exact Exists.intro n (id ⟨hn, hx⟩)",
-    "depth": 1
    }
   ]
  },
@@ -2956,7 +2740,7 @@
    {
     "unit": "enough",
     "prop": "and (divide (orderOf G (times x y)) (orderOf G y)) (forall Nat (p1 => if (prime p1) (if (divide p1 (orderOf G y)) (not (divide (orderOf G (times x y)) (div (orderOf G y) p1))))))",
-    "by": "apply orderOf_eq_of_pow_and_pow_div_prime hoy <;> simp only [Ne, ← orderOf_dvd_iff_pow_eq_one]",
+    "by": "apply orderOf_eq_of_pow_and_pow_div_prime <;> simp only [Ne, ← orderOf_dvd_iff_pow_eq_one]",
     "depth": 0
    },
    {
@@ -3049,7 +2833,7 @@
    {
     "unit": "enough",
     "prop": "and (divide (addOrderOf G (plus x y)) (addOrderOf G y)) (not (divide (addOrderOf G (plus x y)) (div (addOrderOf G y) p)))",
-    "by": "apply orderOf_eq_of_pow_and_pow_div_prime hoy <;> simp only [Ne, ← orderOf_dvd_iff_pow_eq_one]",
+    "by": "apply orderOf_eq_of_pow_and_pow_div_prime <;> simp only [Ne, ← orderOf_dvd_iff_pow_eq_one]",
     "depth": 0
    },
    {
@@ -3275,6 +3059,19 @@
     "by": "simpa [neg_one_eq_one_iff] using h",
     "method": "simplification",
     "depth": 1
+   }
+  ]
+ },
+ {
+  "name": "Units__orderOf_neg_one",
+  "lean": "Units.orderOf_neg_one",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eq (orderOf (Units R) (Neg__neg (Units R) 1)) (ite Nat (Eq (ringChar R) 2) 1 2)",
+    "by": "simp [← orderOf_units]",
+    "method": "simplification",
+    "depth": 0
    }
   ]
  },
@@ -8092,7 +7889,7 @@
    },
    {
     "unit": "enough",
-    "prop": "if (forall I (i3 => IsOfFinAddOrder (alpha i3) (x i3))) (IsOfFinAddOrder ((i2 : Elem I) -> alpha i2) x)",
+    "prop": "if (forall I (i3 => IsOfFinAddOrder (alpha i3) (x i3))) (IsOfFinAddOrder ((i2 : Elem I) -> Elem (alpha i2)) x)",
     "by": "have := Fintype.ofFinite ι",
     "depth": 0
    },

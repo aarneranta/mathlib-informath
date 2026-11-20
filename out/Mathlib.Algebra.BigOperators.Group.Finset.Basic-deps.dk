@@ -3,6 +3,30 @@
 (; a constant applied as a function: DFunLike.coe ;)
 Equiv__symm__app : (a1 : Elem (Equiv I J)) -> (a2 : Elem J) -> Elem I.
 
+(; a constant with an instance argument that the statement gives ;)
+Function__extend__app1 : (a1 : (Elem (Subtype I (x1 => Membership__mem I (Finset I) s x1)) -> Elem I)) -> (a2 : (Elem (Subtype I (x3 => Membership__mem I (Finset I) s x3)) -> Elem M)) -> (a3 : (Elem I -> Elem M)) -> (a4 : Elem I) -> Elem M.
+
+(; a constant with an instance argument that the statement gives ;)
+Membership__mem__part1 : (a1 : Elem (powerset J)) -> (Elem J -> Prop).
+
+(; a constant with an instance argument that the statement gives ;)
+Membership__mem__part2 : (Elem (powerset J) -> (Elem J -> Prop)).
+
+(; a constant with an instance argument that the statement gives ;)
+Multiset__prod__part1 : (Elem (Multiset M) -> Elem M).
+
+(; a constant with an instance argument that the statement gives ;)
+Set__MapsTo__part1 : (a1 : (Elem I -> Elem J)) -> (a2 : Elem (powerset I)) -> (Elem (powerset J) -> Prop).
+
+(; a constant with an instance argument that the statement gives ;)
+Set__MapsTo__part2 : (a1 : (Elem I -> Elem J)) -> (Elem (powerset I) -> (Elem (powerset J) -> Prop)).
+
+(; a constant with an instance argument that the statement gives ;)
+Set__image__part1 : (a1 : (Elem I -> Elem J)) -> (Elem (powerset I) -> Elem (powerset J)).
+
+(; a constant with an instance argument that the statement gives ;)
+Subtype__val__part1 : (Elem (Subtype I (x5 => Membership__mem I (Finset I) s x5)) -> Elem I).
+
 (; doc: Commutative version of `AddCancelMonoid`. ;)
 (; //LEAN:AddCancelCommMonoid ;)
 AddCancelCommMonoid : (M : Set) -> Prop.
@@ -50,10 +74,6 @@ Disjoint : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Prop.
 (; doc: `∅` or `{}` is the empty set or empty collection. It is supported by the `EmptyCollection` typeclass.  Conventions for notations in identifiers:   * The recommended spelling of `{}` in identifiers is `empty`.   * The recommended spelling of `∅` in identifiers is `empty`. ;)
 (; //LEAN:EmptyCollection.emptyCollection ;)
 EmptyCollection__emptyCollection : (X : Set) -> Elem X.
-
-(; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
-(; //LEAN:Eq ;)
-Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: Non-dependent recursor for the equality type. ;)
 (; //LEAN:Eq.ndrec ;)
@@ -268,10 +288,6 @@ Function__comp : (X : Set) -> (Y : Set) -> (W : Set) -> (f : (Elem Y -> Elem W))
 (; doc: The constant function that ignores its argument.  If `a : α`, then `Function.const β a : β → α` is the “constant function with value `a`”. For all arguments `b : β`, `Function.const β a b = a`. It is often written directly as `fun _ => a`.  Examples:  * `Function.const Bool 10 true = 10`  * `Function.const Bool 10 false = 10`  * `Function.const String 10 "any string" = 10` ;)
 (; //LEAN:Function.const ;)
 Function__const : (X : Set) -> (Y : Set) -> (a : Elem X) -> (x : Elem Y) -> Elem X.
-
-(; doc: Extension of a function `g : α → γ` along a function `f : α → β`.  For every `a : α`, `f a` is sent to `g a`. `f` might not be surjective, so we use an auxiliary function `j : β → γ` by sending `b : β` not in the range of `f` to `j b`. If you do not care about the behavior outside the range, `j` can be used as a junk value by setting it to be `0` or `Classical.arbitrary` (assuming `γ` is nonempty).  This definition is mathematically meaningful only when `f a₁ = f a₂ → g a₁ = g a₂` (spelled `g.FactorsThrough f`). In particular this holds if `f` is injective.  A typical use case is extending a function from a subtype to the entire type. If you wish to extend `g : {b : β // p b} → γ` to a function `β → γ`, you should use `Function.extend Subtype.val g j`. ;)
-(; //LEAN:Function.extend ;)
-Function__extend : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem X -> Elem Z)) -> (j : (Elem Y -> Elem Z)) -> (x : Elem Y) -> Elem Z.
 
 (; doc: `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent, but it is intended to be used for left actions.  Conventions for notations in identifiers:   * The recommended spelling of `•` in identifiers is `smul`. ;)
 (; //LEAN:HSMul.hSMul ;)
@@ -549,7 +565,7 @@ Subtype__prop : (X : Set) -> (p : (Elem X -> Prop)) -> (x : Elem (Subtype X (x1 
 Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x => p x))) -> Elem X.
 
 (; //LEAN:Subtype.val_injective ;)
-Subtype__val_injective : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Function__Injective (Subtype X (x => p x)) X (Subtype__val X p)).
+Subtype__val_injective : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Function__Injective (Subtype X (x => p x)) X Subtype__val__part1).
 
 (; doc: The disjoint union of types `α` and `β`, ordinarily written `α ⊕ β`.  An element of `α ⊕ β` is either an `a : α` wrapped in `Sum.inl` or a `b : β` wrapped in `Sum.inr`. `α ⊕ β` is not equivalent to the set-theoretic union of `α` and `β` because its values include an indication of which of the two types was chosen. The union of a singleton set with itself contains one element, while `Unit ⊕ Unit` contains distinct values `inl ()` and `inr ()`. ;)
 (; //LEAN:Sum ;)

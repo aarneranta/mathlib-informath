@@ -426,7 +426,7 @@
    {
     "unit": "conclusion",
     "prop": "Leq (times p (Nat__factorization__app n p)) n",
-    "by": "grw [factorization_le_padicValNat, mul_padicValNat_le]",
+    "by": "grw [factorization_le_multiplicity, mul_multiplicity_le]",
     "depth": 0
    }
   ]
@@ -1431,7 +1431,7 @@
    {
     "unit": "conclusion",
     "prop": "false",
-    "by": "rwa [factorization_mul h1 hd, add_apply, ← lt_tsub_iff_right, h, tsub_apply,",
+    "by": "rwa [factorization_mul h1 hd, Finsupp.add_apply, ← lt_tsub_iff_right, h, tsub_apply,",
     "method": "rewriting",
     "depth": 3
    }
@@ -2615,7 +2615,7 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "and (if (Eq a b) (forall Nat (p => if (prime p) (Eq (padicValNat p a) (padicValNat p b))))) (if (forall Nat (p => if (prime p) (Eq (padicValNat p a) (padicValNat p b)))) (Eq a b))",
+    "prop": "and (if (Eq a b) (forall Nat (p => if (prime p) (Eq (multiplicity Nat p a) (multiplicity Nat p b))))) (if (forall Nat (p => if (prime p) (Eq (multiplicity Nat p a) (multiplicity Nat p b)))) (Eq a b))",
     "by": "constructor",
     "depth": 0
    },
@@ -2627,13 +2627,13 @@
       "Proof (Eq a b)"
      ]
     ],
-    "goal": "forall Nat (p => if (prime p) (Eq (padicValNat p a) (padicValNat p b)))",
+    "goal": "forall Nat (p => if (prime p) (Eq (multiplicity Nat p a) (multiplicity Nat p b)))",
     "by": "rintro rfl",
     "depth": 1
    },
    {
     "unit": "conclusion",
-    "prop": "forall Nat (p => if (prime p) (Eq (padicValNat p a) (padicValNat p a)))",
+    "prop": "forall Nat (p => if (prime p) (Eq (multiplicity Nat p a) (multiplicity Nat p a)))",
     "by": "simp",
     "method": "simplification",
     "depth": 1
@@ -2643,7 +2643,7 @@
     "hypos": [
      [
       "h",
-      "Proof (forall Nat (p => if (prime p) (Eq (padicValNat p a) (padicValNat p b))))"
+      "Proof (forall Nat (p => if (prime p) (Eq (multiplicity Nat p a) (multiplicity Nat p b))))"
      ]
     ],
     "by": "intro h",
@@ -2716,13 +2716,19 @@
   "steps": [
    {
     "unit": "enough",
-    "prop": "Eq (Finsupp__prod Nat Nat Nat (Nat__factorization n) (x => x1 => pow x x1)) (Finset__prod Nat Nat (Finset__filter Nat (p => prime p) (Finset__range m)) (p1 => pow p1 (padicValNat p1 n)))",
+    "prop": "Eq (Finset__prod Nat Nat (Finset__filter Nat (p => prime p) (Finset__range m)) (p1 => pow p1 (multiplicity Nat p1 n))) (Finsupp__prod Nat Nat Nat (Nat__factorization n) (x => x1 => pow x x1))",
+    "by": "nth_rw 2 [← prod_factorization_pow_eq_self hn]",
+    "depth": 0
+   },
+   {
+    "unit": "enough",
+    "prop": "Eq (Finsupp__prod Nat Nat Nat (Nat__factorization n) (x => x1 => pow x x1)) (Finset__prod Nat Nat (Finset__filter Nat (p => prime p) (Finset__range m)) (p1 => pow p1 (multiplicity Nat p1 n)))",
     "by": "rw [eq_comm]",
     "depth": 0
    },
    {
     "unit": "enough",
-    "prop": "and (Set__Subset Nat (Finsupp__support Nat Nat (Nat__factorization n)) (Finset__filter Nat (p => prime p) (Finset__range m))) (and (forall Nat (x => if (Membership__mem Nat (Finset Nat) (SDiff__sdiff (Finset Nat) (Finset__filter Nat (p => prime p) (Finset__range m)) (Finsupp__support Nat Nat (Nat__factorization n))) x) (Eq (pow x (padicValNat x n)) 1))) (forall Nat (x => if (Membership__mem Nat (Finset Nat) (Finsupp__support Nat Nat (Nat__factorization n)) x) (Eq (pow x (Nat__factorization__app n x)) (pow x (padicValNat x n))))))",
+    "prop": "and (Set__Subset Nat (Finsupp__support Nat Nat (Nat__factorization n)) (Finset__filter Nat (p => prime p) (Finset__range m))) (and (forall Nat (x => if (Membership__mem Nat (Finset Nat) (SDiff__sdiff (Finset Nat) (Finset__filter Nat (p => prime p) (Finset__range m)) (Finsupp__support Nat Nat (Nat__factorization n))) x) (Eq (pow x (multiplicity Nat x n)) 1))) (forall Nat (x => if (Membership__mem Nat (Finset Nat) (Finsupp__support Nat Nat (Nat__factorization n)) x) (Eq (pow x (Nat__factorization__app n x)) (pow x (multiplicity Nat x n))))))",
     "by": "apply Finset.prod_subset_one_on_sdiff",
     "depth": 0
    },
@@ -2783,7 +2789,7 @@
    },
    {
     "unit": "conclusion",
-    "prop": "Eq (pow p (Nat__factorization__app n p)) (pow p (padicValNat p n))",
+    "prop": "Eq (pow p (Nat__factorization__app n p)) (pow p (multiplicity Nat p n))",
     "by": "simp [factorization_def n (prime_of_mem_primeFactors hp)]",
     "method": "simplification",
     "depth": 1
@@ -2885,7 +2891,7 @@
    {
     "unit": "conclusion",
     "prop": "Leq (Nat__factorization__app n i) n",
-    "by": "grw [n.factorization_def <| prime_of_mem_primeFactors hi, padicValNat_le_self]",
+    "by": "grw [n.factorization_def <| prime_of_mem_primeFactors hi, multiplicity_le_self]",
     "depth": 1
    }
   ]

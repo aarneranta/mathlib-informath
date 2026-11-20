@@ -632,13 +632,26 @@
   ]
  },
  {
+  "name": "Polynomial__roots_smul_of_ne_zero",
+  "lean": "Polynomial.roots_smul_of_ne_zero",
+  "steps": [
+   {
+    "unit": "conclusion",
+    "prop": "Eqt (Multiset R) (Polynomial__roots R (HSMul__hSMul R (Polynomial R) (Polynomial R) a p)) (Polynomial__roots R p)",
+    "by": "rw [smul_eq_C_mul, roots_C_mul _ ha]",
+    "method": "rewriting",
+    "depth": 0
+   }
+  ]
+ },
+ {
   "name": "Polynomial__roots_neg",
   "lean": "Polynomial.roots_neg",
   "steps": [
    {
     "unit": "conclusion",
     "prop": "Eqt (Multiset R) (Polynomial__roots R (Neg__neg (Polynomial R) p)) (Polynomial__roots R p)",
-    "by": "rw [← neg_one_smul R p, roots_smul_nonzero p (neg_ne_zero.mpr one_ne_zero)]",
+    "by": "rw [← neg_one_smul R p, roots_smul_of_ne_zero p (neg_ne_zero.mpr one_ne_zero)]",
     "method": "rewriting",
     "depth": 0
    }
@@ -659,7 +672,7 @@
     "hypos": [
      [
       "f",
-      "(Elem R -> R)"
+      "(Elem R -> Elem R)"
      ]
     ],
     "by": "set f := fun x ↦ a * x + b",
@@ -785,7 +798,7 @@
    },
    {
     "unit": "conclusion",
-    "prop": "Eqt (Multiset R) (Polynomial__roots R (List__prod (Polynomial R) (List__cons (Polynomial R) hd tl))) (Multiset__bind (Polynomial R) R (Multiset__ofList (Polynomial R) (List__cons (Polynomial R) hd tl)) (Polynomial__roots R))",
+    "prop": "Eqt (Multiset R) (Polynomial__roots R (List__prod (Polynomial R) (List__cons (Polynomial R) hd tl))) (Multiset__bind (Polynomial R) R (Multiset__ofList (Polynomial R) (List__cons (Polynomial R) hd tl)) Polynomial__roots__part1)",
     "by": "rw [List.prod_cons, roots_mul (mul_ne_zero (Ne.symm H.1) <| List.prod_ne_zero H.2), ←",
     "method": "rewriting",
     "depth": 0
@@ -809,13 +822,13 @@
    },
    {
     "unit": "enough",
-    "prop": "if (not (Membership__mem (Polynomial R) (Multiset (Polynomial R)) (Quot__mk (List (Polynomial R)) (Setoid__r (List (Polynomial R))) L) 0)) (Eqt (Multiset R) (Polynomial__roots R (Multiset__prod (Polynomial R) (Quot__mk (List (Polynomial R)) (Setoid__r (List (Polynomial R))) L))) (Multiset__bind (Polynomial R) R (Quot__mk (List (Polynomial R)) (Setoid__r (List (Polynomial R))) L) (Polynomial__roots R)))",
+    "prop": "if (not (Membership__mem (Polynomial R) (Multiset (Polynomial R)) (Quot__mk (List (Polynomial R)) (Setoid__r (List (Polynomial R))) L) 0)) (Eqt (Multiset R) (Polynomial__roots R (Multiset__prod (Polynomial R) (Quot__mk (List (Polynomial R)) (Setoid__r (List (Polynomial R))) L))) (Multiset__bind (Polynomial R) R (Quot__mk (List (Polynomial R)) (Setoid__r (List (Polynomial R))) L) Polynomial__roots__part1))",
     "by": "rcases m with ⟨L⟩",
     "depth": 0
    },
    {
     "unit": "conclusion",
-    "prop": "if (not (Membership__mem (Polynomial R) (Multiset (Polynomial R)) (Quot__mk (List (Polynomial R)) (Setoid__r (List (Polynomial R))) L) 0)) (Eqt (Multiset R) (Polynomial__roots R (Multiset__prod (Polynomial R) (Quot__mk (List (Polynomial R)) (Setoid__r (List (Polynomial R))) L))) (Multiset__bind (Polynomial R) R (Quot__mk (List (Polynomial R)) (Setoid__r (List (Polynomial R))) L) (Polynomial__roots R)))",
+    "prop": "if (not (Membership__mem (Polynomial R) (Multiset (Polynomial R)) (Quot__mk (List (Polynomial R)) (Setoid__r (List (Polynomial R))) L) 0)) (Eqt (Multiset R) (Polynomial__roots R (Multiset__prod (Polynomial R) (Quot__mk (List (Polynomial R)) (Setoid__r (List (Polynomial R))) L))) (Multiset__bind (Polynomial R) R (Quot__mk (List (Polynomial R)) (Setoid__r (List (Polynomial R))) L) Polynomial__roots__part1))",
     "by": "simpa only [Multiset.prod_coe, quot_mk_to_coe''] using! roots_list_prod L",
     "method": "simplification",
     "depth": 0
@@ -1991,8 +2004,8 @@
     "unit": "hypos",
     "hypos": [
      [
-      "pi",
-      "(Elem (Polynomial R) -> Elem (Fin (plus d 1)) -> R)"
+      "{|pi|}",
+      "(Elem (Polynomial R) -> (Elem (Fin (plus d 1)) -> Elem R))"
      ]
     ],
     "by": "let π : R[X] → Fin (d + 1) → R := fun f i => f.coeff i",
@@ -2005,7 +2018,7 @@
    },
    {
     "unit": "conclusion",
-    "prop": "Set__Subset (Elem (Fin (plus d 1)) -> R) (Set__image (Polynomial R) (Elem (Fin (plus d 1)) -> R) pi (Set__ofPred (Polynomial R) (f => and (Leq (Polynomial__natDegree R f) d) (forall Nat (i2 => Membership__mem R (powerset R) U (Polynomial__coeff__app f i2)))))) (Set__pi (Fin (plus d 1)) (i3 => R) (Set__univ (Fin (plus d 1))) (x2 => U))",
+    "prop": "Set__Subset (Elem (Fin (plus d 1)) -> Elem R) (Set__image (Polynomial R) (Elem (Fin (plus d 1)) -> Elem R) {|pi|} (Set__ofPred (Polynomial R) (f => and (Leq (Polynomial__natDegree R f) d) (forall Nat (i2 => Membership__mem R (powerset R) U (AddMonoidAlgebra__coeff__app f i2)))))) (Set__pi (Fin (plus d 1)) (i3 => R) (Set__univ (Fin (plus d 1))) (x3 => U))",
     "by": "exact Set.image_subset_iff.2 fun f hf i _ => hf.2 i",
     "depth": 1
    },
@@ -2018,7 +2031,7 @@
      ],
      [
       "hx",
-      "Proof (Membership__mem (Polynomial R) (powerset (Polynomial R)) (Set__ofPred (Polynomial R) (f => and (Leq (Polynomial__natDegree R f) d) (forall Nat (i => Membership__mem R (powerset R) U (Polynomial__coeff__app f i))))) x)"
+      "Proof (Membership__mem (Polynomial R) (powerset (Polynomial R)) (Set__ofPred (Polynomial R) (f => and (Leq (Polynomial__natDegree R f) d) (forall Nat (i => Membership__mem R (powerset R) U (AddMonoidAlgebra__coeff__app f i))))) x)"
      ],
      [
       "y",
@@ -2026,11 +2039,11 @@
      ],
      [
       "hy",
-      "Proof (Membership__mem (Polynomial R) (powerset (Polynomial R)) (Set__ofPred (Polynomial R) (f1 => and (Leq (Polynomial__natDegree R f1) d) (forall Nat (i1 => Membership__mem R (powerset R) U (Polynomial__coeff__app f1 i1))))) y)"
+      "Proof (Membership__mem (Polynomial R) (powerset (Polynomial R)) (Set__ofPred (Polynomial R) (f1 => and (Leq (Polynomial__natDegree R f1) d) (forall Nat (i1 => Membership__mem R (powerset R) U (AddMonoidAlgebra__coeff__app f1 i1))))) y)"
      ],
      [
       "hxy",
-      "Proof (Eqt (Elem (Fin (plus d 1)) -> R) (pi x) (pi y))"
+      "Proof (Eqt (Elem (Fin (plus d 1)) -> Elem R) ({|pi|} x) ({|pi|} y))"
      ],
      [
       "i",
@@ -2046,13 +2059,13 @@
    },
    {
     "unit": "enough",
-    "prop": "Eqt R (Polynomial__coeff__app x i) (Polynomial__coeff__app y i)",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app x i) (AddMonoidAlgebra__coeff__app y i)",
     "by": "refine fun x hx y hy hxy => (ext_iff_natDegree_le hx.1 hy.1).2 fun i hi => ?_",
     "depth": 1
    },
    {
     "unit": "conclusion",
-    "prop": "Eqt R (Polynomial__coeff__app x i) (Polynomial__coeff__app y i)",
+    "prop": "Eqt R (AddMonoidAlgebra__coeff__app x i) (AddMonoidAlgebra__coeff__app y i)",
     "by": "exact id congr($hxy ⟨i, Nat.lt_succ_of_le hi⟩)",
     "depth": 2
    }
@@ -2608,13 +2621,13 @@
    },
    {
     "unit": "enough",
-    "prop": "divide (Multiset__prod (Polynomial R) (Multiset__map R (Polynomial R) (a1 => minus (Polynomial__X R) (Polynomial__C__app a1)) (Multiset__filter R (Eq R r) s))) p",
+    "prop": "divide (Multiset__prod (Polynomial R) (Multiset__map R (Polynomial R) (a1 => minus (Polynomial__X R) (Polynomial__C__app a1)) (Multiset__filter R (x => Eqt R r x) s))) p",
     "by": "rw [count_roots, le_rootMultiplicity_iff hp, ← Multiset.prod_replicate, ←",
     "depth": 1
    },
    {
     "unit": "conclusion",
-    "prop": "divide (Multiset__prod (Polynomial R) (Multiset__map R (Polynomial R) (a1 => minus (Polynomial__X R) (Polynomial__C__app a1)) (Multiset__filter R (Eq R r) s))) p",
+    "prop": "divide (Multiset__prod (Polynomial R) (Multiset__map R (Polynomial R) (a1 => minus (Polynomial__X R) (Polynomial__C__app a1)) (Multiset__filter R (x => Eqt R r x) s))) p",
     "by": "exact (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| s.filter_le _).trans h",
     "depth": 1
    }
@@ -3082,7 +3095,7 @@
    },
    {
     "unit": "enough",
-    "prop": "divide (Multiset__prod (Polynomial B) (Multiset__map B (Polynomial B) (a => minus (Polynomial__X B) (Polynomial__C__app a)) (Multiset__filter B (Eq B b) (Multiset__map A B f (Polynomial__roots A p))))) (Polynomial__map A B f p)",
+    "prop": "divide (Multiset__prod (Polynomial B) (Multiset__map B (Polynomial B) (a => minus (Polynomial__X B) (Polynomial__C__app a)) (Multiset__filter B (x => Eqt B b x) (Multiset__map A B f (Polynomial__roots A p))))) (Polynomial__map A B f p)",
     "by": "rw [← Multiset.filter_eq]",
     "depth": 0
    },

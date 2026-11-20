@@ -78,6 +78,49 @@ def coercions : List Name :=
   [``Nat.cast, ``Int.cast, ``NatCast.natCast, ``IntCast.intCast, ``Subtype.val, `SetLike.coe,
    `Fin.val, `Subgroup.toSubmonoid, `AddSubgroup.toAddSubmonoid, `Submonoid.toSubsemigroup, ``Subtype.mk]
 
+def strip (s : String) : String :=
+  String.ofList (s.toList.dropWhile Char.isWhitespace |>.reverse.dropWhile Char.isWhitespace |>.reverse)
+
+/-- The arguments that each constant's entry in the symbol tables shows, the
+number of distinct #k (with the highest #k: 0 where they differ, an entry
+that leaves out an argument), the later tables overriding the earlier ones as
+in build-index.py; 0 for an entry without #k (a GF function, a binder macro). -/
+initialize entryArities : IO.Ref (Std.HashMap String Nat) ← IO.mkRef {}
+
+/-- The LaTeX form of each constant's entry ($...$ without the dollars), for
+the entries of c__app<m> (see app). -/
+initialize entryLatex : IO.Ref (Std.HashMap String String) ← IO.mkRef {}
+
+def readEntryArities : IO Unit := do
+  let mut m : Std.HashMap String Nat := {}
+  let mut lx : Std.HashMap String String := {}
+  -- the hand-written tables only: the generated wordings of definitions.dkgf
+  -- name the main arguments only (the swap of #2 and #3), and a constant
+  -- without a hand-written entry is better shown as itself
+  for t in ["mathlib.dkgf", "structures.dkgf"] do
+    let path : System.FilePath := t
+    if !(← path.pathExists) then continue
+    for line in (← IO.FS.lines path) do
+      if line.startsWith "#" then continue
+      match line.splitOn " : " with
+      | c :: rest@(_ :: _) =>
+        if c.isEmpty || c.any (· == ' ') then continue
+        let e := " : ".intercalate rest
+        let mut ks : Std.HashSet Nat := {}
+        let mut top := 0
+        for part in (e.splitOn "#").drop 1 do
+          let ds := part.takeWhile Char.isDigit
+          if !ds.isEmpty then
+            ks := ks.insert ds.toNat!
+            top := max top ds.toNat!
+        m := m.insert c (if ks.size == top then top else 0)
+        lx := match (e.splitOn " | ").find? (fun a => (strip a).startsWith "$" && (strip a).endsWith "$") with
+          | some a => let a := strip a; lx.insert c (String.ofList ((a.toList.drop 1).dropLast))
+          | none => lx.erase c
+      | _ => pure ()
+  entryArities.set m
+  entryLatex.set lx
+
 /-- A sort, or a sort as an outParam (the collection type of Membership). -/
 def sortish (t : Expr) : Bool :=
   t.isSort || (t.isAppOfArity ``outParam 1 && t.appArg!.isSort)
@@ -113,9 +156,12 @@ def freshName (n : Name) (prop : Bool) (sort : Bool := false) : M String := do
     | "σ" => "S" | "τ" => "T" | "ω" => "U" | _ => "X"
   let base := if ok then base0 else if prop then "h" else if sort && !n.hasMacroScopes then latin else "x"
   let st ← get
+  -- a name that is a constant of Informath's base (sigma, the sum Σ; pi, π)
+  -- is quoted, {|sigma|}, so that Informath reads it as a variable
+  let quote (v : String) := if ["sigma", "pi"].contains v then "{|" ++ v ++ "|}" else v
   if !st.names.contains base then
     modify fun s => { s with names := s.names.insert base }
-    return base
+    return quote base
   let mut i := 1
   while (← get).names.contains s!"{base}{i}" do i := i + 1
   let nm := s!"{base}{i}"
@@ -127,6 +173,39 @@ def explicitArgs (c : Name) : MetaM (Array Bool) := do
   let info ← getConstInfo c
   forallTelescope info.type fun xs _ => do
     xs.mapM fun x => return (← x.fvarId!.getBinderInfo) == .default
+
+/-- The entries of the c__app<m> constants of app: the LaTeX of c's entry
+applied to the m extra arguments, \left(\operatorname{invFun}(#1)\right)(#2). -/
+def appEntries (derived : Std.HashMap String String) : IO String := do
+  let lx ← entryLatex.get
+  let ar ← entryArities.get
+  let mut out := ""
+  for (nm, ty) in derived.toList.toArray.qsort (·.1 < ·.1) do
+    let _ := ty
+    for (sep, isApp) in [("__app", true), ("__part", false)] do
+      let parts := nm.splitOn sep
+      if parts.length < 2 then continue
+      let m := parts.getLast!
+      if m.isEmpty || !m.all Char.isDigit then continue
+      let base := sep.intercalate parts.dropLast
+      let some latex := lx.get? base | continue
+      let some k := ar.get? base | continue
+      if isApp then
+        let extra := ", ".intercalate ((List.range m.toNat!).map fun i => s!"#{k + i + 1}")
+        out := out ++ s!"{nm} : $\\left({latex}\\right)({extra})$\n"
+      else
+        -- the m last arguments are missing: dots for them, highest first (#12 before #1)
+        let mut e := latex
+        for j in (List.range m.toNat!).map (k - ·) do
+          e := e.replace s!"#{j}" "\\cdot"
+        out := out ++ s!"{nm} : $\{{e}}$\n"
+  return out
+
+/-- The number of binders of a constant's type, without unfolding definitions
+(Set α is not α → Prop). -/
+def constArity (c : Name) : MetaM Nat := do
+  let some info := (← getEnv).find? c | return 0
+  forallTelescope info.type fun xs _ => return xs.size
 
 /-- The positions of the arguments of a constant that are not instances. -/
 def nonInstanceArgs (c : Name) : MetaM (Array Bool) := do
@@ -605,6 +684,94 @@ partial def app (c : Name) (args : Array Expr) (whole : Expr) : M String := do
         let a ← if given.contains i then stripParents args[i]! else pure args[i]!
         as := as.push (paren (← tr a))
       return " ".intercalate (nm :: as.toList)
+  -- a constant applied to fewer arguments than its type has binders (image f,
+  -- succ as a function) is eta-expanded, λ s. image f s: the symbol table's
+  -- entries have a #k for each explicit binder, and Informath cannot read an
+  -- application with fewer (a LaTeX entry leaves a #k without its argument).
+  -- Not the theorems and propositions, the binders (whose λs are their own),
+  -- the logical rules of the proofs (keepAll), the coercions (the identity in
+  -- the readings: λ x. x would hide the function), and the constants whose
+  -- entries word the function itself (f ∘ g, const_Y(a))
+  -- Only where the constant's entry has a #k for each explicit binder: an entry
+  -- that leaves out arguments (the generated "the swap of #2 and #3") would
+  -- lose the function, and a constant without an entry is shown as itself,
+  -- applied to what it is applied to, which is right as it is
+  --   With more shown arguments than the entry has #k (an entry written for
+  -- the function, invFun(f), applied to a point), c__app<m> takes them all, and
+  -- the entry that Export writes for it in out/<M>-hide.dkgf applies the
+  -- entry's LaTeX to the m extra ones, (invFun(f))(b)
+  -- Equality and the constants mapped to Informath's base (Lt, plus, divide),
+  -- which take all their arguments, are eta-expanded too: (a + ·) is
+  -- λ x. a + x, a ≠ · is λ x. a ≠ x
+  if ((← get).mapping.contains c || [``Eq, ``Ne].contains c) && !(← get).keepAll.contains c
+      && args.size > 0 && args.size < (← constArity c) then
+    let missing := (← constArity c) - args.size
+    let e' ← forallBoundedTelescope (← inferType whole) (some missing) fun xs _ =>
+      if xs.size == missing then mkLambdaFVars xs (mkAppN whole xs) else pure whole
+    if e'.isLambda then return ← tr e'
+  let noEta := coercions ++ [``Function.comp, ``Function.const]
+  let entryK := ((← entryArities.get).get? (mangle c)).getD 0
+  -- (the dot form is fine for those too: ↑· is injective, f ∘ ·)
+  let skip := (← get).binders.contains c || (← get).keepAll.contains c
+  if entryK > 0 && !skip then
+    if let some ci := (← getEnv).find? c then
+      if !(ci matches .thmInfo _) && !(← (try isProp ci.type catch _ => pure false)) then
+        let expl ← try explicitArgs c catch _ => pure (args.map fun _ => true)
+        let arity ← constArity c
+        let shown := (args.toList.zip (expl.toList ++ List.replicate args.size true)).filter (·.2) |>.map (·.1)
+        if shown.length < entryK && args.size < arity && ((← entryLatex.get).contains (mangle c)) then
+          -- c__part<m>: the LaTeX entry with dots for the m missing arguments, image(f, ·)
+          let nm := mangle c ++ "__part" ++ toString (entryK - shown.length)
+          if !((← get).derived.contains nm) then
+            let mut hs := #[]
+            let mut i := 0
+            for a in shown do
+              i := i + 1
+              hs := hs.push s!"(a{i} : {← hypoType (← inferType a)})"
+            let ty := " -> ".intercalate (hs.toList ++ [← hypoType (← inferType whole)])
+            modify fun st => { st with derived := st.derived.insert nm ty }
+          let as ← shown.mapM tr
+          return " ".intercalate (nm :: as.map paren)
+        if shown.length < entryK && args.size < arity && !noEta.contains c then
+          let missing := arity - args.size
+          let e' ← forallBoundedTelescope (← inferType whole) (some missing) fun xs _ =>
+            if xs.size == missing then mkLambdaFVars xs (mkAppN whole xs) else pure whole
+          if e'.isLambda then return ← tr e'
+        -- (not where the extra arguments are proofs, which entries leave out)
+        let extraProof ← (shown.drop entryK).anyM fun a => do
+          try isProp (← inferType a) catch _ => pure false
+        if shown.length > entryK && !extraProof && !noEta.contains c && ((← entryLatex.get).contains (mangle c)) then
+          let nm := mangle c ++ "__app" ++ toString (shown.length - entryK)
+          if !((← get).derived.contains nm) then
+            let mut hs := #[]
+            let mut i := 0
+            for a in shown do
+              i := i + 1
+              hs := hs.push s!"(a{i} : {← hypoType (← inferType a)})"
+            let ty := " -> ".intercalate (hs.toList ++ [← hypoType (← inferType whole)])
+            modify fun st => { st with derived := st.derived.insert nm ty }
+          let as ← shown.mapM tr
+          return " ".intercalate (nm :: as.map paren)
+  -- an arithmetic operation on functions applied to a point, (f - g) x, as
+  -- HSub__hSub__app1 f g x: Informath's base operations are binary
+  let pointwise := [``HSub.hSub, ``HAdd.hAdd, ``HMul.hMul, ``HSMul.hSMul, ``Neg.neg]
+  if pointwise.contains c then
+    let arity := if c == ``Neg.neg then 3 else 6
+    if args.size > arity then
+      let first := args.extract (arity - (if c == ``Neg.neg then 1 else 2)) arity
+      let rest := args.extract arity args.size
+      let all := first.toList ++ rest.toList
+      let nm := mangle c ++ "__app" ++ toString rest.size
+      if !((← get).derived.contains nm) then
+        let mut hs := #[]
+        let mut i := 0
+        for a in all do
+          i := i + 1
+          hs := hs.push s!"(a{i} : {← hypoType (← inferType a)})"
+        let ty := " -> ".intercalate (hs.toList ++ [← hypoType (← inferType whole)])
+        modify fun st => { st with derived := st.derived.insert nm ty }
+      let as ← all.mapM tr
+      return " ".intercalate (nm :: as.map paren)
   let target := (← get).mapping.get? c
   let expl ← try explicitArgs c catch _ => pure (args.map fun _ => true)
   -- in a proof, a theorem is a rule whose premisses -proof-text reads off its
@@ -783,9 +950,6 @@ def wanted (env : Environment) (n : Name) (ci : ConstantInfo) : Bool :=
 
 def jsonStr (s : String) : String := (Json.str s).compress
 
-def strip (s : String) : String :=
-  String.ofList (s.toList.dropWhile Char.isWhitespace |>.reverse.dropWhile Char.isWhitespace |>.reverse)
-
 def readBinders : IO (Std.HashSet Name) := do
   let path : System.FilePath := "binders.txt"
   if !(← path.pathExists) then return {}
@@ -954,6 +1118,7 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
   for (nm, hidden) in derivedHide.toList.toArray.qsort (·.1 < ·.1) do
     if !hidden.isEmpty then
       hide := hide ++ s!"#HIDE {nm} {" ".intercalate (hidden.toList.map toString)}\n"
+  hide := hide ++ (← appEntries derived)
   IO.FS.writeFile s!"{outDir}/{mod}-hide.dkgf" hide
   IO.FS.writeFile s!"{outDir}/{mod}-deps.dk" deps
   IO.FS.writeFile s!"{outDir}/{mod}.json" ("[\n" ++ ",\n".intercalate json.toList ++ "\n]\n")
@@ -1845,6 +2010,7 @@ unsafe def main (args : List String) : IO UInt32 := do
     return 1
   initSearchPath (← findSysroot)
   enableInitializersExecution
+  readEntryArities
   if args.head? == some "--file" then
     let [path, outDir] := args.tail | do
       IO.eprintln "usage: lake exe export --file <File.lean> <outDir>"; return 1

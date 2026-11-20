@@ -52,8 +52,8 @@ def Set__preimage_singleton : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y))
   X => Y => f => y => rfl (powerset X) (Set__preimage X Y f (Singleton__singleton Y (powerset Y) y)).
 
 (; //LEAN:Set.preimage_id_eq ;)
-def Set__preimage_id_eq : (X : Set) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset X)) (Set__preimage X X (id X)) (id (powerset X))) :=
-  X => rfl (Elem (powerset X) -> Elem (powerset X)) (Set__preimage X X (id X)).
+def Set__preimage_id_eq : (X : Set) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset X)) (Set__preimage__part1 (id X)) (id (powerset X))) :=
+  X => rfl (Elem (powerset X) -> Elem (powerset X)) (Set__preimage__part1 (id X)).
 
 (; //LEAN:Set.preimage_id ;)
 def Set__preimage_id : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__preimage X X (id X) s) s) :=
@@ -82,18 +82,18 @@ def Set__preimage_comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> 
   X => Y => Z => f => g => s => rfl (powerset X) (Set__preimage X Z (Function__comp X Y Z g f) s).
 
 (; //LEAN:Set.preimage_comp_eq ;)
-def Set__preimage_comp_eq : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem Y -> Elem Z)) -> Proof (Eqt (Elem (powerset Z) -> Elem (powerset X)) (Set__preimage X Z (Function__comp X Y Z g f)) (Function__comp (powerset Z) (powerset Y) (powerset X) (Set__preimage X Y f) (Set__preimage Y Z g))) :=
-  X => Y => Z => f => g => rfl (Elem (powerset Z) -> Elem (powerset X)) (Set__preimage X Z (Function__comp X Y Z g f)).
+def Set__preimage_comp_eq : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem Y -> Elem Z)) -> Proof (Eqt (Elem (powerset Z) -> Elem (powerset X)) (Set__preimage__part1 (Function__comp X Y Z g f)) (Function__comp (powerset Z) (powerset Y) (powerset X) (Set__preimage__part1 f) (Set__preimage__part1 g))) :=
+  X => Y => Z => f => g => rfl (Elem (powerset Z) -> Elem (powerset X)) (Set__preimage__part1 (Function__comp X Y Z g f)).
 
 (; //LEAN:Set.preimage_iterate_eq ;)
-Set__preimage_iterate_eq : (X : Set) -> (f : (Elem X -> Elem X)) -> (n : Elem Nat) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset X)) (Set__preimage X X (Nat__iterate X f n)) (Nat__iterate (powerset X) (Set__preimage X X f) n)).
+Set__preimage_iterate_eq : (X : Set) -> (f : (Elem X -> Elem X)) -> (n : Elem Nat) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset X)) (Set__preimage__part1 (Nat__iterate__part1 f n)) (Nat__iterate__part1 (Set__preimage__part1 f) n)).
 
 (; //LEAN:Set.preimage_preimage ;)
 def Set__preimage_preimage : (X : Set) -> (Y : Set) -> (Z : Set) -> (g : (Elem Y -> Elem Z)) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset Z)) -> Proof (Eqt (powerset X) (Set__preimage X Y f (Set__preimage Y Z g s)) (Set__preimage X Z (x => g (f x)) s)) :=
   X => Y => Z => g => f => s => Eq__symm (powerset X) (Set__preimage X Z (Function__comp X Y Z g f) s) (Set__preimage X Y f (Set__preimage Y Z g s)) (Set__preimage_comp X Y Z f g s).
 
 (; //LEAN:Set.eq_preimage_subtype_val_iff ;)
-Set__eq_preimage_subtype_val_iff : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (powerset (Subtype X (x5 => p x5)))) -> (t : Elem (powerset X)) -> Proof (iff (Eqt (powerset (Subtype X (x => p x))) s (Set__preimage (Subtype X (x1 => p x1)) X (Subtype__val X p) t)) (forall X (x2 => forall (Proof (p x2)) (h => iff (Membership__mem (Subtype X (x3 => p x3)) (powerset (Subtype X (x4 => p x4))) s (Subtype__mk X p x2 h)) (Membership__mem X (powerset X) t x2))))).
+Set__eq_preimage_subtype_val_iff : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (powerset (Subtype X (x6 => p x6)))) -> (t : Elem (powerset X)) -> Proof (iff (Eqt (powerset (Subtype X (x => p x))) s (Set__preimage (Subtype X (x1 => p x1)) X Subtype__val__part1 t)) (forall X (x3 => forall (Proof (p x3)) (h => iff (Membership__mem (Subtype X (x4 => p x4)) (powerset (Subtype X (x5 => p x5))) s (Subtype__mk X p x3 h)) (Membership__mem X (powerset X) t x3))))).
 
 (; //LEAN:Set.nonempty_of_nonempty_preimage ;)
 Set__nonempty_of_nonempty_preimage : (X : Set) -> (Y : Set) -> (s : Elem (powerset Y)) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Set__Nonempty X (Set__preimage X Y f s))) -> Proof (Set__Nonempty Y s).
@@ -108,7 +108,7 @@ Set__preimage_singleton_true : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Eqt
 Set__preimage_singleton_false : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Eqt (powerset X) (Set__preimage X Prop p (Singleton__singleton Prop (powerset Prop) false)) (Set__ofPred X (a => not (p a)))).
 
 (; //LEAN:Set.preimage_subtype_coe_eq_compl ;)
-Set__preimage_subtype_coe_eq_compl : (X : Set) -> (s : Elem (powerset X)) -> (u : Elem (powerset X)) -> (v : Elem (powerset X)) -> (hsuv : Proof (Set__Subset X s (Union__union (powerset X) u v))) -> (H : Proof (Eqt (powerset X) (Inter__inter (powerset X) s (Inter__inter (powerset X) u v)) (EmptyCollection__emptyCollection (powerset X)))) -> Proof (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X (Subtype__val X (x2 => Membership__mem X (powerset X) s x2)) u) (Compl__compl (powerset (Subtype X (x3 => Membership__mem X (powerset X) s x3))) (Set__preimage (Subtype X (x4 => Membership__mem X (powerset X) s x4)) X (Subtype__val X (x5 => Membership__mem X (powerset X) s x5)) v))).
+Set__preimage_subtype_coe_eq_compl : (X : Set) -> (s : Elem (powerset X)) -> (u : Elem (powerset X)) -> (v : Elem (powerset X)) -> (hsuv : Proof (Set__Subset X s (Union__union (powerset X) u v))) -> (H : Proof (Eqt (powerset X) (Inter__inter (powerset X) s (Inter__inter (powerset X) u v)) (EmptyCollection__emptyCollection (powerset X)))) -> Proof (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X Subtype__val__part1 u) (Compl__compl (powerset (Subtype X (x3 => Membership__mem X (powerset X) s x3))) (Set__preimage (Subtype X (x4 => Membership__mem X (powerset X) s x4)) X Subtype__val__part1 v))).
 
 (; //LEAN:Set.preimage_subset ;)
 Set__preimage_subset : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset Y)) -> (t : Elem (powerset X)) -> (hs : Proof (Set__Subset Y s (Set__image X Y f t))) -> (hf : Proof (Set__InjOn X Y f (Set__preimage X Y f s))) -> Proof (Set__Subset X (Set__preimage X Y f s) t).
@@ -140,17 +140,17 @@ Set__image_congr' : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (g : (
 Set__image_mono : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X s t)) -> Proof (Set__Subset Y (Set__image X Y f s) (Set__image X Y f t)).
 
 (; //LEAN:Set.monotone_image ;)
-def Set__monotone_image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (Monotone (powerset X) (powerset Y) (Set__image X Y f)) :=
+def Set__monotone_image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (Monotone (powerset X) (powerset Y) (Set__image__part1 f)) :=
   X => Y => f => forallI (powerset X) (x => forall (powerset X) (x2 => if (Set__Subset X x x2) (Set__Subset Y (Set__image X Y f x) (Set__image X Y f x2)))) (x => forallI (powerset X) (x1 => if (Set__Subset X x x1) (Set__Subset Y (Set__image X Y f x) (Set__image X Y f x1))) (x1 => Set__image_mono X Y f x x1)).
 
 (; //LEAN:Set.image_comp ;)
 Set__image_comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem Y -> Elem Z)) -> (g : (Elem X -> Elem Y)) -> (a : Elem (powerset X)) -> Proof (Eqt (powerset Z) (Set__image X Z (Function__comp X Y Z f g) a) (Set__image Y Z f (Set__image X Y g a))).
 
 (; //LEAN:Set.image_comp_eq ;)
-Set__image_comp_eq : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem Y -> Elem Z)) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset Z)) (Set__image X Z (Function__comp X Y Z g f)) (Function__comp (powerset X) (powerset Y) (powerset Z) (Set__image Y Z g) (Set__image X Y f))).
+Set__image_comp_eq : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem Y -> Elem Z)) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset Z)) (Set__image__part1 (Function__comp X Y Z g f)) (Function__comp (powerset X) (powerset Y) (powerset Z) (Set__image__part1 g) (Set__image__part1 f))).
 
 (; //LEAN:Set.image_comp_image ;)
-Set__image_comp_image : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem Y -> Elem Z)) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset Z)) (Function__comp (powerset X) (powerset Y) (powerset Z) (Set__image Y Z g) (Set__image X Y f)) (Set__image X Z (Function__comp X Y Z g f))).
+Set__image_comp_image : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem Y -> Elem Z)) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset Z)) (Function__comp (powerset X) (powerset Y) (powerset Z) (Set__image__part1 g) (Set__image__part1 f)) (Set__image__part1 (Function__comp X Y Z g f))).
 
 (; //LEAN:Set.image_image ;)
 def Set__image_image : (X : Set) -> (Y : Set) -> (Z : Set) -> (g : (Elem Y -> Elem Z)) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset Z) (Set__image Y Z g (Set__image X Y f s)) (Set__image X Z (x => g (f x)) s)) :=
@@ -160,11 +160,11 @@ def Set__image_image : (X : Set) -> (Y : Set) -> (Z : Set) -> (g : (Elem Y -> El
 Set__image_comm : (X : Set) -> (Y : Set) -> (Z : Set) -> (s : Elem (powerset X)) -> (X1 : Set) -> (f : (Elem Y -> Elem Z)) -> (g : (Elem X -> Elem Y)) -> (f' : (Elem X -> Elem X1)) -> (g' : (Elem X1 -> Elem Z)) -> (h_comm : Proof (forall X (a => Eqt Z (f (g a)) (g' (f' a))))) -> Proof (Eqt (powerset Z) (Set__image Y Z f (Set__image X Y g s)) (Set__image X1 Z g' (Set__image X X1 f' s))).
 
 (; //LEAN:Function.Semiconj.set_image ;)
-def Function__Semiconj__set_image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (ga : (Elem X -> Elem X)) -> (gb : (Elem Y -> Elem Y)) -> (h : Proof (Function__Semiconj X Y f ga gb)) -> Proof (Function__Semiconj (powerset X) (powerset Y) (Set__image X Y f) (Set__image X X ga) (Set__image Y Y gb)) :=
+def Function__Semiconj__set_image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (ga : (Elem X -> Elem X)) -> (gb : (Elem Y -> Elem Y)) -> (h : Proof (Function__Semiconj X Y f ga gb)) -> Proof (Function__Semiconj (powerset X) (powerset Y) (Set__image__part1 f) (Set__image__part1 ga) (Set__image__part1 gb)) :=
   X => Y => f => ga => gb => h => forallI (powerset X) (x => Eqt (powerset Y) (Set__image X Y f (Set__image X X ga x)) (Set__image Y Y gb (Set__image X Y f x))) (x => Set__image_comm X X Y x Y f ga f gb h).
 
 (; //LEAN:Function.Commute.set_image ;)
-def Function__Commute__set_image : (X : Set) -> (f : (Elem X -> Elem X)) -> (g : (Elem X -> Elem X)) -> (h : Proof (Function__Commute X f g)) -> Proof (Function__Commute (powerset X) (Set__image X X f) (Set__image X X g)) :=
+def Function__Commute__set_image : (X : Set) -> (f : (Elem X -> Elem X)) -> (g : (Elem X -> Elem X)) -> (h : Proof (Function__Commute X f g)) -> Proof (Function__Commute (powerset X) (Set__image__part1 f) (Set__image__part1 g)) :=
   X => f => g => h => Function__Semiconj__set_image X X f g g h.
 
 (; //LEAN:Set.image_union ;)
@@ -190,7 +190,7 @@ def Set__image_inter : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s 
 
 (; //LEAN:Set.image_univ_of_surjective ;)
 def Set__image_univ_of_surjective : (Y : Set) -> (I : Set) -> (f : (Elem I -> Elem Y)) -> (H : Proof (Function__Surjective I Y f)) -> Proof (Eqt (powerset Y) (Set__image I Y f (Set__univ I)) (Set__univ Y)) :=
-  Y => I => f => H => Set__eq_univ_of_forall Y (Set__image I Y f (Set__univ I)) (Eq__mpr (forall Y (x => Membership__mem Y (powerset Y) (Set__image I Y f (Set__univ I)) x)) (forall Y (x1 => exists I (a => Eqt Y (f a) x1))) (id (Eqt Prop (forall Y (x2 => Membership__mem Y (powerset Y) (Set__image I Y f (Set__univ I)) x2)) (forall Y (x3 => exists I (a1 => Eqt Y (f a1) x3)))) (forall_congr Y (Membership__mem Y (powerset Y) (Set__image I Y f (Set__univ I))) (Membership__mem Y (powerset Y) (Set__ofPred Y (x4 => exists I (a2 => Eqt Y (f a2) x4)))) (forallI Y (x5 => Eqt Prop (Membership__mem Y (powerset Y) (Set__image I Y f (Set__univ I)) x5) (Membership__mem Y (powerset Y) (Set__ofPred Y (x19 => exists I (a15 => Eqt Y (f a15) x19))) x5)) (x5 => congrFun' Y Prop (Membership__mem Y (powerset Y) (Set__image I Y f (Set__univ I))) (Membership__mem Y (powerset Y) (Set__ofPred Y (x6 => exists I (a3 => Eqt Y (f a3) x6)))) (congrArg (powerset Y) (Elem Y -> Prop) (Set__image I Y f (Set__univ I)) (Set__ofPred Y (x8 => exists I (a4 => Eqt Y (f a4) x8))) (Membership__mem Y (powerset Y)) (congrArg (Elem Y -> Prop) (powerset Y) (x10 => exists I (a5 => and (Membership__mem I (powerset I) (Set__univ I) a5) (Eqt Y (f a5) x10))) (x11 => exists I (a6 => Eqt Y (f a6) x11)) (Set__ofPred Y) (funext Y (x12 => Prop) (x13 => exists I (a7 => and (Membership__mem I (powerset I) (Set__univ I) a7) (Eqt Y (f a7) x13))) (x14 => exists I (a8 => Eqt Y (f a8) x14)) (forallI Y (x15 => Eqt Prop (exists I (a13 => and (Membership__mem I (powerset I) (Set__univ I) a13) (Eqt Y (f a13) x15))) (exists I (a14 => Eqt Y (f a14) x15))) (x15 => congrArg (Elem I -> Prop) Prop (a10 => and (Membership__mem I (powerset I) (Set__univ I) a10) (Eqt Y (f a10) x15)) (a11 => Eqt Y (f a11) x15) (Exists I) (funext I (x16 => Prop) (x17 => and (Membership__mem I (powerset I) (Set__univ I) x17) (Eqt Y (f x17) x15)) (x18 => Eqt Y (f x18) x15) (forallI I (a12 => Eqt Prop (and (Membership__mem I (powerset I) (Set__univ I) a12) (Eqt Y (f a12) x15)) (Eqt Y (f a12) x15)) (a12 => Eq__trans Prop (and (Membership__mem I (powerset I) (Set__univ I) a12) (Eqt Y (f a12) x15)) (and True (Eqt Y (f a12) x15)) (Eqt Y (f a12) x15) (congrFun' Prop Prop (and (Membership__mem I (powerset I) (Set__univ I) a12)) (and True) (congrArg Prop (Prop -> Prop) (Membership__mem I (powerset I) (Set__univ I) a12) True and (Set__mem_univ___simp_1 I a12)) (Eqt Y (f a12) x15)) (true_and (Eqt Y (f a12) x15)))))))))) x5)))) H).
+  Y => I => f => H => Set__eq_univ_of_forall Y (Set__image I Y f (Set__univ I)) (Eq__mpr (forall Y (x => Membership__mem Y (powerset Y) (Set__image I Y f (Set__univ I)) x)) (forall Y (x1 => exists I (a => Eqt Y (f a) x1))) (id (Eqt Prop (forall Y (x2 => Membership__mem Y (powerset Y) (Set__image I Y f (Set__univ I)) x2)) (forall Y (x3 => exists I (a1 => Eqt Y (f a1) x3)))) (forall_congr Y (Membership__mem__part1 (Set__image I Y f (Set__univ I))) (Membership__mem__part1 (Set__ofPred Y (x5 => exists I (a2 => Eqt Y (f a2) x5)))) (forallI Y (x6 => Eqt Prop (Membership__mem Y (powerset Y) (Set__image I Y f (Set__univ I)) x6) (Membership__mem Y (powerset Y) (Set__ofPred Y (x23 => exists I (a15 => Eqt Y (f a15) x23))) x6)) (x6 => congrFun' Y Prop (Membership__mem__part1 (Set__image I Y f (Set__univ I))) (Membership__mem__part1 (Set__ofPred Y (x7 => exists I (a3 => Eqt Y (f a3) x7)))) (congrArg (powerset Y) (Elem Y -> Prop) (Set__image I Y f (Set__univ I)) (Set__ofPred Y (x9 => exists I (a4 => Eqt Y (f a4) x9))) Membership__mem__part2 (congrArg (Elem Y -> Prop) (powerset Y) (x14 => exists I (a5 => and (Membership__mem I (powerset I) (Set__univ I) a5) (Eqt Y (f a5) x14))) (x15 => exists I (a6 => Eqt Y (f a6) x15)) (Set__ofPred Y) (funext Y (x16 => Prop) (x17 => exists I (a7 => and (Membership__mem I (powerset I) (Set__univ I) a7) (Eqt Y (f a7) x17))) (x18 => exists I (a8 => Eqt Y (f a8) x18)) (forallI Y (x19 => Eqt Prop (exists I (a13 => and (Membership__mem I (powerset I) (Set__univ I) a13) (Eqt Y (f a13) x19))) (exists I (a14 => Eqt Y (f a14) x19))) (x19 => congrArg (Elem I -> Prop) Prop (a10 => and (Membership__mem I (powerset I) (Set__univ I) a10) (Eqt Y (f a10) x19)) (a11 => Eqt Y (f a11) x19) (Exists I) (funext I (x20 => Prop) (x21 => and (Membership__mem I (powerset I) (Set__univ I) x21) (Eqt Y (f x21) x19)) (x22 => Eqt Y (f x22) x19) (forallI I (a12 => Eqt Prop (and (Membership__mem I (powerset I) (Set__univ I) a12) (Eqt Y (f a12) x19)) (Eqt Y (f a12) x19)) (a12 => Eq__trans Prop (and (Membership__mem I (powerset I) (Set__univ I) a12) (Eqt Y (f a12) x19)) (and True (Eqt Y (f a12) x19)) (Eqt Y (f a12) x19) (congrFun' Prop Prop (b => and (Membership__mem I (powerset I) (Set__univ I) a12) b) (b1 => and True b1) (congrArg Prop (Prop -> Prop) (Membership__mem I (powerset I) (Set__univ I) a12) True and (Set__mem_univ___simp_1 I a12)) (Eqt Y (f a12) x19)) (true_and (Eqt Y (f a12) x19)))))))))) x6)))) H).
 
 (; //LEAN:Set.image_singleton ;)
 Set__image_singleton : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (a : Elem X) -> Proof (Eqt (powerset Y) (Set__image X Y f (Singleton__singleton X (powerset X) a)) (Singleton__singleton Y (powerset Y) (f a))).
@@ -205,14 +205,14 @@ Set__image_eq_empty : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s :
 Set__empty_eq_image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Proof (iff (Eqt (powerset Y) (EmptyCollection__emptyCollection (powerset Y)) (Set__image X Y f s)) (Eqt (powerset X) s (EmptyCollection__emptyCollection (powerset X)))).
 
 (; //LEAN:Set.preimage_compl_eq_image_compl ;)
-def Set__preimage_compl_eq_image_compl : (X : Set) -> (_ : Proof (BooleanAlgebra X)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__preimage X X (Compl__compl X) s) (Set__image X X (Compl__compl X) s)) :=
-  X => x => s => Set__ext X (Set__preimage X X (Compl__compl X) s) (Set__image X X (Compl__compl X) s) (forallI X (x1 => iff (Membership__mem X (powerset X) (Set__preimage X X (Compl__compl X) s) x1) (Membership__mem X (powerset X) (Set__image X X (Compl__compl X) s) x1)) (x1 => iffI (Membership__mem X (powerset X) (Set__preimage X X (Compl__compl X) s) x1) (Membership__mem X (powerset X) (Set__image X X (Compl__compl X) s) x1) (h => existsI X (a => and (Membership__mem X (powerset X) s a) (Eqt X (Compl__compl X a) x1)) (Compl__compl X x1) (andI (Membership__mem X (powerset X) s (Compl__compl X x1)) (Eqt X (Compl__compl X (Compl__compl X x1)) x1) h (compl_compl X x1))) (h1 => existsE X (x2 => and (Membership__mem X (powerset X) s x2) (Eqt X (Compl__compl X x2) x1)) (Membership__mem X (powerset X) (Set__preimage X X (Compl__compl X) s) x1) h1 (x3 => hy => Eq__subst X (Lean_Set__proj0 s) x3 (Compl__compl X x1) (Eq__symm X (Compl__compl X x1) x3 (iffEl (Eqt X (Compl__compl X x3) x1) (Eqt X (Compl__compl X x1) x3) (compl_eq_comm X x3 x1) (andEr (Membership__mem X (powerset X) s x3) (Eqt X (Compl__compl X x3) x1) hy))) (andEl (Membership__mem X (powerset X) s x3) (Eqt X (Compl__compl X x3) x1) hy))))).
+def Set__preimage_compl_eq_image_compl : (X : Set) -> (_ : Proof (BooleanAlgebra X)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__preimage X X Compl__compl__part1 s) (Set__image X X Compl__compl__part1 s)) :=
+  X => x => s => Set__ext X (Set__preimage X X Compl__compl__part1 s) (Set__image X X Compl__compl__part1 s) (forallI X (x2 => iff (Membership__mem X (powerset X) (Set__preimage X X Compl__compl__part1 s) x2) (Membership__mem X (powerset X) (Set__image X X Compl__compl__part1 s) x2)) (x2 => iffI (Membership__mem X (powerset X) (Set__preimage X X Compl__compl__part1 s) x2) (Membership__mem X (powerset X) (Set__image X X Compl__compl__part1 s) x2) (h => existsI X (a => and (Membership__mem X (powerset X) s a) (Eqt X (Compl__compl X a) x2)) (Compl__compl X x2) (andI (Membership__mem X (powerset X) s (Compl__compl X x2)) (Eqt X (Compl__compl X (Compl__compl X x2)) x2) h (compl_compl X x2))) (h1 => existsE X (x3 => and (Membership__mem X (powerset X) s x3) (Eqt X (Compl__compl X x3) x2)) (Membership__mem X (powerset X) (Set__preimage X X Compl__compl__part1 s) x2) h1 (x4 => hy => Eq__subst X (Lean_Set__proj0 s) x4 (Compl__compl X x2) (Eq__symm X (Compl__compl X x2) x4 (iffEl (Eqt X (Compl__compl X x4) x2) (Eqt X (Compl__compl X x2) x4) (compl_eq_comm X x4 x2) (andEr (Membership__mem X (powerset X) s x4) (Eqt X (Compl__compl X x4) x2) hy))) (andEl (Membership__mem X (powerset X) s x4) (Eqt X (Compl__compl X x4) x2) hy))))).
 
 (; //LEAN:Set.mem_compl_image ;)
-Set__mem_compl_image : (X : Set) -> (_ : Proof (BooleanAlgebra X)) -> (t : Elem X) -> (s : Elem (powerset X)) -> Proof (iff (Membership__mem X (powerset X) (Set__image X X (Compl__compl X) s) t) (Membership__mem X (powerset X) s (Compl__compl X t))).
+Set__mem_compl_image : (X : Set) -> (_ : Proof (BooleanAlgebra X)) -> (t : Elem X) -> (s : Elem (powerset X)) -> Proof (iff (Membership__mem X (powerset X) (Set__image X X Compl__compl__part1 s) t) (Membership__mem X (powerset X) s (Compl__compl X t))).
 
 (; //LEAN:Set.image_id_eq ;)
-Set__image_id_eq : (X : Set) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset X)) (Set__image X X (id X)) (id (powerset X))).
+Set__image_id_eq : (X : Set) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset X)) (Set__image__part1 (id X)) (id (powerset X))).
 
 (; //LEAN:Set.image_id' ;)
 Set__image_id' : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__image X X (x => x) s) s).
@@ -221,10 +221,10 @@ Set__image_id' : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X)
 Set__image_id : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__image X X (id X) s) s).
 
 (; //LEAN:Set.image_iterate_eq ;)
-Set__image_iterate_eq : (X : Set) -> (f : (Elem X -> Elem X)) -> (n : Elem Nat) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset X)) (Set__image X X (Nat__iterate X f n)) (Nat__iterate (powerset X) (Set__image X X f) n)).
+Set__image_iterate_eq : (X : Set) -> (f : (Elem X -> Elem X)) -> (n : Elem Nat) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset X)) (Set__image__part1 (Nat__iterate__part1 f n)) (Nat__iterate__part1 (Set__image__part1 f) n)).
 
 (; //LEAN:Set.compl_compl_image ;)
-Set__compl_compl_image : (X : Set) -> (_ : Proof (BooleanAlgebra X)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__image X X (Compl__compl X) (Set__image X X (Compl__compl X) s)) s).
+Set__compl_compl_image : (X : Set) -> (_ : Proof (BooleanAlgebra X)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__image X X Compl__compl__part1 (Set__image X X Compl__compl__part1 s)) s).
 
 (; //LEAN:Set.image_insert_eq ;)
 Set__image_insert_eq : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (a : Elem X) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset Y) (Set__image X Y f (Insert__insert X (powerset X) a s)) (Insert__insert Y (powerset Y) (f a) (Set__image X Y f s))).
@@ -246,11 +246,11 @@ def Set__preimage_subset_image_of_inverse : (X : Set) -> (Y : Set) -> (f : (Elem
 Set__range_inter_ssubset_iff_preimage_ssubset : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset Y)) -> (s' : Elem (powerset Y)) -> Proof (iff (HasSSubset__SSubset (powerset Y) (Inter__inter (powerset Y) (Set__range Y X f) s) (Inter__inter (powerset Y) (Set__range Y X f) s')) (HasSSubset__SSubset (powerset X) (Set__preimage X Y f s) (Set__preimage X Y f s'))).
 
 (; //LEAN:Set.image_eq_preimage_of_inverse ;)
-def Set__image_eq_preimage_of_inverse : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem Y -> Elem X)) -> (h1 : Proof (Function__LeftInverse X Y g f)) -> (h2 : Proof (Function__RightInverse X Y g f)) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset Y)) (Set__image X Y f) (Set__preimage Y X g)) :=
-  X => Y => f => g => h1 => h2 => funext (powerset X) (x => powerset Y) (Set__image X Y f) (Set__preimage Y X g) (forallI (powerset X) (s => Eqt (powerset Y) (Set__image X Y f s) (Set__preimage Y X g s)) (s => Set__Subset__antisymm Y (Set__image X Y f s) (Set__preimage Y X g s) (Set__image_subset_preimage_of_inverse X Y f g h1 s) (Set__preimage_subset_image_of_inverse Y X g f h2 s))).
+def Set__image_eq_preimage_of_inverse : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem Y -> Elem X)) -> (h1 : Proof (Function__LeftInverse X Y g f)) -> (h2 : Proof (Function__RightInverse X Y g f)) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset Y)) (Set__image__part1 f) (Set__preimage__part1 g)) :=
+  X => Y => f => g => h1 => h2 => funext (powerset X) (x => powerset Y) (Set__image__part1 f) (Set__preimage__part1 g) (forallI (powerset X) (s2 => Eqt (powerset Y) (Set__image X Y f s2) (Set__preimage Y X g s2)) (s2 => Set__Subset__antisymm Y (Set__image X Y f s2) (Set__preimage Y X g s2) (Set__image_subset_preimage_of_inverse X Y f g h1 s2) (Set__preimage_subset_image_of_inverse Y X g f h2 s2))).
 
 (; //LEAN:Function.Involutive.image_eq_preimage_symm ;)
-def Function__Involutive__image_eq_preimage_symm : (X : Set) -> (f : (Elem X -> Elem X)) -> (hf : Proof (Function__Involutive X f)) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset X)) (Set__image X X f) (Set__preimage X X f)) :=
+def Function__Involutive__image_eq_preimage_symm : (X : Set) -> (f : (Elem X -> Elem X)) -> (hf : Proof (Function__Involutive X f)) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset X)) (Set__image__part1 f) (Set__preimage__part1 f)) :=
   X => f => hf => Set__image_eq_preimage_of_inverse X X f f (Function__Involutive__leftInverse X f hf) (Function__Involutive__rightInverse X f hf).
 
 (; //LEAN:Set.mem_image_iff_of_inverse ;)
@@ -261,7 +261,7 @@ Set__image_compl_subset : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> 
 
 (; //LEAN:Set.subset_image_compl ;)
 def Set__subset_image_compl : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (H : Proof (Function__Surjective X Y f)) -> Proof (Set__Subset Y (Compl__compl (powerset Y) (Set__image X Y f s)) (Set__image X Y f (Compl__compl (powerset X) s))) :=
-  X => Y => f => s => H => iffEr (Set__Subset Y (Compl__compl (powerset Y) (Set__image X Y f s)) (Set__image X Y f (Compl__compl (powerset X) s))) (Eqt (powerset Y) (Union__union (powerset Y) (Set__image X Y f s) (Set__image X Y f (Compl__compl (powerset X) s))) (Set__univ Y)) (Set__compl_subset_iff_union Y (Set__image X Y f s) (Set__image X Y f (Compl__compl (powerset X) s))) (Eq__mpr (Eqt (powerset Y) (Union__union (powerset Y) (Set__image X Y f s) (Set__image X Y f (Compl__compl (powerset X) s))) (Set__univ Y)) (Eqt (powerset Y) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (Set__univ Y)) (id (Eqt Prop (Eqt (powerset Y) (Union__union (powerset Y) (Set__image X Y f s) (Set__image X Y f (Compl__compl (powerset X) s))) (Set__univ Y)) (Eqt (powerset Y) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (Set__univ Y))) (congrArg (powerset Y) Prop (Union__union (powerset Y) (Set__image X Y f s) (Set__image X Y f (Compl__compl (powerset X) s))) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (_a => Eqt (powerset Y) _a (Set__univ Y)) (Eq__symm (powerset Y) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (Union__union (powerset Y) (Set__image X Y f s) (Set__image X Y f (Compl__compl (powerset X) s))) (Set__image_union X Y f s (Compl__compl (powerset X) s))))) (of_eq_true (Eqt (powerset Y) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (Set__univ Y)) (Eq__trans Prop (Eqt (powerset Y) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (Set__univ Y)) (Eqt (powerset Y) (Set__univ Y) (Set__univ Y)) True (congrFun' (powerset Y) Prop (Eq (powerset Y) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s)))) (Eq (powerset Y) (Set__univ Y)) (congrArg (powerset Y) (Elem (powerset Y) -> Prop) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (Set__univ Y) (Eq (powerset Y)) (Eq__trans (powerset Y) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (Set__image X Y f (Set__univ X)) (Set__univ Y) (congrArg (powerset X) (powerset Y) (Union__union (powerset X) s (Compl__compl (powerset X) s)) (Set__univ X) (Set__image X Y f) (sup_compl_eq_top (powerset X) s)) (Set__image_univ_of_surjective Y X f H))) (Set__univ Y)) (eq_self (powerset Y) (Set__univ Y))))).
+  X => Y => f => s => H => iffEr (Set__Subset Y (Compl__compl (powerset Y) (Set__image X Y f s)) (Set__image X Y f (Compl__compl (powerset X) s))) (Eqt (powerset Y) (Union__union (powerset Y) (Set__image X Y f s) (Set__image X Y f (Compl__compl (powerset X) s))) (Set__univ Y)) (Set__compl_subset_iff_union Y (Set__image X Y f s) (Set__image X Y f (Compl__compl (powerset X) s))) (Eq__mpr (Eqt (powerset Y) (Union__union (powerset Y) (Set__image X Y f s) (Set__image X Y f (Compl__compl (powerset X) s))) (Set__univ Y)) (Eqt (powerset Y) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (Set__univ Y)) (id (Eqt Prop (Eqt (powerset Y) (Union__union (powerset Y) (Set__image X Y f s) (Set__image X Y f (Compl__compl (powerset X) s))) (Set__univ Y)) (Eqt (powerset Y) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (Set__univ Y))) (congrArg (powerset Y) Prop (Union__union (powerset Y) (Set__image X Y f s) (Set__image X Y f (Compl__compl (powerset X) s))) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (_a => Eqt (powerset Y) _a (Set__univ Y)) (Eq__symm (powerset Y) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (Union__union (powerset Y) (Set__image X Y f s) (Set__image X Y f (Compl__compl (powerset X) s))) (Set__image_union X Y f s (Compl__compl (powerset X) s))))) (of_eq_true (Eqt (powerset Y) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (Set__univ Y)) (Eq__trans Prop (Eqt (powerset Y) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (Set__univ Y)) (Eqt (powerset Y) (Set__univ Y) (Set__univ Y)) True (congrFun' (powerset Y) Prop (x => Eqt (powerset Y) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) x) (x1 => Eqt (powerset Y) (Set__univ Y) x1) (congrArg (powerset Y) (Elem (powerset Y) -> Prop) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (Set__univ Y) (x3 => x4 => Eqt (powerset Y) x3 x4) (Eq__trans (powerset Y) (Set__image X Y f (Union__union (powerset X) s (Compl__compl (powerset X) s))) (Set__image X Y f (Set__univ X)) (Set__univ Y) (congrArg (powerset X) (powerset Y) (Union__union (powerset X) s (Compl__compl (powerset X) s)) (Set__univ X) (Set__image__part1 f) (sup_compl_eq_top (powerset X) s)) (Set__image_univ_of_surjective Y X f H))) (Set__univ Y)) (eq_self (powerset Y) (Set__univ Y))))).
 
 (; //LEAN:Set.image_compl_eq ;)
 def Set__image_compl_eq : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (H : Proof (Function__Bijective X Y f)) -> Proof (Eqt (powerset Y) (Set__image X Y f (Compl__compl (powerset X) s)) (Compl__compl (powerset Y) (Set__image X Y f s))) :=
@@ -295,7 +295,7 @@ Set__Nonempty__preimage : (X : Set) -> (Y : Set) -> (s : Elem (powerset Y)) -> (
 
 (; //LEAN:Set.image_subset_iff ;)
 def Set__image_subset_iff : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> (f : (Elem X -> Elem Y)) -> Proof (iff (Set__Subset Y (Set__image X Y f s) t) (Set__Subset X s (Set__preimage X Y f t))) :=
-  X => Y => s => t => f => Set__forall_mem_image X Y f s (Membership__mem Y (powerset Y) t).
+  X => Y => s => t => f => Set__forall_mem_image X Y f s (Membership__mem__part1 t).
 
 (; //LEAN:Set.image_preimage_subset ;)
 def Set__image_preimage_subset : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset Y)) -> Proof (Set__Subset Y (Set__image X Y f (Set__preimage X Y f s)) s) :=
@@ -319,14 +319,14 @@ Set__image_preimage_eq : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (
 Set__Nonempty__subset_preimage_const : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (hs : Proof (Set__Nonempty X s)) -> (t : Elem (powerset Y)) -> (a : Elem Y) -> Proof (iff (Set__Subset X s (Set__preimage X Y (x => a) t)) (Membership__mem Y (powerset Y) t a)).
 
 (; //LEAN:Set.preimage_injective ;)
-Set__preimage_injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (iff (Function__Injective (powerset Y) (powerset X) (Set__preimage X Y f)) (Function__Surjective X Y f)).
+Set__preimage_injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (iff (Function__Injective (powerset Y) (powerset X) (Set__preimage__part1 f)) (Function__Surjective X Y f)).
 
 (; //LEAN:Set.preimage_surjective ;)
-Set__preimage_surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (iff (Function__Surjective (powerset Y) (powerset X) (Set__preimage X Y f)) (Function__Injective X Y f)).
+Set__preimage_surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (iff (Function__Surjective (powerset Y) (powerset X) (Set__preimage__part1 f)) (Function__Injective X Y f)).
 
 (; //LEAN:Set.preimage_eq_preimage ;)
 def Set__preimage_eq_preimage : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (f : (Elem Y -> Elem X)) -> (hf : Proof (Function__Surjective Y X f)) -> Proof (iff (Eqt (powerset Y) (Set__preimage Y X f s) (Set__preimage Y X f t)) (Eqt (powerset X) s t)) :=
-  X => Y => s => t => f => hf => Function__Injective__eq_iff (powerset X) (powerset Y) (Set__preimage Y X f) (iffEr (Function__Injective (powerset X) (powerset Y) (Set__preimage Y X f)) (Function__Surjective Y X f) (Set__preimage_injective Y X f) hf) s t.
+  X => Y => s => t => f => hf => Function__Injective__eq_iff (powerset X) (powerset Y) (Set__preimage__part1 f) (iffEr (Function__Injective (powerset X) (powerset Y) (Set__preimage__part1 f)) (Function__Surjective Y X f) (Set__preimage_injective Y X f) hf) s t.
 
 (; //LEAN:Set.image_inter_preimage ;)
 Set__image_inter_preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> Proof (Eqt (powerset Y) (Set__image X Y f (Inter__inter (powerset X) s (Set__preimage X Y f t))) (Inter__inter (powerset Y) (Set__image X Y f s) t)).
@@ -347,12 +347,12 @@ Set__disjoint_image_right : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -
 Set__image_sdiff_preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> Proof (Eqt (powerset Y) (Set__image X Y f (SDiff__sdiff (powerset X) s (Set__preimage X Y f t))) (SDiff__sdiff (powerset Y) (Set__image X Y f s) t)).
 
 (; //LEAN:Set.compl_image ;)
-def Set__compl_image : (X : Set) -> Proof (Eqt (Elem (powerset (powerset X)) -> Elem (powerset (powerset X))) (Set__image (powerset X) (powerset X) (Compl__compl (powerset X))) (Set__preimage (powerset X) (powerset X) (Compl__compl (powerset X)))) :=
-  X => Set__image_eq_preimage_of_inverse (powerset X) (powerset X) (Compl__compl (powerset X)) (Compl__compl (powerset X)) (compl_compl (powerset X)) (compl_compl (powerset X)).
+def Set__compl_image : (X : Set) -> Proof (Eqt (Elem (powerset (powerset X)) -> Elem (powerset (powerset X))) (Set__image__part1 Compl__compl__part1) (Set__preimage__part1 Compl__compl__part1)) :=
+  X => Set__image_eq_preimage_of_inverse (powerset X) (powerset X) Compl__compl__part1 Compl__compl__part1 (compl_compl (powerset X)) (compl_compl (powerset X)).
 
 (; //LEAN:Set.compl_image_ofPred ;)
-def Set__compl_image_ofPred : (X : Set) -> (p : (Elem (powerset X) -> Prop)) -> Proof (Eqt (powerset (powerset X)) (Set__image (powerset X) (powerset X) (Compl__compl (powerset X)) (Set__ofPred (powerset X) (s => p s))) (Set__ofPred (powerset X) (s1 => p (Compl__compl (powerset X) s1)))) :=
-  X => p => congr_fun (powerset (powerset X)) (x => powerset (powerset X)) (Set__image (powerset X) (powerset X) (Compl__compl (powerset X))) (Set__preimage (powerset X) (powerset X) (Compl__compl (powerset X))) (Set__compl_image X) (Set__ofPred (powerset X) (x1 => p x1)).
+def Set__compl_image_ofPred : (X : Set) -> (p : (Elem (powerset X) -> Prop)) -> Proof (Eqt (powerset (powerset X)) (Set__image (powerset X) (powerset X) Compl__compl__part1 (Set__ofPred (powerset X) (s => p s))) (Set__ofPred (powerset X) (s1 => p (Compl__compl (powerset X) s1)))) :=
+  X => p => congr_fun (powerset (powerset X)) (x => powerset (powerset X)) (Set__image__part1 Compl__compl__part1) (Set__preimage__part1 Compl__compl__part1) (Set__compl_image X) (Set__ofPred (powerset X) (x4 => p x4)).
 
 (; //LEAN:Set.inter_preimage_subset ;)
 def Set__inter_preimage_subset : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset Y)) -> (f : (Elem X -> Elem Y)) -> Proof (Set__Subset X (Inter__inter (powerset X) s (Set__preimage X Y f t)) (Set__preimage X Y f (Inter__inter (powerset Y) (Set__image X Y f s) t))) :=
@@ -392,23 +392,23 @@ Set__prod_quotient_preimage_eq_image : (X : Set) -> (Y : Set) -> (_ : Proof (Set
 Set__exists_image_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (x : Elem (powerset X)) -> (P : (Elem Y -> Prop)) -> Proof (iff (exists (Set__Elem Y (Set__image X Y f x)) (a => P (Subtype__val Y (x1 => Membership__mem Y (powerset Y) (Set__image X Y f x) x1) a))) (exists (Set__Elem X x) (a1 => P (f (Subtype__val X (x2 => Membership__mem X (powerset X) x x2) a1))))).
 
 (; //LEAN:Set.imageFactorization_eq ;)
-def Set__imageFactorization_eq : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Proof (Eqt (Elem (Set__Elem X s) -> Elem Y) (Function__comp (Set__Elem X s) (Subtype Y (x1 => Membership__mem Y (powerset Y) (Set__image X Y f s) x1)) Y (Subtype__val Y (x2 => Membership__mem Y (powerset Y) (Set__image X Y f s) x2)) (Set__imageFactorization X Y f s)) (Function__comp (Subtype X (x3 => Membership__mem X (powerset X) s x3)) X Y f (Subtype__val X (x4 => Membership__mem X (powerset X) s x4)))) :=
-  X => Y => f => s => funext (Set__Elem X s) (x => Y) (Function__comp (Set__Elem X s) (Subtype Y (x1 => Membership__mem Y (powerset Y) (Set__image X Y f s) x1)) Y (Subtype__val Y (x2 => Membership__mem Y (powerset Y) (Set__image X Y f s) x2)) (Set__imageFactorization X Y f s)) (Function__comp (Subtype X (x3 => Membership__mem X (powerset X) s x3)) X Y f (Subtype__val X (x4 => Membership__mem X (powerset X) s x4))) (forallI (Set__Elem X s) (x5 => Eqt Y (Subtype__val Y (x7 => Membership__mem Y (powerset Y) (Set__image X Y f s) x7) (Set__imageFactorization X Y f s x5)) (Subtype__val Y (x8 => Membership__mem Y (powerset Y) (Set__image X Y f s) x8) (Set__imageFactorization X Y f s x5))) (x5 => rfl Y (Subtype__val Y (x6 => Membership__mem Y (powerset Y) (Set__image X Y f s) x6) (Set__imageFactorization X Y f s x5)))).
+def Set__imageFactorization_eq : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Proof (Eqt (Elem (Set__Elem X s) -> Elem Y) (Function__comp (Set__Elem X s) (Subtype Y (x1 => Membership__mem Y (powerset Y) (Set__image X Y f s) x1)) Y Subtype__val__part1 (Set__imageFactorization X Y f s)) (Function__comp (Subtype X (x3 => Membership__mem X (powerset X) s x3)) X Y f Subtype__val__part1)) :=
+  X => Y => f => s => funext (Set__Elem X s) (x => Y) (Function__comp (Set__Elem X s) (Subtype Y (x1 => Membership__mem Y (powerset Y) (Set__image X Y f s) x1)) Y Subtype__val__part1 (Set__imageFactorization X Y f s)) (Function__comp (Subtype X (x3 => Membership__mem X (powerset X) s x3)) X Y f Subtype__val__part1) (forallI (Set__Elem X s) (x4 => Eqt Y (Subtype__val Y (x6 => Membership__mem Y (powerset Y) (Set__image X Y f s) x6) (Set__imageFactorization X Y f s x4)) (Subtype__val Y (x7 => Membership__mem Y (powerset Y) (Set__image X Y f s) x7) (Set__imageFactorization X Y f s x4))) (x4 => rfl Y (Subtype__val Y (x5 => Membership__mem Y (powerset Y) (Set__image X Y f s) x5) (Set__imageFactorization X Y f s x4)))).
 
 (; //LEAN:Set.imageFactorization_surjective ;)
 Set__imageFactorization_surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Proof (Function__Surjective (Set__Elem X s) (Set__Elem Y (Set__image X Y f s)) (Set__imageFactorization X Y f s)).
 
 (; //LEAN:Set.image_perm ;)
-Set__image_perm : (X : Set) -> (s : Elem (powerset X)) -> (sigma : Elem (Equiv__Perm X)) -> (hs : Proof (Set__Subset X (Set__ofPred X (a => Neq (sigma a) a)) s)) -> Proof (Eqt (powerset X) (Set__image X X sigma s) s).
+Set__image_perm : (X : Set) -> (s : Elem (powerset X)) -> ({|sigma|} : Elem (Equiv__Perm X)) -> (hs : Proof (Set__Subset X (Set__ofPred X (a => Neq ({|sigma|} a) a)) s)) -> Proof (Eqt (powerset X) (Set__image X X {|sigma|} s) s).
 
 (; //LEAN:Set.powerset_insert ;)
-Set__powerset_insert : (X : Set) -> (s : Elem (powerset X)) -> (a : Elem X) -> Proof (Eqt (powerset (powerset X)) (Set__powerset X (Insert__insert X (powerset X) a s)) (Union__union (powerset (powerset X)) (Set__powerset X s) (Set__image (powerset X) (powerset X) (Insert__insert X (powerset X) a) (Set__powerset X s)))).
+Set__powerset_insert : (X : Set) -> (s : Elem (powerset X)) -> (a : Elem X) -> Proof (Eqt (powerset (powerset X)) (Set__powerset X (Insert__insert X (powerset X) a s)) (Union__union (powerset (powerset X)) (Set__powerset X s) (Set__image (powerset X) (powerset X) (Insert__insert__part1 a) (Set__powerset X s)))).
 
 (; //LEAN:Set.disjoint_powerset_insert ;)
-Set__disjoint_powerset_insert : (X : Set) -> (s : Elem (powerset X)) -> (a : Elem X) -> (h : Proof (not (Membership__mem X (powerset X) s a))) -> Proof (Disjoint (powerset (powerset X)) (Set__powerset X s) (Set__image (powerset X) (powerset X) (Insert__insert X (powerset X) a) (Set__powerset X s))).
+Set__disjoint_powerset_insert : (X : Set) -> (s : Elem (powerset X)) -> (a : Elem X) -> (h : Proof (not (Membership__mem X (powerset X) s a))) -> Proof (Disjoint (powerset (powerset X)) (Set__powerset X s) (Set__image (powerset X) (powerset X) (Insert__insert__part1 a) (Set__powerset X s))).
 
 (; //LEAN:Set.powerset_insert_injOn ;)
-Set__powerset_insert_injOn : (X : Set) -> (s : Elem (powerset X)) -> (a : Elem X) -> (h : Proof (not (Membership__mem X (powerset X) s a))) -> Proof (Set__InjOn (powerset X) (powerset X) (Insert__insert X (powerset X) a) (Set__powerset X s)).
+Set__powerset_insert_injOn : (X : Set) -> (s : Elem (powerset X)) -> (a : Elem X) -> (h : Proof (not (Membership__mem X (powerset X) s a))) -> Proof (Set__InjOn (powerset X) (powerset X) (Insert__insert__part1 a) (Set__powerset X s)).
 
 (; //LEAN:Set.forall_mem_range ;)
 Set__forall_mem_range : (X : Set) -> (I : Set) -> (f : (Elem I -> Elem X)) -> (p : (Elem X -> Prop)) -> Proof (iff (forall X (a => if (Membership__mem X (powerset X) (Set__range X I f) a) (p a))) (forall I (i => p (f i)))).
@@ -467,7 +467,7 @@ def Set__range_comp' : (X : Set) -> (Y : Set) -> (I : Set) -> (g : (Elem X -> El
 
 (; //LEAN:Set.range_subset_iff ;)
 def Set__range_subset_iff : (X : Set) -> (I : Set) -> (f : (Elem I -> Elem X)) -> (s : Elem (powerset X)) -> Proof (iff (Set__Subset X (Set__range X I f) s) (forall I (y => Membership__mem X (powerset X) s (f y)))) :=
-  X => I => f => s => Set__forall_mem_range X I f (Membership__mem X (powerset X) s).
+  X => I => f => s => Set__forall_mem_range X I f (Membership__mem__part1 s).
 
 (; //LEAN:Set.range_subset_range_iff_exists_comp ;)
 Set__range_subset_range_iff_exists_comp : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Z)) -> (g : (Elem Y -> Elem Z)) -> Proof (iff (Set__Subset Z (Set__range Z X f) (Set__range Z Y g)) (exists (Elem X -> Elem Y) (h => Eqt (Elem X -> Elem Z) f (Function__comp X Y Z g h)))).
@@ -521,8 +521,8 @@ Set__image_preimage_eq_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) 
 Set__subset_range_iff_exists_image_eq : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset Y)) -> Proof (iff (Set__Subset Y s (Set__range Y X f)) (exists (powerset X) (t => Eqt (powerset Y) (Set__image X Y f t) s))).
 
 (; //LEAN:Set.range_image ;)
-def Set__range_image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (Eqt (powerset (powerset Y)) (Set__range (powerset Y) (powerset X) (Set__image X Y f)) (Set__powerset Y (Set__range Y X f))) :=
-  X => Y => f => Set__ext (powerset Y) (Set__range (powerset Y) (powerset X) (Set__image X Y f)) (Set__powerset Y (Set__range Y X f)) (forallI (powerset Y) (x => iff (exists (powerset X) (t1 => Eqt (powerset Y) (Set__image X Y f t1) x)) (Set__Subset Y x (Set__range Y X f))) (x => Iff__symm (Set__Subset Y x (Set__range Y X f)) (exists (powerset X) (t => Eqt (powerset Y) (Set__image X Y f t) x)) (Set__subset_range_iff_exists_image_eq X Y f x))).
+def Set__range_image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (Eqt (powerset (powerset Y)) (Set__range (powerset Y) (powerset X) (Set__image__part1 f)) (Set__powerset Y (Set__range Y X f))) :=
+  X => Y => f => Set__ext (powerset Y) (Set__range (powerset Y) (powerset X) (Set__image__part1 f)) (Set__powerset Y (Set__range Y X f)) (forallI (powerset Y) (x1 => iff (exists (powerset X) (t1 => Eqt (powerset Y) (Set__image X Y f t1) x1)) (Set__Subset Y x1 (Set__range Y X f))) (x1 => Iff__symm (Set__Subset Y x1 (Set__range Y X f)) (exists (powerset X) (t => Eqt (powerset Y) (Set__image X Y f t) x1)) (Set__subset_range_iff_exists_image_eq X Y f x1))).
 
 (; //LEAN:Set.exists_subset_range_and_iff ;)
 Set__exists_subset_range_and_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (p : (Elem (powerset Y) -> Prop)) -> Proof (iff (exists (powerset Y) (s => and (Set__Subset Y s (Set__range Y X f)) (p s))) (exists (powerset X) (s1 => p (Set__image X Y f s1)))).
@@ -555,70 +555,70 @@ def Set__range_id' : (X : Set) -> Proof (Eqt (powerset X) (Set__range X X (x => 
   X => Set__range_id X.
 
 (; //LEAN:Prod.range_fst ;)
-def Prod__range_fst : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset X) (Set__range X (Prod X Y) (Prod__fst X Y)) (Set__univ X)) :=
-  X => Y => Function__Surjective__range_eq X (Prod X Y) (Prod__fst X Y) (Prod__fst_surjective X Y).
+def Prod__range_fst : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset X) (Set__range X (Prod X Y) Prod__fst__part1) (Set__univ X)) :=
+  X => Y => Function__Surjective__range_eq X (Prod X Y) Prod__fst__part1 (Prod__fst_surjective X Y).
 
 (; //LEAN:Prod.range_snd ;)
-def Prod__range_snd : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset Y) (Set__range Y (Prod X Y) (Prod__snd X Y)) (Set__univ Y)) :=
-  X => Y => Function__Surjective__range_eq Y (Prod X Y) (Prod__snd X Y) (Prod__snd_surjective X Y).
+def Prod__range_snd : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset Y) (Set__range Y (Prod X Y) Prod__snd__part1) (Set__univ Y)) :=
+  X => Y => Function__Surjective__range_eq Y (Prod X Y) Prod__snd__part1 (Prod__snd_surjective X Y).
 
 (; //LEAN:Set.range_eval ;)
 def Set__range_eval : (I : Set) -> (alpha : (Elem I -> Set)) -> (_ : Proof (forall I (i1 => Nonempty (alpha i1)))) -> (i : Elem I) -> Proof (Eqt (powerset (alpha i)) (Set__range (alpha i) ((x : Elem I) -> Elem (alpha x)) (Function__eval I alpha i)) (Set__univ (alpha i))) :=
   I => alpha => h => i => Function__Surjective__range_eq (alpha i) ((x : Elem I) -> Elem (alpha x)) (Function__eval I alpha i) (Function__surjective_eval I alpha i).
 
 (; //LEAN:Set.range_inl ;)
-Set__range_inl : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Set__range (Sum X Y) X (Sum__inl X Y)) (Set__ofPred (Sum X Y) (x => Eqt Bool (Sum__isLeft X Y x) Bool__true))).
+Set__range_inl : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Set__range (Sum X Y) X Sum__inl__part1) (Set__ofPred (Sum X Y) (x => Eqt Bool (Sum__isLeft X Y x) Bool__true))).
 
 (; //LEAN:Set.range_inr ;)
-Set__range_inr : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y)) (Set__ofPred (Sum X Y) (x => Eqt Bool (Sum__isRight X Y x) Bool__true))).
+Set__range_inr : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Set__range (Sum X Y) Y Sum__inr__part1) (Set__ofPred (Sum X Y) (x => Eqt Bool (Sum__isRight X Y x) Bool__true))).
 
 (; //LEAN:Set.isCompl_range_inl_range_inr ;)
-Set__isCompl_range_inl_range_inr : (X : Set) -> (Y : Set) -> Proof (IsCompl (powerset (Sum X Y)) (Set__range (Sum X Y) X (Sum__inl X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y))).
+Set__isCompl_range_inl_range_inr : (X : Set) -> (Y : Set) -> Proof (IsCompl (powerset (Sum X Y)) (Set__range (Sum X Y) X Sum__inl__part1) (Set__range (Sum X Y) Y Sum__inr__part1)).
 
 (; //LEAN:Set.range_inl_union_range_inr ;)
-def Set__range_inl_union_range_inr : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Union__union (powerset (Sum X Y)) (Set__range (Sum X Y) X (Sum__inl X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y))) (Set__univ (Sum X Y))) :=
-  X => Y => IsCompl__sup_eq_top (powerset (Sum X Y)) (Set__range (Sum X Y) X (Sum__inl X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y)) (Set__isCompl_range_inl_range_inr X Y).
+def Set__range_inl_union_range_inr : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Union__union (powerset (Sum X Y)) (Set__range (Sum X Y) X Sum__inl__part1) (Set__range (Sum X Y) Y Sum__inr__part1)) (Set__univ (Sum X Y))) :=
+  X => Y => IsCompl__sup_eq_top (powerset (Sum X Y)) (Set__range (Sum X Y) X Sum__inl__part1) (Set__range (Sum X Y) Y Sum__inr__part1) (Set__isCompl_range_inl_range_inr X Y).
 
 (; //LEAN:Set.range_inl_inter_range_inr ;)
-def Set__range_inl_inter_range_inr : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Inter__inter (powerset (Sum X Y)) (Set__range (Sum X Y) X (Sum__inl X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y))) (EmptyCollection__emptyCollection (powerset (Sum X Y)))) :=
-  X => Y => IsCompl__inf_eq_bot (powerset (Sum X Y)) (Set__range (Sum X Y) X (Sum__inl X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y)) (Set__isCompl_range_inl_range_inr X Y).
+def Set__range_inl_inter_range_inr : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Inter__inter (powerset (Sum X Y)) (Set__range (Sum X Y) X Sum__inl__part1) (Set__range (Sum X Y) Y Sum__inr__part1)) (EmptyCollection__emptyCollection (powerset (Sum X Y)))) :=
+  X => Y => IsCompl__inf_eq_bot (powerset (Sum X Y)) (Set__range (Sum X Y) X Sum__inl__part1) (Set__range (Sum X Y) Y Sum__inr__part1) (Set__isCompl_range_inl_range_inr X Y).
 
 (; //LEAN:Set.range_inr_union_range_inl ;)
-def Set__range_inr_union_range_inl : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Union__union (powerset (Sum X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y)) (Set__range (Sum X Y) X (Sum__inl X Y))) (Set__univ (Sum X Y))) :=
-  X => Y => IsCompl__sup_eq_top (powerset (Sum X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y)) (Set__range (Sum X Y) X (Sum__inl X Y)) (IsCompl__symm (powerset (Sum X Y)) (Set__range (Sum X Y) X (Sum__inl X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y)) (Set__isCompl_range_inl_range_inr X Y)).
+def Set__range_inr_union_range_inl : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Union__union (powerset (Sum X Y)) (Set__range (Sum X Y) Y Sum__inr__part1) (Set__range (Sum X Y) X Sum__inl__part1)) (Set__univ (Sum X Y))) :=
+  X => Y => IsCompl__sup_eq_top (powerset (Sum X Y)) (Set__range (Sum X Y) Y Sum__inr__part1) (Set__range (Sum X Y) X Sum__inl__part1) (IsCompl__symm (powerset (Sum X Y)) (Set__range (Sum X Y) X Sum__inl__part1) (Set__range (Sum X Y) Y Sum__inr__part1) (Set__isCompl_range_inl_range_inr X Y)).
 
 (; //LEAN:Set.range_inr_inter_range_inl ;)
-def Set__range_inr_inter_range_inl : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Inter__inter (powerset (Sum X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y)) (Set__range (Sum X Y) X (Sum__inl X Y))) (EmptyCollection__emptyCollection (powerset (Sum X Y)))) :=
-  X => Y => IsCompl__inf_eq_bot (powerset (Sum X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y)) (Set__range (Sum X Y) X (Sum__inl X Y)) (IsCompl__symm (powerset (Sum X Y)) (Set__range (Sum X Y) X (Sum__inl X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y)) (Set__isCompl_range_inl_range_inr X Y)).
+def Set__range_inr_inter_range_inl : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Inter__inter (powerset (Sum X Y)) (Set__range (Sum X Y) Y Sum__inr__part1) (Set__range (Sum X Y) X Sum__inl__part1)) (EmptyCollection__emptyCollection (powerset (Sum X Y)))) :=
+  X => Y => IsCompl__inf_eq_bot (powerset (Sum X Y)) (Set__range (Sum X Y) Y Sum__inr__part1) (Set__range (Sum X Y) X Sum__inl__part1) (IsCompl__symm (powerset (Sum X Y)) (Set__range (Sum X Y) X Sum__inl__part1) (Set__range (Sum X Y) Y Sum__inr__part1) (Set__isCompl_range_inl_range_inr X Y)).
 
 (; //LEAN:Set.preimage_inl_image_inr ;)
-Set__preimage_inl_image_inr : (X : Set) -> (Y : Set) -> (s : Elem (powerset Y)) -> Proof (Eqt (powerset X) (Set__preimage X (Sum X Y) (Sum__inl X Y) (Set__image Y (Sum X Y) (Sum__inr X Y) s)) (EmptyCollection__emptyCollection (powerset X))).
+Set__preimage_inl_image_inr : (X : Set) -> (Y : Set) -> (s : Elem (powerset Y)) -> Proof (Eqt (powerset X) (Set__preimage X (Sum X Y) Sum__inl__part1 (Set__image Y (Sum X Y) Sum__inr__part1 s)) (EmptyCollection__emptyCollection (powerset X))).
 
 (; //LEAN:Set.preimage_inr_image_inl ;)
-Set__preimage_inr_image_inl : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset Y) (Set__preimage Y (Sum X Y) (Sum__inr X Y) (Set__image X (Sum X Y) (Sum__inl X Y) s)) (EmptyCollection__emptyCollection (powerset Y))).
+Set__preimage_inr_image_inl : (X : Set) -> (Y : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset Y) (Set__preimage Y (Sum X Y) Sum__inr__part1 (Set__image X (Sum X Y) Sum__inl__part1 s)) (EmptyCollection__emptyCollection (powerset Y))).
 
 (; //LEAN:Set.preimage_inl_range_inr ;)
-Set__preimage_inl_range_inr : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset X) (Set__preimage X (Sum X Y) (Sum__inl X Y) (Set__range (Sum X Y) Y (Sum__inr X Y))) (EmptyCollection__emptyCollection (powerset X))).
+Set__preimage_inl_range_inr : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset X) (Set__preimage X (Sum X Y) Sum__inl__part1 (Set__range (Sum X Y) Y Sum__inr__part1)) (EmptyCollection__emptyCollection (powerset X))).
 
 (; //LEAN:Set.preimage_inr_range_inl ;)
-Set__preimage_inr_range_inl : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset Y) (Set__preimage Y (Sum X Y) (Sum__inr X Y) (Set__range (Sum X Y) X (Sum__inl X Y))) (EmptyCollection__emptyCollection (powerset Y))).
+Set__preimage_inr_range_inl : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset Y) (Set__preimage Y (Sum X Y) Sum__inr__part1 (Set__range (Sum X Y) X Sum__inl__part1)) (EmptyCollection__emptyCollection (powerset Y))).
 
 (; //LEAN:Set.compl_range_inl ;)
-def Set__compl_range_inl : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Compl__compl (powerset (Sum X Y)) (Set__range (Sum X Y) X (Sum__inl X Y))) (Set__range (Sum X Y) Y (Sum__inr X Y))) :=
-  X => Y => IsCompl__compl_eq (powerset (Sum X Y)) (Set__range (Sum X Y) X (Sum__inl X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y)) (Set__isCompl_range_inl_range_inr X Y).
+def Set__compl_range_inl : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Compl__compl (powerset (Sum X Y)) (Set__range (Sum X Y) X Sum__inl__part1)) (Set__range (Sum X Y) Y Sum__inr__part1)) :=
+  X => Y => IsCompl__compl_eq (powerset (Sum X Y)) (Set__range (Sum X Y) X Sum__inl__part1) (Set__range (Sum X Y) Y Sum__inr__part1) (Set__isCompl_range_inl_range_inr X Y).
 
 (; //LEAN:Set.compl_range_inr ;)
-def Set__compl_range_inr : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Compl__compl (powerset (Sum X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y))) (Set__range (Sum X Y) X (Sum__inl X Y))) :=
-  X => Y => IsCompl__compl_eq (powerset (Sum X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y)) (Set__range (Sum X Y) X (Sum__inl X Y)) (IsCompl__symm (powerset (Sum X Y)) (Set__range (Sum X Y) X (Sum__inl X Y)) (Set__range (Sum X Y) Y (Sum__inr X Y)) (Set__isCompl_range_inl_range_inr X Y)).
+def Set__compl_range_inr : (X : Set) -> (Y : Set) -> Proof (Eqt (powerset (Sum X Y)) (Compl__compl (powerset (Sum X Y)) (Set__range (Sum X Y) Y Sum__inr__part1)) (Set__range (Sum X Y) X Sum__inl__part1)) :=
+  X => Y => IsCompl__compl_eq (powerset (Sum X Y)) (Set__range (Sum X Y) Y Sum__inr__part1) (Set__range (Sum X Y) X Sum__inl__part1) (IsCompl__symm (powerset (Sum X Y)) (Set__range (Sum X Y) X Sum__inl__part1) (Set__range (Sum X Y) Y Sum__inr__part1) (Set__isCompl_range_inl_range_inr X Y)).
 
 (; //LEAN:Set.preimage_sumElim ;)
-Set__preimage_sumElim : (X : Set) -> (Y : Set) -> (Z : Set) -> (s : Elem (powerset Z)) -> (f : (Elem X -> Elem Z)) -> (g : (Elem Y -> Elem Z)) -> Proof (Eqt (powerset (Sum X Y)) (Set__preimage (Sum X Y) Z (Sum__elim X Y Z f g) s) (Union__union (powerset (Sum X Y)) (Set__image X (Sum X Y) (Sum__inl X Y) (Set__preimage X Z f s)) (Set__image Y (Sum X Y) (Sum__inr X Y) (Set__preimage Y Z g s)))).
+Set__preimage_sumElim : (X : Set) -> (Y : Set) -> (Z : Set) -> (s : Elem (powerset Z)) -> (f : (Elem X -> Elem Z)) -> (g : (Elem Y -> Elem Z)) -> Proof (Eqt (powerset (Sum X Y)) (Set__preimage (Sum X Y) Z (Sum__elim X Y Z f g) s) (Union__union (powerset (Sum X Y)) (Set__image X (Sum X Y) Sum__inl__part1 (Set__preimage X Z f s)) (Set__image Y (Sum X Y) Sum__inr__part1 (Set__preimage Y Z g s)))).
 
 (; //LEAN:Set.image_preimage_inl_union_image_preimage_inr ;)
-Set__image_preimage_inl_union_image_preimage_inr : (X : Set) -> (Y : Set) -> (s : Elem (powerset (Sum X Y))) -> Proof (Eqt (powerset (Sum X Y)) (Union__union (powerset (Sum X Y)) (Set__image X (Sum X Y) (Sum__inl X Y) (Set__preimage X (Sum X Y) (Sum__inl X Y) s)) (Set__image Y (Sum X Y) (Sum__inr X Y) (Set__preimage Y (Sum X Y) (Sum__inr X Y) s))) s).
+Set__image_preimage_inl_union_image_preimage_inr : (X : Set) -> (Y : Set) -> (s : Elem (powerset (Sum X Y))) -> Proof (Eqt (powerset (Sum X Y)) (Union__union (powerset (Sum X Y)) (Set__image X (Sum X Y) Sum__inl__part1 (Set__preimage X (Sum X Y) Sum__inl__part1 s)) (Set__image Y (Sum X Y) Sum__inr__part1 (Set__preimage Y (Sum X Y) Sum__inr__part1 s))) s).
 
 (; //LEAN:Set.image_sumElim ;)
-Set__image_sumElim : (X : Set) -> (Y : Set) -> (Z : Set) -> (s : Elem (powerset (Sum X Y))) -> (f : (Elem X -> Elem Z)) -> (g : (Elem Y -> Elem Z)) -> Proof (Eqt (powerset Z) (Set__image (Sum X Y) Z (Sum__elim X Y Z f g) s) (Union__union (powerset Z) (Set__image X Z f (Set__preimage X (Sum X Y) (Sum__inl X Y) s)) (Set__image Y Z g (Set__preimage Y (Sum X Y) (Sum__inr X Y) s)))).
+Set__image_sumElim : (X : Set) -> (Y : Set) -> (Z : Set) -> (s : Elem (powerset (Sum X Y))) -> (f : (Elem X -> Elem Z)) -> (g : (Elem Y -> Elem Z)) -> Proof (Eqt (powerset Z) (Set__image (Sum X Y) Z (Sum__elim X Y Z f g) s) (Union__union (powerset Z) (Set__image X Z f (Set__preimage X (Sum X Y) Sum__inl__part1 s)) (Set__image Y Z g (Set__preimage Y (Sum X Y) Sum__inr__part1 s)))).
 
 (; //LEAN:Set.range_quot_mk ;)
 def Set__range_quot_mk : (X : Set) -> (r : (Elem X -> (Elem X -> Prop))) -> Proof (Eqt (powerset (Quot X r)) (Set__range (Quot X r) X (Quot__mk X r)) (Set__univ (Quot X r))) :=
@@ -657,11 +657,11 @@ def Set__range_const : (X : Set) -> (I : Set) -> (c : Elem X) -> Proof (Eqt (pow
   X => I => c => Set__range_eq_singleton X I (x => c) c (forallI I (x1 => Eqt X c c) (x1 => rfl X c)).
 
 (; //LEAN:Set.range_subtype_map ;)
-Set__range_subtype_map : (X : Set) -> (Y : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem Y -> Prop)) -> (f : (Elem X -> Elem Y)) -> (h : Proof (forall X (x5 => if (p x5) (q (f x5))))) -> Proof (Eqt (powerset (Subtype Y (x => q x))) (Set__range (Subtype Y (x1 => q x1)) (Subtype X (x2 => p x2)) (Subtype__map X Y p q f h)) (Set__preimage (Subtype Y (x3 => q x3)) Y (Subtype__val Y q) (Set__image X Y f (Set__ofPred X (x4 => p x4))))).
+Set__range_subtype_map : (X : Set) -> (Y : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem Y -> Prop)) -> (f : (Elem X -> Elem Y)) -> (h : Proof (forall X (x6 => if (p x6) (q (f x6))))) -> Proof (Eqt (powerset (Subtype Y (x => q x))) (Set__range (Subtype Y (x1 => q x1)) (Subtype X (x2 => p x2)) (Subtype__map X Y p q f h)) (Set__preimage (Subtype Y (x3 => q x3)) Y Subtype__val__part1 (Set__image X Y f (Set__ofPred X (x5 => p x5))))).
 
 (; //LEAN:Set.image_swap_eq_preimage_swap ;)
-def Set__image_swap_eq_preimage_swap : (X : Set) -> (Y : Set) -> Proof (Eqt (Elem (powerset (Prod X Y)) -> Elem (powerset (Prod Y X))) (Set__image (Prod X Y) (Prod Y X) (Prod__swap X Y)) (Set__preimage (Prod Y X) (Prod X Y) (Prod__swap Y X))) :=
-  X => Y => Set__image_eq_preimage_of_inverse (Prod X Y) (Prod Y X) (Prod__swap X Y) (Prod__swap Y X) (Prod__swap_leftInverse Y X) (Prod__swap_rightInverse Y X).
+def Set__image_swap_eq_preimage_swap : (X : Set) -> (Y : Set) -> Proof (Eqt (Elem (powerset (Prod X Y)) -> Elem (powerset (Prod Y X))) (Set__image__part1 Prod__swap__part1) (Set__preimage__part1 Prod__swap__part1)) :=
+  X => Y => Set__image_eq_preimage_of_inverse (Prod X Y) (Prod Y X) Prod__swap__part1 Prod__swap__part1 (Prod__swap_leftInverse Y X) (Prod__swap_rightInverse Y X).
 
 (; //LEAN:Set.preimage_singleton_nonempty ;)
 def Set__preimage_singleton_nonempty : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (y : Elem Y) -> Proof (iff (Set__Nonempty X (Set__preimage X Y f (Singleton__singleton Y (powerset Y) y))) (Membership__mem Y (powerset Y) (Set__range Y X f) y)) :=
@@ -678,23 +678,23 @@ Set__range_subset_singleton : (X : Set) -> (I : Set) -> (f : (Elem I -> Elem X))
 Set__image_compl_preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset Y)) -> Proof (Eqt (powerset Y) (Set__image X Y f (Compl__compl (powerset X) (Set__preimage X Y f s))) (SDiff__sdiff (powerset Y) (Set__range Y X f) s)).
 
 (; //LEAN:Set.rangeFactorization_eq ;)
-def Set__rangeFactorization_eq : (Y : Set) -> (I : Set) -> (f : (Elem I -> Elem Y)) -> Proof (Eqt (Elem I -> Elem Y) (Function__comp I (Subtype Y (x1 => Membership__mem Y (powerset Y) (Set__range Y I f) x1)) Y (Subtype__val Y (x2 => Membership__mem Y (powerset Y) (Set__range Y I f) x2)) (Set__rangeFactorization Y I f)) f) :=
-  Y => I => f => funext I (x => Y) (Function__comp I (Subtype Y (x1 => Membership__mem Y (powerset Y) (Set__range Y I f) x1)) Y (Subtype__val Y (x2 => Membership__mem Y (powerset Y) (Set__range Y I f) x2)) (Set__rangeFactorization Y I f)) f (forallI I (x3 => Eqt Y (Subtype__val Y (x5 => Membership__mem Y (powerset Y) (Set__range Y I f) x5) (Set__rangeFactorization Y I f x3)) (Subtype__val Y (x6 => Membership__mem Y (powerset Y) (Set__range Y I f) x6) (Set__rangeFactorization Y I f x3))) (x3 => rfl Y (Subtype__val Y (x4 => Membership__mem Y (powerset Y) (Set__range Y I f) x4) (Set__rangeFactorization Y I f x3)))).
+def Set__rangeFactorization_eq : (Y : Set) -> (I : Set) -> (f : (Elem I -> Elem Y)) -> Proof (Eqt (Elem I -> Elem Y) (Function__comp I (Subtype Y (x1 => Membership__mem Y (powerset Y) (Set__range Y I f) x1)) Y Subtype__val__part1 (Set__rangeFactorization Y I f)) f) :=
+  Y => I => f => funext I (x => Y) (Function__comp I (Subtype Y (x1 => Membership__mem Y (powerset Y) (Set__range Y I f) x1)) Y Subtype__val__part1 (Set__rangeFactorization Y I f)) f (forallI I (x3 => Eqt Y (Subtype__val Y (x5 => Membership__mem Y (powerset Y) (Set__range Y I f) x5) (Set__rangeFactorization Y I f x3)) (Subtype__val Y (x6 => Membership__mem Y (powerset Y) (Set__range Y I f) x6) (Set__rangeFactorization Y I f x3))) (x3 => rfl Y (Subtype__val Y (x4 => Membership__mem Y (powerset Y) (Set__range Y I f) x4) (Set__rangeFactorization Y I f x3)))).
 
 (; //LEAN:Set.rangeFactorization_coe ;)
 def Set__rangeFactorization_coe : (Y : Set) -> (I : Set) -> (f : (Elem I -> Elem Y)) -> (a : Elem I) -> Proof (Eqt Y (Subtype__val Y (x => Membership__mem Y (powerset Y) (Set__range Y I f) x) (Set__rangeFactorization Y I f a)) (f a)) :=
   Y => I => f => a => rfl Y (Subtype__val Y (x => Membership__mem Y (powerset Y) (Set__range Y I f) x) (Set__rangeFactorization Y I f a)).
 
 (; //LEAN:Set.coe_comp_rangeFactorization ;)
-def Set__coe_comp_rangeFactorization : (Y : Set) -> (I : Set) -> (f : (Elem I -> Elem Y)) -> Proof (Eqt (Elem I -> Elem Y) (Function__comp I (Set__Elem Y (Set__range Y I f)) Y (Subtype__val Y (x1 => Membership__mem Y (powerset Y) (Set__range Y I f) x1)) (Set__rangeFactorization Y I f)) f) :=
-  Y => I => f => rfl (Elem I -> Elem Y) (Function__comp I (Set__Elem Y (Set__range Y I f)) Y (Subtype__val Y (x1 => Membership__mem Y (powerset Y) (Set__range Y I f) x1)) (Set__rangeFactorization Y I f)).
+def Set__coe_comp_rangeFactorization : (Y : Set) -> (I : Set) -> (f : (Elem I -> Elem Y)) -> Proof (Eqt (Elem I -> Elem Y) (Function__comp I (Set__Elem Y (Set__range Y I f)) Y Subtype__val__part1 (Set__rangeFactorization Y I f)) f) :=
+  Y => I => f => rfl (Elem I -> Elem Y) (Function__comp I (Set__Elem Y (Set__range Y I f)) Y Subtype__val__part1 (Set__rangeFactorization Y I f)).
 
 (; //LEAN:Set.image_eq_range ;)
 Set__image_eq_range : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset Y) (Set__image X Y f s) (Set__range Y (Set__Elem X s) (x => f (Subtype__val X (x1 => Membership__mem X (powerset X) s x1) x)))).
 
 (; //LEAN:Sum.range_eq ;)
-def Sum__range_eq : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem (Sum X Y) -> Elem Z)) -> Proof (Eqt (powerset Z) (Set__range Z (Sum X Y) f) (Union__union (powerset Z) (Set__range Z X (Function__comp X (Sum X Y) Z f (Sum__inl X Y))) (Set__range Z Y (Function__comp Y (Sum X Y) Z f (Sum__inr X Y))))) :=
-  X => Y => Z => f => Set__ext Z (Set__range Z (Sum X Y) f) (Union__union (powerset Z) (Set__range Z X (Function__comp X (Sum X Y) Z f (Sum__inl X Y))) (Set__range Z Y (Function__comp Y (Sum X Y) Z f (Sum__inr X Y)))) (forallI Z (x => iff (exists (Sum X Y) (x1 => Eqt Z (f x1) x)) (or (exists X (a => Eqt Z (f (Sum__inl X Y a)) x)) (exists Y (b => Eqt Z (f (Sum__inr X Y b)) x)))) (x => Sum__exists X Y (y => Eqt Z (f y) x))).
+def Sum__range_eq : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem (Sum X Y) -> Elem Z)) -> Proof (Eqt (powerset Z) (Set__range Z (Sum X Y) f) (Union__union (powerset Z) (Set__range Z X (Function__comp X (Sum X Y) Z f Sum__inl__part1)) (Set__range Z Y (Function__comp Y (Sum X Y) Z f Sum__inr__part1)))) :=
+  X => Y => Z => f => Set__ext Z (Set__range Z (Sum X Y) f) (Union__union (powerset Z) (Set__range Z X (Function__comp X (Sum X Y) Z f Sum__inl__part1)) (Set__range Z Y (Function__comp Y (Sum X Y) Z f Sum__inr__part1))) (forallI Z (x => iff (exists (Sum X Y) (x1 => Eqt Z (f x1) x)) (or (exists X (a => Eqt Z (f (Sum__inl X Y a)) x)) (exists Y (b => Eqt Z (f (Sum__inr X Y b)) x)))) (x => Sum__exists X Y (y => Eqt Z (f y) x))).
 
 (; //LEAN:Set.Sum.elim_range ;)
 def Set__Sum__elim_range : (X : Set) -> (Y : Set) -> (Z : Set) -> (f : (Elem X -> Elem Z)) -> (g : (Elem Y -> Elem Z)) -> Proof (Eqt (powerset Z) (Set__range Z (Sum X Y) (Sum__elim X Y Z f g)) (Union__union (powerset Z) (Set__range Z X f) (Set__range Z Y g))) :=
@@ -728,7 +728,7 @@ Set__range_inclusion : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powers
 
 (; //LEAN:Set.leftInverse_rangeSplitting ;)
 def Set__leftInverse_rangeSplitting : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (Function__LeftInverse (Set__Elem Y (Set__range Y X f)) X (Set__rangeFactorization Y X f) (Set__rangeSplitting X Y f)) :=
-  X => Y => f => forallI (Set__Elem Y (Set__range Y X f)) (x => Eqt (Subtype Y (x3 => Membership__mem Y (powerset Y) (Set__range Y X f) x3)) (Set__rangeFactorization Y X f (Set__rangeSplitting X Y f x)) x) (x => Subtype__ext Y (Membership__mem Y (powerset Y) (Set__range Y X f)) (Set__rangeFactorization Y X f (Set__rangeSplitting X Y f x)) x (id (Eqt Y (Subtype__val Y (x1 => Membership__mem Y (powerset Y) (Set__range Y X f) x1) (Set__rangeFactorization Y X f (Set__rangeSplitting X Y f x))) (Subtype__val Y (x2 => Membership__mem Y (powerset Y) (Set__range Y X f) x2) x)) (Set__apply_rangeSplitting X Y f x))).
+  X => Y => f => forallI (Set__Elem Y (Set__range Y X f)) (x => Eqt (Subtype Y (x4 => Membership__mem Y (powerset Y) (Set__range Y X f) x4)) (Set__rangeFactorization Y X f (Set__rangeSplitting X Y f x)) x) (x => Subtype__ext Y (Membership__mem__part1 (Set__range Y X f)) (Set__rangeFactorization Y X f (Set__rangeSplitting X Y f x)) x (id (Eqt Y (Subtype__val Y (x2 => Membership__mem Y (powerset Y) (Set__range Y X f) x2) (Set__rangeFactorization Y X f (Set__rangeSplitting X Y f x))) (Subtype__val Y (x3 => Membership__mem Y (powerset Y) (Set__range Y X f) x3) x)) (Set__apply_rangeSplitting X Y f x))).
 
 (; //LEAN:Set.rangeSplitting_injective ;)
 def Set__rangeSplitting_injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (Function__Injective (Set__Elem Y (Set__range Y X f)) X (Set__rangeSplitting X Y f)) :=
@@ -736,37 +736,37 @@ def Set__rangeSplitting_injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> El
 
 (; //LEAN:Set.rightInverse_rangeSplitting ;)
 def Set__rightInverse_rangeSplitting : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (h : Proof (Function__Injective X Y f)) -> Proof (Function__RightInverse (Set__Elem Y (Set__range Y X f)) X (Set__rangeFactorization Y X f) (Set__rangeSplitting X Y f)) :=
-  X => Y => f => h => Function__LeftInverse__rightInverse_of_injective X (Set__Elem Y (Set__range Y X f)) (Set__rangeFactorization Y X f) (Set__rangeSplitting X Y f) (Set__leftInverse_rangeSplitting X Y f) (forallI X (x => forall X (x5 => if (Eqt (Set__Elem Y (Set__range Y X f)) (Set__rangeFactorization Y X f x) (Set__rangeFactorization Y X f x5)) (Eqt X x x5))) (x => forallI X (x1 => if (Eqt (Set__Elem Y (Set__range Y X f)) (Set__rangeFactorization Y X f x) (Set__rangeFactorization Y X f x1)) (Eqt X x x1)) (x1 => ifI (Eqt (Set__Elem Y (Set__range Y X f)) (Set__rangeFactorization Y X f x) (Set__rangeFactorization Y X f x1)) (Eqt X x x1) (hxy => ifE (Eqt Y (f x) (f x1)) (Eqt X x x1) (forallE X (a21 => if (Eqt Y (f x) (f a21)) (Eqt X x a21)) (forallE X (a1 => forall X (a2 => if (Eqt Y (f a1) (f a2)) (Eqt X a1 a2))) h x) x1) (iffEl (Eqt (Subtype Y (x2 => Membership__mem Y (powerset Y) (Set__range Y X f) x2)) (Set__rangeFactorization Y X f x) (Set__rangeFactorization Y X f x1)) (Eqt Y (Subtype__val Y (x3 => Membership__mem Y (powerset Y) (Set__range Y X f) x3) (Set__rangeFactorization Y X f x)) (Subtype__val Y (x4 => Membership__mem Y (powerset Y) (Set__range Y X f) x4) (Set__rangeFactorization Y X f x1))) (Subtype__ext_iff Y (Membership__mem Y (powerset Y) (Set__range Y X f)) (Set__rangeFactorization Y X f x) (Set__rangeFactorization Y X f x1)) hxy))))).
+  X => Y => f => h => Function__LeftInverse__rightInverse_of_injective X (Set__Elem Y (Set__range Y X f)) (Set__rangeFactorization Y X f) (Set__rangeSplitting X Y f) (Set__leftInverse_rangeSplitting X Y f) (forallI X (x => forall X (x6 => if (Eqt (Set__Elem Y (Set__range Y X f)) (Set__rangeFactorization Y X f x) (Set__rangeFactorization Y X f x6)) (Eqt X x x6))) (x => forallI X (x1 => if (Eqt (Set__Elem Y (Set__range Y X f)) (Set__rangeFactorization Y X f x) (Set__rangeFactorization Y X f x1)) (Eqt X x x1)) (x1 => ifI (Eqt (Set__Elem Y (Set__range Y X f)) (Set__rangeFactorization Y X f x) (Set__rangeFactorization Y X f x1)) (Eqt X x x1) (hxy => ifE (Eqt Y (f x) (f x1)) (Eqt X x x1) (forallE X (a21 => if (Eqt Y (f x) (f a21)) (Eqt X x a21)) (forallE X (a1 => forall X (a2 => if (Eqt Y (f a1) (f a2)) (Eqt X a1 a2))) h x) x1) (iffEl (Eqt (Subtype Y (x2 => Membership__mem Y (powerset Y) (Set__range Y X f) x2)) (Set__rangeFactorization Y X f x) (Set__rangeFactorization Y X f x1)) (Eqt Y (Subtype__val Y (x3 => Membership__mem Y (powerset Y) (Set__range Y X f) x3) (Set__rangeFactorization Y X f x)) (Subtype__val Y (x4 => Membership__mem Y (powerset Y) (Set__range Y X f) x4) (Set__rangeFactorization Y X f x1))) (Subtype__ext_iff Y (Membership__mem__part1 (Set__range Y X f)) (Set__rangeFactorization Y X f x) (Set__rangeFactorization Y X f x1)) hxy))))).
 
 (; //LEAN:Set.leftInverse_rangeFactorization_iff_injective ;)
 def Set__leftInverse_rangeFactorization_iff_injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (iff (Function__LeftInverse X (Set__Elem Y (Set__range Y X f)) (Set__rangeSplitting X Y f) (Set__rangeFactorization Y X f)) (Function__Injective X Y f)) :=
   X => Y => f => iffI (Function__LeftInverse X (Set__Elem Y (Set__range Y X f)) (Set__rangeSplitting X Y f) (Set__rangeFactorization Y X f)) (Function__Injective X Y f) (h => iffEl (Function__Injective X (Set__Elem Y (Set__range Y X f)) (Set__rangeFactorization Y X f)) (Function__Injective X Y f) (Set__rangeFactorization_injective Y X f) (Function__LeftInverse__injective X (Set__Elem Y (Set__range Y X f)) (Set__rangeSplitting X Y f) (Set__rangeFactorization Y X f) h)) (h1 => congrFun' X X (x => Set__rangeSplitting X Y f (Set__rangeFactorization Y X f x)) (x1 => x1) (Function__RightInverse__id (Set__Elem Y (Set__range Y X f)) X (Set__rangeFactorization Y X f) (Set__rangeSplitting X Y f) (Set__rightInverse_rangeSplitting X Y f h1))).
 
 (; //LEAN:Set.preimage_rangeSplitting ;)
-def Set__preimage_rangeSplitting : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Injective X Y f)) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset (Set__Elem Y (Set__range Y X f)))) (Set__preimage (Set__Elem Y (Set__range Y X f)) X (Set__rangeSplitting X Y f)) (Set__image X (Set__Elem Y (Set__range Y X f)) (Set__rangeFactorization Y X f))) :=
-  X => Y => f => hf => Eq__symm (Elem (powerset X) -> Elem (powerset (Set__Elem Y (Set__range Y X f)))) (Set__image X (Set__Elem Y (Set__range Y X f)) (Set__rangeFactorization Y X f)) (Set__preimage (Set__Elem Y (Set__range Y X f)) X (Set__rangeSplitting X Y f)) (Set__image_eq_preimage_of_inverse X (Set__Elem Y (Set__range Y X f)) (Set__rangeFactorization Y X f) (Set__rangeSplitting X Y f) (Set__rightInverse_rangeSplitting X Y f hf) (Set__leftInverse_rangeSplitting X Y f)).
+def Set__preimage_rangeSplitting : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Injective X Y f)) -> Proof (Eqt (Elem (powerset X) -> Elem (powerset (Set__Elem Y (Set__range Y X f)))) (Set__preimage__part1 (Set__rangeSplitting X Y f)) (Set__image__part1 (Set__rangeFactorization Y X f))) :=
+  X => Y => f => hf => Eq__symm (Elem (powerset X) -> Elem (powerset (Set__Elem Y (Set__range Y X f)))) (Set__image__part1 (Set__rangeFactorization Y X f)) (Set__preimage__part1 (Set__rangeSplitting X Y f)) (Set__image_eq_preimage_of_inverse X (Set__Elem Y (Set__range Y X f)) (Set__rangeFactorization Y X f) (Set__rangeSplitting X Y f) (Set__rightInverse_rangeSplitting X Y f hf) (Set__leftInverse_rangeSplitting X Y f)).
 
 (; //LEAN:Set.rangeSplitting_strictMono ;)
 Set__rangeSplitting_strictMono : (X : Set) -> (Y : Set) -> (_ : Proof (LinearOrder X)) -> (_ : Proof (Preorder Y)) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Monotone X Y f)) -> Proof (StrictMono (Set__Elem Y (Set__range Y X f)) X (Set__rangeSplitting X Y f)).
 
 (; //LEAN:Set.isCompl_range_some_none ;)
-Set__isCompl_range_some_none : (X : Set) -> Proof (IsCompl (powerset (Option X)) (Set__range (Option X) X (Option__some X)) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X))).
+Set__isCompl_range_some_none : (X : Set) -> Proof (IsCompl (powerset (Option X)) (Set__range (Option X) X Option__some__part1) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X))).
 
 (; //LEAN:Set.compl_range_some ;)
-def Set__compl_range_some : (X : Set) -> Proof (Eqt (powerset (Option X)) (Compl__compl (powerset (Option X)) (Set__range (Option X) X (Option__some X))) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X))) :=
-  X => IsCompl__compl_eq (powerset (Option X)) (Set__range (Option X) X (Option__some X)) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X)) (Set__isCompl_range_some_none X).
+def Set__compl_range_some : (X : Set) -> Proof (Eqt (powerset (Option X)) (Compl__compl (powerset (Option X)) (Set__range (Option X) X Option__some__part1)) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X))) :=
+  X => IsCompl__compl_eq (powerset (Option X)) (Set__range (Option X) X Option__some__part1) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X)) (Set__isCompl_range_some_none X).
 
 (; //LEAN:Set.range_some_inter_none ;)
-def Set__range_some_inter_none : (X : Set) -> Proof (Eqt (powerset (Option X)) (Inter__inter (powerset (Option X)) (Set__range (Option X) X (Option__some X)) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X))) (EmptyCollection__emptyCollection (powerset (Option X)))) :=
-  X => IsCompl__inf_eq_bot (powerset (Option X)) (Set__range (Option X) X (Option__some X)) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X)) (Set__isCompl_range_some_none X).
+def Set__range_some_inter_none : (X : Set) -> Proof (Eqt (powerset (Option X)) (Inter__inter (powerset (Option X)) (Set__range (Option X) X Option__some__part1) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X))) (EmptyCollection__emptyCollection (powerset (Option X)))) :=
+  X => IsCompl__inf_eq_bot (powerset (Option X)) (Set__range (Option X) X Option__some__part1) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X)) (Set__isCompl_range_some_none X).
 
 (; //LEAN:Set.range_some_union_none ;)
-def Set__range_some_union_none : (X : Set) -> Proof (Eqt (powerset (Option X)) (Union__union (powerset (Option X)) (Set__range (Option X) X (Option__some X)) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X))) (Set__univ (Option X))) :=
-  X => IsCompl__sup_eq_top (powerset (Option X)) (Set__range (Option X) X (Option__some X)) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X)) (Set__isCompl_range_some_none X).
+def Set__range_some_union_none : (X : Set) -> Proof (Eqt (powerset (Option X)) (Union__union (powerset (Option X)) (Set__range (Option X) X Option__some__part1) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X))) (Set__univ (Option X))) :=
+  X => IsCompl__sup_eq_top (powerset (Option X)) (Set__range (Option X) X Option__some__part1) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X)) (Set__isCompl_range_some_none X).
 
 (; //LEAN:Set.insert_none_range_some ;)
-def Set__insert_none_range_some : (X : Set) -> Proof (Eqt (powerset (Option X)) (Insert__insert (Option X) (powerset (Option X)) (Option__none X) (Set__range (Option X) X (Option__some X))) (Set__univ (Option X))) :=
-  X => IsCompl__sup_eq_top (powerset (Option X)) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X)) (Set__range (Option X) X (Option__some X)) (IsCompl__symm (powerset (Option X)) (Set__range (Option X) X (Option__some X)) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X)) (Set__isCompl_range_some_none X)).
+def Set__insert_none_range_some : (X : Set) -> Proof (Eqt (powerset (Option X)) (Insert__insert (Option X) (powerset (Option X)) (Option__none X) (Set__range (Option X) X Option__some__part1)) (Set__univ (Option X))) :=
+  X => IsCompl__sup_eq_top (powerset (Option X)) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X)) (Set__range (Option X) X Option__some__part1) (IsCompl__symm (powerset (Option X)) (Set__range (Option X) X Option__some__part1) (Singleton__singleton (Option X) (powerset (Option X)) (Option__none X)) (Set__isCompl_range_some_none X)).
 
 (; //LEAN:Set.image_of_range_union_range_eq_univ ;)
 Set__image_of_range_union_range_eq_univ : (X : Set) -> (Y : Set) -> (Z : Set) -> (X1 : Set) -> (W : Set) -> (X2 : Set) -> (h : (Elem Y -> Elem X)) -> (f : (Elem Z -> Elem Y)) -> (f1 : (Elem X1 -> Elem X)) -> (f2 : (Elem Z -> Elem X1)) -> (g : (Elem W -> Elem Y)) -> (g1 : (Elem X2 -> Elem X)) -> (g2 : (Elem W -> Elem X2)) -> (hf : Proof (Eqt (Elem Z -> Elem X) (Function__comp Z Y X h f) (Function__comp Z X1 X f1 f2))) -> (hg : Proof (Eqt (Elem W -> Elem X) (Function__comp W Y X h g) (Function__comp W X2 X g1 g2))) -> (hfg : Proof (Eqt (powerset Y) (Union__union (powerset Y) (Set__range Y Z f) (Set__range Y W g)) (Set__univ Y))) -> (s : Elem (powerset Y)) -> Proof (Eqt (powerset X) (Set__image Y X h s) (Union__union (powerset X) (Set__image X1 X f1 (Set__image Z X1 f2 (Set__preimage Z Y f s))) (Set__image X2 X g1 (Set__image W X2 g2 (Set__preimage W Y g s))))).
@@ -788,7 +788,7 @@ def Set__subsingleton_of_preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> El
 
 (; //LEAN:Set.subsingleton_range ;)
 def Set__subsingleton_range : (Y : Set) -> (X : Set) -> (_ : Proof (Subsingleton X)) -> (f : (Elem X -> Elem Y)) -> Proof (Set__Subsingleton Y (Set__range Y X f)) :=
-  Y => X => h => f => iffEr (forall Y (a => if (Membership__mem Y (powerset Y) (Set__range Y X f) a) (forall Y (y => if (Membership__mem Y (powerset Y) (Set__range Y X f) y) (Eqt Y a y))))) (forall X (i => forall Y (y1 => if (Membership__mem Y (powerset Y) (Set__range Y X f) y1) (Eqt Y (f i) y1)))) (Set__forall_mem_range Y X f (x => forall Y (y2 => if (Membership__mem Y (powerset Y) (Set__range Y X f) y2) (Eqt Y x y2)))) (x1 => iffEr (forall Y (a1 => if (Membership__mem Y (powerset Y) (Set__range Y X f) a1) (Eqt Y (f x1) a1))) (forall X (i1 => Eqt Y (f x1) (f i1))) (Set__forall_mem_range Y X f (Eq Y (f x1))) (y3 => congr_arg X Y x1 y3 f (Subsingleton__elim X x1 y3))).
+  Y => X => h => f => iffEr (forall Y (a => if (Membership__mem Y (powerset Y) (Set__range Y X f) a) (forall Y (y => if (Membership__mem Y (powerset Y) (Set__range Y X f) y) (Eqt Y a y))))) (forall X (i => forall Y (y1 => if (Membership__mem Y (powerset Y) (Set__range Y X f) y1) (Eqt Y (f i) y1)))) (Set__forall_mem_range Y X f (x => forall Y (y2 => if (Membership__mem Y (powerset Y) (Set__range Y X f) y2) (Eqt Y x y2)))) (x1 => iffEr (forall Y (a1 => if (Membership__mem Y (powerset Y) (Set__range Y X f) a1) (Eqt Y (f x1) a1))) (forall X (i1 => Eqt Y (f x1) (f i1))) (Set__forall_mem_range Y X f (x2 => Eqt Y (f x1) x2)) (y3 => congr_arg X Y x1 y3 f (Subsingleton__elim X x1 y3))).
 
 (; //LEAN:Set.Nontrivial.preimage ;)
 Set__Nontrivial__preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset Y)) -> (hs : Proof (Set__Nontrivial Y s)) -> (hf : Proof (Function__Surjective X Y f)) -> Proof (Set__Nontrivial X (Set__preimage X Y f s)).
@@ -815,7 +815,7 @@ def Set__nontrivial_of_preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem
   X => Y => f => hf => s => hs => Set__Nontrivial__mono Y (Set__image X Y f (Set__preimage X Y f s)) s (Set__Nontrivial__image X Y (Set__preimage X Y f s) f hs hf) (Set__image_preimage_subset X Y f s).
 
 (; //LEAN:Function.Surjective.preimage_injective ;)
-def Function__Surjective__preimage_injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Surjective X Y f)) -> Proof (Function__Injective (powerset Y) (powerset X) (Set__preimage X Y f)) :=
+def Function__Surjective__preimage_injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Surjective X Y f)) -> Proof (Function__Injective (powerset Y) (powerset X) (Set__preimage__part1 f)) :=
   X => Y => f => hf => forallI (powerset Y) (x => forall (powerset Y) (x2 => if (Eqt (powerset X) (Set__preimage X Y f x) (Set__preimage X Y f x2)) (Eqt (powerset Y) x x2))) (x => forallI (powerset Y) (x1 => if (Eqt (powerset X) (Set__preimage X Y f x) (Set__preimage X Y f x1)) (Eqt (powerset Y) x x1)) (x1 => iffEl (Eqt (powerset X) (Set__preimage X Y f x) (Set__preimage X Y f x1)) (Eqt (powerset Y) x x1) (Set__preimage_eq_preimage Y X x x1 f hf))).
 
 (; //LEAN:Function.Injective.preimage_image ;)
@@ -823,8 +823,8 @@ def Function__Injective__preimage_image : (X : Set) -> (Y : Set) -> (f : (Elem X
   X => Y => f => hf => s => Set__preimage_image_eq X Y f s hf.
 
 (; //LEAN:Function.Injective.preimage_surjective ;)
-def Function__Injective__preimage_surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Injective X Y f)) -> Proof (Function__Surjective (powerset Y) (powerset X) (Set__preimage X Y f)) :=
-  X => Y => f => hf => iffEr (Function__Surjective (powerset Y) (powerset X) (Set__preimage X Y f)) (Function__Injective X Y f) (Set__preimage_surjective X Y f) hf.
+def Function__Injective__preimage_surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Injective X Y f)) -> Proof (Function__Surjective (powerset Y) (powerset X) (Set__preimage__part1 f)) :=
+  X => Y => f => hf => iffEr (Function__Surjective (powerset Y) (powerset X) (Set__preimage__part1 f)) (Function__Injective X Y f) (Set__preimage_surjective X Y f) hf.
 
 (; //LEAN:Function.Injective.subsingleton_image_iff ;)
 def Function__Injective__subsingleton_image_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Injective X Y f)) -> (s : Elem (powerset X)) -> Proof (iff (Set__Subsingleton Y (Set__image X Y f s)) (Set__Subsingleton X s)) :=
@@ -835,17 +835,17 @@ def Function__Surjective__image_preimage : (X : Set) -> (Y : Set) -> (f : (Elem 
   X => Y => f => hf => s => Set__image_preimage_eq X Y f s hf.
 
 (; //LEAN:Function.Surjective.image_surjective ;)
-Function__Surjective__image_surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Surjective X Y f)) -> Proof (Function__Surjective (powerset X) (powerset Y) (Set__image X Y f)).
+Function__Surjective__image_surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Surjective X Y f)) -> Proof (Function__Surjective (powerset X) (powerset Y) (Set__image__part1 f)).
 
 (; //LEAN:Function.Surjective.nonempty_preimage ;)
 Function__Surjective__nonempty_preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Surjective X Y f)) -> (s : Elem (powerset Y)) -> Proof (iff (Set__Nonempty X (Set__preimage X Y f s)) (Set__Nonempty Y s)).
 
 (; //LEAN:Function.Injective.image_injective ;)
-Function__Injective__image_injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Injective X Y f)) -> Proof (Function__Injective (powerset X) (powerset Y) (Set__image X Y f)).
+Function__Injective__image_injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Injective X Y f)) -> Proof (Function__Injective (powerset X) (powerset Y) (Set__image__part1 f)).
 
 (; //LEAN:Function.Injective.image_strictMono ;)
-def Function__Injective__image_strictMono : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (inj : Proof (Function__Injective X Y f)) -> Proof (StrictMono (powerset X) (powerset Y) (Set__image X Y f)) :=
-  X => Y => f => inj => Monotone__strictMono_of_injective (powerset X) (powerset Y) (Set__image X Y f) (Set__monotone_image X Y f) (Function__Injective__image_injective X Y f inj).
+def Function__Injective__image_strictMono : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (inj : Proof (Function__Injective X Y f)) -> Proof (StrictMono (powerset X) (powerset Y) (Set__image__part1 f)) :=
+  X => Y => f => inj => Monotone__strictMono_of_injective (powerset X) (powerset Y) (Set__image__part1 f) (Set__monotone_image X Y f) (Function__Injective__image_injective X Y f inj).
 
 (; //LEAN:Function.Surjective.preimage_subset_preimage_iff ;)
 Function__Surjective__preimage_subset_preimage_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset Y)) -> (t : Elem (powerset Y)) -> (hf : Proof (Function__Surjective X Y f)) -> Proof (iff (Set__Subset X (Set__preimage X Y f s) (Set__preimage X Y f t)) (Set__Subset Y s t)).
@@ -872,7 +872,7 @@ Function__LeftInverse__image_image : (X : Set) -> (Y : Set) -> (f : (Elem X -> E
 Function__LeftInverse__preimage_preimage : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (g : (Elem Y -> Elem X)) -> (h : Proof (Function__LeftInverse X Y g f)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__preimage X Y f (Set__preimage Y X g s)) s).
 
 (; //LEAN:Function.Involutive.preimage ;)
-def Function__Involutive__preimage : (X : Set) -> (f : (Elem X -> Elem X)) -> (hf : Proof (Function__Involutive X f)) -> Proof (Function__Involutive (powerset X) (Set__preimage X X f)) :=
+def Function__Involutive__preimage : (X : Set) -> (f : (Elem X -> Elem X)) -> (hf : Proof (Function__Involutive X f)) -> Proof (Function__Involutive (powerset X) (Set__preimage__part1 f)) :=
   X => f => hf => Function__LeftInverse__preimage_preimage X X f f (Function__Involutive__rightInverse X f hf).
 
 (; //LEAN:Function.LeftInverse.image_eq ;)
@@ -883,98 +883,98 @@ def EquivLike__range_comp : (I : Set) -> (X : Set) -> (E : Set) -> (X1 : Set) ->
   I => X => E => X1 => f => e => Function__Surjective__range_comp X1 I X e (EquivLike__surjective E I X e) f.
 
 (; //LEAN:Subtype.coe_image ;)
-Subtype__coe_image : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (powerset (Subtype X (x4 => p x4)))) -> Proof (Eqt (powerset X) (Set__image (Subtype X (x => p x)) X (Subtype__val X p) s) (Set__ofPred X (x1 => exists (p x1) (h => Membership__mem (Subtype X (x2 => p x2)) (powerset (Subtype X (x3 => p x3))) s (Subtype__mk X p x1 h))))).
+Subtype__coe_image : (X : Set) -> (p : (Elem X -> Prop)) -> (s : Elem (powerset (Subtype X (x5 => p x5)))) -> Proof (Eqt (powerset X) (Set__image (Subtype X (x => p x)) X Subtype__val__part1 s) (Set__ofPred X (x2 => exists (p x2) (h => Membership__mem (Subtype X (x3 => p x3)) (powerset (Subtype X (x4 => p x4))) s (Subtype__mk X p x2 h))))).
 
 (; //LEAN:Subtype.coe_image_of_subset ;)
-Subtype__coe_image_of_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X t s)) -> Proof (Eqt (powerset X) (Set__image (Set__Elem X s) X (Subtype__val X (x => Membership__mem X (powerset X) s x)) (Set__ofPred (Set__Elem X s) (x1 => Membership__mem X (powerset X) t (Subtype__val X (x2 => Membership__mem X (powerset X) s x2) x1)))) t).
+Subtype__coe_image_of_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X t s)) -> Proof (Eqt (powerset X) (Set__image (Set__Elem X s) X Subtype__val__part1 (Set__ofPred (Set__Elem X s) (x1 => Membership__mem X (powerset X) t (Subtype__val X (x2 => Membership__mem X (powerset X) s x2) x1)))) t).
 
 (; //LEAN:Subtype.range_coe ;)
-Subtype__range_coe : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__range X (Subtype X (x => Membership__mem X (powerset X) s x)) (Subtype__val X (x1 => Membership__mem X (powerset X) s x1))) s).
+Subtype__range_coe : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__range X (Subtype X (x => Membership__mem X (powerset X) s x)) Subtype__val__part1) s).
 
 (; //LEAN:Subtype.range_val ;)
-def Subtype__range_val : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__range X (Subtype X (x => Membership__mem X (powerset X) s x)) (Subtype__val X (x1 => Membership__mem X (powerset X) s x1))) s) :=
+def Subtype__range_val : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__range X (Subtype X (x => Membership__mem X (powerset X) s x)) Subtype__val__part1) s) :=
   X => s => Subtype__range_coe X s.
 
 (; //LEAN:Subtype.range_coe_subtype ;)
-def Subtype__range_coe_subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Eqt (powerset X) (Set__range X (Subtype X (x => p x)) (Subtype__val X p)) (Set__ofPred X (x1 => p x1))) :=
+def Subtype__range_coe_subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Eqt (powerset X) (Set__range X (Subtype X (x => p x)) Subtype__val__part1) (Set__ofPred X (x2 => p x2))) :=
   X => p => Subtype__range_coe X (Set__ofPred X (x => p x)).
 
 (; //LEAN:Subtype.coe_preimage_self ;)
-Subtype__coe_preimage_self : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X (Subtype__val X (x2 => Membership__mem X (powerset X) s x2)) s) (Set__univ (Subtype X (x3 => Membership__mem X (powerset X) s x3)))).
+Subtype__coe_preimage_self : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X Subtype__val__part1 s) (Set__univ (Subtype X (x3 => Membership__mem X (powerset X) s x3)))).
 
 (; //LEAN:Subtype.range_val_subtype ;)
-def Subtype__range_val_subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Eqt (powerset X) (Set__range X (Subtype X (x => p x)) (Subtype__val X p)) (Set__ofPred X (x1 => p x1))) :=
+def Subtype__range_val_subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Eqt (powerset X) (Set__range X (Subtype X (x => p x)) Subtype__val__part1) (Set__ofPred X (x2 => p x2))) :=
   X => p => Subtype__range_coe X (Set__ofPred X (x => p x)).
 
 (; //LEAN:Subtype.coe_image_subset ;)
-Subtype__coe_image_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset (Set__Elem X s))) -> Proof (Set__Subset X (Set__image (Subtype X (x => Membership__mem X (powerset X) s x)) X (Subtype__val X (x1 => Membership__mem X (powerset X) s x1)) t) s).
+Subtype__coe_image_subset : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset (Set__Elem X s))) -> Proof (Set__Subset X (Set__image (Subtype X (x => Membership__mem X (powerset X) s x)) X Subtype__val__part1 t) s).
 
 (; //LEAN:Subtype.coe_image_univ ;)
-def Subtype__coe_image_univ : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__image (Subtype X (x => Membership__mem X (powerset X) s x)) X (Subtype__val X (x1 => Membership__mem X (powerset X) s x1)) (Set__univ (Subtype X (x2 => Membership__mem X (powerset X) s x2)))) s) :=
-  X => s => Eq__trans (powerset X) (Set__image (Subtype X (x => Membership__mem X (powerset X) s x)) X (Subtype__val X (x1 => Membership__mem X (powerset X) s x1)) (Set__univ (Subtype X (x2 => Membership__mem X (powerset X) s x2)))) (Set__range X (Subtype X (x3 => Membership__mem X (powerset X) s x3)) (Subtype__val X (x4 => Membership__mem X (powerset X) s x4))) s (Set__image_univ (Subtype X (x5 => Membership__mem X (powerset X) s x5)) X (Subtype__val X (x6 => Membership__mem X (powerset X) s x6))) (Subtype__range_coe X s).
+def Subtype__coe_image_univ : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__image (Subtype X (x => Membership__mem X (powerset X) s x)) X Subtype__val__part1 (Set__univ (Subtype X (x2 => Membership__mem X (powerset X) s x2)))) s) :=
+  X => s => Eq__trans (powerset X) (Set__image (Subtype X (x => Membership__mem X (powerset X) s x)) X Subtype__val__part1 (Set__univ (Subtype X (x2 => Membership__mem X (powerset X) s x2)))) (Set__range X (Subtype X (x3 => Membership__mem X (powerset X) s x3)) Subtype__val__part1) s (Set__image_univ (Subtype X (x4 => Membership__mem X (powerset X) s x4)) X Subtype__val__part1) (Subtype__range_coe X s).
 
 (; //LEAN:Subtype.image_preimage_coe ;)
-def Subtype__image_preimage_coe : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__image (Subtype X (x => Membership__mem X (powerset X) s x)) X (Subtype__val X (x1 => Membership__mem X (powerset X) s x1)) (Set__preimage (Subtype X (x2 => Membership__mem X (powerset X) s x2)) X (Subtype__val X (x3 => Membership__mem X (powerset X) s x3)) t)) (Inter__inter (powerset X) s t)) :=
-  X => s => t => Eq__trans (powerset X) (Set__image (Subtype X (x => Membership__mem X (powerset X) s x)) X (Subtype__val X (x1 => Membership__mem X (powerset X) s x1)) (Set__preimage (Subtype X (x2 => Membership__mem X (powerset X) s x2)) X (Subtype__val X (x3 => Membership__mem X (powerset X) s x3)) t)) (Inter__inter (powerset X) (Set__range X (Subtype X (x4 => Membership__mem X (powerset X) s x4)) (Subtype__val X (x5 => Membership__mem X (powerset X) s x5))) t) (Inter__inter (powerset X) s t) (Set__image_preimage_eq_range_inter (Subtype X (x6 => Membership__mem X (powerset X) s x6)) X (Subtype__val X (x7 => Membership__mem X (powerset X) s x7)) t) (congr_arg (powerset X) (powerset X) (Set__range X (Subtype X (x8 => Membership__mem X (powerset X) s x8)) (Subtype__val X (x9 => Membership__mem X (powerset X) s x9))) s (x10 => Inter__inter (powerset X) x10 t) (Subtype__range_coe X s)).
+def Subtype__image_preimage_coe : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__image (Subtype X (x => Membership__mem X (powerset X) s x)) X Subtype__val__part1 (Set__preimage (Subtype X (x2 => Membership__mem X (powerset X) s x2)) X Subtype__val__part1 t)) (Inter__inter (powerset X) s t)) :=
+  X => s => t => Eq__trans (powerset X) (Set__image (Subtype X (x => Membership__mem X (powerset X) s x)) X Subtype__val__part1 (Set__preimage (Subtype X (x2 => Membership__mem X (powerset X) s x2)) X Subtype__val__part1 t)) (Inter__inter (powerset X) (Set__range X (Subtype X (x3 => Membership__mem X (powerset X) s x3)) Subtype__val__part1) t) (Inter__inter (powerset X) s t) (Set__image_preimage_eq_range_inter (Subtype X (x4 => Membership__mem X (powerset X) s x4)) X Subtype__val__part1 t) (congr_arg (powerset X) (powerset X) (Set__range X (Subtype X (x5 => Membership__mem X (powerset X) s x5)) Subtype__val__part1) s (x6 => Inter__inter (powerset X) x6 t) (Subtype__range_coe X s)).
 
 (; //LEAN:Subtype.image_preimage_val ;)
-def Subtype__image_preimage_val : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__image (Subtype X (x => Membership__mem X (powerset X) s x)) X (Subtype__val X (x1 => Membership__mem X (powerset X) s x1)) (Set__preimage (Subtype X (x2 => Membership__mem X (powerset X) s x2)) X (Subtype__val X (x3 => Membership__mem X (powerset X) s x3)) t)) (Inter__inter (powerset X) s t)) :=
+def Subtype__image_preimage_val : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__image (Subtype X (x => Membership__mem X (powerset X) s x)) X Subtype__val__part1 (Set__preimage (Subtype X (x2 => Membership__mem X (powerset X) s x2)) X Subtype__val__part1 t)) (Inter__inter (powerset X) s t)) :=
   X => s => t => Subtype__image_preimage_coe X s t.
 
 (; //LEAN:Subtype.preimage_coe_eq_preimage_coe_iff ;)
-Subtype__preimage_coe_eq_preimage_coe_iff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> Proof (iff (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X (Subtype__val X (x2 => Membership__mem X (powerset X) s x2)) t) (Set__preimage (Subtype X (x3 => Membership__mem X (powerset X) s x3)) X (Subtype__val X (x4 => Membership__mem X (powerset X) s x4)) u)) (Eqt (powerset X) (Inter__inter (powerset X) s t) (Inter__inter (powerset X) s u))).
+Subtype__preimage_coe_eq_preimage_coe_iff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> Proof (iff (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X Subtype__val__part1 t) (Set__preimage (Subtype X (x3 => Membership__mem X (powerset X) s x3)) X Subtype__val__part1 u)) (Eqt (powerset X) (Inter__inter (powerset X) s t) (Inter__inter (powerset X) s u))).
 
 (; //LEAN:Subtype.preimage_coe_self_inter ;)
-Subtype__preimage_coe_self_inter : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X (Subtype__val X (x2 => Membership__mem X (powerset X) s x2)) (Inter__inter (powerset X) s t)) (Set__preimage (Subtype X (x3 => Membership__mem X (powerset X) s x3)) X (Subtype__val X (x4 => Membership__mem X (powerset X) s x4)) t)).
+Subtype__preimage_coe_self_inter : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X Subtype__val__part1 (Inter__inter (powerset X) s t)) (Set__preimage (Subtype X (x3 => Membership__mem X (powerset X) s x3)) X Subtype__val__part1 t)).
 
 (; //LEAN:Subtype.preimage_coe_inter_self ;)
-Subtype__preimage_coe_inter_self : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X (Subtype__val X (x2 => Membership__mem X (powerset X) s x2)) (Inter__inter (powerset X) t s)) (Set__preimage (Subtype X (x3 => Membership__mem X (powerset X) s x3)) X (Subtype__val X (x4 => Membership__mem X (powerset X) s x4)) t)).
+Subtype__preimage_coe_inter_self : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X Subtype__val__part1 (Inter__inter (powerset X) t s)) (Set__preimage (Subtype X (x3 => Membership__mem X (powerset X) s x3)) X Subtype__val__part1 t)).
 
 (; //LEAN:Subtype.preimage_val_eq_preimage_val_iff ;)
-def Subtype__preimage_val_eq_preimage_val_iff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> Proof (iff (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X (Subtype__val X (x2 => Membership__mem X (powerset X) s x2)) t) (Set__preimage (Subtype X (x3 => Membership__mem X (powerset X) s x3)) X (Subtype__val X (x4 => Membership__mem X (powerset X) s x4)) u)) (Eqt (powerset X) (Inter__inter (powerset X) s t) (Inter__inter (powerset X) s u))) :=
+def Subtype__preimage_val_eq_preimage_val_iff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> Proof (iff (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X Subtype__val__part1 t) (Set__preimage (Subtype X (x3 => Membership__mem X (powerset X) s x3)) X Subtype__val__part1 u)) (Eqt (powerset X) (Inter__inter (powerset X) s t) (Inter__inter (powerset X) s u))) :=
   X => s => t => u => Subtype__preimage_coe_eq_preimage_coe_iff X s t u.
 
 (; //LEAN:Subtype.preimage_val_subset_preimage_val_iff ;)
-Subtype__preimage_val_subset_preimage_val_iff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> Proof (iff (Set__Subset (Set__Elem X s) (Set__preimage (Set__Elem X s) X (Subtype__val X (x => Membership__mem X (powerset X) s x)) t) (Set__preimage (Set__Elem X s) X (Subtype__val X (x1 => Membership__mem X (powerset X) s x1)) u)) (Set__Subset X (Inter__inter (powerset X) s t) (Inter__inter (powerset X) s u))).
+Subtype__preimage_val_subset_preimage_val_iff : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (u : Elem (powerset X)) -> Proof (iff (Set__Subset (Set__Elem X s) (Set__preimage (Set__Elem X s) X Subtype__val__part1 t) (Set__preimage (Set__Elem X s) X Subtype__val__part1 u)) (Set__Subset X (Inter__inter (powerset X) s t) (Inter__inter (powerset X) s u))).
 
 (; //LEAN:Subtype.exists_set_subtype ;)
-Subtype__exists_set_subtype : (X : Set) -> (t : Elem (powerset X)) -> (p : (Elem (powerset X) -> Prop)) -> Proof (iff (exists (powerset (Set__Elem X t)) (s => p (Set__image (Subtype X (x => Membership__mem X (powerset X) t x)) X (Subtype__val X (x1 => Membership__mem X (powerset X) t x1)) s))) (exists (powerset X) (s1 => and (Set__Subset X s1 t) (p s1)))).
+Subtype__exists_set_subtype : (X : Set) -> (t : Elem (powerset X)) -> (p : (Elem (powerset X) -> Prop)) -> Proof (iff (exists (powerset (Set__Elem X t)) (s => p (Set__image (Subtype X (x => Membership__mem X (powerset X) t x)) X Subtype__val__part1 s))) (exists (powerset X) (s1 => and (Set__Subset X s1 t) (p s1)))).
 
 (; //LEAN:Subtype.forall_set_subtype ;)
-Subtype__forall_set_subtype : (X : Set) -> (t : Elem (powerset X)) -> (p : (Elem (powerset X) -> Prop)) -> Proof (iff (forall (powerset (Set__Elem X t)) (s => p (Set__image (Subtype X (x => Membership__mem X (powerset X) t x)) X (Subtype__val X (x1 => Membership__mem X (powerset X) t x1)) s))) (forall (powerset X) (s1 => if (Set__Subset X s1 t) (p s1)))).
+Subtype__forall_set_subtype : (X : Set) -> (t : Elem (powerset X)) -> (p : (Elem (powerset X) -> Prop)) -> Proof (iff (forall (powerset (Set__Elem X t)) (s => p (Set__image (Subtype X (x => Membership__mem X (powerset X) t x)) X Subtype__val__part1 s))) (forall (powerset X) (s1 => if (Set__Subset X s1 t) (p s1)))).
 
 (; //LEAN:Subtype.preimage_coe_nonempty ;)
-Subtype__preimage_coe_nonempty : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Set__Nonempty (Subtype X (x => Membership__mem X (powerset X) s x)) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X (Subtype__val X (x2 => Membership__mem X (powerset X) s x2)) t)) (Set__Nonempty X (Inter__inter (powerset X) s t))).
+Subtype__preimage_coe_nonempty : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Set__Nonempty (Subtype X (x => Membership__mem X (powerset X) s x)) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X Subtype__val__part1 t)) (Set__Nonempty X (Inter__inter (powerset X) s t))).
 
 (; //LEAN:Subtype.preimage_coe_eq_empty ;)
-Subtype__preimage_coe_eq_empty : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X (Subtype__val X (x2 => Membership__mem X (powerset X) s x2)) t) (EmptyCollection__emptyCollection (powerset (Subtype X (x3 => Membership__mem X (powerset X) s x3))))) (Eqt (powerset X) (Inter__inter (powerset X) s t) (EmptyCollection__emptyCollection (powerset X)))).
+Subtype__preimage_coe_eq_empty : (X : Set) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> Proof (iff (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X Subtype__val__part1 t) (EmptyCollection__emptyCollection (powerset (Subtype X (x3 => Membership__mem X (powerset X) s x3))))) (Eqt (powerset X) (Inter__inter (powerset X) s t) (EmptyCollection__emptyCollection (powerset X)))).
 
 (; //LEAN:Subtype.preimage_coe_compl ;)
-def Subtype__preimage_coe_compl : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X (Subtype__val X (x2 => Membership__mem X (powerset X) s x2)) (Compl__compl (powerset X) s)) (EmptyCollection__emptyCollection (powerset (Subtype X (x3 => Membership__mem X (powerset X) s x3))))) :=
-  X => s => iffEr (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X (Subtype__val X (x2 => Membership__mem X (powerset X) s x2)) (Compl__compl (powerset X) s)) (EmptyCollection__emptyCollection (powerset (Subtype X (x3 => Membership__mem X (powerset X) s x3))))) (Eqt (powerset X) (Inter__inter (powerset X) s (Compl__compl (powerset X) s)) (EmptyCollection__emptyCollection (powerset X))) (Subtype__preimage_coe_eq_empty X s (Compl__compl (powerset X) s)) (Set__inter_compl_self X s).
+def Subtype__preimage_coe_compl : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X Subtype__val__part1 (Compl__compl (powerset X) s)) (EmptyCollection__emptyCollection (powerset (Subtype X (x3 => Membership__mem X (powerset X) s x3))))) :=
+  X => s => iffEr (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) s x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) s x1)) X Subtype__val__part1 (Compl__compl (powerset X) s)) (EmptyCollection__emptyCollection (powerset (Subtype X (x3 => Membership__mem X (powerset X) s x3))))) (Eqt (powerset X) (Inter__inter (powerset X) s (Compl__compl (powerset X) s)) (EmptyCollection__emptyCollection (powerset X))) (Subtype__preimage_coe_eq_empty X s (Compl__compl (powerset X) s)) (Set__inter_compl_self X s).
 
 (; //LEAN:Subtype.preimage_coe_compl' ;)
 def Subtype__preimage_coe_compl' : (X : Set) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset (Set__Elem X (Compl__compl (powerset X) s))) (Set__preimage (Set__Elem X (Compl__compl (powerset X) s)) X (x => Subtype__val X (x1 => Membership__mem X (powerset X) (Compl__compl (powerset X) s) x1) x) s) (EmptyCollection__emptyCollection (powerset (Set__Elem X (Compl__compl (powerset X) s))))) :=
-  X => s => iffEr (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) (Compl__compl (powerset X) s) x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) (Compl__compl (powerset X) s) x1)) X (Subtype__val X (x2 => Membership__mem X (powerset X) (Compl__compl (powerset X) s) x2)) s) (EmptyCollection__emptyCollection (powerset (Subtype X (x3 => Membership__mem X (powerset X) (Compl__compl (powerset X) s) x3))))) (Eqt (powerset X) (Inter__inter (powerset X) (Compl__compl (powerset X) s) s) (EmptyCollection__emptyCollection (powerset X))) (Subtype__preimage_coe_eq_empty X (Compl__compl (powerset X) s) s) (Set__compl_inter_self X s).
+  X => s => iffEr (Eqt (powerset (Subtype X (x => Membership__mem X (powerset X) (Compl__compl (powerset X) s) x))) (Set__preimage (Subtype X (x1 => Membership__mem X (powerset X) (Compl__compl (powerset X) s) x1)) X Subtype__val__part1 s) (EmptyCollection__emptyCollection (powerset (Subtype X (x3 => Membership__mem X (powerset X) (Compl__compl (powerset X) s) x3))))) (Eqt (powerset X) (Inter__inter (powerset X) (Compl__compl (powerset X) s) s) (EmptyCollection__emptyCollection (powerset X))) (Subtype__preimage_coe_eq_empty X (Compl__compl (powerset X) s) s) (Set__compl_inter_self X s).
 
 (; //LEAN:Option.injective_iff ;)
-Option__injective_iff : (X : Set) -> (Y : Set) -> (f : (Elem (Option X) -> Elem Y)) -> Proof (iff (Function__Injective (Option X) Y f) (and (Function__Injective X Y (Function__comp X (Option X) Y f (Option__some X))) (not (Membership__mem Y (powerset Y) (Set__range Y X (Function__comp X (Option X) Y f (Option__some X))) (f (Option__none X)))))).
+Option__injective_iff : (X : Set) -> (Y : Set) -> (f : (Elem (Option X) -> Elem Y)) -> Proof (iff (Function__Injective (Option X) Y f) (and (Function__Injective X Y (Function__comp X (Option X) Y f Option__some__part1)) (not (Membership__mem Y (powerset Y) (Set__range Y X (Function__comp X (Option X) Y f Option__some__part1)) (f (Option__none X)))))).
 
 (; //LEAN:Option.range_eq ;)
-def Option__range_eq : (X : Set) -> (Y : Set) -> (f : (Elem (Option X) -> Elem Y)) -> Proof (Eqt (powerset Y) (Set__range Y (Option X) f) (Insert__insert Y (powerset Y) (f (Option__none X)) (Set__range Y X (Function__comp X (Option X) Y f (Option__some X))))) :=
-  X => Y => f => Set__ext Y (Set__range Y (Option X) f) (Insert__insert Y (powerset Y) (f (Option__none X)) (Set__range Y X (Function__comp X (Option X) Y f (Option__some X)))) (forallI Y (x => iff (exists (Option X) (x5 => Eqt Y (f x5) x)) (Membership__mem Y (powerset Y) (Insert__insert Y (powerset Y) (f (Option__none X)) (Set__range Y X (Function__comp X (Option X) Y f (Option__some X)))) x)) (x => Iff__trans (exists (Option X) (x1 => Eqt Y (f x1) x)) (or (Eqt Y (f (Option__none X)) x) (exists X (x2 => Eqt Y (f (Option__some X x2)) x))) (Membership__mem Y (powerset Y) (Insert__insert Y (powerset Y) (f (Option__none X)) (Set__range Y X (Function__comp X (Option X) Y f (Option__some X)))) x) (Option__exists X (y => Eqt Y (f y) x)) (Iff__or (Eqt Y (f (Option__none X)) x) (Eqt Y x (f (Option__none X))) (exists X (x3 => Eqt Y (f (Option__some X x3)) x)) (Membership__mem Y (powerset Y) (Set__range Y X (Function__comp X (Option X) Y f (Option__some X))) x) (eq_comm Y (f (Option__none X)) x) (Iff__rfl (exists X (x4 => Eqt Y (f (Option__some X x4)) x)))))).
+def Option__range_eq : (X : Set) -> (Y : Set) -> (f : (Elem (Option X) -> Elem Y)) -> Proof (Eqt (powerset Y) (Set__range Y (Option X) f) (Insert__insert Y (powerset Y) (f (Option__none X)) (Set__range Y X (Function__comp X (Option X) Y f Option__some__part1)))) :=
+  X => Y => f => Set__ext Y (Set__range Y (Option X) f) (Insert__insert Y (powerset Y) (f (Option__none X)) (Set__range Y X (Function__comp X (Option X) Y f Option__some__part1))) (forallI Y (x => iff (exists (Option X) (x5 => Eqt Y (f x5) x)) (Membership__mem Y (powerset Y) (Insert__insert Y (powerset Y) (f (Option__none X)) (Set__range Y X (Function__comp X (Option X) Y f Option__some__part1))) x)) (x => Iff__trans (exists (Option X) (x1 => Eqt Y (f x1) x)) (or (Eqt Y (f (Option__none X)) x) (exists X (x2 => Eqt Y (f (Option__some X x2)) x))) (Membership__mem Y (powerset Y) (Insert__insert Y (powerset Y) (f (Option__none X)) (Set__range Y X (Function__comp X (Option X) Y f Option__some__part1))) x) (Option__exists X (y => Eqt Y (f y) x)) (Iff__or (Eqt Y (f (Option__none X)) x) (Eqt Y x (f (Option__none X))) (exists X (x3 => Eqt Y (f (Option__some X x3)) x)) (Membership__mem Y (powerset Y) (Set__range Y X (Function__comp X (Option X) Y f Option__some__part1)) x) (eq_comm Y (f (Option__none X)) x) (Iff__rfl (exists X (x4 => Eqt Y (f (Option__some X x4)) x)))))).
 
 (; //LEAN:Option.range_elim ;)
 Option__range_elim : (X : Set) -> (Y : Set) -> (b : Elem Y) -> (f : (Elem X -> Elem Y)) -> Proof (Eqt (powerset Y) (Set__range Y (Option X) (o => Option__elim X Y o b f)) (Insert__insert Y (powerset Y) b (Set__range Y X f))).
 
 (; //LEAN:Option.image_elim_range_some_eq_range ;)
-Option__image_elim_range_some_eq_range : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (b : Elem Y) -> Proof (Eqt (powerset Y) (Set__image (Option X) Y (o => Option__elim X Y o b f) (Set__range (Option X) X (Option__some X))) (Set__range Y X f)).
+Option__image_elim_range_some_eq_range : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (b : Elem Y) -> Proof (Eqt (powerset Y) (Set__image (Option X) Y (o => Option__elim X Y o b f) (Set__range (Option X) X Option__some__part1)) (Set__range Y X f)).
 
 (; //LEAN:Set.image_surjective ;)
-Set__image_surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (iff (Function__Surjective (powerset X) (powerset Y) (Set__image X Y f)) (Function__Surjective X Y f)).
+Set__image_surjective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (iff (Function__Surjective (powerset X) (powerset Y) (Set__image__part1 f)) (Function__Surjective X Y f)).
 
 (; //LEAN:Set.image_injective ;)
-Set__image_injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (iff (Function__Injective (powerset X) (powerset Y) (Set__image X Y f)) (Function__Injective X Y f)).
+Set__image_injective : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> Proof (iff (Function__Injective (powerset X) (powerset Y) (Set__image__part1 f)) (Function__Injective X Y f)).
 
 (; //LEAN:Set.preimage_eq_iff_eq_image ;)
 Set__preimage_eq_iff_eq_image : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (hf : Proof (Function__Bijective X Y f)) -> (s : Elem (powerset Y)) -> (t : Elem (powerset X)) -> Proof (iff (Eqt (powerset X) (Set__preimage X Y f s) t) (Eqt (powerset Y) s (Set__image X Y f t))).
@@ -1022,14 +1022,14 @@ Set__preimage_eq_empty : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (
 Set__preimage_eq_empty_iff : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset Y)) -> Proof (iff (Eqt (powerset X) (Set__preimage X Y f s) (EmptyCollection__emptyCollection (powerset X))) (Disjoint (powerset Y) s (Set__range Y X f))).
 
 (; //LEAN:Set.disjoint_image_inl_image_inr ;)
-def Set__disjoint_image_inl_image_inr : (X : Set) -> (Y : Set) -> (u : Elem (powerset X)) -> (v : Elem (powerset Y)) -> Proof (Disjoint (powerset (Sum X Y)) (Set__image X (Sum X Y) (Sum__inl X Y) u) (Set__image Y (Sum X Y) (Sum__inr X Y) v)) :=
-  X => Y => u => v => Set__disjoint_image_image (Sum X Y) X Y (Sum__inl X Y) (Sum__inr X Y) u v (of_eq_true (forall X (a => if (Membership__mem X (powerset X) u a) (forall Y (a1 => if (Membership__mem Y (powerset Y) v a1) (not (Eqt (Sum X Y) (Sum__inl X Y a) (Sum__inr X Y a1))))))) (Eq__trans Prop (forall X (a2 => if (Membership__mem X (powerset X) u a2) (forall Y (a3 => if (Membership__mem Y (powerset Y) v a3) (not (Eqt (Sum X Y) (Sum__inl X Y a2) (Sum__inr X Y a3))))))) (forall X (a4 => True)) True (forall_congr X (a5 => if (Membership__mem X (powerset X) u a5) (forall Y (a6 => if (Membership__mem Y (powerset Y) v a6) (not (Eqt (Sum X Y) (Sum__inl X Y a5) (Sum__inr X Y a6)))))) (a7 => True) (forallI X (b => Eqt Prop (if (Membership__mem X (powerset X) u b) (forall Y (a14 => if (Membership__mem Y (powerset Y) v a14) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y a14)))))) True) (b => Eq__trans Prop (if (Membership__mem X (powerset X) u b) (forall Y (a8 => if (Membership__mem Y (powerset Y) v a8) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y a8)))))) (if (Membership__mem X (powerset X) u b) True) True (implies_congr (Membership__mem X (powerset X) u b) (Membership__mem X (powerset X) u b) (forall Y (a9 => if (Membership__mem Y (powerset Y) v a9) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y a9))))) True (Eq__refl Prop (Membership__mem X (powerset X) u b)) (Eq__trans Prop (forall Y (a10 => if (Membership__mem Y (powerset Y) v a10) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y a10))))) (forall Y (a11 => True)) True (forall_congr Y (a12 => if (Membership__mem Y (powerset Y) v a12) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y a12)))) (a13 => True) (forallI Y (c => Eqt Prop (if (Membership__mem Y (powerset Y) v c) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y c)))) True) (c => Eq__trans Prop (if (Membership__mem Y (powerset Y) v c) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y c)))) (if (Membership__mem Y (powerset Y) v c) True) True (implies_congr (Membership__mem Y (powerset Y) v c) (Membership__mem Y (powerset Y) v c) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y c))) True (Eq__refl Prop (Membership__mem Y (powerset Y) v c)) (Eq__trans Prop (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y c))) (not false) True (congrArg Prop Prop (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y c)) false not (eq_false' (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y c)) (ifI (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y c)) false (h14 => falseE false (noConfusion_of_Nat (Sum X Y) (Sum__ctorIdx X Y) (Sum__inl X Y b) (Sum__inr X Y c) h14))))) not_false_eq_true)) (implies_true (Membership__mem Y (powerset Y) v c))))) (implies_true Y))) (implies_true (Membership__mem X (powerset X) u b))))) (implies_true X))).
+def Set__disjoint_image_inl_image_inr : (X : Set) -> (Y : Set) -> (u : Elem (powerset X)) -> (v : Elem (powerset Y)) -> Proof (Disjoint (powerset (Sum X Y)) (Set__image X (Sum X Y) Sum__inl__part1 u) (Set__image Y (Sum X Y) Sum__inr__part1 v)) :=
+  X => Y => u => v => Set__disjoint_image_image (Sum X Y) X Y Sum__inl__part1 Sum__inr__part1 u v (of_eq_true (forall X (a => if (Membership__mem X (powerset X) u a) (forall Y (a1 => if (Membership__mem Y (powerset Y) v a1) (not (Eqt (Sum X Y) (Sum__inl X Y a) (Sum__inr X Y a1))))))) (Eq__trans Prop (forall X (a2 => if (Membership__mem X (powerset X) u a2) (forall Y (a3 => if (Membership__mem Y (powerset Y) v a3) (not (Eqt (Sum X Y) (Sum__inl X Y a2) (Sum__inr X Y a3))))))) (forall X (a4 => True)) True (forall_congr X (a5 => if (Membership__mem X (powerset X) u a5) (forall Y (a6 => if (Membership__mem Y (powerset Y) v a6) (not (Eqt (Sum X Y) (Sum__inl X Y a5) (Sum__inr X Y a6)))))) (a7 => True) (forallI X (b => Eqt Prop (if (Membership__mem X (powerset X) u b) (forall Y (a14 => if (Membership__mem Y (powerset Y) v a14) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y a14)))))) True) (b => Eq__trans Prop (if (Membership__mem X (powerset X) u b) (forall Y (a8 => if (Membership__mem Y (powerset Y) v a8) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y a8)))))) (if (Membership__mem X (powerset X) u b) True) True (implies_congr (Membership__mem X (powerset X) u b) (Membership__mem X (powerset X) u b) (forall Y (a9 => if (Membership__mem Y (powerset Y) v a9) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y a9))))) True (Eq__refl Prop (Membership__mem X (powerset X) u b)) (Eq__trans Prop (forall Y (a10 => if (Membership__mem Y (powerset Y) v a10) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y a10))))) (forall Y (a11 => True)) True (forall_congr Y (a12 => if (Membership__mem Y (powerset Y) v a12) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y a12)))) (a13 => True) (forallI Y (c => Eqt Prop (if (Membership__mem Y (powerset Y) v c) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y c)))) True) (c => Eq__trans Prop (if (Membership__mem Y (powerset Y) v c) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y c)))) (if (Membership__mem Y (powerset Y) v c) True) True (implies_congr (Membership__mem Y (powerset Y) v c) (Membership__mem Y (powerset Y) v c) (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y c))) True (Eq__refl Prop (Membership__mem Y (powerset Y) v c)) (Eq__trans Prop (not (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y c))) (not false) True (congrArg Prop Prop (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y c)) false not (eq_false' (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y c)) (ifI (Eqt (Sum X Y) (Sum__inl X Y b) (Sum__inr X Y c)) false (h14 => falseE false (noConfusion_of_Nat (Sum X Y) (Sum__ctorIdx X Y) (Sum__inl X Y b) (Sum__inr X Y c) h14))))) not_false_eq_true)) (implies_true (Membership__mem Y (powerset Y) v c))))) (implies_true Y))) (implies_true (Membership__mem X (powerset X) u b))))) (implies_true X))).
 
 (; //LEAN:Set.disjoint_range_inl_image_inr ;)
-Set__disjoint_range_inl_image_inr : (X : Set) -> (Y : Set) -> (v : Elem (powerset Y)) -> Proof (Disjoint (powerset (Sum X Y)) (Set__range (Sum X Y) X (Sum__inl X Y)) (Set__image Y (Sum X Y) (Sum__inr X Y) v)).
+Set__disjoint_range_inl_image_inr : (X : Set) -> (Y : Set) -> (v : Elem (powerset Y)) -> Proof (Disjoint (powerset (Sum X Y)) (Set__range (Sum X Y) X Sum__inl__part1) (Set__image Y (Sum X Y) Sum__inr__part1 v)).
 
 (; //LEAN:Set.disjoint_image_inl_range_inr ;)
-Set__disjoint_image_inl_range_inr : (X : Set) -> (Y : Set) -> (u : Elem (powerset X)) -> Proof (Disjoint (powerset (Sum X Y)) (Set__image X (Sum X Y) (Sum__inl X Y) u) (Set__range (Sum X Y) Y (Sum__inr X Y))).
+Set__disjoint_image_inl_range_inr : (X : Set) -> (Y : Set) -> (u : Elem (powerset X)) -> Proof (Disjoint (powerset (Sum X Y)) (Set__image X (Sum X Y) Sum__inl__part1 u) (Set__range (Sum X Y) Y Sum__inr__part1)).
 
 (; //LEAN:sigma_mk_preimage_image' ;)
 sigma_mk_preimage_image' : (X : Set) -> (beta : (Elem X -> Set)) -> (i : Elem X) -> (j : Elem X) -> (s : Elem (powerset (beta i))) -> (h : Proof (Neq i j)) -> Proof (Eqt (powerset (beta j)) (Set__preimage (beta j) (Sigma X beta) (Sigma__mk X beta j) (Set__image (beta i) (Sigma X beta) (Sigma__mk X beta i) s)) (EmptyCollection__emptyCollection (powerset (beta j)))).

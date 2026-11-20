@@ -3,6 +3,33 @@
 (; a constant applied as a function: DFunLike.coe ;)
 Equiv__symm__app : (a1 : Elem (Equiv X Y)) -> (a2 : Elem Y) -> Elem X.
 
+(; a constant with an instance argument that the statement gives ;)
+Function__invFunOn__app1 : (a1 : (Elem X -> Elem Y)) -> (a2 : Elem (powerset X)) -> (a3 : Elem Y) -> Elem X.
+
+(; a constant with an instance argument that the statement gives ;)
+Function__update__app1 : (a1 : ((b : Elem Y) -> Elem (gamma b))) -> (a2 : Elem Y) -> (a3 : Elem (gamma i)) -> (a4 : Elem Y) -> Elem (gamma (f j1)).
+
+(; a constant with an instance argument that the statement gives ;)
+Membership__mem__part1 : (a1 : Elem (powerset Y)) -> (Elem Y -> Prop).
+
+(; a constant with an instance argument that the statement gives ;)
+Nat__iterate__part1 : (a1 : (Elem X -> Elem X)) -> (a2 : Elem Nat) -> (Elem X -> Elem X).
+
+(; a constant with an instance argument that the statement gives ;)
+Prod__fst__part1 : (Elem (Prod X X1) -> Elem X).
+
+(; a constant with an instance argument that the statement gives ;)
+Prod__snd__part1 : (Elem (Prod X X1) -> Elem X1).
+
+(; a constant with an instance argument that the statement gives ;)
+Set__image__part1 : (a1 : (Elem X -> Elem Y)) -> (Elem (powerset X) -> Elem (powerset Y)).
+
+(; a constant with an instance argument that the statement gives ;)
+Set__preimage__part1 : (a1 : (Elem X -> Elem Y)) -> (Elem (powerset Y) -> Elem (powerset X)).
+
+(; a constant with an instance argument that the statement gives ;)
+Subtype__val__part1 : (Elem (Subtype Y (x2 => p x2)) -> Elem Y).
+
 (; doc: An element of `α` that satisfies `cond` belongs to the range of `coe`. ;)
 (; //LEAN:CanLift.prf ;)
 CanLift__prf : (X : Set) -> (Y : Set) -> (coe : (Elem Y -> Elem X)) -> (cond : (Elem X -> Prop)) -> (_ : Proof (CanLift X Y coe cond)) -> (x : Elem X) -> (h : Proof (cond x)) -> Proof (exists Y (y => Eqt X (coe y) x)).
@@ -26,10 +53,6 @@ Disjoint : (X : Set) -> (a : Elem X) -> (b : Elem X) -> Prop.
 (; doc: `∅` or `{}` is the empty set or empty collection. It is supported by the `EmptyCollection` typeclass.  Conventions for notations in identifiers:   * The recommended spelling of `{}` in identifiers is `empty`.   * The recommended spelling of `∅` in identifiers is `empty`. ;)
 (; //LEAN:EmptyCollection.emptyCollection ;)
 EmptyCollection__emptyCollection : (X : Set) -> Elem X.
-
-(; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
-(; //LEAN:Eq ;)
-Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: Non-dependent recursor for the equality type. ;)
 (; //LEAN:Eq.ndrec ;)
@@ -138,7 +161,7 @@ Function__invFun : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (x : El
 Function__update : (X : Set) -> (beta : (Elem X -> Set)) -> (f : ((a1 : Elem X) -> Elem (beta a1))) -> (a' : Elem X) -> (v : Elem (beta a')) -> (a : Elem X) -> Elem (beta a).
 
 (; //LEAN:Function.update_comp_eq_of_forall_ne' ;)
-Function__update_comp_eq_of_forall_ne' : (X : Set) -> (beta : (Elem X -> Set)) -> (X1 : Set) -> (g : ((a1 : Elem X) -> Elem (beta a1))) -> (f : (Elem X1 -> Elem X)) -> (i : Elem X) -> (a : Elem (beta i)) -> (h : Proof (forall X1 (x1 => Neq (f x1) i))) -> Proof (Eqt ((j : Elem X1) -> Elem (beta (f j))) (j1 => Function__update X beta g i a (f j1)) (j2 => g (f j2))).
+Function__update_comp_eq_of_forall_ne' : (X : Set) -> (beta : (Elem X -> Set)) -> (X1 : Set) -> (g : ((a2 : Elem X) -> Elem (beta a2))) -> (f : (Elem X1 -> Elem X)) -> (i : Elem X) -> (a : Elem (beta i)) -> (h : Proof (forall X1 (x1 => Neq (f x1) i))) -> Proof (Eqt ((j : Elem X1) -> Elem (beta (f j))) (j1 => Function__update__app1 g i a (f j1)) (j2 => g (f j2))).
 
 (; doc: Strict subset relation: `a ⊂ b`  Conventions for notations in identifiers:   * The recommended spelling of `⊂` in identifiers is `ssubset`. ;)
 (; //LEAN:HasSSubset.SSubset ;)
@@ -168,10 +191,6 @@ Inter__inter : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Elem X.
 (; doc: The membership relation `a ∈ s : Prop` where `a : α`, `s : γ`.  Conventions for notations in identifiers:   * The recommended spelling of `∈` in identifiers is `mem`. ;)
 (; //LEAN:Membership.mem ;)
 Membership__mem : (X : Set) -> (Z : Set) -> (x : Elem Z) -> (x1 : Elem X) -> Prop.
-
-(; doc: Iterate a function. ;)
-(; //LEAN:Nat.iterate ;)
-Nat__iterate : (X : Set) -> (op : (Elem X -> Elem X)) -> (x : Elem Nat) -> (x1 : Elem X) -> Elem X.
 
 (; doc: The product type, usually written `α × β`. Product types are also called pair or tuple types. Elements of this type are pairs in which the first element is an `α` and the second element is a `β`.  Products nest to the right, so `(x, y, z) : α × β × γ` is equivalent to `(x, (y, z)) : α × (β × γ)`.  Conventions for notations in identifiers:   * The recommended spelling of `×` in identifiers is `Prod`. ;)
 (; //LEAN:Prod ;)
@@ -290,7 +309,7 @@ Set__diagonal_subset_iff : (X : Set) -> (s : Elem (powerset (Prod X X))) -> Proo
 
 (; doc: Restrict domain of a function `f` to a set `s`. Same as `Subtype.restrict` but this version takes an argument `↥s` instead of `Subtype s`. ;)
 (; //LEAN:Set.domRestrict ;)
-Set__domRestrict : (X : Set) -> (pi : (Elem X -> Set)) -> (s : Elem (powerset X)) -> (f : ((a1 : Elem X) -> Elem (pi a1))) -> (a : Elem (Set__Elem X s)) -> Elem (pi (Subtype__val X (x => Membership__mem X (powerset X) s x) a)).
+Set__domRestrict : (X : Set) -> ({|pi|} : (Elem X -> Set)) -> (s : Elem (powerset X)) -> (f : ((a1 : Elem X) -> Elem ({|pi|} a1))) -> (a : Elem (Set__Elem X s)) -> Elem ({|pi|} (Subtype__val X (x => Membership__mem X (powerset X) s x) a)).
 
 (; //LEAN:Set.empty_subset ;)
 Set__empty_subset : (X : Set) -> (s : Elem (powerset X)) -> Proof (Set__Subset X (EmptyCollection__emptyCollection (powerset X)) s).
@@ -320,7 +339,7 @@ Set__imageFactorization : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> 
 Set__imageFactorization___proof_1 : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (p : Elem (Set__Elem X s)) -> Proof (Membership__mem Y (powerset Y) (Set__image X Y f s) (f (Subtype__val X (x => Membership__mem X (powerset X) s x) p))).
 
 (; //LEAN:Set.image_fst_graphOn ;)
-Set__image_fst_graphOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__image (Prod X Y) X (Prod__fst X Y) (Set__graphOn X Y f s)) s).
+Set__image_fst_graphOn : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> Proof (Eqt (powerset X) (Set__image (Prod X Y) X Prod__fst__part1 (Set__graphOn X Y f s)) s).
 
 (; //LEAN:Set.image_mono ;)
 Set__image_mono : (X : Set) -> (Y : Set) -> (f : (Elem X -> Elem Y)) -> (s : Elem (powerset X)) -> (t : Elem (powerset X)) -> (h : Proof (Set__Subset X s t)) -> Proof (Set__Subset Y (Set__image X Y f s) (Set__image X Y f t)).

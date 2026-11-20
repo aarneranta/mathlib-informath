@@ -3,6 +3,9 @@
 (; a constant applied as a function: DFunLike.coe ;)
 ContinuousLinearMap__toSpanSingleton__app : (a1 : Set) -> (a2 : Elem F) -> (a3 : Elem X) -> Elem F.
 
+(; a constant with an instance argument that the statement gives ;)
+deriv__part1 : (a1 : (Elem X -> Elem F)) -> (Elem X -> Elem F).
+
 (; a constant applied as a function: DFunLike.coe ;)
 fderivWithin__app : (a1 : Set) -> (a2 : (Elem X -> Elem F)) -> (a3 : Elem (powerset X)) -> (a4 : Elem X) -> (a5 : Elem X) -> Elem F.
 
@@ -54,14 +57,14 @@ ContinuousAt__continuousWithinAt : (X : Set) -> (Y : Set) -> (_ : Proof (Topolog
 
 (; doc: Continuous linear maps between modules. We only put the type classes that are necessary for the definition, although in applications `M` and `M₂` will be topological modules over the topological ring `R`. ;)
 (; //LEAN:ContinuousLinearMap ;)
-ContinuousLinearMap : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> Set.
+ContinuousLinearMap : (R : Set) -> (S : Set) -> ({|sigma|} : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> Set.
 
 (; doc: the identity map as a continuous linear map. ;)
 (; //LEAN:ContinuousLinearMap.id ;)
 ContinuousLinearMap__id : (X : Set) -> (X1 : Set) -> Elem (ContinuousLinearMap X X (RingHom__id X) X1 X1).
 
 (; //LEAN:ContinuousLinearMap.mk ;)
-ContinuousLinearMap__mk : (R : Set) -> (S : Set) -> (sigma : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> (toLinearMap : Elem (LinearMap R S sigma M X)) -> (cont : Proof (autoParam (Continuous M X (AddHom__toFun M X (LinearMap__toAddHom R S sigma M X toLinearMap))) ContinuousLinearMap__cont___autoParam)) -> Elem (ContinuousLinearMap R S sigma M X).
+ContinuousLinearMap__mk : (R : Set) -> (S : Set) -> ({|sigma|} : Elem (RingHom R S)) -> (M : Set) -> (X : Set) -> (toLinearMap : Elem (LinearMap R S {|sigma|} M X)) -> (cont : Proof (autoParam (Continuous M X (AddHom__toFun M X (LinearMap__toAddHom R S {|sigma|} M X toLinearMap))) ContinuousLinearMap__cont___autoParam)) -> Elem (ContinuousLinearMap R S {|sigma|} M X).
 
 (; doc: Given an element `x` of a topological space `M` over a semiring `R`, the natural continuous linear map from `R` to `M` by taking multiples of `x`. ;)
 (; //LEAN:ContinuousLinearMap.toSpanSingleton ;)
@@ -105,10 +108,6 @@ DifferentiableWithinAt : (X : Set) -> (E : Set) -> (F : Set) -> (f : (Elem E -> 
 
 (; //LEAN:DifferentiableWithinAt.hasFDerivWithinAt ;)
 DifferentiableWithinAt__hasFDerivWithinAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> Elem F)) -> (x7 : Elem E) -> (s : Elem (powerset E)) -> (h : Proof (DifferentiableWithinAt X E F f s x7)) -> Proof (HasFDerivWithinAt X E F f (fderivWithin X E F f s x7) s x7).
-
-(; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
-(; //LEAN:Eq ;)
-Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: `Eq.refl a : a = a` is reflexivity, the unique constructor of the equality type. See also `rfl`, which is usually used instead. ;)
 (; //LEAN:Eq.refl ;)
@@ -209,7 +208,7 @@ HasFDerivAt__congr_fderiv : (X : Set) -> (_ : Proof (NontriviallyNormedField X))
 HasFDerivAt__differentiableAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> Elem F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (x7 : Elem E) -> (h : Proof (HasFDerivAt X E F f f' x7)) -> Proof (DifferentiableAt X E F f x7).
 
 (; //LEAN:HasFDerivAt.hasFDerivAtFilter ;)
-HasFDerivAt__hasFDerivAtFilter : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> Elem F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (x7 : Elem E) -> (L : Elem (Filter (Prod E E))) -> (h : Proof (HasFDerivAt X E F f f' x7)) -> (hL : Proof (Leq L (SProd__sprod (Filter E) (Filter E) (Filter (Prod E E)) (nhds E x7) (Pure__pure Filter E x7)))) -> Proof (HasFDerivAtFilter X E F f f' L).
+HasFDerivAt__hasFDerivAtFilter : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> Elem F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (x7 : Elem E) -> (L : Elem (Filter (Prod E E))) -> (h : Proof (HasFDerivAt X E F f f' x7)) -> (hL : Proof (Leq L (SProd__sprod (Filter E) (Filter E) (Filter (Prod E E)) (nhds E x7) (Pure__pure (X1 => Filter X1) E x7)))) -> Proof (HasFDerivAtFilter X E F f f' L).
 
 (; //LEAN:HasFDerivAt.hasFDerivWithinAt ;)
 HasFDerivAt__hasFDerivWithinAt : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> Elem F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (x7 : Elem E) -> (s : Elem (powerset E)) -> (h : Proof (HasFDerivAt X E F f f' x7)) -> Proof (HasFDerivWithinAt X E F f f' s x7).
@@ -231,7 +230,7 @@ HasFDerivAtFilter__isBigO_sub : (X : Set) -> (_ : Proof (NontriviallyNormedField
 HasFDerivAtFilter__mono : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> Elem F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (L1 : Elem (Filter (Prod E E))) -> (L2 : Elem (Filter (Prod E E))) -> (h : Proof (HasFDerivAtFilter X E F f f' L2)) -> (hst : Proof (Leq L1 L2)) -> Proof (HasFDerivAtFilter X E F f f' L1).
 
 (; //LEAN:HasFDerivAtFilter.tendsto_nhds ;)
-HasFDerivAtFilter__tendsto_nhds : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> Elem F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (x7 : Elem E) -> (_ : Proof (ContinuousAdd E)) -> (_ : Proof (ContinuousAdd F)) -> (L : Elem (Filter E)) -> (hL : Proof (Leq L (nhds E x7))) -> (h4 : Proof (HasFDerivAtFilter X E F f f' (SProd__sprod (Filter E) (Filter E) (Filter (Prod E E)) L (Pure__pure Filter E x7)))) -> Proof (Filter__Tendsto E F f L (nhds F (f x7))).
+HasFDerivAtFilter__tendsto_nhds : (X : Set) -> (_ : Proof (NontriviallyNormedField X)) -> (E : Set) -> (_ : Proof (AddCommGroup E)) -> (_ : Proof (Module X E)) -> (_ : Proof (TopologicalSpace E)) -> (F : Set) -> (_ : Proof (AddCommGroup F)) -> (_ : Proof (Module X F)) -> (_ : Proof (TopologicalSpace F)) -> (f : (Elem E -> Elem F)) -> (f' : Elem (ContinuousLinearMap X X (RingHom__id X) E F)) -> (x7 : Elem E) -> (_ : Proof (ContinuousAdd E)) -> (_ : Proof (ContinuousAdd F)) -> (L : Elem (Filter E)) -> (hL : Proof (Leq L (nhds E x7))) -> (h4 : Proof (HasFDerivAtFilter X E F f f' (SProd__sprod (Filter E) (Filter E) (Filter (Prod E E)) L (Pure__pure (X1 => Filter X1) E x7)))) -> Proof (Filter__Tendsto E F f L (nhds F (f x7))).
 
 (; doc: A function `f` has the continuous linear map `f'` as derivative at `x` within a set `s` if `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` tends to `x` inside `s`. ;)
 (; //LEAN:HasFDerivWithinAt ;)
@@ -400,7 +399,7 @@ RingHom : (X : Set) -> (Y : Set) -> Set.
 RingHom__id : (X : Set) -> Elem (RingHom X X).
 
 (; //LEAN:RingHom.isometry ;)
-RingHom__isometry : (X : Set) -> (X1 : Set) -> (_ : Proof (SeminormedRing X)) -> (_ : Proof (SeminormedRing X1)) -> (sigma : Elem (RingHom X X1)) -> (_ : Proof (RingHomIsometric X X1 sigma)) -> Proof (Isometry X X1 sigma).
+RingHom__isometry : (X : Set) -> (X1 : Set) -> (_ : Proof (SeminormedRing X)) -> (_ : Proof (SeminormedRing X1)) -> ({|sigma|} : Elem (RingHom X X1)) -> (_ : Proof (RingHomIsometric X X1 {|sigma|})) -> Proof (Isometry X X1 {|sigma|}).
 
 (; doc: Interpret a `RingHom` `f` as an `f`-semilinear map. ;)
 (; //LEAN:RingHom.toSemilinearMap ;)
@@ -408,11 +407,11 @@ RingHom__toSemilinearMap : (R : Set) -> (S : Set) -> (f : Elem (RingHom R S)) ->
 
 (; doc: Class that expresses the fact that two ring homomorphisms are inverses of each other. This is used to handle `symm` for semilinear equivalences. ;)
 (; //LEAN:RingHomInvPair ;)
-RingHomInvPair : (X : Set) -> (X1 : Set) -> (sigma : Elem (RingHom X X1)) -> (sigma' : Elem (RingHom X1 X)) -> Prop.
+RingHomInvPair : (X : Set) -> (X1 : Set) -> ({|sigma|} : Elem (RingHom X X1)) -> (sigma' : Elem (RingHom X1 X)) -> Prop.
 
 (; doc: This class states that a ring homomorphism is isometric. This is a sufficient assumption for a continuous semilinear map to be bounded and this is the main use for this typeclass. ;)
 (; //LEAN:RingHomIsometric ;)
-RingHomIsometric : (X : Set) -> (X1 : Set) -> (sigma : Elem (RingHom X X1)) -> Prop.
+RingHomIsometric : (X : Set) -> (X1 : Set) -> ({|sigma|} : Elem (RingHom X X1)) -> Prop.
 
 (; doc: `a \ b` is the set difference of `a` and `b`, consisting of all elements in `a` that are not in `b`.  Conventions for notations in identifiers:   * The recommended spelling of `\` in identifiers is `sdiff`. ;)
 (; //LEAN:SDiff.sdiff ;)
@@ -612,7 +611,7 @@ not_imp_comm : (a : Prop) -> (b : Prop) -> Proof (iff (if (not a) b) (if (not b)
 of_eq_true : (p : Prop) -> (h : Proof (Eqt Prop p True)) -> Proof p.
 
 (; //LEAN:pure_le_nhds ;)
-pure_le_nhds : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (Leq (Pure__pure Filter X) (nhds X)).
+pure_le_nhds : (X : Set) -> (_ : Proof (TopologicalSpace X)) -> Proof (Leq (Pure__pure (X1 => Filter X1) X) nhds__part1).
 
 (; doc: `rfl : a = a` is the unique constructor of the equality type. This is the same as `Eq.refl` except that it takes `a` implicitly instead of explicitly.  This is a more powerful theorem than it may appear at first, because although the statement of the theorem is `a = a`, Lean will allow anything that is definitionally equal to that type. So, for instance, `2 + 2 = 4` is proven in Lean by `rfl`, because both sides are the same up to definitional equality. ;)
 (; //LEAN:rfl ;)

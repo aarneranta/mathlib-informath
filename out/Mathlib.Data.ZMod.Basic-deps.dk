@@ -9,6 +9,18 @@ Equiv__subtypeEquivRight__app : (a1 : Proof (forall (AddMonoidHom Int A) (x3 => 
 (; a constant applied as a function: DFunLike.coe ;)
 Int__castAddHom__app : (a1 : Set) -> (a2 : Elem Int) -> Elem (ZMod n).
 
+(; a constant with an instance argument that the statement gives ;)
+Int__cast__part1 : (Elem Int -> Elem (ZMod n)).
+
+(; a constant with an instance argument that the statement gives ;)
+Nat__cast__part1 : (Elem Nat -> Elem R).
+
+(; a constant with an instance argument that the statement gives ;)
+Nat__iterate__part1 : (a1 : (Elem G -> Elem G)) -> (a2 : Elem Nat) -> (Elem G -> Elem G).
+
+(; a constant with an instance argument that the statement gives ;)
+Neg__neg__part1 : (Elem (ZMod n) -> Elem (ZMod n)).
+
 (; a constant applied as a function: DFunLike.coe ;)
 RingHom__fst__app : (a1 : Set) -> (a2 : Set) -> (a3 : Elem (Prod (ZMod m) (ZMod n))) -> Elem (ZMod m).
 
@@ -97,10 +109,6 @@ CharP__intCast_eq_zero_iff : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> (p 
 
 (; //LEAN:CharP.neg_one_ne_one ;)
 CharP__neg_one_ne_one : (R : Set) -> (_ : Proof (AddGroupWithOne R)) -> (p : Elem Nat) -> (_ : Proof (CharP R p)) -> (_ : Proof (Fact (Lt 2 p))) -> Proof (Neq (Neg__neg R 1) 1).
-
-(; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
-(; //LEAN:Eq ;)
-Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: Non-dependent recursor for the equality type. ;)
 (; //LEAN:Eq.ndrec ;)
@@ -315,10 +323,6 @@ Nat__cast_zero : (R : Set) -> (_ : Proof (AddMonoidWithOne R)) -> Proof (Eqt R (
 (; doc: The natural number less than `n*m` congruent to `a` mod `n` and `b` mod `m` ;)
 (; //LEAN:Nat.chineseRemainder ;)
 Nat__chineseRemainder : (m : Elem Nat) -> (n : Elem Nat) -> (co : Proof (Nat__Coprime n m)) -> (a : Elem Nat) -> (b : Elem Nat) -> Elem (Subtype Nat (k => and (Nat__ModEq n k a) (Nat__ModEq m k b))).
-
-(; doc: Iterate a function. ;)
-(; //LEAN:Nat.iterate ;)
-Nat__iterate : (X : Set) -> (op : (Elem X -> Elem X)) -> (x : Elem Nat) -> (x1 : Elem X) -> Elem X.
 
 (; doc: The least common multiple of `m` and `n` is the smallest natural number that's evenly divisible by both `m` and `n`. Returns `0` if either `m` or `n` is `0`.  Examples:  * `Nat.lcm 9 6 = 18`  * `Nat.lcm 9 3 = 9`  * `Nat.lcm 0 3 = 0`  * `Nat.lcm 3 0 = 0` ;)
 (; //LEAN:Nat.lcm ;)
@@ -550,7 +554,7 @@ abs : (X : Set) -> (a : Elem X) -> Elem X.
 addOrderOf : (G : Set) -> (x1 : Elem G) -> Elem Nat.
 
 (; //LEAN:add_left_iterate ;)
-add_left_iterate : (M : Set) -> (_ : Proof (AddMonoid M)) -> (a : Elem M) -> (n : Elem Nat) -> Proof (Eqt (Elem M -> Elem M) (Nat__iterate M (x2 => plus a x2) n) (x3 => plus (HSMul__hSMul Nat M M n a) x3)).
+add_left_iterate : (M : Set) -> (_ : Proof (AddMonoid M)) -> (a : Elem M) -> (n : Elem Nat) -> Proof (Eqt (Elem M -> Elem M) (Nat__iterate__part1 (x4 => plus a x4) n) (x5 => plus (HSMul__hSMul Nat M M n a) x5)).
 
 (; doc: Cast across a type equality. If `h : α = β` is an equality of types, and `a : α`, then `a : β` will usually not typecheck directly, but this function will allow you to work around this and embed `a` in type `β` as `cast h a : β`.  It is best to avoid this function if you can, because it is more complicated to reason about terms containing casts, but if the types don't match up definitionally sometimes there isn't anything better you can do.  For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality) ;)
 (; //LEAN:cast ;)

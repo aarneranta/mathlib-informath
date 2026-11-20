@@ -1,5 +1,23 @@
 (; constants used by Mathlib.Data.Fintype.Card, declared with their translated types ;)
 
+(; a constant with an instance argument that the statement gives ;)
+Fin__part1 : (Elem Nat -> Set).
+
+(; a constant with an instance argument that the statement gives ;)
+Membership__mem__part1 : (a1 : Elem (powerset X)) -> (Elem X -> Prop).
+
+(; a constant with an instance argument that the statement gives ;)
+Subtype__mk__part1 : ((val : Elem X) -> (Proof (p val) -> Elem (Subtype X (x5 => p x5)))).
+
+(; a constant with an instance argument that the statement gives ;)
+Subtype__val__part1 : (Elem (Subtype X (x4 => p x4)) -> Elem X).
+
+(; a constant with an instance argument that the statement gives ;)
+Sum__inl__part1 : (Elem X -> Elem (Sum X Y)).
+
+(; a constant with an instance argument that the statement gives ;)
+Sum__inr__part1 : (Elem Y -> Elem (Sum X Y)).
+
 (; doc: The Boolean values, `true` and `false`.  Logically speaking, this is equivalent to `Prop` (the type of propositions). The distinction is public important for programming: both propositions and their proofs are erased in the code generator, while `Bool` corresponds to the Boolean type in most programming languages and carries precisely one bit of run-time information. ;)
 (; //LEAN:Bool ;)
 Bool : Set.
@@ -28,10 +46,6 @@ EmbeddingLike__injective : (F : Set) -> (X : Set) -> (Y : Set) -> (_ : Proof (Em
 (; doc: The empty type. It has no constructors.  Use `Empty.elim` in contexts where a value of type `Empty` is in scope. ;)
 (; //LEAN:Empty ;)
 Empty : Set.
-
-(; doc: The equality relation. It has one introduction rule, `Eq.refl`. We use `a = b` as notation for `Eq a b`. A fundamental property of equality is that it is an equivalence relation. ``` variable (α : Type) (a b c d : α) variable (hab : a = b) (hcb : c = b) (hcd : c = d)  example : a = d :=   Eq.trans (Eq.trans hab (Eq.symm hcb)) hcd ``` Equality is much more than an equivalence relation, however. It has the important property that every assertion respects the equivalence, in the sense that we can substitute equal expressions without changing the truth value. That is, given `h1 : a = b` and `h2 : p a`, we can construct a proof for `p b` using substitution: `Eq.subst h1 h2`. Example: ``` example (α : Type) (a b : α) (p : α → Prop)         (h1 : a = b) (h2 : p a) : p b :=   Eq.subst h1 h2  example (α : Type) (a b : α) (p : α → Prop)     (h1 : a = b) (h2 : p a) : p b :=   h1 ▸ h2 ``` The triangle in the second presentation is a macro built on top of `Eq.subst` and `Eq.symm`, and you can enter it by typing `\t`. For more information: [Equality](https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html#equality)  Conventions for notations in identifiers:   * The recommended spelling of `=` in identifiers is `eq`. ;)
-(; //LEAN:Eq ;)
-Eq : (X : Set) -> (x : Elem X) -> (x1 : Elem X) -> Prop.
 
 (; doc: Non-dependent recursor for the equality type. ;)
 (; //LEAN:Eq.ndrec ;)
@@ -431,34 +445,19 @@ Subtype__coe_injective : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Function_
 (; //LEAN:Subtype.impEmbedding ;)
 Subtype__impEmbedding : (X : Set) -> (p : (Elem X -> Prop)) -> (q : (Elem X -> Prop)) -> (h : Proof (forall X (x2 => if (p x2) (q x2)))) -> Elem (Function__Embedding (Subtype X (x => p x)) (Subtype X (x1 => q x1))).
 
-(; //LEAN:Subtype.mk ;)
-Subtype__mk : (X : Set) -> (p : (Elem X -> Prop)) -> (val : Elem X) -> (property : Proof (p val)) -> Elem (Subtype X (x => p x)).
-
 (; doc: We make this the simp lemma instead of `range_coe`. The reason is that if we write for `s : Set α` the function `(↑) : s → α`, then the inferred implicit arguments of `(↑)` are `↑α (fun x ↦ x ∈ s)`. ;)
 (; //LEAN:Subtype.range_coe_subtype ;)
-Subtype__range_coe_subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Eqt (powerset X) (Set__range X (Subtype X (x => p x)) (Subtype__val X p)) (Set__ofPred X (x1 => p x1))).
-
-(; doc: The value in the underlying type that satisfies the predicate. ;)
-(; //LEAN:Subtype.val ;)
-Subtype__val : (X : Set) -> (p : (Elem X -> Prop)) -> (self : Elem (Subtype X (x => p x))) -> Elem X.
+Subtype__range_coe_subtype : (X : Set) -> (p : (Elem X -> Prop)) -> Proof (Eqt (powerset X) (Set__range X (Subtype X (x => p x)) Subtype__val__part1) (Set__ofPred X (x2 => p x2))).
 
 (; doc: The disjoint union of types `α` and `β`, ordinarily written `α ⊕ β`.  An element of `α ⊕ β` is either an `a : α` wrapped in `Sum.inl` or a `b : β` wrapped in `Sum.inr`. `α ⊕ β` is not equivalent to the set-theoretic union of `α` and `β` because its values include an indication of which of the two types was chosen. The union of a singleton set with itself contains one element, while `Unit ⊕ Unit` contains distinct values `inl ()` and `inr ()`. ;)
 (; //LEAN:Sum ;)
 Sum : (X : Set) -> (Y : Set) -> Set.
 
-(; doc: Left injection into the sum type `α ⊕ β`. ;)
-(; //LEAN:Sum.inl ;)
-Sum__inl : (X : Set) -> (Y : Set) -> (val : Elem X) -> Elem (Sum X Y).
-
 (; //LEAN:Sum.inl_injective ;)
-Sum__inl_injective : (X : Set) -> (Y : Set) -> Proof (Function__Injective X (Sum X Y) (Sum__inl X Y)).
-
-(; doc: Right injection into the sum type `α ⊕ β`. ;)
-(; //LEAN:Sum.inr ;)
-Sum__inr : (X : Set) -> (Y : Set) -> (val : Elem Y) -> Elem (Sum X Y).
+Sum__inl_injective : (X : Set) -> (Y : Set) -> Proof (Function__Injective X (Sum X Y) Sum__inl__part1).
 
 (; //LEAN:Sum.inr_injective ;)
-Sum__inr_injective : (X : Set) -> (Y : Set) -> Proof (Function__Injective Y (Sum X Y) (Sum__inr X Y)).
+Sum__inr_injective : (X : Set) -> (Y : Set) -> Proof (Function__Injective Y (Sum X Y) Sum__inr__part1).
 
 (; doc: Compose two proofs by transitivity, generalized over the relations involved. ;)
 (; //LEAN:Trans.trans ;)

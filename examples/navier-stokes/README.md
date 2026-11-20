@@ -55,18 +55,16 @@ The pages read statements and definitions, not proofs.
 
 The steps of `build.sh`:
 
-1. **Export.** `exporter/` is mathlib-informath's `Export.lean`, built against
-   the project's Lean and Mathlib (`lakefile.toml`, `lake-manifest.json`). It
-   is extended in three ways:
-   - a function of the project applied to fewer arguments than its type has
-     becomes `c__part<m>`, and one applied to more becomes `c__app<m>`, so that
-     every application fits the symbol table entry (otherwise Informath
-     silently drops arguments);
-   - `EuclideanSpace 𝕜 (Fin n)` is `EuclideanSpace__Fin 𝕜 n`, that is, ℝⁿ;
-   - `(u - v) x` and the other arithmetic operations on functions applied to a
-     point are kept as such.
-
-   `MATHLIB` is set to the project, so that the definitions keep their bodies.
+1. **Export.** `exporter/` builds mathlib-informath's own `Export.lean` (a
+   link to it, as are `mapping.tsv` and `binders.txt`) against the project's
+   Lean and Mathlib (`lakefile.toml`, `lake-manifest.json`). `ENTRY_TABLES`
+   gives it this project's tables besides Mathlib's, so that a function
+   applied to fewer arguments than its entry has reads with dots,
+   inverse(d, f, ·), and one applied to more applies the entry to them, as
+   the README of mathlib-informath explains; an entry of the tables for such
+   a form, like `inverse__part1` (N_d⁻¹ f), is kept. The names table is made
+   from a first export, and the modules are exported again with it. `MATHLIB`
+   is set to the project, so that the definitions keep their bodies.
 2. **Symbol tables.** `scripts/name-table.py` gives every constant of the
    project its short name, as an operator (`navier-stokes-names.dkgf`). The
    hand-written [navier-stokes.dkgf](navier-stokes.dkgf) overrides it; each of

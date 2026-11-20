@@ -16,8 +16,14 @@ MODULES="NavierStokes.ComparatorDefinitions NavierStokes.ComparatorSolution
 # the exporter reads the sources (for the definientia) from $MATHLIB
 export MATHLIB="${NAVIER_STOKES:-$(cd ../.. && pwd)/../NavierStokesAndEuler}"
 [ -d "$MATHLIB/NavierStokes" ] || { echo "no NavierStokesAndEuler in $MATHLIB"; exit 1; }
+# the exporter is mathlib-informath's Export.lean; it reads the hand-written
+# tables and the generated names table for the argument counts of the entries
+# (partial applications as c__part<m>, image(f, ·)): the names table is made
+# from a first export, and the modules are exported again with it
+export ENTRY_TABLES="../../../mathlib.dkgf:../../../structures.dkgf:../navier-stokes-names.dkgf:../navier-stokes.dkgf"
 (cd exporter && lake build export && lake exe export $MODULES)
 python3 scripts/name-table.py
+(cd exporter && lake exe export $MODULES)
 python3 scripts/read-modules.py work/index.json $MODULES
 python3 scripts/build-pages.py work/index.json
 python3 scripts/build-comparison.py work/index.json

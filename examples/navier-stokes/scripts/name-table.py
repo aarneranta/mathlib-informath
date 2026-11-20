@@ -53,26 +53,11 @@ def codomain(t):
         i = j + m2.end()
 NOARGS = os.environ.get('NOARGS')
 for c, t in sorted(types.items()):
+    if re.search(r'__(part|app)\d+$', c):
+        continue                        # Export.lean writes their entries (-hide.dkgf)
     if codomain(t).startswith('Proof'):
         continue                        # a theorem: not a symbol
     n = 0 if NOARGS else binders(t)
-    mp = re.match(r'(.*)__part(\d+)$', c)
-    if mp:
-        # c__part<m>: c applied to its shown arguments, m missing (Export.lean)
-        name = mp.group(1).split('__')[-1].replace('_', r'\_')
-        args = ', '.join('#%d' % i for i in range(1, n + 1))
-        out.append('%s : $\\operatorname{%s}%s$' % (c, name, '(%s)' % args if n else ''))
-        continue
-    m = re.match(r'(.*)__app(\d+)$', c)
-    if m:
-        # c__app<m>: c applied to its shown arguments and then to m more (Export.lean)
-        base, extra = m.group(1), int(m.group(2))
-        name = base.split('__')[-1].replace('_', r'\_')
-        k = n - extra
-        inner = ', '.join('#%d' % i for i in range(1, k + 1))
-        outer = ', '.join('#%d' % i for i in range(k + 1, n + 1))
-        out.append('%s : $\\operatorname{%s}%s(%s)$' % (c, name, '(%s)' % inner if k else '', outer))
-        continue
     shown = [k for k in range(1, n + 1) if k not in hidden.get(c, set())]
     name = c.split('__')[-1].replace('_', r'\_').replace("'", r"'")
     op = r'\operatorname{%s}' % name

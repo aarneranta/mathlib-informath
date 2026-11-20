@@ -96,8 +96,12 @@ def readEntryArities : IO Unit := do
   let mut lx : Std.HashMap String String := {}
   -- the hand-written tables only: the generated wordings of definitions.dkgf
   -- name the main arguments only (the swap of #2 and #3), and a constant
-  -- without a hand-written entry is better shown as itself
-  for t in ["mathlib.dkgf", "structures.dkgf"] do
+  -- without a hand-written entry is better shown as itself. ENTRY_TABLES
+  -- (paths separated by :) gives others, for a project of one's own
+  let tables : List String := match (← IO.getEnv "ENTRY_TABLES") with
+    | some ts => (ts.splitOn ":").filter (fun t : String => !t.isEmpty)
+    | none => ["mathlib.dkgf", "structures.dkgf"]
+  for t in tables do
     let path : System.FilePath := t
     if !(← path.pathExists) then continue
     for line in (← IO.FS.lines path) do
@@ -188,6 +192,8 @@ def appEntries (derived : Std.HashMap String String) : IO String := do
       let m := parts.getLast!
       if m.isEmpty || !m.all Char.isDigit then continue
       let base := sep.intercalate parts.dropLast
+      -- a table's own entry for c__part<m> or c__app<m> is kept (N_d⁻¹ f)
+      if lx.contains nm || ar.contains nm then continue
       let some latex := lx.get? base | continue
       let some k := ar.get? base | continue
       if isApp then
@@ -754,6 +760,10 @@ partial def app (c : Name) (args : Array Expr) (whole : Expr) : M String := do
           return " ".intercalate (nm :: as.map paren)
   -- an arithmetic operation on functions applied to a point, (f - g) x, as
   -- HSub__hSub__app1 f g x: Informath's base operations are binary
+  -- ℝ^n: EuclideanSpace 𝕜 (Fin n) as EuclideanSpace__Fin 𝕜 n
+  if c == `EuclideanSpace && args.size == 2 && args[1]!.isAppOfArity ``Fin 1 then
+    modify fun st => { st with derived := st.derived.insert "EuclideanSpace__Fin" "(K : Set) -> (n : Elem Nat) -> Set" }
+    return s!"EuclideanSpace__Fin {paren (← tr args[0]!)} {paren (← tr args[1]!.appArg!)}"
   let pointwise := [``HSub.hSub, ``HAdd.hAdd, ``HMul.hMul, ``HSMul.hSMul, ``Neg.neg]
   if pointwise.contains c then
     let arity := if c == ``Neg.neg then 3 else 6

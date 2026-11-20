@@ -506,7 +506,7 @@ Finset__three_lt_card : (X : Set) -> (s : Elem (Finset X)) -> Proof (iff (Lt 3 (
 
 (; //LEAN:Finset.strongInduction ;)
 def Finset__strongInduction : (X : Set) -> (p : (Elem (Finset X) -> Set)) -> (H : ((s1 : Elem (Finset X)) -> (((t1 : Elem (Finset X)) -> (Proof (HasSSubset__SSubset (Finset X) t1 s1) -> Elem (p t1))) -> Elem (p s1)))) -> (s : Elem (Finset X)) -> Elem (p s) :=
-  X => p => H => WellFounded__Nat__fix (Finset X) (s => p s) (x => Finset__card X x) (s1 => x1 => H s1 (t => h => x1 t (Finset__strongInduction___proof_1 X s1 t (Finset__card_lt_card X t s1 h)))).
+  X => p => H => s => WellFounded__Nat__fix (Finset X) (s1 => p s1) (x => Finset__card X x) (s2 => x1 => H s2 (t => h => x1 t (Finset__strongInduction___proof_1 X s2 t (Finset__card_lt_card X t s2 h)))) s.
 
 (; //LEAN:Finset.strongInduction_eq ;)
 Finset__strongInduction_eq : (X : Set) -> (p : (Elem (Finset X) -> Set)) -> (H : ((s1 : Elem (Finset X)) -> (((t2 : Elem (Finset X)) -> (Proof (HasSSubset__SSubset (Finset X) t2 s1) -> Elem (p t2))) -> Elem (p s1)))) -> (s : Elem (Finset X)) -> Proof (Eqt (p s) (Finset__strongInduction X p H s) (H s (t => h => Finset__strongInduction X p H t))).
@@ -528,14 +528,14 @@ def Finset__Nonempty__strong_induction : (X : Set) -> (p : ((s2 : Elem (Finset X
 
 (; //LEAN:Finset.strongDownwardInduction ;)
 def Finset__strongDownwardInduction : (X : Set) -> (p : (Elem (Finset X) -> Set)) -> (n : Elem Nat) -> (H : ((t1 : Elem (Finset X)) -> (((t21 : Elem (Finset X)) -> (Proof (Leq (Finset__card X t21) n) -> (Proof (HasSSubset__SSubset (Finset X) t1 t21) -> Elem (p t21)))) -> (Proof (Leq (Finset__card X t1) n) -> Elem (p t1))))) -> (s : Elem (Finset X)) -> (h : Proof (Leq (Finset__card X s) n)) -> Elem (p s) :=
-  X => p => n => H => WellFounded__Nat__fix (Finset X) (s => Proof (Leq (Finset__card X s) n) -> Elem (p s)) (x => minus n (Finset__card X x)) (s1 => x1 => H s1 (t => ht => h1 => x1 t (Finset__strongDownwardInduction___proof_3 X n s1 t (Finset__strongDownwardInduction___proof_2 X n s1 t ht (Finset__card_lt_card X s1 t h1))) ht)).
+  X => p => n => H => s => h => WellFounded__Nat__fix (Finset X) (s1 => Proof (Leq (Finset__card X s1) n) -> Elem (p s1)) (x => minus n (Finset__card X x)) (s2 => x1 => H s2 (t => ht => h2 => x1 t (Finset__strongDownwardInduction___proof_3 X n s2 t (Finset__strongDownwardInduction___proof_2 X n s2 t ht (Finset__card_lt_card X s2 t h2))) ht)) s h.
 
 (; //LEAN:Finset.strongDownwardInduction_eq ;)
 Finset__strongDownwardInduction_eq : (X : Set) -> (n : Elem Nat) -> (p : (Elem (Finset X) -> Set)) -> (H : ((t1 : Elem (Finset X)) -> (((t21 : Elem (Finset X)) -> (Proof (Leq (Finset__card X t21) n) -> (Proof (HasSSubset__SSubset (Finset X) t1 t21) -> Elem (p t21)))) -> (Proof (Leq (Finset__card X t1) n) -> Elem (p t1))))) -> (s : Elem (Finset X)) -> Proof (Eqt (Proof (Leq (Finset__card X s) n) -> Elem (p s)) (Finset__strongDownwardInduction X p n H s) (H s (t => ht => h1 => Finset__strongDownwardInduction X p n H t ht))).
 
 (; //LEAN:Finset.strongDownwardInductionOn ;)
 def Finset__strongDownwardInductionOn : (X : Set) -> (n : Elem Nat) -> (p : (Elem (Finset X) -> Set)) -> (s : Elem (Finset X)) -> (H : ((t1 : Elem (Finset X)) -> (((t21 : Elem (Finset X)) -> (Proof (Leq (Finset__card X t21) n) -> (Proof (HasSSubset__SSubset (Finset X) t1 t21) -> Elem (p t21)))) -> (Proof (Leq (Finset__card X t1) n) -> Elem (p t1))))) -> (h : Proof (Leq (Finset__card X s) n)) -> Elem (p s) :=
-  X => n => p => s => H => Finset__strongDownwardInduction X p n H s.
+  X => n => p => s => H => h => Finset__strongDownwardInduction X p n H s h.
 
 (; //LEAN:Finset.strongDownwardInductionOn_eq ;)
 Finset__strongDownwardInductionOn_eq : (X : Set) -> (n : Elem Nat) -> (p : (Elem (Finset X) -> Set)) -> (s : Elem (Finset X)) -> (H : ((t1 : Elem (Finset X)) -> (((t21 : Elem (Finset X)) -> (Proof (Leq (Finset__card X t21) n) -> (Proof (HasSSubset__SSubset (Finset X) t1 t21) -> Elem (p t21)))) -> (Proof (Leq (Finset__card X t1) n) -> Elem (p t1))))) -> Proof (Eqt (Proof (Leq (Finset__card X s) n) -> Elem (p s)) (h1 => Finset__strongDownwardInductionOn X n (x => p x) s H h1) (H s (t => ht => h2 => Finset__strongDownwardInductionOn X n (x1 => p x1) t H ht))).

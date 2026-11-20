@@ -31,3 +31,5 @@ python3 scripts/constants-table.py
 # the constants of Lemma 8.6: the Lean statements the article compares with it,
 # and the definitions they rest on
 python3 scripts/constants-table.py --out constants-lemma86.tsv --roots NavierStokes.SmoothFamilyTorusInverse.inverse_finiteJets,NavierStokes.SmoothFamilyTorusInverse.norm_derivativeWord_inverse_le,NavierStokes.SmoothFamilyTorusInverse.mixedJet_inverse_bound,NavierStokes.ParametricTorusInverse.mixedJet_inverse_bound
+# the same as a symbol table to edit, with mock-ups for the missing entries
+python3 scripts/dkgf-subtable.py constants-lemma86.tsv lemma86.dkgf

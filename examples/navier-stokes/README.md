@@ -59,6 +59,18 @@ A definition by equations (`derivativeWord`, `symbol`) has no body in the
 export, and the chain stops there; so does it at a definition of a module that
 is not read (`DiophantineGraph`).
 
+[lemma86.dkgf](lemma86.dkgf) is that table as a symbol table, to be edited and
+added at the end of RunInformath's `-symboltables=` list (or of the tables of
+`scripts/read-modules.py`), which it then completes and overrides. Each
+constant has its Lean name, origin, occurrences and the table of its entry in
+a comment, and its entry; Informath's base constants are commented out. A
+constant without an entry has a verbal mock-up of the right category and
+number of arguments, in words from outside mathematics: `Bool` is "appendix"
+(so a list of booleans reads "a list of appendices"), `FiniteDimensional` is
+"#1 is inflationary with respect to #2". The `#HIDE` lines of the constants and
+the `#MACRO` lines of the entries come first. Made by `scripts/dkgf-subtable.py`
+from `constants-lemma86.tsv`.
+
 ## How it is made
 
     ./build.sh

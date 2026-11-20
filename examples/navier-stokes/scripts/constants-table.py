@@ -176,25 +176,65 @@ def origins(leans):
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--roots', help='Lean names, comma-separated: only their statements, and the '
+                    'definitions of the project that they use, transitively (column depth)')
+    ap.add_argument('--out', default='constants.tsv')
+    opts = ap.parse_args()
     leans, base = lean_names(), mapping()
     hidden = hidden_args()
-    counts = collections.Counter()
+    # dk -> the texts that its reading shows: a theorem's statement (not its
+    # proof), a definition's statement and body; a structure's fields are its
+    # constructor's statement
+    decls = {}
     for m in modules():
         kinds = {d['dk']: d['kind'] for d in json.load(open(os.path.join(OUT, m + '.json')))}
         for dk, (typ, body) in blocks(os.path.join(OUT, m + '.dk')).items():
-            # a theorem's proof is not informalized; a definition's body is
-            terms = [typ] if kinds.get(dk) == 'theorem' or body is None else [typ, body]
+            decls[dk] = (kinds.get(dk), [typ] if kinds.get(dk) == 'theorem' or body is None else [typ, body])
+
+    def constants_of(text):
+        """The dk names of the constants a text shows (c__part<m> as c)."""
+        out = []
+        for t in shown_constants(parse(text), hidden):
+            if t in FRAMEWORK or t.startswith('{|') or t[0].isdigit():
+                continue
+            out.append(re.sub(r'__(part|app)\d*$', '', t))
+        return out
+
+    def lean_of(c):
+        return leans.get(c) or base.get(c) or ('EuclideanSpace' if c == 'EuclideanSpace__Fin' else None)
+
+    counts, depth = collections.Counter(), {}
+    if opts.roots:
+        dk_of_lean = {v: k for k, v in leans.items()}
+        level = [dk_of_lean[r] for r in opts.roots.split(',')]
+        texts_of = lambda dk, d: decls[dk][1][:1] if d == 0 else decls[dk][1]
+        seen, d = set(level), 0
+        while level:
+            nxt = []
+            for dk in level:
+                for text in texts_of(dk, d):
+                    for c in constants_of(text):
+                        lean = lean_of(c)
+                        if not lean:
+                            continue
+                        counts[lean] += 1
+                        depth.setdefault(lean, d)
+                        # the project's definitions read next: their bodies, a
+                        # structure's fields (its constructor c__mk)
+                        for e in [c, c + '__mk']:
+                            if e in decls and decls[e][0] != 'theorem' and e not in seen:
+                                seen.add(e)
+                                nxt.append(e)
+            level, d = nxt, d + 1
+    else:
+        for dk, (kind, terms) in decls.items():
             for text in terms:
-              for t in shown_constants(parse(text), hidden):
-                if t in FRAMEWORK or t.startswith('{|') or t[0].isdigit():
-                    continue
-                c = re.sub(r'__(part|app)\d*$', '', t)      # c__part<m>, c__app<m>, c__app: c
-                if c in leans:
-                    counts[leans[c]] += 1
-                elif c in base:
-                    counts[base[c]] += 1
-                elif c == 'EuclideanSpace__Fin':
-                    counts['EuclideanSpace'] += 1
+                for c in constants_of(text):
+                    lean = lean_of(c)
+                    if lean:
+                        counts[lean] += 1
     orig = origins(counts)
     # the theorems (proofs inside definitions, as of a subtype) are not counted
     for lean in [l for l in counts if orig.get(l, ('', ''))[1] == 'theorem']:
@@ -217,14 +257,14 @@ def main():
         if dk not in ent and lean in base_of:
             dk = base_of[lean]              # mapped to Informath's base (Real.exp?)
         entry, table = ent.get(dk, ('', ''))
-        rows.append((n, lean, where, mod, dk or '', entry, table))
+        rows.append((n, lean, where, mod, dk or '', entry, table) + ((depth.get(lean, ''),) if opts.roots else ()))
     rows.sort(key=lambda r: (-r[0], r[1]))
-    with open(os.path.join(ROOT, 'constants.tsv'), 'w') as f:
-        f.write('occurrences\tlean\tdefined in\tmodule\tdedukti\tentry\ttable\n')
+    with open(os.path.join(ROOT, opts.out), 'w') as f:
+        f.write('occurrences\tlean\tdefined in\tmodule\tdedukti\tentry\ttable' + ('\tdepth' if opts.roots else '') + '\n')
         for r in rows:
             f.write('\t'.join(str(x).replace('\t', ' ') for x in r) + '\n')
     by = collections.Counter(r[2] for r in rows)
-    print('%d constants (%s), %d occurrences -> constants.tsv; %d without an entry'
+    print(('%d constants (%s), %d occurrences -> ' + opts.out + '; %d without an entry')
           % (len(rows), ', '.join('%d %s' % (n, w or '?') for w, n in by.most_common()),
              sum(counts.values()), sum(1 for r in rows if not r[5])))
 

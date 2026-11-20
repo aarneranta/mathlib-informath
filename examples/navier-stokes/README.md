@@ -49,6 +49,16 @@ Informath's base (`HAdd.hAdd` to `plus`) shows the base's entry; one written
 `c__part<m>` or `c__app<m>` counts as `c`. It is made by
 `scripts/constants-table.py` (the modules from `exporter/checks/Origins.lean`).
 
+[constants-lemma86.tsv](constants-lemma86.tsv) is the same for Lemma 8.6: the
+statements of the four Lean declarations that the article compares with it
+(`inverse_finiteJets`, `norm_derivativeWord_inverse_le` and the two
+`mixedJet_inverse_bound`), and the bodies of the project's definitions that
+they use, transitively (`--roots`). The column depth tells where a constant
+first appears: 0 in the statements, 1 in the definitions they use, and so on.
+A definition by equations (`derivativeWord`, `symbol`) has no body in the
+export, and the chain stops there; so does it at a definition of a module that
+is not read (`DiophantineGraph`).
+
 ## How it is made
 
     ./build.sh

@@ -28,3 +28,6 @@ python3 scripts/read-modules.py work/index.json $MODULES
 python3 scripts/build-pages.py work/index.json
 python3 scripts/build-comparison.py work/index.json
 python3 scripts/constants-table.py
+# the constants of Lemma 8.6: the Lean statements the article compares with it,
+# and the definitions they rest on
+python3 scripts/constants-table.py --out constants-lemma86.tsv --roots NavierStokes.SmoothFamilyTorusInverse.inverse_finiteJets,NavierStokes.SmoothFamilyTorusInverse.norm_derivativeWord_inverse_le,NavierStokes.SmoothFamilyTorusInverse.mixedJet_inverse_bound,NavierStokes.ParametricTorusInverse.mixedJet_inverse_bound

@@ -91,6 +91,12 @@ initialize entryArities : IO.Ref (Std.HashMap String Nat) ← IO.mkRef {}
 the entries of c__app<m> (see app). -/
 initialize entryLatex : IO.Ref (Std.HashMap String String) ← IO.mkRef {}
 
+/-- The constants (Dedukti names) of the #UNFOLD lines of the tables: each
+application of one is replaced by the constant's definiens, β-reduced (see
+app), so that a reading shows what the definition says (δβ-conversion, which
+Dedukti checks like any conversion). -/
+initialize unfoldSet : IO.Ref (Std.HashSet String) ← IO.mkRef {}
+
 def readEntryArities : IO Unit := do
   let mut m : Std.HashMap String Nat := {}
   let mut lx : Std.HashMap String String := {}
@@ -105,6 +111,10 @@ def readEntryArities : IO Unit := do
     let path : System.FilePath := t
     if !(← path.pathExists) then continue
     for line in (← IO.FS.lines path) do
+      if line.startsWith "#UNFOLD " then
+        for c in (line.drop 8).toString.splitOn " " do
+          if !c.isEmpty then unfoldSet.modify (·.insert c)
+        continue
       if line.startsWith "#" then continue
       match line.splitOn " : " with
       | c :: rest@(_ :: _) =>
@@ -519,6 +529,13 @@ partial def hypoType (t : Expr) (inst : Bool := true) : M String := do
 
 /-- An application of a constant, with the special cases of the mapping. -/
 partial def app (c : Name) (args : Array Expr) (whole : Expr) : M String := do
+  -- a constant of an #UNFOLD line: its definiens applied to the arguments,
+  -- β-reduced; applied to fewer arguments than it has λs, a λ remains
+  if (← unfoldSet.get).contains (mangle c) then
+    if let some ci := (← getEnv).find? c then
+      if let some v := ci.value? then
+        let v ← instantiateValueLevelParams ci whole.getAppFn.constLevels!
+        return ← tr (mkAppN v args).headBeta
   -- pattern matching on a conjunction or an existential (fun δ ⟨δ_pos, Hf⟩ => t,
   -- match h with | ⟨w, hw⟩ => t), which Lean compiles to a matcher: the matcher
   -- unfolded to casesOn, and that to the elimination rules, And.left and
@@ -900,6 +917,19 @@ partial def valueGo (explicitOnly : Bool) (t v : Expr) : M String := do
         -- and the statement keeps it too (usedInstances, from a first translation)
         if !(statedClass ty && mentions rest nm) then return rest
         modify fun st => { st with usedInstances := st.usedInstances.insert n }
+      return s!"{nm} => {rest}"
+  -- a definiens with fewer λs than its type has Πs (directionalInverse d a :=
+  -- series (inverseCoeff d a), of type ... → Plane → ℂ): η-expanded, so that
+  -- it has the type of the statement. Definitions only: the proof texts of
+  -- theorems are read from their terms as they are.
+  | .forallE n ty b bi, _ =>
+    if !explicitOnly then return ← tr v
+    let prop ← isProp ty
+    let nm ← freshName n prop (sortish ty)
+    withLocalDecl (Name.mkSimple nm) bi ty fun y => do
+      let rest ← valueGo explicitOnly (b.instantiate1 y) (mkApp v y).headBeta
+      if bi != .default && (bi == .instImplicit || !(← get).keepImplicit) then return rest
+      if droppedInstance ty bi && !(← get).usedInstances.contains n then return rest
       return s!"{nm} => {rest}"
   | _, _ => tr v
 

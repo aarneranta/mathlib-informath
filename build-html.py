@@ -14,6 +14,7 @@ from the line where the declaration starts up to its ":=", without the
 docstring, which is shown apart; each declaration links to its line on
 GitHub, at the commit of the checkout.
 """
+from worded import worded as worded_reading
 import html, json, os, re
 import sys
 
@@ -350,10 +351,10 @@ def cov_cells(ns, tag='td'):
     return ''.join('<%s>%d</%s>' % (tag, n, tag) for n in ns)
 
 
-def worded(text):
-    """No constant left verbatim: a variable may hold for arguments ($r$
-    holds for $a$ and $b$), a \\mathrm{Constant} may not."""
-    return bool(text) and '\\mathrm' not in text
+def worded(d, lang):
+    """No constant left as \\mathrm{c}; a multi-letter variable may be
+    (\\mathrm{hx}): worded.py tells them apart by the Dedukti."""
+    return worded_reading(d['readings'].get(lang), d['dedukti'])
 
 
 def main():
@@ -376,7 +377,7 @@ def main():
                 ' <a href="%s">source</a>' % GITHUB % (commit, m.replace('.', '/') + '.lean', 1)
                 if m.startswith('Mathlib.') else ''))
             body += [entry_html(d, languages, commit, where) for d in ds]
-            ns = [len(ds)] + [sum(worded(d['readings'].get(lang)) for d in ds) for lang in languages]
+            ns = [len(ds)] + [sum(worded(d, lang) for d in ds) for lang in languages]
             grows.append((m, ns))
             gtot = [a + b for a, b in zip(gtot, ns)]
         head = ('<nav><a href="../mathlib-informath.html">Mathlib informalized</a> &rsaquo; %s</nav>'

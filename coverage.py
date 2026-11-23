@@ -10,15 +10,16 @@ text, from a term or from tactics, and how many proof lines say only "It is
 obvious".  Then the constants most often shown symbolically, over all the
 modules: the symbol table entries most worth writing.
 """
+from worded import symbolic_constants, worded as worded_reading
 import collections, json, re
 
 SYMBOLIC = re.compile(r'\\mathrm\{([A-Za-z0-9_\\\']+)\}')
 OBVIOUS = 'It is obvious.'
 
 
-def constants(text):
-    return [c.replace('\\_', '_') for c in SYMBOLIC.findall(text or '')
-            if '\\_\\_' in c or c[:1].isupper()]
+def constants(d, lang='Eng'):
+    """The constants a reading leaves as \\mathrm{c} (worded.py: free in the Dedukti)."""
+    return symbolic_constants(d['readings'].get(lang), d['dedukti'])
 
 
 def main():
@@ -30,7 +31,7 @@ def main():
     seen = collections.defaultdict(set)
     for m, ds in by.items():
         theorems = [d for d in ds if d['kind'] == 'theorem']
-        worded = sum(not constants(d['readings'].get('Eng')) for d in ds)
+        worded = sum(worded_reading(d['readings'].get('Eng'), d['dedukti']) for d in ds)
         forced = sum('Eng' in d['forced'] for d in ds)
         term = sum(bool(d['proof']) and not d['tactics'] for d in theorems)
         tactic = sum(bool(d['proof']) and d['tactics'] for d in theorems)
@@ -38,7 +39,7 @@ def main():
         obvious = sum(OBVIOUS in l for l in lines)
         rows.append((m, len(ds), worded, forced, len(theorems), term, tactic, len(lines), obvious))
         for d in ds:
-            for c in set(constants(d['readings'].get('Eng'))):
+            for c in set(constants(d)):
                 missing[c] += 1
                 seen[c].add(m)
     total = [sum(r[i] for r in rows) for i in range(1, 9)]

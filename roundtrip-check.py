@@ -6,6 +6,10 @@ semantics of t' includes t (exact), does so with the same hypotheses or up to
 normalization (equivalent), or not (lost).
 
     INFORMATH_ROOT=~/claude/informath python3 roundtrip-check.py [-part=statements|definitions] [-workers=8] [-limit=N] [-safe]
+        [-names=FILE] [-out=DIR]
+
+-names=FILE checks only the judgements named in FILE (one Dedukti name per
+line), -out=DIR writes the results there instead of out/roundtrip.
 
 It reads what is saved, without exporting from Lean again:
   * statements: the Dedukti judgements of index.json, with the symbol table of
@@ -18,13 +22,12 @@ within a time limit; a chunk that runs over it or fails is split in halves,
 down to the judgements given up alone.
 
 Output: out/roundtrip/<part>.tsv (one line per variant: name, tree, stage,
-verdict, difference, words), out/roundtrip/<part>-given-up.txt, and the
+verdict, difference, words, first normalization step that matches), out/roundtrip/<part>-given-up.txt, and the
 summary roundtrip-check.md.
 """
 import collections, concurrent.futures, importlib.util, json, os, subprocess, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUTDIR = os.path.join(HERE, 'out', 'roundtrip')
 CHUNK = 40          # judgements per call
 PER_ITEM = 20       # seconds per judgement, on top of loading
 
@@ -40,6 +43,7 @@ def arg(name, default):
     return ([a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('-%s=' % name)] or [default])[0]
 
 
+OUTDIR = os.path.join(HERE, arg('out', os.path.join('out', 'roundtrip')))
 BI = load('build_index', 'build-index.py')
 BI.RUN = BI.informath()
 os.makedirs(OUTDIR, exist_ok=True)
@@ -143,7 +147,7 @@ def summary(part):
     meta = json.load(open(os.path.join(OUTDIR, part + '-meta.json')))
     given_up = [l for l in open(os.path.join(OUTDIR, part + '-given-up.txt')).read().split('\n') if l]
     rows = [l.rstrip('\n').split('\t') for l in open(path) if l.strip()]
-    rows = [r + [''] * (7 - len(r)) for r in rows]
+    rows = [r + [''] * (8 - len(r)) for r in rows]
     notree = sorted({r[0] for r in rows if r[3] == 'NoTree'})
     var = [r for r in rows if r[3] != 'NoTree']
     names = {r[0] for r in var}
@@ -162,6 +166,9 @@ def summary(part):
         out.append('| %s | %d | %s |' % (s, sum(by[(s, v)] for v in VERDICTS), ' | '.join(str(by[(s, v)]) for v in VERDICTS)))
     tot = collections.Counter(r[3] for r in var)
     out.append('| **all** | %d | %s |' % (len(var), ' | '.join(str(tot[v]) for v in VERDICTS)))
+    steps = collections.Counter(r[7] or 'lost' for r in var)
+    out += ['', '### By the first normalization step that makes t and the semantics of t\' equal', '',
+            '| step | variants |', '|---|---:|'] + ['| %s | %d |' % (k, v) for k, v in steps.items()]
     out += ['', '### Where the lost ones differ', '',
             'The head functions of the smallest subtrees where the normalized t and the normalized '
             'semantics of t\' differ, with the variants, judgements and an example.', '',
@@ -194,6 +201,9 @@ def main():
     if '-summary' not in sys.argv[1:]:
         for part in parts:
             items, table = statements() if part == 'statements' else definitions()
+            if arg('names', ''):
+                wanted = set(open(arg('names', '')).read().split())
+                items = [i for i in items if i[0] in wanted]
             run(part, items[:limit] if limit else items, table, workers)
     for f in os.listdir(OUTDIR):
         if f.startswith('.tmp-'):
@@ -203,7 +213,7 @@ def main():
             '(Informath doc/nlg-and-semantics.md, doc/nlg-semantics-check.md).' % (' -roundtrip-safe' if SAFE else ''), '']
     for part in ['statements', 'definitions']:
         text += summary(part)
-    open(os.path.join(HERE, 'roundtrip-check.md'), 'w').write('\n'.join(text) + '\n')
+    open(os.path.join(HERE, 'roundtrip-check.md') if OUTDIR.endswith(os.path.join('out', 'roundtrip')) else os.path.join(OUTDIR, 'summary.md'), 'w').write('\n'.join(text) + '\n')
     print('-> roundtrip-check.md')
 
 

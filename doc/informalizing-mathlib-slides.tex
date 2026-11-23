@@ -74,7 +74,7 @@
         \item \textbf{Mathlib}: Lean's community library of formalized
               mathematics, from algebra and number theory to analysis,
               topology and category theory.
-        \item At the commit used here (\commit{6972d52c0d}, 26 Oct 2026):
+        \item At \commit{6972d52c0d} (26 Oct; the pages now on \commit{15cf10d19d}):
               8,661 files, 2.3 million lines, about 194,000 theorems and
               48,000 definitions, structures and classes.
         \item Statements are read by Lean's \emph{elaborator}: type classes,
@@ -1340,32 +1340,203 @@ We conclude by Hf applied to u n using Hu n n_ge
   \end{columns}
 \end{frame}
 
+\begin{frame}[fragile]{42. A new Mathlib, and a codomain that is a type}
+  \footnotesize
+  \begin{itemize}
+    \item \textbf{The codomain.} A hypothesis of a function type, \texttt{(op : $\alpha$ → $\alpha$ → $\alpha$)}, was
+          exported as \bad{\texttt{Elem X -> Elem X -> X}}: the codomain as a term, the domain
+          as a type. Now \ok{\texttt{Elem X -> (Elem X -> Elem X)}}.
+          mathlib-informath \commit{2d6e8c9}.
+    \item \textbf{Lean v4.36.0-rc2} (was rc1), and \textbf{Mathlib \commit{15cf10d19d}} (16 Nov;
+          was \commit{a88727a581}, 25 Oct), from Mathlib's cache; the manifest pins the
+          dependency revisions of the shared package directory, so that \texttt{lake build}
+          here does not check out others there. \commit{eeb5ce7}.
+    \item \textbf{The pages rebuilt} with both (\commit{a4818d0}):
+      \begin{itemize}
+        \item the codomain fix changes the Dedukti of 2,689 declarations and 209 English
+              readings;
+        \item 9,126 $\to$ \textbf{9,088 declarations}: Mathlib removed 95 and added 57, mostly
+              renamings (\texttt{Algebra.Polynomial.Basic}: 227 $\to$ 159);
+        \item 7,658 $\to$ 7,610 proof texts: Mathlib turned some term proofs into tactic proofs;
+        \item fully worded: 6,537 English, 6,537 French, 6,454 Czech.
+      \end{itemize}
+    \item The next rebuild (step 44) is in English and French only: Czech, German and Swedish
+          are postponed.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{43. Navier--Stokes, lost in translation?}
+  \scriptsize
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item OpenAI's proofs of finite-time blowup for Navier--Stokes and Euler come with a
+              Lean formalization that Lean checks completely (\texttt{NavierStokesAndEuler}).
+        \item \emph{Navier--Stokes lost in translation} (Bastounis, Circelli, Hansen,
+              arXiv:2610.08144) argues that it is not a faithful translation of the paper's
+              argument.
+        \item \texttt{examples/navier-stokes}: 15 of its 2,659 modules, \textbf{618
+              declarations}, read in English and as formulas: the main theorems of the
+              Comparator challenges with their definitions, and the modules of the article's
+              two examples.
+        \item The same \texttt{Export.lean}, built for the project's Lean and Mathlib;
+              \texttt{navier-stokes.dkgf}: 94 hand-written entries, each quoting its Lean
+              definition, in the paper's notation; the other constants by generated names.
+        \item Lean's dependency check tells which declarations the main theorems use.
+        \item Informath fixed: heads of definitions with hidden arguments, ``eventually''.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \texttt{comparison.html} puts the paper beside the readings:
+      \begin{itemize}
+        \item \textbf{Lemma 8.6}: the paper's $\|N^{-1}F\|_{C^m} \leq C_m \|F\|_{C^{m+4}}$; the
+              reading of \texttt{inverse\_finiteJets}: ``if \ldots\ $\mathrm{JetBound}(f, S,
+              \bad{n + 5}, C)$, then \ldots'';
+        \item \textbf{(10.19)}: the reading of the pressure flux bound has the term
+              \bad{$A_R/R$}, which (10.19) does not have; the main theorems use this bound.
+      \end{itemize}
+      Does symbolic informalization help? On this sample:
+      \begin{itemize}
+        \item the main theorem is checkable on about ten declarations, not 641,000 lines;
+        \item both deviations are visible without reading Lean, and a grammar cannot smooth
+              them over with a fluent paraphrase;
+        \item but it does not match lemmas to the paper, judge the deviations, or vouch for its
+              own symbol table.
+      \end{itemize}
+      mathlib-informath \commit{4cc3a65}, \commit{500dad5}.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{44. Definientia, and constants brought to their entries}
+  \scriptsize
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textbf{Pages} (\commit{229060f}):
+      \begin{itemize}
+        \item A definition shows its definiens in the Lean column even when Informath does not
+              read it (equations, a \texttt{match}, a big term), up to 40 lines.
+        \item Rebuilt with Informath \commit{f9d7c00}: \texttt{\textbackslash FilterEventually}
+              gets its bound variable; heads of definitions leave out hidden arguments,
+              \ok{``$s$ is an upper set''}, not \bad{``$X$ is an upper set''}; 541 English
+              readings change.
+        \item $x^{-1}$ as \texttt{\$\{\{\#1\}\^{}\{-1\}\}\$}: no double exponent after it.
+        \item Navier--Stokes: \texttt{MATHLIB} one directory too high had lost the definientia;
+              137 of 146 have them again.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{MathJax errors} (\commit{cf995f4}): a constant applied to fewer or more arguments
+      than its hand-written entry has \texttt{\#k} was read \bad{with a gap} (``Missing
+      argument'') or \bad{without the extra ones} ($\mathrm{invFun}(f)$ for
+      \texttt{invFun f b}). Now \texttt{Export.lean}:
+      \begin{itemize}
+        \item fewer: \texttt{c\_\_part<m>}, an entry with dots, \ok{$\mathrm{image}(f, \cdot)$},
+              ${\uparrow}\cdot$; verbal entries are $\eta$-expanded;
+        \item more: \texttt{c\_\_app<m>}, \ok{$(\mathrm{invFun}(f))(b)$}; $(f - g)\,x$ as
+              \texttt{HSub\_\_hSub\_\_app1};
+        \item equality $\eta$-expanded: no more \texttt{NOTYETEq} in 29 proofs;
+        \item $\sigma$, $\pi$ as variables quoted: their ASCII names are constants of Informath's base (\texttt{\textbackslash Summa}).
+      \end{itemize}
+      MathJax errors on the 23 pages \textbf{3,696 $\to$ 124}, most of those left in docstrings.
+      The Navier--Stokes example uses the same rules, with its own tables (\commit{0d227ba}):
+      \ok{$\mathrm{inverse}(d, f, \cdot)$}; its pages have no MathJax errors.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{45. Which constants does a reading rest on?}
+  \scriptsize
+  A reading is as faithful as its symbol table. Which entries must a reader check?
+  \begin{itemize}
+    \item \texttt{constants.tsv} (\commit{f73bea1}): each Lean constant that the readings show,
+          with its occurrences, where it is declared (\texttt{checks/Origins.lean}), and the entry
+          and table the readings use; proofs and \texttt{\#HIDE}-hidden arguments not counted.
+          \textbf{333 constants}: 175 of the project, 119 of Mathlib, 39 of Lean; 9,015
+          occurrences; 18 without an entry. First: \texttt{Real} (1,584),
+          \texttt{EuclideanSpace} (401).
+    \item \texttt{constants-lemma86.tsv} (\commit{510afd7}): the same for the four statements
+          the article compares with Lemma 8.6, and the definitions they use, transitively, with
+          the depth where each first appears: \textbf{95 constants}, 45 of the project, 29 of
+          Mathlib, 21 of Lean; 3 without an entry.
+    \item \texttt{lemma86.dkgf} (\commit{b3d0ff7}): that table as a symbol table, to edit and add
+          last: each entry with its origin in a comment, Informath's base constants commented
+          out, and where an entry is missing, a \emph{mock-up} of the right category and arity
+          in words from outside mathematics: \texttt{Bool} is ``appendix'' (``a list of
+          appendices''), \texttt{FiniteDimensional} is ``\#1 is inflationary with respect to
+          \#2''. Added, it changes the readings only where the mock-ups apply: 44 of 370.
+    \item \texttt{scripts/dkgf-subtable.py} makes such a table from any constants table.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{46. The Fourier series in the paper's notation: \#UNFOLD}
+  \scriptsize
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textbf{Entries} (\commit{ffb7fda}): \texttt{vector} as $v_d$ (the paper's (6.2)),
+      \texttt{symbol} as $v_d \cdot k$, \texttt{mode} as $e^{2\pi i\, k \cdot x}$,
+      \texttt{series} as ``the Fourier series of $a$ at $x$'':
+      \begin{quote}
+        \ok{the Fourier series of $a$ at $x$ is a complex defined as
+        $\sum_k a(k) \times e^{2\pi i\, k \cdot x}$}
+      \end{quote}
+      \textbf{\#UNFOLD} (\commit{152c41f}): each application of a listed constant is replaced by
+      its definiens applied to the arguments, $\beta$-reduced; a partial application leaves a
+      $\lambda$. $\delta\beta$-conversion, done by Lean with full types, which Dedukti checks like
+      any conversion. \texttt{unfold-lemma86.dkgf} has \texttt{\#UNFOLD} for \texttt{inverse},
+      \texttt{directionalInverse}, \texttt{series}, \texttt{inverseCoeff} and
+      \texttt{multiplier}, so that \texttt{inverse\_finiteJets} shows the Fourier series of (8.19); given for that
+      export only.
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{$\eta$-expansion} (\commit{152c41f}): a definiens with fewer $\lambda$s than its type
+      has $\Pi$s,
+      \begin{quote}
+        \texttt{directionalInverse d a := series (inverseCoeff d a)}
+      \end{quote}
+      of type \texttt{\ldots\ → Plane → $\mathbb{C}$}, was exported with a parameter its body did not apply:
+      \bad{ill-typed} Dedukti, read without ``at $x$''. Now $\eta$-expanded: ``\ok{\ldots\ is a
+      complex defined as the Fourier series of $\ldots$ at $x$}''. Definitions only; proof texts
+      are read from their terms as they are.
+
+      \vspace{1mm}
+      Navier--Stokes rebuilt (\commit{ff09bc4}): the definitions between \texttt{inverse} and the
+      series in the paper's notation.
+
+      \vspace{1mm}
+      Mathlib's 82 modules exported again (\commit{56aeb01}): \texttt{Finset.strongInduction},
+      the quotient maps of \texttt{GroupTheory.Coset.Basic}, \ldots\ are now well-typed;
+      only 2 English readings change.
+    \end{column}
+  \end{columns}
+\end{frame}
+
 \begin{frame}{The result}
   \centering\footnotesize
-  Fully worded statements (no constant or name shown as $\mathrm{c}$):
+  Fully worded statements (no constant or name shown as $\mathrm{c}$), Mathlib \commit{15cf10d19d}:
 
   \scriptsize\begin{tabular}{@{}lrrr@{}}
     \toprule
     pages & statements & English & French \\
     \midrule
-    Order.Defs, Algebra, Structures, Nat primes & 755 & 638 & 638 \\
-    A.\ logic, sets, orders & 1,940 & 1,537 & 1,537 \\
-    B.\ groups and rings & 2,276 & 1,612 & 1,612 \\
-    C.\ elementary number theory & 892 & 718 & 718 \\
-    D.\ finite sets and sums & 767 & 547 & 547 \\
-    E.\ linear algebra, ideals, polynomials & 1,091 & 665 & 665 \\
-    F.\ topology and analysis & 1,405 & 859 & 859 \\
+    Order.Defs, Algebra, Structures, Nat primes & 756 & 639 & 639 \\
+    A.\ logic, sets, orders & 1,953 & 1,543 & 1,543 \\
+    B.\ groups and rings & 2,277 & 1,610 & 1,610 \\
+    C.\ elementary number theory & 893 & 720 & 720 \\
+    D.\ finite sets and sums & 771 & 550 & 550 \\
+    E.\ linear algebra, ideals, polynomials & 1,029 & 608 & 608 \\
+    F.\ topology and analysis & 1,409 & 863 & 863 \\
     \midrule
-    all & \textbf{9,126} & \textbf{6,576} & \textbf{6,576} \\
+    all & \textbf{9,088} & \textbf{6,533} & \textbf{6,533} \\
     \bottomrule
   \end{tabular}
 
   \vspace{1mm}
   \raggedright\scriptsize
   \begin{itemize}
-    \item \textbf{7,658 of 8,472 theorems with a proof text} in both languages: 3,738 from
-          terms, 3,920 from tactics; 27,691 lines, 166 ``obvious''; 45 failures.
-    \item English and French for now; Czech (6,518 on 9 November), German and Swedish: the
+    \item \textbf{7,634 of 8,437 theorems with a proof text} in both languages: 3,724 from
+          terms, 3,910 from tactics; 27,653 lines, 166 ``obvious''; 41 failures.
+    \item English and French for now; Czech (6,454 on 18 November), German and Swedish: the
           grammar has them, the present index does not.
     \item 26,741 of Mathlib's 38,667 definitions worded; 38,517 read in English, 38,546 as
           formulas, 38,306 in French (\texttt{definitions.html}); 869 classes as structures or
@@ -1384,15 +1555,15 @@ We conclude by Hf applied to u n using Hu n n_ge
     \item \textbf{Structures.} One parent only: the other parents should be clauses (877
           classes); adjective parents, two-argument parents; D' (``every $a$ has an inverse'');
           $a \times b$ for $ab$; RGL's \bad{``an unary''}.
-    \item \textbf{Scale.} 9,126 of Mathlib's 240,000 declarations on the pages; 26,741
+    \item \textbf{Scale.} 9,088 of Mathlib's 240,000 declarations on the pages; 26,741
           generated entries for its definitions, unreviewed: composite names
           (\texttt{XEquivY}), bundled maps without arguments (\bad{``the dual''}), verbs
           (\texttt{PreservesX}), 2,000 unknown abbreviations; the words of the other
           languages in \texttt{translations.tsv} to be reviewed.
-    \item \textbf{Proofs.} 45 fail: a $\lambda$ proving what is a $\forall$ only after unfolding
+    \item \textbf{Proofs.} 41 fail: a $\lambda$ proving what is a $\forall$ only after unfolding
           (\texttt{upperBounds}); lean2dk's rewrite rules would unfold it. Long \texttt{simp}
           goals; limits and filters only as formulas ($\mathrm{Tendsto}(f, l_1, l_2)$).
-    \item \textbf{Unworded statements} (2,521 of 9,126 in English):
+    \item \textbf{Unworded statements} (2,555 of 9,088 in English):
       \begin{itemize}
         \item about 1,500 ``applied to'' left, where an argument is itself in words;
         \item binders over proofs: ``for all elements $h$ of \bad{$\mathrm{Proof}$ applied to}
@@ -1519,7 +1690,7 @@ We conclude by Hf applied to u n using Hu n n_ge
 
   \vspace{3mm}
   \normalsize
-  9,126 Mathlib statements and structures from 82 modules, 7,658 proofs, in English, French
+  9,088 Mathlib statements and structures from 82 modules, 7,634 proofs, in English, French
   and LaTeX; all of Mathlib's 38,667 definitions read in English, French and as formulas,
   its classes as structures
 \end{frame}

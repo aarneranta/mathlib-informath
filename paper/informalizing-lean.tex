@@ -1086,6 +1086,74 @@ as in English (about 12,000). 48 readings still use a word without a French form
 pages show in English, marked. The
 other three languages can be read in the same way.
 
+\paragraph{The round trip of generation and semantics.}
+\label{sec:roundtrip}
+Informath's semantics maps the GF trees of the texts back to MathCore and Dedukti. Its
+specification is that if generation (NLG) produces a tree $t'$ from a MathCore tree $t$, the
+semantics of $t'$ includes $t$: the text means what the formal statement says. Informath's
+\ttt{-check-nlg-semantics} tests this for every variant that NLG makes (aggregation, in-situ
+quantification, collective predication and the other variations, of which the default output is
+one), and we ran it over all the statements of the 82 modules and all the definitions, as they
+are stored for the pages: 748,777 variants in all, in about 75 minutes with eight processes
+(Table~\ref{tab:roundtrip}). A variant is \emph{exact} if $t$ is among its readings. Otherwise
+the two trees are normalized step by step, and the variant is counted at the first step after
+which they agree: bound variables renamed; coercions removed; notational variants identified
+(``an even number $n$'' as ``a number $n$ such that $n$ is even''); conjunctions as flat lists
+and antecedents uncurried; $\forall$ distributed over $\wedge$; the variables of a hypothesis
+separated. Up to here, the hypotheses keep their number and order, so that the constant can be
+applied to its arguments as in Lean. The further steps give logical equivalence only: the
+quantifiers of a conclusion as hypotheses, hypotheses renamed, split and sorted, and a
+structure's clauses split, its data before its properties, as the extension form ``a monoid is
+a semigroup $M$ with an element $1$ of $M$ such that \ldots'' must say them.
+
+The first run over Mathlib lost 5,657 variants, 0.8\%, where a sample of eight modules had
+lost 45. Two causes made almost all of them. Words with quoted GF names, such as
+\ttt{'p-adic\_Adj'}, were quoted once more each time a tree passed through Haskell, so that
+they never reached any text, in any project. And a conjunction in the axioms of a structure,
+``such that for all $a$, $1 \times a = a$ and $a \times 1 = a$'', was read as one field where
+Lean has two; the semantics now reads ``and'' there as separate fields, as it already did for
+hypotheses (``both $A$ and $B$'' is one). After these fixes, no statement and 184 variants of 17
+definitions are lost, two of them in the default output. They are structures whose class kind
+comes back as a noun kind (``a graded monoid is a graded one \ldots''), structures over two sets
+whose carrier comes back as the other one, and the ``or empty'' variants of filtered
+categories. 3 statements and 105 definitions, mostly tactic and syntax helpers, went over the
+time limit.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{lrr}
+\toprule
+& statements & definitions \\
+\midrule
+judgements (over the time limit) & 9,088 (3) & 38,972 (105) \\
+NLG variants & 521,386 & 227,391 \\
+\midrule
+exact & 11,395 & 42,376 \\
+\midrule
+\multicolumn{3}{l}{\textit{same hypotheses, after normalizing}} \\
+\quad bound variables & 0 & 8 \\
+\quad coercions & 27,583 & 77,075 \\
+\quad notation & 99 & 783 \\
+\quad connectives & 25,991 & 60,735 \\
+\quad $\forall$ over $\wedge$ & 40 & 2,687 \\
+\quad variables of a hypothesis & 192,400 & 40,823 \\
+\midrule
+\multicolumn{3}{l}{\textit{equivalent, after further normalizing}} \\
+\quad conclusion as hypotheses & 152,217 & 312 \\
+\quad variable names & 0 & 0 \\
+\quad hypotheses split and sorted & 111,565 & 636 \\
+\quad structure clauses & 96 & 1,772 \\
+\midrule
+lost & 0 & 184 \\
+\quad in the default output & 0 & 2 \\
+\bottomrule
+\end{tabular}
+\caption{The round trip of generation and semantics: each NLG variant counted at the first
+normalization step after which its semantics includes the original tree; each step includes the
+earlier ones. Classes are counted twice, as a structure and as a predicate.}
+\label{tab:roundtrip}
+\end{table}
+
 \section{Known problems and open issues}
 \label{sec:problems}
 

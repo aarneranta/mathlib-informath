@@ -1511,6 +1511,84 @@ We conclude by Hf applied to u n using Hu n n_ge
   \end{columns}
 \end{frame}
 
+\begin{frame}{47. The round trip: does the text mean the formula?}
+  \scriptsize
+  \prompt{I want to test roundtrip in sense 2 for all the Mathlib definitions and theorem
+  statements that are stored in mathlib-informath.}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      If NLG makes $t'$ from $t$, the semantics of $t'$ includes $t$:
+      \texttt{roundtrip-check.py} checks every saved statement and definition, every variant
+      (748,777; 75 min).
+
+      \vspace{1mm}
+      First run: \bad{5,657 lost} (0.8\%; a sample of 8 modules had lost 45):
+      \begin{itemize}
+        \item \bad{quoted GF names} (\texttt{'p-adic\_Adj'}) quoted again on every pass through
+              Haskell: never in any text, in any project;
+        \item \bad{``such that for all $a$, $1a = a$ and $a1 = a$''}: one field in the
+              semantics, two in Lean. Now ``and'' gives fields, as it gives hypotheses.
+      \end{itemize}
+      After the fixes: statements \ok{0 lost}; definitions \ok{184 lost} variants of 17 structures and
+      classes (class kinds, the carrier of a structure over two sets, ``or empty''), 2 of them
+      in the default output.
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \renewcommand{\arraystretch}{0.88}\begin{tabular}{@{}lrr@{}}
+        \toprule
+        & statements & definitions \\
+        \midrule
+        variants & 521,386 & 227,391 \\
+        exact & 11,395 & 42,376 \\
+        \midrule
+        \multicolumn{3}{@{}l}{\textit{same hypotheses after}} \\
+        \quad bound variables & 0 & 8 \\
+        \quad coercions & 27,583 & 77,075 \\
+        \quad notation & 99 & 783 \\
+        \quad connectives & 25,991 & 60,735 \\
+        \quad $\forall$ over $\wedge$ & 40 & 2,687 \\
+        \quad variables of a hypothesis & 192,400 & 40,823 \\
+        \midrule
+        \multicolumn{3}{@{}l}{\textit{equivalent after}} \\
+        \quad conclusion as hypotheses & 152,217 & 312 \\
+        \quad variable names & 0 & 0 \\
+        \quad hypotheses split, sorted & 111,565 & 636 \\
+        \quad structure clauses & 96 & 1,772 \\
+        \midrule
+        lost & \ok{0} & \bad{184} \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{48. What counts as the same}
+  \scriptsize
+  Each variant is counted at the first step after which its semantics includes $t$; each step
+  includes the earlier ones (\texttt{firstStep}, Informath \commit{0d9c762}).
+  \begin{enumerate}
+    \item \textbf{Bound variables} renamed in the order of their binders.
+    \item \textbf{Coercions} ($\mathrm{Elem}$, $\mathrm{Proof}$) removed: the semantics puts
+          them back where the type needs them.
+    \item \textbf{Notation}: ``an even number $n$'' = ``a number $n$ such that $n$ is even'';
+          plural = singular; ``the sum of $a$, $b$ and $c$'' = $(a+b)+c$.
+    \item \textbf{Connectives}: $\wedge$, $\vee$ as flat lists; ``if $A$, then if $B$, then
+          $C$'' = ``if $A$ and $B$, then $C$''; $\neg\exists = \forall\neg$.
+    \item \textbf{$\forall$ over $\wedge$}: $\forall x (A \wedge B) = \forall x A \wedge \forall x B$.
+    \item \textbf{Variables of a hypothesis} separated: ``let $a, b \in G$''.
+  \end{enumerate}
+  \ok{Up to 6, the hypotheses keep their number and order}: the constant applies to its
+  arguments as in Lean. Then only equivalence:
+  \begin{enumerate}\setcounter{enumi}{6}
+    \item \textbf{The conclusion's} $\forall$ and ``if'' as hypotheses.
+    \item \textbf{Variable names} of hypotheses by first occurrence.
+    \item \textbf{Hypotheses} one at a time, sorted.
+    \item \textbf{Structure clauses} one at a time, data before properties, as ``a monoid is a
+          semigroup $M$ with an element $1$ of $M$ such that \ldots'' says them.
+  \end{enumerate}
+  The semantics itself: ``and'' = separate hypotheses or fields, ``both $A$ and $B$'' = one.
+\end{frame}
+
 \begin{frame}{The result}
   \centering\footnotesize
   Fully worded statements (no constant shown as $\mathrm{c}$; long variable names may be), Mathlib \commit{15cf10d19d}:

@@ -8,6 +8,10 @@ and Swedish are postponed until the English and French readings stabilize.
 [examples/navier-stokes](examples/navier-stokes/README.md) applies the same
 tools to OpenAI's Lean formalization of finite-time blowup for Navier–Stokes,
 beside the article *Navier–Stokes lost in translation*.
+[examples/riemann](examples/riemann/README.md) reads the top of Levent
+Alpöge's Lean submission claiming the Riemann hypothesis: the claimed
+statements, the statement the proof proves, the hypotheses of its last step
+and the notions they use.
 
 [mathlib-informath.html](mathlib-informath.html) is a table of contents, with
 one page in `pages/` for each part of Mathlib in `modules.txt`: 82 modules,

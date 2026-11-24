@@ -89,11 +89,16 @@ Mathlib or Lean) and the symbol table entry used, as in ../navier-stokes.
   import closure of the modules read, 15,668 modules and 11 GB, and compiles
   `Challenge`, which is not in the cache.
 - **Informath** in `$INFORMATH_ROOT` (default `../informath` beside
-  mathlib-informath), at commit b1f9218 or later, which has the change made
-  for this example: a quantification over
-  the proofs of a proposition whose variable occurs only in hidden arguments
-  reads as an implication, so that Lean's `∀ (N : ℕ) [NeZero N]` reads
-  "for all natural numbers N, if N is nonzero, …".
+  mathlib-informath), at commit 62ff048 or later, which has the two changes
+  made for this example: a quantification over the proofs of a proposition
+  whose variable occurs only in hidden arguments reads as an implication, so
+  that Lean's `∀ (N : ℕ) [NeZero N]` reads "for all natural numbers N, if N
+  is nonzero, …" (b1f9218); and a function quantified over loses the proofs
+  that its type takes and that its applications give it (62ff048), so that
+  `VVle` reads "for all functions ld from natural numbers p₄ to elements of
+  LData(E, X, p₄), for all natural numbers p, if p is prime, then …
+  shaLen(ld(p), e) …". `riemann.dkgf` reads Lean's `Fact P` as P
+  (`#COERCION Fact 1`).
 
 The steps:
 
@@ -125,7 +130,7 @@ for writing table entries.
 
 ## Open issues
 
-- 748 of the 2522 readings still show some notion by its Lean name, mostly
+- 745 of the 2522 readings still show some notion by its Lean name, mostly
   in group 4 (the p-adic Hodge theory of `DataN` and `DataNLoc`: `LocWach`,
   `LocPrime`, `NTh`, …). Propositions without arguments (`EveryCharacter`, `VWin`,
   `RecTExists`, `Green`) can only be symbols: no sentence without arguments

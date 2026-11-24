@@ -24,6 +24,17 @@ use. It reads statements and definitions, not proofs.
 
 ## The pages
 
+[comparison.html](comparison.html) puts the readings beside Alpöge's
+announcement, which has no theorem statements: the claims (RH and GRH for
+Dirichlet L-functions), the statement the proof actually proves
+(`EveryCharacter`, GRH in its half-plane form), and the three propositions of
+its last step: `Row0b` (Galois representations of polarized cusp
+representations), `RecTExists` (a local Langlands correspondence, with most
+laws required only for "good" representations) and `VWin`, which is the
+announcement's step 17 (a bound on Ш¹(E, ℚ_l/ℤ_l(−e)) over a cyclotomic
+ℤ₂-tower, "a significant weakening of Vandiver"). Then what the readings show,
+and what they do not.
+
 [index.html](index.html) lists the modules read, in four groups, and
 [pages/](pages/) has one page per module in mathlib-informath's format: each
 declaration with its Lean source (linked to GitHub), its Dedukti, an English
@@ -106,7 +117,8 @@ The steps:
    `DirichletCharacter.LFunction`).
 3. **Readings.** `scripts/read-modules.py` runs mathlib-informath's
    `build-index.py`, in English only.
-4. **Pages.** `scripts/build-pages.py` (mathlib-informath's `build-html.py`).
+4. **Pages.** `scripts/build-pages.py` (mathlib-informath's `build-html.py`)
+   and `scripts/build-comparison.py`.
 
 `scripts/arguments.py` lists the shown arguments of constants (#1, #2, …),
 for writing table entries.

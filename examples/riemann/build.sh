@@ -76,4 +76,5 @@ python3 scripts/name-table.py
 (cd exporter && lake exe export $MODULES)
 python3 scripts/read-modules.py work/index.json $MODULES
 python3 scripts/build-pages.py work/index.json
+python3 scripts/build-comparison.py work/index.json
 python3 scripts/constants-table.py

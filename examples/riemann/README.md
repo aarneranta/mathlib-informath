@@ -89,7 +89,7 @@ Mathlib or Lean) and the symbol table entry used, as in ../navier-stokes.
   import closure of the modules read, 15,668 modules and 11 GB, and compiles
   `Challenge`, which is not in the cache.
 - **Informath** in `$INFORMATH_ROOT` (default `../informath` beside
-  mathlib-informath), at commit 62ff048 or later, which has the two changes
+  mathlib-informath), at commit 9e031c0 or later, which has the two changes
   made for this example: a quantification over the proofs of a proposition
   whose variable occurs only in hidden arguments reads as an implication, so
   that Lean's `∀ (N : ℕ) [NeZero N]` reads "for all natural numbers N, if N

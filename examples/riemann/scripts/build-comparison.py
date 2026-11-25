@@ -94,9 +94,12 @@ that <code>Main.lean</code> proves exactly these):</p>
     'DirichletLZerosOnLine', 'LFunction_eq_zero_re',
     'PrimitiveDirichletLZerosOnLine', 'LFunction_eq_zero_re_of_isPrimitive',
 ]) + r"""
-<p class="note"><b>Reading.</b> The first theorem is Mathlib's <code>RiemannHypothesis</code>, which is not
-read here (it is Mathlib's definition, outside this sample); the second spells it out: every zero $s$ of
-$\zeta$ that is not $-2(n+1)$ and not $1$ has real part $\frac12$. The exception $s = 1$ is there because
+<p class="note"><b>Reading.</b> The five theorems state their propositions by name only
+(<code>RiemannHypothesis</code>, <code>RiemannZetaZerosOnLine</code>, &hellip;); their statements are read
+with these definitions unfolded, and the unfolded Lean is shown beside the source (<code>#UNFOLD_STATEMENT</code>
+of the exporter). The first is Mathlib's <code>RiemannHypothesis</code>, and the second states the same
+proposition word for word: every zero $s$ of $\zeta$ that is not $-2(n+1)$ and not $1$ has real part
+$\frac12$. The exception $s = 1$ is there because
 Mathlib's $\zeta$ has a value at its pole. The other three are GRH for Dirichlet L-functions: for every
 modulus $N$ and every Dirichlet character $\chi$ modulo $N$, imprimitive ones included,
 $L(\chi, s) \neq 0$ for $\operatorname{Re} s > \frac12$ (except $\chi = 1$ at $s = 1$), and the zeros with

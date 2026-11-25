@@ -306,6 +306,11 @@ def entry_html(d, languages, commit, where):
     # rows: (language or None, label, content)
     rows = [
         (None, 'Lean', '<pre class=lean>%s</pre>' % html.escape(source(m, d))),
+    ] + ([
+        # a statement that only names a proposition, with its definition unfolded
+        # (Export.lean's #UNFOLD_STATEMENT)
+        (None, 'Lean, unfolded', '<pre class=lean>%s</pre>' % html.escape(d['unfolded'])),
+    ] if d.get('unfolded') else []) + [
         # the Dedukti translation is for debugging: closed until clicked
         (None, 'Dedukti', '<details><summary>%d lines</summary><pre>%s</pre></details>'
          % (len((d['dedukti'] or '').split('\n')), html.escape(d['dedukti'] or '(not exported)'))),

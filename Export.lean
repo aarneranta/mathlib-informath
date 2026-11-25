@@ -97,6 +97,14 @@ app), so that a reading shows what the definition says (δβ-conversion, which
 Dedukti checks like any conversion). -/
 initialize unfoldSet : IO.Ref (Std.HashSet String) ← IO.mkRef {}
 
+/-- The constants (Dedukti names) of the #UNFOLD_STATEMENT lines of the tables:
+a declaration whose statement is an application of one of them (theorem
+riemannHypothesis : RiemannHypothesis) gets its definiens, β-reduced, as its
+statement, and the json gives Lean's form of it ("unfolded"), so that a
+reading shows what is claimed and not only its name. Unlike #UNFOLD, the
+constant stays itself everywhere else. -/
+initialize unfoldStatementSet : IO.Ref (Std.HashSet String) ← IO.mkRef {}
+
 def readEntryArities : IO Unit := do
   let mut m : Std.HashMap String Nat := {}
   let mut lx : Std.HashMap String String := {}
@@ -111,6 +119,10 @@ def readEntryArities : IO Unit := do
     let path : System.FilePath := t
     if !(← path.pathExists) then continue
     for line in (← IO.FS.lines path) do
+      if line.startsWith "#UNFOLD_STATEMENT " then
+        for c in (line.drop 18).toString.splitOn " " do
+          if !c.isEmpty then unfoldStatementSet.modify (·.insert c)
+        continue
       if line.startsWith "#UNFOLD " then
         for c in (line.drop 8).toString.splitOn " " do
           if !c.isEmpty then unfoldSet.modify (·.insert c)
@@ -1061,11 +1073,26 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
         let r ← (((value ci.type v).run {mapping, binders, keepAll, proofMode := isThm0, keepImplicit := true}).run' {} {}).toIO ctx st |>.toBaseIO
         pure (match r with | .ok ((_, stt), _) => stt.usedInstances | .error _ => {})
       | none => pure {}
-    let act : M String := statement ci.type
+    -- a statement that only names a proposition of #UNFOLD_STATEMENT: its definiens
+    let ustSet ← unfoldStatementSet.get
+    let stmtTy : Option Expr := match ci.type.getAppFn with
+      | .const c ls =>
+        if ustSet.contains (mangle c) then
+          match env.find? c with
+          | some (.defnInfo d) => some ((d.value.instantiateLevelParams d.levelParams ls).beta ci.type.getAppArgs)
+          | _ => none
+        else none
+      | _ => none
+    let act : M String := statement (stmtTy.getD ci.type)
     let res ← ((act.run {mapping, binders, keepAll, keepImplicit := true, usedInstances}).run' {} {}).toIO ctx st |>.toBaseIO
     let doc ← (Lean.findDocString? env n)
     let pp ← ((Meta.ppExpr ci.type).run' {} {}).toIO ctx st |>.toBaseIO
     let ppStr := match pp with | .ok (f, _) => toString f | .error _ => ""
+    let unfoldedStr ← match stmtTy with
+      | some t => do
+        let r ← ((Meta.ppExpr t).run' {} {}).toIO ctx st |>.toBaseIO
+        pure (match r with | .ok (f, _) => toString f | .error _ => "")
+      | none => pure ""
     match res with
     | .ok ((s, stt), _) =>
       used := stt.used.fold (fun acc c => acc.insert c) used
@@ -1098,7 +1125,7 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
               derivedHide := vst.derivedHide.fold (fun acc k v => acc.insert k v) derivedHide
       dk := dk ++ (if defn.isEmpty then s!"(; //LEAN:{n} ;)\n{mangle n} : {asPredicate env n s}.\n\n"
                    else s!"(; //LEAN:{n} ;)\ndef {mangle n} : {asPredicate env n s} :=\n  {defn}.\n\n")
-      json := json.push s!"\{\"lean\": {jsonStr n.toString}, \"dk\": {jsonStr (mangle n)}, \"kind\": {jsonStr (kindOf ci)}, \"doc\": {jsonStr (doc.getD "")}, \"statement\": {jsonStr ppStr}, \"line\": {r.range.pos.line}, \"nameLine\": {r.selectionRange.pos.line}, \"endLine\": {r.range.endPos.line}, \"definiens\": {if defn.isEmpty then "false" else "true"}{if orig != n then s!", \"additiveOf\": {jsonStr orig.toString}" else ""}}"
+      json := json.push s!"\{\"lean\": {jsonStr n.toString}, \"dk\": {jsonStr (mangle n)}, \"kind\": {jsonStr (kindOf ci)}, \"doc\": {jsonStr (doc.getD "")}, \"statement\": {jsonStr ppStr}, \"line\": {r.range.pos.line}, \"nameLine\": {r.selectionRange.pos.line}, \"endLine\": {r.range.endPos.line}, \"definiens\": {if defn.isEmpty then "false" else "true"}{if unfoldedStr.isEmpty then "" else s!", \"unfolded\": {jsonStr unfoldedStr}"}{if orig != n then s!", \"additiveOf\": {jsonStr orig.toString}" else ""}}"
     | .error e =>
       dk := dk ++ s!"(; //LEAN:{n} ;)\n(; NOT EXPORTED: {toString e} ;)\n\n"
   -- the constants used but neither exported nor mapped

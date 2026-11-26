@@ -23,7 +23,7 @@ made by definition-table.py for all of Mathlib's definitions; the grammar must
 have the words that definition-table.py -lexicon generated (make
 full_grammar in Informath).
 """
-import difflib, glob, json, os, re, subprocess, sys, time
+import hashlib, difflib, glob, json, os, re, subprocess, sys, time
 
 MATHLIB = os.environ.get('MATHLIB', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'mathlib4'))
 # the symbol tables, the later overriding the earlier: the generated entries of
@@ -214,7 +214,7 @@ def load_time(lang):
     return time.time() - t
 
 
-def bisected(items, call, load):
+def bisected(items, call, load, chunk_size=CHUNK):
     """call(items) on chunks of CHUNK items, with a time limit of PER_ITEM
     seconds per item on top of load; a chunk that runs over the limit or fails
     is split in halves, down to the items that are too slow (or fail) alone.
@@ -230,8 +230,8 @@ def bisected(items, call, load):
             else:
                 go(chunk[:len(chunk) // 2])
                 go(chunk[len(chunk) // 2:])
-    for i in range(0, len(items), CHUNK):
-        go(items[i:i + CHUNK])
+    for i in range(0, len(items), chunk_size):
+        go(items[i:i + chunk_size])
     return results, given_up
 
 
@@ -249,9 +249,14 @@ def slow_readings(blocks, names, table, lang, load, force=False):
 FORMULA_LABEL = re.compile(r'^\\textbf\{(\w+)\}(?: \\texttt\{\\detokenize\{([^}]*)\}\})?\.\s*')
 
 
-def formulas(dk, decls, force=False):
-    """Lean name -> formula, aligned with the declarations by their labels."""
-    lines = run('-add-symboltables=' + TABLE, '-to-symbolic-latex', *(['-force-symbolic'] if force else []), dk)
+def formulas(dk, decls, force=False, timeout=None):
+    """Lean name -> formula, aligned with the declarations by their labels;
+    RuntimeError (or subprocess.TimeoutExpired) if RunInformath fails."""
+    r = subprocess.run([RUN, '-add-symboltables=' + TABLE, '-to-symbolic-latex'] + (['-force-symbolic'] if force else [])
+                       + [dk], capture_output=True, text=True, timeout=timeout)
+    if r.returncode:
+        raise RuntimeError(r.stderr[-500:])
+    lines = [l for l in r.stdout.split('\n') if l.strip()]
     lab = FORMULA_LABEL
     # a theorem is labelled with its name, a definition with "Definition", and
     # a constant without a definiens (a structure's constructor) as an axiom
@@ -393,8 +398,43 @@ def main():
     verbal = verbal_table()
     all_stmts = write('statements.dk', '\n'.join(stmts))
 
-    verb = verbal_readings(all_stmts, verbal, FAST_LANGUAGES)
-    form = formulas(all_stmts, decls)
+    # the readings of the same statements with the same table are kept (a
+    # reading of all can take hours when it has to go in chunks)
+    key = hashlib.sha1((open(all_stmts).read() + open(verbal).read() + ','.join(FAST_LANGUAGES)).encode()).hexdigest()
+    cache = INDEX + '.verbal-cache.json'  # beside the index: the TMP files are removed at the end
+    cached = json.load(open(cache)) if os.path.exists(cache) else {}
+    if cached.get('key') == key:
+        verb = cached['readings']
+        print('verbal readings from', cache, flush=True)
+    else:
+      try:
+        verb = verbal_readings(all_stmts, verbal, FAST_LANGUAGES)
+      except RuntimeError as e:
+          # a statement that RunInformath fails on stops the whole call: then the
+          # statements in chunks, halved down to those it fails on, left unread
+          print('RunInformath failed (%s); reading in chunks' % str(e).strip()[-200:], flush=True)
+          sb, dkn = dk_blocks(all_stmts), {d['lean']: d['dk'] for d in decls}
+
+          def call(chunk, timeout):
+              got = verbal_readings(write('chunk.dk', '\n\n'.join(sb[n] for n in chunk) + '\n'), verbal,
+                                    FAST_LANGUAGES, timeout=timeout)
+              return {dkn[n]: got[dkn[n]] for n in chunk if dkn[n] in got}
+          verb, failed = bisected([d['lean'] for d in decls if d['lean'] in sb], call,
+                                  load_time(FAST_LANGUAGES[0]), 400)
+          print('%d statements not read (RunInformath fails or is too slow): %s'
+                % (len(failed), ' '.join(failed[:30])), flush=True)
+      json.dump({'key': key, 'readings': verb}, open(cache, 'w'))
+    try:
+        form = formulas(all_stmts, decls)
+    except RuntimeError as e:
+        print('RunInformath failed on the formulas (%s); in chunks' % str(e).strip()[-200:], flush=True)
+        sb, byname = dk_blocks(all_stmts), {d['lean']: d for d in decls}
+
+        def fcall(chunk, timeout):
+            return formulas(write('fchunk.dk', '\n\n'.join(sb[n] for n in chunk) + '\n'),
+                            [byname[n] for n in chunk], timeout=timeout)
+        form, ffailed = bisected([d['lean'] for d in decls if d['lean'] in sb], fcall, load_time('Eng'), 400)
+        print('%d formulas not made: %s' % (len(ffailed), ' '.join(ffailed[:30])), flush=True)
     texts = {d['lean']: dict(verb.get(d['dk'], {}), formula=form.get(d['lean'])) for d in decls}
     # the slow languages statement by statement, the statements without proofs
     stmt_blocks = dk_blocks(all_stmts)

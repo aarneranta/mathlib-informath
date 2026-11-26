@@ -26,6 +26,7 @@ BATCH = 40
 NAMES = os.path.join(BOOK, 'grh-names.dkgf')
 
 env = dict(os.environ)
+env['STATEMENTS_ONLY'] = '1'  # the book shows no proof terms; translating them is 15x slower
 env['MATHLIB'] = os.path.expanduser('~/claude/grh-lean/grh-compact/src')
 env['ENTRY_TABLES'] = '../../../../mathlib.dkgf:../../../../structures.dkgf:../grh-names.dkgf:../grh.dkgf'
 env['LEAN_PATH'] = subprocess.run(['lake', 'env', 'printenv', 'LEAN_PATH'], cwd=EXP, capture_output=True,

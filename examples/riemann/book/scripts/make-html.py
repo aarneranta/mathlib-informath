@@ -79,6 +79,44 @@ def head(title, depth):
             % (html.escape(title), up, up))
 
 
+SRC = os.path.expanduser('~/claude/grh-lean/grh-compact/src/')
+_src = {}
+TOKEN = re.compile(r"[^\W\d][\w'.!?]*")
+
+
+def named(d):
+    """The constants of d's proof that its source names: d['uses'] and
+    d['mathlib'] have all the constants of the proof term, also those that
+    tactics (simp, instances, elaboration) put there. A name counts as named
+    when it, or its last component, is one of the components of an identifier
+    of the proof's text (P.foo.choose_spec names foo; h.le names le)."""
+    m = d['module']
+    if m not in _src:
+        try:
+            _src[m] = open(SRC + m.replace('.', '/') + '.lean').read().split('\n')
+        except OSError:
+            _src[m] = []
+    text = '\n'.join(_src[m][(d['line'] or 1) - 1:d['endLine'] or 0])
+    text = re.sub(r'/-.*?-/', ' ', text, flags=re.S)
+    text = re.sub(r'--[^\n]*', ' ', text)
+    i = text.find(':=')
+    toks = set(TOKEN.findall(text[i:] if i >= 0 else text))
+    parts = toks | {p for t in toks for p in t.split('.')}
+    keep = lambda c: c in toks or c.split('.')[-1] in parts
+    return [c for c in d['uses'] if keep(c)], [c for c in d['mathlib'] if keep(c)]
+
+
+def source_head(d):
+    """The declaration as the source has it, up to its := or where (without
+    the doc comment): shown for the declarations that are not exported, the
+    instances."""
+    lines = _src.get(d['module']) or []
+    text = '\n'.join(lines[(d['line'] or 1) - 1:d['endLine'] or 0])
+    text = re.sub(r'/-.*?-/', '', text, flags=re.S).strip()
+    m = re.search(r':=|\swhere\b|\|', text)
+    return (text[:m.start()] if m else text).strip()
+
+
 def anchor(name):
     return re.sub(r"[^A-Za-z0-9_.'-]", lambda m: '_%x_' % ord(m.group(0)), name)
 
@@ -121,17 +159,23 @@ def main():
             out.append('<h2 id="%s"><code>%s</code></h2>' % (anchor(m['module']), html.escape(m['module'])))
             for x in m['decls']:
                 d = deps[x]
-                if d['kind'] in SKIP:
+                # what Lean generates (congr_simp, hcongr) has no place in the source
+                if d['kind'] in SKIP or not d['line']:
                     continue
+                named(d)  # loads the source of the module
                 num += 1
                 total += 1
                 rd = (readings.get(x) or {}).get('readings', {})
+                inst = x not in readings  # not exported: the instances
+                kind = 'Instance' if inst else KINDS.get(d['kind'], 'Definition')
                 e = ['<div class="decl %s" id="%s"><div class=head><b>%s %d.%d</b>'
                      '<a class=src href="%s">src/%s.lean: %s</a></div>'
-                     % (d['kind'], anchor(x), KINDS.get(d['kind'], 'Definition'), ci, num,
+                     % (d['kind'], anchor(x), kind, ci, num,
                         GRH_URL % (path, d['line'] or 1), html.escape(path), html.escape(x))]
                 if rd.get('Eng'):
                     e.append('<div class=reading>%s</div>' % html.escape(rd['Eng'], quote=False))
+                elif inst:
+                    e.append('<div class=reading><span class=lean>%s</span></div>' % html.escape(source_head(d)))
                 else:
                     unread += 1
                     st = (readings.get(x) or {}).get('statement') or ''
@@ -139,14 +183,15 @@ def main():
                              '<span class=lean>%s</span></div>' % html.escape(st))
                 if d.get('doc', '').strip():
                     e.append('<div class=comment>%s</div>' % html.escape(d['doc'].strip()))
-                if d['kind'] == 'theorem':
+                if d['kind'] == 'theorem' and not inst:
                     cites = []
-                    for u in d['uses']:
+                    uses, mathlib = named(d)
+                    for u in uses:
                         if u in deps and deps[u]['kind'] not in SKIP and u in where:
                             href = ('#%s' if where[u] == ci else 'ch%03d.html#%%s' % where[u]) % anchor(u)
                             cites.append('<a href="%s"><code>%s</code></a>' % (href, html.escape(u)))
                     ml = []
-                    for u in d['mathlib']:
+                    for u in mathlib:
                         if u.startswith(('Mathlib.', 'Lean.', 'Std.', 'Batteries.Tactic')):
                             continue
                         loc = mloc.get(u)
@@ -159,7 +204,7 @@ def main():
                         p.append('<details><summary>%s %d lemma%s of Mathlib</summary> %s</details>'
                                  % ('and' if cites else 'By', len(ml), '' if len(ml) == 1 else 's', ', '.join(ml)))
                     e.append('<div class=proof><i>Proof.</i> %s. &#8718;</div>'
-                             % (' '.join(p) if p else 'By the definitions'))
+                             % (' '.join(p) if p else 'By Lean\'s tactics, without named lemmas'))
                 e.append('</div>')
                 out.append(''.join(e))
         out.append(nav + '</body></html>')

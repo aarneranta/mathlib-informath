@@ -183,8 +183,11 @@ def freshName (n : Name) (prop : Bool) (sort : Bool := false) : M String := do
   let base := if ok then base0 else if prop then "h" else if sort && !n.hasMacroScopes then latin else "x"
   let st ← get
   -- a name that is a constant of Informath's base (sigma, the sum Σ; pi, π)
-  -- is quoted, {|sigma|}, so that Informath reads it as a variable
-  let quote (v : String) := if ["sigma", "pi"].contains v then "{|" ++ v ++ "|}" else v
+  -- or a keyword of Dedukti (a field named injective) is quoted, {|sigma|},
+  -- so that Informath reads it as a variable
+  let quote (v : String) :=
+    if ["sigma", "pi", "def", "thm", "injective", "private", "defac", "defacu"].contains v
+    then "{|" ++ v ++ "|}" else v
   if !st.names.contains base then
     modify fun s => { s with names := s.names.insert base }
     return quote base
@@ -1067,7 +1070,10 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
   for (n, ci) in decls do
     -- the instances that the statement would leave out but the proof uses (valueGo)
     let isThm0 := ci matches .thmInfo _
-    let usedInstances ← match ci.value? (allowOpaque := true) with
+    -- STATEMENTS_ONLY: the proof terms of theorems are not translated (a book
+    -- that shows the statements only; a large term can take minutes)
+    let stmtOnly := (← IO.getEnv "STATEMENTS_ONLY").isSome && isThm0
+    let usedInstances ← match (if stmtOnly then none else ci.value? (allowOpaque := true)) with
       | some v => do
         if !(termDefiniens src (lineOf.getD (original 3 n) (lineOf.get! n)) && !isClass env n) then pure {} else
         let r ← (((value ci.type v).run {mapping, binders, keepAll, proofMode := isThm0, keepImplicit := true}).run' {} {}).toIO ctx st |>.toBaseIO
@@ -1103,7 +1109,7 @@ def exportDecls (env : Environment) (mapping : Std.HashMap Name String)
       -- the definiens too, where the source has a term and it translates
       let isThm := ci matches .thmInfo _
       let mut defn := ""
-      if let some v := ci.value? (allowOpaque := true) then
+      if let some v := (if stmtOnly then none else ci.value? (allowOpaque := true)) then
         if termDefiniens src (lineOf.getD orig r) && !isClass env n then
           let vres ← (((value ci.type v).run {mapping, binders, keepAll, proofMode := isThm, keepImplicit := true, usedInstances}).run' {} {}).toIO ctx st
                      |>.toBaseIO

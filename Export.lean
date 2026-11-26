@@ -183,8 +183,11 @@ def freshName (n : Name) (prop : Bool) (sort : Bool := false) : M String := do
   let base := if ok then base0 else if prop then "h" else if sort && !n.hasMacroScopes then latin else "x"
   let st ← get
   -- a name that is a constant of Informath's base (sigma, the sum Σ; pi, π)
-  -- is quoted, {|sigma|}, so that Informath reads it as a variable
-  let quote (v : String) := if ["sigma", "pi"].contains v then "{|" ++ v ++ "|}" else v
+  -- or a keyword of Dedukti (a field named injective) is quoted, {|sigma|},
+  -- so that Informath reads it as a variable
+  let quote (v : String) :=
+    if ["sigma", "pi", "def", "thm", "injective", "private", "defac", "defacu"].contains v
+    then "{|" ++ v ++ "|}" else v
   if !st.names.contains base then
     modify fun s => { s with names := s.names.insert base }
     return quote base

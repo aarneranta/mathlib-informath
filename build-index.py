@@ -45,6 +45,7 @@ LANGUAGES = [l for l in ALL_LANGUAGES if l in os.environ.get('LANGUAGES', 'Eng,F
 SLOW_LANGUAGES = [l for l in ['Ger'] if l in LANGUAGES]
 FAST_LANGUAGES = [l for l in LANGUAGES if l not in SLOW_LANGUAGES]
 PER_ITEM = 1
+WHOLE_TIMEOUT = 1200            # seconds for reading all statements in one call, before going in chunks
 CHUNK = 12
 PROOF_TIMEOUT = 300               # seconds for one call of -proof-text in the fast languages
 # the proof texts indented by the assumptions open at each line, with the goals
@@ -408,8 +409,8 @@ def main():
         print('verbal readings from', cache, flush=True)
     else:
       try:
-        verb = verbal_readings(all_stmts, verbal, FAST_LANGUAGES)
-      except RuntimeError as e:
+        verb = verbal_readings(all_stmts, verbal, FAST_LANGUAGES, timeout=WHOLE_TIMEOUT)
+      except (RuntimeError, subprocess.TimeoutExpired) as e:
           # a statement that RunInformath fails on stops the whole call: then the
           # statements in chunks, halved down to those it fails on, left unread
           print('RunInformath failed (%s); reading in chunks' % str(e).strip()[-200:], flush=True)
@@ -425,8 +426,8 @@ def main():
                 % (len(failed), ' '.join(failed[:30])), flush=True)
       json.dump({'key': key, 'readings': verb}, open(cache, 'w'))
     try:
-        form = formulas(all_stmts, decls)
-    except RuntimeError as e:
+        form = formulas(all_stmts, decls, timeout=WHOLE_TIMEOUT)
+    except (RuntimeError, subprocess.TimeoutExpired) as e:
         print('RunInformath failed on the formulas (%s); in chunks' % str(e).strip()[-200:], flush=True)
         sb, byname = dk_blocks(all_stmts), {d['lean']: d for d in decls}
 

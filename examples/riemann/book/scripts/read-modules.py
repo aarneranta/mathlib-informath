@@ -26,6 +26,8 @@ bi.LANGUAGES, bi.SLOW_LANGUAGES, bi.FAST_LANGUAGES, bi.TACTIC_LANGUAGES = ['Eng'
 extra = [os.path.abspath(os.path.join(HERE, '..', t)) for t in ['grh-names.dkgf', 'grh.dkgf']]
 bi.TABLES = [os.path.join(MI, t) for t in bi.TABLES] + [t for t in extra if os.path.exists(t)]
 bi.read_modules = lambda: mods
+# the book's 12,000 statements take RunInformath over 20 minutes in one call: in chunks at once
+bi.WHOLE_TIMEOUT = int(os.environ.get('WHOLE_TIMEOUT', '60'))
 if not proofs:
     bi.proof_texts = lambda base, ps, langs: ([None] * len(ps), [])
 sys.argv = [sys.argv[0]]

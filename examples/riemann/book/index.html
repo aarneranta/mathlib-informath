@@ -1,0 +1,228 @@
+<!DOCTYPE html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width, initial-scale=1"><title>The Generalized Riemann Hypothesis, read by Informath</title><link rel=stylesheet href="style.css"><script src="macros.js"></script><script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script></head><body>
+
+<h1>The Generalized Riemann Hypothesis</h1>
+<p>The Lean proof <a href="https://github.com/lsernau/grh-lean/tree/72fead1/grh-compact">grh-lean</a> (compact edition), read in English by Informath: 12292 declarations in 165 chapters.</p>
+<h2>The main theorem</h2>
+<div class=thm><b>The Riemann hypothesis.</b> Let $s$ be a complex such that $\EqtMACRoDE {\riemannZetaMACRoFDB {s}}{0}$, there exists no natural number $n$, such that $\EqtMACRoDE {s}{\NegnegMACRoFV {2}\times (n + 1)}$ and $s \neq 1$. Then $\ComplexreMACRoFEF {s}= \frac{ 1}{2}$.<div class=src><a href="https://github.com/lsernau/grh-lean/blob/72fead1/grh-compact/src/Main.lean#L4">src/Main.lean: riemannHypothesis</a> &middot; <a href="pages/ch165.html#riemannHypothesis">in the book</a></div></div>
+<div class=thm><b>The zeros of the zeta function.</b> Let $s$ be a complex such that $\EqtMACRoDE {\riemannZetaMACRoFDB {s}}{0}$, there exists no natural number $n$, such that $\EqtMACRoDE {s}{\NegnegMACRoFV {2}\times (n + 1)}$ and $s \neq 1$. Then $\ComplexreMACRoFEF {s}= \frac{ 1}{2}$.<div class=src><a href="https://github.com/lsernau/grh-lean/blob/72fead1/grh-compact/src/Main.lean#L6">src/Main.lean: riemannZeta_eq_zero_re</a> &middot; <a href="pages/ch165.html#riemannZeta_eq_zero_re">in the book</a></div></div>
+<div class=thm><b>GRH for Dirichlet L-functions, half-plane form.</b> Let $N$ be a nonzero natural number. Let $\chi$ be a Dirichlet character modulo $N$. Let $s$ be a complex such that $\frac{ 1}{2}&lt; \ComplexreMACRoFEF {s}$ and either $\chi \neq 1$ or $s \neq 1$. Then $\DirichletCharacterLFunctionMACRoFDA {\chi}{s}\neq 0$.<div class=src><a href="https://github.com/lsernau/grh-lean/blob/72fead1/grh-compact/src/Main.lean#L8">src/Main.lean: LFunction_ne_zero_of_half_lt_re</a> &middot; <a href="pages/ch165.html#LFunction_ne_zero_of_half_lt_re">in the book</a></div></div>
+<div class=thm><b>GRH for Dirichlet L-functions.</b> Let $N$ be a nonzero natural number. Let $\chi$ be a Dirichlet character modulo $N$. Let $s$ be a complex such that $0 &lt; \ComplexreMACRoFEF {s}&lt; 1$ and $\DirichletCharacterLFunctionMACRoFDA {\chi}{s}$ is equal to $0$. Then $\ComplexreMACRoFEF {s}= \frac{ 1}{2}$.<div class=src><a href="https://github.com/lsernau/grh-lean/blob/72fead1/grh-compact/src/Main.lean#L10">src/Main.lean: LFunction_eq_zero_re</a> &middot; <a href="pages/ch165.html#LFunction_eq_zero_re">in the book</a></div></div>
+<div class=thm><b>GRH for primitive Dirichlet characters.</b> Let $N$ be a nonzero natural number. Let $\chi$ be a primitive Dirichlet character modulo $N$. Let $s$ be a complex such that $0 &lt; \ComplexreMACRoFEF {s}&lt; 1$ and $\DirichletCharacterLFunctionMACRoFDA {\chi}{s}$ is equal to $0$. Then $\ComplexreMACRoFEF {s}= \frac{ 1}{2}$.<div class=src><a href="https://github.com/lsernau/grh-lean/blob/72fead1/grh-compact/src/Main.lean#L12">src/Main.lean: LFunction_eq_zero_re_of_isPrimitive</a> &middot; <a href="pages/ch165.html#LFunction_eq_zero_re_of_isPrimitive">in the book</a></div></div>
+<h2>Preface</h2>
+
+<p>This is an informalization of <a href="https://github.com/lsernau/grh-lean/tree/72fead1/grh-compact">grh-lean</a>,
+a Lean&nbsp;4 proof of the Riemann hypothesis and of the generalized Riemann hypothesis for Dirichlet
+L-functions. The proof is Levent Alpöge's, with Claude (<a href="https://alpo.ge/remark.pdf">remark.pdf</a>);
+grh-lean is a shorter rewriting of his Lean proof, made at Anthropic with Claude, which follows its
+method and proves many steps by other arguments. It is built on
+<a href="https://github.com/leanprover-community/mathlib4/tree/56a005855ea17e0b0958f73ec801ae140b0a1679">Mathlib</a>
+and uses only Lean's axioms <code>propext</code>, <code>Classical.choice</code> and <code>Quot.sound</code>.
+grh-lean comes in two editions; this book reads the compact one (<code>grh-compact</code>, about
+76,000 lines of Lean), and consults the readable one (<code>grh</code>) for explanations.</p>
+
+<p>The book contains every declaration of the project that the five theorems of
+<code>src/Main.lean</code> depend on, and no others: the background results that Mathlib lacks
+(<code>src/Lib</code>) and the steps of the argument (<code>src/New</code>). They are given in an
+order where nothing is used before it is stated: each module after the modules it imports, and in
+each module the order of its source. The declarations are grouped in chapters by the folders of the
+source, one page each; a folder whose modules depend on other folders' appears again in a later
+chapter (&ldquo;continued&rdquo;).</p>
+
+<p>Each declaration is shown with</p>
+<ul>
+<li>its statement, as <a href="https://github.com/GrammaticalFramework/informath">Informath</a> reads it in
+English from the Lean statement; where Informath has no reading, Lean's own statement is shown;</li>
+<li>the comment that the source gives it, if any, in a grey frame;</li>
+<li>for a theorem, its proof in one line: the declarations of the project that the proof names,
+each linked to its statement in the book, and, in a fold, the theorems of Mathlib that it names, each
+linked to its place in Mathlib. Only what the source of the proof names is cited, not what Lean's
+tactics (<code>simp</code>, instance search, elaboration) find on their own; a proof that names
+nothing is done by the tactics alone. The proofs of Mathlib's theorems are not shown;</li>
+<li>its file and identifier in grh-lean, linked to the line of the source on GitHub.</li>
+</ul>
+
+<p>As in grh-lean's guide, P is a parameter set and D an admissible system for P throughout, and
+the parts of D and P are written without them: <i>x</i>, <i>m</i>, <i>a</i> for D.x, D.m, D.a,
+<i>d</i> for P.d. The letters are those of the compact edition's guide (<code>grh-compact/GUIDE.md</code>, section 3): x, x₁, b
+are scales, m the number of theta lifts, k and r the ranks of columns and rows, a the end of the
+prime sums.</p>
+
+<p>The statements are read by machine, by Informath with the symbol tables of
+<a href="https://github.com/aarneranta/mathlib-informath">mathlib-informath</a> and a table of this
+project; nothing in them is written by hand. A reading says what the Lean statement says, in words
+where the tables have words for its notions and in formulas otherwise; it can be long, and some
+notions of the project are shown by their Lean names. The proofs are not read: the book only says what
+each proof relies on. To check that the theorems hold, one checks the Lean proof itself, as the
+README of grh-lean explains; the book is a way to read what is proved, and from what.</p>
+
+<h2>Contents</h2>
+<h3>The statements and the theorems</h3><ol start=1>
+<li><a href="pages/ch001.html">The statements</a> <span class=m>4 declarations: Statements</span></li>
+</ol><h3>Background results (src/Lib)</h3><ol start=2>
+<li><a href="pages/ch002.html">Lib.General</a> <span class=m>649 declarations: LinearAlgebra.Base, Algebra.AdicRingHomExt, Algebra.SuccessiveApprox, Analysis.OstrowskiTaussky …</span></li>
+<li><a href="pages/ch003.html">Lib.DiscreteSeries</a> <span class=m>241 declarations: CuspKernel.CircleMean, Haar.UnitaryNorm, Haar.SkewCoordinates, Haar.LogDerivative …</span></li>
+<li><a href="pages/ch004.html">Lib.Adelic</a> <span class=m>391 declarations: Adeles.CoprimeValuation, Adeles.AdeleTopology, Adeles.AdditiveCharDefs, Adeles.AdeleIdempotent …</span></li>
+<li><a href="pages/ch005.html">Lib.General (continued)</a> <span class=m>176 declarations: Groups.CompactMean, LinearAlgebra.ColumnLattices, Algebra.ZerosCostDegree, Measure.HaarModulus …</span></li>
+<li><a href="pages/ch006.html">Lib.Weil</a> <span class=m>180 declarations: Construction.SubmoduleNormedSpace, Construction.Model, Construction.WeilOperators, Construction.OrthogonalSum …</span></li>
+<li><a href="pages/ch007.html">Lib.GLn</a> <span class=m>103 declarations: SchurModule.Nabla, SchurModule.Bordering, SchurModule.Interlacing, SchurModule.MinorBasis …</span></li>
+<li><a href="pages/ch008.html">Lib.LocalGL</a> <span class=m>117 declarations: Green.MackeyFormula, Green.InductionMean, Green.CuspidalFunction, Green.FrobeniusOrbits …</span></li>
+<li><a href="pages/ch009.html">Lib.ClassField</a> <span class=m>163 declarations: GaloisCohomology.ContinuousCocycles, Places.GaloisDefs, GaloisCohomology.CyclicClass, Places.LocalDefs …</span></li>
+<li><a href="pages/ch010.html">Lib.PadicHodge</a> <span class=m>316 declarations: Crystalline.NonUnitalUnits, PeriodRings.CpIntegers, PeriodRings.Ainf, PeriodRings.ThetaKernel …</span></li>
+<li><a href="pages/ch011.html">Lib.Cohomology</a> <span class=m>149 declarations: Etale.Defs, Etale.Functoriality, Etale.TestCohomology, Etale.TestRings …</span></li>
+<li><a href="pages/ch012.html">Lib.DiscreteSeries (continued)</a> <span class=m>45 declarations: Haar.HaarMass, Haar.RegularRepL2, CuspKernel.BumpConvolution, Theta.FischerDecomposition …</span></li>
+<li><a href="pages/ch013.html">Lib.General (continued)</a> <span class=m>133 declarations: Algebra.CechDescent, Algebra.DisjointUnions, Algebra.FaithfulChar, Algebra.MultivariateHensel …</span></li>
+<li><a href="pages/ch014.html">Lib.DiscreteSeries (continued)</a> <span class=m>80 declarations: Character.LaurentAlternants, Holomorphic.MinorEquivariance, FlenstedJensen.FlenstedJensenInvariance, FlenstedJensen.PsiSmooth …</span></li>
+<li><a href="pages/ch015.html">Lib.Cohomology (continued)</a> <span class=m>168 declarations: Etale.BijectiveComparisons, Etale.FilteredColimits, Etale.AcyclicTests, Etale.Partitions …</span></li>
+<li><a href="pages/ch016.html">Lib.Shimura</a> <span class=m>183 declarations: AbelianScheme.KernelRing, ThetaModuli.CutOutIdeals, Uniformisation.Frames, Uniformisation.LieExponential …</span></li>
+<li><a href="pages/ch017.html">Lib.Analytic</a> <span class=m>41 declarations: Landau.PolarLandau, PolyaVinogradov.PolyaVinogradov, DirichletTheta.MellinTheta, Primes.AuxiliaryPrimes …</span></li>
+<li><a href="pages/ch018.html">Lib.ClassField (continued)</a> <span class=m>114 declarations: GaloisCohomology.DiscreteUnits, GaloisCohomology.CupProduct, GreenbergWiles.ExtendCharacter, HeckeL.EulerProduct …</span></li>
+<li><a href="pages/ch019.html">Lib.Adelic (continued)</a> <span class=m>147 declarations: Adeles.AdelicAbs, Cartan.ProjectiveModules, QuotientMeasure.PeriodicMean, Unitary.CongruenceLevel …</span></li>
+<li><a href="pages/ch020.html">Lib.General (continued)</a> <span class=m>226 declarations: Algebra.FittingDuality, Analysis.FundamentalDomain, Geometry.ConstantFunctions, Geometry.OpenSubfunctors …</span></li>
+<li><a href="pages/ch021.html">Lib.ClassField (continued)</a> <span class=m>147 declarations: Places.LocalFrobenius, Places.LocalExtension, Places.UnramifiedCharacters, GaloisCohomology.SylowReduction …</span></li>
+<li><a href="pages/ch022.html">Lib.PadicHodge (continued)</a> <span class=m>207 declarations: TateSen.NearOne, TateSen.DeRhamFiltration, PeriodRings.FundamentalKernel, WachKisin.HodgeFrame …</span></li>
+<li><a href="pages/ch023.html">Lib.DiscreteSeries (continued)</a> <span class=m>114 declarations: Bruhat.EichlerMaps, Bruhat.FloorGroups, FlenstedJensen.PsiDecay, CuspKernel.SchurOrthogonality …</span></li>
+<li><a href="pages/ch024.html">Lib.GaloisRep</a> <span class=m>64 declarations: Hilbert90.TameDescent, Hilbert90.UnitaryHilbert90, BaseChange.OrbitClassSum, HodgeTateCocharacter.HodgeTateCocharacter …</span></li>
+<li><a href="pages/ch025.html">Lib.Adelic (continued)</a> <span class=m>102 declarations: Adeles.IdeleHilbert90, Adeles.RationalPoints, Adeles.AdditiveCharBasic, Adeles.AdeleSelfDual …</span></li>
+<li><a href="pages/ch026.html">Lib.Weil (continued)</a> <span class=m>104 declarations: Construction.AdelicHeisenberg, Construction.FiniteHeisenberg, Construction.FiniteVacuum, Construction.GaussSumSign …</span></li>
+<li><a href="pages/ch027.html">Lib.ClassField (continued)</a> <span class=m>91 declarations: Places.AdeleNorm, HeckeCharacter.CharacterLevels, HeckeCharacter.CharacterConjugates, Local.ArtinMapAtPlace …</span></li>
+<li><a href="pages/ch028.html">Lib.General (continued)</a> <span class=m>113 declarations: Algebra.InertResidue, LinearAlgebra.FramedCoefficient, Measure.Place, NumberTheory.Valuation …</span></li>
+<li><a href="pages/ch029.html">Lib.Adelic (continued)</a> <span class=m>234 declarations: Adeles.AdelicModulus, Adeles.ExtensionByZero, Adeles.NormAbsValue, Witt.SpaceOperations …</span></li>
+<li><a href="pages/ch030.html">Lib.Weil (continued)</a> <span class=m>521 declarations: DualPair.Lift, Periods.DegreeAndUnipotent, Periods.FiniteBesselGroup, Periods.DegreeOfT …</span></li>
+<li><a href="pages/ch031.html">Lib.ClassField (continued)</a> <span class=m>169 declarations: HeckeCharacter.SplittingCharOnU1, HeckeL.IdelicThetaSum, HeckeL.HeckeContinuation, Global.AlbertBrauerHasseNoether …</span></li>
+<li><a href="pages/ch032.html">Lib.Shimura (continued)</a> <span class=m>226 declarations: ComplexTheta.ThetaDimension, HeckeTower.GroupRingOperators, IntegralModel.GroupBaseChange, AbelianScheme.TangentCoords …</span></li>
+<li><a href="pages/ch033.html">Lib.General (continued)</a> <span class=m>55 declarations: Algebra.LatticeComplement, Geometry.SeparatingPoints, Geometry.SmoothnessCriterion, LinearAlgebra.BlockMatrices …</span></li>
+<li><a href="pages/ch034.html">Lib.Shimura (continued)</a> <span class=m>154 declarations: AbelianScheme.Specialisation, ThetaGroup.ThetaStructure, Uniformisation.UniformisationExists, AbelianScheme.ThetaFamily …</span></li>
+<li><a href="pages/ch035.html">Lib.LocalGL (continued)</a> <span class=m>82 declarations: Green.LabelDegree, Iwahori.IwahoriConjugation, Shintani.LabelCharacters, Green.LabelIdempotents …</span></li>
+<li><a href="pages/ch036.html">Lib.GaloisRep (continued)</a> <span class=m>69 declarations: BaseChange.BaseChangePlaces, LocalGlobal.ParahoricTypeLabel, LocalGlobal.TameExponent, Main.HeckeOperatorOfFunction …</span></li>
+<li><a href="pages/ch037.html">Lib.PadicHodge (continued)</a> <span class=m>285 declarations: WachKisin.KummerChartExists, WachKisin.KummerChart, Crystalline.RegularityFrobenius, WachKisin.CrystallinePeriodMatrix …</span></li>
+<li><a href="pages/ch038.html">Lib.LocalGL (continued)</a> <span class=m>40 declarations: Iwahori.IwahoriInjective, Iwahori.HeckeCounts, Iwahori.SortedExponents, Iwahori.ExponentOfLabel …</span></li>
+<li><a href="pages/ch039.html">Lib.CM</a> <span class=m>122 declarations: Genus.QuadraticZeta, Sigma.SigmaFunction, Sigma.CurveTheta, Sigma.PadicSeriesDefs</span></li>
+<li><a href="pages/ch040.html">Lib.Shimura (continued)</a> <span class=m>225 declarations: Eigenspace.EigenQuotient, GoodReduction.ThetaOrthogonality, GoodReduction.HermitianAction, GoodReduction.GaussUnfolding …</span></li>
+<li><a href="pages/ch041.html">Lib.General (continued)</a> <span class=m>39 declarations: Algebra.JetChainRule, Algebra.DepthBounds, Algebra.JetRename, Geometry.Lefschetz …</span></li>
+<li><a href="pages/ch042.html">Lib.Shimura (continued)</a> <span class=m>116 declarations: Uniformisation.AppellHumbert, Uniformisation.ModelAlongArc, ThetaModuli.FamilyFromPoints, GoodReduction.ArcReduction …</span></li>
+<li><a href="pages/ch043.html">Lib.CM (continued)</a> <span class=m>72 declarations: LocalHeight.IntegralParameter, LocalHeight.IsogenyIntegrality, KroneckerLimit.LogTheta, LocalHeight.EulerAdditionFormula …</span></li>
+<li><a href="pages/ch044.html">Lib.Weil (continued)</a> <span class=m>68 declarations: Construction.FockThetaFunctions, GaussSum.ShearInvariance, MixedModel.NameModulus, Unramified.UniformiserScalar</span></li>
+<li><a href="pages/ch045.html">Lib.Adelic (continued)</a> <span class=m>7 declarations: CuspForms.HeckePolyEval, Landherr.SumOfTwoSquares, Landherr.Landherr</span></li>
+<li><a href="pages/ch046.html">Lib.Weil (continued)</a> <span class=m>131 declarations: MixedModel.AdaptedSplitting, DualPair.PairSplitting, DualPair.PairReal, DualPair.DatumLevel …</span></li>
+<li><a href="pages/ch047.html">Lib.GaloisRep (continued)</a> <span class=m>30 declarations: BaseChange.ParahoricColumns, BaseChange.UnitaryRoots, BaseChange.WeilDataExtension, Division.MultiplicityFreeSum</span></li>
+<li><a href="pages/ch048.html">Lib.SiegelWeil</a> <span class=m>68 declarations: Mass.TorusMajorant, SingularForms.AdaptedHom, SingularForms.SingularForms, StrongApproximation.EqualRankConstant</span></li>
+<li><a href="pages/ch049.html">Lib.ClassField (continued)</a> <span class=m>51 declarations: HeckeCharacter.LineParabolic, HeckeCharacter.CharOfDet, HeckeCharacter.LocalCharacters, LocalDuality.CrystallineDuality</span></li>
+<li><a href="pages/ch050.html">Lib.Weil (continued)</a> <span class=m>60 declarations: DualPair.FourierCoefficient, DualPair.TwoLineTerms, DualPair.ThetaIntegralLaws, MixedModel.EquivariantCoefficients</span></li>
+<li><a href="pages/ch051.html">Lib.SiegelWeil (continued)</a> <span class=m>39 declarations: Formula.ZeroTermHeight, Tower.ConstantTerm, Tower.LineGaussSum, Tower.LargeSideConstantTerm</span></li>
+<li><a href="pages/ch052.html">Lib.GLn (continued)</a> <span class=m>30 declarations: Branching.BranchingVector, Branching.Branching, SchurModule.SchurContinuous</span></li>
+<li><a href="pages/ch053.html">Lib.Adelic (continued)</a> <span class=m>29 declarations: CuspForms.CuspStep, CuspForms.DeltaForms, CuspForms.ReproducingKernel</span></li>
+<li><a href="pages/ch054.html">Lib.GLn (continued)</a> <span class=m>49 declarations: Dual.MixedCartan, Dual.ClassSum, SchurModule.WeightRepBasic</span></li>
+<li><a href="pages/ch055.html">Lib.Adelic (continued)</a> <span class=m>73 declarations: CuspForms.ClassReps, CuspForms.SmoothFormPairing, CuspForms.LevelForms</span></li>
+<li><a href="pages/ch056.html">Lib.Cyclotomic</a> <span class=m>10 declarations: Kolyvagin.Components, Voronoi.StickelbergerInteger</span></li>
+<li><a href="pages/ch057.html">Lib.DiscreteSeries (continued)</a> <span class=m>90 declarations: Bruhat.BigCell, Theta.LocalThetaCorrespondence</span></li>
+<li><a href="pages/ch058.html">Lib.Weil (continued)</a> <span class=m>35 declarations: Lift.Edge, Lift.Arrow, Unramified.HeckeTransfer</span></li>
+<li><a href="pages/ch059.html">Lib.SiegelWeil (continued)</a> <span class=m>9 declarations: Formula.SiegelSets, Formula.SiegelWeilFormula, OneVector.OneVector, Mass.MassRatio</span></li>
+<li><a href="pages/ch060.html">Lib.Adelic (continued)</a> <span class=m>56 declarations: Adeles.FinitePlaceDensity, Poincare.MiddleGroupEmbedding</span></li>
+<li><a href="pages/ch061.html">Lib.DiscreteSeries (continued)</a> <span class=m>107 declarations: Bessel.UnipotentCoords, Bessel.RealMeasures, Bruhat.ComplexPlace, Bruhat.ComplexFloorMeasure …</span></li>
+<li><a href="pages/ch062.html">Lib.General (continued)</a> <span class=m>2 declarations: Algebra.BlockFittingBound, Groups.IndexOfProduct</span></li>
+<li><a href="pages/ch063.html">Lib.LocalGL (continued)</a> <span class=m>7 declarations: Iwahori.HeckeOnLineStabiliser, Tadic.ChainLemma</span></li>
+<li><a href="pages/ch064.html">Lib.PadicComparison</a> <span class=m>72 declarations: Crystalline.CrystallineTests, Descent.ReductionModP</span></li>
+<li><a href="pages/ch065.html">Lib.Cohomology (continued)</a> <span class=m>14 declarations: Etale.GluingWithSupports, ProperBaseChange.KummerLine, ProperBaseChange.SubringSplitting</span></li>
+<li><a href="pages/ch066.html">Lib.General (continued)</a> <span class=m>39 declarations: Algebra.TensorCohomology, Geometry.EtaleCharts</span></li>
+<li><a href="pages/ch067.html">Lib.Cohomology (continued)</a> <span class=m>299 declarations: Etale.ConnectedComponents, Hodge.HodgeSite, Duality.Contraction, PointClass.LocusEquations …</span></li>
+<li><a href="pages/ch068.html">Lib.PadicComparison (continued)</a> <span class=m>215 declarations: Completion.RootSystems, Crystalline.TestGenericFibre, Crystalline.PeriodLifting, Descent.TestCover …</span></li>
+<li><a href="pages/ch069.html">Lib.General (continued)</a> <span class=m>10 declarations: Geometry.ProperSchemes, Geometry.ProperAtlas, Geometry.ChartedSchemes</span></li>
+<li><a href="pages/ch070.html">Lib.Cohomology (continued)</a> <span class=m>155 declarations: Etale.EllAdicCohomology, Hodge.DepthVanishing, Hodge.Kunneth, Hodge.GrothendieckSymbol …</span></li>
+<li><a href="pages/ch071.html">Lib.PadicComparison (continued)</a> <span class=m>39 declarations: Crystalline.CrystallineEtale, CrystallineFrobenius.DenseRelation, Primitive.PrimitivePeriods, ToricTower.CrystallineLines …</span></li>
+<li><a href="pages/ch072.html">Lib.ClassField (continued)</a> <span class=m>4 declarations: Places.LocalBasics</span></li>
+<li><a href="pages/ch073.html">Lib.Cohomology (continued)</a> <span class=m>4 declarations: SmoothBaseChange.SmoothBaseChange</span></li>
+<li><a href="pages/ch074.html">Lib.PadicComparison (continued)</a> <span class=m>15 declarations: Primitive.PrimitiveComparison, CrystallineFrobenius.CrystallineCohomology, HodgeTate.HodgeTateVectors</span></li>
+<li><a href="pages/ch075.html">Lib.Cohomology (continued)</a> <span class=m>3 declarations: PointClass.GaloisRep</span></li>
+<li><a href="pages/ch076.html">Lib.Cyclotomic (continued)</a> <span class=m>7 declarations: Stickelberger.GaussSums</span></li>
+<li><a href="pages/ch077.html">Lib.ClassField (continued)</a> <span class=m>8 declarations: GreenbergWiles.SelmerMembership, GaloisCohomology.TameCocycles</span></li>
+<li><a href="pages/ch078.html">Lib.Cyclotomic (continued)</a> <span class=m>19 declarations: Kolyvagin.ComponentBound, OddSha.OddShaBound</span></li>
+<li><a href="pages/ch079.html">Lib.GLn (continued)</a> <span class=m>14 declarations: SchurModule.SchurOrthogonality</span></li>
+<li><a href="pages/ch080.html">Lib.Adelic (continued)</a> <span class=m>24 declarations: CuspForms.FormRepresentation, CuspForms.WeightParameter, CuspForms.AlgebraicForms</span></li>
+<li><a href="pages/ch081.html">Lib.GaloisRep (continued)</a> <span class=m>63 declarations: LocalGlobal.LocalTranslates, BaseChange.TwistedTraceSum, BaseChange.BaseChangeWeight, BaseChange.BaseChangeLevel …</span></li>
+<li><a href="pages/ch082.html">Lib.DiscreteSeries (continued)</a> <span class=m>25 declarations: Character.KTypeMultiplicity, Character.SectorBound, Character.FormalDegree, Character.WeylTrace</span></li>
+<li><a href="pages/ch083.html">Lib.Weil (continued)</a> <span class=m>85 declarations: CompactLift.BranchingPeriod, Periods.BesselIntegral, DualPair.TwoEdgesOnePair, Periods.UnfoldingStep</span></li>
+<li><a href="pages/ch084.html">Lib.ClassField (continued)</a> <span class=m>27 declarations: Grunwald.Grunwald, HeckeCharacter.LevelModulus</span></li>
+<li><a href="pages/ch085.html">Lib.Shimura (continued)</a> <span class=m>9 declarations: ComplexTheta.PeriodVanishing, Transfer.PELDataExistence</span></li>
+<li><a href="pages/ch086.html">Lib.GaloisRep (continued)</a> <span class=m>14 declarations: Main.AttachedDeterminant, Main.SeedRepresentation, Main.AvatarCompatibility</span></li>
+<li><a href="pages/ch087.html">Lib.Adelic (continued)</a> <span class=m>2 declarations: Hecke.ClassSumBounds</span></li>
+<li><a href="pages/ch088.html">Lib.LocalGL (continued)</a> <span class=m>11 declarations: TraceFormula.TraceComparison</span></li>
+<li><a href="pages/ch089.html">Lib.Weil (continued)</a> <span class=m>21 declarations: Lift.Staircase</span></li>
+<li><a href="pages/ch090.html">Lib.CM (continued)</a> <span class=m>4 declarations: Reciprocity.SemilinearWeilLaw</span></li>
+<li><a href="pages/ch091.html">Lib.DiscreteSeries (continued)</a> <span class=m>1 declarations: Holomorphic.NearMaximum</span></li>
+<li><a href="pages/ch092.html">Lib.SiegelWeil (continued)</a> <span class=m>44 declarations: RallisInner.SharpData</span></li>
+<li><a href="pages/ch093.html">Lib.Weil (continued)</a> <span class=m>11 declarations: CompactLift.RallisFormula</span></li>
+<li><a href="pages/ch094.html">Lib.GaloisRep (continued)</a> <span class=m>6 declarations: EvenRank.ThetaLift, Main.SphericalAllRanks, LocalGlobal.EigencharCompatibility, LocalGlobal.LabelCompatibility</span></li>
+<li><a href="pages/ch095.html">Lib.Adelic (continued)</a> <span class=m>45 declarations: CuspForms.BaseLevel</span></li>
+<li><a href="pages/ch096.html">Lib.LocalGL (continued)</a> <span class=m>21 declarations: TaylorWiles.HeckeAlgebra, TaylorWiles.AuxPlaceOperators</span></li>
+<li><a href="pages/ch097.html">Lib.GLn (continued)</a> <span class=m>1 declarations: Dual.DualWeights</span></li>
+<li><a href="pages/ch098.html">Lib.GaloisRep (continued)</a> <span class=m>2 declarations: LocalGlobal.TypeFrobenius</span></li>
+<li><a href="pages/ch099.html">Lib.Weil (continued)</a> <span class=m>6 declarations: Fock.ReproducingFormula</span></li>
+</ol><h3>The argument (src/New)</h3><ol start=100>
+<li><a href="pages/ch100.html">New.Exchange</a> <span class=m>79 declarations: BlockPartners, DeterminantVectors, NonnegativeVanishing, PartnersMatch …</span></li>
+<li><a href="pages/ch101.html">New.Seesaw</a> <span class=m>161 declarations: EdgePair, IntegralAsCosetSum, DoubleLiftValue, LatticeAndTorsionDefs …</span></li>
+<li><a href="pages/ch102.html">New.Selmer</a> <span class=m>91 declarations: BlocksAndCocycles, Corepresentable, LinePointPowers, RibetCramer …</span></li>
+<li><a href="pages/ch103.html">New.Filling</a> <span class=m>281 declarations: EichlerFlag, BesselSystem, Setup, LevelBridge …</span></li>
+<li><a href="pages/ch104.html">New.RealPlace</a> <span class=m>282 declarations: FrameNorm, GramSectionBounds, GramSection, CellNeighbourhood …</span></li>
+<li><a href="pages/ch105.html">New.Filling (continued)</a> <span class=m>223 declarations: NearTerms, BoxPartition, GlobalSieve, LinkPairing …</span></li>
+<li><a href="pages/ch106.html">New.Lift</a> <span class=m>157 declarations: CupProductBound, ExponentLattices, HodgeExpansion, CokernelKillers …</span></li>
+<li><a href="pages/ch107.html">New.TwistedHecke</a> <span class=m>90 declarations: InterlacingCone, TwistingData, DeepFormCost, ClassMeans …</span></li>
+<li><a href="pages/ch108.html">New.DiscreteSeries</a> <span class=m>57 declarations: MinorExpansion, GaussianShape, TwoFactorSetup, BesselExistence …</span></li>
+<li><a href="pages/ch109.html">New.Rows</a> <span class=m>92 declarations: PartnerCut, SemiInvariantNorm, StackedDeterminants, RealMatching …</span></li>
+<li><a href="pages/ch110.html">New.Core</a> <span class=m>11 declarations: ClassCountBound, ModuleIndex</span></li>
+<li><a href="pages/ch111.html">New.Curve</a> <span class=m>7 declarations: FormalParameter, KatzDivisibility</span></li>
+<li><a href="pages/ch112.html">New.Endgame</a> <span class=m>12 declarations: PrimeError, OneSidedCriterion</span></li>
+<li><a href="pages/ch113.html">New.Data</a> <span class=m>113 declarations: Different, WeilDataOfE</span></li>
+<li><a href="pages/ch114.html">New.Curve (continued)</a> <span class=m>31 declarations: PeriodDefs, ThetaProducts, TightFrameExists, FrameSections …</span></li>
+<li><a href="pages/ch115.html">New.Data (continued)</a> <span class=m>142 declarations: AdmissibleData, Magnitudes, Weights</span></li>
+<li><a href="pages/ch116.html">New.Selmer (continued)</a> <span class=m>34 declarations: DeterminantBound, ThickSpacing, CrystallineRank, CrystallineBound …</span></li>
+<li><a href="pages/ch117.html">New.Curve (continued)</a> <span class=m>51 declarations: LiveSum, DepthPairs, IntegralVacuum, ConjugatesOfJets …</span></li>
+<li><a href="pages/ch118.html">New.Heights</a> <span class=m>18 declarations: Heights, OneDeterminant</span></li>
+<li><a href="pages/ch119.html">New.Patching</a> <span class=m>10 declarations: OnePrime, OnePrimeTie</span></li>
+<li><a href="pages/ch120.html">New.RealPlace (continued)</a> <span class=m>14 declarations: BesselCut, VolumeKernel</span></li>
+<li><a href="pages/ch121.html">New.Filling (continued)</a> <span class=m>31 declarations: SchurTest, ThinClasses, BlockBound, CrudeEnergy</span></li>
+<li><a href="pages/ch122.html">New.Forms</a> <span class=m>20 declarations: AuxiliaryPair</span></li>
+<li><a href="pages/ch123.html">New.Seesaw (continued)</a> <span class=m>2 declarations: StandardLatticeLevel</span></li>
+<li><a href="pages/ch124.html">New.Trace</a> <span class=m>6 declarations: BadShare</span></li>
+<li><a href="pages/ch125.html">New.Seesaw (continued)</a> <span class=m>94 declarations: IndexTypes, FramesForY</span></li>
+<li><a href="pages/ch126.html">New.Data (continued)</a> <span class=m>22 declarations: ChosenPlaceLevels, DataExist</span></li>
+<li><a href="pages/ch127.html">New.Exchange (continued)</a> <span class=m>37 declarations: GridParameters, LValueRatio</span></li>
+<li><a href="pages/ch128.html">New.Columns</a> <span class=m>28 declarations: ColumnDefs, SizeEstimates</span></li>
+<li><a href="pages/ch129.html">New.Exchange (continued)</a> <span class=m>26 declarations: CrudeModularData</span></li>
+<li><a href="pages/ch130.html">New.Rows (continued)</a> <span class=m>38 declarations: MemberKernels, GluedFormTheta</span></li>
+<li><a href="pages/ch131.html">New.Columns (continued)</a> <span class=m>26 declarations: JetExponentBound</span></li>
+<li><a href="pages/ch132.html">New.Filling (continued)</a> <span class=m>6 declarations: Moments</span></li>
+<li><a href="pages/ch133.html">New.Trace (continued)</a> <span class=m>31 declarations: GoodIdempotent</span></li>
+<li><a href="pages/ch134.html">New.Exchange (continued)</a> <span class=m>44 declarations: AlgebraicPartDefs, SteepParameters</span></li>
+<li><a href="pages/ch135.html">New.SiegelWeil</a> <span class=m>8 declarations: AuxPairVanishing, DescentsVanishPlanes</span></li>
+<li><a href="pages/ch136.html">New.Columns (continued)</a> <span class=m>36 declarations: ChainValuation</span></li>
+<li><a href="pages/ch137.html">New.Seesaw (continued)</a> <span class=m>49 declarations: GradingsOfY, LiftCharacters</span></li>
+<li><a href="pages/ch138.html">New.Filling (continued)</a> <span class=m>32 declarations: PoincareSeries, ColumnCoords</span></li>
+<li><a href="pages/ch139.html">New.Rows (continued)</a> <span class=m>39 declarations: LineCoordinates</span></li>
+<li><a href="pages/ch140.html">New.Filling (continued)</a> <span class=m>7 declarations: FillingData</span></li>
+<li><a href="pages/ch141.html">New.Selmer (continued)</a> <span class=m>36 declarations: FitTwists</span></li>
+<li><a href="pages/ch142.html">New.Exchange (continued)</a> <span class=m>37 declarations: CharacterLiftNorm, GridModuli</span></li>
+<li><a href="pages/ch143.html">New.Seesaw (continued)</a> <span class=m>41 declarations: PairTensorData, GoodDatumExists, BesselGeneric</span></li>
+<li><a href="pages/ch144.html">New.Filling (continued)</a> <span class=m>7 declarations: DegreeBounds, FillingAdmissible</span></li>
+<li><a href="pages/ch145.html">New.Exchange (continued)</a> <span class=m>47 declarations: GridMove</span></li>
+<li><a href="pages/ch146.html">New.Rows (continued)</a> <span class=m>2 declarations: LineArithmetic</span></li>
+<li><a href="pages/ch147.html">New.Exchange (continued)</a> <span class=m>62 declarations: TriangleLevelExponent, AlgebraicPartConjugates, CostOfSquares, RowLadder …</span></li>
+<li><a href="pages/ch148.html">New.Selmer (continued)</a> <span class=m>99 declarations: LevelPlacesChosen, AptTupleDefs, AptTuples, HeckeStableSubspaces …</span></li>
+<li><a href="pages/ch149.html">New.Rows (continued)</a> <span class=m>11 declarations: MonomialCoefficientVector, MemberOrthogonality, CartanIntegrality</span></li>
+<li><a href="pages/ch150.html">New.GaloisRep</a> <span class=m>2 declarations: LabelUniqueness</span></li>
+<li><a href="pages/ch151.html">New.Trace (continued)</a> <span class=m>9 declarations: LabelRigidity, GoodFormTransfer</span></li>
+<li><a href="pages/ch152.html">New.Selmer (continued)</a> <span class=m>3 declarations: BaseLevelOfLabel, DenominatorBound</span></li>
+<li><a href="pages/ch153.html">New.Rows (continued)</a> <span class=m>8 declarations: RowVolume</span></li>
+<li><a href="pages/ch154.html">New.TwistedHecke (continued)</a> <span class=m>6 declarations: ElementaryDivisors</span></li>
+<li><a href="pages/ch155.html">New.Columns (continued)</a> <span class=m>18 declarations: TwistedHeckeType, MarkedPrimeType, LocalStatement</span></li>
+<li><a href="pages/ch156.html">New.Seesaw (continued)</a> <span class=m>6 declarations: UnfoldingStages</span></li>
+<li><a href="pages/ch157.html">New.Weil</a> <span class=m>1 declarations: FockCoeffDecay</span></li>
+<li><a href="pages/ch158.html">New.Rows (continued)</a> <span class=m>31 declarations: SparseThetaSum, NaturalFormNear, Separation, HeckeValueHeight</span></li>
+<li><a href="pages/ch159.html">New.Filling (continued)</a> <span class=m>5 declarations: RowDimension, FillingTheorem</span></li>
+<li><a href="pages/ch160.html">New.Rows (continued)</a> <span class=m>23 declarations: ComparisonForms, LiftVolumeHeight</span></li>
+<li><a href="pages/ch161.html">New.Selmer (continued)</a> <span class=m>3 declarations: RowsExist, FitTwistsExist</span></li>
+<li><a href="pages/ch162.html">New.Seesaw (continued)</a> <span class=m>3 declarations: SeesawTheorem</span></li>
+<li><a href="pages/ch163.html">New.Endgame (continued)</a> <span class=m>17 declarations: ShortAndEnough, LongForms</span></li>
+<li><a href="pages/ch164.html">The main inequality and GRH</a> <span class=m>5 declarations: Main</span></li>
+</ol><h3>The statements and the theorems</h3><ol start=165>
+<li><a href="pages/ch165.html">The five theorems</a> <span class=m>5 declarations: Main</span></li>
+</ol></body></html>
